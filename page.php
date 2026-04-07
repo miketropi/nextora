@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 get_header();
 ?>
-<main id="primary" class="wp-site-blocks nextora-main" role="main">
-	<div class="nextora-content-shell">
+<main id="primary" class="wp-site-blocks nextora-main nextora-singular nextora-singular--page" role="main">
+	<div class="nextora-content-shell nextora-content-shell--wide-size">
 		<?php
 		while ( have_posts() ) :
 			the_post();
@@ -18,9 +18,10 @@ get_header();
 				'template-parts/content',
 				'article',
 				array(
-					'show_meta'   => false,
-					'use_excerpt' => false,
-					'link_title'  => false,
+					'content_type' => 'page',
+					'show_meta'    => false,
+					'use_excerpt'  => false,
+					'link_title'   => false,
 				)
 			);
 		endwhile;

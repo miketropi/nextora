@@ -39,9 +39,6 @@ $thumb_img_class  = $na['thumb_img_class'];
 			<?php else : ?>
 				<?php
 				$ph_class = ( '' !== $permalink ? $thumb_img_class : 'size-full object-cover' );
-				if ( $is_card_lead ) {
-					$ph_class .= ' md:absolute md:inset-0 md:h-full md:w-full';
-				}
 				?>
 				<img
 					src="<?php echo esc_url( $placeholder_url ); ?>"

@@ -1,0 +1,23 @@
+/**
+ * Global typography baseline (no Preflight).
+ */
+@layer base {
+	body {
+		font-family: var(--font-sans);
+	}
+
+	.site-header,
+	.site-footer {
+		width: 100%;
+		max-width: none;
+	}
+
+	/* Avoid clipping the in-header menu toggle; drawer itself mounts on `body`. */
+	.site-header {
+		overflow: visible;
+	}
+
+	.site-header .alignfull {
+		overflow: visible;
+	}
+}

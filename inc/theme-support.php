@@ -24,6 +24,7 @@ add_action(
 		register_nav_menus(
 			array(
 				'primary' => __( 'Primary Menu', 'nextora' ),
+				'footer'  => __( 'Footer Menu', 'nextora' ),
 			)
 		);
 	}

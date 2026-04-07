@@ -1,0 +1,23 @@
+/**
+ * Threaded comments ({@see wp_list_comments()}).
+ */
+@layer base {
+	.nextora-comments ol.comment-list {
+		list-style: none;
+		padding: 0;
+		margin: 1.5rem 0 0;
+	}
+
+	.nextora-comments .comment-list .children {
+		list-style: none;
+		margin: 1.25rem 0 0;
+		padding: 0 0 0 1rem;
+		/* border-left: 2px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 35%, transparent); */
+	}
+
+	@media (min-width: 640px) {
+		.nextora-comments .comment-list .children {
+			padding-left: 2.5rem;
+		}
+	}
+}

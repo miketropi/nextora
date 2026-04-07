@@ -1,0 +1,29 @@
+/**
+ * Main column, content shells, singular hooks ({@see page.php}, theme.json layout).
+ */
+@layer base {
+	.nextora-main {
+		padding-block: var(--nextora-main-pad-y);
+	}
+
+	.nextora-singular--page .nextora-article--page .nextora-article-featured img {
+		max-height: min(50vh, 28rem);
+	}
+
+	.nextora-content-shell {
+		box-sizing: border-box;
+		margin-left: auto;
+		margin-right: auto;
+		width: 100%;
+		max-width: var(--wp--style--global--content-size, 720px);
+		padding-inline: var(--nextora-gutter);
+	}
+
+	.nextora-content-shell--wide {
+		max-width: min(100%, 78rem);
+	}
+
+	.nextora-content-shell--wide-size {
+		max-width: min(100%, var(--wp--style--global--wide-size, 1200px));
+	}
+}

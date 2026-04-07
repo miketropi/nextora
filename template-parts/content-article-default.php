@@ -31,7 +31,7 @@ $na = $args;
 			);
 			?>
 		</figure>
-	<?php elseif ( '' !== $na['placeholder_url'] ) : ?>
+	<?php elseif ( ! empty( $na['show_placeholder'] ) && '' !== $na['placeholder_url'] ) : ?>
 		<figure class="nextora-article-featured m-0 mb-[clamp(0.75rem,2.25vw,1.5rem)] overflow-hidden rounded-lg bg-surface" aria-label="<?php esc_attr_e( 'Placeholder — no featured image', 'nextora' ); ?>">
 			<img
 				src="<?php echo esc_url( $na['placeholder_url'] ); ?>"

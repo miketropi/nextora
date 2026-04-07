@@ -3,9 +3,9 @@
  * Article shell router: resolves args and loads a layout partial.
  *
  * Load with {@see get_template_part()} and `$args`:
- * - `layout` `default` — single / page (optional featured image, bordered title strip).
+ * - `layout` `default` — single / page (optional featured image; pass `content_type` `post`|`page` for layout).
  * - `layout` `card` — blog grid tile (thumbnail, excerpt, read more).
- * - `card_lead` — first post on index page 1: full-width row, larger type, split layout on `md+`.
+ * - `card_lead` — optional accent for one tile (e.g. first post): same layout as other cards, subtle ring + LCP-friendly image loading.
  *
  * Partials: `content-article-default.php`, `content-article-card.php`,
  * `content-article-title-meta.php`, `content-article-entry.php`.

@@ -7,7 +7,7 @@
  *
  * - Blog posts index (Settings → Reading → “Your latest posts”)
  * - Any archive type if you have not added `home.php`, `archive.php`, etc.
- * - Search results if `search.php` is missing
+ * - Search results use `search.php` when present
  *
  * Dev tips:
  * - Add `home.php` if you want the blog index markup to differ from this file.
@@ -27,7 +27,9 @@ get_header();
 	if ( have_posts() ) {
 		?>
 		<div class="nextora-content-shell nextora-content-shell--wide">
-			<div class="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-7">
+			<div
+				class="nextora-posts-grid grid grid-cols-1 items-stretch gap-x-4 gap-y-10 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-8 md:gap-x-6 lg:grid-cols-3 lg:gap-x-7 lg:gap-y-10"
+			>
 				<?php
 				$nextora_index_post = 0;
 				while ( have_posts() ) {
@@ -49,7 +51,7 @@ get_header();
 				?>
 			</div>
 
-			<div class="nextora-pagination-wrap mx-0 mt-[clamp(1.75rem,4vw,2.5rem)] max-w-none border-t border-secondary/25 px-0 pt-[clamp(1.25rem,3.5vw,2rem)]">
+			<div class="nextora-pagination-wrap nextora-pagination-wrap--archive mx-0 mt-[clamp(2rem,5vw,3rem)] max-w-none border-t border-contrast/10 px-0 pt-[clamp(1.5rem,4vw,2.25rem)]">
 				<?php
 				the_posts_pagination(
 					array(

@@ -1,0 +1,10 @@
+/**
+ * Entry / editor horizontal padding parity.
+ */
+@layer base {
+	.entry-content.nextora-entry,
+	.editor-styles-wrapper .block-editor-block-list__layout {
+		padding-inline: var(--nextora-gutter);
+		box-sizing: border-box;
+	}
+}

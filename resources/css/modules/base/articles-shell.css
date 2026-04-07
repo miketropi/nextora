@@ -1,0 +1,26 @@
+/**
+ * Article wrapper, legacy title container, entry padding guard.
+ */
+@layer base {
+	.nextora-content-shell > .nextora-article .entry-content.nextora-entry {
+		padding-inline: 0;
+	}
+
+	.nextora-article {
+		margin-bottom: clamp(2rem, 6vw, 3.5rem);
+	}
+
+	.nextora-container {
+		max-width: var(--wp--style--global--content-size, 720px);
+		margin-left: auto;
+		margin-right: auto;
+		/* padding-inline: var(--nextora-gutter); */
+		box-sizing: border-box;
+	}
+
+	.nextora-container--title {
+		padding-block: clamp(0.5rem, 2vw, 1rem);
+		margin-bottom: clamp(0.75rem, 2.25vw, 1.25rem);
+		border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 25%, transparent);
+	}
+}

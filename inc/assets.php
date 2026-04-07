@@ -100,5 +100,16 @@ function nextora_enqueue_scripts(): void {
 		(string) filemtime( $path ),
 		true
 	);
+
+	wp_localize_script(
+		'nextora-main',
+		'nextoraNav',
+		array(
+			'openMenu'     => __( 'Open menu', 'nextora' ),
+			'closeMenu'    => __( 'Close menu', 'nextora' ),
+			'openSubmenu'  => __( 'Open submenu', 'nextora' ),
+			'closeSubmenu' => __( 'Close submenu', 'nextora' ),
+		)
+	);
 }
 add_action( 'wp_enqueue_scripts', 'nextora_enqueue_scripts' );
