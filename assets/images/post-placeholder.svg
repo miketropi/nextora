@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="nextora-ph-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#nextora-ph-bg)"/>
+  <g fill="none" stroke="#94a3b8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.5">
+    <rect x="380" y="178" width="440" height="320" rx="20"/>
+    <circle cx="480" cy="278" r="36"/>
+    <path d="M 400 458 L 520 338 L 640 418 L 760 298 L 800 458 Z"/>
+  </g>
+</svg>

@@ -133,6 +133,11 @@ const rules = [
 	{ from: 'Text Domain: nextora', to: `Text Domain: ${ slug }` },
 	{ from: 'nextora-container', to: `${ slug }-container` },
 	{ from: 'nextora-main', to: `${ slug }-main` },
+	{ from: 'nextora-entry', to: `${ slug }-entry` },
+	{ from: 'nextora-article', to: `${ slug }-article` },
+	{ from: 'nextora-pagination-wrap', to: `${ slug }-pagination-wrap` },
+	{ from: '--nextora-gutter', to: `--${ slug }-gutter` },
+	{ from: '--nextora-main-pad-y', to: `--${ slug }-main-pad-y` },
 	{ from: 'nextora-js', to: `${ slug }-js` },
 	{ from: 'nextora antialiased', to: `${ slug } antialiased` },
 ];

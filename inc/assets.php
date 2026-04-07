@@ -56,10 +56,15 @@ function nextora_enqueue_styles(): void {
 		return;
 	}
 
+	$deps = array( 'nextora-fonts' );
+	// Load after WP global styles so unlayered theme rules can override block margins.
+	if ( wp_style_is( 'global-styles', 'registered' ) ) {
+		$deps[] = 'global-styles';
+	}
 	wp_enqueue_style(
 		'nextora-app',
 		NEXTORA_URI . $rel,
-		array( 'nextora-fonts' ),
+		$deps,
 		(string) filemtime( $path )
 	);
 }

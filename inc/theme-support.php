@@ -28,3 +28,18 @@ add_action(
 		);
 	}
 );
+
+/**
+ * Longer auto-generated excerpts on the blog posts index (default is 55 words).
+ */
+add_filter(
+	'excerpt_length',
+	static function ( int $length ): int {
+		if ( is_admin() || ! is_home() || ! in_the_loop() || ! is_main_query() ) {
+			return $length;
+		}
+
+		return 90;
+	},
+	10
+);
