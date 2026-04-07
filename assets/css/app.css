@@ -1,0 +1,308 @@
+/*! tailwindcss v4.2.2 | MIT License | https://tailwindcss.com */
+@layer properties;
+@layer theme, base, components, utilities;
+@layer theme {
+  :root, :host {
+    --font-sans: var(
+		--wp--preset--font-family--sans,
+		"Hanken Grotesk",
+		ui-sans-serif,
+		system-ui,
+		sans-serif
+	);
+    --font-mono: var(
+		--wp--preset--font-family--mono,
+		ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace
+	);
+    --spacing: 0.25rem;
+    --text-sm: 0.875rem;
+    --text-sm--line-height: calc(1.25 / 0.875);
+    --text-3xl: 1.875rem;
+    --text-3xl--line-height: calc(2.25 / 1.875);
+    --font-weight-semibold: 600;
+    --leading-relaxed: 1.625;
+    --color-base: var(--wp--preset--color--base, #fafafa);
+    --color-contrast: var(--wp--preset--color--contrast, #0f172a);
+    --color-primary: var(--wp--preset--color--primary, #2563eb);
+    --color-secondary: var(--wp--preset--color--secondary, #64748b);
+  }
+}
+@layer utilities {
+  .static {
+    position: static;
+  }
+  .end {
+    inset-inline-end: var(--spacing);
+  }
+  .mt-2 {
+    margin-top: calc(var(--spacing) * 2);
+  }
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
+  }
+  .mb-12 {
+    margin-bottom: calc(var(--spacing) * 12);
+  }
+  .block {
+    display: block;
+  }
+  .flex {
+    display: flex;
+  }
+  .max-w-none {
+    max-width: none;
+  }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .bg-base {
+    background-color: var(--color-base);
+  }
+  .px-4 {
+    padding-inline: calc(var(--spacing) * 4);
+  }
+  .py-10 {
+    padding-block: calc(var(--spacing) * 10);
+  }
+  .text-3xl {
+    font-size: var(--text-3xl);
+    line-height: var(--tw-leading, var(--text-3xl--line-height));
+  }
+  .text-sm {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
+  .leading-relaxed {
+    --tw-leading: var(--leading-relaxed);
+    line-height: var(--leading-relaxed);
+  }
+  .font-semibold {
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+  }
+  .text-contrast {
+    color: var(--color-contrast);
+  }
+  .text-secondary {
+    color: var(--color-secondary);
+  }
+  .uppercase {
+    text-transform: uppercase;
+  }
+  .italic {
+    font-style: italic;
+  }
+  .underline {
+    text-decoration-line: underline;
+  }
+  .antialiased {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .\[\&_a\]\:text-primary {
+    & a {
+      color: var(--color-primary);
+    }
+  }
+  .\[\&_a\]\:underline {
+    & a {
+      text-decoration-line: underline;
+    }
+  }
+}
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+  .site-header,
+	.site-footer {
+    width: 100%;
+    max-width: none;
+  }
+  .nextora-container {
+    max-width: var(--wp--style--global--content-size, 720px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .entry-content,
+	.editor-styles-wrapper .block-editor-block-list__layout {
+    & :where(p) {
+      margin-block: 0 1em;
+    }
+    & :where(p:last-child) {
+      margin-block-end: 0;
+    }
+    & :where(ul, ol) {
+      margin-block: 0 1em;
+      padding-inline-start: 1.35em;
+    }
+    & :where(ul) {
+      list-style-type: disc;
+    }
+    & :where(ol) {
+      list-style-type: decimal;
+    }
+    & :where(li) {
+      margin-block: 0.35em;
+    }
+    & :where(li > ul, li > ol) {
+      margin-block: 0.5em 0;
+    }
+    & :where(blockquote) {
+      margin-block: 1.25em;
+      margin-inline: 0;
+      padding-block: 0.15em;
+      padding-inline: 0 0 0 1.15em;
+      border-inline-start: 4px solid var(--wp--preset--color--primary, #2563eb);
+    }
+    & :where(blockquote p) {
+      margin-block: 0 0.75em;
+    }
+    & :where(blockquote p:last-child) {
+      margin-block-end: 0;
+    }
+    & :where(blockquote cite) {
+      display: block;
+      font-size: 0.875em;
+      font-style: normal;
+      color: var(--wp--preset--color--secondary, #64748b);
+    }
+    & :where(hr) {
+      border: 0;
+      border-block-start: 1px solid var(--wp--preset--color--secondary, #64748b);
+      margin-block: 2em;
+    }
+    & :where(strong, b) {
+      font-weight: 600;
+    }
+    & :where(em, i) {
+      font-style: italic;
+    }
+    & :where(abbr[title]) {
+      cursor: help;
+      text-decoration: underline dotted;
+      text-underline-offset: 0.12em;
+    }
+    & :where(mark) {
+      color: inherit;
+      padding: 0.08em 0.2em;
+      border-radius: 0.2em;
+      background-color: rgba(37, 99, 235, 0.14);
+      background-color: var(--wp--preset--color--primary, #2563eb);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in srgb, var(--wp--preset--color--primary, #2563eb) 18%, transparent);
+      }
+    }
+    & :where(kbd) {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      padding: 0.1em 0.35em;
+      border: 1px solid var(--wp--preset--color--secondary, #64748b);
+      border-radius: 0.25rem;
+      background: var(--wp--preset--color--surface, #f1f5f9);
+    }
+    & :where(samp) {
+      font-family: var(--font-mono);
+      font-size: 0.9em;
+    }
+    & :where(sub, sup) {
+      font-size: 0.75em;
+      line-height: 0;
+      position: relative;
+      vertical-align: baseline;
+    }
+    & :where(sup) {
+      top: -0.35em;
+    }
+    & :where(sub) {
+      bottom: -0.2em;
+    }
+    & :where(dl) {
+      margin-block: 0 1em;
+    }
+    & :where(dt) {
+      font-weight: 600;
+      margin-block-start: 0.75em;
+    }
+    & :where(dt:first-child) {
+      margin-block-start: 0;
+    }
+    & :where(dd) {
+      margin-inline-start: 1.25em;
+      margin-block: 0.25em 0.5em;
+    }
+    & :where(address) {
+      margin-block: 1em;
+      font-style: normal;
+      color: var(--wp--preset--color--secondary, #64748b);
+    }
+    & :where(figure) {
+      margin-block: 1.25em;
+      margin-inline: 0;
+    }
+    & :where(figcaption) {
+      margin-block-start: 0.5em;
+      font-size: 0.875em;
+      line-height: 1.5;
+      color: var(--wp--preset--color--secondary, #64748b);
+    }
+    & :where(table) {
+      width: 100%;
+      border-collapse: collapse;
+      margin-block: 1.25em;
+      font-size: 0.9375em;
+    }
+    & :where(th, td) {
+      border: 1px solid var(--wp--preset--color--secondary, #64748b);
+      padding: 0.5em 0.65em;
+      text-align: start;
+      vertical-align: top;
+    }
+    & :where(th) {
+      font-weight: 600;
+      background-color: var(--wp--preset--color--surface, #f1f5f9);
+    }
+    & :where(pre) {
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      tab-size: 2;
+    }
+    & :where(p code:not([class]), li code:not([class])) {
+      background-color: var(--wp--preset--color--surface, #f1f5f9);
+      padding: 0.15em 0.4em;
+      border-radius: 0.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.9em;
+    }
+    & :where(img) {
+      height: auto;
+      max-width: 100%;
+    }
+  }
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+@property --tw-leading {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-border-style: solid;
+      --tw-leading: initial;
+      --tw-font-weight: initial;
+    }
+  }
+}

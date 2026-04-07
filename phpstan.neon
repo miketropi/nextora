@@ -1,0 +1,20 @@
+includes:
+	- vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+	bootstrapFiles:
+		- phpstan-bootstrap.php
+	level: 8
+	paths:
+		- functions.php
+		- index.php
+		- header.php
+		- footer.php
+		- page.php
+		- single.php
+		- inc
+	excludePaths:
+		analyse:
+			- vendor
+			- node_modules
+			- tests

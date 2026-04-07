@@ -1,0 +1,28 @@
+{
+	"name": "nextora/theme",
+	"description": "Nextora WordPress hybrid starter theme",
+	"type": "wordpress-theme",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=8.1"
+	},
+	"require-dev": {
+		"phpstan/phpstan": "^2.1",
+		"phpunit/phpunit": "^11.5",
+		"szepeviktor/phpstan-wordpress": "^2.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Nextora\\": "inc/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Nextora\\Tests\\": "tests/"
+		}
+	},
+	"scripts": {
+		"phpstan": "phpstan analyse --memory-limit=512M",
+		"test": "phpunit"
+	}
+}
