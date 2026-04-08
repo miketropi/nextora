@@ -3,6 +3,7 @@
  * Add interactive behavior for child themes here.
  */
 
+import { initArticleShare } from "./lib/article-share";
 import { initCommentTiptap } from "./lib/comment-tiptap";
 import { initHeaderNavigation } from "./header-nav";
 import { attachModalGlobals, initModals } from "./lib/modal";
@@ -15,4 +16,5 @@ initHeaderNavigation();
 initModals();
 attachModalGlobals();
 initSpotlightSearch();
+initArticleShare();
 initCommentTiptap();

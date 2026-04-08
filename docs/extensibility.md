@@ -16,14 +16,18 @@ This theme is a **hybrid** setup: classic templates load **block template parts*
 | Footer markup (blocks) | `parts/footer.html` |
 | Custom logo support | `inc/setup/theme-support.php` |
 | Spotlight search (REST + markup) | `inc/search/spotlight-search.php` · [spotlight-search.md](./spotlight-search.md) |
+| Comments form + Tiptap / KSES | `inc/comments/comments.php` · [comments-tiptap.md](./comments-tiptap.md) |
+| Comment toolbar strings (`nextoraComments`) | `inc/assets/assets.php` |
 | Header / footer nav layout (CSS) | `resources/css/modules/base/body.css` |
 | Spotlight UI (CSS) | `resources/css/modules/components/spotlight-search.css` |
+| Comments + Tiptap UI (CSS) | `resources/css/modules/base/comments.css` |
+| Article share (PHP helpers + filters) | `inc/template/article-share.php` |
 
 ---
 
 ## Page heading (title band)
 
-Output by `nextora_render_page_heading()` on blog index, archives, search, single posts, and pages. Markup and **Tailwind** utilities: `template-parts/page-heading.php`.
+Output by `nextora_render_page_heading()` on blog index, archives, search, single posts, and pages. Markup and **Tailwind** utilities: `template-parts/page-heading.php`. The outer band uses a solid **contrast** background; the inner wrapper class comes from **`nextora_get_page_heading_inner_shell_class()`** so spacing and width align with content shells below.
 
 Singular views use one **H1** in the heading; the article template omits the duplicate title and skips the in-article featured image when the heading uses that image as the hero background.
 
@@ -40,7 +44,56 @@ Singular views use one **H1** in the heading; the article template omits the dup
 
 ### Single post sidebar
 
-`single.php` can show a **sticky right sidebar** (featured image, author, date, categories, tags, previous/next post). Return `false` from `nextora_show_single_post_sidebar` to restore the one-column layout and inline meta row.
+`single.php` can show a **sticky sidebar** beside the post (featured image, author, date, categories, tags, previous/next). On large viewports the layout uses **`flex-row-reverse`**, so the sidebar column sits **to the left** and the article (and comments) stay in the main column. Return `false` from **`nextora_show_single_post_sidebar`** to restore the one-column layout and inline meta on the article template.
+
+### Article title, meta, and share
+
+`template-parts/content-article-title-meta.php` outputs the **title** (when `show_entry_title` is true), an optional **meta** row for posts (`show_meta`: date, author, categories), and **share** controls on **single posts** (not cards): X, Facebook, LinkedIn, email, plus **copy link** (Clipboard API). Share is gated by `show_share_actions` from `nextora_content_article_vars()` (posts, default layout, non-empty permalink). Logic and defaults live in **`inc/template/article-share.php`** (`nextora_get_article_share_items()`, `nextora_render_article_share_block()`).
+
+#### Actions
+
+| Action | When |
+|--------|------|
+| `nextora_before_article_title_meta_header` | Before the opening `<header>` of the article title/meta block. Args: `$article_args`. |
+| `nextora_after_article_title_meta_header` | After the closing `</header>`. Args: `$article_args`. |
+| `nextora_article_title_meta_header_start` | Inside `<header>`, before title/meta/share. Args: `$article_args`. |
+| `nextora_article_title_meta_header_end` | Inside `<header>`, after title/meta/share. Args: `$article_args`. |
+| `nextora_article_share_before` | Inside the share wrapper, before the heading. Args: `$post_id`, `$article_args`, `$permalink`. |
+| `nextora_article_share_after` | Inside the share wrapper, after the status region. Args: `$post_id`, `$article_args`, `$permalink`. |
+
+#### Filters (title + meta)
+
+| Filter | Arguments | Purpose |
+|--------|-----------|---------|
+| `nextora_article_display_title` | `(string $title, array $article_args)` | Adjust the title text. |
+| `nextora_article_permalink` | `(string $permalink, array $article_args)` | Adjust URL used for the title link, share links, and copy. |
+| `nextora_article_header_classes` | `(string $classes, array $article_args)` | Classes on the `<header>`. |
+| `nextora_article_title_classes` | `(string $classes, array $article_args)` | Classes on the title `h1` / `h2`. |
+| `nextora_article_title_link_classes` | `(string $classes, array $article_args)` | Classes on the title link when `link_title` is true. |
+| `nextora_article_meta_pieces` | `(array $pieces, int $post_id, array $article_args)` | Each string is HTML for one meta segment (wrapped in a span; separated by the “between” HTML below). |
+| `nextora_article_meta_row_classes` | `(string $classes, array $article_args)` | Classes on the meta row wrapper. |
+| `nextora_article_meta_between_pieces_html` | `(string $html, int $post_id, array $article_args)` | Snippet between meta pieces (default: middot span). |
+
+#### Filters (share)
+
+| Filter | Arguments | Purpose |
+|--------|-----------|---------|
+| `nextora_show_article_share_actions` | `(bool $show, int $post_id, array $article_args)` | Return `false` to hide the whole share region. |
+| `nextora_article_share_markup` | `(null $custom, int $post_id, array $article_args, string $permalink, string $title)` | Return a **non-empty string** to replace default share HTML entirely (you must escape output). |
+| `nextora_article_share_items` | `(array $items, int $post_id, array $article_args, string $permalink, string $title)` | Reorder, add, or remove share targets. Each item: `id`, `type` (`link` \| `copy`), `url`, `target`, `rel`, `label`, `icon_html`, optional `class`. |
+| `nextora_article_share_item` | `(array $item, string $id, int $post_id, array $article_args)` | Adjust one item before render; return an empty array to skip. |
+| `nextora_article_share_wrapper_classes` | `(string $classes, int $post_id, array $article_args)` | Outer share container (has `data-nextora-article-share`). |
+| `nextora_article_share_buttons_wrap_classes` | `(string $classes, int $post_id, array $article_args)` | Flex row around controls. |
+| `nextora_article_share_button_classes` | `(string $classes, string $id, array $item, int $post_id, array $article_args)` | Per control (link or copy button). |
+| `nextora_article_share_heading_text` | `(string $text, int $post_id, array $article_args)` | Plain-text heading above buttons. |
+| `nextora_article_share_group_aria_label` | `(string $label, int $post_id, array $article_args)` | `aria-label` on the `role="group"` wrapper. |
+| `nextora_article_share_icon_allowed_html` | `(array $allowed_tags)` | KSES allowlist for `icon_html` SVG snippets. |
+
+#### Script localization
+
+| Filter | Purpose |
+|--------|---------|
+| `nextora_article_share_script_vars` | `(array $strings)` before `wp_localize_script` builds **`window.nextoraArticleShare`** (`inc/assets/assets.php`). |
 
 ---
 

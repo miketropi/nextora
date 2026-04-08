@@ -127,9 +127,9 @@ function nextora_content_article_vars( array $args ): array {
 		$header_classes = 'w-full max-w-none mx-0 border-0 py-0 mb-0 pb-0';
 	} elseif ( 'page' === $content_type ) {
 		/* Page: no masthead rule — reads as one continuous document. */
-		$header_classes = 'w-full box-border pt-0 pb-[clamp(0.35rem,1.5vw,0.65rem)] mb-[clamp(1rem,2.75vw,1.75rem)]';
+		$header_classes = ''; // 'w-full box-border pt-0 pb-[clamp(0.35rem,1.5vw,0.65rem)] mb-[clamp(1rem,2.75vw,1.75rem)]';
 	} else {
-		$header_classes = 'w-full box-border mb-[clamp(1.75rem,2.25vw,2.25rem)] border-b border-secondary/25';
+		$header_classes = 'w-full box-border mb-[clamp(1.75rem,2.25vw,2.25rem)]';
 	}
 
 	$entry_classes = 'entry-content nextora-entry wp-block-post-content is-layout-constrained max-w-none leading-relaxed text-contrast [&_a]:text-primary [&_a]:underline';
@@ -182,6 +182,10 @@ function nextora_content_article_vars( array $args ): array {
 	$show_entry_title    = ! empty( $resolved['show_entry_title'] );
 	$show_featured_media = ! empty( $resolved['show_featured_media'] );
 
+	$show_share_actions = ! $is_card
+		&& 'post' === $content_type
+		&& '' !== $permalink;
+
 	return array(
 		'content_type'         => $content_type,
 		'show_entry_title'     => $show_entry_title,
@@ -211,5 +215,6 @@ function nextora_content_article_vars( array $args ): array {
 		'thumb_attrs'        => $thumb_attrs,
 		'read_more_wrap'     => $read_more_wrap,
 		'read_more_link'     => $read_more_link,
+		'show_share_actions' => $show_share_actions,
 	);
 }

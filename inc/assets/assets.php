@@ -120,6 +120,30 @@ function nextora_enqueue_scripts(): void {
 		)
 	);
 
+	$article_share_vars = array(
+		'shareHeading' => __( 'Share', 'nextora' ),
+		'copyLink'     => __( 'Copy link', 'nextora' ),
+		'copied'       => __( 'Link copied', 'nextora' ),
+		'copyFailed'   => __( 'Could not copy', 'nextora' ),
+		'shareOnX'     => __( 'Share on X', 'nextora' ),
+		'shareOnFacebook'  => __( 'Share on Facebook', 'nextora' ),
+		'shareOnLinkedIn'  => __( 'Share on LinkedIn', 'nextora' ),
+		'shareViaEmail'    => __( 'Share by email', 'nextora' ),
+	);
+
+	/**
+	 * Filter strings passed to `window.nextoraArticleShare` (copy feedback, labels for JS).
+	 *
+	 * @param array<string, string> $vars Localized strings.
+	 */
+	$article_share_vars = apply_filters( 'nextora_article_share_script_vars', $article_share_vars );
+
+	wp_localize_script(
+		'nextora-main',
+		'nextoraArticleShare',
+		$article_share_vars
+	);
+
 	wp_localize_script(
 		'nextora-main',
 		'nextoraComments',
