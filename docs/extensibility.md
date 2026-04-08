@@ -43,6 +43,12 @@ Use them for site-wide banners, skip links, or markup that should sit **outside*
 
 The theme ships a **search icon → modal** on `nextora_header_after_primary_nav` (priority 20) in `inc/hooks/header-hooks.php`. Markup uses **Tailwind** utilities plus required `nextora-modal*` classes (for `resources/ts/lib/modal.ts`).
 
+**Mobile primary menu:** the **primary** `core/navigation` block is wrapped (`render_block` priority **12**) with a hamburger button. On small viewports the menu is **cloned** into a **portal** (`<div>` appended to `document.body`) so it is not clipped by header `overflow` or stacking contexts; see `resources/ts/header-nav.ts`. Disable the toggle + wrapper with:
+
+```php
+add_filter( 'nextora_show_header_nav_mobile_toggle', '__return_false' );
+```
+
 Disable entirely:
 
 ```php
@@ -56,6 +62,9 @@ add_filter( 'nextora_show_header_search_modal', '__return_false' );
 | Filter | Purpose |
 |--------|---------|
 | `nextora_header_search_modal_id` | Modal root `id` (sanitized). |
+| `nextora_show_header_nav_mobile_toggle` | Return false to omit the mobile nav hamburger + drawer wrapper around the primary menu. |
+| `nextora_header_nav_mobile_toggle_args` | Classes, ids, labels (`toggle_id`, `panel_id`, `portal_root_id`, `portal_panel_id`, `portal_title_id`, `portal_dialog_label`, `toggle_class`, `panel_class`, …). |
+| `nextora_header_nav_mobile_toggle_icon_svg` | Hamburger icon SVG (`wp_kses`). |
 | `nextora_header_search_modal_markup_args` | Merge class strings and labels (`title_text`, `spotlight_subtitle_text`, `spotlight_modal_header_class`, `spotlight_modal_header_text_class`, `spotlight_title_class`, `spotlight_subtitle_class`, `spotlight_close_wrap_class`, `subtitle_id`, `trigger_class`, …). Set `spotlight_subtitle_text` to `''` to hide the subtitle (and `aria-describedby`). Keep `nextora-modal` / `nextora-modal__surface` on the root and panel unless you replace `nextora_header_search_modal_output` entirely. |
 | `nextora_header_search_modal_icon_svg` | Trigger icon markup (passed through SVG `wp_kses`). |
 | `nextora_header_search_modal_close_icon_svg` | Close control icon (same). |

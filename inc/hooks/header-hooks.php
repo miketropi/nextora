@@ -11,12 +11,18 @@
  *   The theme registers a default handler (priority 20): search icon → modal with
  *   Spotlight-style AJAX search ({@see nextora_get_spotlight_search_inner_html()}).
  *   Disable with `add_filter( 'nextora_show_header_search_modal', '__return_false' );`.
+ * - Primary navigation (mobile): a hamburger toggle is injected **before** the nav via
+ *   {@see nextora_wrap_primary_navigation_mobile_toggle()} (`render_block` priority 12).
+ *   Disable with `add_filter( 'nextora_show_header_nav_mobile_toggle', '__return_false' );`.
  * - `nextora_header_search_modal_before` — (array $args) Before the search modal markup is printed.
  * - `nextora_header_search_modal_after` — (array $args) After the search modal markup is printed.
  *
  * ## Filters
  *
  * - `nextora_header_after_primary_nav_html` — (string $html, array $block) Adjust suffix HTML.
+ * - `nextora_show_header_nav_mobile_toggle` — (bool) Return false to omit the mobile menu button + drawer wrapper.
+ * - `nextora_header_nav_mobile_toggle_args` — (array $args) Classes, ids, labels (`toggle_id`, `panel_id`, `portal_root_id`, `portal_panel_id`, `portal_title_id`, `portal_dialog_label`, …).
+ * - `nextora_header_nav_mobile_toggle_icon_svg` — (string $svg, array $args) Hamburger icon markup (`wp_kses` SVG).
  * - `nextora_show_header_search_modal` — (bool) Return false to disable the built-in search modal.
  * - `nextora_header_search_modal_id` — (string) DOM id for the modal root (default `nextora-search-modal`).
  * - `nextora_header_search_modal_markup_args` — (array $args) Tailwind + structural classes, labels, text.
@@ -49,6 +55,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 function nextora_header_search_modal_kses_svg(): array {
 	return array(
 		'svg'    => array(
+			'color'       => true,
+			'style'       => true,
 			'class'       => true,
 			'width'       => true,
 			'height'      => true,
@@ -266,6 +274,132 @@ function nextora_get_header_search_modal_markup( array $args ): string {
 	<?php
 	return (string) ob_get_clean();
 }
+
+/**
+ * Default hamburger icon SVG for the mobile primary nav toggle.
+ */
+function nextora_header_nav_mobile_toggle_default_icon_svg(): string {
+	return '<svg width="22" color="white" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>';
+}
+
+/**
+ * Class names, ids, and labels for the mobile nav toggle + panel wrapper.
+ *
+ * @return array<string, string>
+ */
+function nextora_get_header_nav_mobile_toggle_args(): array {
+	$defaults = array(
+		'toggle_id'              => 'nextora-primary-nav-toggle',
+		'panel_id'               => 'nextora-primary-nav-panel',
+		'portal_root_id'         => 'nextora-primary-nav-portal-root',
+		'portal_panel_id'        => 'nextora-primary-nav-portal-panel',
+		'portal_title_id'        => 'nextora-primary-nav-portal-title',
+		'portal_dialog_label'    => __( 'Primary navigation', 'nextora' ),
+		'shell_class'            => 'nextora-primary-nav-shell relative z-[1] flex min-w-0 flex-1 items-center justify-end gap-2',
+		'toggle_class'           => 'nextora-nav-menu-toggle inline-flex size-10 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-base text-inherit transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-base md:hidden',
+		'toggle_icon_wrap_class' => 'flex leading-none',
+		'panel_class'            => 'nextora-primary-nav-panel nextora-primary-nav-panel--source hidden md:flex md:min-w-0 md:flex-1 md:items-center md:justify-end',
+		'open_label'             => __( 'Open menu', 'nextora' ),
+		'close_label'            => __( 'Close menu', 'nextora' ),
+	);
+
+	$args = apply_filters( 'nextora_header_nav_mobile_toggle_args', $defaults );
+	$args = is_array( $args ) ? wp_parse_args( $args, $defaults ) : $defaults;
+
+	foreach ( array_keys( $defaults ) as $key ) {
+		if ( isset( $args[ $key ] ) && is_string( $args[ $key ] ) ) {
+			continue;
+		}
+		$args[ $key ] = $defaults[ $key ];
+	}
+
+	return $args;
+}
+
+/**
+ * Wrap primary `core/navigation` with a mobile hamburger toggle and sliding panel.
+ *
+ * Priority 12: after {@see nextora_render_navigation_from_menu_location()} (10),
+ * before {@see nextora_append_header_primary_nav_suffix()} (15).
+ *
+ * @param string $block_content Rendered block HTML.
+ * @param array  $block         Parsed block array.
+ * @return string
+ */
+function nextora_wrap_primary_navigation_mobile_toggle( string $block_content, array $block ): string {
+	if ( ! apply_filters( 'nextora_show_header_nav_mobile_toggle', true ) ) {
+		return $block_content;
+	}
+
+	if ( ( $block['blockName'] ?? '' ) !== 'core/navigation' ) {
+		return $block_content;
+	}
+
+	$attrs = $block['attrs'] ?? array();
+	$location = isset( $attrs['__unstableLocation'] ) && is_string( $attrs['__unstableLocation'] )
+		? $attrs['__unstableLocation']
+		: '';
+	if ( 'primary' !== $location ) {
+		return $block_content;
+	}
+
+	if ( '' === trim( $block_content ) ) {
+		return $block_content;
+	}
+
+	$args     = nextora_get_header_nav_mobile_toggle_args();
+	$kses     = nextora_header_search_modal_kses_svg();
+	$icon_svg = (string) apply_filters(
+		'nextora_header_nav_mobile_toggle_icon_svg',
+		nextora_header_nav_mobile_toggle_default_icon_svg(),
+		$args
+	);
+	$icon_svg = wp_kses( $icon_svg, $kses );
+
+	$toggle_id        = $args['toggle_id'];
+	$panel_id         = $args['panel_id'];
+	$portal_root_id   = $args['portal_root_id'];
+	$portal_panel_id  = $args['portal_panel_id'];
+	$portal_title_id  = $args['portal_title_id'];
+	$source_selector  = '#' . $panel_id;
+
+	ob_start();
+	?>
+	<div class="<?php echo esc_attr( $args['shell_class'] ); ?>">
+		<button
+			type="button"
+			id="<?php echo esc_attr( $toggle_id ); ?>"
+			class="<?php echo esc_attr( $args['toggle_class'] ); ?>"
+			data-nextora-nav-toggle
+			aria-controls="<?php echo esc_attr( $portal_panel_id ); ?>"
+			aria-expanded="false"
+			aria-haspopup="dialog"
+			aria-label="<?php echo esc_attr( $args['open_label'] ); ?>"
+			data-nextora-nav-open-label="<?php echo esc_attr( $args['open_label'] ); ?>"
+			data-nextora-nav-close-label="<?php echo esc_attr( $args['close_label'] ); ?>"
+			data-nextora-nav-clone-source="<?php echo esc_attr( $source_selector ); ?>"
+			data-nextora-nav-portal-root="<?php echo esc_attr( $portal_root_id ); ?>"
+			data-nextora-nav-portal-panel="<?php echo esc_attr( $portal_panel_id ); ?>"
+			data-nextora-nav-portal-title="<?php echo esc_attr( $portal_title_id ); ?>"
+			data-nextora-nav-portal-dialog-label="<?php echo esc_attr( $args['portal_dialog_label'] ); ?>"
+		>
+			<span class="<?php echo esc_attr( $args['toggle_icon_wrap_class'] ); ?>" aria-hidden="true">
+				<?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses() above. ?>
+			</span>
+		</button>
+		<div
+			id="<?php echo esc_attr( $panel_id ); ?>"
+			class="<?php echo esc_attr( $args['panel_class'] ); ?>"
+			data-nextora-nav-source-panel
+		>
+			<?php echo $block_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core / theme navigation HTML. ?>
+		</div>
+	</div>
+	<?php
+	return (string) ob_get_clean();
+}
+
+add_filter( 'render_block', 'nextora_wrap_primary_navigation_mobile_toggle', 12, 2 );
 
 /**
  * Append plugin / child-theme output after the header primary navigation.

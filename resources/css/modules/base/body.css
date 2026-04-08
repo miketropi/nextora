@@ -62,4 +62,9 @@
 		justify-content: center;
 		gap: var(--spacing-20, 0.5rem);
 	}
+
+	/* Mobile primary nav drawer open — avoid background scroll */
+	html.nextora-primary-nav-drawer-open {
+		overflow: hidden;
+	}
 }

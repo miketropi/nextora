@@ -17,3 +17,16 @@
 .nextora-singular--page .nextora-content-shell--wide-size {
 	--wp--style--global--content-size: var(--wp--style--global--wide-size, 1200px);
 }
+
+/**
+ * Header container width
+ */
+.nextora-header-container {
+	
+}
+
+@media (max-width: 1024px) {
+	.nextora-header-container {
+		padding-inline: var(--nextora-gutter);
+	}
+}
