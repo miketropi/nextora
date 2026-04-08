@@ -17,7 +17,7 @@ if ( post_password_required() ) {
 	aria-label="<?php esc_attr_e( 'Comments', 'nextora' ); ?>"
 >
 	<?php if ( have_comments() ) : ?>
-		<h2 class="m-0 text-xl font-semibold tracking-tight text-contrast">
+		<h2 class="!m-0 text-xl font-semibold tracking-tight text-contrast">
 			<?php
 			$count = (int) get_comments_number();
 			if ( 1 === $count ) {

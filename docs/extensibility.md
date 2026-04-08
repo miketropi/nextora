@@ -18,10 +18,11 @@ This theme is a **hybrid** setup: classic templates load **block template parts*
 | Spotlight search (REST + markup) | `inc/search/spotlight-search.php` · [spotlight-search.md](./spotlight-search.md) |
 | Comments form + Tiptap / KSES | `inc/comments/comments.php` · [comments-tiptap.md](./comments-tiptap.md) |
 | Comment toolbar strings (`nextoraComments`) | `inc/assets/assets.php` |
-| Header / footer nav layout (CSS) | `resources/css/modules/base/body.css` |
+| Header / footer nav layout (CSS) | `resources/css/modules/base/nav-menus.css` (shared tokens in `body.css` / `app.css` `@theme`) |
 | Spotlight UI (CSS) | `resources/css/modules/components/spotlight-search.css` |
 | Comments + Tiptap UI (CSS) | `resources/css/modules/base/comments.css` |
 | Article share (PHP helpers + filters) | `inc/template/article-share.php` |
+| Related posts (single post, below entry) | `inc/template/article-template.php` (`nextora_get_related_posts_query`), `template-parts/content-article-related-posts.php` |
 
 ---
 
@@ -44,7 +45,26 @@ Singular views use one **H1** in the heading; the article template omits the dup
 
 ### Single post sidebar
 
-`single.php` can show a **sticky sidebar** beside the post (featured image, author, date, categories, tags, previous/next). On large viewports the layout uses **`flex-row-reverse`**, so the sidebar column sits **to the left** and the article (and comments) stay in the main column. Return `false` from **`nextora_show_single_post_sidebar`** to restore the one-column layout and inline meta on the article template.
+`single.php` can show a **sticky sidebar** beside the post (featured image, author, date, categories, tags, previous/next). On large viewports the layout uses **`lg:flex-row`**, so the article (and comments) stay in the **main column on the left** and the sidebar sits **to the right**. Return `false` from **`nextora_show_single_post_sidebar`** to restore the one-column layout and inline meta on the article template.
+
+### Related posts (single)
+
+Below the entry on **single posts**, `template-parts/content-article-related-posts.php` may render a **Related posts** section as a **simple divided list**: small **thumbnail** (default size **`thumbnail`**), **title** (link to the post), and **one meta line** — author, **date**, **category** links, **tag** links — separated by middots. The thumbnail is a second link to the same post (`tabindex="-1"` / `aria-hidden` so keyboard users are not duplicated). Posts are chosen by the same **categories** as the current post (if any), otherwise the same **tags**. Uncategorised posts with no tags show nothing. Default count is **5** (filterable, max 12).
+
+| Filter | Arguments | Purpose |
+|--------|-----------|---------|
+| `nextora_show_related_posts` | `(bool $show, int $post_id)` | Return `false` to hide the block. |
+| `nextora_related_posts_limit` | `(int $limit, int $post_id)` | Cap between 1 and 12 (default 5). |
+| `nextora_related_posts_query_args` | `(array $args, int $post_id)` | Merge into `WP_Query` arguments. |
+| `nextora_related_posts_heading` | `(string $heading, int $post_id)` | Section `h2` text. |
+| `nextora_related_posts_thumbnail_size` | `(string $size, int $related_post_id, int $post_id)` | Registered image size for the thumb (default `thumbnail`). |
+| `nextora_related_posts_meta_line_html` | `(string $html, int $related_post_id, int $post_id)` | Replace the default meta line (author, date, term links); output is run through `wp_kses_post`. |
+| `nextora_related_posts_item_append_html` | `(string $html, int $related_post_id, int $post_id)` | Extra HTML below the meta line (`wp_kses_post` on output). |
+
+| Action | When |
+|--------|------|
+| `nextora_before_related_posts` | Inside `<section>`, before the heading. Arg: `$post_id`. |
+| `nextora_after_related_posts` | Inside `<section>`, after the list. Arg: `$post_id`. |
 
 ### Article title, meta, and share
 

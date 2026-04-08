@@ -29,7 +29,7 @@ if ( $nextora_show_sidebar ) {
 	?>
 	<div class="<?php echo esc_attr( $nextora_content_shell_class ); ?>">
 		<?php if ( $nextora_show_sidebar ) : ?>
-		<div class="nextora-singular-post-with-sidebar flex flex-col justify-between !gap-[4rem] lg:flex-row-reverse lg:items-start lg:gap-6 xl:gap-7">
+		<div class="nextora-singular-post-with-sidebar flex flex-col justify-between !gap-[4rem] lg:flex-row lg:items-start lg:gap-6 xl:gap-7">
 			<div class="nextora-singular-post-with-sidebar__main min-w-0 w-full max-w-[min(100%,var(--wp--style--global--content-size,720px))]">
 		<?php endif; ?>
 		<?php

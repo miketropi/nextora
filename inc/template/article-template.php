@@ -218,3 +218,82 @@ function nextora_content_article_vars( array $args ): array {
 		'show_share_actions' => $show_share_actions,
 	);
 }
+
+/**
+ * Query posts related to a single blog post (same categories, else same tags).
+ *
+ * @param int $post_id Published post ID.
+ * @return WP_Query|null Secondary query with posts, or null when none / not applicable.
+ */
+function nextora_get_related_posts_query( int $post_id ): ?WP_Query {
+	if ( $post_id <= 0 || 'post' !== get_post_type( $post_id ) ) {
+		return null;
+	}
+
+	/**
+	 * Whether to output the “Related posts” block on singular posts.
+	 *
+	 * @param bool $show    Default true.
+	 * @param int  $post_id Post ID.
+	 */
+	if ( ! (bool) apply_filters( 'nextora_show_related_posts', true, $post_id ) ) {
+		return null;
+	}
+
+	/**
+	 * Max related posts to load (clamped 1–12).
+	 *
+	 * @param int $limit   Default 5.
+	 * @param int $post_id Post ID.
+	 */
+	$limit = (int) apply_filters( 'nextora_related_posts_limit', 5, $post_id );
+	$limit = max( 1, min( 12, $limit ) );
+
+	$base = array(
+		'post_type'           => 'post',
+		'post_status'         => 'publish',
+		'posts_per_page'      => $limit,
+		'post__not_in'        => array( $post_id ),
+		'ignore_sticky_posts' => true,
+		'no_found_rows'       => true,
+		'orderby'             => 'date',
+		'order'               => 'DESC',
+	);
+
+	$cat_ids = wp_get_post_categories( $post_id );
+	if ( ! empty( $cat_ids ) ) {
+		$args = array_merge(
+			$base,
+			array(
+				'category__in' => $cat_ids,
+			)
+		);
+	} else {
+		$tag_ids = wp_get_post_tags( $post_id, array( 'fields' => 'ids' ) );
+		if ( empty( $tag_ids ) ) {
+			return null;
+		}
+		$args = array_merge(
+			$base,
+			array(
+				'tag__in' => $tag_ids,
+			)
+		);
+	}
+
+	/**
+	 * Extra or overridden arguments for {@see WP_Query} (related posts).
+	 *
+	 * @param array<string, mixed> $args    Query arguments.
+	 * @param int                    $post_id Source post ID.
+	 */
+	$args = apply_filters( 'nextora_related_posts_query_args', $args, $post_id );
+
+	$query = new WP_Query( $args );
+
+	if ( ! $query->have_posts() ) {
+		return null;
+	}
+
+	return $query;
+}

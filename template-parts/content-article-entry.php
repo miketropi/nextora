@@ -17,6 +17,10 @@ $na = $args;
 ?>
 
 <div class="<?php echo esc_attr( $na['entry_classes'] ); ?>">
+
+
+	<?php do_action( 'nextora_before_article_entry', $na ); ?>
+	
 	<?php
 	if ( $na['use_excerpt'] ) {
 		the_excerpt();
@@ -24,6 +28,9 @@ $na = $args;
 		the_content();
 	}
 	?>
+
+	<?php do_action( 'nextora_after_article_entry', $na ); ?>
+
 </div>
 
 <?php if ( $na['use_excerpt'] && $na['link_title'] && '' !== $na['permalink'] ) : ?>
