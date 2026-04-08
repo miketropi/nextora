@@ -1462,7 +1462,7 @@
   background-color: var(--nextora-nav-row-hover);
 }
 .nextora-header-menu .sub-menu .current-menu-item > a, .nextora-header-menu .sub-menu .current-menu-ancestor > a, .nextora-footer-menu .sub-menu .current-menu-item > a, .nextora-footer-menu .sub-menu .current-menu-ancestor > a {
-  color: var(--nextora-nav-panel-active-fg);
+  color: var(--nextora-nav-panel-active-fg) !important;
   font-weight: 600;
   background-color: var(--nextora-nav-row-active);
 }
@@ -1536,7 +1536,7 @@
 .nextora-primary-nav-portal {
   position: fixed;
   inset: 0;
-  z-index: 1043;
+  z-index: 99999;
   display: none !important;
   pointer-events: none;
 }
@@ -1674,7 +1674,7 @@
     pointer-events: auto;
     min-width: 0;
     margin: 0.2rem 0 0.35rem;
-    padding: 0.25rem 0 0.25rem 0.75rem;
+    padding: .5rem;
     border: none;
     box-shadow: none;
     background-color: var(--color-base, #fafafa);
@@ -2224,7 +2224,6 @@
   }
   html.nextora-modal-scroll-lock {
     overflow: hidden;
-    position: fixed;
     width: 100%;
     top: var(--nextora-modal-scroll-y, 0);
     left: 0;
