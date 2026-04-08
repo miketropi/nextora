@@ -129,13 +129,19 @@ function nextora_render_comment( $comment, array $args, int $depth ): void {
 
 	$time_h = get_comment_date( '', $comment );
 	$time_h = is_string( $time_h ) ? $time_h : '';
+
+	$item_class = 'nextora-comment-item';
+	if ( $depth > 1 ) {
+		$item_class .= ' nextora-comment--reply';
+	}
+	$avatar_class = $depth > 1 ? 'size-10 rounded-full' : 'size-12 rounded-full';
 	?>
 	<?php if ( 'div' === $tag ) : ?>
-	<div id="comment-<?php echo esc_attr( (string) $comment_id ); ?>" <?php comment_class( 'border-b border-secondary/20 pb-8 last:mb-0 last:border-b-0', $comment ); ?>>
+	<div id="comment-<?php echo esc_attr( (string) $comment_id ); ?>" <?php comment_class( $item_class, $comment ); ?>>
 	<?php else : ?>
-	<li id="comment-<?php echo esc_attr( (string) $comment_id ); ?>" <?php comment_class( 'border-b border-secondary/20 pb-8 last:mb-0 last:border-b-0', $comment ); ?>>
+	<li id="comment-<?php echo esc_attr( (string) $comment_id ); ?>" <?php comment_class( $item_class, $comment ); ?>>
 	<?php endif; ?>
-		<article id="div-comment-<?php echo esc_attr( (string) $comment_id ); ?>" class="comment-body flex gap-4">
+		<article id="div-comment-<?php echo esc_attr( (string) $comment_id ); ?>" class="nextora-comment-body comment-body flex gap-4">
 			<div class="comment-author-avatar shrink-0">
 				<?php
 				echo get_avatar(
@@ -144,13 +150,13 @@ function nextora_render_comment( $comment, array $args, int $depth ): void {
 					'',
 					'',
 					array(
-						'class' => 'size-12 rounded-full',
+						'class' => $avatar_class,
 					)
 				);
 				?>
 			</div>
 			<div class="comment-meta min-w-0 flex-1">
-				<footer class="comment-meta-header mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm text-secondary">
+				<footer class="comment-meta-header flex flex-wrap items-baseline gap-x-2 gap-y-1">
 					<span class="fn font-semibold text-contrast"><?php echo get_comment_author_link( $comment ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 					<a href="<?php echo esc_url( $link ); ?>" class="comment-permalink hover:text-primary">
 						<time datetime="<?php echo esc_attr( $time_c ); ?>"><?php echo esc_html( $time_h ); ?></time>
@@ -158,7 +164,7 @@ function nextora_render_comment( $comment, array $args, int $depth ): void {
 					<?php
 					edit_comment_link(
 						__( 'Edit', 'nextora' ),
-						'<span class="comment-edit-link text-xs">',
+						'<span class="comment-edit-link">',
 						'</span>'
 					);
 					?>
@@ -198,7 +204,7 @@ add_filter(
 	static function ( array $args ): array {
 		$args['prev_text'] = __( 'Older comments', 'nextora' );
 		$args['next_text'] = __( 'Newer comments', 'nextora' );
-		$args['class']     = 'comment-navigation navigation flex flex-wrap justify-between gap-4 border-b border-secondary/20 py-6 text-sm font-medium text-primary';
+		$args['class']     = 'comment-navigation navigation flex flex-wrap justify-between gap-4 text-sm font-medium text-primary';
 		return $args;
 	}
 );

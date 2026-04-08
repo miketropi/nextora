@@ -29,12 +29,12 @@ The theme runs without `vendor/` (Composer is optional at runtime) but needs com
 | Path | Purpose |
 |------|---------|
 | `style.css` | Theme metadata (required by WordPress) |
-| `functions.php` | Bootstrap, constants, loads `inc/` |
+| `functions.php` | Bootstrap, constants, loads `inc/**` (see `inc/README.md`) |
 | `theme.json` | Global styles, color/spacing/typography presets |
 | `header.php` / `footer.php` | Classic shell; call `block_template_part()` |
 | `parts/*.html` | Block markup for header/footer (hybrid template parts) |
 | `index.php`, `page.php`, `single.php` | Main templates |
-| `inc/` | PHP modules and `Nextora\*` classes (PSR-4) |
+| `inc/` | PHP modules by area + `Nextora\*` PSR-4 classes (`inc/README.md`) |
 | `resources/css/app.css` | Tailwind source (`@import "tailwindcss"`, `@theme` tokens) |
 | `resources/ts/main.ts` | Front-end TypeScript entry |
 | `assets/css/app.css` | Compiled CSS (generated) |

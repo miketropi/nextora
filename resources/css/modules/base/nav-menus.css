@@ -1,0 +1,285 @@
+/**
+ * Classic {@see wp_nav_menu()} output injected into `core/navigation` via
+ * {@see nextora_render_navigation_from_menu_location()} (`inc/navigation/navigation.php`).
+ *
+ * Markup: `nav.nextora-navigation-from-location--{primary|footer}` > `ul.nextora-{header|footer}-menu`.
+ * Colors: `--nextora-nav-*` in `resources/css/app.css` (`@theme`).
+ *
+ * Unlayered — WordPress global styles for `.wp-block-navigation` are unlayered; layered rules lose.
+ */
+.nextora-navigation-from-location {
+	--nextora-nav-submenu-bg: var(--nextora-nav-panel-bg);
+	--nextora-nav-submenu-border: var(--nextora-nav-panel-border);
+	--nextora-nav-submenu-shadow: var(--nextora-nav-panel-shadow);
+	--nextora-nav-row-hover: var(--nextora-nav-panel-hover-bg);
+	--nextora-nav-row-active: var(--nextora-nav-panel-active-bg);
+	--nextora-nav-t: 0.18s ease;
+
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	row-gap: 0.5rem;
+	column-gap: clamp(0.75rem, 2vw, 1.25rem);
+}
+
+.nextora-navigation-from-location--primary {
+	justify-content: flex-end;
+}
+
+.nextora-navigation-from-location--footer {
+	justify-content: center;
+}
+
+.nextora-header-menu,
+.nextora-footer-menu {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: inherit;
+	gap: clamp(0.65rem, 1.8vw, 1.15rem);
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.nextora-header-menu li,
+.nextora-footer-menu li {
+	position: relative;
+	margin: 0;
+}
+
+.nextora-header-menu .menu-item-has-children::before,
+.nextora-footer-menu .menu-item-has-children::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 100%;
+	height: 0.5rem;
+	z-index: 40;
+	pointer-events: none;
+}
+
+.nextora-header-menu .menu-item-has-children:hover::before,
+.nextora-header-menu .menu-item-has-children:focus-within::before,
+.nextora-footer-menu .menu-item-has-children:hover::before,
+.nextora-footer-menu .menu-item-has-children:focus-within::before {
+	pointer-events: auto;
+}
+
+.nextora-header-menu .sub-menu,
+.nextora-footer-menu .sub-menu {
+	display: block;
+	list-style: none;
+	margin: 0;
+	padding: 0.35rem;
+	min-width: 12.5rem;
+	border-radius: 0.5rem;
+	background-color: var(--nextora-nav-submenu-bg);
+	color: var(--nextora-nav-panel-fg);
+	border: 1px solid var(--nextora-nav-submenu-border);
+	box-shadow: var(--nextora-nav-submenu-shadow);
+}
+
+.nextora-header-menu .sub-menu .sub-menu,
+.nextora-footer-menu .sub-menu .sub-menu {
+	top: 0;
+	left: calc(100% + 0.3rem);
+	margin-top: -0.35rem;
+}
+
+.nextora-header-menu a,
+.nextora-footer-menu a {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.35rem 0.15rem;
+	text-decoration: underline solid transparent;
+	text-decoration-thickness: 2px;
+	text-underline-offset: 0.28em;
+	border-radius: 0.25rem;
+	transition:
+		color var(--nextora-nav-t),
+		text-decoration-color var(--nextora-nav-t),
+		background-color var(--nextora-nav-t);
+}
+
+.nextora-navigation-from-location--primary .nextora-header-menu > li > a {
+	color: var(--nextora-nav-header-link);
+	font-weight: 500;
+	font-size: 0.9375rem;
+}
+
+.nextora-navigation-from-location--primary .nextora-header-menu > li > a:hover,
+.nextora-navigation-from-location--primary .nextora-header-menu > li > a:focus-visible {
+	color: var(--nextora-nav-header-link);
+	text-decoration-color: var(--nextora-nav-header-link-hover-underline);
+}
+
+.nextora-navigation-from-location--primary .nextora-header-menu > li.current-menu-item > a,
+.nextora-navigation-from-location--primary .nextora-header-menu > li.current-menu-ancestor > a {
+	text-decoration-color: var(--nextora-nav-header-link-active-underline);
+}
+
+.nextora-navigation-from-location--primary .nextora-header-menu .sub-menu a {
+	color: var(--nextora-nav-panel-fg);
+	font-weight: 400;
+	font-size: 0.875rem;
+	padding: 0.5rem 0.75rem;
+	width: 100%;
+	box-sizing: border-box;
+	border-radius: 0.35rem;
+	text-decoration: none;
+}
+
+.nextora-navigation-from-location--primary .nextora-header-menu .sub-menu a:hover,
+.nextora-navigation-from-location--primary .nextora-header-menu .sub-menu a:focus-visible {
+	color: var(--nextora-nav-panel-hover-fg);
+	background-color: var(--nextora-nav-row-hover);
+}
+
+.nextora-navigation-from-location--footer .nextora-footer-menu > li > a {
+	color: var(--nextora-nav-footer-link);
+	font-weight: 500;
+	font-size: 0.875rem;
+}
+
+.nextora-navigation-from-location--footer .nextora-footer-menu > li > a:hover,
+.nextora-navigation-from-location--footer .nextora-footer-menu > li > a:focus-visible {
+	color: var(--nextora-nav-footer-link-hover);
+	text-decoration-color: var(--nextora-nav-footer-link-hover-underline);
+}
+
+.nextora-navigation-from-location--footer .nextora-footer-menu > li.current-menu-item > a,
+.nextora-navigation-from-location--footer .nextora-footer-menu > li.current-menu-ancestor > a {
+	color: var(--nextora-nav-footer-link-active-fg);
+	text-decoration-color: var(--nextora-nav-footer-link-active-underline);
+}
+
+.nextora-navigation-from-location--footer .nextora-footer-menu .sub-menu a {
+	color: var(--nextora-nav-panel-fg);
+	font-size: 0.8125rem;
+	padding: 0.45rem 0.75rem;
+	width: 100%;
+	box-sizing: border-box;
+	border-radius: 0.35rem;
+	text-decoration: none;
+}
+
+.nextora-navigation-from-location--footer .nextora-footer-menu .sub-menu a:hover,
+.nextora-navigation-from-location--footer .nextora-footer-menu .sub-menu a:focus-visible {
+	color: var(--nextora-nav-panel-hover-fg);
+	background-color: var(--nextora-nav-row-hover);
+}
+
+.nextora-header-menu .sub-menu .current-menu-item > a,
+.nextora-header-menu .sub-menu .current-menu-ancestor > a,
+.nextora-footer-menu .sub-menu .current-menu-item > a,
+.nextora-footer-menu .sub-menu .current-menu-ancestor > a {
+	color: var(--nextora-nav-panel-active-fg);
+	font-weight: 600;
+	background-color: var(--nextora-nav-row-active);
+}
+
+.nextora-header-menu .sub-menu,
+.nextora-footer-menu .sub-menu {
+	position: absolute;
+	top: calc(100% + 0.12rem);
+	left: 0;
+	z-index: 50;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(0.25rem);
+	pointer-events: none;
+	transition:
+		opacity var(--nextora-nav-t),
+		visibility var(--nextora-nav-t),
+		transform var(--nextora-nav-t);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-header-menu .sub-menu,
+	.nextora-footer-menu .sub-menu {
+		transition: opacity 0.1s ease, visibility 0.1s ease;
+		transform: none;
+	}
+}
+
+.nextora-header-menu .menu-item:hover > .sub-menu,
+.nextora-header-menu .menu-item:focus-within > .sub-menu,
+.nextora-footer-menu .menu-item:hover > .sub-menu,
+.nextora-footer-menu .menu-item:focus-within > .sub-menu {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-header-menu .menu-item:hover > .sub-menu,
+	.nextora-header-menu .menu-item:focus-within > .sub-menu,
+	.nextora-footer-menu .menu-item:hover > .sub-menu,
+	.nextora-footer-menu .menu-item:focus-within > .sub-menu {
+		transform: none;
+	}
+}
+
+.nextora-header-menu .sub-menu .sub-menu,
+.nextora-footer-menu .sub-menu .sub-menu {
+	transform: translateX(-0.2rem);
+}
+
+.nextora-header-menu .sub-menu .menu-item:hover > .sub-menu,
+.nextora-header-menu .sub-menu .menu-item:focus-within > .sub-menu,
+.nextora-footer-menu .sub-menu .menu-item:hover > .sub-menu,
+.nextora-footer-menu .sub-menu .menu-item:focus-within > .sub-menu {
+	transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-header-menu .sub-menu .sub-menu,
+	.nextora-footer-menu .sub-menu .sub-menu {
+		transform: none;
+	}
+
+	.nextora-header-menu .sub-menu .menu-item:hover > .sub-menu,
+	.nextora-header-menu .sub-menu .menu-item:focus-within > .sub-menu,
+	.nextora-footer-menu .sub-menu .menu-item:hover > .sub-menu,
+	.nextora-footer-menu .sub-menu .menu-item:focus-within > .sub-menu {
+		transform: none;
+	}
+}
+
+.nextora-header-menu .menu-item-has-children > a::after,
+.nextora-footer-menu .menu-item-has-children > a::after {
+	content: "";
+	display: inline-block;
+	width: 0.3rem;
+	height: 0.3rem;
+	margin-inline-start: 0.12rem;
+	border-inline-end: 2px solid currentColor;
+	border-block-end: 2px solid currentColor;
+	transform: rotate(45deg) translateY(-0.06rem);
+	opacity: 0.75;
+}
+
+.nextora-header-menu .sub-menu .menu-item-has-children > a::after,
+.nextora-footer-menu .sub-menu .menu-item-has-children > a::after {
+	transform: rotate(-45deg);
+	margin-inline-start: auto;
+}
+
+.nextora-header-menu a:focus-visible,
+.nextora-footer-menu a:focus-visible {
+	outline: 2px solid var(--nextora-nav-focus-ring);
+	outline-offset: 3px;
+}
+
+.nextora-navigation-from-location--primary .nextora-header-menu > li > a:focus-visible {
+	outline-color: var(--nextora-nav-focus-ring-on-dark);
+}
+
+.nextora-header-menu .sub-menu a:focus-visible,
+.nextora-footer-menu .sub-menu a:focus-visible {
+	outline-offset: 2px;
+}

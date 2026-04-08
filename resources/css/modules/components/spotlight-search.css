@@ -1,0 +1,277 @@
+/**
+ * Spotlight search — header modal. Pairs with `resources/ts/lib/spotlight-search.ts`.
+ */
+
+@layer components {
+	.nextora-modal__surface--spotlight {
+		width: min(100%, 36rem);
+		max-height: min(85vh, 580px);
+		border-radius: 0.875rem;
+		box-shadow:
+			0 1px 2px rgb(0 0 0 / 0.06),
+			0 20px 40px -16px rgb(0 0 0 / 0.28);
+	}
+
+	.nextora-modal__body--spotlight {
+		min-height: 0;
+	}
+
+	.nextora-spotlight__modal-header {
+		background: color-mix(in srgb, var(--color-contrast, #0f172a) 2.5%, transparent);
+	}
+
+	.nextora-spotlight {
+		display: flex;
+		min-height: 0;
+		flex: 1 1 auto;
+		flex-direction: column;
+		font-family: var(--font-sans);
+	}
+
+	.nextora-spotlight__title-modal {
+		letter-spacing: -0.02em;
+	}
+
+	.nextora-spotlight__subtitle-modal {
+		opacity: 0.92;
+	}
+
+	.nextora-spotlight__field {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 0.625rem;
+		margin: 0.5rem 1rem 0.25rem;
+		border-radius: 0.5rem;
+		border: 1px solid color-mix(in srgb, var(--color-secondary, #64748b) 22%, transparent);
+		background: var(--color-base, #fafafa);
+		padding: 0.5rem 0.75rem;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	.nextora-spotlight:focus-within .nextora-spotlight__field {
+		border-color: color-mix(in srgb, var(--color-primary, #2563eb) 45%, transparent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary, #2563eb) 18%, transparent);
+	}
+
+	.nextora-spotlight--loading .nextora-spotlight__field {
+		border-color: color-mix(in srgb, var(--color-primary, #2563eb) 35%, transparent);
+	}
+
+	.nextora-spotlight__field-icon {
+		display: flex;
+		flex-shrink: 0;
+		color: color-mix(in srgb, var(--color-secondary, #64748b) 85%, transparent);
+	}
+
+	.nextora-spotlight:focus-within .nextora-spotlight__field-icon {
+		color: var(--color-primary, #2563eb);
+	}
+
+	.nextora-spotlight__input {
+		min-width: 0;
+		flex: 1 1 auto;
+		border: none;
+		background: transparent;
+		font-size: 1rem;
+		line-height: 1.45;
+		color: var(--color-contrast, #0f172a);
+		outline: none;
+	}
+
+	.nextora-spotlight__input::placeholder {
+		color: color-mix(in srgb, var(--color-secondary, #64748b) 72%, transparent);
+	}
+
+	.nextora-spotlight__status {
+		position: absolute;
+		overflow: hidden;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		border: 0;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+	}
+
+	.nextora-spotlight__spinner {
+		flex-shrink: 0;
+		width: 1.125rem;
+		height: 1.125rem;
+		border: 2px solid color-mix(in srgb, var(--color-primary, #2563eb) 22%, transparent);
+		border-radius: 50%;
+		border-top-color: var(--color-primary, #2563eb);
+		animation: nextora-spotlight-spin 0.55s linear infinite;
+	}
+
+	@keyframes nextora-spotlight-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.nextora-spotlight__results {
+		margin-top: 0.2rem;
+		min-height: 0;
+		flex: 1 1 auto;
+		overflow-x: hidden;
+		overflow-y: auto;
+		padding: 0.5rem; 
+		-webkit-overflow-scrolling: touch;
+		/* scrollbar-gutter: stable; */
+	}
+
+	.nextora-spotlight__list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.nextora-spotlight__item {
+		margin: 0;
+		padding: 0;
+		opacity: 0;
+		animation: nextora-spotlight-item-in 0.22s ease forwards;
+		animation-delay: calc(var(--nextora-spotlight-i, 0) * 28ms);
+	}
+
+	@keyframes nextora-spotlight-item-in {
+		from {
+			opacity: 0;
+			transform: translateY(4px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.nextora-spotlight__link {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		margin: 0.125rem 0;
+		padding: 0.65rem 0.6rem;
+		border-radius: 0.5rem;
+		text-decoration: none !important;
+		color: var(--color-contrast, #0f172a) !important;
+		transition: background-color 0.15s ease;
+	}
+
+	.nextora-spotlight__link:hover {
+		background: color-mix(in srgb, var(--color-secondary, #64748b) 9%, transparent);
+	}
+
+	.nextora-spotlight__link--active {
+		background: color-mix(in srgb, var(--color-secondary, #64748b) 11%, transparent);
+		/* box-shadow: inset 3px 0 0 var(--color-primary, #2563eb); */
+	}
+
+	.nextora-spotlight__link:focus-visible {
+		outline: 2px solid var(--color-primary, #2563eb);
+		outline-offset: 2px;
+	}
+
+	.nextora-spotlight__thumb {
+		display: flex;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.45rem;
+		background: color-mix(in srgb, var(--color-secondary, #64748b) 10%, transparent);
+		color: color-mix(in srgb, var(--color-secondary, #64748b) 88%, transparent);
+	}
+
+	.nextora-spotlight__link--active .nextora-spotlight__thumb {
+		background: color-mix(in srgb, var(--color-primary, #2563eb) 12%, transparent);
+		color: var(--color-primary, #2563eb) !important;
+	}
+
+	.nextora-spotlight__thumb svg {
+		display: block;
+	}
+
+	.nextora-spotlight__stack {
+		display: flex;
+		min-width: 0;
+		flex: 1 1 auto;
+		flex-direction: column;
+		gap: 0.2rem;
+		padding-top: 0.1rem;
+	}
+
+	.nextora-spotlight__title {
+		display: -webkit-box;
+		overflow: hidden;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		line-height: 1.35;
+		letter-spacing: -0.01em;
+	}
+
+	.nextora-spotlight__meta {
+		display: flex;
+		min-width: 0;
+		align-items: center;
+		gap: 0.35rem;
+		font-size: 0.75rem;
+		line-height: 1.3;
+		color: color-mix(in srgb, var(--color-secondary, #64748b) 92%, transparent);
+	}
+
+	.nextora-spotlight__type {
+		flex-shrink: 0;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+	}
+
+	.nextora-spotlight__sep {
+		flex-shrink: 0;
+		opacity: 0.55;
+	}
+
+	.nextora-spotlight__path {
+		min-width: 0;
+		overflow: hidden;
+		font-family: var(--font-mono, ui-monospace, monospace);
+		font-size: 0.7rem;
+		font-weight: 450;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.nextora-spotlight__hint,
+	.nextora-spotlight__empty {
+		margin: 0 1rem 0.75rem;
+		text-align: center;
+		font-size: 0.78rem;
+		line-height: 1.45;
+		color: color-mix(in srgb, var(--color-secondary, #64748b) 88%, transparent);
+	}
+
+	.nextora-spotlight__kbd-hint {
+		display: block;
+		margin-top: 0.3rem;
+		opacity: 0.9;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.nextora-spotlight__item {
+			animation: none;
+			opacity: 1;
+		}
+
+		.nextora-spotlight__spinner {
+			animation-duration: 1s;
+		}
+	}
+}

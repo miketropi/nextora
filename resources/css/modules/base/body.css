@@ -20,4 +20,46 @@
 	.site-header .alignfull {
 		overflow: visible;
 	}
+
+	.nextora-site-branding {
+		min-width: 0;
+	}
+
+	/* Hide Site Logo block when no custom logo is set (title still shows). */
+	.nextora-site-branding .wp-block-site-logo:not(:has(img)) {
+		display: none;
+	}
+
+	.nextora-site-branding .wp-block-site-logo img {
+		display: block;
+		height: auto;
+		max-height: 2.5rem;
+		width: auto;
+	}
+
+	/* Primary nav + hooked suffix (mini cart, CTA) share one end-aligned row. */
+	.nextora-header-inner > .nextora-header-nav-cluster {
+		min-width: 0;
+		flex: 1;
+		justify-content: flex-end;
+	}
+
+	.nextora-header-nav-suffix {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-30, 0.75rem);
+	}
+
+	/* Footer menu + hooked suffix (social, badges) share one centered, wrapping row. */
+	.nextora-footer-nav-cluster {
+		justify-content: center;
+	}
+
+	.nextora-footer-nav-suffix {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: var(--spacing-20, 0.5rem);
+	}
 }

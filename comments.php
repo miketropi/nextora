@@ -33,7 +33,8 @@ if ( post_password_required() ) {
 		</h2>
 		
 		<?php the_comments_navigation(); ?>
-
+		
+		<ol class="comment-list">
 		<?php
 		wp_list_comments(
 			array(
@@ -41,9 +42,11 @@ if ( post_password_required() ) {
 				'short_ping'  => true,
 				'avatar_size' => 48,
 				'callback'    => 'nextora_render_comment',
+
 			)
 		);
 		?>
+		</ol>
 
 		<?php the_comments_navigation(); ?>
 	<?php endif; ?>

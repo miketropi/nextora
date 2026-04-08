@@ -56,7 +56,7 @@ function nextora_content_article_vars( array $args ): array {
 	$permalink = is_string( $permalink ) ? $permalink : '';
 
 	if ( $is_card ) {
-		$title_classes = '!text-[1.5rem] font-semibold tracking-tight text-contrast !mt-0 !sm:text-lg leading-snug';
+		$title_classes = '!text-[1.5rem] font-semibold tracking-tight text-contrast !mt-0 !mb-1 !sm:text-lg leading-snug';
 	} elseif ( 'page' === $content_type ) {
 		/* Static page: document-style title, calmer than editorial posts. */
 		$title_classes = 'text-2xl font-semibold tracking-tight text-contrast !mt-0 sm:text-3xl sm:leading-tight leading-snug';
@@ -131,7 +131,7 @@ function nextora_content_article_vars( array $args ): array {
 	$entry_classes = 'entry-content nextora-entry wp-block-post-content is-layout-constrained max-w-none leading-relaxed text-contrast [&_a]:text-primary [&_a]:underline';
 	if ( $is_card ) {
 		$entry_classes .= ' flex-1 min-h-0 px-0 leading-relaxed text-contrast/90 [&_p]:m-0';
-		$entry_classes .= ' text-sm [&_p]:line-clamp-4 sm:[&_p]:line-clamp-5';
+		$entry_classes .= ' text-[.95rem] [&_p]:line-clamp-4 sm:[&_p]:line-clamp-5';
 	}
 
 	if ( $is_card ) {

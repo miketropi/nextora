@@ -38,6 +38,54 @@
 	 */
 	--nextora-gutter: clamp(1rem, 4.5vw, 2.75rem);
 	--nextora-main-pad-y: clamp(1.75rem, 5vw, 3.25rem);
+
+	/**
+	 * Navigation menus — monochrome preset (decoupled from brand primary).
+	 */
+	--nextora-nav-header-link: #ffffff;
+	--nextora-nav-header-link-hover-underline: #a8a8a8;
+	--nextora-nav-header-link-active-underline: #ffffff;
+
+	--nextora-nav-footer-link: #404040;
+	--nextora-nav-footer-link-hover: #000000;
+	--nextora-nav-footer-link-hover-underline: #404040;
+	--nextora-nav-footer-link-active-fg: #0a0a0a;
+	--nextora-nav-footer-link-active-underline: #0a0a0a;
+
+	--nextora-nav-panel-bg: #ffffff;
+	--nextora-nav-panel-fg: #171717;
+	--nextora-nav-panel-border: rgb(0 0 0 / 0.1);
+	--nextora-nav-panel-shadow: 0 8px 24px -6px rgb(0 0 0 / 0.18);
+	--nextora-nav-panel-hover-bg: #f5f5f5;
+	--nextora-nav-panel-hover-fg: #0a0a0a;
+	--nextora-nav-panel-active-bg: #ebebeb;
+	--nextora-nav-panel-active-fg: #000000;
+
+	--nextora-nav-focus-ring: #0a0a0a;
+	--nextora-nav-focus-ring-on-dark: #f5f5f5;
+
+	/**
+	 * Posts pagination — same interaction model as footer nav (`nav-menus.css`); tokens stay
+	 * separate from `--nextora-nav-*` so you can diverge later without touching menus.
+	 */
+	--nextora-pagination-fg: #404040;
+	--nextora-pagination-hover-fg: #000000;
+	--nextora-pagination-hover-underline: #404040;
+	--nextora-pagination-current-fg: #0a0a0a;
+	--nextora-pagination-current-underline: #0a0a0a;
+	--nextora-pagination-dots: #a1a1aa;
+	--nextora-pagination-focus-ring: #0a0a0a;
+	--nextora-pagination-t: 0.18s ease;
+
+	/**
+	 * Comment list — open top-level threads; nested = one soft panel per reply (no rules, no double-box).
+	 */
+	--nextora-comments-between-threads: clamp(1.75rem, 4.5vw, 2.5rem);
+	--nextora-comments-nested-indent: clamp(1.15rem, 3vw, 2rem);
+	--nextora-comments-between-replies: 0.75rem;
+	--nextora-comments-reply-surface: color-mix(in srgb, var(--color-surface) 70%, transparent);
+	--nextora-comments-reply-radius: 0.5rem;
+	--nextora-comments-reply-padding: 0.85rem 1rem;
 }
 
 @import "tailwindcss/utilities.css" layer(utilities);
@@ -58,6 +106,8 @@
 
 @import "./modules/components/buttons.css";
 @import "./modules/components/form-fields.css";
+@import "./modules/components/modal.css";
+@import "./modules/components/spotlight-search.css";
 
 @import "./modules/prose/entry-content.css";
 

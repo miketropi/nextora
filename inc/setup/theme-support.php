@@ -21,6 +21,17 @@ add_action(
 		add_theme_support( 'block-template-parts' );
 		add_theme_support( 'align-wide' );
 
+		add_theme_support(
+			'custom-logo',
+			array(
+				'height'      => 512,
+				'width'       => 512,
+				'flex-height' => true,
+				'flex-width'  => true,
+				'header-text' => array( 'site-title', 'site-description' ),
+			)
+		);
+
 		register_nav_menus(
 			array(
 				'primary' => __( 'Primary Menu', 'nextora' ),

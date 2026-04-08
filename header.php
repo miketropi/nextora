@@ -20,5 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <body <?php body_class( 'nextora antialiased bg-base text-contrast' ); ?>>
 <?php wp_body_open(); ?>
 <header class="site-header">
+	<?php do_action( 'nextora_header_before' ); ?>
 	<?php block_template_part( 'header' ); ?>
+	<?php do_action( 'nextora_header_after' ); ?>
 </header>

@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Nextora;
+namespace Nextora\Core;
 
 final class ThemeConfig {
 

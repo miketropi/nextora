@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-require_once __DIR__ . '/inc/constants.php';
+require_once __DIR__ . '/inc/bootstrap/constants.php';
 
 define( 'NEXTORA_DIR', get_template_directory() );
 define( 'NEXTORA_URI', get_template_directory_uri() );
@@ -20,9 +20,12 @@ if ( is_readable( NEXTORA_DIR . '/vendor/autoload.php' ) ) {
 	require_once NEXTORA_DIR . '/vendor/autoload.php';
 }
 
-require_once NEXTORA_DIR . '/inc/theme-support.php';
-require_once NEXTORA_DIR . '/inc/navigation.php';
-require_once NEXTORA_DIR . '/inc/post-placeholder.php';
-require_once NEXTORA_DIR . '/inc/article-template.php';
-require_once NEXTORA_DIR . '/inc/comments.php';
-require_once NEXTORA_DIR . '/inc/assets.php';
+require_once NEXTORA_DIR . '/inc/setup/theme-support.php';
+require_once NEXTORA_DIR . '/inc/navigation/navigation.php';
+require_once NEXTORA_DIR . '/inc/search/spotlight-search.php';
+require_once NEXTORA_DIR . '/inc/hooks/header-hooks.php';
+require_once NEXTORA_DIR . '/inc/hooks/footer-hooks.php';
+require_once NEXTORA_DIR . '/inc/template/post-placeholder.php';
+require_once NEXTORA_DIR . '/inc/template/article-template.php';
+require_once NEXTORA_DIR . '/inc/comments/comments.php';
+require_once NEXTORA_DIR . '/inc/assets/assets.php';

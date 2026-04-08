@@ -9,7 +9,7 @@
  *
  * Partials: `content-article-default.php`, `content-article-card.php`,
  * `content-article-title-meta.php`, `content-article-entry.php`.
- * Logic: {@see nextora_content_article_vars()} in `inc/article-template.php`.
+ * Logic: {@see nextora_content_article_vars()} in `inc/template/article-template.php`.
  *
  * @package Nextora
  */

@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Nextora\Tests;
 
-use Nextora\ThemeConfig;
+use Nextora\Core\ThemeConfig;
 use PHPUnit\Framework\TestCase;
 
 final class ThemeConfigTest extends TestCase {

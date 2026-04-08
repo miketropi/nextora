@@ -111,5 +111,13 @@ function nextora_enqueue_scripts(): void {
 			'closeSubmenu' => __( 'Close submenu', 'nextora' ),
 		)
 	);
+
+	wp_localize_script(
+		'nextora-main',
+		'nextoraModal',
+		array(
+			'closeLabel' => __( 'Close dialog', 'nextora' ),
+		)
+	);
 }
 add_action( 'wp_enqueue_scripts', 'nextora_enqueue_scripts' );
