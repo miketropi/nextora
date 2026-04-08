@@ -15,6 +15,9 @@
 	/* Avoid clipping the in-header menu toggle; drawer itself mounts on `body`. */
 	.site-header {
 		overflow: visible;
+		z-index: 9999;
+		position: sticky;
+		top: 0;
 	}
 
 	.site-header .alignfull {

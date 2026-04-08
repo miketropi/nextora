@@ -18,18 +18,22 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return array<string, mixed>
  */
 function nextora_content_article_vars( array $args ): array {
-	$resolved = wp_parse_args(
+		$resolved = wp_parse_args(
 		$args,
 		array(
-			'show_meta'        => false,
-			'use_excerpt'      => false,
-			'link_title'       => false,
-			'layout'           => 'default',
-			'title_heading'    => '',
-			'card_lead'        => false,
+			'show_meta'           => false,
+			'use_excerpt'         => false,
+			'link_title'          => false,
+			'layout'              => 'default',
+			'title_heading'       => '',
+			'card_lead'           => false,
 			// Singular context: post (editorial) or page (document). Empty = legacy neutral.
-			'content_type'     => '',
-			'show_placeholder' => null,
+			'content_type'        => '',
+			'show_placeholder'    => null,
+			// When false, title (H1/H2) is omitted — e.g. {@see template-parts/page-heading.php} supplies H1.
+			'show_entry_title'    => true,
+			// When false, featured / placeholder figure is omitted (hero image in page heading).
+			'show_featured_media' => true,
 		)
 	);
 
@@ -125,7 +129,7 @@ function nextora_content_article_vars( array $args ): array {
 		/* Page: no masthead rule — reads as one continuous document. */
 		$header_classes = 'w-full box-border pt-0 pb-[clamp(0.35rem,1.5vw,0.65rem)] mb-[clamp(1rem,2.75vw,1.75rem)]';
 	} else {
-		$header_classes = 'w-full box-border py-[clamp(0.5rem,2vw,1rem)] mb-[clamp(0.75rem,2.25vw,1.25rem)] border-b border-secondary/25';
+		$header_classes = 'w-full box-border mb-[clamp(1.75rem,2.25vw,2.25rem)] border-b border-secondary/25';
 	}
 
 	$entry_classes = 'entry-content nextora-entry wp-block-post-content is-layout-constrained max-w-none leading-relaxed text-contrast [&_a]:text-primary [&_a]:underline';
@@ -175,8 +179,13 @@ function nextora_content_article_vars( array $args ): array {
 		? 'inline-flex items-center justify-center gap-1.5 self-start rounded-full bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary no-underline transition-all duration-200 hover:bg-primary hover:text-base hover:shadow-sm active:scale-[0.98] sm:px-5 sm:py-3'
 		: 'inline-flex items-center gap-1 text-sm font-semibold text-primary no-underline transition-colors hover:underline';
 
+	$show_entry_title    = ! empty( $resolved['show_entry_title'] );
+	$show_featured_media = ! empty( $resolved['show_featured_media'] );
+
 	return array(
-		'content_type'       => $content_type,
+		'content_type'         => $content_type,
+		'show_entry_title'     => $show_entry_title,
+		'show_featured_media'  => $show_featured_media,
 		'show_placeholder'   => $show_placeholder,
 		'show_meta'          => $show_meta,
 		'use_excerpt'        => $use_excerpt,

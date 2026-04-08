@@ -3,7 +3,7 @@
  */
 @layer base {
 	.nextora-main {
-		padding-block: var(--nextora-main-pad-y);
+		/* padding-block: var(--nextora-main-pad-y); */
 	}
 
 	.nextora-singular--page .nextora-article--page .nextora-article-featured img {

@@ -52,12 +52,12 @@
 	}
 
 	.nextora-spotlight:focus-within .nextora-spotlight__field {
-		border-color: color-mix(in srgb, var(--color-primary, #2563eb) 45%, transparent);
-		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary, #2563eb) 18%, transparent);
+		border-color: color-mix(in srgb, var(--color-primary, #4f46e5) 45%, transparent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary, #4f46e5) 18%, transparent);
 	}
 
 	.nextora-spotlight--loading .nextora-spotlight__field {
-		border-color: color-mix(in srgb, var(--color-primary, #2563eb) 35%, transparent);
+		border-color: color-mix(in srgb, var(--color-primary, #4f46e5) 35%, transparent);
 	}
 
 	.nextora-spotlight__field-icon {
@@ -67,7 +67,7 @@
 	}
 
 	.nextora-spotlight:focus-within .nextora-spotlight__field-icon {
-		color: var(--color-primary, #2563eb);
+		color: var(--color-primary, #4f46e5);
 	}
 
 	.nextora-spotlight__input {
@@ -101,9 +101,9 @@
 		flex-shrink: 0;
 		width: 1.125rem;
 		height: 1.125rem;
-		border: 2px solid color-mix(in srgb, var(--color-primary, #2563eb) 22%, transparent);
+		border: 2px solid color-mix(in srgb, var(--color-primary, #4f46e5) 22%, transparent);
 		border-radius: 50%;
-		border-top-color: var(--color-primary, #2563eb);
+		border-top-color: var(--color-primary, #4f46e5);
 		animation: nextora-spotlight-spin 0.55s linear infinite;
 	}
 
@@ -168,11 +168,11 @@
 
 	.nextora-spotlight__link--active {
 		background: color-mix(in srgb, var(--color-secondary, #64748b) 11%, transparent);
-		/* box-shadow: inset 3px 0 0 var(--color-primary, #2563eb); */
+		/* box-shadow: inset 3px 0 0 var(--color-primary, #4f46e5); */
 	}
 
 	.nextora-spotlight__link:focus-visible {
-		outline: 2px solid var(--color-primary, #2563eb);
+		outline: 2px solid var(--color-primary, #4f46e5);
 		outline-offset: 2px;
 	}
 
@@ -189,8 +189,8 @@
 	}
 
 	.nextora-spotlight__link--active .nextora-spotlight__thumb {
-		background: color-mix(in srgb, var(--color-primary, #2563eb) 12%, transparent);
-		color: var(--color-primary, #2563eb) !important;
+		background: color-mix(in srgb, var(--color-primary, #4f46e5) 12%, transparent);
+		color: var(--color-primary, #4f46e5) !important;
 	}
 
 	.nextora-spotlight__thumb svg {

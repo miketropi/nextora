@@ -8,13 +8,39 @@
 declare(strict_types=1);
 
 /**
+ * Allow minimal block HTML from Tiptap in comments (default KSES strips `p` / `br` / some link attrs).
+ *
+ * @param array<string, array<string, bool>> $tags    Allowed tags.
+ * @param string                             $context KSES context (hook name for comments).
+ * @return array<string, array<string, bool>>
+ */
+function nextora_kses_allowed_html_comment_tiptap( array $tags, string $context ): array {
+	if ( 'pre_comment_content' !== $context ) {
+		return $tags;
+	}
+
+	$tags['p']  = array();
+	$tags['br'] = array();
+
+	if ( isset( $tags['a'] ) && is_array( $tags['a'] ) ) {
+		$tags['a']['rel']    = true;
+		$tags['a']['class'] = true;
+	}
+
+	return $tags;
+}
+
+add_filter( 'wp_kses_allowed_html', 'nextora_kses_allowed_html_comment_tiptap', 10, 2 );
+
+/**
  * Arguments for {@see comment_form()} (Tailwind-friendly markup).
  *
  * @return array<string, mixed>
  */
 function nextora_get_comment_form_args(): array {
-	$input_class = 'mt-1 block w-full max-w-2xl rounded-md border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
-	$ta_class    = 'mt-1 block w-full max-w-2xl rounded-md border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
+	$input_class = 'mt-1 block w-full max-w-2xl rounded-md box-border border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
+	$tiptap_shell = 'nextora-tiptap-shell mb-4 max-w-2xl rounded-md border border-secondary/40 bg-base shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20';
+	$ta_sync      = 'nextora-comment-textarea-sync sr-only';
 
 	$permalink = get_permalink();
 	if ( ! is_string( $permalink ) ) {
@@ -38,10 +64,11 @@ function nextora_get_comment_form_args(): array {
 		'submit_button'        => '<input name="%1$s" type="submit" id="%2$s" class="%3$s" value="%4$s" />',
 		'class_submit'         => 'inline-flex cursor-pointer rounded-md border-none bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50',
 		'comment_field'        => sprintf(
-			'<p class="comment-form-comment !mb-4"><label class="block text-sm font-medium text-contrast" for="comment">%1$s <span class="text-primary" aria-hidden="true">*</span></label><textarea id="comment" name="comment" cols="45" rows="6" maxlength="65525" required="required" placeholder="%2$s" class="%3$s"></textarea></p>',
+			'<p class="comment-form-comment !mb-4"><label id="nextora-comment-field-label" class="block cursor-text text-sm font-medium text-contrast">%1$s <span class="text-primary" aria-hidden="true">*</span></label><div class="%3$s"><div class="nextora-tiptap-toolbar min-h-0"></div><div id="nextora-tiptap-host" data-placeholder="%2$s"></div></div><textarea id="comment" name="comment" cols="45" rows="4" maxlength="65525" class="%4$s" tabindex="-1" aria-hidden="true"></textarea></p>',
 			esc_html__( 'Comment', 'nextora' ),
 			esc_attr__( 'Write your comment here…', 'nextora' ),
-			esc_attr( $ta_class )
+			esc_attr( $tiptap_shell ),
+			esc_attr( $ta_sync )
 		),
 		'comment_notes_before' => '<p class="comment-notes !mb-4 text-sm text-secondary">' . esc_html__( 'Your email address will not be published. Required fields are marked with *', 'nextora' ) . '</p>',
 		'comment_notes_after'  => '',
@@ -70,7 +97,7 @@ add_filter(
 		$req_mark  = $req ? ' <span class="text-primary" aria-hidden="true">*</span>' : '';
 		$aria_req  = $req ? ' aria-required="true"' : '';
 
-		$input_class = 'mt-1 block w-full max-w-2xl rounded-md border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
+		$input_class = 'mt-1 block w-full max-w-2xl rounded-md box-border border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
 
 		$fields['author'] = sprintf(
 			'<p class="comment-form-author !mb-4"><label class="block text-sm font-medium text-contrast" for="author">%1$s%2$s</label><input id="author" name="author" type="text" value="%3$s" size="30" maxlength="245" autocomplete="name"%4$s class="%5$s" /></p>',

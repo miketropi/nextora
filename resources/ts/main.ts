@@ -3,6 +3,7 @@
  * Add interactive behavior for child themes here.
  */
 
+import { initCommentTiptap } from "./lib/comment-tiptap";
 import { initHeaderNavigation } from "./header-nav";
 import { attachModalGlobals, initModals } from "./lib/modal";
 import { initSpotlightSearch } from "./lib/spotlight-search";
@@ -14,3 +15,4 @@ initHeaderNavigation();
 initModals();
 attachModalGlobals();
 initSpotlightSearch();
+initCommentTiptap();

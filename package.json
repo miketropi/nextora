@@ -5,10 +5,10 @@
 	"scripts": {
 		"build": "npm run build:css && npm run build:ts",
 		"build:css": "postcss ./resources/css/app.css -o ./assets/css/app.css --verbose",
-		"build:ts": "esbuild ./resources/ts/main.ts --bundle --outfile=./assets/js/main.js --target=es2020 --platform=browser",
+		"build:ts": "esbuild ./resources/ts/main.ts --bundle --outfile=./assets/js/main.js --target=es2020 --platform=browser --minify",
 		"watch": "npm run watch:css & npm run watch:ts",
 		"watch:css": "postcss ./resources/css/app.css -o ./assets/css/app.css --verbose --watch",
-		"watch:ts": "esbuild ./resources/ts/main.ts --bundle --outfile=./assets/js/main.js --target=es2020 --platform=browser --watch",
+		"watch:ts": "esbuild ./resources/ts/main.ts --bundle --outfile=./assets/js/main.js --target=es2020 --platform=browser --watch --sourcemap",
 		"typecheck": "tsc --noEmit",
 		"lint:php": "composer phpstan",
 		"theme:clone": "node ./scripts/clone-theme.mjs"
@@ -20,5 +20,13 @@
 		"postcss-cli": "^11.0.1",
 		"tailwindcss": "^4.2.2",
 		"typescript": "^5.8.2"
+	},
+	"dependencies": {
+		"@tiptap/core": "^3.22.2",
+		"@tiptap/extension-link": "^3.22.2",
+		"@tiptap/extension-placeholder": "^3.22.2",
+		"@tiptap/pm": "^3.22.2",
+		"@tiptap/starter-kit": "^3.22.2",
+		"lucide": "^1.7.0"
 	}
 }

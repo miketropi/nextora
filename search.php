@@ -10,50 +10,14 @@ declare(strict_types=1);
 
 get_header();
 
-global $wp_query;
-$nextora_search_total = isset( $wp_query->found_posts ) ? (int) $wp_query->found_posts : 0;
 $nextora_search_query = get_search_query();
 ?>
 <main id="primary" class="wp-site-blocks nextora-main nextora-search" role="main">
+	<?php nextora_render_page_heading(); ?>
 	<?php
 	if ( have_posts() ) {
 		?>
 		<div class="nextora-content-shell nextora-content-shell--wide">
-			<header class="nextora-search-header mb-[clamp(1.5rem,4vw,2.75rem)] border-b border-contrast/10 pb-[clamp(1.25rem,3.5vw,2rem)]">
-				<h1 class="m-0 text-2xl font-semibold tracking-tight text-contrast sm:text-3xl sm:leading-tight">
-					<?php
-					if ( '' !== $nextora_search_query ) {
-						printf(
-							/* translators: %s: search query */
-							esc_html__( 'Search results for "%s"', 'nextora' ),
-							esc_html( $nextora_search_query )
-						);
-					} else {
-						esc_html_e( 'Search results', 'nextora' );
-					}
-					?>
-				</h1>
-				<p class="mb-0 mt-2 text-sm leading-relaxed text-secondary sm:text-[0.9375rem]">
-					<?php
-					echo esc_html(
-						sprintf(
-							/* translators: %d: number of results */
-							_n(
-								'%d result found.',
-								'%d results found.',
-								$nextora_search_total,
-								'nextora'
-							),
-							$nextora_search_total
-						)
-					);
-					?>
-				</p>
-				<div class="nextora-search-header__form mt-6 max-w-xl">
-					<?php get_search_form( array( 'aria_label' => __( 'Refine search', 'nextora' ) ) ); ?>
-				</div>
-			</header>
-
 			<div
 				class="nextora-posts-grid nextora-search-results grid grid-cols-1 items-stretch gap-x-4 gap-y-10 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-8 md:gap-x-6 lg:grid-cols-3 lg:gap-x-7 lg:gap-y-10"
 			>

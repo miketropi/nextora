@@ -6,6 +6,7 @@ This theme is a **hybrid** setup: classic templates load **block template parts*
 
 | Topic | Path |
 |--------|------|
+| Page heading (archives, search, singular hero) | `inc/template/page-heading.php`, `template-parts/page-heading.php` |
 | Header hooks | `inc/hooks/header-hooks.php` |
 | Footer hooks | `inc/hooks/footer-hooks.php` |
 | Navigation block ↔ menu locations | `inc/navigation/navigation.php` |
@@ -17,6 +18,29 @@ This theme is a **hybrid** setup: classic templates load **block template parts*
 | Spotlight search (REST + markup) | `inc/search/spotlight-search.php` · [spotlight-search.md](./spotlight-search.md) |
 | Header / footer nav layout (CSS) | `resources/css/modules/base/body.css` |
 | Spotlight UI (CSS) | `resources/css/modules/components/spotlight-search.css` |
+
+---
+
+## Page heading (title band)
+
+Output by `nextora_render_page_heading()` on blog index, archives, search, single posts, and pages. Markup and **Tailwind** utilities: `template-parts/page-heading.php`.
+
+Singular views use one **H1** in the heading; the article template omits the duplicate title and skips the in-article featured image when the heading uses that image as the hero background.
+
+| Filter | Purpose |
+|--------|---------|
+| `nextora_show_page_heading` | Return `false` to hide the section. |
+| `nextora_page_heading_context` | Replace or adjust the context array; return `null` to hide. |
+| `nextora_page_heading_term_image_url` | Background image URL for term archives (empty string default); args: `''`, `WP_Term`. |
+| `nextora_page_heading_image_url` | Singular hero image URL (defaults to featured image); args: URL string, post ID. |
+| `nextora_page_heading_blog_title` | Title on the blog / posts index. |
+| `nextora_page_heading_blog_description` | Optional subtitle on the blog index. |
+| `nextora_page_heading_section_classes` | Classes on the outer `<section>`. |
+| `nextora_page_heading_inner_shell_class` | Classes on the inner content wrapper. |
+
+### Single post sidebar
+
+`single.php` can show a **sticky right sidebar** (featured image, author, date, categories, tags, previous/next post). Return `false` from `nextora_show_single_post_sidebar` to restore the one-column layout and inline meta row.
 
 ---
 

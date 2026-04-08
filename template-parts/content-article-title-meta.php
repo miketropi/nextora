@@ -17,7 +17,7 @@ $na = $args;
 ?>
 
 <header class="<?php echo esc_attr( $na['header_classes'] ); ?>">
-	<?php if ( $na['link_title'] && '' !== $na['permalink'] ) : ?>
+	<?php if ( ! empty( $na['show_entry_title'] ) && $na['link_title'] && '' !== $na['permalink'] ) : ?>
 		<?php if ( 'h2' === $na['title_heading'] ) : ?>
 			<h2 class="<?php echo esc_attr( $na['title_classes'] ); ?>">
 				<a href="<?php echo esc_url( $na['permalink'] ); ?>" class="<?php echo esc_attr( $na['title_link_classes'] ); ?>">
@@ -31,9 +31,9 @@ $na = $args;
 				</a>
 			</h1>
 		<?php endif; ?>
-	<?php elseif ( 'h2' === $na['title_heading'] ) : ?>
+	<?php elseif ( ! empty( $na['show_entry_title'] ) && 'h2' === $na['title_heading'] ) : ?>
 		<h2 class="<?php echo esc_attr( $na['title_classes'] ); ?>"><?php echo esc_html( $na['title'] ); ?></h2>
-	<?php else : ?>
+	<?php elseif ( ! empty( $na['show_entry_title'] ) ) : ?>
 		<h1 class="<?php echo esc_attr( $na['title_classes'] ); ?>"><?php echo esc_html( $na['title'] ); ?></h1>
 	<?php endif; ?>
 

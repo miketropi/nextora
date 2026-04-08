@@ -166,8 +166,8 @@
 		.wp-block-post-comments-form select
 	):focus-visible {
 		outline: none;
-		border-color: var(--wp--preset--color--primary, #2563eb);
-		box-shadow: 0 0 0 2px color-mix(in srgb, var(--wp--preset--color--primary, #2563eb) 22%, transparent);
+		border-color: var(--wp--preset--color--primary, #4f46e5);
+		box-shadow: 0 0 0 2px color-mix(in srgb, var(--wp--preset--color--primary, #4f46e5) 22%, transparent);
 	}
 
 	:where(

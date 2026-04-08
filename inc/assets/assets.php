@@ -119,5 +119,27 @@ function nextora_enqueue_scripts(): void {
 			'closeLabel' => __( 'Close dialog', 'nextora' ),
 		)
 	);
+
+	wp_localize_script(
+		'nextora-main',
+		'nextoraComments',
+		array(
+			'toolbarLabel'      => __( 'Comment formatting', 'nextora' ),
+			'toolBold'          => __( 'Bold', 'nextora' ),
+			'toolBoldHint'      => __( 'Bold (Ctrl+B)', 'nextora' ),
+			'toolItalic'        => __( 'Italic', 'nextora' ),
+			'toolItalicHint'    => __( 'Italic (Ctrl+I)', 'nextora' ),
+			'toolStrike'        => __( 'Strikethrough', 'nextora' ),
+			'toolStrikeHint'    => __( 'Strikethrough', 'nextora' ),
+			'toolCode'          => __( 'Inline code', 'nextora' ),
+			'toolCodeHint'      => __( 'Inline code', 'nextora' ),
+			'toolQuote'         => __( 'Blockquote', 'nextora' ),
+			'toolQuoteHint'     => __( 'Blockquote', 'nextora' ),
+			'toolLink'          => __( 'Link', 'nextora' ),
+			'toolLinkHint'      => __( 'Add or edit link', 'nextora' ),
+			'linkPromptTitle'   => __( 'Link URL', 'nextora' ),
+			'linkPromptDefault' => 'https://',
+		)
+	);
 }
 add_action( 'wp_enqueue_scripts', 'nextora_enqueue_scripts' );

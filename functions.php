@@ -27,5 +27,6 @@ require_once NEXTORA_DIR . '/inc/hooks/header-hooks.php';
 require_once NEXTORA_DIR . '/inc/hooks/footer-hooks.php';
 require_once NEXTORA_DIR . '/inc/template/post-placeholder.php';
 require_once NEXTORA_DIR . '/inc/template/article-template.php';
+require_once NEXTORA_DIR . '/inc/template/page-heading.php';
 require_once NEXTORA_DIR . '/inc/comments/comments.php';
 require_once NEXTORA_DIR . '/inc/assets/assets.php';

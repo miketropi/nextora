@@ -15,7 +15,7 @@
 @theme {
 	--color-base: var(--wp--preset--color--base, #000000);
 	--color-contrast: var(--wp--preset--color--contrast, #0f172a);
-	--color-primary: var(--wp--preset--color--primary, #2563eb);
+	--color-primary: var(--wp--preset--color--primary, #4f46e5);
 	--color-secondary: var(--wp--preset--color--secondary, #64748b);
 	--color-surface: var(--wp--preset--color--surface, #f1f5f9);
 	--font-sans: var(
@@ -32,6 +32,7 @@
 		Menlo,
 		monospace
 	);
+
 	/**
 	 * Horizontal inset for title + entry (mobile → desktop).
 	 * Tweak once; title and body stay aligned.

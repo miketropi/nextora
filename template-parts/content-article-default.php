@@ -16,7 +16,7 @@ if ( ! isset( $args ) || ! is_array( $args ) ) {
 $na = $args;
 ?>
 <article <?php post_class( $na['post_classes'] ); ?>>
-	<?php if ( has_post_thumbnail() ) : ?>
+	<?php if ( ! empty( $na['show_featured_media'] ) && has_post_thumbnail() ) : ?>
 		<figure class="nextora-article-featured m-0 mb-[clamp(0.75rem,2.25vw,1.5rem)] overflow-hidden rounded-lg bg-surface">
 			<?php
 			the_post_thumbnail(
@@ -31,7 +31,7 @@ $na = $args;
 			);
 			?>
 		</figure>
-	<?php elseif ( ! empty( $na['show_placeholder'] ) && '' !== $na['placeholder_url'] ) : ?>
+	<?php elseif ( ! empty( $na['show_featured_media'] ) && ! empty( $na['show_placeholder'] ) && '' !== $na['placeholder_url'] ) : ?>
 		<figure class="nextora-article-featured m-0 mb-[clamp(0.75rem,2.25vw,1.5rem)] overflow-hidden rounded-lg bg-surface" aria-label="<?php esc_attr_e( 'Placeholder — no featured image', 'nextora' ); ?>">
 			<img
 				src="<?php echo esc_url( $na['placeholder_url'] ); ?>"
