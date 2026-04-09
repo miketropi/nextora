@@ -10,6 +10,7 @@ declare(strict_types=1);
 if ( post_password_required() ) {
 	return;
 }
+
 ?>
 <section
 	id="comments"
@@ -55,7 +56,7 @@ if ( post_password_required() ) {
 	if (
 		! comments_open()
 		&& get_comments_number()
-		&& post_type_supports( get_post_type(), 'comments' )
+		&& post_type_supports( get_post_type(), 'comments' ) 
 	) :
 		?>
 		<p class="mt-8 border-t border-secondary/25 pt-8 text-md text-secondary">

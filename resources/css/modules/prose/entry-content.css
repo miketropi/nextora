@@ -2,6 +2,7 @@
  * Entry / editor prose — outside @layer so it wins over WordPress global styles
  * (unlayered CSS beats all layered rules, including @layer base).
  */
+.theme-global-prose, 
 .entry-content.nextora-entry,
 .editor-styles-wrapper .block-editor-block-list__layout {
 		/* Links: clearer underline + focus ring */

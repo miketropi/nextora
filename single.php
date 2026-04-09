@@ -27,7 +27,7 @@ if ( $nextora_show_sidebar ) {
 	$nextora_heading_ctx = nextora_get_page_heading_context();
 	$nextora_heading_img = is_array( $nextora_heading_ctx ) && ! empty( $nextora_heading_ctx['image_url'] );
 	?>
-	<div class="<?php echo esc_attr( $nextora_content_shell_class ); ?>">
+	<div class="<?php echo esc_attr( $nextora_content_shell_class ); ?>"> 
 		<?php if ( $nextora_show_sidebar ) : ?>
 		<div class="nextora-singular-post-with-sidebar flex flex-col justify-between !gap-[4rem] lg:flex-row lg:items-start lg:gap-6 xl:gap-7">
 			<div class="nextora-singular-post-with-sidebar__main min-w-0 w-full max-w-[min(100%,var(--wp--style--global--content-size,720px))]">
@@ -49,11 +49,8 @@ if ( $nextora_show_sidebar ) {
 			);
 		endwhile;
 
-		if (
-			( comments_open() || get_comments_number() )
-			&& post_type_supports( get_post_type(), 'comments' )
-		) {
-			comments_template();
+		if ( comments_open() || get_comments_number() ) {
+				comments_template();
 		}
 		?>
 		<?php if ( $nextora_show_sidebar ) : ?>

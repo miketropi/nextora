@@ -38,6 +38,15 @@ add_action(
 				'footer'  => __( 'Footer Menu', 'nextora' ),
 			)
 		);
+
+		// Add support for WooCommerce.
+		add_theme_support( 'woocommerce' );
+		add_theme_support( 'wc-product-gallery-slider' );
+		add_theme_support( 'wc-product-gallery-lightbox' );
+		add_theme_support( 'wc-product-gallery-zoom' );
+
+		// Add support for GiftFlow.
+		add_theme_support( 'giftflow' );
 	}
 );
 
