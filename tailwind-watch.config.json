@@ -1,0 +1,12 @@
+{
+	"_note": "When you add a path here, add a matching @source line in resources/css/app.css so Tailwind scans those files.",
+	"paths": [
+		"resources/css",
+		"blocks",
+		"inc",
+		"template-parts",
+		"parts",
+		"templates"
+	],
+	"ignore": []
+}

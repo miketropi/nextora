@@ -69,7 +69,7 @@ The header **Spotlight search** listens to these to focus the query field and re
 
 ### Spotlight search modal (theme default)
 
-Built in **`inc/hooks/header-hooks.php`**: same root + scrim + **one** `data-nextora-modal-surface` panel with `nextora-modal__surface--spotlight`. Inside the panel, a **`<header>`** holds the dialog title and subtitle; **`nextora-modal__body`** wraps only the search form (field, results, hints). The close button is **after** the body in the DOM and positioned over the header row so tab order reaches the query field first. Full behavior, REST filters, and `data-*` hooks are documented in **[spotlight-search.md](./spotlight-search.md)**.
+Built in **`inc/features/spotlight-search/modal-markup.php`** (`nextora_get_header_search_modal_markup()`), used by the **`nextora/spotlight-search`** block and optionally by the legacy PHP hook in **`register-hooks.php`**: same root + scrim + **one** `data-nextora-modal-surface` panel with `nextora-modal__surface--spotlight`. Inside the panel, a **`<header>`** holds the dialog title and subtitle; **`nextora-modal__body`** wraps only the search form (field, results, hints). The close button is **after** the body in the DOM and positioned over the header row so tab order reaches the query field first. Full behavior, REST filters, and `data-*` hooks are documented in **[spotlight-search.md](./spotlight-search.md)**.
 
 - **`data-nextora-modal-dismiss`**: click closes that modal (scrim, close button, “Cancel” links).
 - **Surface widths / variants**: `nextora-modal__surface--sm`, `--lg`, `--spotlight`, etc. Keep `nextora-modal__surface` **or** rely on `data-nextora-modal-surface` if you rename classes via filters.

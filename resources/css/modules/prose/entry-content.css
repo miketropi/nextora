@@ -42,7 +42,7 @@
 		}
 
 		& :where(ul) {
-			list-style-type: disc;
+			/* list-style-type: disc; */
 		}
 
 		& :where(ol) {
@@ -263,7 +263,7 @@
 
 		/* Headings without .wp-block-heading (classic HTML): match block heading bottom space */
 		& :where(h1, h2, h3, h4, h5, h6) {
-			margin-block-end: clamp(0.85rem, 2.2vw, 1.2rem);
+			margin-block-end: clamp(0.85rem, 2.2vw, 1.2rem); 
 		}
 
 		& :where(.wp-block-heading:first-child, .wp-block-post-content > .wp-block-heading:first-child) {

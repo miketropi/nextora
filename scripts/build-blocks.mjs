@@ -41,6 +41,7 @@ function writeAssetFile(entryFile, dependencies) {
 const WP_PACKAGES = [
   '@wordpress/blocks',
   '@wordpress/block-editor',
+  '@wordpress/server-side-render',
   '@wordpress/components',
   '@wordpress/element',
   '@wordpress/i18n',
@@ -94,7 +95,9 @@ if (entryPoints.length === 0) {
   process.exit(0);
 }
 
-console.log(`🔍 Found ${entryPoints.length} block(s):`, entryPoints);
+if ( ! isWatch ) {
+  console.log(`🔍 Found ${entryPoints.length} block(s):`, entryPoints);
+}
 
 /** @type {import('esbuild').BuildOptions} */
 const buildOptions = {
@@ -107,6 +110,7 @@ const buildOptions = {
   jsxImportSource: 'react',
   sourcemap: isWatch ? 'inline' : false,
   minify: !isWatch,
+  logLevel: isWatch ? 'warning' : 'info',
   plugins: [wpExternalsPlugin],
   define: {
     'process.env.NODE_ENV': isWatch ? '"development"' : '"production"',
@@ -130,7 +134,8 @@ const assetWriterPlugin = {
           writeAssetFile(outFile, WP_HANDLES);
         }
       });
-      console.log(`[${new Date().toLocaleTimeString()}] ✅ Blocks rebuilt.`);
+      const t = new Date().toTimeString().slice(0, 8);
+      console.log(`${t}  blocks rebuilt (${entryPoints.length})`);
     });
   },
 };
@@ -146,7 +151,9 @@ if (isWatch) {
   });
 
   await ctx.watch();
-  console.log('👀 Watching blocks for changes... (Ctrl+C to stop)');
+  console.log(
+    `Watching ${entryPoints.length} block(s) under ./blocks/*/index.{ts,tsx}  ·  Ctrl+C to stop`
+  );
 } else {
   const result = await esbuild.build(buildOptions);
 

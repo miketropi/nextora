@@ -167,3 +167,32 @@ function nextora_enqueue_scripts(): void {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'nextora_enqueue_scripts' );
+
+/**
+ * Script modules + import map: align with when blocks actually enqueue assets.
+ *
+ * Block themes using {@see template-canvas.php} run `do_blocks()` before `wp_head()`, so core’s default
+ * (import map in `wp_head`) works. Nextora uses classic PHP templates (`get_header()` → `wp_head()` then
+ * `block_template_part()` / content), so interactive blocks (e.g. WooCommerce) enqueue script modules after
+ * the head. Without this, the import map is empty and the browser throws
+ * “Failed to resolve module specifier @wordpress/interactivity”.
+ */
+add_action(
+	'after_setup_theme',
+	static function (): void {
+		if ( ! wp_is_block_theme() ) {
+			return;
+		}
+
+		$sm = wp_script_modules();
+
+		remove_action( 'wp_head', array( $sm, 'print_import_map' ) );
+		remove_action( 'wp_head', array( $sm, 'print_script_module_preloads' ) );
+		remove_action( 'wp_head', array( $sm, 'print_head_enqueued_script_modules' ) );
+
+		add_action( 'wp_footer', array( $sm, 'print_import_map' ), 9 );
+		add_action( 'wp_footer', array( $sm, 'print_script_module_preloads' ), 9 );
+		add_action( 'wp_footer', array( $sm, 'print_head_enqueued_script_modules' ), 9 );
+	},
+	20
+);

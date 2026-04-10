@@ -8,14 +8,25 @@ For the **modal shell** (focus trap, scrim, stacking), see [modal.md](./modal.md
 
 | Piece | Path |
 |--------|------|
-| Trigger + modal markup (title, body, close) | `inc/hooks/header-hooks.php` |
-| Form fragment (input, results container, hints) | `inc/search/spotlight-search.php` |
-| REST config + strings → `window.nextoraSpotlight` | `inc/search/spotlight-search.php` (`nextora_localize_spotlight_search`) |
+| **Block (default placement)** — `nextora/spotlight-search` | `blocks/spotlight-search/` (`block.json`, `edit.tsx`, `render.php`); included in `parts/header.html` inside `nextora-header-nav-cluster` |
+| **PHP feature bundle** | `inc/features/spotlight-search/` (`load.php`, `modal-markup.php`, `search-ui.php`, `register-hooks.php`) — see `inc/features/spotlight-search/README.md` |
+| Trigger + modal markup (title, body, close) | `inc/features/spotlight-search/modal-markup.php` — `nextora_get_header_search_modal_markup()` |
+| Block attrs → modal args | `inc/features/spotlight-search/search-ui.php` — `nextora_merge_spotlight_search_block_modal_args()`; filter `nextora_spotlight_search_block_modal_args` |
+| Form fragment (input, results container, hints) | `inc/features/spotlight-search/search-ui.php` — `nextora_get_spotlight_search_inner_html()` |
+| REST config + strings → `window.nextoraSpotlight` | `inc/features/spotlight-search/search-ui.php` (`nextora_localize_spotlight_search`) |
 | Client behavior | `resources/ts/lib/spotlight-search.ts` |
 | Styles | `resources/css/modules/components/spotlight-search.css` |
 | Boot order | `resources/ts/main.ts` (`initSpotlightSearch()` after `initModals()`) |
 
-`functions.php` loads `inc/search/spotlight-search.php`. The search UI is printed on `nextora_header_after_primary_nav` (priority **20**) via `nextora_header_search_modal_trigger()`.
+`functions.php` loads `inc/features/spotlight-search/load.php`. **By default** the spotlight UI is **not** hooked into `nextora_header_after_primary_nav`; it is rendered by the **`nextora/spotlight-search` block** in the header template part.
+
+**Legacy PHP-only injection** (no block in the header): add
+
+```php
+add_filter( 'nextora_header_spotlight_search_use_php_hook', '__return_true' );
+```
+
+That restores `nextora_header_search_modal_trigger()` on `nextora_header_after_primary_nav` (priority **20**). Do not use both the block and this hook on the same header, or you will get duplicate modals.
 
 ## Markup structure
 
@@ -70,7 +81,7 @@ Localized onto the `nextora-main` script as `nextoraSpotlight` (see `nextora_loc
 
 ## PHP filters (spotlight-specific)
 
-Defined or consumed in `inc/search/spotlight-search.php` unless noted.
+Defined or consumed in `inc/features/spotlight-search/search-ui.php` unless noted.
 
 | Filter | Purpose |
 |--------|---------|

@@ -31,10 +31,18 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 | Tailwind tokens / `@import` order | `resources/css/app.css` (`@theme` maps to `--wp--preset--*`; feature CSS in `resources/css/modules/`) | `assets/css/app.css` |
 | Feature CSS slices | `resources/css/modules/**/*.css` | `assets/css/app.css` |
 | Front-end JS | `resources/ts/main.ts`, `resources/ts/**/*.ts` | `assets/js/main.js` |
+| Theme blocks (editor) | `blocks/<name>/` (e.g. `block.json`, `*.tsx`, `render.php`); build via `npm run build:blocks` | `blocks/<name>/index.js`, `index.asset.php` (generated) |
 | PHP behavior | `functions.php`, `inc/**/*.php` | — |
 | Markup | `template-parts/*.php`, `parts/*.html`, root `*.php` templates | — |
 
-After changing CSS or TS, run **`npm run build`** (or **`npm run watch`**) so `assets/` stays in sync. The theme skips loading compiled files if they are missing or unreadable.
+After changing CSS, TS, or block sources, run **`npm run build`** (or **`npm run watch`**) so `assets/` and compiled block bundles stay in sync. The theme skips loading compiled CSS/JS if they are missing or unreadable.
+
+### Theme blocks (`blocks/`)
+
+- **Registration**: `blocks/blocks.php` — on `init`, globs each subdirectory of `blocks/` and calls `register_block_type( $block_dir )`. Each block folder needs **`block.json`** plus the **built** `index.js` and **`index.asset.php`** (dependency manifest for WordPress).
+- **Build**: `scripts/build-blocks.mjs` (esbuild; `@wordpress/*` imports shim to `window.wp.*`). **`npm run build`** runs `build:css`, `build:ts`, and **`build:blocks`**. **`npm run watch`** includes **`watch:blocks`**.
+- **Scaffold**: **`npm run gen`** → `scripts/gen-block.mjs` (new block folder + starter files).
+- **Examples in repo**: `blocks/hero-section/`, `blocks/spotlight-search/` (header modal + live search; default placement in `parts/header.html`).
 
 ### `resources/css/app.css` import order
 
@@ -63,12 +71,19 @@ Boot order matters where noted:
 
 Not exhaustive — key includes:
 
+- `inc/setup/theme-support.php` — `add_theme_support` (including **WooCommerce** and **`giftflow`** for the GiftFlow plugin)
 - `inc/navigation/navigation.php` — Navigation block ↔ menu locations (`render_block` filter)
-- `inc/search/spotlight-search.php` — Spotlight REST + localization
+- `inc/features/spotlight-search/load.php` — Spotlight search feature (modal, form, REST localization, block merge; see `inc/features/spotlight-search/README.md`)
 - `inc/hooks/header-hooks.php`, `inc/hooks/footer-hooks.php`
 - `inc/template/article-template.php`, `article-share.php`, `page-heading.php`, `post-placeholder.php`
 - `inc/comments/comments.php`
 - `inc/assets/assets.php` — fonts, `nextora-app` / `nextora-main`, all `wp_localize_script` payloads for front-end JS
+- **`blocks/blocks.php`** — registers all theme blocks under `blocks/*/`
+
+### GiftFlow and WooCommerce
+
+- **GiftFlow**: `add_theme_support( 'giftflow' )` in `inc/setup/theme-support.php`. Campaign singular layout uses **`giftflow.php`** at the theme root: `get_header()` / `get_footer()`, wide content shell, **`giftflow_content()`** (provided by the plugin). Most campaign UI/CSS comes from **GiftFlow**, not Nextora.
+- **WooCommerce**: theme support in `theme-support.php`; **`woocommerce.php`** at theme root for shop overrides when needed.
 
 ## Design system alignment
 
@@ -85,11 +100,13 @@ Not exhaustive — key includes:
 
 ## Article / loop templates
 
-- **`nextora_content_article_vars()`** and related live in **`inc/template/article-template.php`** (not the old single-file path). Prefer extending that API rather than duplicating class strings across `template-parts/`.
+- **`nextora_content_article_vars()`**, **`nextora_get_related_posts_query()`**, and filters such as `nextora_show_related_posts`, `nextora_related_posts_limit`, `nextora_related_posts_query_args` live in **`inc/template/article-template.php`**. Prefer extending that API rather than duplicating class strings across `template-parts/`.
+- **Singular post**: `single.php` uses optional sidebar (`nextora_show_single_post_sidebar`), `nextora_render_page_heading()`, and `template-parts/content-article.php` with `content_type` `post`.
+- Other classic templates: `home.php`, `archive.php`, `page.php`, `search.php`, `index.php`.
 
 ## Quality checks (from theme root)
 
-- `npm run build` — CSS + JS
+- `npm run build` — CSS + front-end JS + theme blocks
 - `npm run typecheck` — TypeScript
 - `npm run lint:php` — PHPStan (`composer phpstan`)
 - `composer test` — PHPUnit

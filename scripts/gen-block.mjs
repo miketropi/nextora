@@ -2,9 +2,16 @@
  * gen-block.mjs
  * Scaffolds a new dynamic block inside ./blocks/<name>/
  *
+ * Options:
+ *   --name <slug>     Required. Lowercase [a-z][a-z0-9-]* — folder + block slug.
+ *   --title <string>  Optional. Inserter title (default: Title Case from slug).
+ *   --category <slug> Optional. block.json category (default: text).
+ *   --ns <string>     Optional. Block namespace + textdomain (default: mytheme).
+ *                     Use --ns nextora when working in the Nextora theme.
+ *
  * Usage:
- *   node ./scripts/gen-block.mjs --name my-block
- *   node ./scripts/gen-block.mjs --name my-block --title "My Block" --category text
+ *   npm run gen -- --name my-block --ns nextora
+ *   node ./scripts/gen-block.mjs --name my-block --title "My Block" --category design --ns nextora
  */
 
 import fs from 'fs';

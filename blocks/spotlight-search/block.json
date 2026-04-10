@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/spotlight-search",
+  "title": "Spotlight search",
+  "category": "theme",
+  "description": "Header search control that opens a modal with live REST search (same UI as the theme spotlight).",
+  "keywords": ["search", "spotlight", "modal", "nextora"],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": false,
+    "spacing": {
+      "margin": true
+    }
+  },
+  "attributes": {
+    "modalId": {
+      "type": "string",
+      "default": ""
+    },
+    "titleText": {
+      "type": "string",
+      "default": ""
+    },
+    "showSubtitle": {
+      "type": "boolean",
+      "default": true
+    },
+    "subtitleText": {
+      "type": "string",
+      "default": ""
+    },
+    "openLabel": { 
+      "type": "string",
+      "default": ""
+    },
+    "closeLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "formAriaLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "iconColor": {
+      "type": "string",
+      "default": "#abb8c3"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

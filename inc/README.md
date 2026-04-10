@@ -8,7 +8,7 @@ Procedural theme code is grouped by role. `functions.php` loads these files in d
 | **`setup/`** | Theme support, text domain, nav menu registration (`after_setup_theme`). |
 | **`navigation/`** | Navigation block ↔ classic menu locations. |
 | **`hooks/`** | Header/footer extensibility (`render_block`, `do_action`). |
-| **`search/`** | Spotlight AJAX search markup + REST localization for the header modal. |
+| **`features/`** | Self-contained features (e.g. `spotlight-search/`). See `features/README.md`. |
 | **`template/`** | Article/loop helpers and post placeholders. |
 | **`comments/`** | Comment form args, list callback, navigation filters. |
 | **`assets/`** | Scripts, styles, font URLs, editor integration. |

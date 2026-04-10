@@ -1,0 +1,112 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/post-grid",
+  "title": "Post grid",
+  "category": "theme",
+  "description": "Responsive post grid with image, meta, and query controls.",
+  "keywords": ["posts", "grid", "blog", "archive", "nextora"],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    }
+  },
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": ""
+    },
+    "postsPerPage": {
+      "type": "number",
+      "default": 6
+    },
+    "columns": {
+      "type": "number",
+      "default": 3
+    },
+    "gridGap": {
+      "type": "string",
+      "default": "md"
+    },
+    "orderBy": {
+      "type": "string",
+      "default": "date"
+    },
+    "order": {
+      "type": "string",
+      "default": "desc"
+    },
+    "categoryIds": {
+      "type": "string",
+      "default": ""
+    },
+    "inheritArchiveContext": {
+      "type": "boolean",
+      "default": true
+    },
+    "enablePagination": {
+      "type": "boolean",
+      "default": false
+    },
+    "showFeaturedImage": {
+      "type": "boolean",
+      "default": true
+    },
+    "imageRatio": {
+      "type": "string",
+      "default": "16-9"
+    },
+    "imageSize": {
+      "type": "string",
+      "default": "medium_large"
+    },
+    "showDate": {
+      "type": "boolean",
+      "default": true
+    },
+    "showAuthor": {
+      "type": "boolean",
+      "default": true
+    },
+    "showCategories": {
+      "type": "boolean",
+      "default": true
+    },
+    "showTags": {
+      "type": "boolean",
+      "default": false
+    },
+    "maxTermsDisplay": {
+      "type": "number",
+      "default": 4
+    },
+    "showExcerpt": {
+      "type": "boolean",
+      "default": true
+    },
+    "excerptWords": {
+      "type": "number",
+      "default": 22
+    },
+    "metaStyle": {
+      "type": "string",
+      "default": "inline"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

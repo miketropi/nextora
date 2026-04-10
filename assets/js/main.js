@@ -12966,7 +12966,7 @@
         const fromSelectionAtStart = $from.parentOffset === 0;
         const isTextSelection2 = $fromNode.isText || $fromNode.isTextblock;
         const hasContent = $fromNode.content.size > 0;
-        if (fromSelectionAtStart && isTextSelection2 && hasContent) {
+        if (fromSelectionAtStart && isTextSelection2 && hasContent && isOnlyBlockContent) {
           from2 = Math.max(0, from2 - 1);
         }
         tr2.replaceWith(from2, to, newContent);
@@ -23787,7 +23787,7 @@ lucide/dist/esm/icons/quote.js:
 lucide/dist/esm/icons/strikethrough.js:
 lucide/dist/esm/lucide.js:
   (**
-   * @license lucide v1.7.0 - ISC
+   * @license lucide v1.8.0 - ISC
    *
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.

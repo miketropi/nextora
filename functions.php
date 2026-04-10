@@ -22,7 +22,7 @@ if ( is_readable( NEXTORA_DIR . '/vendor/autoload.php' ) ) {
 
 require_once NEXTORA_DIR . '/inc/setup/theme-support.php';
 require_once NEXTORA_DIR . '/inc/navigation/navigation.php';
-require_once NEXTORA_DIR . '/inc/search/spotlight-search.php';
+require_once NEXTORA_DIR . '/inc/features/spotlight-search/load.php';
 require_once NEXTORA_DIR . '/inc/hooks/header-hooks.php';
 require_once NEXTORA_DIR . '/inc/hooks/footer-hooks.php';
 require_once NEXTORA_DIR . '/inc/template/post-placeholder.php';

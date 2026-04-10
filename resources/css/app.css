@@ -7,6 +7,16 @@
  */
 @layer theme, base, components, utilities;
 
+/**
+ * Scan PHP / HTML templates for utility classes (dynamic blocks, template parts).
+ */
+@source "../../blocks/**/*.php";
+@source "../../inc/**/*.php";
+@source "../../template-parts/**/*.php";
+@source "../../parts/**/*.html";
+@source "../../templates/**/*.html";
+@source "../../*.php";
+
 @import "tailwindcss/theme.css" layer(theme);
 
 /**

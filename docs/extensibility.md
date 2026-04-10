@@ -15,7 +15,7 @@ This theme is a **hybrid** setup: classic templates load **block template parts*
 | Header markup (blocks) | `parts/header.html` |
 | Footer markup (blocks) | `parts/footer.html` |
 | Custom logo support | `inc/setup/theme-support.php` |
-| Spotlight search (REST + markup) | `inc/search/spotlight-search.php` · [spotlight-search.md](./spotlight-search.md) |
+| Spotlight search (REST + markup) | `inc/features/spotlight-search/` · [spotlight-search.md](./spotlight-search.md) |
 | Comments form + Tiptap / KSES | `inc/comments/comments.php` · [comments-tiptap.md](./comments-tiptap.md) |
 | Comment toolbar strings (`nextoraComments`) | `inc/assets/assets.php` |
 | Header / footer nav layout (CSS) | `resources/css/modules/base/nav-menus.css` (shared tokens in `body.css` / `app.css` `@theme`) |
@@ -138,7 +138,9 @@ These run in `header.php` around `block_template_part( 'header' )`.
 
 Use them for site-wide banners, skip links, or markup that should sit **outside** the block-based header group.
 
-The theme ships a **search icon → modal** on `nextora_header_after_primary_nav` (priority 20) in `inc/hooks/header-hooks.php`. Markup uses **Tailwind** utilities plus required `nextora-modal*` classes (for `resources/ts/lib/modal.ts`).
+The default header includes the **`nextora/spotlight-search` block** (`parts/header.html`), which outputs the same **search icon → modal** markup as `nextora_get_header_search_modal_markup()` in `inc/hooks/header-hooks.php`. Markup uses **Tailwind** utilities plus required `nextora-modal*` classes (for `resources/ts/lib/modal.ts`).
+
+To inject that modal **without** the block (legacy), use `add_filter( 'nextora_header_spotlight_search_use_php_hook', '__return_true' );` — see [spotlight-search.md](./spotlight-search.md).
 
 **Mobile primary menu:** the **primary** `core/navigation` block is wrapped (`render_block` priority **12**) with a hamburger button. On small viewports the menu is **cloned** into a **portal** (`<div>` appended to `document.body`) so it is not clipped by header `overflow` or stacking contexts; see `resources/ts/header-nav.ts`. Disable the toggle + wrapper with:
 
@@ -180,7 +182,7 @@ add_filter(
 );
 ```
 
-**Spotlight AJAX search** (inside that modal) uses the WordPress REST route `wp/v2/search`, debounced requests, and `AbortController` for stale responses. Overview: [spotlight-search.md](./spotlight-search.md). PHP filters in `inc/search/spotlight-search.php`:
+**Spotlight AJAX search** (inside that modal) uses the WordPress REST route `wp/v2/search`, debounced requests, and `AbortController` for stale responses. Overview: [spotlight-search.md](./spotlight-search.md). PHP filters in `inc/features/spotlight-search/search-ui.php`:
 
 | Filter | Default / purpose |
 |--------|-------------------|
