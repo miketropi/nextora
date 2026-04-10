@@ -391,11 +391,11 @@
 .nextora-primary-nav-portal__close:hover,
 .nextora-primary-nav-portal__close:focus-visible {
 	opacity: 1;
-	background-color: color-mix(in srgb, var(--color-base, #fafafa) 14%, transparent);
+	background-color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 14%, transparent);
 }
 
 .nextora-primary-nav-portal__close:focus-visible {
-	outline: 2px solid var(--color-base, #fafafa);
+	outline: 2px solid var(--wp--preset--color--base, #fafafa);
 	outline-offset: 2px;
 }
 
@@ -418,8 +418,8 @@
 @media (max-width: 767.98px) {
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel {
 		padding: 4.5rem 1rem 1.5rem;
-		background-color: var(--color-contrast, #0f172a);
-		color: var(--color-base, #fafafa);
+		background-color: var(--wp--preset--color--contrast, #0f172a);
+		color: var(--wp--preset--color--base, #fafafa);
 		box-shadow: 0 12px 40px rgb(0 0 0 / 0.35);
 	}
 
@@ -457,7 +457,7 @@
 		padding: .5rem;
 		border: none;
 		box-shadow: none;
-		background-color: color-mix(in srgb, var(--color-base, #fafafa) 8%, transparent);
+		background-color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 8%, transparent);
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .sub-menu {
@@ -471,13 +471,13 @@
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a {
-		color: color-mix(in srgb, var(--color-base, #fafafa) 92%, transparent);
+		color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 92%, transparent);
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:hover,
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:focus-visible {
-		color: var(--color-base, #fafafa);
-		background-color: color-mix(in srgb, var(--color-base, #fafafa) 12%, transparent);
+		color: var(--wp--preset--color--base, #fafafa);
+		background-color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 12%, transparent);
 	}
 }
 

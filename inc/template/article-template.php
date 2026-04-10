@@ -85,7 +85,7 @@ function nextora_content_article_vars( array $args ): array {
 			'flex-col',
 			'h-full',
 			'mb-0',
-			'rounded-2xl',
+			'rounded-xl',
 			'border',
 			'border-contrast/10',
 			'bg-base',

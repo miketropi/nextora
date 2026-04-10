@@ -3,7 +3,13 @@
  */
 @layer base {
 	body {
-		font-family: var(--font-sans);
+		font-family: var(
+			--wp--preset--font-family--sans,
+			"Hanken Grotesk",
+			ui-sans-serif,
+			system-ui,
+			sans-serif
+		);
 	}
 
 	.site-header,
@@ -50,7 +56,7 @@
 	.nextora-header-nav-suffix {
 		display: flex;
 		align-items: center;
-		gap: var(--spacing-30, 0.75rem);
+		gap: var(--wp--preset--spacing--10, 1rem);
 	}
 
 	/* Footer menu + hooked suffix (social, badges) share one centered, wrapping row. */
@@ -63,7 +69,7 @@
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: center;
-		gap: var(--spacing-20, 0.5rem);
+		gap: var(--wp--preset--spacing--05, 0.5rem);
 	}
 
 	/* Mobile primary nav drawer open — avoid background scroll */

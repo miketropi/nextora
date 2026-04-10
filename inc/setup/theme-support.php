@@ -12,6 +12,8 @@ add_action(
 	static function (): void {
 		load_theme_textdomain( 'nextora', NEXTORA_DIR . '/languages' );
 
+		add_theme_support( 'block-templates' );
+
 		add_theme_support( 'title-tag' );
 		add_theme_support( 'post-thumbnails' );
 		add_theme_support( 'responsive-embeds' );

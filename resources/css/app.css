@@ -10,10 +10,12 @@
 @import "tailwindcss/theme.css" layer(theme);
 
 /**
- * Tokens mirror theme.json presets (--wp--preset--*). Fallbacks keep local builds usable.
+ * Tailwind theme aliases → theme.json presets (WordPress emits --wp--preset--color--*,
+ * --wp--preset--font-family--*, --wp--preset--font-size--*, --wp--preset--spacing--*).
+ * Fallbacks keep local / editor builds usable when globals are absent.
  */
 @theme {
-	--color-base: var(--wp--preset--color--base, #000000);
+	--color-base: var(--wp--preset--color--base, #fafafa);
 	--color-contrast: var(--wp--preset--color--contrast, #0f172a);
 	--color-primary: var(--wp--preset--color--primary, #4f46e5);
 	--color-secondary: var(--wp--preset--color--secondary, #64748b);
@@ -34,59 +36,118 @@
 	);
 
 	/**
-	 * Horizontal inset for title + entry (mobile → desktop).
-	 * Tweak once; title and body stay aligned.
+	 * Layout rhythm — built from theme.json spacing presets (05–50).
 	 */
-	--nextora-gutter: clamp(1rem, 4.5vw, 2.75rem);
-	--nextora-main-pad-y: clamp(1.75rem, 5vw, 3.25rem);
+	--nextora-gutter: clamp(
+		var(--wp--preset--spacing--10, 1rem),
+		4.5vw,
+		var(--wp--preset--spacing--30, 3rem)
+	);
+	--nextora-main-pad-y: clamp(
+		var(--wp--preset--spacing--20, 2rem),
+		5vw,
+		var(--wp--preset--spacing--40, 4rem)
+	);
 
 	/**
-	 * Navigation menus — monochrome preset (decoupled from brand primary).
+	 * Navigation — no primary brand on links; colors derived from base / contrast / secondary
+	 * so palette edits in theme.json flow through (header treats base as “on dark” ink).
 	 */
-	--nextora-nav-header-link: #ffffff;
-	--nextora-nav-header-link-hover-underline: #a8a8a8;
-	--nextora-nav-header-link-active-underline: #ffffff;
+	--nextora-nav-header-link: var(--wp--preset--color--base, #fafafa);
+	--nextora-nav-header-link-hover-underline: color-mix(
+		in srgb,
+		var(--wp--preset--color--base, #fafafa) 72%,
+		var(--wp--preset--color--secondary, #64748b)
+	);
+	--nextora-nav-header-link-active-underline: var(--wp--preset--color--base, #fafafa);
 
-	--nextora-nav-footer-link: #404040;
-	--nextora-nav-footer-link-hover: #000000;
-	--nextora-nav-footer-link-hover-underline: #404040;
-	--nextora-nav-footer-link-active-fg: #0a0a0a;
-	--nextora-nav-footer-link-active-underline: #0a0a0a;
+	--nextora-nav-footer-link: color-mix(
+		in srgb,
+		var(--wp--preset--color--contrast, #0f172a) 45%,
+		var(--wp--preset--color--base, #fafafa)
+	);
+	--nextora-nav-footer-link-hover: var(--wp--preset--color--contrast, #0f172a);
+	--nextora-nav-footer-link-hover-underline: color-mix(
+		in srgb,
+		var(--wp--preset--color--contrast, #0f172a) 45%,
+		var(--wp--preset--color--base, #fafafa)
+	);
+	--nextora-nav-footer-link-active-fg: var(--wp--preset--color--contrast, #0f172a);
+	--nextora-nav-footer-link-active-underline: var(--wp--preset--color--contrast, #0f172a);
 
-	--nextora-nav-panel-bg: #ffffff;
-	--nextora-nav-panel-fg: #171717;
-	--nextora-nav-panel-border: rgb(0 0 0 / 0.1);
-	--nextora-nav-panel-shadow: 0 8px 24px -6px rgb(0 0 0 / 0.18);
-	--nextora-nav-panel-hover-bg: #f5f5f5;
-	--nextora-nav-panel-hover-fg: #0a0a0a;
-	--nextora-nav-panel-active-bg: #ebebeb;
-	--nextora-nav-panel-active-fg: #000000;
+	--nextora-nav-panel-bg: var(--wp--preset--color--base, #fafafa);
+	--nextora-nav-panel-fg: var(--wp--preset--color--contrast, #0f172a); 
+	--nextora-nav-panel-border: color-mix(
+		in srgb,
+		var(--wp--preset--color--contrast, #0f172a) 10%,
+		transparent
+	);
+	--nextora-nav-panel-shadow: 0 8px 24px -6px
+		color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 18%, transparent);
+	--nextora-nav-panel-hover-bg: color-mix(
+		in srgb,
+		var(--wp--preset--color--contrast, #0f172a) 4%,
+		var(--wp--preset--color--base, #fafafa)
+	);
+	--nextora-nav-panel-hover-fg: var(--wp--preset--color--contrast, #0f172a);
+	--nextora-nav-panel-active-bg: color-mix(
+		in srgb,
+		var(--wp--preset--color--contrast, #0f172a) 8%,
+		var(--wp--preset--color--base, #fafafa)
+	);
+	--nextora-nav-panel-active-fg: var(--wp--preset--color--contrast, #0f172a);
 
-	--nextora-nav-focus-ring: #0a0a0a;
-	--nextora-nav-focus-ring-on-dark: #f5f5f5;
+	--nextora-nav-focus-ring: var(--wp--preset--color--contrast, #0f172a);
+	--nextora-nav-focus-ring-on-dark: var(--wp--preset--color--base, #fafafa);
 
 	/**
-	 * Posts pagination — same interaction model as footer nav (`nav-menus.css`); tokens stay
-	 * separate from `--nextora-nav-*` so you can diverge later without touching menus.
+	 * Pagination — same interaction model as footer nav; values track theme.json like `--nextora-nav-footer-*`.
 	 */
-	--nextora-pagination-fg: #404040;
-	--nextora-pagination-hover-fg: #000000;
-	--nextora-pagination-hover-underline: #404040;
-	--nextora-pagination-current-fg: #0a0a0a;
-	--nextora-pagination-current-underline: #0a0a0a;
-	--nextora-pagination-dots: #a1a1aa;
-	--nextora-pagination-focus-ring: #0a0a0a;
+	--nextora-pagination-fg: color-mix(
+		in srgb,
+		var(--wp--preset--color--contrast, #0f172a) 45%,
+		var(--wp--preset--color--base, #fafafa)
+	);
+	--nextora-pagination-hover-fg: var(--wp--preset--color--contrast, #0f172a);
+	--nextora-pagination-hover-underline: color-mix(
+		in srgb,
+		var(--wp--preset--color--contrast, #0f172a) 45%,
+		var(--wp--preset--color--base, #fafafa)
+	);
+	--nextora-pagination-current-fg: var(--wp--preset--color--contrast, #0f172a);
+	--nextora-pagination-current-underline: var(--wp--preset--color--contrast, #0f172a);
+	--nextora-pagination-dots: color-mix(
+		in srgb,
+		var(--wp--preset--color--secondary, #64748b) 52%,
+		var(--wp--preset--color--base, #fafafa)
+	);
+	--nextora-pagination-focus-ring: var(--wp--preset--color--contrast, #0f172a);
 	--nextora-pagination-t: 0.18s ease;
 
 	/**
-	 * Comment list — open top-level threads; nested = one soft panel per reply (no rules, no double-box).
+	 * Comment list — spacing from presets; reply surface from surface color.
 	 */
-	--nextora-comments-between-threads: clamp(1.75rem, 4.5vw, 2.5rem);
-	--nextora-comments-nested-indent: clamp(1.15rem, 3vw, 2rem);
-	--nextora-comments-between-replies: 0.75rem;
-	--nextora-comments-reply-surface: color-mix(in srgb, var(--color-surface) 70%, transparent);
-	--nextora-comments-reply-radius: 0.5rem;
-	--nextora-comments-reply-padding: 0.85rem 1rem;
+	--nextora-comments-between-threads: clamp(
+		var(--wp--preset--spacing--20, 2rem),
+		4.5vw,
+		var(--wp--preset--spacing--30, 3rem)
+	);
+	--nextora-comments-nested-indent: clamp(
+		var(--wp--preset--spacing--10, 1rem),
+		3vw,
+		var(--wp--preset--spacing--20, 2rem)
+	);
+	--nextora-comments-between-replies: calc(
+		(var(--wp--preset--spacing--05, 0.5rem) + var(--wp--preset--spacing--10, 1rem)) / 2
+	);
+	--nextora-comments-reply-surface: color-mix(
+		in srgb,
+		var(--wp--preset--color--surface, #f1f5f9) 70%,
+		transparent
+	);
+	--nextora-comments-reply-radius: var(--wp--preset--spacing--05, 0.5rem);
+	--nextora-comments-reply-padding: calc(var(--wp--preset--spacing--10, 1rem) - 0.15rem)
+		var(--wp--preset--spacing--10, 1rem);
 }
 
 @import "tailwindcss/utilities.css" layer(utilities);

@@ -111,7 +111,17 @@
 		}
 
 		& :where(kbd) {
-			font-family: var(--font-mono);
+			font-family: var(
+				--wp--preset--font-family--mono,
+				ui-monospace,
+				SFMono-Regular,
+				Menlo,
+				Monaco,
+				Consolas,
+				"Liberation Mono",
+				"Courier New",
+				monospace
+			);
 			font-size: 0.85em;
 			padding: 0.1em 0.35em;
 			border: 1px solid var(--wp--preset--color--secondary, #64748b);
@@ -120,7 +130,17 @@
 		}
 
 		& :where(samp) {
-			font-family: var(--font-mono);
+			font-family: var(
+				--wp--preset--font-family--mono,
+				ui-monospace,
+				SFMono-Regular,
+				Menlo,
+				Monaco,
+				Consolas,
+				"Liberation Mono",
+				"Courier New",
+				monospace
+			);
 			font-size: 0.9em;
 		}
 
@@ -195,7 +215,17 @@
 
 		& :where(pre) {
 			overflow-x: auto;
-			font-family: var(--font-mono);
+			font-family: var(
+				--wp--preset--font-family--mono,
+				ui-monospace,
+				SFMono-Regular,
+				Menlo,
+				Monaco,
+				Consolas,
+				"Liberation Mono",
+				"Courier New",
+				monospace
+			);
 			tab-size: 2;
 			-webkit-overflow-scrolling: touch;
 		}
@@ -204,7 +234,17 @@
 			background-color: var(--wp--preset--color--surface, #f1f5f9);
 			padding: 0.15em 0.45em;
 			border-radius: 0.25rem;
-			font-family: var(--font-mono);
+			font-family: var(
+				--wp--preset--font-family--mono,
+				ui-monospace,
+				SFMono-Regular,
+				Menlo,
+				Monaco,
+				Consolas,
+				"Liberation Mono",
+				"Courier New",
+				monospace
+			);
 			font-size: 0.9em;
 			border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 22%, transparent);
 		}

@@ -31,3 +31,5 @@ require_once NEXTORA_DIR . '/inc/template/article-share.php';
 require_once NEXTORA_DIR . '/inc/template/page-heading.php';
 require_once NEXTORA_DIR . '/inc/comments/comments.php';
 require_once NEXTORA_DIR . '/inc/assets/assets.php';
+
+require_once NEXTORA_DIR . '/blocks/blocks.php';
