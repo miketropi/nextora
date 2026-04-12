@@ -72,6 +72,7 @@ Boot order matters where noted:
 Not exhaustive — key includes:
 
 - `inc/setup/theme-support.php` — `add_theme_support` (including **WooCommerce** and **`giftflow`** for the GiftFlow plugin)
+- `inc/setup/elementor.php` — Elementor: hide duplicate **page heading** on Elementor-built singulars; **Elementor Pro** Theme Builder **`header`** / **`footer`** locations in `header.php` / `footer.php` (via `elementor_theme_do_location`)
 - `inc/navigation/navigation.php` — Navigation block ↔ menu locations (`render_block` filter)
 - `inc/features/spotlight-search/load.php` — Spotlight search feature (modal, form, REST localization, block merge; see `inc/features/spotlight-search/README.md`)
 - `inc/hooks/header-hooks.php`, `inc/hooks/footer-hooks.php`

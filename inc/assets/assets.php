@@ -33,6 +33,28 @@ add_filter(
 );
 
 /**
+ * Core block CSS + hybrid template skip link (classic shell + block template parts).
+ *
+ * Runs at priority 1 so `global-styles` is enqueued before theme styles that list it as a dependency.
+ */
+function nextora_enqueue_core_block_styles(): void {
+	wp_enqueue_style( 'wp-block-library' );
+	wp_enqueue_style( 'wp-block-library-theme' );
+	wp_enqueue_style( 'global-styles' );
+
+	if ( function_exists( 'wp_enqueue_block_template_skip_link' ) ) {
+		wp_enqueue_block_template_skip_link();
+	}
+}
+add_action( 'wp_enqueue_scripts', 'nextora_enqueue_core_block_styles', 1 );
+
+/** Let core load block styles per-block where supported (helps with Elementor + block markup). */
+add_filter( 'should_load_separate_core_block_assets', '__return_true' );
+
+/** Elementor otherwise may print kit Google fonts in a way that competes with theme/block font loading. */
+add_filter( 'elementor/frontend/print_google_fonts', '__return_false' );
+
+/**
  * Load default typeface on the front end and in shared block editor assets.
  */
 function nextora_enqueue_fonts(): void {

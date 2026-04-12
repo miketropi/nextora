@@ -30,6 +30,7 @@ The theme runs without `vendor/` (Composer is optional at runtime) but needs com
 
 - **WooCommerce**: `add_theme_support( 'woocommerce' )` and related gallery features in `inc/setup/theme-support.php`.
 - **GiftFlow**: `add_theme_support( 'giftflow' )` in the same file. Campaign views can use **`giftflow.php`**, which delegates content to the plugin’s `giftflow_content()`.
+- **Elementor**: `inc/setup/elementor.php` (loaded from `functions.php`) — skips the theme **page heading** band when a singular is built with Elementor; with **Elementor Pro**, **Theme Builder** templates can replace the block **header** / **footer** parts (`elementor_theme_do_location`). Prose/button/form CSS already avoids clashing with Elementor widgets (see `resources/css/modules/`).
 
 ## Project layout
 

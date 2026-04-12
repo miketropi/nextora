@@ -49,6 +49,10 @@ add_action(
 
 		// Add support for GiftFlow.
 		add_theme_support( 'giftflow' );
+
+		// Add support for Elementor.
+		add_theme_support( 'elementor' );
+		add_theme_support( 'elementor-pro' );
 	}
 );
 

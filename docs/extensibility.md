@@ -35,6 +35,7 @@ Singular views use one **H1** in the heading; the article template omits the dup
 | Filter | Purpose |
 |--------|---------|
 | `nextora_show_page_heading` | Return `false` to hide the section. |
+| `nextora_elementor_hide_page_heading` | Default `true`: when a singular is edited with Elementor (`_elementor_edit_mode` = `builder`), the theme skips the page heading band. Return `false` to keep the heading on Elementor pages. |
 | `nextora_page_heading_context` | Replace or adjust the context array; return `null` to hide. |
 | `nextora_page_heading_term_image_url` | Background image URL for term archives (empty string default); args: `''`, `WP_Term`. |
 | `nextora_page_heading_image_url` | Singular hero image URL (defaults to featured image); args: URL string, post ID. |

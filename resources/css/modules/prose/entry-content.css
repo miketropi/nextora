@@ -37,8 +37,8 @@
 		}
 
 		& :where(ul, ol) {
-			margin-block: 0 1.45em;
-			padding-inline-start: 1.4em;
+			/* margin-block: 0 1.45em;
+			padding-inline-start: 1.4em; */
 		}
 
 		& :where(ul) {

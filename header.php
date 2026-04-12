@@ -20,7 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 <body <?php body_class( 'nextora antialiased bg-base text-contrast' ); ?>>
 <?php wp_body_open(); ?>
 <header class="site-header">
-	<?php do_action( 'nextora_header_before' ); ?>
-	<?php block_template_part( 'header' ); ?>
-	<?php do_action( 'nextora_header_after' ); ?>
+	<?php
+	$nextora_elementor_header = function_exists( 'elementor_theme_do_location' ) && elementor_theme_do_location( 'header' );
+	if ( ! $nextora_elementor_header ) :
+		do_action( 'nextora_header_before' );
+		block_template_part( 'header' );
+		do_action( 'nextora_header_after' );
+	endif;
+	?>
 </header>
