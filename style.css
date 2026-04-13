@@ -5,7 +5,7 @@ Author: Beplus Theme
 Elementor: true
 Elementor Pro: true
 Author URI: https://example.com
-Description: Hybrid core theme — classic PHP templates, theme.json, block template parts, Tailwind CSS v4. Clone with npm run theme:clone.
+Description: Block theme with theme.json, HTML templates under templates/, template parts, Tailwind CSS v4, and custom blocks. Clone with npm run theme:clone.
 Version: 1.0.0
 Requires at least: 6.4
 Tested up to: 6.9

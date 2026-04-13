@@ -4,7 +4,9 @@
  */
 .theme-global-prose, 
 .entry-content.nextora-entry,
-.editor-styles-wrapper .block-editor-block-list__layout {
+.editor-styles-wrapper .block-editor-block-list__layout,
+.entry-content,
+.wp-block-post-content {
 		/* Links: clearer underline + focus ring */
 		& :where(a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button))) {
 			text-underline-offset: 0.2em;

@@ -33,7 +33,7 @@ add_filter(
 );
 
 /**
- * Core block CSS + hybrid template skip link (classic shell + block template parts).
+ * Core block CSS + block-template skip link on the front end.
  *
  * Runs at priority 1 so `global-styles` is enqueued before theme styles that list it as a dependency.
  */
@@ -142,30 +142,6 @@ function nextora_enqueue_scripts(): void {
 		)
 	);
 
-	$article_share_vars = array(
-		'shareHeading' => __( 'Share', 'nextora' ),
-		'copyLink'     => __( 'Copy link', 'nextora' ),
-		'copied'       => __( 'Link copied', 'nextora' ),
-		'copyFailed'   => __( 'Could not copy', 'nextora' ),
-		'shareOnX'     => __( 'Share on X', 'nextora' ),
-		'shareOnFacebook'  => __( 'Share on Facebook', 'nextora' ),
-		'shareOnLinkedIn'  => __( 'Share on LinkedIn', 'nextora' ),
-		'shareViaEmail'    => __( 'Share by email', 'nextora' ),
-	);
-
-	/**
-	 * Filter strings passed to `window.nextoraArticleShare` (copy feedback, labels for JS).
-	 *
-	 * @param array<string, string> $vars Localized strings.
-	 */
-	$article_share_vars = apply_filters( 'nextora_article_share_script_vars', $article_share_vars );
-
-	wp_localize_script(
-		'nextora-main',
-		'nextoraArticleShare',
-		$article_share_vars
-	);
-
 	wp_localize_script(
 		'nextora-main',
 		'nextoraComments',
@@ -191,13 +167,9 @@ function nextora_enqueue_scripts(): void {
 add_action( 'wp_enqueue_scripts', 'nextora_enqueue_scripts' );
 
 /**
- * Script modules + import map: align with when blocks actually enqueue assets.
- *
- * Block themes using {@see template-canvas.php} run `do_blocks()` before `wp_head()`, so core’s default
- * (import map in `wp_head`) works. Nextora uses classic PHP templates (`get_header()` → `wp_head()` then
- * `block_template_part()` / content), so interactive blocks (e.g. WooCommerce) enqueue script modules after
- * the head. Without this, the import map is empty and the browser throws
- * “Failed to resolve module specifier @wordpress/interactivity”.
+ * Script modules + import map: some plugin templates call `get_header()` / `get_footer()` so interactive
+ * blocks may enqueue script modules after `wp_head()`. Move the import map to `wp_footer` so
+ * `@wordpress/interactivity` resolves on those views.
  */
 add_action(
 	'after_setup_theme',
