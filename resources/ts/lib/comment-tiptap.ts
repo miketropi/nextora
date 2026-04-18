@@ -37,6 +37,21 @@ const TIPTAP_ICONS = {
 	link: Link,
 } as const;
 
+/** One editor mount (host + synced textarea + optional toolbar shell). */
+export type CommentTiptapMountConfig = {
+	hostId: string;
+	textareaSelector: string;
+	labelId: string;
+	toolbarSelector: string;
+};
+
+const DEFAULT_MOUNT: CommentTiptapMountConfig = {
+	hostId: "nextora-tiptap-host",
+	textareaSelector: "textarea#comment",
+	labelId: "nextora-comment-field-label",
+	toolbarSelector: ".nextora-tiptap-toolbar",
+};
+
 declare global {
 	interface Window {
 		nextoraComments?: {
@@ -55,6 +70,10 @@ declare global {
 			toolLinkHint?: string;
 			linkPromptTitle?: string;
 			linkPromptDefault?: string;
+		};
+		/** Populated by {@see nextora_get_comment_tiptap_js_config()} in PHP; filter `nextora_comment_tiptap_js_config`. */
+		nextoraCommentTiptap?: {
+			mounts?: Partial<CommentTiptapMountConfig>[];
 		};
 	}
 }
@@ -204,24 +223,47 @@ function buildToolbar(editor: Editor): HTMLElement {
 	return bar;
 }
 
-let mounted: Editor | null = null;
+const mountedHosts = new WeakSet<HTMLElement>();
 
-export function initCommentTiptap(): void {
-	const host = document.getElementById("nextora-tiptap-host");
-	const textarea = document.querySelector<HTMLTextAreaElement>("textarea#comment");
-	if (!host || !textarea) {
+function resolveMounts(): CommentTiptapMountConfig[] {
+	const raw = window.nextoraCommentTiptap?.mounts;
+	if (raw && raw.length > 0) {
+		return raw.map((partial) => ({ ...DEFAULT_MOUNT, ...partial }));
+	}
+	return [DEFAULT_MOUNT];
+}
+
+function mountCommentTiptap(config: CommentTiptapMountConfig): void {
+	const host = document.getElementById(config.hostId);
+	const textarea = document.querySelector<HTMLTextAreaElement>(
+		config.textareaSelector,
+	);
+	if (!host || !textarea || !(host instanceof HTMLElement)) {
 		return;
 	}
-	if (mounted) {
+	if (mountedHosts.has(host)) {
 		return;
 	}
 
-	const label = document.getElementById("nextora-comment-field-label");
+	const label = config.labelId
+		? document.getElementById(config.labelId)
+		: null;
 	const placeholder = host.dataset.placeholder ?? "";
 
 	const shell = host.parentElement;
 	const toolbarMount =
-		shell?.querySelector<HTMLElement>(".nextora-tiptap-toolbar") ?? null;
+		shell?.querySelector<HTMLElement>(config.toolbarSelector) ?? null;
+
+	const editorAttrs: Record<string, string> = {
+		class:
+			"nextora-tiptap-prose min-h-[9rem] max-w-none px-3 py-2.5 text-sm leading-relaxed text-contrast outline-none focus:outline-none",
+		tabindex: "0",
+		role: "textbox",
+		"aria-multiline": "true",
+	};
+	if (label) {
+		editorAttrs["aria-labelledby"] = config.labelId;
+	}
 
 	const editor = new Editor({
 		element: host,
@@ -252,20 +294,13 @@ export function initCommentTiptap(): void {
 		],
 		content: textarea.value.trim() ? textarea.value : "",
 		editorProps: {
-			attributes: {
-				class:
-					"nextora-tiptap-prose min-h-[9rem] max-w-none px-3 py-2.5 text-sm leading-relaxed text-contrast outline-none focus:outline-none",
-				tabindex: "0",
-				role: "textbox",
-				"aria-multiline": "true",
-				"aria-labelledby": "nextora-comment-field-label",
-			},
+			attributes: editorAttrs,
 		},
 		onUpdate: () => syncTextarea(textarea, editor),
 		onCreate: () => syncTextarea(textarea, editor),
 	});
 
-	mounted = editor;
+	mountedHosts.add(host);
 
 	if (toolbarMount) {
 		toolbarMount.replaceChildren();
@@ -288,4 +323,14 @@ export function initCommentTiptap(): void {
 		},
 		{ capture: true },
 	);
+}
+
+/**
+ * Mounts Tiptap for each entry in `window.nextoraCommentTiptap.mounts` (from PHP),
+ * or the default Nextora comment form selectors when unset.
+ */
+export function initCommentTiptap(): void {
+	for (const config of resolveMounts()) {
+		mountCommentTiptap(config);
+	}
 }

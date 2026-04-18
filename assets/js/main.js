@@ -22714,6 +22714,12 @@ ${nextLine.slice(indentLevel + 2)}`;
     quote: Quote,
     link: Link2
   };
+  var DEFAULT_MOUNT = {
+    hostId: "nextora-tiptap-host",
+    textareaSelector: "textarea#comment",
+    labelId: "nextora-comment-field-label",
+    toolbarSelector: ".nextora-tiptap-toolbar"
+  };
   function syncTextarea(textarea, editor) {
     if (editor.isEmpty) {
       textarea.value = "";
@@ -22835,20 +22841,38 @@ ${nextLine.slice(indentLevel + 2)}`;
     syncPressed();
     return bar;
   }
-  var mounted = null;
-  function initCommentTiptap() {
-    const host = document.getElementById("nextora-tiptap-host");
-    const textarea = document.querySelector("textarea#comment");
-    if (!host || !textarea) {
+  var mountedHosts = /* @__PURE__ */ new WeakSet();
+  function resolveMounts() {
+    const raw = window.nextoraCommentTiptap?.mounts;
+    if (raw && raw.length > 0) {
+      return raw.map((partial) => ({ ...DEFAULT_MOUNT, ...partial }));
+    }
+    return [DEFAULT_MOUNT];
+  }
+  function mountCommentTiptap(config) {
+    const host = document.getElementById(config.hostId);
+    const textarea = document.querySelector(
+      config.textareaSelector
+    );
+    if (!host || !textarea || !(host instanceof HTMLElement)) {
       return;
     }
-    if (mounted) {
+    if (mountedHosts.has(host)) {
       return;
     }
-    const label = document.getElementById("nextora-comment-field-label");
+    const label = config.labelId ? document.getElementById(config.labelId) : null;
     const placeholder = host.dataset.placeholder ?? "";
     const shell = host.parentElement;
-    const toolbarMount = shell?.querySelector(".nextora-tiptap-toolbar") ?? null;
+    const toolbarMount = shell?.querySelector(config.toolbarSelector) ?? null;
+    const editorAttrs = {
+      class: "nextora-tiptap-prose min-h-[9rem] max-w-none px-3 py-2.5 text-sm leading-relaxed text-contrast outline-none focus:outline-none",
+      tabindex: "0",
+      role: "textbox",
+      "aria-multiline": "true"
+    };
+    if (label) {
+      editorAttrs["aria-labelledby"] = config.labelId;
+    }
     const editor = new Editor({
       element: host,
       injectCSS: true,
@@ -22878,18 +22902,12 @@ ${nextLine.slice(indentLevel + 2)}`;
       ],
       content: textarea.value.trim() ? textarea.value : "",
       editorProps: {
-        attributes: {
-          class: "nextora-tiptap-prose min-h-[9rem] max-w-none px-3 py-2.5 text-sm leading-relaxed text-contrast outline-none focus:outline-none",
-          tabindex: "0",
-          role: "textbox",
-          "aria-multiline": "true",
-          "aria-labelledby": "nextora-comment-field-label"
-        }
+        attributes: editorAttrs
       },
       onUpdate: () => syncTextarea(textarea, editor),
       onCreate: () => syncTextarea(textarea, editor)
     });
-    mounted = editor;
+    mountedHosts.add(host);
     if (toolbarMount) {
       toolbarMount.replaceChildren();
       toolbarMount.append(buildToolbar(editor));
@@ -22909,6 +22927,11 @@ ${nextLine.slice(indentLevel + 2)}`;
       },
       { capture: true }
     );
+  }
+  function initCommentTiptap() {
+    for (const config of resolveMounts()) {
+      mountCommentTiptap(config);
+    }
   }
 
   // resources/ts/header-nav.ts

@@ -33,12 +33,34 @@ function nextora_kses_allowed_html_comment_tiptap( array $tags, string $context 
 add_filter( 'wp_kses_allowed_html', 'nextora_kses_allowed_html_comment_tiptap', 10, 2 );
 
 /**
+ * JavaScript mount config for `initCommentTiptap()` (`window.nextoraCommentTiptap`).
+ *
+ * Add a second mount when another template (e.g. a blog plugin) renders its own comment field:
+ * same markup contract (host div + hidden textarea + optional toolbar placeholder inside the shell).
+ *
+ * @return array<string, mixed>
+ */
+function nextora_get_comment_tiptap_js_config(): array {
+	$default = array(
+		'mounts' => array(
+			array(
+				'hostId'           => 'nextora-tiptap-host',
+				'textareaSelector' => 'textarea#comment',
+				'labelId'          => 'nextora-comment-field-label',
+				'toolbarSelector'  => '.nextora-tiptap-toolbar',
+			),
+		),
+	);
+
+	return apply_filters( 'nextora_comment_tiptap_js_config', $default );
+}
+
+/**
  * Arguments for {@see comment_form()} (Tailwind-friendly markup).
  *
  * @return array<string, mixed>
  */
 function nextora_get_comment_form_args(): array {
-	$input_class = 'mt-1 block w-full max-w-2xl rounded-md box-border border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
 	$tiptap_shell = 'nextora-tiptap-shell mb-4 max-w-2xl rounded-md border border-secondary/40 bg-base shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20';
 	$ta_sync      = 'nextora-comment-textarea-sync sr-only';
 
@@ -52,7 +74,7 @@ function nextora_get_comment_form_args(): array {
 		? 'mt-[clamp(1.75rem,4.5vw,2.5rem)] border-t border-secondary/25 pt-[clamp(1.25rem,3.5vw,2rem)] text-lg font-semibold tracking-tight text-contrast'
 		: 'mt-0 text-lg font-semibold tracking-tight text-contrast';
 
-	return array(
+	$args = array(
 		'title_reply'          => __( 'Leave a reply', 'nextora' ),
 		'title_reply_to'       => __( 'Leave a reply to %s', 'nextora' ),
 		'title_reply_before'   => '<h3 id="reply-title" class="!mt-2 !mb-1 ' . esc_attr( $reply_title_classes ) . '">',
@@ -64,7 +86,7 @@ function nextora_get_comment_form_args(): array {
 		'submit_button'        => '<input name="%1$s" type="submit" id="%2$s" class="%3$s" value="%4$s" />',
 		'class_submit'         => 'inline-flex cursor-pointer rounded-md border-none bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50',
 		'comment_field'        => sprintf(
-			'<p class="comment-form-comment !mb-4"><label id="nextora-comment-field-label" class="block cursor-text text-sm font-medium text-contrast">%1$s <span class="text-primary" aria-hidden="true">*</span></label><div class="%3$s"><div class="nextora-tiptap-toolbar min-h-0"></div><div id="nextora-tiptap-host" data-placeholder="%2$s"></div></div><textarea id="comment" name="comment" cols="45" rows="4" maxlength="65525" class="%4$s" tabindex="-1" aria-hidden="true"></textarea></p>',
+			'<p class="comment-form-comment !mb-[4px]"><label id="nextora-comment-field-label" class="block cursor-text text-sm font-medium text-contrast">%1$s <span class="text-primary" aria-hidden="true">*</span></label><div class="%3$s"><div class="nextora-tiptap-toolbar min-h-0"></div><div id="nextora-tiptap-host" data-placeholder="%2$s"></div></div><textarea id="comment" name="comment" cols="45" rows="4" maxlength="65525" class="%4$s" tabindex="-1" aria-hidden="true"></textarea></p>',
 			esc_html__( 'Comment', 'nextora' ),
 			esc_attr__( 'Write your comment here…', 'nextora' ),
 			esc_attr( $tiptap_shell ),
@@ -87,7 +109,25 @@ function nextora_get_comment_form_args(): array {
 			esc_url( wp_logout_url( $permalink ) )
 		) . '</p>',
 	);
+
+	return apply_filters( 'nextora_comment_form_args', $args );
 }
+
+/**
+ * Wire Nextora comment form args (Tiptap field, classes) into {@see comment_form()}.
+ *
+ * The block Comments area uses `core/post-comments-form`, which calls `comment_form()`.
+ * Without this filter, {@see nextora_get_comment_form_args()} is never applied.
+ *
+ * Priority 20 runs after Core block filters that adjust the submit button markup.
+ *
+ * @param array<string, mixed> $defaults Default arguments from WordPress.
+ * @return array<string, mixed>
+ */
+function nextora_merge_comment_form_defaults( array $defaults ): array {
+	return array_merge( $defaults, nextora_get_comment_form_args() );
+}
+add_filter( 'comment_form_defaults', 'nextora_merge_comment_form_defaults', 20 );
 
 add_filter(
 	'comment_form_default_fields',
@@ -97,7 +137,7 @@ add_filter(
 		$req_mark  = $req ? ' <span class="text-primary" aria-hidden="true">*</span>' : '';
 		$aria_req  = $req ? ' aria-required="true"' : '';
 
-		$input_class = 'mt-1 block w-full max-w-2xl rounded-md box-border border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
+		$input_class = 'mt-1 block w-full max-w-2xl rounded-md box-border border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';	
 
 		$fields['author'] = sprintf(
 			'<p class="comment-form-author !mb-4"><label class="block text-sm font-medium text-contrast" for="author">%1$s%2$s</label><input id="author" name="author" type="text" value="%3$s" size="30" maxlength="245" autocomplete="name"%4$s class="%5$s" /></p>',

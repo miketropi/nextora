@@ -163,6 +163,12 @@ function nextora_enqueue_scripts(): void {
 			'linkPromptDefault' => 'https://',
 		)
 	);
+
+	wp_localize_script(
+		'nextora-main',
+		'nextoraCommentTiptap',
+		nextora_get_comment_tiptap_js_config()
+	);
 }
 add_action( 'wp_enqueue_scripts', 'nextora_enqueue_scripts' );
 
