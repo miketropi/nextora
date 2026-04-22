@@ -1,0 +1,120 @@
+/**
+ * nextora/hero-section — two-column “content | creative” layout.
+ *
+ * Uses @theme tokens from resources/css/app.css (`--nextora-gutter`, wp presets).
+ * Layout attributes add BEM classes on the wrapper; PHP mirrors the same class names.
+ */
+@layer components {
+	/* Single-column when legacy heading/body attributes are used. */
+	.wp-block-nextora-hero-section .nextora-hero__grid--legacy,
+	.wp-block-nextora-hero-section.nextora-hero--legacy .nextora-hero__grid {
+		grid-template-columns: 1fr;
+	}
+
+	/* Column tracks (inline style can override --nextora-hero--cols from the editor). */
+	.wp-block-nextora-hero-section.nextora-hero--split-50-50 {
+		--nextora-hero--cols: minmax(0, 1fr) minmax(0, 1fr);
+	}
+	.wp-block-nextora-hero-section.nextora-hero--split-40-60 {
+		--nextora-hero--cols: minmax(0, 2fr) minmax(0, 3fr);
+	}
+	.wp-block-nextora-hero-section.nextora-hero--split-60-40 {
+		--nextora-hero--cols: minmax(0, 3fr) minmax(0, 2fr);
+	}
+	.wp-block-nextora-hero-section.nextora-hero--split-33-66 {
+		--nextora-hero--cols: minmax(0, 1fr) minmax(0, 2fr);
+	}
+	.wp-block-nextora-hero-section.nextora-hero--split-66-33 {
+		--nextora-hero--cols: minmax(0, 2fr) minmax(0, 1fr);
+	}
+
+	.wp-block-nextora-hero-section.nextora-hero--align-v-top {
+		--nextora-hero--align: start;
+	}
+	.wp-block-nextora-hero-section.nextora-hero--align-v-center {
+		--nextora-hero--align: center;
+	}
+	.wp-block-nextora-hero-section.nextora-hero--align-v-bottom {
+		--nextora-hero--align: end;
+	}
+
+	/*
+	 * Row alignment: align-items on the grid is often negated by core/group
+	 * (align-self: stretch / min-height) from global / block styles, so this
+	 * is reinforced with explicit align-self on direct column children.
+	 * On 1 column (stack) align-items is the inline axis, not “vertical in the row”
+	 * — we reset to stretch for normal stacked full-width layout.
+	 */
+	.wp-block-nextora-hero-section .nextora-hero__grid {
+		display: grid;
+		width: 100%;
+		min-width: 0;
+		grid-template-columns: var(
+			--nextora-hero--cols,
+			minmax(0, 1fr) minmax(0, 1fr)
+		);
+		gap: var(--nextora-hero--gap, var(--nextora-hero-gap));
+		align-items: var(--nextora-hero--align, start);
+	}
+
+	/* Two columns: force column boxes to follow the “Vertical alignment (row)” control. */
+	@media (min-width: 782px) {
+		/*
+		 * min-height: min-content — avoids core/group (or theme) min-height: 100% / stretch
+		 * from blocking align-self so shorter columns can sit top/center/bottom in the row.
+		 */
+		.wp-block-nextora-hero-section.nextora-hero--align-v-top
+			.nextora-hero__grid
+			> * {
+			align-self: start;
+			min-height: min-content;
+		}
+		.wp-block-nextora-hero-section.nextora-hero--align-v-center
+			.nextora-hero__grid
+			> * {
+			align-self: center;
+			min-height: min-content;
+		}
+		.wp-block-nextora-hero-section.nextora-hero--align-v-bottom
+			.nextora-hero__grid
+			> * {
+			align-self: end;
+			min-height: min-content;
+		}
+	}
+
+	/* ~782px — stack; aligns with the block editor’s medium breakpoint. */
+	@media (max-width: 781px) {
+		.wp-block-nextora-hero-section .nextora-hero__grid {
+			grid-template-columns: 1fr;
+			align-items: stretch;
+		}
+		.wp-block-nextora-hero-section .nextora-hero__grid > * {
+			align-self: stretch;
+		}
+
+		.wp-block-nextora-hero-section.nextora-hero--stack-creative-first
+			.nextora-hero__column--creative {
+			order: -1;
+		}
+	}
+
+	@media (min-width: 782px) {
+		.wp-block-nextora-hero-section.nextora-hero--creative-left
+			.nextora-hero__column--content {
+			order: 2;
+		}
+
+		.wp-block-nextora-hero-section.nextora-hero--creative-left
+			.nextora-hero__column--creative {
+			order: 1;
+		}
+	}
+
+	.wp-block-nextora-hero-section .nextora-hero__column--creative .wp-block-image,
+	.wp-block-nextora-hero-section .nextora-hero__column--creative .wp-block-embed,
+	.wp-block-nextora-hero-section .nextora-hero__column--creative .wp-block-cover {
+		min-width: 0;
+		max-width: 100%;
+	}
+}

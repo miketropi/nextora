@@ -1,14 +1,18 @@
 import { BlockConfiguration, registerBlockType } from '@wordpress/blocks';
 import Edit from './edit';
+import Save from './save';
 import metadata from './block.json';
 
-interface Attributes {
+interface BlockAttributes {
+  columnSplit: string;
+  creativePosition: string;
+  stackOrder: string;
+  verticalAlign: string;
   heading: string;
   content: string;
 }
 
-registerBlockType(metadata as BlockConfiguration<Attributes>, {
+registerBlockType(metadata as BlockConfiguration<BlockAttributes>, {
   edit: Edit,
-  // Dynamic block — front-end output handled by render.php
-  save: () => null,
+  save: Save,
 });

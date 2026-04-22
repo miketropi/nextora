@@ -46,6 +46,11 @@
 		5vw,
 		var(--wp--preset--spacing--40, 4rem)
 	);
+    --nextora-hero-gap: clamp(
+		var(--wp--preset--spacing--20, 1.25rem),
+		4vw,
+		var(--wp--preset--spacing--30, 2.75rem)
+	);
     --nextora-nav-header-link: var(--wp--preset--color--base, #fafafa);
     --nextora-nav-header-link-hover-underline: var(--wp--preset--color--base, #fafafa);
     @supports (color: color-mix(in lab, red, red)) {
@@ -211,9 +216,6 @@
   .start {
     inset-inline-start: var(--spacing);
   }
-  .start\! {
-    inset-inline-start: var(--spacing) !important;
-  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -318,9 +320,6 @@
   }
   .inline {
     display: inline;
-  }
-  .inline\! {
-    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -798,9 +797,6 @@
   .italic {
     font-style: italic;
   }
-  .italic\! {
-    font-style: italic !important;
-  }
   .\!no-underline {
     text-decoration-line: none !important;
   }
@@ -812,9 +808,6 @@
   }
   .underline {
     text-decoration-line: underline;
-  }
-  .underline\! {
-    text-decoration-line: underline !important;
   }
   .decoration-secondary\/30 {
     text-decoration-color: var(--color-secondary);
@@ -2570,6 +2563,81 @@
     .nextora-spotlight__spinner {
       animation-duration: 1s;
     }
+  }
+}
+@layer components {
+  .wp-block-nextora-hero-section .nextora-hero__grid--legacy,	.wp-block-nextora-hero-section.nextora-hero--legacy .nextora-hero__grid {
+    grid-template-columns: 1fr;
+  }
+  .wp-block-nextora-hero-section.nextora-hero--split-50-50 {
+    --nextora-hero--cols: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .wp-block-nextora-hero-section.nextora-hero--split-40-60 {
+    --nextora-hero--cols: minmax(0, 2fr) minmax(0, 3fr);
+  }
+  .wp-block-nextora-hero-section.nextora-hero--split-60-40 {
+    --nextora-hero--cols: minmax(0, 3fr) minmax(0, 2fr);
+  }
+  .wp-block-nextora-hero-section.nextora-hero--split-33-66 {
+    --nextora-hero--cols: minmax(0, 1fr) minmax(0, 2fr);
+  }
+  .wp-block-nextora-hero-section.nextora-hero--split-66-33 {
+    --nextora-hero--cols: minmax(0, 2fr) minmax(0, 1fr);
+  }
+  .wp-block-nextora-hero-section.nextora-hero--align-v-top {
+    --nextora-hero--align: start;
+  }
+  .wp-block-nextora-hero-section.nextora-hero--align-v-center {
+    --nextora-hero--align: center;
+  }
+  .wp-block-nextora-hero-section.nextora-hero--align-v-bottom {
+    --nextora-hero--align: end;
+  }
+  .wp-block-nextora-hero-section .nextora-hero__grid {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: var(	--nextora-hero--cols,	minmax(0, 1fr) minmax(0, 1fr)	);
+    gap: var(--nextora-hero--gap, var(--nextora-hero-gap));
+    align-items: var(--nextora-hero--align, start);
+  }
+  @media (min-width: 782px) {
+    .wp-block-nextora-hero-section.nextora-hero--align-v-top	.nextora-hero__grid	> * {
+      align-self: start;
+      min-height: min-content;
+    }
+    .wp-block-nextora-hero-section.nextora-hero--align-v-center	.nextora-hero__grid	> * {
+      align-self: center;
+      min-height: min-content;
+    }
+    .wp-block-nextora-hero-section.nextora-hero--align-v-bottom	.nextora-hero__grid	> * {
+      align-self: end;
+      min-height: min-content;
+    }
+  }
+  @media (max-width: 781px) {
+    .wp-block-nextora-hero-section .nextora-hero__grid {
+      grid-template-columns: 1fr;
+      align-items: stretch;
+    }
+    .wp-block-nextora-hero-section .nextora-hero__grid > * {
+      align-self: stretch;
+    }
+    .wp-block-nextora-hero-section.nextora-hero--stack-creative-first	.nextora-hero__column--creative {
+      order: -1;
+    }
+  }
+  @media (min-width: 782px) {
+    .wp-block-nextora-hero-section.nextora-hero--creative-left	.nextora-hero__column--content {
+      order: 2;
+    }
+    .wp-block-nextora-hero-section.nextora-hero--creative-left	.nextora-hero__column--creative {
+      order: 1;
+    }
+  }
+  .wp-block-nextora-hero-section .nextora-hero__column--creative .wp-block-image,	.wp-block-nextora-hero-section .nextora-hero__column--creative .wp-block-embed,	.wp-block-nextora-hero-section .nextora-hero__column--creative .wp-block-cover {
+    min-width: 0;
+    max-width: 100%;
   }
 }
 .theme-global-prose, .entry-content.nextora-entry, .editor-styles-wrapper .block-editor-block-list__layout, .entry-content, .wp-block-post-content {

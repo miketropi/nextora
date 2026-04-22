@@ -16,6 +16,7 @@
 @source "../../parts/**/*.html";
 @source "../../templates/**/*.html";
 @source "../../*.php";
+@source "../../blocks/**/*.tsx";
 
 @import "tailwindcss/theme.css" layer(theme);
 
@@ -57,6 +58,15 @@
 		var(--wp--preset--spacing--20, 2rem),
 		5vw,
 		var(--wp--preset--spacing--40, 4rem)
+	);
+
+	/**
+	 * Hero (nextora/hero-section) — optional override for the grid; default uses --nextora-gutter.
+	 */
+	--nextora-hero-gap: clamp(
+		var(--wp--preset--spacing--20, 1.25rem),
+		4vw,
+		var(--wp--preset--spacing--30, 2.75rem)
 	);
 
 	/**
@@ -180,6 +190,7 @@
 @import "./modules/components/form-fields.css";
 @import "./modules/components/modal.css";
 @import "./modules/components/spotlight-search.css";
+@import "./modules/components/hero-section.css";
 
 @import "./modules/prose/entry-content.css";
 

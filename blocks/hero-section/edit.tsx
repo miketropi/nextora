@@ -2,63 +2,174 @@
 import { __ } from '@wordpress/i18n';
 import {
   useBlockProps,
-  RichText,
+  useInnerBlocksProps,
   InspectorControls,
 } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, SelectControl, Notice } from '@wordpress/components';
+import { useMemo } from '@wordpress/element';
 
 // ---------------------------------------------------------------------------
-// Types
+// Two root groups: copy (left) | creative (right). A single InnerBlocks.
+// Do not pass an inner *template* for each group: nested templates re-sync to
+// only those block types on reload and will strip added blocks (e.g. images).
+// Keep top-level useInnerBlocksProps templateLock so the two columns stay fixed.
 // ---------------------------------------------------------------------------
 
-interface Attributes {
-  heading: string;
-  content: string;
+const TEMPLATE = [
+  [
+    'core/group',
+    {
+      className: 'nextora-hero__column nextora-hero__column--content',
+    },
+  ],
+  [
+    'core/group',
+    {
+      className: 'nextora-hero__column nextora-hero__column--creative',
+    },
+  ],
+];
+
+const COLUMN_SPLIT_OPTIONS = [
+  { label: __('50% / 50%', 'nextora'), value: '50-50' },
+  { label: __('40% / 60%', 'nextora'), value: '40-60' },
+  { label: __('60% / 40%', 'nextora'), value: '60-40' },
+  { label: __('33% / 66%', 'nextora'), value: '33-66' },
+  { label: __('66% / 33%', 'nextora'), value: '66-33' },
+];
+
+const splitToCss: Record<string, string> = {
+  '50-50': 'minmax(0, 1fr) minmax(0, 1fr)',
+  '40-60': 'minmax(0, 2fr) minmax(0, 3fr)',
+  '60-40': 'minmax(0, 3fr) minmax(0, 2fr)',
+  '33-66': 'minmax(0, 1fr) minmax(0, 2fr)',
+  '66-33': 'minmax(0, 2fr) minmax(0, 1fr)',
+};
+
+const alignMap: Record<string, string> = {
+  top: 'start',
+  center: 'center',
+  bottom: 'end',
+};
+
+function buildClassName(attrs: {
+  columnSplit: string;
+  creativePosition: string;
+  stackOrder: string;
+  verticalAlign: string;
+}): string {
+  const { creativePosition, stackOrder, columnSplit, verticalAlign } = attrs;
+  return [
+    'nextora-hero--split',
+    'nextora-hero--split-' + columnSplit,
+    'nextora-hero--align-v-' + verticalAlign,
+    creativePosition === 'left' ? 'nextora-hero--creative-left' : 'nextora-hero--creative-right',
+    'nextora-hero--stack-' + stackOrder,
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
-interface EditProps {
-  attributes: Attributes;
-  setAttributes: (attrs: Partial<Attributes>) => void;
-}
+export default function HeroSectionEdit({ attributes, setAttributes }) {
+  const {
+    columnSplit,
+    creativePosition,
+    stackOrder,
+    verticalAlign,
+    heading: legacyHeading,
+    content: legacyContent,
+  } = attributes;
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
+  const blockClass = useMemo(
+    () => buildClassName({ columnSplit, creativePosition, stackOrder, verticalAlign }),
+    [columnSplit, creativePosition, stackOrder, verticalAlign],
+  );
 
-export default function HeroSectionEdit({ attributes, setAttributes }: EditProps) {
-  const { heading, content } = attributes;
+  const splitCss = splitToCss[columnSplit] || splitToCss['50-50'];
+  const alignItems = alignMap[verticalAlign] || 'center';
 
-  /**
-   * useBlockProps injects:
-   *  - default block class: wp-block-nextora-hero-section
-   *  - inline styles from Global Styles (color, spacing, typography)
-   */
-  const blockProps = useBlockProps();
+  const blockProps = useBlockProps({
+    className: blockClass,
+    style: {
+      '--nextora-hero--cols': splitCss,
+      '--nextora-hero--align': alignItems,
+    },
+  });
+
+  const innerBlocksProps = useInnerBlocksProps(
+    {
+      className: 'nextora-hero__grid',
+    },
+    {
+      template: TEMPLATE,
+      templateLock: 'all',
+      allowedBlocks: ['core/group'],
+    },
+  );
 
   return (
     <>
-      {/* Sidebar controls */}
       <InspectorControls>
-        <PanelBody title={__('Hero Section Settings', 'nextora')} initialOpen>
-          {/* Add custom sidebar controls here */}
+        <PanelBody title={__('Columns & layout', 'nextora')} initialOpen>
+          <p className="components-base-control__help" style={{ marginTop: 0 }}>
+            {__(
+              'Add blocks inside each column (heading, paragraph, image, buttons). The two column groups stay in place; inner content is yours to edit.',
+              'nextora',
+            )}
+          </p>
+          <SelectControl
+            label={__('Column width', 'nextora')}
+            help={__(
+              'Two tracks on wide screens; single column on smaller screens. Fine-tune with theme spacing in the block toolbar.',
+              'nextora',
+            )}
+            value={columnSplit}
+            options={COLUMN_SPLIT_OPTIONS}
+            onChange={(v: string) => setAttributes({ columnSplit: v })}
+          />
+          <SelectControl
+            label={__('Creative column (visuals)', 'nextora')}
+            value={creativePosition}
+            options={[
+              { label: __('Right of content', 'nextora'), value: 'right' },
+              { label: __('Left of content', 'nextora'), value: 'left' },
+            ]}
+            onChange={(v: string) => setAttributes({ creativePosition: v })}
+          />
+          <SelectControl
+            label={__('Stack order (tablet & mobile)', 'nextora')}
+            value={stackOrder}
+            options={[
+              { label: __('Content first', 'nextora'), value: 'content-first' },
+              { label: __('Creative first', 'nextora'), value: 'creative-first' },
+            ]}
+            onChange={(v: string) => setAttributes({ stackOrder: v })}
+          />
+          <SelectControl
+            label={__('Vertical alignment (row)', 'nextora')}
+            value={verticalAlign}
+            options={[
+              { label: __('Top', 'nextora'), value: 'top' },
+              { label: __('Center', 'nextora'), value: 'center' },
+              { label: __('Bottom', 'nextora'), value: 'bottom' },
+            ]}
+            onChange={(v: string) => setAttributes({ verticalAlign: v })}
+          />
         </PanelBody>
+        {(legacyHeading || legacyContent) && (
+          <PanelBody title={__('Legacy text', 'nextora')} initialOpen={false}>
+            <Notice status="info" isDismissible={false}>
+              {__(
+                'This block used placeholder heading/body fields. Re-add the text in the “Content” column (left) so it appears on the site. You can then clear the old text from the database by removing it in document code or re-saving after migration.',
+                'nextora',
+              )}
+            </Notice>
+          </PanelBody>
+        )}
       </InspectorControls>
 
-      {/* Editor UI */}
       <div {...blockProps}>
-        <RichText
-          tagName="h2"
-          value={heading}
-          onChange={(val: string) => setAttributes({ heading: val })}
-          placeholder={__('Enter heading…', 'nextora')}
-          allowedFormats={['core/bold', 'core/italic']}
-        />
-        <RichText
-          tagName="p"
-          value={content}
-          onChange={(val: string) => setAttributes({ content: val })}
-          placeholder={__('Enter content…', 'nextora')}
-        />
+        <div {...innerBlocksProps} />
       </div>
     </>
   );

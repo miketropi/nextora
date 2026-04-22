@@ -4,9 +4,10 @@
   "name": "nextora/hero-section",
   "title": "Hero Section",
   "category": "theme",
-  "description": "Hero Section block.",
+  "description": "Two-column hero: copy and supporting visuals. Layout uses CSS clamp() for small screens; use the sidebar to adjust column ratio and order.",
   "keywords": [
-    "hero-section",
+    "hero",
+    "banner",
     "nextora"
   ],
   "textdomain": "nextora",
@@ -29,9 +30,28 @@
     "typography": {
       "fontSize": true,
       "lineHeight": true
+    },
+    "dimensions": {
+      "minHeight": true
     }
   },
   "attributes": {
+    "columnSplit": {
+      "type": "string",
+      "default": "50-50"
+    },
+    "creativePosition": {
+      "type": "string",
+      "default": "right"
+    },
+    "stackOrder": {
+      "type": "string",
+      "default": "content-first"
+    },
+    "verticalAlign": {
+      "type": "string",
+      "default": "center"
+    },
     "heading": {
       "type": "string",
       "default": ""
