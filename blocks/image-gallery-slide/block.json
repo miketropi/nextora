@@ -1,0 +1,88 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/image-gallery-slide",
+  "title": "Image gallery (slider)",
+  "category": "media",
+  "description": "A touch-friendly image carousel with Swiper. Pick images in the block; optional autoplay, arrows, and dots.",
+  "keywords": [
+    "image",
+    "gallery",
+    "slider",
+    "carousel",
+    "nextora"
+  ],
+  "textdomain": "nextora",
+  "style": "file:./view.css",
+  "editorStyle": "file:./editor.css",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    }
+  },
+  "attributes": {
+    "imageIds": {
+      "type": "array",
+      "default": []
+    },
+    "showNav": {
+      "type": "boolean",
+      "default": true
+    },
+    "showPagination": {
+      "type": "boolean",
+      "default": true
+    },
+    "loop": {
+      "type": "boolean",
+      "default": true
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": false
+    },
+    "autoplayDelay": {
+      "type": "number",
+      "default": 4500
+    },
+    "spaceBetween": {
+      "type": "number",
+      "default": 12
+    },
+    "slidesPerView": {
+      "type": "number",
+      "default": 1
+    },
+    "slidesPerViewTablet": {
+      "type": "number",
+      "default": 1.08
+    },
+    "slidesPerViewDesktop": {
+      "type": "number",
+      "default": 1.25
+    },
+    "slideImageFit": {
+      "type": "string",
+      "default": "cover"
+    },
+    "slideAreaBackground": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

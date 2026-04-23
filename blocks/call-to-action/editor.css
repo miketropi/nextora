@@ -1,0 +1,24 @@
+/**
+ * `nextora/call-to-action` — editor.
+ */
+.block-editor-block-list__block .nextora-cta {
+  min-height: 10rem;
+}
+
+.block-editor-block-list__block .nextora-cta__body {
+  min-height: 6rem;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.block-editor-block-list__block .nextora-cta__grid {
+  min-height: 5rem;
+}
+
+.block-editor-block-list__block
+  .nextora-cta__column
+  .block-editor-block-list__layout
+  .block-list-appender {
+  position: relative;
+}

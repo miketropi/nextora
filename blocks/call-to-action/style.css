@@ -1,0 +1,219 @@
+/**
+ * `nextora/call-to-action` — full-bleed background + two-column body (aligns with hero layout).
+ *
+ * `overflow: hidden` keeps parallax/background media inside; the block’s
+ * “Corner radius” control sets `border-radius` on this root (editor + front).
+ */
+.wp-block-nextora-call-to-action.nextora-cta,
+.nextora-cta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 12rem;
+  overflow: hidden;
+  isolation: isolate;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Background stack */
+.nextora-cta__bg {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.nextora-cta--parallax.nextora-cta--has-media .nextora-cta__bg {
+  height: 120%;
+  top: -10%;
+  bottom: auto;
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+
+.nextora-cta__img,
+.nextora-cta__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  margin: 0;
+}
+
+.nextora-cta__bg--video .nextora-cta__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nextora-cta__bg--color-mix {
+  background: var(--nextora-cta-color-mix, transparent);
+}
+
+.nextora-cta__scrim {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  margin: 0;
+  background: #000;
+  pointer-events: none;
+  opacity: calc(var(--nextora-cta-scrim, 0) * 0.01);
+}
+
+/* Foreground: full width so columns can use the same grid model as the hero */
+.nextora-cta__body {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: clamp(1rem, 2.5vw, 2.5rem) var(--nextora-gutter, 1.25rem);
+}
+
+/* —— Two-column layout (see hero-section.css; scoped under CTA) —— */
+.wp-block-nextora-call-to-action .nextora-cta__grid--legacy,
+.wp-block-nextora-call-to-action.nextora-cta--legacy .nextora-cta__grid {
+  grid-template-columns: 1fr;
+}
+
+.wp-block-nextora-call-to-action.nextora-cta--split-50-50 {
+  --nextora-cta--cols: minmax(0, 1fr) minmax(0, 1fr);
+}
+.wp-block-nextora-call-to-action.nextora-cta--split-40-60 {
+  --nextora-cta--cols: minmax(0, 2fr) minmax(0, 3fr);
+}
+.wp-block-nextora-call-to-action.nextora-cta--split-60-40 {
+  --nextora-cta--cols: minmax(0, 3fr) minmax(0, 2fr);
+}
+.wp-block-nextora-call-to-action.nextora-cta--split-33-66 {
+  --nextora-cta--cols: minmax(0, 1fr) minmax(0, 2fr);
+}
+.wp-block-nextora-call-to-action.nextora-cta--split-66-33 {
+  --nextora-cta--cols: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+.wp-block-nextora-call-to-action.nextora-cta--align-v-top {
+  --nextora-cta--align: start;
+}
+.wp-block-nextora-call-to-action.nextora-cta--align-v-center {
+  --nextora-cta--align: center;
+}
+.wp-block-nextora-call-to-action.nextora-cta--align-v-bottom {
+  --nextora-cta--align: end;
+}
+
+.wp-block-nextora-call-to-action .nextora-cta__grid {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: var(
+    --nextora-cta--cols,
+    minmax(0, 1fr) minmax(0, 1fr)
+  );
+  gap: var(--nextora-cta--gap, var(--nextora-hero-gap, clamp(1rem, 3vw, 2rem)));
+  align-items: var(--nextora-cta--align, start);
+}
+
+@media (min-width: 782px) {
+  .wp-block-nextora-call-to-action.nextora-cta--align-v-top .nextora-cta__grid > * {
+    align-self: start;
+    min-height: min-content;
+  }
+  .wp-block-nextora-call-to-action.nextora-cta--align-v-center .nextora-cta__grid > * {
+    align-self: center;
+    min-height: min-content;
+  }
+  .wp-block-nextora-call-to-action.nextora-cta--align-v-bottom .nextora-cta__grid > * {
+    align-self: end;
+    min-height: min-content;
+  }
+}
+
+@media (max-width: 781px) {
+  .wp-block-nextora-call-to-action .nextora-cta__grid {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  .wp-block-nextora-call-to-action .nextora-cta__grid > * {
+    align-self: stretch;
+  }
+  .wp-block-nextora-call-to-action.nextora-cta--stack-creative-first
+    .nextora-cta__column--creative {
+    order: -1;
+  }
+}
+
+@media (min-width: 782px) {
+  .wp-block-nextora-call-to-action.nextora-cta--creative-left
+    .nextora-cta__column--content {
+    order: 2;
+  }
+  .wp-block-nextora-call-to-action.nextora-cta--creative-left
+    .nextora-cta__column--creative {
+    order: 1;
+  }
+}
+
+.wp-block-nextora-call-to-action .nextora-cta__column--creative .wp-block-image,
+.wp-block-nextora-call-to-action .nextora-cta__column--creative .wp-block-embed,
+.wp-block-nextora-call-to-action .nextora-cta__column--creative .wp-block-cover {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (min-width: 782px) {
+  .wp-block-nextora-call-to-action.nextora-cta--sticky-content .nextora-cta__grid,
+  .wp-block-nextora-call-to-action.nextora-cta--sticky-creative .nextora-cta__grid {
+    align-items: start;
+  }
+  .wp-block-nextora-call-to-action.nextora-cta--sticky-content
+    .nextora-cta__grid
+    > .nextora-cta__column--content {
+    position: sticky;
+    top: var(--nextora-hero-sticky-top, 1.25rem);
+    align-self: start;
+    min-height: min-content;
+  }
+  .wp-block-nextora-call-to-action.nextora-cta--sticky-creative
+    .nextora-cta__grid
+    > .nextora-cta__column--creative {
+    position: sticky;
+    top: var(--nextora-hero-sticky-top, 1.25rem);
+    align-self: start;
+    min-height: min-content;
+  }
+}
+
+@media (max-width: 781px) {
+  .wp-block-nextora-call-to-action.nextora-cta--sticky-content .nextora-cta__column--content,
+  .wp-block-nextora-call-to-action.nextora-cta--sticky-creative .nextora-cta__column--creative {
+    position: static;
+  }
+}
+
+/* Legacy single-column (old heading + body attributes) */
+.nextora-cta__grid--legacy {
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nextora-cta__heading {
+  margin: 0 0 0.75rem;
+}
+
+.nextora-cta__content p:first-child {
+  margin-top: 0;
+}
+
+.nextora-cta__content p:last-child {
+  margin-bottom: 0;
+}

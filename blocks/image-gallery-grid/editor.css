@@ -1,0 +1,149 @@
+/**
+ * nextora/image-gallery-grid — Gutenberg editor (aligned with image-gallery-slide)
+ */
+.nextora-igg--editor {
+	margin-block: 0;
+}
+
+/* Light containment; no “card” fill */
+.nextora-igg-editor__frame {
+	box-sizing: border-box;
+	padding: 0.5rem 0 0 0;
+	border: none;
+	background: none;
+}
+
+.nextora-igg-editor__frame--empty {
+	padding: 0;
+	border-radius: 2px;
+	border: 1px dashed color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.nextora-igg-editor__placeholder.components-placeholder {
+	margin-block: 0;
+}
+
+.nextora-igg-editor__placeholder .components-placeholder__illustration,
+.nextora-igg-editor__placeholder .components-placeholder__label svg {
+	color: var(--wp-components-color-foreground, #1d2327);
+	opacity: 0.85;
+}
+
+/* One row: count + action — no extra chrome */
+.nextora-igg-editor__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem 0.75rem;
+	margin-block-end: 0.5rem;
+	padding: 0;
+	border: none;
+}
+
+.nextora-igg-editor__head-text {
+	margin: 0;
+	font-size: 0.8125rem;
+	font-weight: 400;
+	line-height: 1.4;
+	color: var(--wp-components-color-foreground, #1d2327);
+	opacity: 0.82;
+	max-width: 100%;
+}
+
+/* Thumbnail grid: quiet borders only */
+.nextora-igg-editor__thumbs {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+	gap: 0.45rem;
+}
+
+.nextora-igg-editor__thumb {
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	border-radius: 2px;
+	overflow: hidden;
+	background: transparent;
+	border: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+	box-shadow: none;
+}
+
+.nextora-igg-editor__thumb-preview {
+	position: relative;
+	flex: 1;
+	min-height: 0;
+}
+
+.nextora-igg-editor__thumb .nextora-igg-editor__img {
+	display: block;
+	width: 100%;
+	height: 4.75rem;
+	object-fit: cover;
+}
+
+.nextora-igg-editor__thumb-skeleton {
+	width: 100%;
+	height: 4.75rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: color-mix(in srgb, currentColor 5%, transparent);
+	font-size: 0.7rem;
+	color: color-mix(in srgb, currentColor 40%, transparent);
+}
+
+/* Muted bar — same family as the canvas, not a dark “toolbar” */
+.nextora-igg-editor__thumb-actions {
+	width: 100%;
+	margin: 0;
+	padding: 0.1rem 0.05rem;
+	border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+	background: color-mix(in srgb, currentColor 3.5%, transparent);
+	flex-shrink: 0;
+}
+
+.nextora-igg-editor__thumb-actions.components-h-stack {
+	margin-block: 0;
+}
+
+.nextora-igg-editor__thumb-actions .nextora-igg-editor__reorder.components-button {
+	color: var(--wp-components-color-foreground, #1d2327);
+	min-width: 1.5rem;
+	opacity: 0.9;
+}
+
+.nextora-igg-editor__thumb-actions .nextora-igg-editor__reorder.components-button svg {
+	fill: currentColor;
+}
+
+.nextora-igg-editor__thumb-actions .nextora-igg-editor__reorder.components-button:hover:not(:disabled) {
+	opacity: 1;
+	background: color-mix(in srgb, currentColor 6%, transparent);
+}
+
+.nextora-igg-editor__thumb-actions .nextora-igg-editor__reorder.is-destructive {
+	color: #b32d2e;
+	opacity: 1;
+}
+
+.nextora-igg-editor__thumb-actions .nextora-igg-editor__reorder.is-destructive:hover:not(:disabled) {
+	color: #8a2424;
+	background: color-mix(in srgb, #b32d2e 8%, transparent);
+}
+
+.nextora-igg-editor__reorder {
+	padding: 0.08rem 0.2rem;
+}
+
+.nextora-igg-editor__hint {
+	margin: 0.4rem 0 0 0;
+	padding: 0;
+	border: none;
+	font-size: 0.75rem;
+	opacity: 0.65;
+	line-height: 1.4;
+}

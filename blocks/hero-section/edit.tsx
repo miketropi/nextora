@@ -9,10 +9,15 @@ import { PanelBody, SelectControl, Notice } from '@wordpress/components';
 import { useMemo } from '@wordpress/element';
 
 // ---------------------------------------------------------------------------
-// Two root groups: copy (left) | creative (right). A single InnerBlocks.
-// Do not pass an inner *template* for each group: nested templates re-sync to
-// only those block types on reload and will strip added blocks (e.g. images).
-// Keep top-level useInnerBlocksProps templateLock so the two columns stay fixed.
+// Two root groups: copy | creative. Child blocks are set here as the *initial*
+// template only (nested array = inner blocks of each group).
+//
+// Do not put `template` on core/group in Group’s block edit: that re-syncs and can
+// strip user blocks on reload. Supplying children via *this* parent TEMPLATE is OK.
+//
+// `templateLock` is off so the hero does not add another “locked” layer when it
+// sits inside locked columns/patterns. Only `core/group` is allowed at the root
+// to keep a two-column layout; users can add/remove/reorder top-level groups.
 // ---------------------------------------------------------------------------
 
 const TEMPLATE = [
@@ -21,12 +26,28 @@ const TEMPLATE = [
     {
       className: 'nextora-hero__column nextora-hero__column--content',
     },
+    [
+      ['core/heading', { level: 1 }],
+      [
+        'core/paragraph',
+        { placeholder: __('Add supporting text…', 'nextora') },
+      ],
+    ],
   ],
   [
     'core/group',
     {
       className: 'nextora-hero__column nextora-hero__column--creative',
     },
+    [
+      [
+        'core/paragraph',
+        {
+          align: 'center',
+          placeholder: __('Add an image, video, or other blocks', 'nextora'),
+        },
+      ],
+    ],
   ],
 ];
 
@@ -57,17 +78,20 @@ function buildClassName(attrs: {
   creativePosition: string;
   stackOrder: string;
   verticalAlign: string;
+  stickyColumn: string;
 }): string {
-  const { creativePosition, stackOrder, columnSplit, verticalAlign } = attrs;
-  return [
+  const { creativePosition, stackOrder, columnSplit, verticalAlign, stickyColumn } = attrs;
+  const parts = [
     'nextora-hero--split',
     'nextora-hero--split-' + columnSplit,
     'nextora-hero--align-v-' + verticalAlign,
     creativePosition === 'left' ? 'nextora-hero--creative-left' : 'nextora-hero--creative-right',
     'nextora-hero--stack-' + stackOrder,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  ];
+  if (stickyColumn === 'content' || stickyColumn === 'creative') {
+    parts.push('nextora-hero--sticky-' + stickyColumn);
+  }
+  return parts.filter(Boolean).join(' ');
 }
 
 export default function HeroSectionEdit({ attributes, setAttributes }) {
@@ -76,13 +100,21 @@ export default function HeroSectionEdit({ attributes, setAttributes }) {
     creativePosition,
     stackOrder,
     verticalAlign,
+    stickyColumn = 'none',
     heading: legacyHeading,
     content: legacyContent,
   } = attributes;
 
   const blockClass = useMemo(
-    () => buildClassName({ columnSplit, creativePosition, stackOrder, verticalAlign }),
-    [columnSplit, creativePosition, stackOrder, verticalAlign],
+    () =>
+      buildClassName({
+        columnSplit,
+        creativePosition,
+        stackOrder,
+        verticalAlign,
+        stickyColumn: typeof stickyColumn === 'string' ? stickyColumn : 'none',
+      }),
+    [columnSplit, creativePosition, stackOrder, verticalAlign, stickyColumn],
   );
 
   const splitCss = splitToCss[columnSplit] || splitToCss['50-50'];
@@ -102,7 +134,7 @@ export default function HeroSectionEdit({ attributes, setAttributes }) {
     },
     {
       template: TEMPLATE,
-      templateLock: 'all',
+      templateLock: false,
       allowedBlocks: ['core/group'],
     },
   );
@@ -113,7 +145,7 @@ export default function HeroSectionEdit({ attributes, setAttributes }) {
         <PanelBody title={__('Columns & layout', 'nextora')} initialOpen>
           <p className="components-base-control__help" style={{ marginTop: 0 }}>
             {__(
-              'Add blocks inside each column (heading, paragraph, image, buttons). The two column groups stay in place; inner content is yours to edit.',
+              'Each side is a group: add or change blocks as you like. New heroes include a default headline, text, and a placeholder in the visual column. You can add or remove a top-level group if you need a different structure.',
               'nextora',
             )}
           </p>
@@ -154,6 +186,20 @@ export default function HeroSectionEdit({ attributes, setAttributes }) {
               { label: __('Bottom', 'nextora'), value: 'bottom' },
             ]}
             onChange={(v: string) => setAttributes({ verticalAlign: v })}
+          />
+          <SelectControl
+            label={__('Sticky column (wide layout)', 'nextora')}
+            help={__(
+              'When one column is taller, keep the other visible while scrolling. Only applies to the two-column layout (not stacked mobile). “Top” row alignment often looks best with sticky.',
+              'nextora',
+            )}
+            value={typeof stickyColumn === 'string' ? stickyColumn : 'none'}
+            options={[
+              { label: __('Off', 'nextora'), value: 'none' },
+              { label: __('Content column (copy)', 'nextora'), value: 'content' },
+              { label: __('Creative column (visuals)', 'nextora'), value: 'creative' },
+            ]}
+            onChange={(v: string) => setAttributes({ stickyColumn: v || 'none' })}
           />
         </PanelBody>
         {(legacyHeading || legacyContent) && (

@@ -1,0 +1,189 @@
+/**
+ * nextora/image-gallery-slide — theme layer on top of Swiper (see view.ts imports).
+ * Touch-friendly; arrows scale on small screens; images use object-fit.
+ */
+.wp-block-nextora-image-gallery-slide {
+	/* In columns / flex layouts, allow the block to shrink and avoid page overflow. */
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.nextora-ig {
+	--nextora-ig-radius: clamp(0.5rem, 1.2vw, 0.75rem);
+	--nextora-ig-nav-size: 2.75rem;
+	--nextora-ig-nav-offset: 0.35rem;
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	/* Contain “peek” slides (slidesPerView > 1) so width never spills past the block. */
+	overflow: clip;
+	isolation: isolate;
+}
+
+.nextora-ig__swiper {
+	border-radius: var(--nextora-ig-radius);
+	overflow: hidden;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+}
+
+/* Swiper: respect container width in alignwide / nested layouts. */
+.nextora-ig__swiper.swiper {
+	max-width: 100%;
+}
+
+.nextora-ig__media {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	/* Filled in editor/PHP as --nextora-ig-slide-bg when set. */
+	background: var(
+		--nextora-ig-slide-bg,
+		color-mix(
+			in srgb,
+			var(--wp--preset--color--contrast, #0f172a) 6%,
+			transparent
+		)
+	);
+}
+
+@media (min-width: 640px) {
+	.nextora-ig__media {
+		aspect-ratio: 16 / 9;
+	}
+}
+
+.nextora-ig__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Full image visible; letterbox uses --nextora-ig-slide-bg (see block “Image area background”). */
+.nextora-ig--fit-contain .nextora-ig__img {
+	object-fit: contain;
+}
+
+.nextora-ig__caption {
+	margin: 0;
+	padding: 0.65rem 0.85rem 0.85rem;
+	font-size: clamp(0.8125rem, 1.4vw, 0.9rem);
+	line-height: 1.4;
+	color: var(--wp--preset--color--contrast, #0f172a);
+	background: color-mix(
+		in srgb,
+		var(--wp--preset--color--base, #fff) 92%,
+		transparent
+	);
+}
+
+.nextora-ig__arrows {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	pointer-events: none;
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+}
+
+.nextora-ig__arrow-btn {
+	pointer-events: auto;
+	appearance: none;
+	border: 0;
+	margin: 0;
+	width: var(--nextora-ig-nav-size);
+	height: var(--nextora-ig-nav-size);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: var(--wp--preset--color--contrast, #0f172a);
+	background: color-mix(
+		in srgb,
+		var(--wp--preset--color--base, #fff) 88%,
+		transparent
+	);
+	box-shadow: 0 2px 12px
+		color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 12%, transparent);
+	transition:
+		background 0.2s ease,
+		transform 0.15s ease;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.nextora-ig__arrow-btn:hover,
+.nextora-ig__arrow-btn:focus-visible {
+	background: var(--wp--preset--color--base, #fff);
+}
+
+.nextora-ig__arrow-btn:focus-visible {
+	outline: 2px solid
+		var(--wp--preset--color--contrast, #0f172a);
+	outline-offset: 2px;
+}
+
+.nextora-ig__arrow-btn:active {
+	transform: scale(0.97);
+}
+
+.nextora-ig__arrow--prev {
+	margin-left: var(--nextora-ig-nav-offset);
+}
+
+.nextora-ig__arrow--next {
+	margin-right: var(--nextora-ig-nav-offset);
+}
+
+.nextora-ig__icon {
+	display: block;
+	width: 1.25rem;
+	height: 1.25rem;
+}
+
+.nextora-ig__pagination {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.75rem 0.5rem 0.25rem;
+}
+
+.nextora-ig__pagination.swiper-pagination-bullets-dynamic {
+	overflow: visible;
+}
+
+/* Swiper renames bullets; keep them tappable for fat fingers. */
+.nextora-ig .swiper-pagination-bullet {
+	width: 0.5rem;
+	height: 0.5rem;
+	opacity: 0.45;
+	transition: opacity 0.2s ease, transform 0.2s ease;
+}
+@media (min-width: 480px) {
+	.nextora-ig .swiper-pagination-bullet {
+		width: 0.4rem;
+		height: 0.4rem;
+	}
+}
+
+.nextora-ig .swiper-pagination-bullet-active {
+	opacity: 1;
+	transform: scale(1.1);
+}
+
+@media (max-width: 480px) {
+	.nextora-ig {
+		--nextora-ig-nav-size: 2.5rem;
+	}
+}

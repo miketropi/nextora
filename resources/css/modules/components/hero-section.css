@@ -117,4 +117,42 @@
 		min-width: 0;
 		max-width: 100%;
 	}
+
+	/*
+	 * Sticky column: when one side is much taller, the shorter column can stay in view.
+	 * `--nextora-hero-sticky-top` can be overridden in theme CSS (e.g. under a fixed header).
+	 */
+	@media (min-width: 782px) {
+		.wp-block-nextora-hero-section.nextora-hero--sticky-content .nextora-hero__grid,
+		.wp-block-nextora-hero-section.nextora-hero--sticky-creative .nextora-hero__grid {
+			align-items: start;
+		}
+
+		.wp-block-nextora-hero-section.nextora-hero--sticky-content
+			.nextora-hero__grid
+			> .nextora-hero__column--content {
+			position: sticky;
+			top: var(--nextora-hero-sticky-top, 1.25rem);
+			align-self: start;
+			min-height: min-content;
+		}
+
+		.wp-block-nextora-hero-section.nextora-hero--sticky-creative
+			.nextora-hero__grid
+			> .nextora-hero__column--creative {
+			position: sticky;
+			top: var(--nextora-hero-sticky-top, 1.25rem);
+			align-self: start;
+			min-height: min-content;
+		}
+	}
+
+	@media (max-width: 781px) {
+		.wp-block-nextora-hero-section.nextora-hero--sticky-content
+			.nextora-hero__column--content,
+		.wp-block-nextora-hero-section.nextora-hero--sticky-creative
+			.nextora-hero__column--creative {
+			position: static;
+		}
+	}
 }

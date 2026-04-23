@@ -89,6 +89,7 @@ const wpExternalsPlugin = {
 // ---------------------------------------------------------------------------
 
 const entryPoints = await glob('./blocks/*/index.{ts,tsx}');
+const viewEntryPoints = await glob('./blocks/*/view.ts');
 
 if (entryPoints.length === 0) {
   console.warn('⚠️  No block entry points found in ./blocks/*/index.{ts,tsx}');
@@ -144,6 +145,42 @@ const assetWriterPlugin = {
 // Build or watch
 // ---------------------------------------------------------------------------
 
+/** Front-end view bundles (Swiper, etc.) — no @wordpress/* externals. */
+const viewBuildOptions = {
+  entryPoints: viewEntryPoints,
+  bundle: true,
+  format: 'iife',
+  platform: 'browser',
+  target: 'es2020',
+  minify: !isWatch,
+  logLevel: isWatch ? 'warning' : 'info',
+  sourcemap: isWatch ? 'inline' : false,
+  outdir: '.',
+  outbase: '.',
+};
+
+async function buildViewBundles() {
+  if (!viewEntryPoints.length) {
+    return;
+  }
+  const r = await esbuild.build(viewBuildOptions);
+  if (r.errors.length) {
+    console.error('❌ View script build errors:', r.errors);
+    process.exit(1);
+  }
+  viewEntryPoints.forEach((entry) => {
+    const base = entry.replace(/\.ts$/, '');
+    const js = `${base}.js`;
+    const css = `${base}.css`;
+    if (fs.existsSync(js)) {
+      console.log(`  ✓ ${js}`);
+    }
+    if (fs.existsSync(css)) {
+      console.log(`  ✓ ${css}`);
+    }
+  });
+}
+
 if (isWatch) {
   const ctx = await esbuild.context({
     ...buildOptions,
@@ -151,9 +188,31 @@ if (isWatch) {
   });
 
   await ctx.watch();
+
+  if (viewEntryPoints.length) {
+    const vctx = await esbuild.context({
+      ...viewBuildOptions,
+      plugins: [
+        {
+          name: 'view-rebuild-log',
+          setup(b) {
+            b.onEnd(() => {
+              const t = new Date().toTimeString().slice(0, 8);
+              console.log(`${t}  view script(s) rebuilt (${viewEntryPoints.length})`);
+            });
+          },
+        },
+      ],
+    });
+    await vctx.watch();
+  }
+
   console.log(
     `Watching ${entryPoints.length} block(s) under ./blocks/*/index.{ts,tsx}  ·  Ctrl+C to stop`
   );
+  if (viewEntryPoints.length) {
+    console.log(`Watching ${viewEntryPoints.length} view bundle(s) under ./blocks/*/view.ts`);
+  }
 } else {
   const result = await esbuild.build(buildOptions);
 
@@ -170,6 +229,8 @@ if (isWatch) {
       console.log(`  ✓ ${path.dirname(outFile)}/index.asset.php`);
     }
   });
+
+  await buildViewBundles();
 
   console.log('\n✅ All blocks built successfully.');
 }

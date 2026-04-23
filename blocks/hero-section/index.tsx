@@ -8,6 +8,7 @@ interface BlockAttributes {
   creativePosition: string;
   stackOrder: string;
   verticalAlign: string;
+  stickyColumn: string;
   heading: string;
   content: string;
 }

@@ -52,6 +52,10 @@
       "type": "string",
       "default": "center"
     },
+    "stickyColumn": {
+      "type": "string",
+      "default": "none"
+    },
     "heading": {
       "type": "string",
       "default": ""

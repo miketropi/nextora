@@ -72,6 +72,7 @@ $split    = $attributes['columnSplit'] ?? '50-50';
 $creative = $attributes['creativePosition'] ?? 'right';
 $stack    = $attributes['stackOrder'] ?? 'content-first';
 $v_align  = $attributes['verticalAlign'] ?? 'center';
+$sticky   = isset( $attributes['stickyColumn'] ) ? (string) $attributes['stickyColumn'] : 'none';
 
 $legacy_heading = isset( $attributes['heading'] ) ? (string) $attributes['heading'] : '';
 $legacy_content = isset( $attributes['content'] ) ? (string) $attributes['content'] : '';
@@ -109,6 +110,10 @@ $classes = array(
 	'left' === $creative ? 'nextora-hero--creative-left' : 'nextora-hero--creative-right',
 	'nextora-hero--stack-' . ( 'creative-first' === $stack ? 'creative-first' : 'content-first' ),
 );
+$allowed_sticky = array( 'none', 'content', 'creative' );
+if ( in_array( $sticky, $allowed_sticky, true ) && 'none' !== $sticky ) {
+	$classes[] = 'nextora-hero--sticky-' . $sticky;
+}
 
 if ( $is_legacy ) {
 	$classes[] = 'nextora-hero--legacy';

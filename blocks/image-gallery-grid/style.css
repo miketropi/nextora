@@ -1,0 +1,332 @@
+/**
+ * nextora/image-gallery-grid — front end (no JS)
+ *
+ * Images use intrinsic aspect ratio: column width is set by the grid, height follows each image.
+ */
+.wp-block-nextora-image-gallery-grid {
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.nextora-igg {
+	--nextora-igg-gap: 12px;
+	--nextora-igg-cols-m: 2;
+	--nextora-igg-cols-t: 3;
+	--nextora-igg-cols-d: 4;
+	--nextora-igg-radius: clamp(0.25rem, 0.5vw, 0.4rem);
+	--nextora-igg-creative-radius: clamp(0.35rem, 0.6vw, 0.5rem);
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+/* ——— Classic: user columns + gap (breakpoints: 600px, 960px) ——— */
+/* Include legacy blocks saved before the layout attribute (list has no `nextora-igg__list--*`). */
+.nextora-igg--layout-classic .nextora-igg__list,
+.nextora-igg .nextora-igg__list:not([class*='nextora-igg__list--']) {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: var(--nextora-igg-gap);
+	grid-template-columns: repeat(var(--nextora-igg-cols-m), minmax(0, 1fr));
+	align-items: start;
+}
+
+@media (min-width: 600px) {
+	.nextora-igg--layout-classic .nextora-igg__list,
+	.nextora-igg .nextora-igg__list:not([class*='nextora-igg__list--']) {
+		grid-template-columns: repeat(var(--nextora-igg-cols-t), minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 960px) {
+	.nextora-igg--layout-classic .nextora-igg__list,
+	.nextora-igg .nextora-igg__list:not([class*='nextora-igg__list--']) {
+		grid-template-columns: repeat(var(--nextora-igg-cols-d), minmax(0, 1fr));
+	}
+}
+
+/* ——— Creative layouts: Bento + Spotlight use CSS grid; Editorial uses a flex “magazine” column ——— */
+.nextora-igg--layout-bento .nextora-igg__list--bento,
+.nextora-igg--layout-spotlight .nextora-igg__list--spotlight {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: var(--nextora-igg-gap);
+	min-width: 0;
+	align-items: start;
+}
+
+/* Bento: stacked on small screens, mosaic from tablet up */
+.nextora-igg--layout-bento .nextora-igg__list--bento {
+	grid-template-columns: 1fr;
+}
+
+.nextora-igg--layout-bento .nextora-igg__list--bento .nextora-igg__item {
+	min-width: 0;
+}
+
+/* Bento: dense mosaic “tiles” — border, soft shadow, slight tile tilt (desktop) */
+.nextora-igg--layout-bento .nextora-igg__list--bento {
+	padding: clamp(0.15rem, 0.4vw, 0.4rem);
+}
+
+.nextora-igg--layout-bento .nextora-igg__item {
+	background: var(--nextora-igg-bento-tile-bg, var(--wp--preset--color--base, #fff));
+	border: 1px solid color-mix(in srgb, var(--nextora-igg-bento-edge, #0f172a) 14%, transparent);
+	box-shadow:
+		0 1px 0 color-mix(in srgb, #fff 50%, transparent),
+		0 6px 20px -6px color-mix(in srgb, #000 20%, transparent);
+}
+
+@media (min-width: 600px) {
+	/* Tilt the tile (media), not the whole li, so GSAP can translate the li on hover */
+	.nextora-igg--layout-bento .nextora-igg__item:nth-child(3n + 1) .nextora-igg__media {
+		transform: rotate(-0.9deg);
+	}
+	.nextora-igg--layout-bento .nextora-igg__item:nth-child(3n + 2) .nextora-igg__media {
+		transform: rotate(0.75deg);
+	}
+	.nextora-igg--layout-bento .nextora-igg__item:nth-child(3n) .nextora-igg__media {
+		transform: rotate(-0.35deg);
+	}
+}
+
+@media (min-width: 600px) {
+	.nextora-igg--layout-bento .nextora-igg__list--bento[data-nextora-n="3"] {
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+		grid-template-rows: auto auto;
+	}
+	.nextora-igg--layout-bento
+		.nextora-igg__list--bento[data-nextora-n="3"]
+		.nextora-igg__item:nth-child(1) {
+		grid-row: 1 / span 2;
+	}
+
+	.nextora-igg--layout-bento .nextora-igg__list--bento[data-nextora-n="4"] {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-rows: auto auto;
+	}
+
+	.nextora-igg--layout-bento .nextora-igg__list--bento[data-nextora-n="5"] {
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		grid-template-rows: auto auto;
+	}
+	.nextora-igg--layout-bento
+		.nextora-igg__list--bento[data-nextora-n="5"]
+		.nextora-igg__item:nth-child(1) {
+		grid-column: 1 / span 3;
+	}
+	.nextora-igg--layout-bento
+		.nextora-igg__list--bento[data-nextora-n="5"]
+		.nextora-igg__item:nth-child(2) {
+		grid-column: 4 / span 3;
+	}
+	.nextora-igg--layout-bento
+		.nextora-igg__list--bento[data-nextora-n="5"]
+		.nextora-igg__item:nth-child(3) {
+		grid-column: 1 / span 2;
+	}
+	.nextora-igg--layout-bento
+		.nextora-igg__list--bento[data-nextora-n="5"]
+		.nextora-igg__item:nth-child(4) {
+		grid-column: 3 / span 2;
+	}
+	.nextora-igg--layout-bento
+		.nextora-igg__list--bento[data-nextora-n="5"]
+		.nextora-igg__item:nth-child(5) {
+		grid-column: 5 / span 2;
+	}
+
+	.nextora-igg--layout-bento .nextora-igg__list--bento[data-nextora-n="6"] {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-rows: auto auto;
+	}
+}
+
+/* Spotlight */
+.nextora-igg--layout-spotlight .nextora-igg__list--spotlight {
+	grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+	.nextora-igg--layout-spotlight .nextora-igg__list--spotlight[data-nextora-n="3"] {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-rows: auto auto;
+	}
+	.nextora-igg--layout-spotlight
+		.nextora-igg__list--spotlight[data-nextora-n="3"]
+		.nextora-igg__item:nth-child(1) {
+		grid-column: 1 / -1;
+	}
+
+	.nextora-igg--layout-spotlight .nextora-igg__list--spotlight[data-nextora-n="4"] {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-rows: auto auto;
+	}
+	.nextora-igg--layout-spotlight
+		.nextora-igg__list--spotlight[data-nextora-n="4"]
+		.nextora-igg__item:nth-child(1) {
+		grid-column: 1 / -1;
+	}
+
+	.nextora-igg--layout-spotlight .nextora-igg__list--spotlight[data-nextora-n="5"] {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-rows: auto auto auto;
+	}
+	.nextora-igg--layout-spotlight
+		.nextora-igg__list--spotlight[data-nextora-n="5"]
+		.nextora-igg__item:nth-child(1) {
+		grid-column: 1 / -1;
+	}
+
+	.nextora-igg--layout-spotlight .nextora-igg__list--spotlight[data-nextora-n="6"] {
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		grid-template-rows: auto auto auto;
+	}
+	.nextora-igg--layout-spotlight
+		.nextora-igg__list--spotlight[data-nextora-n="6"]
+		.nextora-igg__item:nth-child(1) {
+		grid-column: 1 / -1;
+	}
+	.nextora-igg--layout-spotlight
+		.nextora-igg__list--spotlight[data-nextora-n="6"]
+		.nextora-igg__item:nth-child(2) {
+		grid-column: 1 / span 2;
+	}
+	.nextora-igg--layout-spotlight
+		.nextora-igg__list--spotlight[data-nextora-n="6"]
+		.nextora-igg__item:nth-child(3) {
+		grid-column: 3 / span 2;
+	}
+	.nextora-igg--layout-spotlight
+		.nextora-igg__list--spotlight[data-nextora-n="6"]
+		.nextora-igg__item:nth-child(4) {
+		grid-column: 5 / span 2;
+	}
+	.nextora-igg--layout-spotlight
+		.nextora-igg__list--spotlight[data-nextora-n="6"]
+		.nextora-igg__item:nth-child(5) {
+		grid-column: 1 / span 3;
+	}
+	.nextora-igg--layout-spotlight
+		.nextora-igg__list--spotlight[data-nextora-n="6"]
+		.nextora-igg__item:nth-child(6) {
+		grid-column: 4 / span 3;
+	}
+}
+
+/* Editorial: magazine column — not a mosaic; narrow rail, flat, accent lines (distinct from Bento cards) */
+.nextora-igg--layout-editorial .nextora-igg__list--editorial {
+	list-style: none;
+	margin: 0;
+	padding: 0.35rem 0.5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: clamp(1.15rem, 3vw, 2.4rem);
+	max-width: min(36rem, 100%);
+	margin-inline: auto;
+	min-width: 0;
+}
+
+.nextora-igg--layout-editorial .nextora-igg__list--editorial .nextora-igg__item {
+	border-radius: 0;
+	box-shadow: none;
+	border: none;
+	background: transparent;
+	overflow: visible;
+}
+
+.nextora-igg--layout-editorial .nextora-igg__list--editorial .nextora-igg__item:nth-child(even) {
+	align-self: flex-end;
+	max-width: 90%;
+}
+
+@media (min-width: 600px) {
+	.nextora-igg--layout-editorial .nextora-igg__list--editorial {
+		gap: clamp(1.5rem, 3.5vw, 2.5rem);
+		padding-inline: clamp(0, 2vw, 0.5rem);
+	}
+}
+
+/* ——— Shared: list items + media + intrinsic-ratio images ——— */
+.nextora-igg__item {
+	position: relative;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	min-height: 0;
+	border-radius: var(--nextora-igg-radius);
+	overflow: hidden;
+	align-self: start;
+}
+
+/* Creative: slightly larger radius (Editorial: flat / square—overridden below) */
+.nextora-igg--layout-bento .nextora-igg__item,
+.nextora-igg--layout-spotlight .nextora-igg__item {
+	border-radius: var(--nextora-igg-creative-radius);
+}
+
+.nextora-igg--layout-editorial .nextora-igg__item {
+	border-radius: 0;
+}
+
+/* Wrapper only clips rounded corners; height comes from the image */
+.nextora-igg__media {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	background: var(
+		--nextora-igg-image-bg,
+		color-mix(
+			in srgb,
+			var(--wp--preset--color--contrast, #0f172a) 6%,
+			transparent
+		)
+	);
+}
+
+/* Intrinsic aspect ratio: full width of cell, height from the file.
+   Override theme / WP attrs that forced cover-in-box layout. */
+body .nextora-igg .nextora-igg__media .nextora-igg__img,
+body .nextora-igg .nextora-igg__img {
+	display: block;
+	position: static;
+	inset: auto;
+	width: 100% !important;
+	max-width: 100% !important;
+	height: auto !important;
+	margin: 0;
+}
+
+/* Block setting “Contain (letterbox)”: limit very tall images; still show full image */
+.nextora-igg--fit-contain .nextora-igg__img {
+	width: 100% !important;
+	height: auto !important;
+	max-height: min(70vh, 50rem);
+	object-fit: contain;
+	object-position: center;
+}
+
+.nextora-igg__caption {
+	margin: 0;
+	padding: 0.5rem 0.55rem 0.55rem;
+	font-size: clamp(0.75rem, 1.1vw, 0.85rem);
+	line-height: 1.4;
+	color: var(--wp--preset--color--contrast, #0f172a);
+	background: color-mix(
+		in srgb,
+		var(--wp--preset--color--base, #fff) 94%,
+		transparent
+	);
+}
