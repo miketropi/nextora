@@ -80,6 +80,10 @@
     "slideAreaBackground": {
       "type": "string",
       "default": ""
+    },
+    "showCaptions": {
+      "type": "boolean",
+      "default": true
     }
   },
   "editorScript": "file:./index.js",

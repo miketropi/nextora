@@ -73,6 +73,7 @@ export default function ImageGallerySlideEdit({ attributes, setAttributes }: Pro
     slidesPerViewDesktop = 1.25,
     slideImageFit = 'cover',
     slideAreaBackground = '',
+    showCaptions = true,
   } = attributes;
 
   const idList: number[] = Array.isArray(imageIds) ? imageIds.map((id) => parseInt(String(id), 10)).filter((n) => n > 0) : [];
@@ -145,6 +146,15 @@ export default function ImageGallerySlideEdit({ attributes, setAttributes }: Pro
               { label: __('Contain (letterbox)', 'nextora'), value: 'contain' },
             ]}
             onChange={(v) => setAttributes({ slideImageFit: v })}
+          />
+          <ToggleControl
+            label={__('Image captions', 'nextora')}
+            checked={!!showCaptions}
+            onChange={(v) => setAttributes({ showCaptions: v })}
+            help={__(
+              'Uses each image’s caption from the Media Library (the “Caption” field in the attachment details).',
+              'nextora',
+            )}
           />
           <PanelColorSettings
             title={__('Slide background', 'nextora')}
@@ -293,6 +303,12 @@ export default function ImageGallerySlideEdit({ attributes, setAttributes }: Pro
                       {idList.map((id, i) => {
                         const m = media.find((x) => x && x.id === id);
                         const src = m?.source_url;
+                        const capRaw =
+                          m?.caption && typeof m.caption === 'object' && 'raw' in m.caption
+                            ? (m.caption as { raw?: string }).raw
+                            : typeof m?.caption === 'string'
+                              ? m.caption
+                              : '';
                         return (
                           <li key={id} className="nextora-ig-editor__thumb">
                             <div className="nextora-ig-editor__thumb-preview">
@@ -308,6 +324,9 @@ export default function ImageGallerySlideEdit({ attributes, setAttributes }: Pro
                                 </div>
                               )}
                             </div>
+                            {showCaptions && capRaw && (
+                              <p className="nextora-ig-editor__caption">{capRaw}</p>
+                            )}
                             <HStack
                               className="nextora-ig-editor__thumb-actions"
                               spacing={0}

@@ -45,8 +45,9 @@ if ( ! $ids ) {
 	return;
 }
 
-$show_nav   = ! isset( $attributes['showNav'] ) || (bool) $attributes['showNav'];
-$show_pag  = ! isset( $attributes['showPagination'] ) || (bool) $attributes['showPagination'];
+$show_nav      = ! isset( $attributes['showNav'] ) || (bool) $attributes['showNav'];
+$show_pag      = ! isset( $attributes['showPagination'] ) || (bool) $attributes['showPagination'];
+$show_captions = ! isset( $attributes['showCaptions'] ) || (bool) $attributes['showCaptions'];
 $loop      = ! isset( $attributes['loop'] ) || (bool) $attributes['loop'];
 $autoplay  = isset( $attributes['autoplay'] ) && (bool) $attributes['autoplay'];
 $autoplay_d = isset( $attributes['autoplayDelay'] ) ? max( 1000, (int) $attributes['autoplayDelay'] ) : 4500;
@@ -128,7 +129,7 @@ $wrapper = get_block_wrapper_attributes();
 							<div class="nextora-ig__media">
 								<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attachment image. ?>
 							</div>
-							<?php if ( $caption ) : ?>
+							<?php if ( $show_captions && $caption ) : ?>
 								<p class="nextora-ig__caption"><?php echo esc_html( $caption ); ?></p>
 							<?php endif; ?>
 						</div>
