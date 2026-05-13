@@ -1,0 +1,512 @@
+/**
+ * Front-end layout for nextora/header (block theme).
+ * Typography defaults: theme.json → styles.blocks["nextora/header"].
+ * Nav: .nextora-navigation-from-location--primary + nav-menus.css (--nextora-nav-*).
+ * Utilities (cart / account / hamburger): same hover + focus cues as primary nav on contrast headers.
+ */
+
+.nextora-header-block {
+	box-sizing: border-box;
+	font-family: var(--wp--style--font-family, var(--wp--preset--font-family--sans));
+	font-size: var(--wp--style--font-size, inherit);
+}
+
+.nextora-header-block--border-bottom {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+/**
+ * Global Styles (text / link / typography) apply to the header wrapper; nav-menus.css
+ * forces --nextora-nav-header-link on primary links — override here so the menu matches
+ * the block sidebar and theme.json block styles.
+ */
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu > li > a {
+	color: var(
+		--wp--style--color--link,
+		var(--wp--style--color, inherit)
+	);
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: var(--wp--style--font-weight, 500);
+}
+
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu > li > a:hover,
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu > li > a:focus-visible {
+	color: var(
+		--wp--style--color--link,
+		var(--wp--style--color, inherit)
+	);
+	text-decoration-color: color-mix(in srgb, currentColor 70%, transparent);
+}
+
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu > li.current-menu-item > a,
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu > li.current-menu-ancestor > a {
+	text-decoration-color: currentColor;
+}
+
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu > li > a:focus-visible {
+	outline-color: var(--wp--preset--color--primary, var(--nextora-nav-focus-ring-on-dark, currentColor));
+}
+
+/* Flyout panel: palette surface/contrast so dropdowns stay readable on custom header bands */
+.nextora-header-block .nextora-header-menu .sub-menu {
+	background-color: var(--nextora-nav-submenu-bg);
+	color: var(--wp--preset--color--contrast, var(--nextora-nav-panel-fg));
+	border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 14%, transparent);
+}
+
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu .sub-menu a {
+	color: inherit;
+}
+
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu .sub-menu a:hover,
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu .sub-menu a:focus-visible {
+	color: inherit;
+	background-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 8%, transparent);
+}
+
+.nextora-header-block .nextora-header-menu .sub-menu .current-menu-item > a,
+.nextora-header-block .nextora-header-menu .sub-menu .current-menu-ancestor > a {
+	color: var(--wp--preset--color--contrast, inherit) !important;
+	background-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 12%, transparent);
+}
+
+.nextora-header-block .nextora-header-menu .sub-menu a:focus-visible {
+	outline-color: var(--wp--preset--color--primary, var(--nextora-nav-focus-ring, currentColor));
+}
+
+/* Sticky: always visible while scrolling */
+.nextora-header-block--sticky-always {
+	position: sticky;
+	z-index: 100;
+	top: 0;
+}
+
+/* Sticky: hide when scrolling down, show when scrolling up */
+.nextora-header-block--sticky-scroll-up {
+	position: sticky;
+	z-index: 100;
+	top: 0;
+	transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nextora-header-block--sticky-scroll-up.nextora-header-block--scroll-hidden {
+	transform: translateY(-100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-header-block--sticky-scroll-up {
+		transition-duration: 0.01ms;
+	}
+}
+
+/* WordPress admin bar offset */
+body.admin-bar .nextora-header-block--sticky {
+	top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+	body.admin-bar .nextora-header-block--sticky {
+		top: 46px;
+	}
+}
+
+.nextora-header-block__inner {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: clamp(
+		var(--wp--preset--spacing--10, 1rem),
+		2vw,
+		var(--nextora-gutter, 1.5rem)
+	);
+}
+
+/* Content width cap for logo + nav + utilities (pairs with block “Inner max width” option). */
+.nextora-header-block__inner--max-content,
+.nextora-header-block__inner--max-wide,
+.nextora-header-block__inner--max-64rem,
+.nextora-header-block__inner--max-70rem,
+.nextora-header-block__inner--max-72rem,
+.nextora-header-block__inner--max-75rem,
+.nextora-header-block__inner--max-80rem,
+.nextora-header-block__inner--max-90rem,
+.nextora-header-block__inner--max-96rem {
+	margin-inline: auto;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* theme.json settings.layout — same tokens as core constrained / wide layouts */
+.nextora-header-block__inner--max-content {
+	max-width: min(100%, var(--wp--style--global--content-size, 720px));
+}
+
+.nextora-header-block__inner--max-wide {
+	max-width: min(100%, var(--wp--style--global--wide-size, 1200px));
+}
+
+.nextora-header-block__inner--max-64rem {
+	max-width: 64rem;
+}
+
+.nextora-header-block__inner--max-70rem {
+	max-width: 70rem;
+}
+
+.nextora-header-block__inner--max-72rem {
+	max-width: 72rem;
+}
+
+.nextora-header-block__inner--max-75rem {
+	max-width: 75rem;
+}
+
+.nextora-header-block__inner--max-80rem {
+	max-width: 80rem;
+}
+
+.nextora-header-block__inner--max-90rem {
+	max-width: 90rem;
+}
+
+.nextora-header-block__inner--max-96rem {
+	max-width: 96rem;
+}
+
+.nextora-header-block__logo {
+	flex: 0 0 auto;
+	min-width: 0;
+}
+
+.nextora-header-block__logo-link {
+	display: inline-flex;
+	align-items: center;
+	text-decoration: none;
+	color: inherit;
+}
+
+.nextora-header-block__logo-text {
+	font-weight: 600;
+	font-size: var(--wp--preset--font-size--medium);
+	letter-spacing: -0.02em;
+	color: inherit;
+}
+
+.nextora-header-block__nav-source {
+	flex: 1 1 auto;
+	min-width: 0;
+	justify-content: flex-end;
+	/* < 768px: desktop menu is cloned into the portal; this source stays in DOM for cloning only */
+	display: none;
+}
+
+@media (min-width: 768px) {
+	.nextora-header-block__nav-source {
+		display: flex;
+	}
+}
+
+.nextora-header-block__nav-empty {
+	display: none;
+}
+
+.nextora-header-block__actions {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: var(--wp--preset--spacing--10, 0.65rem);
+}
+
+.nextora-header-block__utilities {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: var(--wp--preset--spacing--10, 0.5rem);
+}
+
+/* Inline search (not spotlight) — tuned for contrast “band” headers; still uses palette presets */
+.nextora-header-block__search--simple .search-form {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--10, 0.35rem);
+	flex-wrap: wrap;
+}
+
+.nextora-header-block__search--simple .search-field {
+	box-sizing: border-box;
+	min-width: 0;
+	flex: 1 1 10rem;
+	border-radius: 0.375rem;
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 38%, transparent);
+	background-color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 14%, transparent);
+	padding: 0.5rem 0.65rem;
+	font-family: inherit;
+	font-size: var(--wp--preset--font-size--small);
+	color: var(--wp--preset--color--base, #fafafa);
+}
+
+.nextora-header-block__search--simple .search-field:focus {
+	outline: 2px solid var(--wp--preset--color--primary, #4f46e5);
+	outline-offset: 2px;
+	border-color: var(--wp--preset--color--primary, #4f46e5);
+}
+
+.nextora-header-block__search--simple .search-submit {
+	cursor: pointer;
+	border-radius: 0.375rem;
+	border: none;
+	padding: 0.5rem 1rem;
+	font-family: inherit;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
+	background-color: var(--wp--preset--color--primary, #4f46e5);
+	color: var(--wp--preset--color--base, #fafafa);
+	transition:
+		background-color var(--nextora-nav-t, 0.18s ease),
+		color var(--nextora-nav-t, 0.18s ease);
+}
+
+.nextora-header-block__search--simple .search-submit:hover,
+.nextora-header-block__search--simple .search-submit:focus-visible {
+	background-color: color-mix(
+		in srgb,
+		var(--wp--preset--color--base, #fafafa) 22%,
+		var(--wp--preset--color--primary, #4f46e5)
+	);
+	color: var(--wp--preset--color--base, #fafafa);
+}
+
+/**
+ * Spotlight trigger: `modal-markup.php` uses utility `text-base` (palette ink), not font size.
+ * Inside the header block it must follow block text/link colors like cart + nav.
+ */
+.nextora-header-block__search--spotlight button[data-nextora-modal-open] {
+	color: var(--wp--style--color--link, var(--wp--style--color, inherit));
+}
+
+.nextora-header-block__search--spotlight button[data-nextora-modal-open]:hover,
+.nextora-header-block__search--spotlight button[data-nextora-modal-open]:focus-visible {
+	color: var(--wp--style--color--link, var(--wp--style--color, inherit));
+	background-color: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.nextora-header-block__search--spotlight button[data-nextora-modal-open]:focus-visible {
+	outline-color: var(--wp--preset--color--primary, currentColor);
+}
+
+/**
+ * Cart + account: match spotlight search trigger — 2.5rem square ghost control, rounded-md.
+ * @see modal-markup.php `trigger_class` (size-10, inline-flex, rounded-md).
+ */
+.nextora-header-block__utilities .nextora-header-block__cart-link,
+.nextora-header-block__utilities .nextora-header-block__account-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: 2.5rem;
+	height: 2.5rem;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 0.375rem;
+	background: transparent;
+	color: var(--wp--style--color--link, var(--wp--style--color, inherit));
+	text-decoration: none;
+	transition:
+		color var(--nextora-nav-t, 0.18s ease),
+		background-color var(--nextora-nav-t, 0.18s ease);
+}
+
+.nextora-header-block__utilities .nextora-header-block__account-link:visited {
+	color: var(--wp--style--color--link, var(--wp--style--color, inherit));
+}
+
+.nextora-header-block__utilities .nextora-header-block__account-link--with-text {
+	width: auto;
+	max-width: 12rem;
+	min-width: 2.5rem;
+	height: 2.5rem;
+	padding-inline: 0.5rem;
+	gap: 0.35rem;
+	justify-content: center;
+}
+
+.nextora-header-block__utilities .nextora-header-block__cart-link:hover,
+.nextora-header-block__utilities .nextora-header-block__cart-link:focus-visible,
+.nextora-header-block__utilities .nextora-header-block__account-link:hover,
+.nextora-header-block__utilities .nextora-header-block__account-link:focus-visible {
+	color: var(--wp--style--color--link, var(--wp--style--color, inherit));
+	background-color: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.nextora-header-block__utilities .nextora-header-block__cart-link:focus-visible,
+.nextora-header-block__utilities .nextora-header-block__account-link:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+}
+
+/* Cart: quantity badge sits on the trigger corner */
+.nextora-header-block__cart .nextora-header-block__cart-link {
+	position: relative;
+}
+
+.nextora-header-block__cart-icon,
+.nextora-header-block__account-icon {
+	display: inline-flex;
+	line-height: 0;
+	flex-shrink: 0;
+}
+
+.nextora-header-block__cart-badge {
+	position: absolute;
+	inset-inline-end: -0.2rem;
+	top: 0.125rem;
+	z-index: 1;
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1rem;
+	height: 1rem;
+	padding: 0 0.28rem;
+	font-size: 0.7rem;
+	font-weight: 600;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+	color: var(--wp--preset--color--contrast, #0f172a);
+	pointer-events: none;
+}
+
+.nextora-header-block__cart-badge:empty {
+	display: none;
+}
+
+.nextora-header-block__cart-count {
+	margin: 0;
+	padding: 0;
+	font: inherit;
+	font-weight: inherit;
+	font-size: inherit;
+	line-height: 1;
+	min-width: 0;
+	text-align: center;
+	opacity: 1;
+}
+
+.nextora-header-block__account-text {
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 500;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Mini-cart trigger: native `<button>` reset beyond utility rules */
+button.nextora-header-block__cart-link.nextora-header-block__cart-trigger {
+	appearance: none;
+	font: inherit;
+	cursor: pointer;
+	text-align: inherit;
+}
+
+/* Sit above mobile nav portal (very high z-index) when open */
+.nextora-header-block__mini-cart-modal {
+	--nextora-modal-z: 100000;
+}
+
+.nextora-header-block__mini-cart-body {
+	padding-top: 0.5rem;
+}
+
+.nextora-header-block__mini-cart-body .woocommerce-mini-cart {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.nextora-header-block__mini-cart-body .woocommerce-mini-cart-item {
+	padding: 0.65rem 0;
+	border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 10%, transparent);
+}
+
+.nextora-header-block__mini-cart-body .woocommerce-mini-cart__total {
+	margin: 1rem 0 0.75rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 12%, transparent);
+	font-weight: 600;
+}
+
+.nextora-header-block__mini-cart-body .woocommerce-mini-cart__buttons {
+	margin: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.nextora-header-block__mini-cart-body .woocommerce-mini-cart__buttons .button {
+	flex: 1 1 auto;
+	min-width: 0;
+	text-align: center;
+}
+
+/* Match spotlight trigger hit target (modal-markup.php uses size-10) */
+.nextora-header-block__menu-toggle {
+	display: inline-flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
+	width: 2.5rem;
+	height: 2.5rem;
+	padding: 0;
+	margin: 0;
+	border: none;
+	background: transparent;
+	color: var(
+		--wp--style--color--link,
+		var(--wp--style--color, inherit)
+	);
+	cursor: pointer;
+	border-radius: 0.375rem;
+	transition: background-color var(--nextora-nav-t, 0.18s ease), color var(--nextora-nav-t, 0.18s ease);
+}
+
+.nextora-header-block__menu-toggle:hover,
+.nextora-header-block__menu-toggle:focus-visible {
+	background-color: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.nextora-header-block__menu-toggle:focus-visible {
+	outline: 2px solid var(--nextora-nav-focus-ring-on-dark, currentColor);
+	outline-offset: 2px;
+}
+
+.nextora-header-block__hamburger-line {
+	display: block;
+	width: 1.35rem;
+	height: 2px;
+	background: currentColor;
+	border-radius: 1px;
+}
+
+@media (min-width: 768px) {
+	.nextora-header-block__menu-toggle {
+		display: none !important;
+	}
+}
+
+@media (max-width: 767.98px) {
+	.nextora-header-block__utilities--hide-search-mobile .nextora-header-block__search {
+		display: none !important;
+	}
+
+	.nextora-header-block__utilities--hide-cart-mobile .nextora-header-block__cart {
+		display: none !important;
+	}
+}

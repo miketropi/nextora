@@ -48,7 +48,7 @@ After changing CSS, TS, or block sources, run **`npm run build`** (or **`npm run
 - **Registration**: `blocks/blocks.php` — on `init`, globs each subdirectory of `blocks/` and calls `register_block_type( $block_dir )`. Each block folder needs **`block.json`** plus the **built** `index.js` and **`index.asset.php`** (dependency manifest for WordPress).
 - **Build**: `scripts/build-blocks.mjs` (esbuild; `@wordpress/*` imports shim to `window.wp.*`). **`npm run build`** runs `build:css`, `build:ts`, and **`build:blocks`**. **`npm run watch`** includes **`watch:blocks`**.
 - **Scaffold**: **`npm run gen`** → `scripts/gen-block.mjs` (new block folder + starter files).
-- **Examples in repo**: `blocks/hero-section/`, `blocks/spotlight-search/` (header modal + live search; default placement in `parts/header.html`).
+- **Examples in repo**: `blocks/hero-section/`, `blocks/spotlight-search/` (header modal + live search; default placement in `parts/header.html`), `blocks/header/` (all-in-one site header: logo, classic menu, spotlight search, WooCommerce utilities; replaces the older grouped header pattern when used in `parts/header.html`).
 
 ### `resources/css/app.css` import order
 
@@ -65,11 +65,12 @@ Imports are intentional: **base** → **components** → **prose** → **overrid
 
 Boot order matters where noted:
 
-1. `initHeaderNavigation()` — primary menu drawer / accordion (`header-nav.ts`); strings from `wp_localize_script` → `window.nextoraNav` in `inc/assets/assets.php`
-2. `initModals()` / `attachModalGlobals()` — `lib/modal.ts`; `window.nextoraModal` localized in `assets.php`
-3. `initSpotlightSearch()` — after modals; `lib/spotlight-search.ts`; `window.nextoraSpotlight`
-4. `initArticleShare()` — `lib/article-share.ts`; `window.nextoraArticleShare` (filter `nextora_article_share_script_vars`)
-5. `initCommentTiptap()` — `lib/comment-tiptap.ts`; Tiptap + Lucide bundles; `window.nextoraComments`
+1. `initHeaderSticky()` — `header-sticky.ts`; scroll-up hide/show for `nextora/header` when enabled (`window.nextoraHeaderSticky.hideAfter` from `inc/assets/assets.php`, filter `nextora_header_block_sticky_hide_after`).
+2. `initHeaderNavigation()` — primary menu drawer / accordion (`header-nav.ts`); strings from `wp_localize_script` → `window.nextoraNav` in `inc/assets/assets.php`
+3. `initModals()` / `attachModalGlobals()` — `lib/modal.ts`; `window.nextoraModal` localized in `assets.php`
+4. `initSpotlightSearch()` — after modals; `lib/spotlight-search.ts`; `window.nextoraSpotlight`
+5. `initArticleShare()` — `lib/article-share.ts`; `window.nextoraArticleShare` (filter `nextora_article_share_script_vars`)
+6. `initCommentTiptap()` — `lib/comment-tiptap.ts`; Tiptap + Lucide bundles; `window.nextoraComments`
 
 **npm `dependencies`**: `@tiptap/*`, `lucide`. **devDependencies**: Tailwind, PostCSS, esbuild, TypeScript.
 
@@ -103,7 +104,7 @@ Not exhaustive — key includes:
 
 - **PHP**: `inc/navigation/navigation.php` — replaces empty `core/navigation` with `wp_nav_menu()` when `__unstableLocation` is set; classes `nextora-header-menu`, `nextora-navigation-from-location--primary|footer`.
 - **CSS**: `resources/css/modules/base/nav-menus.css` — desktop flyouts (**CSS** `:focus-within` + `(hover: hover)` hover); mobile/tablet **full-height off-canvas** panel, **portal** mount (see below).
-- **JS**: `resources/ts/header-nav.ts` — no GSAP; class toggles, `document.body` **`.nextora-nav-portal`** for fixed positioning, accordion **`.nextora-submenu-toggle`**, Escape / backdrop / resize.
+- **JS**: `resources/ts/header-nav.ts` — no GSAP; class toggles, `document.body` **`.nextora-nav-portal`** for fixed positioning, **`button.nextora-submenu-toggle`** accordion (portal mount only, see `bindPortalSubmenuAccordions`), Escape / backdrop / resize.
 
 ## Article / loop templates
 

@@ -1,0 +1,129 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/header",
+  "title": "Site header",
+  "category": "theme",
+  "description": "Logo, menu, and optional toolbar (search, cart, account). Customize colors and typography in the block sidebar.",
+  "keywords": ["header", "navigation", "logo", "menu", "nextora"],
+  "textdomain": "nextora",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "multiple": false,
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": ["top", "bottom"]
+    },
+    "typography": {
+      "fontSize": true,
+      "fontFamily": true
+    }
+  },
+  "attributes": {
+    "logoType": {
+      "type": "string",
+      "enum": ["image", "text"],
+      "default": "image"
+    },
+    "logoImageId": {
+      "type": "number",
+      "default": 0
+    },
+    "logoImageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "logoText": {
+      "type": "string",
+      "default": ""
+    },
+    "logoWidth": {
+      "type": "number",
+      "default": 150
+    },
+    "logoLink": {
+      "type": "string",
+      "default": ""
+    },
+    "useSiteLogo": {
+      "type": "boolean",
+      "default": true
+    },
+    "menuId": {
+      "type": "number",
+      "default": 0
+    },
+    "menuLocation": {
+      "type": "string",
+      "default": "primary"
+    },
+    "menuDepth": {
+      "type": "number",
+      "default": 4
+    },
+    "showSearch": {
+      "type": "boolean",
+      "default": true
+    },
+    "searchMode": {
+      "type": "string",
+      "enum": ["spotlight", "simple"],
+      "default": "spotlight"
+    },
+    "showMiniCart": {
+      "type": "boolean",
+      "default": true
+    },
+    "showMyAccount": {
+      "type": "boolean",
+      "default": true
+    },
+    "myAccountIconOnly": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSearchMobile": {
+      "type": "boolean",
+      "default": true
+    },
+    "showCartMobile": {
+      "type": "boolean",
+      "default": true
+    },
+    "stickyHeader": {
+      "type": "boolean",
+      "default": false
+    },
+    "stickyStyle": {
+      "type": "string",
+      "enum": ["always", "scroll-up"],
+      "default": "scroll-up"
+    },
+    "innerMaxWidth": {
+      "type": "string",
+      "default": ""
+    },
+    "innerMaxWidthCustom": {
+      "type": "string",
+      "default": ""
+    },
+    "showBottomBorder": {
+      "type": "boolean",
+      "default": false
+    },
+    "bottomBorderColor": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

@@ -23,6 +23,8 @@ if ( is_readable( NEXTORA_DIR . '/vendor/autoload.php' ) ) {
 require_once NEXTORA_DIR . '/inc/setup/theme-support.php';
 require_once NEXTORA_DIR . '/inc/setup/elementor.php';
 require_once NEXTORA_DIR . '/inc/navigation/navigation.php';
+require_once NEXTORA_DIR . '/inc/navigation/header-block-woocommerce.php';
+require_once NEXTORA_DIR . '/inc/navigation/class-nextora-header-block-walker.php';
 require_once NEXTORA_DIR . '/inc/features/spotlight-search/load.php';
 require_once NEXTORA_DIR . '/inc/comments/comments.php';
 require_once NEXTORA_DIR . '/inc/assets/assets.php';

@@ -326,15 +326,62 @@ export function initHeaderNavigation(): void {
 			btn.setAttribute("aria-expanded", "false");
 			setExpandedLabel(false);
 			document.documentElement.classList.remove("nextora-primary-nav-drawer-open");
-			if (mq.matches) {
-				sourcePanel.classList.remove("hidden");
-			} else {
-				sourcePanel.classList.add("hidden");
-			}
 		};
 
 		mq.addEventListener("change", resetForViewport);
 
 		resetForViewport();
+	});
+
+	bindPortalSubmenuAccordions();
+}
+
+/**
+ * Accordion toggles for submenu `<button.nextora-submenu-toggle>` inside the mobile portal clone only.
+ */
+let portalSubmenuAccordionsBound = false;
+
+function bindPortalSubmenuAccordions(): void {
+	if (portalSubmenuAccordionsBound) {
+		return;
+	}
+	portalSubmenuAccordionsBound = true;
+
+	document.addEventListener("click", (e: MouseEvent): void => {
+		const raw = e.target;
+		const el = raw instanceof Element ? raw.closest(".nextora-submenu-toggle") : null;
+		if (!el || !(el instanceof HTMLButtonElement)) {
+			return;
+		}
+		if (!el.closest("[data-nextora-nav-portal-mount]")) {
+			return;
+		}
+
+		e.preventDefault();
+		e.stopPropagation();
+
+		const li = el.closest("li.menu-item-has-children");
+		if (!li) {
+			return;
+		}
+
+		const expanded = el.getAttribute("aria-expanded") === "true";
+		const next = !expanded;
+
+		const parentUl = li.parentElement;
+		if (parentUl instanceof HTMLUListElement) {
+			parentUl.querySelectorAll(":scope > li.menu-item-has-children.nextora-submenu--open").forEach((sib) => {
+				if (sib !== li) {
+					sib.classList.remove("nextora-submenu--open");
+					const oth = sib.querySelector(":scope > button.nextora-submenu-toggle");
+					if (oth instanceof HTMLButtonElement) {
+						oth.setAttribute("aria-expanded", "false");
+					}
+				}
+			});
+		}
+
+		el.setAttribute("aria-expanded", next ? "true" : "false");
+		li.classList.toggle("nextora-submenu--open", next);
 	});
 }

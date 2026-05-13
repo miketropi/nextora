@@ -47,6 +47,7 @@ const WP_PACKAGES = [
   '@wordpress/i18n',
   '@wordpress/hooks',
   '@wordpress/data',
+  '@wordpress/core-data',
   '@wordpress/compose',
   '@wordpress/primitives',
   '@wordpress/blob',

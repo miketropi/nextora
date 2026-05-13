@@ -263,6 +263,16 @@
 	opacity: 0.75;
 }
 
+/**
+ * Mobile-only submenu accordion (nextora/header + portal clone). Desktop hides the button
+ * and keeps flyout submenus (`:hover` / `:focus-within`).
+ */
+@media (min-width: 768px) {
+	.nextora-header-menu .nextora-submenu-toggle {
+		display: none !important;
+	}
+}
+
 .nextora-header-menu .sub-menu .menu-item-has-children > a::after,
 .nextora-footer-menu .sub-menu .menu-item-has-children > a::after {
 	transform: rotate(-45deg);
@@ -443,6 +453,88 @@
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu > li > a {
 		padding: 0.65rem 0.35rem;
 		font-size: 1.05rem;
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu > li.menu-item-has-children {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.15rem 0.35rem;
+	}
+
+	/* Chevron on links is redundant next to the accordion control in the drawer */
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .menu-item-has-children > a::after {
+		display: none;
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu > li.menu-item-has-children > a {
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle {
+		flex: 0 0 auto;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 0.3rem;
+		background: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 12%, transparent);
+		color: inherit;
+		cursor: pointer;
+		transition: background-color var(--nextora-nav-t), transform var(--nextora-nav-t);
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle:hover,
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle:focus-visible {
+		background: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 20%, transparent);
+		outline: 2px solid var(--nextora-nav-focus-ring-on-dark, currentColor);
+		outline-offset: 2px;
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle__icon {
+		display: flex;
+		line-height: 0;
+		transition: transform var(--nextora-nav-t);
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle[aria-expanded="true"] .nextora-submenu-toggle__icon {
+		transform: rotate(180deg);
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .menu-item-has-children > .sub-menu {
+		flex: 1 0 100%;
+		width: 100%;
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .menu-item-has-children {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.15rem 0.35rem;
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .menu-item-has-children > a {
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .menu-item-has-children > .sub-menu {
+		flex: 1 0 100%;
+		width: 100%;
+	}
+
+	/* Accordion: closed by default inside the drawer (overrides :hover / :focus-within flyout). */
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .menu-item-has-children:not(.nextora-submenu--open) > .sub-menu {
+		display: none !important;
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu li.nextora-submenu--open > .sub-menu {
+		display: block !important;
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu {

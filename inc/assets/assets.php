@@ -136,6 +136,14 @@ function nextora_enqueue_scripts(): void {
 
 	wp_localize_script(
 		'nextora-main',
+		'nextoraHeaderSticky',
+		array(
+			'hideAfter' => (int) apply_filters( 'nextora_header_block_sticky_hide_after', 72 ),
+		)
+	);
+
+	wp_localize_script(
+		'nextora-main',
 		'nextoraModal',
 		array(
 			'closeLabel' => __( 'Close dialog', 'nextora' ),

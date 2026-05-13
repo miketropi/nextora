@@ -8,7 +8,7 @@ alwaysApply: false
 
 - **Tailwind v4:** [`resources/css/app.css`](../../resources/css/app.css) — Preflight **off**; `@theme` maps to `--wp--preset--*` with fallbacks. Keep editor/front parity with `theme.json`.
 - **CSS module order** in `app.css`: **base** → **components** → **prose** → **overrides** (see [`AGENTS.md`](../../AGENTS.md) § `resources/css/app.css` import order). New feature slices: `resources/css/modules/`.
-- **`main.ts` boot order** (dependents matter): `initHeaderNavigation` → `initModals` → `attachModalGlobals` → `initSpotlightSearch` → `initArticleShare` → `initCommentTiptap`.
+- **`main.ts` boot order** (dependents matter): `initHeaderSticky` → `initHeaderNavigation` → `initModals` → `attachModalGlobals` → `initSpotlightSearch` → `initArticleShare` → `initCommentTiptap`.
 - **Output:** Edits compile to `assets/css/app.css` and `assets/js/main.js` via **`npm run build`** / **`watch`**.
 
 ```text
