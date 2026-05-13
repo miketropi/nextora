@@ -2,6 +2,12 @@
 
 Use this file when changing code under `wp-content/themes/nextora/`. **Deeper feature docs** live in [`docs/`](./docs/) (see table below). Authoritative project overview: `README.md`. PHP layout notes: `inc/README.md`.
 
+## Cursor / IDE
+
+- **Cursor rules (concise constraints):** [`.cursor/rules/*.mdc`](./.cursor/rules/) — always-on and file-pattern rules for blocks, PHP, front-end, and `theme.json`/templates.
+- **Cursor skills (workflows):** [`.cursor/skills/`](./.cursor/skills/) — e.g. adding theme blocks, styling and token alignment. Invoke by skill name when relevant.
+- Long-form context stays in this file and in `docs/`; avoid duplicating large sections into rules.
+
 ## What this theme is
 
 - **Hybrid WordPress theme**: classic PHP templates (`header.php`, `footer.php`, `index.php`, `page.php`, `single.php`) plus **`theme.json` v3** and block **template parts** in `parts/*.html` (loaded via `block_template_part()` in the shell templates).

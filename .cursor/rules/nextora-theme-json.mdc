@@ -1,0 +1,16 @@
+---
+description: Nextora theme.json and block templates — hybrid shell, layout tokens
+globs: theme.json,parts/**/*.html,templates/**/*.html
+alwaysApply: false
+---
+
+# Nextora — theme.json and HTML templates
+
+- **Hybrid theme:** Classic PHP shells (`header.php`, `footer.php`, etc.) load block **template parts** from `parts/*.html` where applicable — align Site Editor structure with those parts.
+- **Design tokens:** Colors, typography, spacing, and `layout.contentSize` / `wideSize` live in [`theme.json`](../../theme.json). Mirror important colors/fonts in `resources/css/app.css` `@theme` so Tailwind utilities match the editor.
+- **Patterns:** Prefer core blocks and existing theme blocks; keep constrained layout compatibility (avoid fighting `layout` / content width unnecessarily).
+
+```text
+❌ Hard-code a hex in parts/header.html for theme-wide ink
+✅ Use theme palette / classes that resolve via presets and @theme
+```

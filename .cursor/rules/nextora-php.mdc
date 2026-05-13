@@ -1,0 +1,17 @@
+---
+description: Nextora PHP — strict types, PSR-4, prefixes, inc/ layouts
+globs: "**/*.php"
+alwaysApply: false
+---
+
+# Nextora — PHP
+
+- Start new PHP files with `declare(strict_types=1);` when appropriate to the file type.
+- **Namespaces:** `Nextora\...` maps to `inc/` (see [`inc/README.md`](../../inc/README.md)); prefer extending existing APIs in `inc/` over duplicating logic.
+- **Procedural** theme code: prefix functions `nextora_`; use `NEXTORA_*` constants / `ThemeConfig` for slug and version.
+- **Front-end script data:** Prefer `wp_localize_script` patterns in [`inc/assets/assets.php`](../../inc/assets/assets.php) over ad-hoc globals.
+
+```text
+❌ New helper function named get_related()
+✅ nextora_get_* or a namespaced class under inc/
+```

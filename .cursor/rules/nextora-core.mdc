@@ -1,0 +1,17 @@
+---
+description: Nextora theme core — naming, builds, generated assets, doc entry points
+alwaysApply: true
+---
+
+# Nextora — core
+
+- **Briefing:** Read [`AGENTS.md`](../../AGENTS.md) first; feature details in [`docs/`](../../docs/).
+- **Slug / i18n:** Text domain `nextora`; PHP hooks/functions `nextora_`; PSR-4 `Nextora\` → `inc/`.
+- **After editing** `resources/css/**`, `resources/ts/**`, or block sources under `blocks/**`, run **`npm run build`** or **`npm run watch`** from the theme root.
+- **Do not treat as source** (regenerate via npm): `assets/css/app.css`, `assets/js/main.js`, `blocks/*/index.js`, `blocks/*/index.asset.php`.
+- **Target:** WordPress 6.4+; PHP 8.1+ (`declare(strict_types=1);` in new PHP).
+
+```text
+❌ Editing assets/js/main.js by hand to fix a bug
+✅ Fix resources/ts/** then npm run build (or watch:ts)
+```

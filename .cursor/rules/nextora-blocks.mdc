@@ -1,0 +1,17 @@
+---
+description: Nextora theme blocks — block.json, esbuild, registration, scaffold
+globs: blocks/**
+alwaysApply: false
+---
+
+# Nextora — theme blocks
+
+- **Registration:** Each folder under `blocks/` with `block.json` is registered via `register_block_type( $block_dir )` in [`blocks/blocks.php`](../../blocks/blocks.php).
+- **Built artifacts:** WordPress expects **`index.js`** + **`index.asset.php`** in the block folder; produced by [`scripts/build-blocks.mjs`](../../scripts/build-blocks.mjs) (esbuild). **`@wordpress/*`** imports resolve to **`window.wp.*`** shims — add new packages in that script if needed.
+- **New block:** `npm run gen` → edit `block.json`, editor source (e.g. `*.tsx`), `render.php` / `view.js` as needed → `npm run build:blocks` or `npm run watch`.
+- **Examples:** `blocks/hero-section/`, `blocks/spotlight-search/`.
+
+```text
+❌ Committing only TSX changes without running build:blocks
+✅ Run npm run build:blocks so index.js and index.asset.php match editor code
+```
