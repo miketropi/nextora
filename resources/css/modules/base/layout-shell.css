@@ -10,7 +10,7 @@
 		max-height: min(50vh, 28rem);
 	}
 
-	.nextora-content-shell {
+	/* .nextora-content-shell {
 		box-sizing: border-box;
 		margin-left: auto;
 		margin-right: auto;
@@ -19,11 +19,11 @@
 		padding-inline: var(--nextora-gutter);
 	}
 
-	.nextora-content-shell--wide {
+	.nextora-content-shell--wide { 
 		max-width: min(100%, 78rem);
 	}
 
 	.nextora-content-shell--wide-size {
 		max-width: min(100%, var(--wp--style--global--wide-size, 1200px));
-	}
+	} */
 }
