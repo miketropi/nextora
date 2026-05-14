@@ -115,6 +115,15 @@
       "type": "string",
       "default": ""
     },
+    "innerRowPadding": {
+      "type": "object",
+      "default": {
+        "top": "",
+        "right": "",
+        "bottom": "",
+        "left": ""
+      }
+    },
     "showBottomBorder": {
       "type": "boolean",
       "default": false

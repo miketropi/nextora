@@ -52,8 +52,8 @@
 			"defaultFontSizes": false,
 			"fontFamilies": [
 				{
-					"fontFamily": "\"Hanken Grotesk\", ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
-					"name": "Hanken Grotesk",
+					"fontFamily": "Arial, Helvetica, sans-serif",
+					"name": "Arial",
 					"slug": "sans"
 				},
 				{

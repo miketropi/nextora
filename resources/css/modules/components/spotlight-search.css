@@ -27,9 +27,8 @@
 		flex-direction: column;
 		font-family: var(
 			--wp--preset--font-family--sans,
-			"Hanken Grotesk",
-			ui-sans-serif,
-			system-ui,
+			Arial,
+			Helvetica,
 			sans-serif
 		);
 	}

@@ -33,9 +33,8 @@
 	--color-surface: var(--wp--preset--color--surface, #f1f5f9);
 	--font-sans: var(
 		--wp--preset--font-family--sans,
-		"Hanken Grotesk",
-		ui-sans-serif,
-		system-ui,
+		Arial,
+		Helvetica,
 		sans-serif
 	);
 	--font-mono: var(
@@ -185,13 +184,10 @@
 @import "./modules/base/comments.css";
 @import "./modules/base/pagination.css";
 @import "./modules/base/entry-column.css";
-
 @import "./modules/components/buttons.css";
 @import "./modules/components/form-fields.css";
 @import "./modules/components/modal.css";
 @import "./modules/components/spotlight-search.css";
 @import "./modules/components/hero-section.css";
-
 @import "./modules/prose/entry-content.css";
-
 @import "./modules/overrides/layout-tweaks.css";

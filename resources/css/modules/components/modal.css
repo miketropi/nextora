@@ -134,9 +134,8 @@
 		margin: 0;
 		font-family: var(
 			--wp--preset--font-family--sans,
-			"Hanken Grotesk",
-			ui-sans-serif,
-			system-ui,
+			Arial,
+			Helvetica,
 			sans-serif
 		);
 		font-size: var(--wp--preset--font-size--medium, 1.125rem);
@@ -184,9 +183,8 @@
 		padding: var(--nextora-modal-pad);
 		font-family: var(
 			--wp--preset--font-family--sans,
-			"Hanken Grotesk",
-			ui-sans-serif,
-			system-ui,
+			Arial,
+			Helvetica,
 			sans-serif
 		);
 		font-size: var(--wp--preset--font-size--base, 1rem);

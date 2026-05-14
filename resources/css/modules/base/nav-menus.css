@@ -124,7 +124,7 @@
 .nextora-navigation-from-location--primary .nextora-header-menu .sub-menu a {
 	color: var(--nextora-nav-panel-fg);
 	font-weight: 400;
-	font-size: 0.875rem;
+	/* font-size: 0.875rem; */
 	padding: 0.5rem 0.75rem;
 	width: 100%;
 	box-sizing: border-box;

@@ -113,6 +113,112 @@ if ( ! function_exists( 'nextora_header_block_sanitize_inner_max_width' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_header_block_sanitize_inner_padding_custom' ) ) {
+	/**
+	 * Sanitize custom padding for `.nextora-header-block__inner` (1–4 lengths).
+	 *
+	 * @param string $value Raw value.
+	 */
+	function nextora_header_block_sanitize_inner_padding_custom( string $value ): string {
+		$value = trim( preg_replace( '/\s+/', ' ', $value ) );
+		if ( '' === $value || strlen( $value ) > 80 ) {
+			return '';
+		}
+		$token = '(?:\d+|\d*\.\d+)(?:px|rem|em|%)';
+		if ( ! preg_match( '/^' . $token . '(?:\s+' . $token . '){0,3}$/i', $value ) ) {
+			return '';
+		}
+
+		return strtolower( $value );
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_sanitize_inner_padding_side' ) ) {
+	/**
+	 * Sanitize one padding side for `.nextora-header-block__inner`.
+	 *
+	 * @param string $value Raw value from the editor BoxControl.
+	 */
+	function nextora_header_block_sanitize_inner_padding_side( string $value ): string {
+		$value = trim( $value );
+		if ( '' === $value ) {
+			return '';
+		}
+		if ( preg_match( '/^(?:\d+|\d*\.\d+)(?:px|rem|em|%|vw|vi|ch)$/i', $value ) ) {
+			return strtolower( $value );
+		}
+		if ( preg_match( '/^var\(\s*--wp--preset--spacing--[a-z0-9]+\s*\)$/i', $value ) ) {
+			return preg_replace( '/\s+/', ' ', $value );
+		}
+
+		return '';
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_inner_padding_markup' ) ) {
+	/**
+	 * Inner row padding (pairs with block “Inner padding” option).
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @return array{class: string, style: string}
+	 */
+	function nextora_header_block_inner_padding_markup( array $attributes ): array {
+		$class = '';
+		$style = '';
+
+		$row = isset( $attributes['innerRowPadding'] ) && is_array( $attributes['innerRowPadding'] )
+			? $attributes['innerRowPadding']
+			: array();
+
+		$decls = array();
+		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+			$raw = isset( $row[ $side ] ) ? trim( (string) $row[ $side ] ) : '';
+			if ( '' === $raw ) {
+				continue;
+			}
+			$san = nextora_header_block_sanitize_inner_padding_side( $raw );
+			if ( '' !== $san ) {
+				$decls[] = 'padding-' . $side . ':' . $san;
+			}
+		}
+
+		if ( ! empty( $decls ) ) {
+			return array(
+				'class' => '',
+				'style' => implode( ';', $decls ) . '; box-sizing: border-box;',
+			);
+		}
+
+		// Legacy: innerPadding / innerPaddingCustom (older saves before innerRowPadding).
+		$ip = isset( $attributes['innerPadding'] ) ? trim( (string) $attributes['innerPadding'] ) : '';
+
+		$pad_class = array(
+			'none' => 'nextora-header-block__inner--pad-none',
+			'05'   => 'nextora-header-block__inner--pad-05',
+			'10'   => 'nextora-header-block__inner--pad-10',
+			'20'   => 'nextora-header-block__inner--pad-20',
+			'30'   => 'nextora-header-block__inner--pad-30',
+			'40'   => 'nextora-header-block__inner--pad-40',
+			'50'   => 'nextora-header-block__inner--pad-50',
+		);
+
+		if ( 'custom' === $ip ) {
+			$raw = isset( $attributes['innerPaddingCustom'] ) ? trim( (string) $attributes['innerPaddingCustom'] ) : '';
+			$san = nextora_header_block_sanitize_inner_padding_custom( $raw );
+			if ( '' !== $san ) {
+				$style = 'padding: ' . $san . '; box-sizing: border-box;';
+			}
+		} elseif ( isset( $pad_class[ $ip ] ) ) {
+			$class = $pad_class[ $ip ];
+		}
+
+		return array(
+			'class' => $class,
+			'style' => $style,
+		);
+	}
+}
+
 if ( ! function_exists( 'nextora_header_block_inner_max_width_markup' ) ) {
 	/**
 	 * Inner row constraint: extra class and/or inline `max-width` (custom).
@@ -415,7 +521,7 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 						aria-label="<?php echo esc_attr( $cart_aria ); ?>"
 					>
 						<span class="nextora-header-block__cart-icon" aria-hidden="true">
-							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 7h15l-1.5 9h-12L6 7Zm0 0L5 3H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.35" fill="currentColor"/><circle cx="18" cy="20" r="1.35" fill="currentColor"/></svg>
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 7h15l-1.5 9h-12L6 7Zm0 0L5 3H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.35" fill="currentColor"/><circle cx="18" cy="20" r="1.35" fill="currentColor"/></svg>
 						</span>
 						<?php
 						echo function_exists( 'nextora_header_block_mini_cart_badge_html' )
@@ -480,7 +586,7 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 			<div class="nextora-header-block__account">
 				<a class="<?php echo esc_attr( $acct_class ); ?>" href="<?php echo esc_url( wc_get_account_endpoint_url( 'dashboard' ) ); ?>" aria-label="<?php esc_attr_e( 'My account', 'nextora' ); ?>">
 					<span class="nextora-header-block__account-icon" aria-hidden="true">
-						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.7"/></svg>
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.7"/></svg>
 					</span>
 					<?php if ( ! isset( $atts['myAccountIconOnly'] ) || ! (bool) $atts['myAccountIconOnly'] ) : ?>
 						<span class="nextora-header-block__account-text">
@@ -541,10 +647,12 @@ $dialog_lab  = __( 'Menu', 'nextora' );
 do_action( 'nextora_header_block_before', $attributes );
 
 $inner_row     = nextora_header_block_inner_max_width_markup( $attributes );
-$inner_classes = trim( 'nextora-header-block__inner ' . $inner_row['class'] );
+$inner_pad     = nextora_header_block_inner_padding_markup( $attributes );
+$inner_classes = trim( 'nextora-header-block__inner ' . $inner_row['class'] . ' ' . $inner_pad['class'] );
+$inner_style   = trim( $inner_row['style'] . ';' . $inner_pad['style'], '; ' );
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<div class="<?php echo esc_attr( $inner_classes ); ?>"<?php echo '' !== $inner_row['style'] ? ' style="' . esc_attr( $inner_row['style'] ) . '"' : ''; ?>>
+	<div class="<?php echo esc_attr( $inner_classes ); ?>"<?php echo '' !== $inner_style ? ' style="' . esc_attr( $inner_style ) . '"' : ''; ?>>
 		<?php echo $render_logo( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<div id="<?php echo esc_attr( $source_id ); ?>" class="nextora-header-block__nav-source" data-nextora-nav-source-panel>
 			<?php echo $render_nav( $attributes, $menu_dom_id, $uid ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>

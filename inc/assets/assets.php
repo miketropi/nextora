@@ -8,29 +8,13 @@
 declare(strict_types=1);
 
 /**
- * Google Fonts stylesheet (Hanken Grotesk, variable ital + weight).
+ * Webfonts hook: Arial / system stack comes from theme.json — no remote font stylesheet.
  */
-const NEXTORA_GOOGLE_FONT_STYLESHEET = 'https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap';
-
-add_filter(
-	'wp_resource_hints',
-	static function ( array $urls, string $relation_type ): array {
-		if ( 'preconnect' !== $relation_type ) {
-			return $urls;
-		}
-		$urls[] = array(
-			'href'        => 'https://fonts.googleapis.com',
-			'crossorigin' => 'anonymous',
-		);
-		$urls[] = array(
-			'href'        => 'https://fonts.gstatic.com',
-			'crossorigin' => 'anonymous',
-		);
-		return $urls;
-	},
-	10,
-	2
-);
+function nextora_enqueue_fonts(): void {
+	// Intentionally empty (keeps action name stable for child themes / plugins).
+}
+add_action( 'wp_enqueue_scripts', 'nextora_enqueue_fonts', 5 );
+add_action( 'enqueue_block_assets', 'nextora_enqueue_fonts', 5 );
 
 /**
  * Core block CSS + block-template skip link on the front end.
@@ -55,20 +39,6 @@ add_filter( 'should_load_separate_core_block_assets', '__return_true' );
 add_filter( 'elementor/frontend/print_google_fonts', '__return_false' );
 
 /**
- * Load default typeface on the front end and in shared block editor assets.
- */
-function nextora_enqueue_fonts(): void {
-	wp_enqueue_style(
-		'nextora-fonts',
-		NEXTORA_GOOGLE_FONT_STYLESHEET,
-		array(),
-		null
-	);
-}
-add_action( 'wp_enqueue_scripts', 'nextora_enqueue_fonts', 5 );
-add_action( 'enqueue_block_assets', 'nextora_enqueue_fonts', 5 );
-
-/**
  * Enqueue compiled Tailwind / theme styles (front + block editor canvas).
  */
 function nextora_enqueue_styles(): void {
@@ -78,7 +48,7 @@ function nextora_enqueue_styles(): void {
 		return;
 	}
 
-	$deps = array( 'nextora-fonts' );
+	$deps = array();
 	// Load after WP global styles so unlayered theme rules can override block margins.
 	if ( wp_style_is( 'global-styles', 'registered' ) ) {
 		$deps[] = 'global-styles';
@@ -96,12 +66,7 @@ add_action( 'enqueue_block_assets', 'nextora_enqueue_styles' );
 add_action(
 	'after_setup_theme',
 	static function (): void {
-		add_editor_style(
-			array(
-				NEXTORA_GOOGLE_FONT_STYLESHEET,
-				'assets/css/app.css',
-			)
-		);
+		add_editor_style( 'assets/css/app.css' );
 	}
 );
 

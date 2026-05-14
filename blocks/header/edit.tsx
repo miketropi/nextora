@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck, PanelColorSettings } from '@wordpress/block-editor';
+import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import { useMemo } from '@wordpress/element';
 import {
   Disabled,
   PanelBody,
@@ -10,6 +11,7 @@ import {
   SelectControl,
   Notice,
   Button,
+  ColorPalette,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
@@ -36,6 +38,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     showCartMobile,
     innerMaxWidth,
     innerMaxWidthCustom,
+    innerRowPadding,
     stickyHeader,
     stickyStyle,
     showBottomBorder,
@@ -54,9 +57,76 @@ export default function HeaderEdit({ attributes, setAttributes }) {
       : []),
   ];
 
+  const themeColorPaletteRaw = useSelect((select) => {
+    try {
+      const s = select('core/block-editor').getSettings() ?? {};
+      if (Array.isArray(s.colors) && s.colors.length) {
+        return s.colors;
+      }
+      if (Array.isArray(s.color?.palette)) {
+        return s.color.palette;
+      }
+    } catch {
+      /* getSettings unavailable in some editor contexts */
+    }
+    return [];
+  }, []);
+
+  const themeColorPalette = useMemo(() => {
+    if (!Array.isArray(themeColorPaletteRaw)) {
+      return [];
+    }
+    return themeColorPaletteRaw.filter(
+      (c) =>
+        c &&
+        typeof c === 'object' &&
+        typeof (c.color ?? c.value) === 'string'
+    );
+  }, [themeColorPaletteRaw]);
+
   const blockProps = useBlockProps({
     className: 'nextora-header-block--editor',
   });
+
+  const paddingHelp = __(
+    'Use theme spacing sizes (e.g. 1rem, var(--wp--preset--spacing--10)) or px/em/% . Leave empty for no padding on that side.',
+    'nextora'
+  );
+
+  const innerPad = useMemo(() => {
+    const p = innerRowPadding && typeof innerRowPadding === 'object' ? innerRowPadding : {};
+    const side = (k) => {
+      const v = p[k];
+      if (v === undefined || v === null || v === '') {
+        return '';
+      }
+      return String(v);
+    };
+    return {
+      top: side('top'),
+      right: side('right'),
+      bottom: side('bottom'),
+      left: side('left'),
+    };
+  }, [innerRowPadding]);
+
+  const mergeInnerRowPadding = (partial) => {
+    const base = {
+      top: '',
+      right: '',
+      bottom: '',
+      left: '',
+      ...innerPad,
+    };
+    const norm = (v) => (v === undefined || v === null || v === '' ? '' : String(v));
+    const next = { ...base };
+    for (const [k, v] of Object.entries(partial || {})) {
+      if (['top', 'right', 'bottom', 'left'].includes(k)) {
+        next[k] = norm(v);
+      }
+    }
+    setAttributes({ innerRowPadding: next });
+  };
 
   return (
     <>
@@ -270,6 +340,83 @@ export default function HeaderEdit({ attributes, setAttributes }) {
       </InspectorControls>
 
       <InspectorControls group="styles">
+        <PanelBody title={__('Inner row', 'nextora')} initialOpen>
+          <p className="components-base-control__label" style={{ marginBottom: '0.5rem' }}>
+            {__('Horizontal padding (left & right)', 'nextora')}
+          </p>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '12px',
+              alignItems: 'flex-start',
+            }}
+          >
+            <TextControl
+              label={__('Left', 'nextora')}
+              value={innerPad.left}
+              onChange={(v) => mergeInnerRowPadding({ left: v })}
+            />
+            <TextControl
+              label={__('Right', 'nextora')}
+              value={innerPad.right}
+              onChange={(v) => mergeInnerRowPadding({ right: v })}
+            />
+          </div>
+          <div style={{ marginTop: '0.35rem', marginBottom: '0.85rem' }}>
+            <Button
+              variant="link"
+              isSmall
+              onClick={() => mergeInnerRowPadding({ left: '', right: '' })}
+            >
+              {__('Clear horizontal padding', 'nextora')}
+            </Button>
+            <p className="components-help-text" style={{ marginTop: '0.35rem' }}>
+              {paddingHelp}
+            </p>
+          </div>
+
+          <p className="components-base-control__label" style={{ marginBottom: '0.5rem' }}>
+            {__('Vertical padding (top & bottom)', 'nextora')}
+          </p>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '12px',
+              alignItems: 'flex-start',
+            }}
+          >
+            <TextControl
+              label={__('Top', 'nextora')}
+              value={innerPad.top}
+              onChange={(v) => mergeInnerRowPadding({ top: v })}
+            />
+            <TextControl
+              label={__('Bottom', 'nextora')}
+              value={innerPad.bottom}
+              onChange={(v) => mergeInnerRowPadding({ bottom: v })}
+            />
+          </div>
+          <div style={{ marginTop: '0.35rem' }}>
+            <Button
+              variant="link"
+              isSmall
+              onClick={() => mergeInnerRowPadding({ top: '', bottom: '' })}
+            >
+              {__('Clear vertical padding', 'nextora')}
+            </Button>
+            <p className="components-help-text" style={{ marginTop: '0.35rem' }}>
+              {paddingHelp}
+            </p>
+          </div>
+          <p className="components-help-text" style={{ marginTop: '0.75rem' }}>
+            {__(
+              'Applies to the inner flex row (logo, menu, actions). Block padding under Dimensions still affects the outer header band.',
+              'nextora'
+            )}
+          </p>
+        </PanelBody>
         <PanelBody title={__('Bottom border', 'nextora')} initialOpen>
           <ToggleControl
             label={__('Show border line', 'nextora')}
@@ -278,17 +425,18 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             help={__('Draws a line along the bottom of the header band.', 'nextora')}
           />
           {showBottomBorder && (
-            <PanelColorSettings
-              title={__('Border color', 'nextora')}
-              colorSettings={[
-                {
-                  value: bottomBorderColor ?? '',
-                  onChange: (c) =>
-                    setAttributes({ bottomBorderColor: typeof c === 'string' && c ? c : '' }),
-                  label: __('Color', 'nextora'),
-                },
-              ]}
-            />
+            <>
+              <p className="components-base-control__label" style={{ marginBottom: '0.5rem' }}>
+                {__('Border color', 'nextora')}
+              </p>
+              <ColorPalette
+                colors={themeColorPalette}
+                value={bottomBorderColor || ''}
+                onChange={(c) =>
+                  setAttributes({ bottomBorderColor: typeof c === 'string' && c ? c : '' })
+                }
+              />
+            </>
           )}
         </PanelBody>
       </InspectorControls>

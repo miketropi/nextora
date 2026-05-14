@@ -216,9 +216,6 @@
   .start {
     inset-inline-start: var(--spacing);
   }
-  .start\! {
-    inset-inline-start: var(--spacing) !important;
-  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -323,9 +320,6 @@
   }
   .inline {
     display: inline;
-  }
-  .inline\! {
-    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -812,9 +806,6 @@
   .italic {
     font-style: italic;
   }
-  .italic\! {
-    font-style: italic !important;
-  }
   .\!no-underline {
     text-decoration-line: none !important;
   }
@@ -826,9 +817,6 @@
   }
   .underline {
     text-decoration-line: underline;
-  }
-  .underline\! {
-    text-decoration-line: underline !important;
   }
   .decoration-secondary\/30 {
     text-decoration-color: var(--color-secondary);
@@ -1204,7 +1192,7 @@
 }
 @layer base {
   body {
-    font-family: var(	--wp--preset--font-family--sans,	"Hanken Grotesk",	ui-sans-serif,	system-ui,	sans-serif	);
+    font-family: var(	--wp--preset--font-family--sans,	Arial,	Helvetica,	sans-serif	);
   }
   .site-header,	.site-footer {
     width: 100%;
@@ -1344,7 +1332,6 @@
 .nextora-navigation-from-location--primary .nextora-header-menu .sub-menu a {
   color: var(--nextora-nav-panel-fg);
   font-weight: 400;
-  font-size: 0.875rem;
   padding: 0.5rem 0.75rem;
   width: 100%;
   box-sizing: border-box;
@@ -2347,7 +2334,7 @@
   }
   .nextora-modal__title {
     margin: 0;
-    font-family: var(	--wp--preset--font-family--sans,	"Hanken Grotesk",	ui-sans-serif,	system-ui,	sans-serif	);
+    font-family: var(	--wp--preset--font-family--sans,	Arial,	Helvetica,	sans-serif	);
     font-size: var(--wp--preset--font-size--medium, 1.125rem);
     font-weight: 600;
     line-height: 1.3;
@@ -2389,7 +2376,7 @@
     flex: 1;
     overflow: auto;
     padding: var(--nextora-modal-pad);
-    font-family: var(	--wp--preset--font-family--sans,	"Hanken Grotesk",	ui-sans-serif,	system-ui,	sans-serif	);
+    font-family: var(	--wp--preset--font-family--sans,	Arial,	Helvetica,	sans-serif	);
     font-size: var(--wp--preset--font-size--base, 1rem);
     line-height: 1.55;
     -webkit-overflow-scrolling: touch;
@@ -2445,7 +2432,7 @@
     min-height: 0;
     flex: 1 1 auto;
     flex-direction: column;
-    font-family: var(	--wp--preset--font-family--sans,	"Hanken Grotesk",	ui-sans-serif,	system-ui,	sans-serif	);
+    font-family: var(	--wp--preset--font-family--sans,	Arial,	Helvetica,	sans-serif	);
   }
   .nextora-spotlight__title-modal {
     letter-spacing: -0.02em;
