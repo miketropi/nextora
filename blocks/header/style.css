@@ -166,8 +166,6 @@ body.admin-bar .nextora-header-block--sticky {
 }
 
 /* Content width cap for logo + nav + utilities (pairs with block “Inner max width” option). */
-.nextora-header-block__inner--max-content,
-.nextora-header-block__inner--max-wide,
 .nextora-header-block__inner--max-64rem,
 .nextora-header-block__inner--max-70rem,
 .nextora-header-block__inner--max-72rem,
@@ -178,15 +176,6 @@ body.admin-bar .nextora-header-block--sticky {
 	margin-inline: auto;
 	width: 100%;
 	box-sizing: border-box;
-}
-
-/* theme.json settings.layout — same tokens as core constrained / wide layouts */
-.nextora-header-block__inner--max-content {
-	max-width: min(100%, var(--wp--style--global--content-size, 720px));
-}
-
-.nextora-header-block__inner--max-wide {
-	max-width: min(100%, var(--wp--style--global--wide-size, 1200px));
 }
 
 .nextora-header-block__inner--max-64rem {
