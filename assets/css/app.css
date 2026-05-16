@@ -51,7 +51,6 @@
 		4vw,
 		var(--wp--preset--spacing--30, 2.75rem)
 	);
-    --nextora-nav-header-link: var(--wp--preset--color--base, #fafafa);
     --nextora-nav-header-link-hover-underline: var(--wp--preset--color--base, #fafafa);
     @supports (color: color-mix(in lab, red, red)) {
       --nextora-nav-header-link-hover-underline: color-mix(
@@ -116,6 +115,10 @@
     --nextora-nav-panel-active-fg: var(--wp--preset--color--contrast, #0f172a);
     --nextora-nav-focus-ring: var(--wp--preset--color--contrast, #0f172a);
     --nextora-nav-focus-ring-on-dark: var(--wp--preset--color--base, #fafafa);
+    --nextora-nav-portal-backdrop: rgb(0 0 0 / 0.45);
+    --nextora-nav-mobile-drawer-bg: var(--wp--preset--color--contrast, #0f172a);
+    --nextora-nav-mobile-drawer-fg: var(--wp--preset--color--base, #fafafa);
+    --nextora-nav-mobile-drawer-shadow: 0 12px 40px rgb(0 0 0 / 0.35);
     --nextora-pagination-fg: var(--wp--preset--color--contrast, #0f172a);
     @supports (color: color-mix(in lab, red, red)) {
       --nextora-pagination-fg: color-mix(
@@ -1318,12 +1321,14 @@
   transition: color var(--nextora-nav-t),	text-decoration-color var(--nextora-nav-t),	background-color var(--nextora-nav-t);
 }
 .nextora-navigation-from-location--primary .nextora-header-menu > li > a {
-  color: var(--nextora-nav-header-link);
   font-weight: 500;
   font-size: 0.9375rem;
 }
-.nextora-navigation-from-location--primary .nextora-header-menu > li > a:hover, .nextora-navigation-from-location--primary .nextora-header-menu > li > a:focus-visible {
-  color: var(--nextora-nav-header-link);
+:where(.nextora-navigation-from-location--primary .nextora-header-menu > li > a) {
+  color: inherit;
+}
+:where(	.nextora-navigation-from-location--primary .nextora-header-menu > li > a:hover,	.nextora-navigation-from-location--primary .nextora-header-menu > li > a:focus-visible	) {
+  color: inherit;
   text-decoration-color: var(--nextora-nav-header-link-hover-underline);
 }
 .nextora-navigation-from-location--primary .nextora-header-menu > li.current-menu-item > a, .nextora-navigation-from-location--primary .nextora-header-menu > li.current-menu-ancestor > a {
@@ -1369,7 +1374,7 @@
   background-color: var(--nextora-nav-row-hover);
 }
 .nextora-header-menu .sub-menu .current-menu-item > a, .nextora-header-menu .sub-menu .current-menu-ancestor > a, .nextora-footer-menu .sub-menu .current-menu-item > a, .nextora-footer-menu .sub-menu .current-menu-ancestor > a {
-  color: var(--nextora-nav-panel-active-fg) !important;
+  color: var(--nextora-nav-panel-active-fg);
   font-weight: 600;
   background-color: var(--nextora-nav-row-active);
 }
@@ -1440,7 +1445,7 @@
   outline-offset: 3px;
 }
 .nextora-navigation-from-location--primary .nextora-header-menu > li > a:focus-visible {
-  outline-color: var(--nextora-nav-focus-ring-on-dark);
+  outline-color: var(--wp--preset--color--primary, var(--nextora-nav-focus-ring));
 }
 .nextora-header-menu .sub-menu a:focus-visible, .nextora-footer-menu .sub-menu a:focus-visible {
   outline-offset: 2px;
@@ -1456,7 +1461,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-color: rgb(0 0 0 / 0.45);
+  background-color: var(--nextora-nav-portal-backdrop);
 }
 .nextora-primary-nav-portal__panel {
   position: relative;
@@ -1529,13 +1534,13 @@
 }
 .nextora-primary-nav-portal__close:hover, .nextora-primary-nav-portal__close:focus-visible {
   opacity: 1;
-  background-color: var(--wp--preset--color--base, #fafafa);
+  background-color: currentColor;
   @supports (color: color-mix(in lab, red, red)) {
-    background-color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 14%, transparent);
+    background-color: color-mix(in srgb, currentColor 14%, transparent);
   }
 }
 .nextora-primary-nav-portal__close:focus-visible {
-  outline: 2px solid var(--wp--preset--color--base, #fafafa);
+  outline: 2px solid var(--wp--preset--color--primary, currentColor);
   outline-offset: 2px;
 }
 .nextora-primary-nav-portal__close-icon {
@@ -1554,9 +1559,9 @@
 @media (max-width: 767.98px) {
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel {
     padding: 4.5rem 1rem 1.5rem;
-    background-color: var(--wp--preset--color--contrast, #0f172a);
-    color: var(--wp--preset--color--base, #fafafa);
-    box-shadow: 0 12px 40px rgb(0 0 0 / 0.35);
+    background-color: var(--nextora-nav-mobile-drawer-bg);
+    color: var(--nextora-nav-mobile-drawer-fg);
+    box-shadow: var(--nextora-nav-mobile-drawer-shadow);
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-navigation-from-location--primary {
     flex-direction: column;
@@ -1601,20 +1606,20 @@
     padding: 0;
     border: 0;
     border-radius: 0.3rem;
-    background: var(--wp--preset--color--base, #fafafa);
+    background: currentColor;
     @supports (color: color-mix(in lab, red, red)) {
-      background: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 12%, transparent);
+      background: color-mix(in srgb, currentColor 12%, transparent);
     }
     color: inherit;
     cursor: pointer;
     transition: background-color var(--nextora-nav-t), transform var(--nextora-nav-t);
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle:hover,	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle:focus-visible {
-    background: var(--wp--preset--color--base, #fafafa);
+    background: currentColor;
     @supports (color: color-mix(in lab, red, red)) {
-      background: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 20%, transparent);
+      background: color-mix(in srgb, currentColor 20%, transparent);
     }
-    outline: 2px solid var(--nextora-nav-focus-ring-on-dark, currentColor);
+    outline: 2px solid var(--wp--preset--color--primary, currentColor);
     outline-offset: 2px;
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle__icon {
@@ -1661,9 +1666,9 @@
     padding: .5rem;
     border: none;
     box-shadow: none;
-    background-color: var(--wp--preset--color--base, #fafafa);
+    background-color: currentColor;
     @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 8%, transparent);
+      background-color: color-mix(in srgb, currentColor 8%, transparent);
     }
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .sub-menu {
@@ -1675,16 +1680,24 @@
     display: none;
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a {
-    color: var(--wp--preset--color--base, #fafafa);
+    color: currentColor;
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 92%, transparent);
+      color: color-mix(in srgb, currentColor 92%, transparent);
     }
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:hover,	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:focus-visible {
-    color: var(--wp--preset--color--base, #fafafa);
-    background-color: var(--wp--preset--color--base, #fafafa);
+    color: currentColor;
+    background-color: currentColor;
     @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 12%, transparent);
+      background-color: color-mix(in srgb, currentColor 12%, transparent);
+    }
+  }
+  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-item > a,	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-ancestor > a {
+    color: currentColor;
+    font-weight: 600;
+    background-color: currentColor;
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in srgb, currentColor 18%, transparent);
     }
   }
 }
@@ -1698,6 +1711,10 @@
 @layer base {
   .nextora-singular--page .nextora-article--page .nextora-article-featured img {
     max-height: min(50vh, 28rem);
+  }
+  .wp-block-template-part {
+    margin-left: calc(-1 * var(--wp--style--root--padding-left));
+    margin-right: calc(-1 * var(--wp--style--root--padding-right));
   }
 }
 @layer base {

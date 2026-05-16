@@ -21,6 +21,11 @@ if ( ! function_exists( 'nextora_ig_sanitize_slide_bg' ) ) {
 		if ( $hex ) {
 			return $hex;
 		}
+		$compact = preg_replace( '/\s+/', ' ', $raw );
+		if ( preg_match( '/^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$/i', $compact )
+			|| preg_match( '/^rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*(?:0|1|0?\.\d+)\s*\)$/i', $compact ) ) {
+			return $compact;
+		}
 		if ( strlen( $raw ) < 220 && preg_match( '/^var\(([^)]+)\)$/', $raw, $m ) && ! preg_match( '/[<>\'\"\\\\;]/', $m[1] ) ) {
 			return $raw;
 		}
@@ -87,7 +92,8 @@ $wrapper = get_block_wrapper_attributes(
 	array(
 		'class' => implode( ' ', $classes ),
 		'style' => implode( ';', $style_bits ),
-	)
+	),
+	isset( $block ) && $block instanceof WP_Block ? $block : null
 );
 
 $list_classes = array( 'nextora-igg__list' );
@@ -99,7 +105,7 @@ if ( $is_creative ) {
 }
 ?>
 <div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<ul<?php echo $list_tag_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<ul<?php echo $list_tag_attrs; ?>>
 		<?php foreach ( $ids as $attachment_id ) : ?>
 			<?php
 			$image = wp_get_attachment_image(

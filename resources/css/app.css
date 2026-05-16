@@ -72,7 +72,7 @@
 	 * Navigation — no primary brand on links; colors derived from base / contrast / secondary
 	 * so palette edits in theme.json flow through (header treats base as “on dark” ink).
 	 */
-	--nextora-nav-header-link: var(--wp--preset--color--base, #fafafa);
+	--nextora-nav-header-link: var(--wp--preset--color--contrast, #333);
 	--nextora-nav-header-link-hover-underline: color-mix(
 		in srgb,
 		var(--wp--preset--color--base, #fafafa) 72%,
@@ -118,6 +118,16 @@
 
 	--nextora-nav-focus-ring: var(--wp--preset--color--contrast, #0f172a);
 	--nextora-nav-focus-ring-on-dark: var(--wp--preset--color--base, #fafafa);
+
+	/**
+	 * Mobile primary nav drawer (`nextora-primary-nav-portal`). Panel sets foreground;
+	 * children use color-mix(..., currentColor, ...) for hovers. Override in a child theme
+	 * to match a custom header (defaults: dark band, light type from palette).
+	 */
+	--nextora-nav-portal-backdrop: rgb(0 0 0 / 0.45);
+	--nextora-nav-mobile-drawer-bg: var(--wp--preset--color--contrast, #0f172a);
+	--nextora-nav-mobile-drawer-fg: var(--wp--preset--color--base, #fafafa);
+	--nextora-nav-mobile-drawer-shadow: 0 12px 40px rgb(0 0 0 / 0.35);
 
 	/**
 	 * Pagination — same interaction model as footer nav; values track theme.json like `--nextora-nav-footer-*`.

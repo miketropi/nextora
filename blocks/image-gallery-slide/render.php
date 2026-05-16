@@ -23,6 +23,11 @@ if ( ! function_exists( 'nextora_ig_sanitize_slide_bg' ) ) {
 		if ( $hex ) {
 			return $hex;
 		}
+		$compact = preg_replace( '/\s+/', ' ', $raw );
+		if ( preg_match( '/^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$/i', $compact )
+			|| preg_match( '/^rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*(?:0|1|0?\.\d+)\s*\)$/i', $compact ) ) {
+			return $compact;
+		}
 		// Theme/preset: var(--wp--preset--color--slug) or var(--x).
 		if ( strlen( $raw ) < 220 && preg_match( '/^var\(([^)]+)\)$/', $raw, $m ) && ! preg_match( '/[<>\'\"\\\\;]/', $m[1] ) ) {
 			return $raw;

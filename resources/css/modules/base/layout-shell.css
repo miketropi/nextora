@@ -9,4 +9,9 @@
 	.nextora-singular--page .nextora-article--page .nextora-article-featured img {
 		max-height: min(50vh, 28rem);
 	}
+
+	.wp-block-template-part {
+		margin-left: calc(-1 * var(--wp--style--root--padding-left));
+		margin-right: calc(-1 * var(--wp--style--root--padding-right));
+	}
 }

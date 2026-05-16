@@ -76,6 +76,11 @@
 	position: relative;
 	flex: 1;
 	min-height: 0;
+	/* Same token as the front end (.nextora-igg__media) so “Image area” color previews in the editor. */
+	background: var(
+		--nextora-igg-image-bg,
+		color-mix(in srgb, currentColor 5%, transparent)
+	);
 }
 
 .nextora-igg-editor__thumb .nextora-igg-editor__img {
@@ -83,6 +88,14 @@
 	width: 100%;
 	height: 4.75rem;
 	object-fit: cover;
+}
+
+.nextora-igg-editor__thumb .nextora-igg-editor__img--contain {
+	height: auto;
+	max-height: min(70vh, 50rem);
+	min-height: 4.75rem;
+	object-fit: contain;
+	object-position: center;
 }
 
 .nextora-igg-editor__thumb-skeleton {

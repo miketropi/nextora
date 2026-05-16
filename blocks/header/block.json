@@ -107,23 +107,6 @@
       "enum": ["always", "scroll-up"],
       "default": "scroll-up"
     },
-    "innerMaxWidth": {
-      "type": "string",
-      "default": ""
-    },
-    "innerMaxWidthCustom": {
-      "type": "string",
-      "default": ""
-    },
-    "innerRowPadding": {
-      "type": "object",
-      "default": {
-        "top": "",
-        "right": "",
-        "bottom": "",
-        "left": ""
-      }
-    },
     "showBottomBorder": {
       "type": "boolean",
       "default": false

@@ -36,9 +36,6 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     myAccountIconOnly,
     showSearchMobile,
     showCartMobile,
-    innerMaxWidth,
-    innerMaxWidthCustom,
-    innerRowPadding,
     stickyHeader,
     stickyStyle,
     showBottomBorder,
@@ -87,46 +84,6 @@ export default function HeaderEdit({ attributes, setAttributes }) {
   const blockProps = useBlockProps({
     className: 'nextora-header-block--editor',
   });
-
-  const paddingHelp = __(
-    'Use theme spacing sizes (e.g. 1rem, var(--wp--preset--spacing--10)) or px/em/% . Leave empty for no padding on that side.',
-    'nextora'
-  );
-
-  const innerPad = useMemo(() => {
-    const p = innerRowPadding && typeof innerRowPadding === 'object' ? innerRowPadding : {};
-    const side = (k) => {
-      const v = p[k];
-      if (v === undefined || v === null || v === '') {
-        return '';
-      }
-      return String(v);
-    };
-    return {
-      top: side('top'),
-      right: side('right'),
-      bottom: side('bottom'),
-      left: side('left'),
-    };
-  }, [innerRowPadding]);
-
-  const mergeInnerRowPadding = (partial) => {
-    const base = {
-      top: '',
-      right: '',
-      bottom: '',
-      left: '',
-      ...innerPad,
-    };
-    const norm = (v) => (v === undefined || v === null || v === '' ? '' : String(v));
-    const next = { ...base };
-    for (const [k, v] of Object.entries(partial || {})) {
-      if (['top', 'right', 'bottom', 'left'].includes(k)) {
-        next[k] = norm(v);
-      }
-    }
-    setAttributes({ innerRowPadding: next });
-  };
 
   return (
     <>
@@ -280,31 +237,6 @@ export default function HeaderEdit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
-          <SelectControl
-            label={__('Inner max width', 'nextora')}
-            value={innerMaxWidth || ''}
-            options={[
-              { label: __('None (use full width of block)', 'nextora'), value: '' },
-              { label: __('Content size (theme layout)', 'nextora'), value: 'content' },
-              { label: __('Wide size (theme layout)', 'nextora'), value: 'wide' },
-              { label: __('Custom…', 'nextora'), value: 'custom' },
-            ]}
-            onChange={(v) =>
-              setAttributes({ innerMaxWidth: v, innerMaxWidthCustom: v === 'custom' ? innerMaxWidthCustom : '' })
-            }
-            help={__(
-              'Content and wide follow theme.json → settings.layout (contentSize / wideSize), matching core layout widths. Block wide/full alignment and padding still apply to the header band.',
-              'nextora'
-            )}
-          />
-          {innerMaxWidth === 'custom' && (
-            <TextControl
-              label={__('Custom max-width', 'nextora')}
-              value={innerMaxWidthCustom}
-              onChange={(v) => setAttributes({ innerMaxWidthCustom: v })}
-              help={__('Examples: 1200px, 80rem, min(100%, 80rem). Unsafe values are ignored.', 'nextora')}
-            />
-          )}
           <ToggleControl
             label={__('Sticky header', 'nextora')}
             checked={stickyHeader}
@@ -340,83 +272,6 @@ export default function HeaderEdit({ attributes, setAttributes }) {
       </InspectorControls>
 
       <InspectorControls group="styles">
-        <PanelBody title={__('Inner row', 'nextora')} initialOpen>
-          <p className="components-base-control__label" style={{ marginBottom: '0.5rem' }}>
-            {__('Horizontal padding (left & right)', 'nextora')}
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '12px',
-              alignItems: 'flex-start',
-            }}
-          >
-            <TextControl
-              label={__('Left', 'nextora')}
-              value={innerPad.left}
-              onChange={(v) => mergeInnerRowPadding({ left: v })}
-            />
-            <TextControl
-              label={__('Right', 'nextora')}
-              value={innerPad.right}
-              onChange={(v) => mergeInnerRowPadding({ right: v })}
-            />
-          </div>
-          <div style={{ marginTop: '0.35rem', marginBottom: '0.85rem' }}>
-            <Button
-              variant="link"
-              isSmall
-              onClick={() => mergeInnerRowPadding({ left: '', right: '' })}
-            >
-              {__('Clear horizontal padding', 'nextora')}
-            </Button>
-            <p className="components-help-text" style={{ marginTop: '0.35rem' }}>
-              {paddingHelp}
-            </p>
-          </div>
-
-          <p className="components-base-control__label" style={{ marginBottom: '0.5rem' }}>
-            {__('Vertical padding (top & bottom)', 'nextora')}
-          </p>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '12px',
-              alignItems: 'flex-start',
-            }}
-          >
-            <TextControl
-              label={__('Top', 'nextora')}
-              value={innerPad.top}
-              onChange={(v) => mergeInnerRowPadding({ top: v })}
-            />
-            <TextControl
-              label={__('Bottom', 'nextora')}
-              value={innerPad.bottom}
-              onChange={(v) => mergeInnerRowPadding({ bottom: v })}
-            />
-          </div>
-          <div style={{ marginTop: '0.35rem' }}>
-            <Button
-              variant="link"
-              isSmall
-              onClick={() => mergeInnerRowPadding({ top: '', bottom: '' })}
-            >
-              {__('Clear vertical padding', 'nextora')}
-            </Button>
-            <p className="components-help-text" style={{ marginTop: '0.35rem' }}>
-              {paddingHelp}
-            </p>
-          </div>
-          <p className="components-help-text" style={{ marginTop: '0.75rem' }}>
-            {__(
-              'Applies to the inner flex row (logo, menu, actions). Block padding under Dimensions still affects the outer header band.',
-              'nextora'
-            )}
-          </p>
-        </PanelBody>
         <PanelBody title={__('Bottom border', 'nextora')} initialOpen>
           <ToggleControl
             label={__('Show border line', 'nextora')}

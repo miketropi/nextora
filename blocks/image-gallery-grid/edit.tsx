@@ -344,7 +344,12 @@ export default function ImageGalleryGridEdit({ attributes, setAttributes }: Prop
                             <div className="nextora-igg-editor__thumb-preview">
                               {src ? (
                                 <img
-                                  className="nextora-igg-editor__img"
+                                  className={[
+                                    'nextora-igg-editor__img',
+                                    imageFit === 'contain' ? 'nextora-igg-editor__img--contain' : '',
+                                  ]
+                                    .filter(Boolean)
+                                    .join(' ')}
                                   src={src}
                                   alt={m?.alt_text || ''}
                                 />

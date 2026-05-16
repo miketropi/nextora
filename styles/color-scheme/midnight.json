@@ -1,0 +1,66 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "Midnight",
+	"settings": {
+		"color": {
+			"palette": [
+				{
+					"slug": "base",
+					"color": "#0c1222",
+					"name": "Base"
+				},
+				{
+					"slug": "contrast",
+					"color": "#e8edf5",
+					"name": "Contrast"
+				},
+				{
+					"slug": "primary",
+					"color": "#38bdf8",
+					"name": "Primary"
+				},
+				{
+					"slug": "secondary",
+					"color": "#94a3b8",
+					"name": "Secondary"
+				},
+				{
+					"slug": "surface",
+					"color": "#151d2e",
+					"name": "Surface"
+				}
+			]
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var(--wp--preset--color--base)",
+			"text": "var(--wp--preset--color--contrast)"
+		},
+		"elements": {
+			"heading": {
+				"color": {
+					"text": "var(--wp--preset--color--contrast)"
+				}
+			},
+			"link": {
+				"color": {
+					"text": "var(--wp--preset--color--primary)"
+				}
+			},
+			"button": {
+				"color": {
+					"text": "var(--wp--preset--color--contrast)",
+					"background": "var(--wp--preset--color--primary)"
+				},
+				":hover": {
+					"color": {
+						"background": "var(--wp--preset--color--contrast)",
+						"text": "var(--wp--preset--color--base)"
+					}
+				}
+			}
+		}
+	}
+}

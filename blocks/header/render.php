@@ -91,178 +91,6 @@ if ( ! function_exists( 'nextora_header_block_append_border_color_to_wrapper' ) 
 	}
 }
 
-if ( ! function_exists( 'nextora_header_block_sanitize_inner_max_width' ) ) {
-	/**
-	 * Sanitize editor-provided `innerMaxWidthCustom` for use in CSS `max-width`.
-	 *
-	 * @param string $value Raw value.
-	 */
-	function nextora_header_block_sanitize_inner_max_width( string $value ): string {
-		$value = trim( $value );
-		if ( '' === $value ) {
-			return '';
-		}
-		if ( preg_match( '/^(?:\d+|\d*\.\d+)(px|rem|em|%|vw|vi|ch)$/i', $value ) ) {
-			return strtolower( $value );
-		}
-		if ( preg_match( '/^min\(\s*100%\s*,\s*(?:\d+|\d*\.\d+)rem\s*\)$/i', $value ) ) {
-			return preg_replace( '/\s+/', ' ', $value );
-		}
-
-		return '';
-	}
-}
-
-if ( ! function_exists( 'nextora_header_block_sanitize_inner_padding_custom' ) ) {
-	/**
-	 * Sanitize custom padding for `.nextora-header-block__inner` (1–4 lengths).
-	 *
-	 * @param string $value Raw value.
-	 */
-	function nextora_header_block_sanitize_inner_padding_custom( string $value ): string {
-		$value = trim( preg_replace( '/\s+/', ' ', $value ) );
-		if ( '' === $value || strlen( $value ) > 80 ) {
-			return '';
-		}
-		$token = '(?:\d+|\d*\.\d+)(?:px|rem|em|%)';
-		if ( ! preg_match( '/^' . $token . '(?:\s+' . $token . '){0,3}$/i', $value ) ) {
-			return '';
-		}
-
-		return strtolower( $value );
-	}
-}
-
-if ( ! function_exists( 'nextora_header_block_sanitize_inner_padding_side' ) ) {
-	/**
-	 * Sanitize one padding side for `.nextora-header-block__inner`.
-	 *
-	 * @param string $value Raw value from the editor BoxControl.
-	 */
-	function nextora_header_block_sanitize_inner_padding_side( string $value ): string {
-		$value = trim( $value );
-		if ( '' === $value ) {
-			return '';
-		}
-		if ( preg_match( '/^(?:\d+|\d*\.\d+)(?:px|rem|em|%|vw|vi|ch)$/i', $value ) ) {
-			return strtolower( $value );
-		}
-		if ( preg_match( '/^var\(\s*--wp--preset--spacing--[a-z0-9]+\s*\)$/i', $value ) ) {
-			return preg_replace( '/\s+/', ' ', $value );
-		}
-
-		return '';
-	}
-}
-
-if ( ! function_exists( 'nextora_header_block_inner_padding_markup' ) ) {
-	/**
-	 * Inner row padding (pairs with block “Inner padding” option).
-	 *
-	 * @param array<string, mixed> $attributes Block attributes.
-	 * @return array{class: string, style: string}
-	 */
-	function nextora_header_block_inner_padding_markup( array $attributes ): array {
-		$class = '';
-		$style = '';
-
-		$row = isset( $attributes['innerRowPadding'] ) && is_array( $attributes['innerRowPadding'] )
-			? $attributes['innerRowPadding']
-			: array();
-
-		$decls = array();
-		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
-			$raw = isset( $row[ $side ] ) ? trim( (string) $row[ $side ] ) : '';
-			if ( '' === $raw ) {
-				continue;
-			}
-			$san = nextora_header_block_sanitize_inner_padding_side( $raw );
-			if ( '' !== $san ) {
-				$decls[] = 'padding-' . $side . ':' . $san;
-			}
-		}
-
-		if ( ! empty( $decls ) ) {
-			return array(
-				'class' => '',
-				'style' => implode( ';', $decls ) . '; box-sizing: border-box;',
-			);
-		}
-
-		// Legacy: innerPadding / innerPaddingCustom (older saves before innerRowPadding).
-		$ip = isset( $attributes['innerPadding'] ) ? trim( (string) $attributes['innerPadding'] ) : '';
-
-		$pad_class = array(
-			'none' => 'nextora-header-block__inner--pad-none',
-			'05'   => 'nextora-header-block__inner--pad-05',
-			'10'   => 'nextora-header-block__inner--pad-10',
-			'20'   => 'nextora-header-block__inner--pad-20',
-			'30'   => 'nextora-header-block__inner--pad-30',
-			'40'   => 'nextora-header-block__inner--pad-40',
-			'50'   => 'nextora-header-block__inner--pad-50',
-		);
-
-		if ( 'custom' === $ip ) {
-			$raw = isset( $attributes['innerPaddingCustom'] ) ? trim( (string) $attributes['innerPaddingCustom'] ) : '';
-			$san = nextora_header_block_sanitize_inner_padding_custom( $raw );
-			if ( '' !== $san ) {
-				$style = 'padding: ' . $san . '; box-sizing: border-box;';
-			}
-		} elseif ( isset( $pad_class[ $ip ] ) ) {
-			$class = $pad_class[ $ip ];
-		}
-
-		return array(
-			'class' => $class,
-			'style' => $style,
-		);
-	}
-}
-
-if ( ! function_exists( 'nextora_header_block_inner_max_width_markup' ) ) {
-	/**
-	 * Inner row constraint: extra class and/or inline `max-width` (custom).
-	 *
-	 * @param array<string, mixed> $attributes Block attributes.
-	 * @return array{class: string, style: string}
-	 */
-	function nextora_header_block_inner_max_width_markup( array $attributes ): array {
-		$class = '';
-		$style = '';
-
-		$iw = isset( $attributes['innerMaxWidth'] ) ? trim( (string) $attributes['innerMaxWidth'] ) : '';
-
-		$size_class = array(
-			// theme.json → settings.layout (global styles variables).
-			'content' => 'nextora-header-block__inner--max-content',
-			'wide'    => 'nextora-header-block__inner--max-wide',
-			// Legacy fixed widths (older block saves).
-			'64rem'   => 'nextora-header-block__inner--max-64rem',
-			'70rem'   => 'nextora-header-block__inner--max-70rem',
-			'72rem'   => 'nextora-header-block__inner--max-72rem',
-			'75rem'   => 'nextora-header-block__inner--max-75rem',
-			'80rem'   => 'nextora-header-block__inner--max-80rem',
-			'90rem'   => 'nextora-header-block__inner--max-90rem',
-			'96rem'   => 'nextora-header-block__inner--max-96rem',
-		);
-
-		if ( 'custom' === $iw ) {
-			$raw = isset( $attributes['innerMaxWidthCustom'] ) ? trim( (string) $attributes['innerMaxWidthCustom'] ) : '';
-			$san = nextora_header_block_sanitize_inner_max_width( $raw );
-			if ( '' !== $san ) {
-				$style = 'max-width: ' . $san . '; margin-inline: auto; width: 100%; box-sizing: border-box;';
-			}
-		} elseif ( isset( $size_class[ $iw ] ) ) {
-			$class = $size_class[ $iw ];
-		}
-
-		return array(
-			'class' => $class,
-			'style' => $style,
-		);
-	}
-}
-
 $woo_on = static function (): bool {
 	return class_exists( 'WooCommerce', false );
 };
@@ -640,19 +468,22 @@ if ( ! empty( $attributes['showBottomBorder'] ) && '' !== $san_border ) {
 	$wrapper_attributes = nextora_header_block_append_border_color_to_wrapper( $wrapper_attributes, $san_border );
 }
 
+$nav_style_fragment = function_exists( 'nextora_header_block_nav_color_inline_declarations' )
+	? nextora_header_block_nav_color_inline_declarations( $attributes )
+	: '';
+if ( '' !== $nav_style_fragment ) {
+	$wrapper_attributes = nextora_header_block_append_inline_style_declarations( $wrapper_attributes, $nav_style_fragment );
+}
+
 $open_label  = __( 'Open menu', 'nextora' );
 $close_label = __( 'Close menu', 'nextora' );
 $dialog_lab  = __( 'Menu', 'nextora' );
 
 do_action( 'nextora_header_block_before', $attributes );
 
-$inner_row     = nextora_header_block_inner_max_width_markup( $attributes );
-$inner_pad     = nextora_header_block_inner_padding_markup( $attributes );
-$inner_classes = trim( 'nextora-header-block__inner ' . $inner_row['class'] . ' ' . $inner_pad['class'] );
-$inner_style   = trim( $inner_row['style'] . ';' . $inner_pad['style'], '; ' );
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<div class="<?php echo esc_attr( $inner_classes ); ?>"<?php echo '' !== $inner_style ? ' style="' . esc_attr( $inner_style ) . '"' : ''; ?>>
+	<div class="nextora-header-block__inner">
 		<?php echo $render_logo( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<div id="<?php echo esc_attr( $source_id ); ?>" class="nextora-header-block__nav-source" data-nextora-nav-source-panel>
 			<?php echo $render_nav( $attributes, $menu_dom_id, $uid ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
