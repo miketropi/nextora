@@ -4,7 +4,8 @@
 	"title": "Josefin Sans",
 	"styles": {
 		"typography": {
-			"fontFamily": "var(--wp--preset--font-family--josefin-sans)"
+			"fontFamily": "var(--wp--preset--font-family--josefin-sans)",
+			"fontWeight": "300"
 		},
 		"elements": {
 			"heading": {
