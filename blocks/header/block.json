@@ -53,10 +53,6 @@
       "type": "string",
       "default": ""
     },
-    "useSiteLogo": {
-      "type": "boolean",
-      "default": true
-    },
     "menuId": {
       "type": "number",
       "default": 0
@@ -112,6 +108,20 @@
       "default": false
     },
     "bottomBorderColor": {
+      "type": "string",
+      "default": ""
+    },
+    "headerLayout": {
+      "type": "string",
+      "enum": [
+        "logo-nav-end",
+        "logo-nav-center",
+        "nav-start-logo-center",
+        "two-row"
+      ],
+      "default": "logo-nav-end"
+    },
+    "innerMaxWidth": {
       "type": "string",
       "default": ""
     }

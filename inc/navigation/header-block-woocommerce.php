@@ -1,6 +1,6 @@
 <?php
 /**
- * WooCommerce: mini cart count in {@see nextora/header} block output.
+ * WooCommerce: mini cart fragments for {@see nextora/header} block (badge + drawer HTML).
  *
  * @package Nextora
  */
@@ -54,19 +54,37 @@ function nextora_header_block_mini_cart_aria_label( int $count, array $atts = ar
 }
 
 /**
- * Refresh cart badge fragment for the theme header block mini cart trigger.
+ * Refresh cart badge and mini cart panel HTML on add-to-cart / cart AJAX (`wc-cart-fragments`).
+ * The block renders the drawer outside the cart widget, so Woo does not add a default
+ * `widget_shopping_cart_content` fragment for it — register an explicit selector.
  *
  * @param array<string, string> $fragments Fragments.
  * @return array<string, string>
  */
 function nextora_header_block_cart_fragments( array $fragments ): array {
 	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
-		return $fragments;
+		if ( function_exists( 'wc_load_cart' ) ) {
+			wc_load_cart();
+		}
+		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+			return $fragments;
+		}
 	}
 
 	$count = (int) WC()->cart->get_cart_contents_count();
 
 	$fragments['.nextora-header-block__cart-badge'] = nextora_header_block_mini_cart_badge_html( $count );
+
+	ob_start();
+	woocommerce_mini_cart();
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce markup for fragment JSON.
+	$mini_inner = ob_get_clean();
+
+	$mini_wrapped = '<div class="widget_shopping_cart_content" data-nextora-mini-cart-fragments="1">' . $mini_inner . '</div>';
+
+	// Core passes this key from `WC_AJAX::get_refreshed_fragments()`; keep it so `add-to-cart` / session restore hit the header mini cart.
+	$fragments['div.widget_shopping_cart_content'] = $mini_wrapped;
+	$fragments['[data-nextora-mini-cart-fragments]'] = $mini_wrapped;
 
 	return $fragments;
 }

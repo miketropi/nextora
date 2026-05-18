@@ -44,12 +44,15 @@
 		position: absolute;
 		inset: 0;
 		background: var(--nextora-modal-scrim);
-		backdrop-filter: blur(6px);
-		-webkit-backdrop-filter: blur(6px);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
 		cursor: pointer;
 	}
 
 	.nextora-modal--drawer-end {
+		--nextora-modal-dur: var(--nextora-offcanvas-dur);
+		--nextora-modal-ease: var(--nextora-offcanvas-ease);
+
 		display: flex;
 		justify-content: flex-end;
 		align-items: stretch;

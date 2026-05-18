@@ -66,11 +66,13 @@ Imports are intentional: **base** → **components** → **prose** → **overrid
 Boot order matters where noted:
 
 1. `initHeaderSticky()` — `header-sticky.ts`; scroll-up hide/show for `nextora/header` when enabled (`window.nextoraHeaderSticky.hideAfter` from `inc/assets/assets.php`, filter `nextora_header_block_sticky_hide_after`).
-2. `initHeaderNavigation()` — primary menu drawer / accordion (`header-nav.ts`); strings from `wp_localize_script` → `window.nextoraNav` in `inc/assets/assets.php`
-3. `initModals()` / `attachModalGlobals()` — `lib/modal.ts`; `window.nextoraModal` localized in `assets.php`
-4. `initSpotlightSearch()` — after modals; `lib/spotlight-search.ts`; `window.nextoraSpotlight`
-5. `initArticleShare()` — `lib/article-share.ts`; `window.nextoraArticleShare` (filter `nextora_article_share_script_vars`)
-6. `initCommentTiptap()` — `lib/comment-tiptap.ts`; Tiptap + Lucide bundles; `window.nextoraComments`
+2. `initHeaderNavigation()` — mobile primary nav is an ~90% off-canvas sheet docked to the inline end (theme preset colors/spacing); GSAP animates backdrop opacity + panel slide only (`header-nav.ts`); strings from `wp_localize_script` → `window.nextoraNav` in `inc/assets/assets.php`
+3. `mountHeaderMiniCartPortalToBody()` — `mini-cart-portal.ts`; reparents the header block mini cart modal under `document.body` (parity with the nav portal layer) before modal wiring
+4. `bindHeaderMiniCartAfterAjaxAdd()` — `mini-cart-portal.ts`; on jQuery `added_to_cart`, reapplies fragment HTML, triggers `wc_fragment_refresh`, opens the mini cart when `wc_fragments_refreshed` fires (or ~550ms fallback)
+5. `initModals()` / `attachModalGlobals()` — `lib/modal.ts`; `window.nextoraModal` localized in `assets.php`
+6. `initSpotlightSearch()` — after modals; `lib/spotlight-search.ts`; `window.nextoraSpotlight`
+7. `initArticleShare()` — `lib/article-share.ts`; `window.nextoraArticleShare` (filter `nextora_article_share_script_vars`)
+8. `initCommentTiptap()` — `lib/comment-tiptap.ts`; Tiptap + Lucide bundles; `window.nextoraComments`
 
 **npm `dependencies`**: `@tiptap/*`, `lucide`. **devDependencies**: Tailwind, PostCSS, esbuild, TypeScript.
 
@@ -103,8 +105,8 @@ Not exhaustive — key includes:
 ## Navigation (header menu)
 
 - **PHP**: `inc/navigation/navigation.php` — replaces empty `core/navigation` with `wp_nav_menu()` when `__unstableLocation` is set; classes `nextora-header-menu`, `nextora-navigation-from-location--primary|footer`.
-- **CSS**: `resources/css/modules/base/nav-menus.css` — desktop flyouts (**CSS** `:focus-within` + `(hover: hover)` hover); mobile/tablet **full-height off-canvas** panel, **portal** mount (see below).
-- **JS**: `resources/ts/header-nav.ts` — no GSAP; class toggles, `document.body` **`.nextora-nav-portal`** for fixed positioning, **`button.nextora-submenu-toggle`** accordion (portal mount only, see `bindPortalSubmenuAccordions`), Escape / backdrop / resize.
+- **CSS**: `resources/css/modules/base/nav-menus.css` — desktop flyouts (**CSS** `:focus-within` + `(hover: hover)` hover); mobile **~90% off-canvas** sheet using **`base` background / `contrast` text** and shared `--nextora-nav-panel-*` borders/shadow (`app.css` drawer tokens + `--nextora-nav-portal-backdrop`), in a **portal** under `body`. Header **mini cart** uses the same drawer tokens and `nextora-modal` UI; at runtime `mountHeaderMiniCartPortalToBody()` (`mini-cart-portal.ts`) moves the live mini cart root to **`document.body`** (`data-nextora-header-mini-cart-portal` in `blocks/header/render.php`) so it matches the nav portal stacking layer; width **~90%** on phone and **`min(26rem, 92vw)`** from `768px` (`blocks/header/style.css`).
+- **JS**: `resources/ts/header-nav.ts` — **GSAP** panel slide + backdrop fade when motion is allowed; class `nextora-primary-nav-portal--gsap` disables conflicting CSS transitions; **`button.nextora-submenu-toggle`** accordion (portal mount only, see `bindPortalSubmenuAccordions`), Escape / backdrop / resize. Falls back to CSS transitions when `prefers-reduced-motion: reduce`.
 
 ## Article / loop templates
 

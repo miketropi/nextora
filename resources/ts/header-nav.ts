@@ -1,17 +1,62 @@
 /**
  * Primary header navigation — mobile menu opens in a body portal with a cloned nav
  * (avoids stacking-context / overflow clipping in the header). See `header-hooks.php`.
+ * Open/close uses GSAP on viewports that allow motion; see `nav-menus.css` for visuals.
  */
 
+import gsap from "gsap";
+
 const DESKTOP_MQ = "(min-width: 768px)";
-/** Keep in sync with `--nextora-nav-portal-dur` in `nav-menus.css` (300ms + small buffer). */
-const PORTAL_CLOSE_MS = 320;
+/** Must match `--nextora-offcanvas-dur` in `resources/css/app.css` (seconds). */
+const OFFCANVAS_DUR_S = 0.4;
+/** Fallback if GSAP path fails; slightly longer than `OFFCANVAS_DUR_S` for paint/rounding. */
+const PORTAL_CLOSE_MS = Math.round(OFFCANVAS_DUR_S * 1000) + 80;
 const FOCUS_AFTER_OPEN_MS = 80;
 /** Ignore backdrop clicks right after open (avoids mobile “ghost” click closing the menu). */
 const OPEN_BACKDROP_GUARD_MS = 500;
 
 function prefersReducedMotion(): boolean {
 	return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function portalPanelOffscreenXPercent(): 100 | -100 {
+	const d = document.documentElement.getAttribute("dir") || document.body.getAttribute("dir") || "";
+	return d.toLowerCase() === "rtl" ? -100 : 100;
+}
+
+function killPortalGsap(p: PortalElements): void {
+	gsap.killTweensOf([p.backdrop, p.panel]);
+}
+
+function runPortalOpenGsap(p: PortalElements): void {
+	killPortalGsap(p);
+	const offX = portalPanelOffscreenXPercent();
+	p.root.classList.add("nextora-primary-nav-portal--gsap");
+	p.root.classList.add("nextora-primary-nav-portal--open");
+
+	gsap.set(p.backdrop, { opacity: 0 });
+	gsap.set(p.panel, { xPercent: offX, force3D: true });
+
+	gsap.timeline({ defaults: { ease: "power2.out" } })
+		.to(p.backdrop, { opacity: 1, duration: OFFCANVAS_DUR_S }, 0)
+		.to(p.panel, { xPercent: 0, duration: OFFCANVAS_DUR_S }, 0);
+}
+
+function runPortalCloseGsap(p: PortalElements, onDone: () => void): void {
+	killPortalGsap(p);
+	const offX = portalPanelOffscreenXPercent();
+	gsap.to(p.backdrop, { opacity: 0, duration: OFFCANVAS_DUR_S, ease: "power2.in" });
+	gsap.to(p.panel, {
+		xPercent: offX,
+		duration: OFFCANVAS_DUR_S,
+		ease: "power2.in",
+		onComplete: () => {
+			p.root.classList.remove("nextora-primary-nav-portal--open");
+			p.root.classList.remove("nextora-primary-nav-portal--gsap");
+			gsap.set([p.backdrop, p.panel], { clearProps: "opacity,transform" });
+			onDone();
+		},
+	});
 }
 
 const CLONE_ID_SUFFIX = "-nextora-portal";
@@ -238,7 +283,9 @@ export function initHeaderNavigation(): void {
 
 			if (mq.matches) {
 				clearCloseTimer();
+				killPortalGsap(p);
 				p.root.classList.remove("nextora-primary-nav-portal--open");
+				p.root.classList.remove("nextora-primary-nav-portal--gsap");
 				p.root.hidden = true;
 				p.mount.replaceChildren();
 				btn.setAttribute("aria-expanded", "false");
@@ -248,19 +295,28 @@ export function initHeaderNavigation(): void {
 				return;
 			}
 
-			p.root.classList.remove("nextora-primary-nav-portal--open");
 			btn.setAttribute("aria-expanded", "false");
 			setExpandedLabel(false);
 			document.documentElement.classList.remove("nextora-primary-nav-drawer-open");
 
-			clearCloseTimer();
-			const closeMs = prefersReducedMotion() ? 0 : PORTAL_CLOSE_MS;
-			closeFinishTimer = window.setTimeout(() => {
-				closeFinishTimer = null;
+			killPortalGsap(p);
+
+			if (prefersReducedMotion()) {
+				clearCloseTimer();
+				p.root.classList.remove("nextora-primary-nav-portal--open");
+				p.root.classList.remove("nextora-primary-nav-portal--gsap");
 				p.root.hidden = true;
 				p.mount.replaceChildren();
 				btn.focus();
-			}, closeMs);
+				return;
+			}
+
+			clearCloseTimer();
+			runPortalCloseGsap(p, () => {
+				p.root.hidden = true;
+				p.mount.replaceChildren();
+				btn.focus();
+			});
 		};
 
 		const open = (): void => {
@@ -285,10 +341,16 @@ export function initHeaderNavigation(): void {
 
 			p.root.hidden = false;
 			p.root.classList.remove("nextora-primary-nav-portal--open");
+			p.root.classList.remove("nextora-primary-nav-portal--gsap");
 			void p.root.getBoundingClientRect();
 
 			requestAnimationFrame(() => {
-				p.root.classList.add("nextora-primary-nav-portal--open");
+				killPortalGsap(p);
+				if (prefersReducedMotion()) {
+					p.root.classList.add("nextora-primary-nav-portal--open");
+				} else {
+					runPortalOpenGsap(p);
+				}
 				btn.setAttribute("aria-expanded", "true");
 				setExpandedLabel(true);
 				document.documentElement.classList.add("nextora-primary-nav-drawer-open");
@@ -318,7 +380,9 @@ export function initHeaderNavigation(): void {
 			clearCloseTimer();
 			const p = portal();
 			if (p) {
+				killPortalGsap(p);
 				p.root.classList.remove("nextora-primary-nav-portal--open");
+				p.root.classList.remove("nextora-primary-nav-portal--gsap");
 				p.root.hidden = true;
 				p.mount.replaceChildren();
 			}

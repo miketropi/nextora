@@ -84,7 +84,7 @@ function findModalRoot(el: Element | null): HTMLElement | null {
 
 function setStackZIndex(): void {
 	stack.forEach((entry, i) => {
-		entry.root.style.zIndex = String(1050 + i);
+		entry.root.style.zIndex = String(99999 + i);
 	});
 }
 
@@ -211,7 +211,8 @@ export function closeModal(root?: HTMLElement, afterClose?: () => void): void {
 	};
 
 	target.addEventListener("transitionend", onTransitionEnd);
-	window.setTimeout(finish, 380);
+	/** Fallback if `transitionend` doesn’t fire; keep ≥ `--nextora-offcanvas-dur` + buffer (see `app.css`). */
+	window.setTimeout(finish, 480);
 	target.classList.remove(OPEN_CLASS);
 }
 

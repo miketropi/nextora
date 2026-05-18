@@ -91,6 +91,34 @@ if ( ! function_exists( 'nextora_header_block_append_border_color_to_wrapper' ) 
 	}
 }
 
+if ( ! function_exists( 'nextora_header_block_sanitize_inner_max_width' ) ) {
+	/**
+	 * Sanitize custom max-width for `.nextora-header-block__inner` inline style only.
+	 *
+	 * @param string $value Raw attribute.
+	 */
+	function nextora_header_block_sanitize_inner_max_width( string $value ): string {
+		$value = trim( $value );
+		if ( '' === $value || strlen( $value ) > 120 ) {
+			return '';
+		}
+
+		if ( preg_match( '/[;<>{}]|url\s*\(|expression\s*\(|\\\\/i', $value ) ) {
+			return '';
+		}
+
+		if ( preg_match( '/^var\(\s*(--[a-zA-Z0-9][a-zA-Z0-9._-]*)\s*\)$/', $value, $var_m ) ) {
+			return 'var(' . $var_m[1] . ')';
+		}
+
+		if ( preg_match( '/^(?:0|[0-9]*\.?[0-9]+)(?:px|rem|em|%|vw|vh|svw|svh|ch|cap)$/i', $value ) ) {
+			return $value;
+		}
+
+		return '';
+	}
+}
+
 $woo_on = static function (): bool {
 	return class_exists( 'WooCommerce', false );
 };
@@ -103,7 +131,6 @@ $woo_on = static function (): bool {
 $render_logo = static function ( array $atts ): string {
 	do_action( 'nextora_header_block_before_logo', $atts );
 
-	$use_site = ! isset( $atts['useSiteLogo'] ) || (bool) $atts['useSiteLogo'];
 	$logo_href = isset( $atts['logoLink'] ) && is_string( $atts['logoLink'] ) ? trim( $atts['logoLink'] ) : '';
 	$logo_href = '' !== $logo_href ? $logo_href : home_url( '/' );
 	$logo_href = (string) apply_filters( 'nextora_header_block_logo_link', $logo_href, $atts );
@@ -119,7 +146,14 @@ $render_logo = static function ( array $atts ): string {
 	?>
 	<div class="nextora-header-block__logo">
 		<a class="nextora-header-block__logo-link" href="<?php echo esc_url( $logo_href ); ?>" rel="home">
-			<?php if ( $use_site && function_exists( 'has_custom_logo' ) && has_custom_logo() ) : ?>
+			<?php if ( 'text' === $logo_type ) : ?>
+				<span class="nextora-header-block__logo-text">
+					<?php
+					$text = isset( $atts['logoText'] ) && is_string( $atts['logoText'] ) ? trim( $atts['logoText'] ) : '';
+					echo esc_html( '' !== $text ? $text : get_bloginfo( 'name' ) );
+					?>
+				</span>
+			<?php elseif ( function_exists( 'has_custom_logo' ) && has_custom_logo() ) : ?>
 				<?php
 				echo wp_get_attachment_image(
 					(int) get_theme_mod( 'custom_logo' ),
@@ -238,10 +272,25 @@ $render_nav = static function ( array $atts, string $menu_dom_id, string $uid ):
 	$aria = apply_filters( 'nextora_header_block_nav_aria_label', __( 'Primary navigation', 'nextora' ), $atts );
 	$aria = is_string( $aria ) ? $aria : '';
 
+	$just = 'right';
+	if ( isset( $atts['headerLayout'] ) && is_string( $atts['headerLayout'] ) ) {
+		switch ( $atts['headerLayout'] ) {
+			case 'logo-nav-center':
+			case 'two-row':
+				$just = 'center';
+				break;
+			case 'nav-start-logo-center':
+				$just = 'left';
+				break;
+			default:
+				$just = 'right';
+		}
+	}
+
 	$nav_classes = array(
 		'wp-block-navigation',
 		'is-horizontal',
-		'is-content-justification-right',
+		'is-content-justification-' . $just,
 		'is-layout-flex',
 		'nextora-navigation-from-location',
 		'nextora-navigation-from-location--primary',
@@ -364,6 +413,7 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 					class="nextora-modal nextora-modal--drawer-end nextora-header-block__mini-cart-modal"
 					hidden
 					data-nextora-modal
+					data-nextora-header-mini-cart-portal
 					aria-hidden="true"
 				>
 					<div class="nextora-modal__scrim" data-nextora-modal-dismiss tabindex="-1"></div>
@@ -393,7 +443,7 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 						<div class="nextora-modal__body nextora-header-block__mini-cart-body woocommerce">
 							<?php
 							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce template / core markup.
-							echo '<div class="widget_shopping_cart_content">';
+							echo '<div class="widget_shopping_cart_content" data-nextora-mini-cart-fragments="1">';
 							woocommerce_mini_cart();
 							echo '</div>';
 							?>
@@ -455,6 +505,12 @@ if ( ! empty( $attributes['showBottomBorder'] ) ) {
 	$wrapper_classes[] = 'nextora-header-block--border-bottom';
 }
 
+$layout_raw    = isset( $attributes['headerLayout'] ) && is_string( $attributes['headerLayout'] ) ? $attributes['headerLayout'] : 'logo-nav-end';
+$layouts_ok    = array( 'logo-nav-end', 'logo-nav-center', 'nav-start-logo-center', 'two-row' );
+$header_layout = in_array( $layout_raw, $layouts_ok, true ) ? $layout_raw : 'logo-nav-end';
+$attributes['headerLayout'] = $header_layout;
+$wrapper_classes[]          = 'nextora-header-block--layout-' . sanitize_html_class( str_replace( '_', '-', $header_layout ) );
+
 $wrapper_extra = array(
 	'class' => implode( ' ', $wrapper_classes ),
 	'role'  => 'banner',
@@ -481,36 +537,97 @@ $dialog_lab  = __( 'Menu', 'nextora' );
 
 do_action( 'nextora_header_block_before', $attributes );
 
+$logo_markup = $render_logo( $attributes );
+$utils_markup  = $render_utils( $attributes, $uid );
+$nav_markup    = $render_nav( $attributes, $menu_dom_id, $uid );
+
+ob_start();
+?>
+<button
+	type="button"
+	class="nextora-header-block__menu-toggle nextora-header-block__menu-toggle--hamburger"
+	data-nextora-nav-toggle
+	data-nextora-nav-clone-source="#<?php echo esc_attr( $source_id ); ?>"
+	data-nextora-nav-portal-root="<?php echo esc_attr( $portal_root_id ); ?>"
+	data-nextora-nav-portal-panel="<?php echo esc_attr( $portal_panel ); ?>"
+	data-nextora-nav-portal-title="<?php echo esc_attr( $portal_title ); ?>"
+	data-nextora-nav-portal-dialog-label="<?php echo esc_attr( $dialog_lab ); ?>"
+	data-nextora-nav-open-label="<?php echo esc_attr( $open_label ); ?>"
+	data-nextora-nav-close-label="<?php echo esc_attr( $close_label ); ?>"
+	aria-expanded="false"
+	aria-controls="<?php echo esc_attr( $portal_panel ); ?>"
+	aria-label="<?php echo esc_attr( $open_label ); ?>"
+>
+	<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
+	<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
+	<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
+</button>
+<?php
+$menu_toggle_markup = (string) ob_get_clean();
+
+ob_start();
+?>
+<div id="<?php echo esc_attr( $source_id ); ?>" class="nextora-header-block__nav-source" data-nextora-nav-source-panel>
+	<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- nav HTML from wp_nav_menu walker.
+	echo $nav_markup;
+	?>
+</div>
+<?php
+$nav_source_markup = (string) ob_get_clean();
+
+$inner_style_attr = '';
+$raw_inner_max    = isset( $attributes['innerMaxWidth'] ) ? (string) $attributes['innerMaxWidth'] : '';
+$san_inner_max    = nextora_header_block_sanitize_inner_max_width( $raw_inner_max );
+if ( '' !== $san_inner_max ) {
+	// Scoped to `.nextora-header-block__inner` only — does not alter the block wrapper or sibling markup.
+	$inner_css        = 'max-width:' . $san_inner_max . ';margin-inline:auto;width:100%;box-sizing:border-box;';
+	$inner_style_attr = ' style="' . esc_attr( $inner_css ) . '"';
+}
+
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<div class="nextora-header-block__inner">
-		<?php echo $render_logo( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-		<div id="<?php echo esc_attr( $source_id ); ?>" class="nextora-header-block__nav-source" data-nextora-nav-source-panel>
-			<?php echo $render_nav( $attributes, $menu_dom_id, $uid ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+	<?php if ( 'two-row' === $header_layout ) : ?>
+		<div class="nextora-header-block__inner"<?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr(). ?>>
+			<div class="nextora-header-block__row nextora-header-block__row--top">
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Logo region markup.
+				echo $logo_markup;
+				?>
+				<div class="nextora-header-block__actions">
+					<?php
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Utilities column markup.
+					echo $utils_markup;
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Toggle control markup.
+					echo $menu_toggle_markup;
+					?>
+				</div>
+			</div>
+			<div class="nextora-header-block__row nextora-header-block__row--nav">
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Nav + clone source wrapper.
+				echo $nav_source_markup;
+				?>
+			</div>
 		</div>
-		<div class="nextora-header-block__actions">
-			<?php echo $render_utils( $attributes, $uid ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			<button
-				type="button"
-				class="nextora-header-block__menu-toggle nextora-header-block__menu-toggle--hamburger"
-				data-nextora-nav-toggle
-				data-nextora-nav-clone-source="#<?php echo esc_attr( $source_id ); ?>"
-				data-nextora-nav-portal-root="<?php echo esc_attr( $portal_root_id ); ?>"
-				data-nextora-nav-portal-panel="<?php echo esc_attr( $portal_panel ); ?>"
-				data-nextora-nav-portal-title="<?php echo esc_attr( $portal_title ); ?>"
-				data-nextora-nav-portal-dialog-label="<?php echo esc_attr( $dialog_lab ); ?>"
-				data-nextora-nav-open-label="<?php echo esc_attr( $open_label ); ?>"
-				data-nextora-nav-close-label="<?php echo esc_attr( $close_label ); ?>"
-				aria-expanded="false"
-				aria-controls="<?php echo esc_attr( $portal_panel ); ?>"
-				aria-label="<?php echo esc_attr( $open_label ); ?>"
-			>
-				<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
-				<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
-				<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
-			</button>
+	<?php else : ?>
+		<div class="nextora-header-block__inner"<?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr(). ?>>
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Logo region markup.
+			echo $logo_markup;
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Nav + clone source wrapper.
+			echo $nav_source_markup;
+			?>
+			<div class="nextora-header-block__actions">
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Utilities column markup.
+				echo $utils_markup;
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Toggle control markup.
+				echo $menu_toggle_markup;
+				?>
+			</div>
 		</div>
-	</div>
+	<?php endif; ?>
 </div>
 <?php
 do_action( 'nextora_header_block_after', $attributes );

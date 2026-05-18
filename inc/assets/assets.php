@@ -71,6 +71,33 @@ add_action(
 );
 
 /**
+ * Script handles `nextora-main` depends on (WooCommerce mini cart needs `wc-cart-fragments` + AJAX handler order).
+ *
+ * @return list<string>
+ */
+function nextora_main_script_dependencies(): array {
+	$deps = array( 'jquery' );
+
+	if ( ! class_exists( 'WooCommerce' ) || is_admin() ) {
+		return $deps;
+	}
+
+	// `wc-cart-fragments.js` is normally only enqueued by the cart *widget*; the header block mini cart still needs it
+	// (`wc_cart_fragments_params`, `wc_fragment_refresh`, `wc_fragments_refreshed`).
+	if ( wp_script_is( 'wc-cart-fragments', 'registered' ) ) {
+		wp_enqueue_script( 'wc-cart-fragments' );
+		$deps[] = 'wc-cart-fragments';
+	}
+
+	if ( 'yes' === get_option( 'woocommerce_enable_ajax_add_to_cart' ) && wp_script_is( 'wc-add-to-cart', 'registered' ) ) {
+		wp_enqueue_script( 'wc-add-to-cart' );
+		$deps[] = 'wc-add-to-cart';
+	}
+
+	return $deps;
+}
+
+/**
  * Enqueue TypeScript build output.
  */
 function nextora_enqueue_scripts(): void {
@@ -83,7 +110,7 @@ function nextora_enqueue_scripts(): void {
 	wp_enqueue_script(
 		'nextora-main',
 		NEXTORA_URI . $rel,
-		array(),
+		nextora_main_script_dependencies(),
 		(string) filemtime( $path ),
 		true
 	);
@@ -143,7 +170,7 @@ function nextora_enqueue_scripts(): void {
 		nextora_get_comment_tiptap_js_config()
 	);
 }
-add_action( 'wp_enqueue_scripts', 'nextora_enqueue_scripts' );
+add_action( 'wp_enqueue_scripts', 'nextora_enqueue_scripts', 20 );
 
 /**
  * Script modules + import map: some plugin templates call `get_header()` / `get_footer()` so interactive

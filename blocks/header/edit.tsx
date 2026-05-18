@@ -20,7 +20,6 @@ import metadata from './block.json';
 
 export default function HeaderEdit({ attributes, setAttributes }) {
   const {
-    useSiteLogo,
     logoType,
     logoImageUrl,
     logoText,
@@ -40,6 +39,8 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     stickyStyle,
     showBottomBorder,
     bottomBorderColor,
+    headerLayout,
+    innerMaxWidth,
   } = attributes;
 
   const menus = useSelect(
@@ -89,58 +90,56 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     <>
       <InspectorControls>
         <PanelBody title={__('Logo', 'nextora')} initialOpen>
-          <ToggleControl
-            label={__('Use site logo (Customizer)', 'nextora')}
-            checked={useSiteLogo}
-            onChange={(v) => setAttributes({ useSiteLogo: v })}
+          <p className="components-help-text" style={{ marginTop: 0 }}>
+            {__(
+              'Image: uses the Customizer site logo if set, otherwise the uploaded image below. Text: always uses the text below (or the site title if empty), even when a site logo exists.',
+              'nextora'
+            )}
+          </p>
+          <SelectControl
+            label={__('Logo type', 'nextora')}
+            value={logoType}
+            options={[
+              { label: __('Image', 'nextora'), value: 'image' },
+              { label: __('Text', 'nextora'), value: 'text' },
+            ]}
+            onChange={(v) => setAttributes({ logoType: v })}
           />
-          {!useSiteLogo && (
-            <>
-              <SelectControl
-                label={__('Logo type', 'nextora')}
-                value={logoType}
-                options={[
-                  { label: __('Image', 'nextora'), value: 'image' },
-                  { label: __('Text', 'nextora'), value: 'text' },
-                ]}
-                onChange={(v) => setAttributes({ logoType: v })}
+          {logoType === 'image' ? (
+            <MediaUploadCheck>
+              <MediaUpload
+                onSelect={(media) =>
+                  setAttributes({ logoImageId: media.id, logoImageUrl: media.url || '' })
+                }
+                allowedTypes={['image']}
+                value={attributes.logoImageId || 0}
+                render={({ open }) => (
+                  <div className="nextora-header-block__editor-media">
+                    {logoImageUrl ? (
+                      <img src={logoImageUrl} alt="" style={{ maxWidth: logoWidth, height: 'auto' }} />
+                    ) : null}
+                    <Button variant="secondary" onClick={open}>
+                      {logoImageUrl ? __('Replace logo image', 'nextora') : __('Upload logo image', 'nextora')}
+                    </Button>
+                  </div>
+                )}
               />
-              {logoType === 'image' ? (
-                <MediaUploadCheck>
-                  <MediaUpload
-                    onSelect={(media) =>
-                      setAttributes({ logoImageId: media.id, logoImageUrl: media.url || '' })
-                    }
-                    allowedTypes={['image']}
-                    value={attributes.logoImageId || 0}
-                    render={({ open }) => (
-                      <div className="nextora-header-block__editor-media">
-                        {logoImageUrl ? (
-                          <img src={logoImageUrl} alt="" style={{ maxWidth: logoWidth, height: 'auto' }} />
-                        ) : null}
-                        <Button variant="secondary" onClick={open}>
-                          {logoImageUrl ? __('Replace logo image', 'nextora') : __('Upload logo image', 'nextora')}
-                        </Button>
-                      </div>
-                    )}
-                  />
-                </MediaUploadCheck>
-              ) : (
-                <TextControl
-                  label={__('Logo text', 'nextora')}
-                  value={logoText}
-                  onChange={(v) => setAttributes({ logoText: v })}
-                />
-              )}
-              <RangeControl
-                label={__('Logo max width (px)', 'nextora')}
-                value={logoWidth}
-                onChange={(v) => setAttributes({ logoWidth: v })}
-                min={40}
-                max={400}
-              />
-            </>
+            </MediaUploadCheck>
+          ) : (
+            <TextControl
+              label={__('Logo text', 'nextora')}
+              value={logoText}
+              onChange={(v) => setAttributes({ logoText: v })}
+            />
           )}
+          <RangeControl
+            label={__('Logo max width (px)', 'nextora')}
+            value={logoWidth}
+            onChange={(v) => setAttributes({ logoWidth: v })}
+            min={40}
+            max={400}
+            help={__('Applies to the site logo and the fallback image.', 'nextora')}
+          />
           <TextControl
             label={__('Home link (optional)', 'nextora')}
             value={logoLink}
@@ -237,6 +236,43 @@ export default function HeaderEdit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
+          <SelectControl
+            label={__('Header layout', 'nextora')}
+            value={headerLayout}
+            options={[
+              {
+                label: __('Logo left · menu & icons right', 'nextora'),
+                value: 'logo-nav-end',
+              },
+              {
+                label: __('Logo left · menu center · icons right', 'nextora'),
+                value: 'logo-nav-center',
+              },
+              {
+                label: __('Menu left · logo center · icons right', 'nextora'),
+                value: 'nav-start-logo-center',
+              },
+              {
+                label: __('Two rows (logo & icons, then menu)', 'nextora'),
+                value: 'two-row',
+              },
+            ]}
+            onChange={(v) => setAttributes({ headerLayout: v })}
+            help={__(
+              'Wide layouts use the grid from 768px up. On smaller screens the bar stays compact: logo, utilities, and the menu button.',
+              'nextora'
+            )}
+          />
+          <TextControl
+            label={__('Inner max width', 'nextora')}
+            value={innerMaxWidth}
+            onChange={(v) => setAttributes({ innerMaxWidth: v })}
+            help={__(
+              'Optional. Sets max-width only on the header content wrapper (.nextora-header-block__inner), e.g. 1200px, 75rem, or var(--wp--style--global--wide-size). Centers that row; background on the block is unchanged. Leave empty for no limit.',
+              'nextora'
+            )}
+            autoComplete="off"
+          />
           <ToggleControl
             label={__('Sticky header', 'nextora')}
             checked={stickyHeader}
