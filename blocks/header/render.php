@@ -119,6 +119,51 @@ if ( ! function_exists( 'nextora_header_block_sanitize_inner_max_width' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_header_block_render_simple_search_form' ) ) {
+	/**
+	 * HTML5 search markup for header “simple” mode: underline field plus icon-only submit.
+	 *
+	 * The submit is painted on the logical start (overlaid). DOM order puts the input first so tab order is field → button.
+	 */
+	function nextora_header_block_render_simple_search_form(): void {
+		$form_action  = home_url( '/' );
+		$placeholder = apply_filters( 'nextora_header_simple_search_placeholder', __( 'Search …', 'nextora' ) );
+		if ( ! is_string( $placeholder ) ) {
+			$placeholder = __( 'Search …', 'nextora' );
+		}
+		$search_query = get_search_query();
+		$icon_svg     = '<svg class="nextora-header-block__search-submit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" /><path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>';
+		$icon_svg     = apply_filters( 'nextora_header_simple_search_submit_icon_svg', $icon_svg );
+		if ( ! is_string( $icon_svg ) || '' === trim( $icon_svg ) ) {
+			$icon_svg = '<svg class="nextora-header-block__search-submit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" /><path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>';
+		}
+		?>
+		<form role="search" method="get" class="search-form" action="<?php echo esc_url( $form_action ); ?>">
+			<div class="nextora-header-block__search-simple-field">
+				<label>
+					<span class="screen-reader-text"><?php echo esc_html_x( 'Search for:', 'label', 'nextora' ); ?></span>
+					<input
+						type="search"
+						class="search-field"
+						name="s"
+						value="<?php echo esc_attr( $search_query ); ?>"
+						placeholder="<?php echo esc_attr( $placeholder ); ?>"
+						autocomplete="off"
+					/>
+				</label>
+				<button type="submit" class="search-submit">
+					<span class="screen-reader-text"><?php echo esc_html_x( 'Search', 'submit button', 'nextora' ); ?></span>
+					<?php
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from theme default or trusted filter-only replacement.
+					echo $icon_svg;
+					?>
+				</button>
+			</div>
+		</form>
+		<?php
+	}
+}
+
 $woo_on = static function (): bool {
 	return class_exists( 'WooCommerce', false );
 };
@@ -340,7 +385,7 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 		<?php if ( $show_search && apply_filters( 'nextora_show_header_search_modal', true ) ) : ?>
 			<?php if ( isset( $atts['searchMode'] ) && 'simple' === $atts['searchMode'] ) : ?>
 				<div class="nextora-header-block__search nextora-header-block__search--simple">
-					<?php get_search_form(); ?>
+					<?php nextora_header_block_render_simple_search_form(); ?>
 				</div>
 			<?php elseif ( function_exists( 'nextora_merge_spotlight_search_block_modal_args' ) && function_exists( 'nextora_get_header_search_modal_markup' ) ) : ?>
 				<?php
