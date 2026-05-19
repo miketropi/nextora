@@ -22,6 +22,7 @@ function nextora_get_spotlight_search_inner_html( array $args ): string {
 	$list_id   = $modal_id . '-results';
 	$form_id   = $modal_id . '-form';
 	$status_id = $modal_id . '-status';
+	$hint_id   = $modal_id . '-spotlight-hint';
 
 	ob_start();
 	?>
@@ -38,10 +39,13 @@ function nextora_get_spotlight_search_inner_html( array $args ): string {
 		</label>
 		<div class="nextora-spotlight__field">
 			<span class="nextora-spotlight__field-icon" aria-hidden="true">
-				<svg width="20" height="20" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-					<circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
-					<path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-				</svg>
+				<span class="nextora-spotlight__field-icon-slot nextora-spotlight__field-icon-slot--search">
+					<svg width="20" height="20" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+						<circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
+						<path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+					</svg>
+				</span>
+				<span class="nextora-spotlight__field-icon-slot nextora-spotlight__field-icon-slot--loading" aria-hidden="true"></span>
 			</span>
 			<input
 				type="search"
@@ -66,7 +70,6 @@ function nextora_get_spotlight_search_inner_html( array $args ): string {
 				data-spotlight-status
 				hidden
 			></span>
-			<span class="nextora-spotlight__spinner" data-spotlight-spinner hidden aria-hidden="true"></span>
 		</div>
 		<div
 			id="<?php echo esc_attr( $list_id ); ?>"
@@ -76,8 +79,10 @@ function nextora_get_spotlight_search_inner_html( array $args ): string {
 			hidden
 			data-spotlight-results
 		></div>
-		<p class="nextora-spotlight__hint" data-spotlight-hint>
-			<?php esc_html_e( 'Type at least two characters to search this site.', 'nextora' ); ?>
+		<p id="<?php echo esc_attr( $hint_id ); ?>" class="nextora-spotlight__hint" data-spotlight-hint>
+			<span class="nextora-spotlight__hint-inner">
+				<?php esc_html_e( 'Type at least two characters to search this site.', 'nextora' ); ?>
+			</span>
 		</p>
 		<p class="nextora-spotlight__empty" data-spotlight-empty hidden role="status"></p>
 		<button type="submit" class="sr-only" tabindex="-1"><?php esc_html_e( 'Submit search', 'nextora' ); ?></button>
@@ -92,7 +97,9 @@ function nextora_get_spotlight_search_inner_html( array $args ): string {
  * Pass REST + UX config to `nextora-main` for {@see resources/ts/lib/spotlight-search.ts}.
  */
 function nextora_localize_spotlight_search(): void {
-	if ( ! wp_script_is( 'nextora-main', 'registered' ) ) {
+	// `nextora-main` is enqueued in `inc/assets/assets.php` at priority 20 — localize after that
+	// or `window.nextoraSpotlight` is never printed and live search never binds.
+	if ( ! wp_script_is( 'nextora-main', 'enqueued' ) ) {
 		return;
 	}
 
@@ -117,7 +124,7 @@ function nextora_localize_spotlight_search(): void {
 	);
 }
 
-add_action( 'wp_enqueue_scripts', 'nextora_localize_spotlight_search', 12 );
+add_action( 'wp_enqueue_scripts', 'nextora_localize_spotlight_search', 25 );
 
 /**
  * Merge {@see nextora/spotlight-search} block attributes into header modal args.

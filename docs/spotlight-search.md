@@ -10,7 +10,7 @@ For the **modal shell** (focus trap, scrim, stacking), see [modal.md](./modal.md
 |--------|------|
 | **Block (default placement)** — `nextora/spotlight-search` | `blocks/spotlight-search/` (`block.json`, `edit.tsx`, `render.php`); included in `parts/header.html` inside `nextora-header-nav-cluster` |
 | **PHP feature bundle** | `inc/features/spotlight-search/` (`load.php`, `modal-markup.php`, `search-ui.php`, `register-hooks.php`) — see `inc/features/spotlight-search/README.md` |
-| Trigger + modal markup (title, body, close) | `inc/features/spotlight-search/modal-markup.php` — `nextora_get_header_search_modal_markup()` |
+| Trigger + modal markup (streamlined dialog + close) | `inc/features/spotlight-search/modal-markup.php` — `nextora_get_header_search_modal_markup()` |
 | Block attrs → modal args | `inc/features/spotlight-search/search-ui.php` — `nextora_merge_spotlight_search_block_modal_args()`; filter `nextora_spotlight_search_block_modal_args` |
 | Form fragment (input, results container, hints) | `inc/features/spotlight-search/search-ui.php` — `nextora_get_spotlight_search_inner_html()` |
 | REST config + strings → `window.nextoraSpotlight` | `inc/features/spotlight-search/search-ui.php` (`nextora_localize_spotlight_search`) |
@@ -31,8 +31,8 @@ That restores `nextora_header_search_modal_trigger()` on `nextora_header_after_p
 ## Markup structure
 
 1. **Modal** — Built like any Nextora modal: root `[data-nextora-modal]`, scrim, dialog surface with **`data-nextora-modal-surface`** (see [modal.md](./modal.md)).
-2. **Surface** — `<header>` holds the dialog **title** (`h2` + `title_id`) and optional **subtitle**; **`nextora-modal__body`** wraps only the form. The **close** button is a sibling **after** the body, absolutely positioned over the header so **tab order** reaches the search field before the close control.
-3. **Form** — `nextora_get_spotlight_search_inner_html()` outputs a `<form class="nextora-spotlight" data-nextora-spotlight role="search" method="get" action="…">` that degrades to a normal site search if scripts are off.
+2. **Surface** — No separate title row: the dialog is named with **`aria-label`** (from `title_text`) and described by the hint line (`aria-describedby` → `{modal_id}-spotlight-hint`). **`nextora-modal__body`** wraps the form with top padding so the absolutely positioned **close** control clears the field. Tab order still reaches the query before close.
+3. **Form** — `nextora_get_spotlight_search_inner_html()` outputs a `<form class="nextora-spotlight" data-nextora-spotlight role="search" method="get" action="…">` that degrades to a normal site search if scripts are off. While a request is in flight, **`nextora-spotlight--loading`** on the form swaps the field’s search glyph for an inline spinner (CSS).
 
 ## JavaScript contract
 
@@ -43,8 +43,8 @@ That restores `nextora_header_search_modal_trigger()` on `nextora_header_after_p
 | `input[name="s"]` | Query field; drives debounced REST requests. |
 | `[data-spotlight-results]` | Results region (`role="listbox"` in default markup). |
 | `[data-spotlight-status]` | Polite live region for loading / screen reader status. |
-| `[data-spotlight-spinner]` | Optional loading indicator. |
-| `[data-spotlight-hint]` | Shown when the query is shorter than `minQueryLength`. |
+| `[data-spotlight-hint]` | Shown when the query is shorter than `minQueryLength`; `id` = `{modal_id}-spotlight-hint` (dialog description). |
+| *(loading)* | Class **`nextora-spotlight--loading`** on the form toggles the search icon → spinner in the field (no separate spinner node). |
 | `[data-spotlight-empty]` | “No results” or error message container. |
 
 If `window.nextoraSpotlight` is missing or has no `restUrl`, initialization no-ops (no requests).

@@ -132,7 +132,6 @@ function bindSpotlightForm(form: HTMLElement, config: NextoraSpotlightConfig): v
 	const input = form.querySelector<HTMLInputElement>('input[name="s"]');
 	const resultsEl = form.querySelector<HTMLElement>("[data-spotlight-results]");
 	const statusEl = form.querySelector<HTMLElement>("[data-spotlight-status]");
-	const spinnerEl = form.querySelector<HTMLElement>("[data-spotlight-spinner]");
 	const hintEl = form.querySelector<HTMLElement>("[data-spotlight-hint]");
 	const emptyEl = form.querySelector<HTMLElement>("[data-spotlight-empty]");
 
@@ -145,7 +144,6 @@ function bindSpotlightForm(form: HTMLElement, config: NextoraSpotlightConfig): v
 	let activeIndex = -1;
 
 	const setLoading = (on: boolean): void => {
-		spinnerEl?.toggleAttribute("hidden", !on);
 		form.classList.toggle("nextora-spotlight--loading", on);
 	};
 
@@ -397,7 +395,12 @@ function bindSpotlightForm(form: HTMLElement, config: NextoraSpotlightConfig): v
 	if (hintEl && config.keyboardHint && !hintEl.querySelector(".nextora-spotlight__kbd-hint")) {
 		const kbd = document.createElement("span");
 		kbd.className = "nextora-spotlight__kbd-hint";
-		kbd.textContent = ` ${config.keyboardHint}`;
-		hintEl.appendChild(kbd);
+		kbd.textContent = config.keyboardHint;
+		const hintInner = hintEl.querySelector(".nextora-spotlight__hint-inner");
+		if (hintInner) {
+			hintInner.appendChild(kbd);
+		} else {
+			hintEl.appendChild(kbd);
+		}
 	}
 }

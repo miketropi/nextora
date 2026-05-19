@@ -84,15 +84,15 @@ function nextora_get_header_search_modal_markup_args(): array {
 		'close_label'             => __( 'Close dialog', 'nextora' ),
 		'form_aria_label'         => __( 'Search this site', 'nextora' ),
 		'wrap_class'              => 'flex shrink-0 items-center',
-		'trigger_class'           => 'inline-flex size-10 items-center justify-center rounded-md border-0 bg-transparent p-0 text-base transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-base',
+		'trigger_class'           => 'inline-flex size-10 items-center justify-center rounded-lg border-0 bg-transparent p-0 text-base text-contrast/85 transition-colors hover:bg-contrast/[0.06] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-contrast/20',
 		'trigger_icon_wrap_class' => 'flex leading-none',
 		'trigger_icon_color'      => '',
 		'modal_root_class'        => 'nextora-modal',
 		'scrim_class'             => 'nextora-modal__scrim',
 		'surface_class'           => 'nextora-modal__surface nextora-modal__surface--spotlight relative flex flex-col overflow-hidden',
-		'spotlight_body_class'    => 'nextora-modal__body nextora-modal__body--spotlight flex min-h-0 min-w-0 flex-1 flex-col !border-t-0 !px-0 !pb-0 !pt-0',
+		'spotlight_body_class'    => 'nextora-modal__body nextora-modal__body--spotlight flex min-h-0 min-w-0 flex-1 flex-col !border-t-0 !px-0 !pb-0 !pt-0 relative',
 		'spotlight_close_wrap_class' => 'nextora-spotlight__close-wrap pointer-events-none absolute end-2 top-2 z-10 sm:end-3 sm:top-3',
-		'spotlight_close_class'   => 'nextora-modal__close nextora-spotlight__close pointer-events-auto inline-flex size-9 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-secondary transition-colors hover:bg-secondary/10 hover:text-contrast focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+		'spotlight_close_class'   => 'nextora-modal__close nextora-spotlight__close pointer-events-auto inline-flex size-8 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-secondary/80 transition-colors hover:bg-contrast/[0.055] hover:text-contrast/90 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-primary/35',
 		'close_icon_wrap_class'   => 'nextora-modal__close-icon flex leading-none text-lg',
 		/* Legacy keys kept for filters that still merge them; spotlight layout uses spotlight_* instead of header. */
 		'header_class'            => 'nextora-modal__header',
@@ -178,8 +178,6 @@ function nextora_get_header_search_modal_markup( array $args ): string {
 	}
 	$form_html = apply_filters( 'nextora_header_search_modal_form_html', $form_html, $args );
 
-	$has_spotlight_subtitle = isset( $args['spotlight_subtitle_text'] ) && '' !== trim( (string) $args['spotlight_subtitle_text'] );
-
 	$trigger_style_attr = '';
 	if ( isset( $args['trigger_icon_color'] ) && is_string( $args['trigger_icon_color'] ) ) {
 		$icon_color = sanitize_hex_color( trim( $args['trigger_icon_color'] ) );
@@ -216,26 +214,12 @@ function nextora_get_header_search_modal_markup( array $args ): string {
 			data-nextora-modal-surface
 			role="dialog"
 			aria-modal="true"
-			aria-labelledby="<?php echo esc_attr( $args['title_id'] ); ?>"
-			<?php if ( $has_spotlight_subtitle ) : ?>
-			aria-describedby="<?php echo esc_attr( $args['subtitle_id'] ); ?>"
-			<?php endif; ?>
+			aria-label="<?php echo esc_attr( (string) $args['title_text'] ); ?>"
+			aria-describedby="<?php echo esc_attr( $args['modal_id'] . '-spotlight-hint' ); ?>"
 			tabindex="-1"
 		>
-			<header class="<?php echo esc_attr( $args['spotlight_modal_header_class'] ); ?>">
-				<div class="<?php echo esc_attr( $args['spotlight_modal_header_text_class'] ); ?>">
-					<h2 id="<?php echo esc_attr( $args['title_id'] ); ?>" class="<?php echo esc_attr( $args['spotlight_title_class'] ); ?>">
-						<?php echo esc_html( (string) $args['title_text'] ); ?>
-					</h2>
-					<?php if ( $has_spotlight_subtitle ) : ?>
-						<p id="<?php echo esc_attr( $args['subtitle_id'] ); ?>" class="<?php echo esc_attr( $args['spotlight_subtitle_class'] ); ?>">
-							<?php echo esc_html( (string) $args['spotlight_subtitle_text'] ); ?>
-						</p>
-					<?php endif; ?>
-				</div>
-			</header>
 			<div class="<?php echo esc_attr( $args['spotlight_body_class'] ); ?>">
-				<div class="p-2 pb-3">
+				<div class="px-2 pb-3 pt-3 sm:px-5 sm:pb-4 sm:pt-5">
 					<?php echo $form_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Theme spotlight / filtered markup. ?>
 				</div>
 			</div>

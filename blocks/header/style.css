@@ -527,10 +527,7 @@ button.nextora-header-block__cart-link.nextora-header-block__cart-trigger {
 }
 
 .nextora-header-block__mini-cart-modal .nextora-modal__header {
-	padding:
-		calc(var(--wp--preset--spacing--40, 2.5rem) + env(safe-area-inset-top, 0px))
-		var(--wp--preset--spacing--10, 1rem)
-		var(--wp--preset--spacing--10, 1rem);
+	padding: var(--wp--preset--spacing--10, 1rem);
 	border-bottom: 1px solid var(--nextora-nav-mobile-drawer-border);
 }
 
