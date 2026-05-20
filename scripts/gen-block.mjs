@@ -53,6 +53,8 @@ const pascal = name.replace(/(^|-)([a-z])/g, (_, __, c) => c.toUpperCase());
 const camel = (str) => str.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
 
 const blockDir = path.resolve(`./blocks/${name}`);
+const isNextora = ns === 'nextora';
+const blockCategory = isNextora && category === 'text' ? 'theme' : category;
 
 if (fs.existsSync(blockDir)) {
   console.error(`❌  Block "${name}" already exists at ${blockDir}`);
@@ -63,32 +65,41 @@ if (fs.existsSync(blockDir)) {
 // File templates
 // ---------------------------------------------------------------------------
 
+const blockJson = {
+  $schema: 'https://schemas.wp.org/trunk/block.json',
+  apiVersion: 3,
+  name: `${ns}/${name}`,
+  title,
+  category: blockCategory,
+  description: `${title} block.`,
+  keywords: [name, ns],
+  textdomain: ns,
+  supports: {
+    html: false,
+    align: ['wide', 'full'],
+    color: { background: true, text: true, link: true },
+    spacing: { padding: true, margin: true, blockGap: true },
+    typography: { fontSize: true, lineHeight: true },
+  },
+  attributes: {
+    heading: { type: 'string', default: '' },
+    content: { type: 'string', default: '' },
+    ...(isNextora
+      ? { enableScrollAnimation: { type: 'boolean', default: true } }
+      : {}),
+  },
+  editorScript: 'file:./index.js',
+  render: 'file:./render.php',
+};
+
+if (isNextora) {
+  blockJson.style = 'file:./style.css';
+}
+
 const files = {
 
   // ── block.json ────────────────────────────────────────────────────────────
-  'block.json': JSON.stringify({
-    $schema: 'https://schemas.wp.org/trunk/block.json',
-    apiVersion: 3,
-    name: `${ns}/${name}`,
-    title,
-    category,
-    description: `${title} block.`,
-    keywords: [name, ns],
-    textdomain: ns,
-    supports: {
-      html: false,
-      align: ['wide', 'full'],
-      color: { background: true, text: true, link: true },
-      spacing: { padding: true, margin: true, blockGap: true },
-      typography: { fontSize: true, lineHeight: true },
-    },
-    attributes: {
-      heading: { type: 'string', default: '' },
-      content: { type: 'string', default: '' },
-    },
-    editorScript: 'file:./index.js',
-    render: 'file:./render.php',
-  }, null, 2),
+  'block.json': JSON.stringify(blockJson, null, 2),
 
   // ── index.tsx ─────────────────────────────────────────────────────────────
   'index.tsx': `import { registerBlockType } from '@wordpress/blocks';
@@ -109,7 +120,7 @@ import {
   RichText,
   InspectorControls,
 } from '@wordpress/block-editor';
-import { PanelBody } from '@wordpress/components';
+import { PanelBody, ToggleControl } from '@wordpress/components';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -118,7 +129,7 @@ import { PanelBody } from '@wordpress/components';
 interface Attributes {
   heading: string;
   content: string;
-}
+${isNextora ? '\tenableScrollAnimation: boolean;\n' : ''}}
 
 interface EditProps {
   attributes: Attributes;
@@ -130,7 +141,7 @@ interface EditProps {
 // ---------------------------------------------------------------------------
 
 export default function ${pascal}Edit({ attributes, setAttributes }: EditProps) {
-  const { heading, content } = attributes;
+  const { heading, content${isNextora ? ', enableScrollAnimation' : ''} } = attributes;
 
   /**
    * useBlockProps injects:
@@ -146,6 +157,17 @@ export default function ${pascal}Edit({ attributes, setAttributes }: EditProps) 
         <PanelBody title={__('${title} Settings', '${ns}')} initialOpen>
           {/* Add custom sidebar controls here */}
         </PanelBody>
+        ${isNextora ? `<PanelBody title={__('Animation', '${ns}')} initialOpen={false}>
+          <ToggleControl
+            label={__('Animate on scroll', '${ns}')}
+            help={__(
+              'Fade or move content in when it enters the viewport. Disabled automatically when the visitor prefers reduced motion.',
+              '${ns}'
+            )}
+            checked={enableScrollAnimation !== false}
+            onChange={(v: boolean) => setAttributes({ enableScrollAnimation: v })}
+          />
+        </PanelBody>` : ''}
       </InspectorControls>
 
       {/* Editor UI */}
@@ -195,7 +217,11 @@ if ( ! $heading && ! $content ) {
  *  - Global Styles overrides (color, spacing, typography supports)
  *  - custom class/style added by the editor user
  */
-$wrapper_attributes = get_block_wrapper_attributes();
+${isNextora ? `$scroll_reveal = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
+
+$wrapper_attributes = get_block_wrapper_attributes(
+\t$scroll_reveal ? array( 'data-nextora-scroll-reveal' => '1' ) : array()
+);` : `$wrapper_attributes = get_block_wrapper_attributes();`}
 ?>
 
 <div <?php echo $wrapper_attributes; ?>>
@@ -212,6 +238,31 @@ $wrapper_attributes = get_block_wrapper_attributes();
 `,
 
 };
+
+if (isNextora) {
+  files['style.css'] = `/**
+ * ${ns}/${name} — front-end + editor canvas.
+ * Use theme presets: var(--wp--preset--color--*). See docs/blocks.md.
+ */
+.wp-block-${ns}-${name} {
+\tcolor: var(--wp--preset--color--contrast, inherit);
+}
+
+.${name}__heading {
+\tfont-size: var(--wp--preset--font-size--large, 1.25rem);
+\tfont-weight: 600;
+\tletter-spacing: -0.02em;
+}
+
+.${name}__content {
+\tfont-size: var(--wp--preset--font-size--medium, 1rem);
+\tline-height: 1.55;
+\tcolor: color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 88%, transparent);
+}
+
+/* When adding viewScript (carousel/slider): use --loading / --ready classes — docs/blocks.md */
+`;
+}
 
 // ---------------------------------------------------------------------------
 // Write files
@@ -235,5 +286,6 @@ console.log(`
    Next steps:
    1. Run: npm run build:blocks
    2. Reload wp-admin — block "${title}" will appear in the inserter
-   3. Customise edit.tsx, render.php, and block.json as needed
+   3. Read docs/blocks.md — tokens, scroll animation, JS init loading
+   4. Customise edit.tsx, render.php, style.css, and block.json as needed
 `);

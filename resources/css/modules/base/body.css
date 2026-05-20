@@ -17,12 +17,13 @@
 		max-width: none;
 	}
 
-	/* Avoid clipping the in-header menu toggle; drawer itself mounts on `body`. */
-	.site-header {
+	/*
+	 * Header shell: no sticky here — only `.nextora-header-block--sticky-*` sticks (see blocks/header/style.css).
+	 * Visible overflow so block-level sticky is not clipped by the template part or classic `.site-header`.
+	 */
+	.site-header,
+	header.wp-block-template-part {
 		overflow: visible;
-		z-index: 9999;
-		position: sticky;
-		top: 0;
 	}
 
 	.site-header .alignfull {

@@ -541,8 +541,7 @@ $wrapper_classes   = (array) apply_filters( 'nextora_header_block_wrapper_classe
 $wrapper_classes   = array_filter( array_map( 'trim', $wrapper_classes ) );
 
 if ( ! empty( $attributes['stickyHeader'] ) ) {
-	$wrapper_classes[] = 'nextora-header-block--sticky';
-	$sticky_style      = isset( $attributes['stickyStyle'] ) && 'always' === $attributes['stickyStyle'] ? 'always' : 'scroll-up';
+	$sticky_style = isset( $attributes['stickyStyle'] ) && 'always' === $attributes['stickyStyle'] ? 'always' : 'scroll-up';
 	$wrapper_classes[] = 'nextora-header-block--sticky-' . $sticky_style;
 }
 
@@ -630,9 +629,9 @@ if ( '' !== $san_inner_max ) {
 	$inner_style_attr = ' style="' . esc_attr( $inner_css ) . '"';
 }
 
-?>
-<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-	<?php if ( 'two-row' === $header_layout ) : ?>
+ob_start();
+if ( 'two-row' === $header_layout ) :
+	?>
 		<div class="nextora-header-block__inner"<?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr(). ?>>
 			<div class="nextora-header-block__row nextora-header-block__row--top">
 				<?php
@@ -655,7 +654,9 @@ if ( '' !== $san_inner_max ) {
 				?>
 			</div>
 		</div>
-	<?php else : ?>
+	<?php
+else :
+	?>
 		<div class="nextora-header-block__inner"<?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr(). ?>>
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Logo region markup.
@@ -672,7 +673,15 @@ if ( '' !== $san_inner_max ) {
 				?>
 			</div>
 		</div>
-	<?php endif; ?>
+	<?php
+endif;
+$header_inner_markup = (string) ob_get_clean();
+?>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+	<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner layout rows.
+	echo $header_inner_markup;
+	?>
 </div>
 <?php
 do_action( 'nextora_header_block_after', $attributes );

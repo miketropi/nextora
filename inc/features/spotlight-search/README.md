@@ -9,6 +9,6 @@ PHP for the header spotlight / live search modal. Loaded via `inc/features/spotl
 | `search-ui.php` | `nextora_get_spotlight_search_inner_html()`, `nextora_localize_spotlight_search()`, `nextora_merge_spotlight_search_block_modal_args()` |
 | `register-hooks.php` | `nextora_header_search_modal_trigger()` + optional `nextora_header_after_primary_nav` action |
 
-**Block:** `blocks/spotlight-search/` (`nextora/spotlight-search`). **Assets:** `resources/css/modules/components/spotlight-search.css`, `resources/ts/lib/spotlight-search.ts`.
+**Block:** `blocks/spotlight-search/` (`nextora/spotlight-search`). **Assets:** `resources/css/modules/components/spotlight-search.css`, `resources/ts/lib/spotlight-search.ts`, `resources/ts/spotlight-search-portal.ts` (modal → `body`).
 
 Hooks and filters are documented in [docs/spotlight-search.md](../../../docs/spotlight-search.md) and [docs/extensibility.md](../../../docs/extensibility.md).

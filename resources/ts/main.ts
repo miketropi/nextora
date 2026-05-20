@@ -10,16 +10,18 @@ import { initHeaderNavigation } from "./header-nav";
 import { bindHeaderMiniCartAfterAjaxAdd, mountHeaderMiniCartPortalToBody } from "./mini-cart-portal";
 import { attachModalGlobals, initModals } from "./lib/modal";
 import { initSpotlightSearch } from "./lib/spotlight-search";
+import { mountSpotlightSearchPortalToBody } from "./spotlight-search-portal";
 
 const root = document.documentElement;
 root.classList.add("nextora-js");
 
-initHeaderSticky(); 
+initHeaderSticky();
 initHeaderNavigation();
 mountHeaderMiniCartPortalToBody();
+mountSpotlightSearchPortalToBody();
 initModals();
 bindHeaderMiniCartAfterAjaxAdd();
-attachModalGlobals(); 
+attachModalGlobals();
 initSpotlightSearch();
 initArticleShare();
 initCommentTiptap();

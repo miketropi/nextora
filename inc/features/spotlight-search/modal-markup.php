@@ -84,7 +84,7 @@ function nextora_get_header_search_modal_markup_args(): array {
 		'close_label'             => __( 'Close dialog', 'nextora' ),
 		'form_aria_label'         => __( 'Search this site', 'nextora' ),
 		'wrap_class'              => 'flex shrink-0 items-center',
-		'trigger_class'           => 'inline-flex size-10 items-center justify-center rounded-lg border-0 bg-transparent p-0 text-base text-contrast/85 transition-colors hover:bg-contrast/[0.06] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-contrast/20',
+		'trigger_class'           => 'inline-flex size-10 items-center justify-center rounded-lg border-0 bg-transparent p-0 text-base text-contrast/85 transition-colors',
 		'trigger_icon_wrap_class' => 'flex leading-none',
 		'trigger_icon_color'      => '',
 		'modal_root_class'        => 'nextora-modal',
@@ -206,6 +206,7 @@ function nextora_get_header_search_modal_markup( array $args ): string {
 		class="<?php echo esc_attr( $args['modal_root_class'] ); ?>"
 		hidden
 		data-nextora-modal
+		data-nextora-spotlight-search-portal
 		aria-hidden="true"
 	>
 		<div class="<?php echo esc_attr( $args['scrim_class'] ); ?>" data-nextora-modal-dismiss tabindex="-1"></div>

@@ -21,6 +21,7 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 | [`docs/modal.md`](./docs/modal.md) | Modal layer (`data-nextora-modal`, `openModalDialog`, events, a11y) |
 | [`docs/spotlight-search.md`](./docs/spotlight-search.md) | Header spotlight search, REST, `window.nextoraSpotlight` |
 | [`docs/comments-tiptap.md`](./docs/comments-tiptap.md) | Tiptap comment field, KSES, `window.nextoraComments` |
+| [`docs/blocks.md`](./docs/blocks.md) | Theme block standards: `theme.json` tokens, style overrides, scroll animation toggle, JS init loading, consistent controls |
 
 ## Naming and constants
 
@@ -45,10 +46,12 @@ After changing CSS, TS, or block sources, run **`npm run build`** (or **`npm run
 
 ### Theme blocks (`blocks/`)
 
+- **Standards (read first for new/changed blocks):** [`docs/blocks.md`](./docs/blocks.md) — use **`theme.json` / CSS variables** by default; add **color/background overrides** in the sidebar only when needed; **`enableScrollAnimation`** toggle + GSAP scroll reveal on content blocks; **loading → ready** init for JS layout (carousel/slider); keep **panel labels, help text, and control patterns** aligned across blocks.
 - **Registration**: `blocks/blocks.php` — on `init`, globs each subdirectory of `blocks/` and calls `register_block_type( $block_dir )`. Each block folder needs **`block.json`** plus the **built** `index.js` and **`index.asset.php`** (dependency manifest for WordPress).
 - **Build**: `scripts/build-blocks.mjs` (esbuild; `@wordpress/*` imports shim to `window.wp.*`). **`npm run build`** runs `build:css`, `build:ts`, and **`build:blocks`**. **`npm run watch`** includes **`watch:blocks`**.
-- **Scaffold**: **`npm run gen`** → `scripts/gen-block.mjs` (new block folder + starter files).
-- **Examples in repo**: `blocks/hero-section/`, `blocks/spotlight-search/` (header modal + live search; default placement in `parts/header.html`), `blocks/header/` (all-in-one site header: logo, classic menu, spotlight search, WooCommerce utilities; replaces the older grouped header pattern when used in `parts/header.html`).
+- **Scaffold**: **`npm run gen -- --name=slug --ns=nextora`** → `scripts/gen-block.mjs` (includes `enableScrollAnimation` and `style.css` stub when `ns` is `nextora`).
+- **Cursor**: rule [`.cursor/rules/nextora-blocks.mdc`](./.cursor/rules/nextora-blocks.mdc); skills **`nextora-add-theme-block`**, **`nextora-theme-styling-and-tokens`**.
+- **Examples in repo**: `blocks/hero-section/`, `blocks/spotlight-search/` (header modal + live search; default placement in `parts/header.html`), `blocks/header/` (all-in-one site header), `blocks/image-gallery-grid/` (scroll reveal), `blocks/image-gallery-slide/` (Swiper init).
 
 ### `resources/css/app.css` import order
 
@@ -65,14 +68,15 @@ Imports are intentional: **base** → **components** → **prose** → **overrid
 
 Boot order matters where noted:
 
-1. `initHeaderSticky()` — `header-sticky.ts`; scroll-up hide/show for `nextora/header` when enabled (`window.nextoraHeaderSticky.hideAfter` from `inc/assets/assets.php`, filter `nextora_header_block_sticky_hide_after`).
+1. `initHeaderSticky()` — `header-sticky.ts`; sets `--nextora-header-sticky-top` / `--nextora-header-sticky-translate-y` on sticky `nextora/header` blocks (`window.nextoraHeaderSticky.hideAfter`, filter `nextora_header_block_sticky_hide_after`).
 2. `initHeaderNavigation()` — mobile primary nav is an ~90% off-canvas sheet docked to the inline end (theme preset colors/spacing); GSAP animates backdrop opacity + panel slide only (`header-nav.ts`); strings from `wp_localize_script` → `window.nextoraNav` in `inc/assets/assets.php`
-3. `mountHeaderMiniCartPortalToBody()` — `mini-cart-portal.ts`; reparents the header block mini cart modal under `document.body` (parity with the nav portal layer) before modal wiring
-4. `bindHeaderMiniCartAfterAjaxAdd()` — `mini-cart-portal.ts`; on jQuery `added_to_cart`, reapplies fragment HTML, triggers `wc_fragment_refresh`, opens the mini cart when `wc_fragments_refreshed` fires (or ~550ms fallback)
+3. `mountHeaderMiniCartPortalToBody()` — `mini-cart-portal.ts`; reparents the header block mini cart modal under `document.body` before modal wiring
+4. `mountSpotlightSearchPortalToBody()` — `spotlight-search-portal.ts`; reparents `[data-nextora-spotlight-search-portal]` to `document.body` (trigger stays in header)
 5. `initModals()` / `attachModalGlobals()` — `lib/modal.ts`; `window.nextoraModal` localized in `assets.php`
-6. `initSpotlightSearch()` — after modals; `lib/spotlight-search.ts`; `window.nextoraSpotlight`
-7. `initArticleShare()` — `lib/article-share.ts`; `window.nextoraArticleShare` (filter `nextora_article_share_script_vars`)
-8. `initCommentTiptap()` — `lib/comment-tiptap.ts`; Tiptap + Lucide bundles; `window.nextoraComments`
+6. `bindHeaderMiniCartAfterAjaxAdd()` — `mini-cart-portal.ts`; Woo AJAX add-to-cart → open mini cart
+7. `initSpotlightSearch()` — `lib/spotlight-search.ts`; `window.nextoraSpotlight`
+8. `initArticleShare()` — `lib/article-share.ts`; `window.nextoraArticleShare` (filter `nextora_article_share_script_vars`)
+9. `initCommentTiptap()` — `lib/comment-tiptap.ts`; Tiptap + Lucide bundles; `window.nextoraComments`
 
 **npm `dependencies`**: `@tiptap/*`, `lucide`. **devDependencies**: Tailwind, PostCSS, esbuild, TypeScript.
 

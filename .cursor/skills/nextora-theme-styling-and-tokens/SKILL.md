@@ -8,9 +8,10 @@ disable-model-invocation: true
 
 ## Principles
 
-1. **Canonical presets** live in [`theme.json`](../../../theme.json) (palette, typography, spacing, layout).
-2. **Tailwind utilities** read from **`@theme`** in [`resources/css/app.css`](../../../resources/css/app.css), which maps to `--wp--preset--*` with fallbacks.
-3. **Preflight is disabled** — do not rely on Tailwind’s global reset; scope changes so core/editor UI is unaffected (see `app.css` header).
+1. **Theme blocks** also follow [`docs/blocks.md`](../../../docs/blocks.md) (scroll animation toggle, JS init loading, consistent sidebar controls).
+2. **Canonical presets** live in [`theme.json`](../../../theme.json) (palette, typography, spacing, layout).
+3. **Tailwind utilities** read from **`@theme`** in [`resources/css/app.css`](../../../resources/css/app.css), which maps to `--wp--preset--*` with fallbacks.
+4. **Preflight is disabled** — do not rely on Tailwind’s global reset; scope changes so core/editor UI is unaffected (see `app.css` header).
 
 ## Workflow
 

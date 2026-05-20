@@ -15,8 +15,9 @@ For the **modal shell** (focus trap, scrim, stacking), see [modal.md](./modal.md
 | Form fragment (input, results container, hints) | `inc/features/spotlight-search/search-ui.php` — `nextora_get_spotlight_search_inner_html()` |
 | REST config + strings → `window.nextoraSpotlight` | `inc/features/spotlight-search/search-ui.php` (`nextora_localize_spotlight_search`) |
 | Client behavior | `resources/ts/lib/spotlight-search.ts` |
+| Modal portal → `body` | `resources/ts/spotlight-search-portal.ts` — `mountSpotlightSearchPortalToBody()` moves `[data-nextora-spotlight-search-portal]` before `initModals()` |
 | Styles | `resources/css/modules/components/spotlight-search.css` |
-| Boot order | `resources/ts/main.ts` (`initSpotlightSearch()` after `initModals()`) |
+| Boot order | `resources/ts/main.ts` (`mountSpotlightSearchPortalToBody()` → `initModals()` → `initSpotlightSearch()`) |
 
 `functions.php` loads `inc/features/spotlight-search/load.php`. **By default** the spotlight UI is **not** hooked into `nextora_header_after_primary_nav`; it is rendered by the **`nextora/spotlight-search` block** in the header template part.
 
@@ -30,7 +31,7 @@ That restores `nextora_header_search_modal_trigger()` on `nextora_header_after_p
 
 ## Markup structure
 
-1. **Modal** — Built like any Nextora modal: root `[data-nextora-modal]`, scrim, dialog surface with **`data-nextora-modal-surface`** (see [modal.md](./modal.md)).
+1. **Modal** — Built like any Nextora modal: root `[data-nextora-modal]` + **`data-nextora-spotlight-search-portal`** (reparented to `document.body` on load), scrim, dialog surface with **`data-nextora-modal-surface`** (see [modal.md](./modal.md)). The **trigger** stays in the header block or `nextora/spotlight-search` block wrapper.
 2. **Surface** — No separate title row: the dialog is named with **`aria-label`** (from `title_text`) and described by the hint line (`aria-describedby` → `{modal_id}-spotlight-hint`). **`nextora-modal__body`** wraps the form with top padding so the absolutely positioned **close** control clears the field. Tab order still reaches the query before close.
 3. **Form** — `nextora_get_spotlight_search_inner_html()` outputs a `<form class="nextora-spotlight" data-nextora-spotlight role="search" method="get" action="…">` that degrades to a normal site search if scripts are off. While a request is in flight, **`nextora-spotlight--loading`** on the form swaps the field’s search glyph for an inline spinner (CSS).
 

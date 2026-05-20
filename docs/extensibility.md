@@ -157,6 +157,15 @@ add_filter( 'nextora_show_header_search_modal', '__return_false' );
 
 **Actions:** `nextora_header_search_modal_before`, `nextora_header_search_modal_after` — both receive the resolved args array from `nextora_get_header_search_modal_markup_args()`.
 
+### `nextora/header` sticky
+
+Sticky is **block-level** only (classes `nextora-header-block--sticky-always` or `--sticky-scroll-up` on the block root from the **Sticky header** setting). Sibling blocks in the same header template part (e.g. a top bar) are not stuck. Front-end JS (`resources/ts/header-sticky.ts`) reads `header.wp-block-template-part` for pin geometry and sets `--nextora-header-sticky-top` (admin bar), `--nextora-header-sticky-left`, `--nextora-header-sticky-width`, and `--nextora-header-sticky-translate-y` (scroll-up show/hide on the block root while pinned). When pinned, class `nextora-header-block--is-pinned` switches to `position: fixed` aligned to the template part; scroll-up hide adds `nextora-header-block--scroll-hidden`. Styles live in `blocks/header/style.css`.
+
+| Filter | Purpose |
+|--------|---------|
+| `nextora_header_block_sticky_hide_after` | Scroll Y (px) before scroll-up hide can engage (default `72`). Localized as `window.nextoraHeaderSticky.hideAfter`. |
+| `nextora_header_block_wrapper_classes` | Add classes on the block wrapper when sticky is enabled (same hook as other header block classes). |
+
 **Filters:**
 
 | Filter | Purpose |

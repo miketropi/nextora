@@ -1,17 +1,47 @@
 ---
-description: Nextora theme blocks — block.json, esbuild, registration, scaffold
+description: Nextora theme blocks — tokens, animation toggle, JS init, consistent controls
 globs: blocks/**
 alwaysApply: false
 ---
 
 # Nextora — theme blocks
 
-- **Registration:** Each folder under `blocks/` with `block.json` is registered via `register_block_type( $block_dir )` in [`blocks/blocks.php`](../../blocks/blocks.php).
-- **Built artifacts:** WordPress expects **`index.js`** + **`index.asset.php`** in the block folder; produced by [`scripts/build-blocks.mjs`](../../scripts/build-blocks.mjs) (esbuild). **`@wordpress/*`** imports resolve to **`window.wp.*`** shims — add new packages in that script if needed.
-- **New block:** `npm run gen` → edit `block.json`, editor source (e.g. `*.tsx`), `render.php` / `view.js` as needed → `npm run build:blocks` or `npm run watch`.
-- **Examples:** `blocks/hero-section/`, `blocks/spotlight-search/`.
+Full standards: [`docs/blocks.md`](../../docs/blocks.md). Skills: `nextora-add-theme-block`, `nextora-theme-styling-and-tokens`.
+
+## Registration & build
+
+- Folders under `blocks/` with `block.json` → [`blocks/blocks.php`](../../blocks/blocks.php).
+- Built **`index.js`** + **`index.asset.php`** via [`scripts/build-blocks.mjs`](../../scripts/build-blocks.mjs); `@wordpress/*` → `window.wp.*`.
+- Scaffold: `npm run gen -- --name=slug --ns=nextora` → **`npm run build:blocks`**.
+
+## Theme scheme (required)
+
+- Default styling from **`theme.json`** presets via `supports.color` / `spacing` / `typography` and `get_block_wrapper_attributes()`.
+- CSS uses **`var(--wp--preset--color--*)`** / `@theme` tokens — not ad-hoc hex unless mapping a custom override attribute.
+
+## Style overrides (agent discretion)
+
+- Add sidebar **Colors** / **Appearance** controls only when presets are insufficient; name attributes consistently (`backgroundColor`, `textColor`, scoped variants).
+- Map preset slugs to CSS variables in `render.php`; document empty = theme default.
+
+## Scroll animation (content blocks)
+
+- Attribute: **`enableScrollAnimation`** (boolean, default `true`).
+- Sidebar: panel **Animation**, toggle **Animate on scroll** + standard help text (see `docs/blocks.md`).
+- PHP: `data-nextora-scroll-reveal="1"` when on; JS in `view.ts` with GSAP ScrollTrigger, **`once: true`**, skip if **`prefers-reduced-motion: reduce`**.
+- Reference: [`blocks/image-gallery-grid/view.ts`](../../blocks/image-gallery-grid/view.ts).
+
+## JS layout (slider / carousel)
+
+- Reserve space in CSS; root **`nextora-{slug}--loading`** → **`--ready`** after init.
+- Use **`data-nextora-{slug}-init-pending`** / **`data-nextora-{slug}-inited`**; idempotent init.
+- Reference: [`blocks/image-gallery-slide/view.ts`](../../blocks/image-gallery-slide/view.ts).
+
+## Consistency
+
+- Reuse panel titles and help copy from sibling blocks; `textdomain` **`nextora`**; compare **header**, **spotlight-search**, **image-gallery-*** before shipping.
 
 ```text
-❌ Committing only TSX changes without running build:blocks
-✅ Run npm run build:blocks so index.js and index.asset.php match editor code
+❌ New block with hard-coded #333 and no scroll toggle
+✅ Presets + optional overrides + enableScrollAnimation + build:blocks
 ```

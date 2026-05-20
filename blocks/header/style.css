@@ -77,39 +77,49 @@
 	outline-color: var(--wp--preset--color--primary, var(--nextora-nav-focus-ring, currentColor));
 }
 
-/* Sticky: always visible while scrolling */
-.nextora-header-block--sticky-always {
-	position: sticky;
-	z-index: 100;
-	top: 0;
+/**
+ * Sticky on this block only (siblings in `header.wp-block-template-part` scroll away).
+ * Pin line, left, and width are set in header-sticky.ts from `header.wp-block-template-part`.
+ * Parent shells: overflow visible in resources/css/modules/base/body.css.
+ */
+.nextora-header-block__sticky-spacer {
+	display: block;
+	height: 0;
+	pointer-events: none;
 }
 
-/* Sticky: hide when scrolling down, show when scrolling up */
+.nextora-header-block--sticky-always:not(.nextora-header-block--is-pinned),
+.nextora-header-block--sticky-scroll-up:not(.nextora-header-block--is-pinned) {
+	position: sticky;
+	top: var(--nextora-header-sticky-top, 0px);
+}
+
+.nextora-header-block--sticky-always,
 .nextora-header-block--sticky-scroll-up {
-	position: sticky;
 	z-index: 100;
-	top: 0;
-	transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+	width: 100%;
+	max-width: none;
+	align-self: start;
 }
 
-.nextora-header-block--sticky-scroll-up.nextora-header-block--scroll-hidden {
-	transform: translateY(-100%);
+.nextora-header-block--sticky-always.nextora-header-block--is-pinned,
+.nextora-header-block--sticky-scroll-up.nextora-header-block--is-pinned {
+	position: fixed;
+	top: var(--nextora-header-sticky-top, 0px);
+	left: var(--nextora-header-sticky-left, 0px);
+	width: var(--nextora-header-sticky-width, 100%);
+	right: auto;
+}
+
+/* Scroll-up show/hide on the block root (only while pinned — see header-sticky.ts). */
+.nextora-header-block--sticky-scroll-up.nextora-header-block--is-pinned {
+	transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+	transform: translateY(var(--nextora-header-sticky-translate-y, 0px));
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.nextora-header-block--sticky-scroll-up {
+	.nextora-header-block--sticky-scroll-up.nextora-header-block--is-pinned {
 		transition-duration: 0.01ms;
-	}
-}
-
-/* WordPress admin bar offset */
-body.admin-bar .nextora-header-block--sticky {
-	top: 32px;
-}
-
-@media screen and (max-width: 782px) {
-	body.admin-bar .nextora-header-block--sticky {
-		top: 46px;
 	}
 }
 
