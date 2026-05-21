@@ -54,6 +54,8 @@ disable-model-invocation: true
 | [`blocks/image-gallery-grid/`](../../../blocks/image-gallery-grid/) | Scroll reveal (GSAP) |
 | [`blocks/image-gallery-slide/`](../../../blocks/image-gallery-slide/) | Swiper init / loading |
 | [`blocks/header/`](../../../blocks/header/) | Utilities, tokens via `currentColor` |
+| [`docs/blocks/Hotel Listing Card Block.md`](../../../docs/blocks/Hotel%20Listing%20Card%20Block.md) | Hotel listing card spec (design category) |
+| [`docs/blocks/Hero Slider Block System.md`](../../../docs/blocks/Hero%20Slider%20Block%20System.md) | Slide wrapper + slide item carousel spec (Swiper + InnerBlocks) |
 
 ## Checklist
 

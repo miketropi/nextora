@@ -1,0 +1,18 @@
+.nextora-sw-editor {
+	min-height: var(--nextora-sw-min-height, 500px);
+}
+
+.nextora-sw-editor__hint {
+	margin: 0 0 0.75rem;
+}
+
+.nextora-sw-editor__slides {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+.nextora-sw-editor__slides > .block-editor-block-list__block {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+}

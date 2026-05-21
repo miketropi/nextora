@@ -1,0 +1,109 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/slide-wrapper",
+  "title": "Slide wrapper",
+  "category": "design",
+  "description": "Carousel wrapper for Slide item blocks with navigation, pagination, and autoplay.",
+  "keywords": ["slider", "carousel", "hero", "slides", "nextora"],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    },
+    "dimensions": {
+      "minHeight": true
+    }
+  },
+  "attributes": {
+    "slidesPerView": {
+      "type": "number",
+      "default": 1
+    },
+    "slidesPerGroup": {
+      "type": "number",
+      "default": 1
+    },
+    "spaceBetween": {
+      "type": "number",
+      "default": 0
+    },
+    "speed": {
+      "type": "number",
+      "default": 500
+    },
+    "loop": {
+      "type": "boolean",
+      "default": true
+    },
+    "effect": {
+      "type": "string",
+      "default": "slide"
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": true
+    },
+    "autoplayDelay": {
+      "type": "number",
+      "default": 5000
+    },
+    "pauseOnHover": {
+      "type": "boolean",
+      "default": true
+    },
+    "showArrows": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDots": {
+      "type": "boolean",
+      "default": true
+    },
+    "arrowStyle": {
+      "type": "string",
+      "default": "minimal"
+    },
+    "arrowSize": {
+      "type": "number",
+      "default": 24
+    },
+    "arrowColor": {
+      "type": "string",
+      "default": ""
+    },
+    "dotColor": {
+      "type": "string",
+      "default": ""
+    },
+    "dotActiveColor": {
+      "type": "string",
+      "default": ""
+    },
+    "dotSize": {
+      "type": "number",
+      "default": 10
+    },
+    "sliderHeight": {
+      "type": "string",
+      "default": "80vh"
+    },
+    "sliderMinHeight": {
+      "type": "string",
+      "default": "500px"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "render": "file:./render.php"
+}

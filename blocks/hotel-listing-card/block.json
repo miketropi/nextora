@@ -1,0 +1,87 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/hotel-listing-card",
+  "title": "Hotel listing card",
+  "category": "design",
+  "description": "Card for a property or hotel: image, name, price, location, and rating.",
+  "keywords": ["hotel", "property", "listing", "card", "travel", "nextora"],
+  "textdomain": "nextora",
+  "icon": "building",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    }
+  },
+  "attributes": {
+    "imageId": {
+      "type": "number",
+      "default": 0
+    },
+    "imageAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "propertyName": {
+      "type": "string",
+      "default": "La Brisa Vales"
+    },
+    "price": {
+      "type": "string",
+      "default": "$980"
+    },
+    "priceLabel": {
+      "type": "string",
+      "default": "/Night"
+    },
+    "location": {
+      "type": "string",
+      "default": "Ubud, Bali, Indonesia"
+    },
+    "rating": {
+      "type": "string",
+      "default": "4.9"
+    },
+    "reviewCount": {
+      "type": "string",
+      "default": "1,982"
+    },
+    "showRating": {
+      "type": "boolean",
+      "default": true
+    },
+    "showLocation": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    },
+    "cardBorderRadius": {
+      "type": "number",
+      "default": 16
+    },
+    "imageBorderRadius": {
+      "type": "number",
+      "default": 12
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,35 @@
+/**
+ * nextora/hotel-listing-card — editor-only tweaks.
+ */
+.editor-styles-wrapper .wp-block-nextora-hotel-listing-card.nextora-hlc {
+	max-width: 25rem;
+}
+
+.editor-styles-wrapper .nextora-hlc__media-placeholder.components-button {
+	align-items: center;
+	aspect-ratio: 16 / 10;
+	display: flex;
+	height: auto;
+	justify-content: center;
+	width: 100%;
+}
+
+.editor-styles-wrapper .nextora-hlc__name,
+.editor-styles-wrapper .nextora-hlc__price-value,
+.editor-styles-wrapper .nextora-hlc__price-label,
+.editor-styles-wrapper .nextora-hlc__location-text,
+.editor-styles-wrapper .nextora-hlc__rating-score,
+.editor-styles-wrapper .nextora-hlc__review-count {
+	outline: none;
+}
+
+.editor-styles-wrapper .nextora-hlc__rating-reviews {
+	align-items: center;
+	display: inline-flex;
+	gap: 0;
+}
+
+.editor-styles-wrapper .nextora-hlc__review-count {
+	display: inline;
+	min-width: 2ch;
+}

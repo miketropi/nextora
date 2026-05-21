@@ -75,6 +75,8 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 ## Related docs
 
 - [`AGENTS.md`](../AGENTS.md) — theme overview and build pipeline.
+- [`docs/blocks/Hotel Listing Card Block.md`](./blocks/Hotel%20Listing%20Card%20Block.md) — **Hotel listing card** block spec (implemented).
+- [`docs/blocks/Hero Slider Block System.md`](./blocks/Hero%20Slider%20Block%20System.md) — **Slide wrapper + slide item** carousel spec (implemented).
 - [`docs/modal.md`](./modal.md), [`docs/spotlight-search.md`](./spotlight-search.md) — shared UI patterns.
 - Skill: `.cursor/skills/nextora-add-theme-block/SKILL.md`
 - Skill: `.cursor/skills/nextora-theme-styling-and-tokens/SKILL.md`

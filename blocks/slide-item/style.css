@@ -1,0 +1,76 @@
+/**
+ * nextora/slide-item — single carousel slide.
+ */
+.nextora-si {
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+.nextora-si--valign-top {
+	align-items: flex-start;
+}
+
+.nextora-si--valign-center {
+	align-items: center;
+}
+
+.nextora-si--valign-bottom {
+	align-items: flex-end;
+}
+
+.nextora-si__background {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background-repeat: no-repeat;
+	background-color: var(--wp--preset--color--contrast, #0f172a);
+}
+
+.nextora-si__background--video {
+	overflow: hidden;
+}
+
+.nextora-si__background--video video {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.nextora-si__overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+}
+
+.nextora-si__content {
+	position: relative;
+	z-index: 2;
+	width: 100%;
+	max-width: var(--nextora-si-content-max-width, 600px);
+}
+
+.nextora-si__content .wp-block-heading {
+	font-size: clamp(2.25rem, 5vw, 4rem);
+	font-weight: 900;
+	line-height: 1.05;
+	text-transform: uppercase;
+}
+
+.nextora-si__content .wp-block-paragraph {
+	font-size: clamp(0.875rem, 1.5vw, 1.125rem);
+	line-height: 1.6;
+	max-width: 32.5rem;
+}
+
+@media (max-width: 767px) {
+	.nextora-si__content .wp-block-heading {
+		font-size: clamp(1.75rem, 8vw, 2.25rem);
+	}
+}

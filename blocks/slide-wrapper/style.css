@@ -1,0 +1,115 @@
+/**
+ * nextora/slide-wrapper — full-width hero carousel shell.
+ */
+.wp-block-nextora-slide-wrapper {
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.nextora-sw {
+	--nextora-sw-height: 80vh;
+	--nextora-sw-min-height: 500px;
+	--nextora-sw-arrow-color: var(--wp--preset--color--base, #fff);
+	--nextora-sw-arrow-size: 24px;
+	--nextora-sw-arrow-offset: 1.5rem;
+	--nextora-sw-dot-color: rgba(255, 255, 255, 0.5);
+	--nextora-sw-dot-active: var(--wp--preset--color--base, #fff);
+	--nextora-sw-dot-size: 10px;
+	position: relative;
+	width: 100%;
+	height: var(--nextora-sw-height);
+	min-height: var(--nextora-sw-min-height);
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.nextora-sw--loading {
+	opacity: 1;
+}
+
+.nextora-sw__swiper {
+	width: 100%;
+	height: 100%;
+}
+
+.nextora-sw__swiper .swiper-wrapper {
+	height: 100%;
+}
+
+.nextora-sw__arrow {
+	position: absolute;
+	top: 50%;
+	z-index: 10;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem;
+	border: none;
+	background: none;
+	color: var(--nextora-sw-arrow-color);
+	cursor: pointer;
+	transform: translateY(-50%);
+	transition: opacity 0.2s ease;
+}
+
+.nextora-sw__arrow:hover {
+	opacity: 0.75;
+}
+
+.nextora-sw__arrow--prev {
+	left: var(--nextora-sw-arrow-offset);
+}
+
+.nextora-sw__arrow--next {
+	right: var(--nextora-sw-arrow-offset);
+}
+
+.nextora-sw__arrow-icon {
+	width: var(--nextora-sw-arrow-size);
+	height: var(--nextora-sw-arrow-size);
+}
+
+.nextora-sw--arrow-circle .nextora-sw__arrow,
+.nextora-sw--arrow-square .nextora-sw__arrow {
+	width: 3rem;
+	height: 3rem;
+	background: color-mix(in srgb, var(--nextora-sw-arrow-color) 15%, transparent);
+}
+
+.nextora-sw--arrow-circle .nextora-sw__arrow {
+	border-radius: 50%;
+}
+
+.nextora-sw--arrow-square .nextora-sw__arrow {
+	border-radius: 0.25rem;
+}
+
+.nextora-sw__pagination {
+	position: absolute;
+	bottom: 1.5rem;
+	left: 50%;
+	z-index: 10;
+	display: flex;
+	gap: 0.5rem;
+	transform: translateX(-50%);
+}
+
+.nextora-sw__pagination .swiper-pagination-bullet {
+	width: var(--nextora-sw-dot-size);
+	height: var(--nextora-sw-dot-size);
+	opacity: 1;
+	background: var(--nextora-sw-dot-color);
+}
+
+.nextora-sw__pagination .swiper-pagination-bullet-active {
+	background: var(--nextora-sw-dot-active);
+}
+
+@media (max-width: 767px) {
+	.nextora-sw {
+		--nextora-sw-arrow-offset: 0.75rem;
+		--nextora-sw-arrow-size: 18px;
+	}
+}
