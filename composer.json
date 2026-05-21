@@ -1,6 +1,6 @@
 {
 	"name": "nextora/theme",
-	"description": "Nextora WordPress hybrid starter theme",
+	"description": "Nextora WordPress block theme (FSE)",
 	"type": "wordpress-theme",
 	"license": "GPL-2.0-or-later",
 	"require": {

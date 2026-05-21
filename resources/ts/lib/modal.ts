@@ -16,7 +16,7 @@
  * The dialog panel **must** have `role="dialog"` and either `data-nextora-modal-surface` or class
  * `nextora-modal__surface` (attribute preferred so filters can keep hooks if they rename BEM classes).
  * Spotlight search uses a variant: `.nextora-modal__body` + chrome row inside the same surface
- * ({@see inc/hooks/header-hooks.php}).
+ * Spotlight search modal markup ({@see inc/features/spotlight-search/modal-markup.php}).
  */
 
 const FOCUSABLE_SELECTOR =

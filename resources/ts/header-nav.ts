@@ -1,6 +1,6 @@
 /**
  * Primary header navigation — mobile menu opens in a body portal with a cloned nav
- * (avoids stacking-context / overflow clipping in the header). See `header-hooks.php`.
+ * (avoids stacking-context / overflow clipping in the header). See `blocks/header/render.php` + `header-nav.ts`.
  * Open/close uses GSAP on viewports that allow motion; see `nav-menus.css` for visuals.
  */
 

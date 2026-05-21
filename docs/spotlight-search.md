@@ -8,7 +8,8 @@ For the **modal shell** (focus trap, scrim, stacking), see [modal.md](./modal.md
 
 | Piece | Path |
 |--------|------|
-| **Block (default placement)** — `nextora/spotlight-search` | `blocks/spotlight-search/` (`block.json`, `edit.tsx`, `render.php`); included in `parts/header.html` inside `nextora-header-nav-cluster` |
+| **Block (standalone)** — `nextora/spotlight-search` | `blocks/spotlight-search/` (`block.json`, `edit.tsx`, `render.php`) |
+| **Header block (default)** — search in `nextora/header` | `blocks/header/render.php` (spotlight mode); default `parts/header.html` uses `nextora/header` only |
 | **PHP feature bundle** | `inc/features/spotlight-search/` (`load.php`, `modal-markup.php`, `search-ui.php`, `register-hooks.php`) — see `inc/features/spotlight-search/README.md` |
 | Trigger + modal markup (streamlined dialog + close) | `inc/features/spotlight-search/modal-markup.php` — `nextora_get_header_search_modal_markup()` |
 | Block attrs → modal args | `inc/features/spotlight-search/search-ui.php` — `nextora_merge_spotlight_search_block_modal_args()`; filter `nextora_spotlight_search_block_modal_args` |
@@ -19,15 +20,9 @@ For the **modal shell** (focus trap, scrim, stacking), see [modal.md](./modal.md
 | Styles | `resources/css/modules/components/spotlight-search.css` |
 | Boot order | `resources/ts/main.ts` (`mountSpotlightSearchPortalToBody()` → `initModals()` → `initSpotlightSearch()`) |
 
-`functions.php` loads `inc/features/spotlight-search/load.php`. **By default** the spotlight UI is **not** hooked into `nextora_header_after_primary_nav`; it is rendered by the **`nextora/spotlight-search` block** in the header template part.
+`functions.php` loads `inc/features/spotlight-search/load.php`. **By default** spotlight search is rendered by the **`nextora/header` block** (search mode: spotlight) in `parts/header.html`, or by the standalone **`nextora/spotlight-search`** block when placed elsewhere.
 
-**Legacy PHP-only injection** (no block in the header): add
-
-```php
-add_filter( 'nextora_header_spotlight_search_use_php_hook', '__return_true' );
-```
-
-That restores `nextora_header_search_modal_trigger()` on `nextora_header_after_primary_nav` (priority **20**). Do not use both the block and this hook on the same header, or you will get duplicate modals.
+Do not enable multiple spotlight triggers on the same view (e.g. header block spotlight + standalone block) or users will get duplicate modals.
 
 ## Markup structure
 
@@ -92,7 +87,7 @@ Defined or consumed in `inc/features/spotlight-search/search-ui.php` unless note
 | `nextora_spotlight_per_page` | Result page size. |
 | `nextora_spotlight_search_inner_html` | Replace the entire inner form HTML (`$html`, `$args`). |
 
-**Modal + trigger** (classes, labels, full HTML) use the hooks in `header-hooks.php`, e.g. `nextora_header_search_modal_markup_args`, `nextora_header_search_modal_form_html`, `nextora_header_search_modal_output`. See [extensibility.md](./extensibility.md#header).
+**Modal + trigger** (classes, labels, full HTML) use filters in `inc/features/spotlight-search/modal-markup.php`, e.g. `nextora_header_search_modal_markup_args`, `nextora_header_search_modal_form_html`, `nextora_header_search_modal_output`. See [extensibility.md](./extensibility.md).
 
 ## Disabling
 
@@ -110,6 +105,6 @@ Component styles live under `.nextora-spotlight*` and `.nextora-modal__surface--
 
 ## Accessibility notes
 
-- Dialog: `aria-labelledby` on the surface points at the visible `h2`; optional `aria-describedby` when a subtitle is output (see `header-hooks.php`).
+- Dialog: `aria-label` on the surface (from `title_text`); `aria-describedby` on the hint line (`modal-markup.php`).
 - Combobox-style hints: input uses `aria-controls`, `aria-expanded`, `aria-autocomplete="list"`, and `aria-activedescendant` when an option is active.
 - Results links use `role="option"` while the listbox is open; status updates use a live region.

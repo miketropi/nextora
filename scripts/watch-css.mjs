@@ -18,7 +18,6 @@ const defaultPaths = [
 	'resources/css',
 	'blocks',
 	'inc',
-	'template-parts',
 	'parts',
 	'templates',
 ];
