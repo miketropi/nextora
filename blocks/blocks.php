@@ -27,3 +27,8 @@ function nextora_register_blocks(): void {
 	}
 }
 add_action( 'init', 'nextora_register_blocks' );
+
+$scrolling_promotion_styles = __DIR__ . '/scrolling-promotion/register-styles.php';
+if ( is_readable( $scrolling_promotion_styles ) ) {
+	require_once $scrolling_promotion_styles;
+}
