@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Constants and optional plugin stubs for PHPStan analysis.
  */
@@ -48,5 +49,22 @@ if ( ! function_exists( 'WC' ) ) {
 		}
 
 		return $instance;
+	}
+}
+
+if ( ! function_exists( 'wc_load_cart' ) ) {
+	function wc_load_cart(): void {
+	}
+}
+
+if ( ! function_exists( 'wc_get_cart_url' ) ) {
+	function wc_get_cart_url(): string {
+		return '';
+	}
+}
+
+if ( ! function_exists( 'wc_get_account_endpoint_url' ) ) {
+	function wc_get_account_endpoint_url( string $endpoint ): string {
+		return '';
 	}
 }

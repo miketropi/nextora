@@ -18,6 +18,21 @@ add_action( 'wp_enqueue_scripts', 'nextora_enqueue_fonts', 5 );
 add_action( 'enqueue_block_assets', 'nextora_enqueue_fonts', 5 );
 
 /**
+ * Invoke a {@see WP_Script_Modules} print method when present (Woo/plugin templates, older stubs).
+ *
+ * @param WP_Script_Modules $script_modules Script modules registry.
+ * @param string            $method         Method name.
+ */
+function nextora_call_script_modules_method( WP_Script_Modules $script_modules, string $method ): void {
+	$callable = array( $script_modules, $method );
+	if ( ! is_callable( $callable ) ) {
+		return;
+	}
+
+	call_user_func( $callable );
+}
+
+/**
  * Core block CSS + block-template skip link on the front end.
  *
  * Runs at priority 1 so `global-styles` is enqueued before theme styles that list it as a dependency.
@@ -191,9 +206,15 @@ add_action(
 		remove_action( 'wp_head', array( $sm, 'print_script_module_preloads' ) );
 		remove_action( 'wp_head', array( $sm, 'print_head_enqueued_script_modules' ) );
 
-		add_action( 'wp_footer', array( $sm, 'print_import_map' ), 9 );
-		add_action( 'wp_footer', array( $sm, 'print_script_module_preloads' ), 9 );
-		add_action( 'wp_footer', array( $sm, 'print_head_enqueued_script_modules' ), 9 );
+		add_action( 'wp_footer', static function () use ( $sm ): void {
+			nextora_call_script_modules_method( $sm, 'print_import_map' );
+		}, 9 );
+		add_action( 'wp_footer', static function () use ( $sm ): void {
+			nextora_call_script_modules_method( $sm, 'print_script_module_preloads' );
+		}, 9 );
+		add_action( 'wp_footer', static function () use ( $sm ): void {
+			nextora_call_script_modules_method( $sm, 'print_head_enqueued_script_modules' );
+		}, 9 );
 	},
 	20,
 );
