@@ -1,0 +1,53 @@
+name: PR notification
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+    branches:
+      - main
+      - develop
+
+jobs:
+  notify:
+    name: Post PR message
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Send notification
+        env:
+          POST_MESSAGE_CMS_TOKEN: ${{ secrets.POST_MESSAGE_CMS_TOKEN }}
+          API_URL: https://post-message-cms.beplus-agency.cloud/api/v1/messages
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          REPO: ${{ github.repository }}
+          ACTION: ${{ github.event.action }}
+        run: |
+          if [ -z "${POST_MESSAGE_CMS_TOKEN}" ]; then
+            echo "POST_MESSAGE_CMS_TOKEN secret is not set — skipping notification."
+            exit 0
+          fi
+
+          if [ "${ACTION}" = "reopened" ]; then
+            ACTION_LABEL="reopened"
+          else
+            ACTION_LABEL="opened"
+          fi
+
+          TEXT="PR #${PR_NUMBER} ${ACTION_LABEL} → ${BASE_REF}: ${PR_TITLE} (by @${PR_AUTHOR}) — ${REPO} ${PR_URL}"
+
+          PAYLOAD="$(jq -n \
+            --arg text "${TEXT}" \
+            --arg branch "${HEAD_REF}" \
+            '{text: $text, branch: $branch}')"
+
+          curl -sS -f -X POST "${API_URL}" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${POST_MESSAGE_CMS_TOKEN}" \
+            -d "${PAYLOAD}"

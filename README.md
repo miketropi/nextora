@@ -341,6 +341,8 @@ composer test
 
 **CI (GitHub Actions):** [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) runs on push/PR to `main` and `develop` — `typecheck`, `lint:php:all`, `build`, PHPUnit (PHP 8.1, Node 20). Local parity: **`npm run ci`**.
 
+**PR notifications:** [`.github/workflows/pr-notify.yml`](./.github/workflows/pr-notify.yml) posts to the BePlus message API when a PR is **opened** or **reopened** targeting `main` or `develop`. Add repo secret **`POST_MESSAGE_CMS_TOKEN`** (Settings → Secrets and variables → Actions) — do not commit the bearer token to the repo.
+
 ---
 
 ## Further reading
