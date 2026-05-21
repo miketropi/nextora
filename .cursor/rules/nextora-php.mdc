@@ -15,7 +15,7 @@ From the theme root (after `composer install`):
 1. **`npm run lint:php`** — PHPStan level 8 (`functions.php`, `inc/`, `blocks/`; see `phpstan.neon`)
 2. **`npm run lint:php:check`** — PHP CS Fixer dry-run (formatting / style)
 
-Or run both: **`npm run lint:php:all`**.
+Or run both: **`npm run lint:php:all`**. Husky pre-commit runs the same gate on every commit (see **`npm run precommit`**).
 
 If either fails, fix the underlying issue and re-run until both pass. Do **not** leave PHPStan errors for the user. Avoid `@phpstan-ignore`, baselines, and widening types just to silence analysis.
 

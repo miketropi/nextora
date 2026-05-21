@@ -117,6 +117,8 @@ PHP changes are not done until **`npm run lint:php:all`** passes (PHPStan + styl
 
 Auto-fix formatting: **`npm run lint:php:fix`**, then re-run the two checks above.
 
+**Git pre-commit (Husky):** staged PHP is auto-formatted, then **`npm run lint:php:all`** runs. TypeScript **`npm run typecheck`** runs when staged `resources/**` or `blocks/**` `.ts`/`.tsx` files change. Manual dry-run: **`npm run precommit`**.
+
 Also:
 
 - `npm run build`

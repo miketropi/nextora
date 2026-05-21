@@ -17,7 +17,9 @@
 		"lint:php:fix": "composer php-cs-fixer",
 		"lint:php:check": "composer php-cs-fixer:check",
 		"theme:clone": "node ./scripts/clone-theme.mjs",
-		"gen": "node ./scripts/gen-block.mjs"
+		"gen": "node ./scripts/gen-block.mjs",
+		"prepare": "husky",
+		"precommit": "lint-staged && npm run lint:php:all"
 	},
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4.2.2",
@@ -33,6 +35,8 @@
 		"concurrently": "^9.2.1",
 		"esbuild": "^0.25.0",
 		"glob": "^13.0.6",
+		"husky": "^9.1.7",
+		"lint-staged": "^17.0.5",
 		"postcss": "^8.5.3",
 		"postcss-cli": "^11.0.1",
 		"tailwindcss": "^4.2.2",

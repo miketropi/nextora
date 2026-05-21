@@ -22,9 +22,11 @@ WordPress **block theme** (FSE): HTML templates under `templates/`, template par
 ```bash
 # From wp-content/themes/nextora/
 composer install
-npm install
+npm install   # installs Husky pre-commit hook via "prepare"
 npm run build
 ```
+
+Git **pre-commit** (Husky) runs `lint-staged` (auto-fix staged PHP + TypeScript check when `.ts`/`.tsx` changed), then **`npm run lint:php:all`**. Skip once with `git commit --no-verify`. Dry-run: **`npm run precommit`**.
 
 Activate **Nextora** under **Appearance → Themes**.
 
@@ -253,8 +255,10 @@ Merge `develop` → `main` when a release slice is ready. Keep `main` deployable
 | `npm run watch:blocks` | Block esbuild watch |
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint:php` | Static analysis — `composer phpstan` |
+| `npm run lint:php:all` | PHPStan + PHP CS Fixer dry-run (pre-commit gate) |
 | `npm run lint:php:fix` | Auto-fix PHP formatting — `composer php-cs-fixer` |
 | `npm run lint:php:check` | Preview formatting fixes (dry run) |
+| `npm run precommit` | Same checks as the Husky pre-commit hook |
 | `npm run gen` | Scaffold a new block |
 | `npm run theme:clone` | Copy theme to sibling folder |
 
@@ -329,9 +333,11 @@ CSS import order: **base → components → prose → overrides** (see `resource
 ```bash
 npm run build
 npm run typecheck
-composer phpstan
+npm run lint:php:all
 composer test
 ```
+
+**Pre-commit (Husky):** `lint-staged` → `npm run lint:php:all`. TypeScript is checked when staged files under `resources/` or `blocks/` change. Install hooks with `npm install` (runs `prepare` → `husky`).
 
 ---
 
