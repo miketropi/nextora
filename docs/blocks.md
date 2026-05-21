@@ -72,6 +72,15 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 - [ ] `view.ts` (if needed): scroll reveal + init loading pattern; reduced motion.
 - [ ] `npm run build:blocks` (and `npm run build` if CSS/TS global).
 
+## Reference blocks (by pattern)
+
+| Block | Pattern |
+|-------|---------|
+| `nextora/scrolling-promotion` | CSS-only marquee, `render.php`, no `viewScript`; items repeater in editor |
+| `nextora/arc-gallery-section` | Arc layout + `arc-math.ts` / PHP mirror, live editor preview, `view.ts` scroll reveal |
+| `nextora/image-gallery-grid` | Scroll reveal (GSAP) |
+| `nextora/image-gallery-slide` | Swiper init / loading |
+
 ## Related docs
 
 - [`AGENTS.md`](../AGENTS.md) — theme overview and build pipeline.

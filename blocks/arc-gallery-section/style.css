@@ -1,0 +1,282 @@
+/**
+ * Arc gallery section — front-end (theme.json presets + block CSS vars).
+ */
+
+.nextora-arc-gallery {
+	color: var(--nextora-arc-text, var(--wp--style--color, var(--wp--preset--color--contrast, #0a0a0a)));
+	background-color: var(
+		--nextora-arc-bg,
+		var(--wp--style--background-color, transparent)
+	);
+	padding-top: var(
+		--nextora-arc-padding-top,
+		var(--wp--preset--spacing--50, clamp(2.5rem, 8vw, 4.5rem))
+	);
+	padding-bottom: var(
+		--nextora-arc-padding-bottom,
+		var(--wp--preset--spacing--50, clamp(2.5rem, 8vw, 4.5rem))
+	);
+	font-family: var(--wp--preset--font-family--sans, inherit);
+	overflow: hidden;
+	box-sizing: border-box;
+	border: none;
+}
+
+.nextora-arc-gallery--overflow-visible {
+	overflow: visible;
+}
+
+.nextora-arc-gallery__stage {
+	position: relative;
+	width: 100%;
+	margin: 0 auto;
+	height: var(--nextora-arc-gallery-height, 380px);
+}
+
+.nextora-arc-gallery__item {
+	position: absolute;
+	box-sizing: border-box;
+	border-radius: var(--nextora-arc-img-radius, 0.375rem);
+	border: var(--nextora-arc-img-border, 3px) solid
+		var(--nextora-arc-img-border-color, var(--wp--preset--color--base, #fff));
+	overflow: hidden;
+	transform: rotate(var(--nextora-arc-rotation, 0deg));
+	transform-origin: center center;
+	transition:
+		transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+		box-shadow 0.3s ease;
+	z-index: 1;
+}
+
+.nextora-arc-gallery__media {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	will-change: transform, opacity;
+}
+
+/* GSAP reveal — hidden until images preload + enter view (view.ts) */
+.nextora-arc-gallery[data-nextora-arc-animate="1"]:not(.is-arc-ready) .nextora-arc-gallery__media {
+	opacity: 0;
+}
+
+.nextora-arc-gallery__item:hover {
+	transform: rotate(var(--nextora-arc-rotation, 0deg)) scale(1.05);
+	z-index: 10;
+	/* box-shadow: 0 12px 40px
+		color-mix(in srgb, var(--wp--preset--color--contrast, #0a0a0a) 15%, transparent); */
+}
+
+.nextora-arc-gallery__content {
+	margin: var(--nextora-arc-content-offset-y, 0px) auto 0;
+	padding: 0 var(--nextora-gutter, var(--wp--preset--spacing--30, 1.5rem));
+	max-width: var(--wp--style--global--content-size, 720px);
+}
+
+.nextora-arc-gallery--align-left .nextora-arc-gallery__content {
+	text-align: left;
+}
+
+.nextora-arc-gallery--align-center .nextora-arc-gallery__content {
+	text-align: center;
+}
+
+.nextora-arc-gallery--align-right .nextora-arc-gallery__content {
+	text-align: right;
+}
+
+.nextora-arc-gallery__eyebrow {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 300;
+	letter-spacing: 0.04em;
+	/* text-transform: uppercase; */
+	color: var(--nextora-arc-eyebrow, var(--wp--preset--color--secondary, #525252));
+	margin: 0 0 var(--wp--preset--spacing--10, 0.75rem);
+	line-height: 1.5;
+}
+
+.nextora-arc-gallery__heading {
+	font-family: var(--wp--preset--font-family--sans, inherit);
+	font-size: var(--wp--preset--font-size--x-large, clamp(1.5rem, 3.5vw, 2.125rem));
+	font-weight: 600;
+	line-height: 1.2;
+	color: var(--nextora-arc-text, var(--wp--preset--color--contrast, #0a0a0a));
+	margin: var(--wp--preset--spacing--10, 0.75rem) 0
+		var(--wp--preset--spacing--30, 1.5rem);
+}
+
+.nextora-arc-gallery__buttons {
+	display: flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--30, 1rem);
+	flex-wrap: wrap;
+}
+
+.nextora-arc-gallery--align-center .nextora-arc-gallery__buttons {
+	justify-content: center;
+}
+
+.nextora-arc-gallery--align-left .nextora-arc-gallery__buttons {
+	justify-content: flex-start;
+}
+
+.nextora-arc-gallery--align-right .nextora-arc-gallery__buttons {
+	justify-content: flex-end;
+}
+
+.nextora-arc-gallery__btn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--wp--preset--spacing--10, 0.5rem);
+	text-decoration: none;
+	font-family: inherit;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: normal;
+	line-height: 1.25;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease,
+		border-color 0.2s ease,
+		opacity 0.2s ease,
+		transform 0.15s ease;
+}
+
+.nextora-arc-gallery__btn:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #000);
+	outline-offset: 2px;
+}
+
+.nextora-arc-gallery__btn--primary {
+	padding: 0.8em 2.25em;
+	background: var(--nextora-arc-btn-bg, var(--wp--preset--color--primary, #000));
+	color: var(--nextora-arc-btn-color, var(--wp--preset--color--base, #fff));
+	border-radius: 50px;
+	border: 2px solid transparent;
+	box-shadow: 0 1px 2px
+		color-mix(in srgb, var(--wp--preset--color--contrast, #0a0a0a) 8%, transparent);
+}
+
+.nextora-arc-gallery__btn--primary:hover {
+	opacity: .8;
+	transform: translateY(-1px);
+}
+
+.nextora-arc-gallery__btn--primary.is-outline {
+	background: transparent;
+	border-color: var(--nextora-arc-btn-bg, var(--wp--preset--color--primary, #000));
+	color: var(--nextora-arc-btn-bg, var(--wp--preset--color--primary, #000));
+	box-shadow: none;
+}
+
+.nextora-arc-gallery__btn--primary.is-outline:hover {
+	background: var(--nextora-arc-btn-bg, var(--wp--preset--color--primary, #000));
+	color: var(--nextora-arc-btn-color, var(--wp--preset--color--base, #fff));
+}
+
+.nextora-arc-gallery__btn--link {
+	padding: 0.65em 0.5em;
+	background: none;
+	color: var(--nextora-arc-text, var(--wp--preset--color--primary, #000));
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	text-decoration-thickness: 1.5px;
+}
+
+.nextora-arc-gallery__btn--link:hover {
+	color: var(--wp--preset--color--secondary, #525252);
+	opacity: 1;
+}
+
+.nextora-arc-gallery__btn--link .nextora-arc-gallery__btn-icon {
+	transition: transform 0.2s ease;
+}
+
+.nextora-arc-gallery__btn--link:hover .nextora-arc-gallery__btn-icon {
+	transform: translateX(3px);
+}
+
+.nextora-arc-gallery__btn-icon {
+	display: inline-flex;
+	flex-shrink: 0;
+}
+
+/* Block style presets */
+.is-style-bold-statement.nextora-arc-gallery {
+	--nextora-arc-padding-top: var(--wp--preset--spacing--30, 1.5rem);
+	--nextora-arc-padding-bottom: var(--wp--preset--spacing--30, 1.5rem);
+}
+
+.is-style-bold-statement .nextora-arc-gallery__heading {
+	font-size: var(--wp--preset--font-size--large, clamp(1.3125rem, 4vw, 1.6875rem));
+}
+
+.is-style-dark-strip.nextora-arc-gallery {
+	--nextora-arc-bg: var(--wp--preset--color--contrast, #0a0a0a);
+	--nextora-arc-text: var(--wp--preset--color--base, #fff);
+	--nextora-arc-eyebrow: color-mix(
+		in srgb,
+		var(--wp--preset--color--base, #fff) 65%,
+		transparent
+	);
+	--nextora-arc-btn-bg: var(--wp--preset--color--base, #fff);
+	--nextora-arc-btn-color: var(--wp--preset--color--contrast, #0a0a0a);
+	--nextora-arc-img-border-color: var(--wp--preset--color--base, #fff);
+}
+
+.is-style-announcement-bar.nextora-arc-gallery {
+	--nextora-arc-bg: var(--wp--preset--color--primary, #000);
+	--nextora-arc-text: var(--wp--preset--color--base, #fff);
+	--nextora-arc-eyebrow: color-mix(
+		in srgb,
+		var(--wp--preset--color--base, #fff) 75%,
+		transparent
+	);
+	--nextora-arc-btn-bg: var(--wp--preset--color--base, #fff);
+	--nextora-arc-btn-color: var(--wp--preset--color--primary, #000);
+	--nextora-arc-padding-top: var(--wp--preset--spacing--30, 1.5rem);
+	--nextora-arc-padding-bottom: var(--wp--preset--spacing--30, 1.5rem);
+}
+
+.is-style-minimal.nextora-arc-gallery {
+	--nextora-arc-padding-top: var(--wp--preset--spacing--30, 1.5rem);
+	--nextora-arc-padding-bottom: var(--wp--preset--spacing--30, 1.5rem);
+}
+
+/* Tablet / mobile: same arc layout as desktop (absolute positions + rotation). */
+@media (max-width: 768px) {
+	.nextora-arc-gallery__buttons {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.nextora-arc-gallery__btn--primary,
+	.nextora-arc-gallery__btn--link {
+		justify-content: center;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-arc-gallery[data-nextora-arc-animate="1"] .nextora-arc-gallery__media {
+		opacity: 1;
+	}
+
+	.nextora-arc-gallery__item {
+		transition: none;
+	}
+
+	.nextora-arc-gallery__item:hover {
+		transform: rotate(var(--nextora-arc-rotation, 0deg));
+	}
+
+	.nextora-arc-gallery__btn,
+	.nextora-arc-gallery__btn--link .nextora-arc-gallery__btn-icon {
+		transition: none;
+	}
+
+	.nextora-arc-gallery__media {
+		will-change: auto;
+	}
+}

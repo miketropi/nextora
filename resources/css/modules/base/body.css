@@ -76,4 +76,8 @@
 	html.nextora-primary-nav-drawer-open {
 		overflow: hidden;
 	}
+
+	/* html :where([style*=--nextora-arc-img-border-color]) {
+    border-style: none !important;
+	} */
 }
