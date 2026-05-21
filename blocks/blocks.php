@@ -1,4 +1,6 @@
 <?php
+
+declare( strict_types=1 );
 /**
  * Register all blocks located in the /blocks directory.
  *
@@ -13,8 +15,13 @@ function nextora_register_blocks(): void {
 	if ( ! is_dir( $blocks_dir ) ) {
 		return;
 	}
-  
-	foreach ( glob( $blocks_dir . '/*', GLOB_ONLYDIR ) as $block_dir ) {
+
+	$block_dirs = glob( $blocks_dir . '/*', GLOB_ONLYDIR );
+	if ( false === $block_dirs ) {
+		return;
+	}
+
+	foreach ( $block_dirs as $block_dir ) {
 		// Expects block.json + index.asset.php + index.js inside $block_dir
 		register_block_type( $block_dir );
 	}

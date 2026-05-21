@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Navigation block ↔ classic menu locations ({@see register_nav_menus()}).
  *
@@ -8,7 +9,7 @@
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -18,8 +19,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * When a Navigation block declares `__unstableLocation`, has no `ref`, and has no saved
  * inner blocks, render the menu assigned to that location via `wp_nav_menu()`.
  *
- * @param string $block_content Rendered block HTML.
- * @param array  $block         Parsed block array.
+ * @param string               $block_content Rendered block HTML.
+ * @param array<string, mixed> $block         Parsed block array.
+ *
  * @return string
  */
 function nextora_render_navigation_from_menu_location( string $block_content, array $block ): string {

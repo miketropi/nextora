@@ -10,6 +10,7 @@ alwaysApply: true
 - **After editing** `resources/css/**`, `resources/ts/**`, or block sources under `blocks/**`, run **`npm run build`** or **`npm run watch`** from the theme root.
 - **Do not treat as source** (regenerate via npm): `assets/css/app.css`, `assets/js/main.js`, `blocks/*/index.js`, `blocks/*/index.asset.php`.
 - **Target:** WordPress 6.4+; PHP 8.1+ (`declare(strict_types=1);` in new PHP).
+- **PHP quality:** After any PHP change, run **`npm run lint:php:all`** (or `lint:php` + `lint:php:check`) from the theme root; fix until both pass (see [`.cursor/rules/nextora-php.mdc`](./.cursor/rules/nextora-php.mdc)).
 
 ```text
 ❌ Editing assets/js/main.js by hand to fix a bug
