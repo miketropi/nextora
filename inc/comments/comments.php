@@ -5,13 +5,14 @@
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 /**
  * Allow minimal block HTML from Tiptap in comments (default KSES strips `p` / `br` / some link attrs).
  *
  * @param array<string, array<string, bool>> $tags    Allowed tags.
  * @param string                             $context KSES context (hook name for comments).
+ *
  * @return array<string, array<string, bool>>
  */
 function nextora_kses_allowed_html_comment_tiptap( array $tags, string $context ): array {
@@ -90,7 +91,7 @@ function nextora_get_comment_form_args(): array {
 			esc_html__( 'Comment', 'nextora' ),
 			esc_attr__( 'Write your comment here…', 'nextora' ),
 			esc_attr( $tiptap_shell ),
-			esc_attr( $ta_sync )
+			esc_attr( $ta_sync ),
 		),
 		'comment_notes_before' => '<p class="comment-notes !mb-4 text-sm text-secondary">' . esc_html__( 'Your email address will not be published. Required fields are marked with *', 'nextora' ) . '</p>',
 		'comment_notes_after'  => '',
@@ -99,14 +100,14 @@ function nextora_get_comment_form_args(): array {
 		'must_log_in'          => '<p class="must-log-in !mb-4 rounded-md border border-secondary/30 bg-surface px-4 py-3 text-sm text-contrast">' . sprintf(
 			/* translators: %s: login URL */
 			wp_kses_post( __( 'You must be <a class="font-medium text-primary underline hover:no-underline" href="%s">logged in</a> to post a comment.', 'nextora' ) ),
-			esc_url( wp_login_url( $permalink ) )
+			esc_url( wp_login_url( $permalink ) ),
 		) . '</p>',
 		'logged_in_as'         => '<p class="logged-in-as !mb-4 text-sm text-secondary">' . sprintf(
 			/* translators: 1: edit user link, 2: user name, 3: logout URL */
 			wp_kses_post( __( 'Logged in as <a class="font-medium text-primary underline hover:no-underline" href="%1$s">%2$s</a>. <a class="font-medium text-primary underline hover:no-underline" href="%3$s">Log out?</a>', 'nextora' ) ),
 			esc_url( get_edit_user_link() ),
 			esc_html( wp_get_current_user()->display_name ),
-			esc_url( wp_logout_url( $permalink ) )
+			esc_url( wp_logout_url( $permalink ) ),
 		) . '</p>',
 	);
 
@@ -122,6 +123,7 @@ function nextora_get_comment_form_args(): array {
  * Priority 20 runs after Core block filters that adjust the submit button markup.
  *
  * @param array<string, mixed> $defaults Default arguments from WordPress.
+ *
  * @return array<string, mixed>
  */
 function nextora_merge_comment_form_defaults( array $defaults ): array {
@@ -137,7 +139,7 @@ add_filter(
 		$req_mark  = $req ? ' <span class="text-primary" aria-hidden="true">*</span>' : '';
 		$aria_req  = $req ? ' aria-required="true"' : '';
 
-		$input_class = 'mt-1 block w-full max-w-2xl rounded-md box-border border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';	
+		$input_class = 'mt-1 block w-full max-w-2xl rounded-md box-border border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
 
 		$fields['author'] = sprintf(
 			'<p class="comment-form-author !mb-4"><label class="block text-sm font-medium text-contrast" for="author">%1$s%2$s</label><input id="author" name="author" type="text" value="%3$s" size="30" maxlength="245" autocomplete="name"%4$s class="%5$s" /></p>',
@@ -145,7 +147,7 @@ add_filter(
 			$req_mark,
 			esc_attr( $commenter['comment_author'] ),
 			$aria_req,
-			esc_attr( $input_class )
+			esc_attr( $input_class ),
 		);
 
 		$fields['email'] = sprintf(
@@ -154,33 +156,33 @@ add_filter(
 			$req_mark,
 			esc_attr( $commenter['comment_author_email'] ),
 			$aria_req,
-			esc_attr( $input_class )
+			esc_attr( $input_class ),
 		);
 
 		$fields['url'] = sprintf(
 			'<p class="comment-form-url !mb-4"><label class="block text-sm font-medium text-contrast" for="url">%1$s</label><input id="url" name="url" type="url" value="%2$s" size="30" maxlength="200" autocomplete="url" class="%3$s" /></p>',
 			esc_html__( 'Website', 'nextora' ),
 			esc_attr( $commenter['comment_author_url'] ),
-			esc_attr( $input_class )
+			esc_attr( $input_class ),
 		);
 
 		if ( isset( $fields['cookies'] ) && is_string( $fields['cookies'] ) ) {
 			$fields['cookies'] = str_replace(
 				'<p class="comment-form-cookies-consent">',
 				'<p class="comment-form-cookies-consent !mb-4 text-sm text-secondary">',
-				$fields['cookies']
+				$fields['cookies'],
 			);
 		}
 
 		return $fields;
 	},
-	20
+	20,
 );
 
 /**
  * Output one comment (HTML5 list item).
  *
- * @param WP_Comment $comment Comment object.
+ * @param WP_Comment           $comment Comment object.
  * @param array<string, mixed> $args    Arguments from {@see wp_list_comments()}.
  * @param int                  $depth   Thread depth.
  */
@@ -218,13 +220,13 @@ function nextora_render_comment( $comment, array $args, int $depth ): void {
 					'',
 					array(
 						'class' => $avatar_class,
-					)
+					),
 				);
 				?>
 			</div>
 			<div class="comment-meta min-w-0 flex-1">
 				<footer class="comment-meta-header flex flex-wrap items-baseline gap-x-2 gap-y-1">
-					<span class="fn font-semibold text-contrast"><?php echo get_comment_author_link( $comment ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
+					<span class="fn font-semibold text-contrast"><?php echo get_comment_author_link( $comment ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?></span>
 					<a href="<?php echo esc_url( $link ); ?>" class="comment-permalink hover:text-primary">
 						<time datetime="<?php echo esc_attr( $time_c ); ?>"><?php echo esc_html( $time_h ); ?></time>
 					</a>
@@ -232,7 +234,7 @@ function nextora_render_comment( $comment, array $args, int $depth ): void {
 					edit_comment_link(
 						__( 'Edit', 'nextora' ),
 						'<span class="comment-edit-link">',
-						'</span>'
+						'</span>',
 					);
 					?>
 				</footer>
@@ -252,8 +254,8 @@ function nextora_render_comment( $comment, array $args, int $depth ): void {
 							'max_depth' => $args['max_depth'],
 							'before'    => '<p class="comment-reply mt-3 text-sm [&_a]:font-medium [&_a]:text-primary [&_a]:no-underline [&_a:hover]:underline">',
 							'after'     => '</p>',
-						)
-					)
+						),
+					),
 				);
 				?>
 			</div>
@@ -273,5 +275,5 @@ add_filter(
 		$args['next_text'] = __( 'Newer comments', 'nextora' );
 		$args['class']     = 'comment-navigation navigation flex flex-wrap justify-between gap-4 text-sm font-medium text-primary';
 		return $args;
-	}
+	},
 );

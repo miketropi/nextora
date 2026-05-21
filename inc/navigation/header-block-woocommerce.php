@@ -1,11 +1,12 @@
 <?php
+
 /**
  * WooCommerce: mini cart fragments for {@see nextora/header} block (badge + drawer HTML).
  *
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -44,12 +45,10 @@ function nextora_header_block_mini_cart_aria_label( int $count, array $atts = ar
 			'Open shopping cart, %d item',
 			'Open shopping cart, %d items',
 			$count,
-			'nextora'
+			'nextora',
 		),
-		$count
+		$count,
 	);
-	$with_count = is_string( $with_count ) ? $with_count : $base;
-
 	return (string) apply_filters( 'nextora_header_block_mini_cart_aria_label', $with_count, $count, $atts );
 }
 
@@ -59,6 +58,7 @@ function nextora_header_block_mini_cart_aria_label( int $count, array $atts = ar
  * `widget_shopping_cart_content` fragment for it — register an explicit selector.
  *
  * @param array<string, string> $fragments Fragments.
+ *
  * @return array<string, string>
  */
 function nextora_header_block_cart_fragments( array $fragments ): array {

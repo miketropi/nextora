@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Markup walker for {@see nextora/header} primary menu — adds a submenu toggle control
  * for `.nextora-primary-nav-portal` accordion behavior (see `header-nav.ts` + `nav-menus.css`).
@@ -6,7 +7,7 @@
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -114,7 +115,7 @@ class Nextora_Header_Block_Menu_Walker extends Walker_Nav_Menu {
 				'nextora_header_block_submenu_toggle_icon',
 				'<span class="nextora-submenu-toggle__icon" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>',
 				$item,
-				(int) $depth
+				(int) $depth,
 			);
 
 			$label = apply_filters(
@@ -122,10 +123,10 @@ class Nextora_Header_Block_Menu_Walker extends Walker_Nav_Menu {
 				sprintf(
 					/* translators: %s: navigation menu item label */
 					__( 'Toggle submenu for %s', 'nextora' ),
-					wp_strip_all_tags( (string) $item->title )
+					wp_strip_all_tags( (string) $item->title ),
 				),
 				$item,
-				(int) $depth
+				(int) $depth,
 			);
 
 			$output .= '<button type="button" class="nextora-submenu-toggle" aria-expanded="false" aria-haspopup="true" aria-label="' . esc_attr( $label ) . '">';

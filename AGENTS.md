@@ -113,9 +113,14 @@ Boot order matters:
 
 ## Quality checks (from theme root)
 
+PHP changes are not done until **`npm run lint:php:all`** passes (PHPStan + style lint).
+
+Auto-fix formatting: **`npm run lint:php:fix`**, then re-run the two checks above.
+
+Also:
+
 - `npm run build`
 - `npm run typecheck`
-- `npm run lint:php` / `composer phpstan`
 - `composer test`
 
 ## Cloning

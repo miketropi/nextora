@@ -252,7 +252,9 @@ Merge `develop` → `main` when a release slice is ready. Keep `main` deployable
 | `npm run watch:ts` | esbuild watch + sourcemaps |
 | `npm run watch:blocks` | Block esbuild watch |
 | `npm run typecheck` | `tsc --noEmit` |
-| `npm run lint:php` | Alias for `composer phpstan` |
+| `npm run lint:php` | Static analysis — `composer phpstan` |
+| `npm run lint:php:fix` | Auto-fix PHP formatting — `composer php-cs-fixer` |
+| `npm run lint:php:check` | Preview formatting fixes (dry run) |
 | `npm run gen` | Scaffold a new block |
 | `npm run theme:clone` | Copy theme to sibling folder |
 
@@ -286,6 +288,8 @@ npm run theme:clone -- --slug=my-shop --name="My Shop"
 |---------|----------------|
 | `composer install` | Dev deps + PSR-4 autoload |
 | `composer phpstan` | Static analysis |
+| `composer php-cs-fixer` | Apply PHP CS Fixer |
+| `composer php-cs-fixer:check` | PHP CS Fixer dry run |
 | `composer test` | PHPUnit |
 
 ---

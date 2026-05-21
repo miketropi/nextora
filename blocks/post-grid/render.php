@@ -4,12 +4,12 @@
  *
  * @package Nextora
  *
- * @var array    $attributes Block attributes.
- * @var string   $content    Inner blocks (unused).
- * @var WP_Block $block      Block instance.
+ * @var array<string, mixed> $attributes Block attributes.
+ * @var string               $content    Inner blocks (unused).
+ * @var WP_Block             $block      Block instance.
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -81,10 +81,13 @@ $meta_stacked      = isset( $attributes['metaStyle'] ) && is_string( $attributes
 
 $category_in = array();
 if ( isset( $attributes['categoryIds'] ) && is_string( $attributes['categoryIds'] ) && '' !== trim( $attributes['categoryIds'] ) ) {
-	foreach ( preg_split( '/\s*,\s*/', $attributes['categoryIds'] ) as $piece ) {
-		$cid = absint( $piece );
-		if ( $cid > 0 ) {
-			$category_in[] = $cid;
+	$category_pieces = preg_split( '/\s*,\s*/', $attributes['categoryIds'] );
+	if ( is_array( $category_pieces ) ) {
+		foreach ( $category_pieces as $piece ) {
+			$cid = absint( $piece );
+			if ( $cid > 0 ) {
+				$category_in[] = $cid;
+			}
 		}
 	}
 	$category_in = array_values( array_unique( $category_in ) );
@@ -167,7 +170,7 @@ if ( ! $archive_category_locked && array() !== $category_in ) {
  * @param array<string, mixed> $query_args Query arguments.
  * @param array<string, mixed> $attributes Block attributes.
  */
-$query_args = apply_filters( 'nextora_post_grid_query_args', $query_args, is_array( $attributes ) ? $attributes : array() );
+$query_args = apply_filters( 'nextora_post_grid_query_args', $query_args, $attributes );
 $query_args = is_array( $query_args ) ? $query_args : array();
 
 $grid_query = new WP_Query( $query_args );
@@ -175,7 +178,7 @@ $grid_query = new WP_Query( $query_args );
 $wrapper = get_block_wrapper_attributes(
 	array(
 		'class' => 'nextora-post-grid',
-	)
+	),
 );
 
 $column_classes = array(
@@ -191,7 +194,7 @@ ob_start();
 <div <?php echo $wrapper; ?>>
 	<?php if ( '' !== $heading ) : ?>
 		<h2 class="nextora-post-grid__heading mb-8 text-2xl font-semibold tracking-tight text-contrast md:text-3xl">
-			<?php echo $heading; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses above. ?>
+			<?php echo $heading; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses above.?>
 		</h2>
 	<?php endif; ?>
 
@@ -200,7 +203,10 @@ ob_start();
 			<?php
 			while ( $grid_query->have_posts() ) :
 				$grid_query->the_post();
-				$post_id    = get_the_ID();
+				$post_id = get_the_ID();
+				if ( ! is_int( $post_id ) || $post_id <= 0 ) {
+					continue;
+				}
 				$thumb_id   = (int) get_post_thumbnail_id( $post_id );
 				$has_thumb  = $thumb_id > 0;
 				$meta_items = array();
@@ -208,8 +214,8 @@ ob_start();
 				if ( $show_date ) {
 					$meta_items[] = sprintf(
 						'<time class="nextora-post-grid__date whitespace-nowrap" datetime="%1$s">%2$s</time>',
-						esc_attr( get_the_date( DATE_W3C ) ),
-						esc_html( get_the_date() )
+						esc_attr( (string) get_the_date( DATE_W3C ) ),
+						esc_html( (string) get_the_date() ),
 					);
 				}
 
@@ -222,7 +228,7 @@ ob_start();
 							'<span class="nextora-post-grid__author whitespace-nowrap"><span class="text-secondary/70">%s</span> <a class="font-medium text-contrast no-underline hover:underline" href="%s">%s</a></span>',
 							esc_html__( 'By', 'nextora' ),
 							esc_url( $author_url ),
-							esc_html( $author_name )
+							esc_html( $author_name ),
 						);
 					}
 				}
@@ -247,7 +253,7 @@ ob_start();
 												'class'   => 'nextora-post-grid__image h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]',
 												'loading' => 'lazy',
 												'alt'     => esc_attr( get_post_meta( $thumb_id, '_wp_attachment_image_alt', true ) ?: get_the_title() ),
-											)
+											),
 										);
 									} else {
 										?>
@@ -265,23 +271,15 @@ ob_start();
 							<?php if ( $show_categories ) : ?>
 								<?php
 								$cats = get_the_terms( $post_id, 'category' );
-								if ( is_array( $cats ) && array() !== $cats ) :
-									$cats = array_values(
-										array_filter(
-											$cats,
-											static function ( $t ) {
-												return $t instanceof WP_Term;
-											}
-										)
-									);
-									$cats = array_slice( $cats, 0, $max_terms );
+								if ( is_array( $cats ) && array() !== $cats ) {
+									$cats = array_slice( array_values( $cats ), 0, $max_terms );
 									?>
 									<ul class="nextora-post-grid__categories !m-0 flex list-none flex-wrap gap-1.5 !p-0">
 										<?php foreach ( $cats as $cat ) : ?>
 											<?php
 											if ( ! $cat instanceof WP_Term ) {
 												continue;
-											} 
+											}
 											$cat_link = get_term_link( $cat );
 											if ( is_wp_error( $cat_link ) ) {
 												continue;
@@ -294,7 +292,7 @@ ob_start();
 											</li>
 										<?php endforeach; ?>
 									</ul>
-								<?php endif; ?>
+								<?php } ?>
 							<?php endif; ?>
 
 							<h3 class="nextora-post-grid__title order-0 !m-0 text-lg font-semibold leading-snug tracking-tight  md:text-xl">
@@ -327,15 +325,7 @@ ob_start();
 							if ( $show_tags ) {
 								$tags = get_the_terms( $post_id, 'post_tag' );
 								if ( is_array( $tags ) && array() !== $tags ) {
-									$tags = array_values(
-										array_filter(
-											$tags,
-											static function ( $t ) {
-												return $t instanceof WP_Term;
-											}
-										)
-									);
-									$tags = array_slice( $tags, 0, $max_terms );
+									$tags = array_slice( array_values( $tags ), 0, $max_terms );
 									foreach ( $tags as $tag ) {
 										if ( ! $tag instanceof WP_Term ) {
 											continue;
@@ -347,7 +337,7 @@ ob_start();
 										$tag_items[] = sprintf(
 											'<a class="font-medium text-contrast no-underline hover:underline" href="%s">%s</a>',
 											esc_url( $turl ),
-											esc_html( $tag->name )
+											esc_html( $tag->name ),
 										);
 									}
 								}
@@ -430,13 +420,13 @@ ob_start();
 		 * @param WP_Query             $grid_query      Block query instance.
 		 * @param array<string, mixed> $attributes      Block attributes.
 		 */
-		$pagination_args = apply_filters( 'nextora_post_grid_pagination_args', $pagination_args, $grid_query, is_array( $attributes ) ? $attributes : array() );
+		$pagination_args = apply_filters( 'nextora_post_grid_pagination_args', $pagination_args, $grid_query, $attributes );
 		$pagination_args = is_array( $pagination_args ) ? $pagination_args : array();
 		$links           = paginate_links( $pagination_args );
 		if ( is_string( $links ) && '' !== $links ) :
 			?>
 		<nav class="nextora-post-grid__pagination nextora-pagination-wrap nextora-pagination-wrap--archive" aria-label="<?php esc_attr_e( 'Pagination', 'nextora' ); ?>">
-			<?php echo $links; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() from core. ?>
+			<?php echo $links; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- paginate_links() from core.?>
 		</nav>
 			<?php
 		endif;
@@ -447,4 +437,4 @@ ob_start();
 $html = (string) ob_get_clean();
 
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_* inside template.
-echo apply_filters( 'nextora_post_grid_output', $html, $query_args, is_array( $attributes ) ? $attributes : array() );
+echo apply_filters( 'nextora_post_grid_output', $html, $query_args, $attributes );

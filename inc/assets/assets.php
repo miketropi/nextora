@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Front-end and editor assets.
  *
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 /**
  * Webfonts hook: Arial / system stack comes from theme.json — no remote font stylesheet.
@@ -57,7 +58,7 @@ function nextora_enqueue_styles(): void {
 		'nextora-app',
 		NEXTORA_URI . $rel,
 		$deps,
-		(string) filemtime( $path )
+		(string) filemtime( $path ),
 	);
 }
 add_action( 'wp_enqueue_scripts', 'nextora_enqueue_styles' );
@@ -67,7 +68,7 @@ add_action(
 	'after_setup_theme',
 	static function (): void {
 		add_editor_style( 'assets/css/app.css' );
-	}
+	},
 );
 
 /**
@@ -112,7 +113,7 @@ function nextora_enqueue_scripts(): void {
 		NEXTORA_URI . $rel,
 		nextora_main_script_dependencies(),
 		(string) filemtime( $path ),
-		true
+		true,
 	);
 
 	wp_localize_script(
@@ -123,7 +124,7 @@ function nextora_enqueue_scripts(): void {
 			'closeMenu'    => __( 'Close menu', 'nextora' ),
 			'openSubmenu'  => __( 'Open submenu', 'nextora' ),
 			'closeSubmenu' => __( 'Close submenu', 'nextora' ),
-		)
+		),
 	);
 
 	wp_localize_script(
@@ -131,7 +132,7 @@ function nextora_enqueue_scripts(): void {
 		'nextoraHeaderSticky',
 		array(
 			'hideAfter' => (int) apply_filters( 'nextora_header_block_sticky_hide_after', 72 ),
-		)
+		),
 	);
 
 	wp_localize_script(
@@ -139,7 +140,7 @@ function nextora_enqueue_scripts(): void {
 		'nextoraModal',
 		array(
 			'closeLabel' => __( 'Close dialog', 'nextora' ),
-		)
+		),
 	);
 
 	wp_localize_script(
@@ -161,13 +162,13 @@ function nextora_enqueue_scripts(): void {
 			'toolLinkHint'      => __( 'Add or edit link', 'nextora' ),
 			'linkPromptTitle'   => __( 'Link URL', 'nextora' ),
 			'linkPromptDefault' => 'https://',
-		)
+		),
 	);
 
 	wp_localize_script(
 		'nextora-main',
 		'nextoraCommentTiptap',
-		nextora_get_comment_tiptap_js_config()
+		nextora_get_comment_tiptap_js_config(),
 	);
 }
 add_action( 'wp_enqueue_scripts', 'nextora_enqueue_scripts', 20 );
@@ -194,5 +195,5 @@ add_action(
 		add_action( 'wp_footer', array( $sm, 'print_script_module_preloads' ), 9 );
 		add_action( 'wp_footer', array( $sm, 'print_head_enqueued_script_modules' ), 9 );
 	},
-	20
+	20,
 );

@@ -13,6 +13,9 @@
 		"watch:blocks": "node ./scripts/build-blocks.mjs --watch",
 		"typecheck": "tsc --noEmit",
 		"lint:php": "composer phpstan",
+		"lint:php:all": "composer phpstan && composer php-cs-fixer:check",
+		"lint:php:fix": "composer php-cs-fixer",
+		"lint:php:check": "composer php-cs-fixer:check",
 		"theme:clone": "node ./scripts/clone-theme.mjs",
 		"gen": "node ./scripts/gen-block.mjs"
 	},

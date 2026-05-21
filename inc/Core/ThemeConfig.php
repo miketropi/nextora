@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Theme metadata (unit-testable without WordPress).
  *
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 namespace Nextora\Core;
 
