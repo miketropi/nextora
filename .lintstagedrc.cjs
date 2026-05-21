@@ -6,10 +6,8 @@ module.exports = {
 			return [];
 		}
 
-		return [
-			'vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-unsupported-php-version=yes --',
-			...source,
-		];
+		// lint-staged v17: return one command string (array items are separate tasks).
+		return `bash scripts/lint-staged-php.sh ${ source.map( ( file ) => JSON.stringify( file ) ).join( ' ' ) }`;
 	},
 	'{resources,blocks}/**/*.{ts,tsx}': () => 'npm run typecheck',
 };
