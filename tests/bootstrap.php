@@ -1,9 +1,10 @@
 <?php
+
 /**
  * PHPUnit bootstrap (no full WordPress load).
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', '/tmp/wordpress/' );

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Spotlight search feature — bootstrap.
  *
@@ -9,7 +10,7 @@
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

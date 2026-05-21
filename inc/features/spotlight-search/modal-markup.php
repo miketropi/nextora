@@ -8,7 +8,7 @@
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -67,7 +67,7 @@ function nextora_header_search_modal_sanitize_id( string $id ): string {
  */
 function nextora_get_header_search_modal_markup_args(): array {
 	$modal_id = nextora_header_search_modal_sanitize_id(
-		(string) apply_filters( 'nextora_header_search_modal_id', 'nextora-search-modal' )
+		(string) apply_filters( 'nextora_header_search_modal_id', 'nextora-search-modal' ),
 	);
 
 	$defaults = array(
@@ -153,14 +153,14 @@ function nextora_get_header_search_modal_markup( array $args ): string {
 	$icon_svg = (string) apply_filters(
 		'nextora_header_search_modal_icon_svg',
 		nextora_header_search_modal_default_icon_svg(),
-		$args
+		$args,
 	);
 	$icon_svg = wp_kses( $icon_svg, $kses );
 
 	$close_icon_svg = (string) apply_filters(
 		'nextora_header_search_modal_close_icon_svg',
 		nextora_header_search_modal_default_close_icon_svg(),
-		$args
+		$args,
 	);
 	$close_icon_svg = wp_kses( $close_icon_svg, $kses );
 
@@ -172,7 +172,7 @@ function nextora_get_header_search_modal_markup( array $args ): string {
 		get_search_form(
 			array(
 				'aria_label' => $args['form_aria_label'],
-			)
+			),
 		);
 		$form_html = (string) ob_get_clean();
 	}
@@ -194,10 +194,10 @@ function nextora_get_header_search_modal_markup( array $args ): string {
 			class="<?php echo esc_attr( $args['trigger_class'] ); ?>"
 			data-nextora-modal-open="<?php echo esc_attr( $args['modal_id'] ); ?>"
 			aria-label="<?php echo esc_attr( $args['open_label'] ); ?>"
-			<?php echo $trigger_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr() on color value. ?>
+			<?php echo $trigger_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr() on color value.?>
 		>
 			<span class="<?php echo esc_attr( $args['trigger_icon_wrap_class'] ); ?>" aria-hidden="true">
-				<?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses() above. ?>
+				<?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses() above.?>
 			</span>
 		</button>
 	</div>
@@ -221,7 +221,7 @@ function nextora_get_header_search_modal_markup( array $args ): string {
 		>
 			<div class="<?php echo esc_attr( $args['spotlight_body_class'] ); ?>">
 				<div class="px-2 pb-3 pt-3 sm:px-5 sm:pb-4 sm:pt-5">
-					<?php echo $form_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Theme spotlight / filtered markup. ?>
+					<?php echo $form_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Theme spotlight / filtered markup.?>
 				</div>
 			</div>
 			<div class="<?php echo esc_attr( $args['spotlight_close_wrap_class'] ); ?>">

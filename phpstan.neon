@@ -4,7 +4,10 @@ includes:
 parameters:
 	bootstrapFiles:
 		- phpstan-bootstrap.php
+	stubFiles:
+		- stubs/phpstan.php
 	level: 8
+	treatPhpDocTypesAsCertain: false
 	paths:
 		- functions.php
 		- inc
@@ -14,5 +17,7 @@ parameters:
 			- vendor
 			- node_modules
 			- tests
+			- stubs
 			- blocks/*/index.js
 			- blocks/*/view.js
+			- blocks/*/index.asset.php

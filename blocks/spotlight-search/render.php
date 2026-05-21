@@ -1,15 +1,16 @@
 <?php
+
 /**
  * Spotlight search block — trigger + modal (dynamic).
  *
  * @package Nextora
  *
- * @var array    $attributes Block attributes.
- * @var string   $content    Inner blocks (unused).
- * @var WP_Block $block      Block instance.
+ * @var array<string, mixed> $attributes Block attributes.
+ * @var string               $content    Inner blocks (unused).
+ * @var WP_Block             $block      Block instance.
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -37,8 +38,8 @@ if ( '' === trim( $html ) ) {
 $wrapper = get_block_wrapper_attributes(
 	array(
 		'class' => 'nextora-spotlight-search-block shrink-0',
-	)
+	),
 );
 
 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Modal HTML built with esc_* inside theme helpers; final filter may return full markup.
-echo '<div ' . $wrapper . '>' . $html . '</div>'; 
+echo '<div ' . $wrapper . '>' . $html . '</div>';

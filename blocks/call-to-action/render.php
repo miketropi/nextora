@@ -5,9 +5,9 @@
  * Layout mirrors the hero (two `core/group` columns). Legacy heading/content attributes
  * still render a single column when no inner blocks exist in the post.
  *
- * @var array    $attributes Block attributes.
- * @var string   $content    Saved inner HTML (or empty when only innerBlocks used).
- * @var WP_Block $block      Block instance.
+ * @var array<string, mixed> $attributes Block attributes.
+ * @var string               $content    Saved inner HTML (or empty when only innerBlocks used).
+ * @var WP_Block             $block      Block instance.
  */
 
 if ( ! function_exists( 'nextora_cta_enqueue_view_script' ) ) {
@@ -20,7 +20,7 @@ if ( ! function_exists( 'nextora_cta_enqueue_view_script' ) ) {
 		if ( is_admin() ) {
 			return;
 		}
-		$bt = \WP_Block_Type_Registry::get_instance()->get_registered( 'nextora/call-to-action' );
+		$bt = WP_Block_Type_Registry::get_instance()->get_registered( 'nextora/call-to-action' );
 		if ( $bt && ! empty( $bt->view_script_handles ) && is_array( $bt->view_script_handles ) ) {
 			foreach ( $bt->view_script_handles as $handle ) {
 				if ( is_string( $handle ) && $handle !== '' ) {
@@ -38,7 +38,7 @@ if ( ! function_exists( 'nextora_cta_enqueue_view_script' ) ) {
 					$uri,
 					array(),
 					(string) filemtime( $path ),
-					true
+					true,
 				);
 			}
 			wp_enqueue_script( 'nextora-cta-view-fallback' );
@@ -51,6 +51,7 @@ if ( ! function_exists( 'nextora_cta_strip_outer_wrapper' ) ) {
 	 * Remove the outermost wrapper div from saved `save()` markup.
 	 *
 	 * @param string $html HTML starting with a single root <div>…</div>.
+	 *
 	 * @return string Inner HTML.
 	 */
 	function nextora_cta_strip_outer_wrapper( string $html ): string {
@@ -78,7 +79,7 @@ if ( ! function_exists( 'nextora_cta_strip_outer_wrapper' ) ) {
 		$content_start = $gt + 1;
 		$i              = $content_start;
 
-		while ( $i < $len && $depth > 0 ) {
+		while ( $i < $len ) {
 			$next_div_open  = stripos( $html, '<div', $i );
 			$next_div_close = stripos( $html, '</div>', $i );
 
@@ -140,7 +141,7 @@ if ( 'video' === $mode && $video_id ) {
 
 $has_custom_bg = $use_image || $use_video || $use_color_mix;
 
-$has_from_inner     = is_object( $block ) && ! empty( $block->inner_blocks );
+$has_from_inner     = $block instanceof WP_Block && $block->inner_blocks->count() > 0;
 $has_content_string = is_string( $content ) && '' !== trim( (string) $content );
 $has_legacy         = ( '' !== $legacy_heading || '' !== $legacy_content );
 $is_legacy          = ( ! $has_from_inner && ! $has_content_string && $has_legacy );
@@ -222,7 +223,7 @@ $radius_map = array(
 	'2xl'  => '1.5rem',
 	'full' => '9999px',
 );
-if ( isset( $radius_map[ $radius_key ] ) && $radius_map[ $radius_key ] !== '' ) {
+if ( '' !== $radius_map[ $radius_key ] ) {
 	$style_bits[] = 'border-radius:' . $radius_map[ $radius_key ];
 }
 
@@ -237,7 +238,6 @@ if ( $parallax && ( $use_image || $use_video ) ) {
 }
 $wrapper = get_block_wrapper_attributes(
 	$wrapper_args,
-	( is_object( $block ) && $block instanceof \WP_Block ) ? $block : null
 );
 
 if ( $parallax && ( $use_image || $use_video ) ) {
@@ -259,6 +259,9 @@ if ( $is_legacy ) {
 } elseif ( $has_from_inner ) {
 	$ib_html = '';
 	foreach ( $block->inner_blocks as $inner ) {
+		if ( ! $inner instanceof WP_Block ) {
+			continue;
+		}
 		$ib_html .= $inner->render();
 	}
 	$body_inner = '<div class="nextora-cta__grid">' . $ib_html . '</div>';
@@ -267,7 +270,7 @@ if ( $is_legacy ) {
 	$body_inner  = '<div class="nextora-cta__grid">' . $strip . '</div>';
 }
 ?>
-<div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<?php if ( $use_image ) : ?>
 		<div class="nextora-cta__bg" aria-hidden="true">
 			<?php
@@ -279,7 +282,7 @@ if ( $is_legacy ) {
 					'class'    => 'nextora-cta__img',
 					'loading'  => 'lazy',
 					'decoding' => 'async',
-				)
+				),
 			);
 			?>
 		</div>
@@ -301,6 +304,6 @@ if ( $is_legacy ) {
 		<div class="nextora-cta__scrim" aria-hidden="true"></div>
 	<?php endif; ?>
 	<div class="nextora-cta__body">
-		<?php echo $body_inner; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — HTML from block render. ?>
+		<?php echo $body_inner; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — HTML from block render.?>
 	</div>
 </div>

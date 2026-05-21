@@ -1,4 +1,6 @@
 <?php
+
+declare( strict_types=1 );
 /**
  * Hero Section — dynamic block render template.
  *
@@ -6,15 +8,16 @@
  * blocks, so it includes the save() outer div (useBlockProps). Wrapping that string
  * nests both columns in one grid cell — wrong layout. Render direct inner blocks only.
  *
- * @var array    $attributes Block attributes from block.json.
- * @var string   $content    Pre-merged inner HTML (may include duplicate save wrapper).
- * @var WP_Block $block      Block instance.
+ * @var array<string, mixed> $attributes Block attributes from block.json.
+ * @var string               $content    Pre-merged inner HTML (may include duplicate save wrapper).
+ * @var WP_Block             $block      Block instance.
  */
 
 /**
  * Remove the outermost wrapper div (used when only $content is available).
  *
  * @param string $html Full HTML that starts with a single root <div>…</div>.
+ *
  * @return string Inner HTML.
  */
 if ( ! function_exists( 'nextora_hero_section_strip_outer_wrapper' ) ) {
@@ -43,7 +46,7 @@ if ( ! function_exists( 'nextora_hero_section_strip_outer_wrapper' ) ) {
 		$content_start = $gt + 1;
 		$i              = $content_start;
 
-		while ( $i < $len && $depth > 0 ) {
+		while ( $i < $len ) {
 			$next_div_open  = stripos( $html, '<div', $i );
 			$next_div_close = stripos( $html, '</div>', $i );
 
@@ -94,7 +97,7 @@ $align_map = array(
 $css_cols = $split_to_cols[ $split ] ?? $split_to_cols['50-50'];
 $align    = $align_map[ $v_align ] ?? 'center';
 
-$has_from_inner_blocks = is_object( $block ) && ! empty( $block->inner_blocks );
+$has_from_inner_blocks = $block instanceof WP_Block && $block->inner_blocks->count() > 0;
 $has_content_string    = is_string( $content ) && '' !== trim( $content );
 $has_legacy            = ( $legacy_heading !== '' || $legacy_content !== '' );
 $is_legacy             = ( ! $has_from_inner_blocks && ! $has_content_string ) && $has_legacy;
@@ -128,7 +131,7 @@ $wrapper = get_block_wrapper_attributes(
 	array(
 		'class' => implode( ' ', $classes ),
 		'style' => implode( ';', $style_rules ),
-	)
+	),
 );
 
 if ( $is_legacy ) {
@@ -146,6 +149,9 @@ if ( $is_legacy ) {
 } elseif ( $has_from_inner_blocks ) {
 	$inner_html = '';
 	foreach ( $block->inner_blocks as $inner_block ) {
+		if ( ! $inner_block instanceof WP_Block ) {
+			continue;
+		}
 		$inner_html .= $inner_block->render();
 	}
 	$inner = '<div class="nextora-hero__grid">' . $inner_html . '</div>';

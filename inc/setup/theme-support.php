@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Theme supports and editor integration (block theme).
  *
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 add_action(
 	'after_setup_theme',
@@ -28,14 +29,14 @@ add_action(
 				'flex-height' => true,
 				'flex-width'  => true,
 				'header-text' => array( 'site-title', 'site-description' ),
-			)
+			),
 		);
 
 		register_nav_menus(
 			array(
 				'primary' => __( 'Primary Menu', 'nextora' ),
 				'footer'  => __( 'Footer Menu', 'nextora' ),
-			)
+			),
 		);
 
 		// Add support for WooCommerce.
@@ -50,7 +51,7 @@ add_action(
 		// Add support for Elementor.
 		add_theme_support( 'elementor' );
 		add_theme_support( 'elementor-pro' );
-	}
+	},
 );
 
 /**
@@ -65,5 +66,5 @@ add_filter(
 
 		return 90;
 	},
-	10
+	10,
 );

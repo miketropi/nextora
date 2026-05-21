@@ -5,10 +5,38 @@
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
+}
+
+/**
+ * Coerce modal arg values to strings for typed consumers.
+ *
+ * @param array<string, mixed> $args Raw args.
+ *
+ * @return array<string, string>
+ */
+function nextora_spotlight_search_normalize_modal_args( array $args ): array {
+	$normalized = array();
+
+	foreach ( $args as $key => $value ) {
+		if ( ! is_string( $key ) ) {
+			continue;
+		}
+		if ( is_string( $value ) ) {
+			$normalized[ $key ] = $value;
+			continue;
+		}
+		if ( is_scalar( $value ) ) {
+			$normalized[ $key ] = (string) $value;
+			continue;
+		}
+		$normalized[ $key ] = '';
+	}
+
+	return $normalized;
 }
 
 /**
@@ -120,7 +148,7 @@ function nextora_localize_spotlight_search(): void {
 			'typePage'       => __( 'Page', 'nextora' ),
 			'typeOther'      => __( 'Content', 'nextora' ),
 			'keyboardHint'   => __( 'Use ↑ ↓ to choose · Enter to open · Esc to close', 'nextora' ),
-		)
+		),
 	);
 }
 
@@ -130,6 +158,7 @@ add_action( 'wp_enqueue_scripts', 'nextora_localize_spotlight_search', 25 );
  * Merge {@see nextora/spotlight-search} block attributes into header modal args.
  *
  * @param array<string, mixed> $attributes Block attributes (camelCase).
+ *
  * @return array<string, string> Args for {@see nextora_get_header_search_modal_markup()}.
  */
 function nextora_merge_spotlight_search_block_modal_args( array $attributes ): array {
@@ -137,15 +166,15 @@ function nextora_merge_spotlight_search_block_modal_args( array $attributes ): a
 		return array();
 	}
 
-	$args = nextora_get_header_search_modal_markup_args();
+	$args = nextora_spotlight_search_normalize_modal_args( nextora_get_header_search_modal_markup_args() );
 
 	$modal_id = isset( $attributes['modalId'] ) && is_string( $attributes['modalId'] )
 		? trim( $attributes['modalId'] )
 		: '';
 	if ( '' !== $modal_id && function_exists( 'nextora_header_search_modal_sanitize_id' ) ) {
-		$args['modal_id']      = nextora_header_search_modal_sanitize_id( $modal_id );
-		$args['title_id']      = $args['modal_id'] . '-title';
-		$args['subtitle_id']   = $args['modal_id'] . '-subtitle';
+		$args['modal_id']    = nextora_header_search_modal_sanitize_id( $modal_id );
+		$args['title_id']    = $args['modal_id'] . '-title';
+		$args['subtitle_id'] = $args['modal_id'] . '-subtitle';
 	}
 
 	if ( isset( $attributes['titleText'] ) && is_string( $attributes['titleText'] ) && '' !== trim( $attributes['titleText'] ) ) {
@@ -173,10 +202,12 @@ function nextora_merge_spotlight_search_block_modal_args( array $attributes ): a
 
 	if ( isset( $attributes['iconColor'] ) && is_string( $attributes['iconColor'] ) ) {
 		$icon_color = sanitize_hex_color( trim( $attributes['iconColor'] ) );
-		if ( '' !== $icon_color ) {
+		if ( is_string( $icon_color ) && '' !== $icon_color ) {
 			$args['trigger_icon_color'] = $icon_color;
 		}
 	}
+
+	$args = nextora_spotlight_search_normalize_modal_args( $args );
 
 	/**
 	 * Filter merged modal args for the spotlight search block.
@@ -184,5 +215,10 @@ function nextora_merge_spotlight_search_block_modal_args( array $attributes ): a
 	 * @param array<string, string> $args       Merged args.
 	 * @param array<string, mixed>  $attributes Raw block attributes.
 	 */
-	return apply_filters( 'nextora_spotlight_search_block_modal_args', $args, $attributes );
+	$filtered = apply_filters( 'nextora_spotlight_search_block_modal_args', $args, $attributes );
+	if ( ! is_array( $filtered ) ) {
+		return $args;
+	}
+
+	return nextora_spotlight_search_normalize_modal_args( $filtered );
 }
