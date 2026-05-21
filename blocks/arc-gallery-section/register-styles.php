@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Block style presets for nextora/scrolling-promotion.
+ * Block style presets for nextora/arc-gallery-section.
  *
  * @package Nextora
  */
@@ -9,10 +9,10 @@
 declare( strict_types=1 );
 
 /**
- * Register marquee style variations.
+ * Register style variations.
  */
-function nextora_register_scrolling_promotion_block_styles(): void {
-	$block = 'nextora/scrolling-promotion';
+function nextora_register_arc_gallery_section_block_styles(): void {
+	$block = 'nextora/arc-gallery-section';
 
 	register_block_style(
 		$block,
@@ -46,4 +46,4 @@ function nextora_register_scrolling_promotion_block_styles(): void {
 		),
 	);
 }
-add_action( 'init', 'nextora_register_scrolling_promotion_block_styles', 20 );
+add_action( 'init', 'nextora_register_arc_gallery_section_block_styles', 20 );

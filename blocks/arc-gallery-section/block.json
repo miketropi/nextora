@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/arc-gallery-section",
+  "title": "Arc Gallery Section",
+  "category": "media",
+  "description": "Images along a curved arc with eyebrow, heading, and CTA buttons.",
+  "keywords": ["arc", "gallery", "images", "cta", "section", "nextora"],
+  "textdomain": "nextora",
+  "icon": "images-alt2",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "margin": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    }
+  },
+  "attributes": {
+    "images": {
+      "type": "array",
+      "default": []
+    },
+    "imageWidth": { "type": "number", "default": 220 },
+    "imageHeight": { "type": "number", "default": 280 },
+    "imageBorderRadius": { "type": "number", "default": 6 },
+    "imageBorderWidth": { "type": "number", "default": 3 },
+    "imageBorderColor": { "type": "string", "default": "#ffffff" },
+    "arcRadius": { "type": "number", "default": 600 },
+    "arcSpread": { "type": "number", "default": 50 },
+    "arcDirection": { "type": "string", "default": "down" },
+    "galleryHeight": { "type": "number", "default": 380 },
+    "galleryOverflow": { "type": "boolean", "default": true },
+    "eyebrowText": { "type": "string", "default": "" },
+    "headingText": { "type": "string", "default": "" },
+    "headingLevel": { "type": "number", "default": 2 },
+    "textAlign": { "type": "string", "default": "center" },
+    "contentMaxWidth": { "type": "string", "default": "700px" },
+    "contentOffsetY": { "type": "number", "default": 0 },
+    "showPrimaryButton": { "type": "boolean", "default": true },
+    "primaryButtonText": { "type": "string", "default": "Donate Now" },
+    "primaryButtonUrl": { "type": "string", "default": "" },
+    "primaryButtonTarget": { "type": "boolean", "default": false },
+    "primaryButtonStyle": { "type": "string", "default": "solid" },
+    "showSecondaryButton": { "type": "boolean", "default": true },
+    "secondaryButtonText": { "type": "string", "default": "Learn More" },
+    "secondaryButtonUrl": { "type": "string", "default": "" },
+    "secondaryButtonTarget": { "type": "boolean", "default": false },
+    "backgroundColor": { "type": "string", "default": "" },
+    "textColor": { "type": "string", "default": "" },
+    "eyebrowColor": { "type": "string", "default": "" },
+    "primaryButtonBg": { "type": "string", "default": "" },
+    "primaryButtonColor": { "type": "string", "default": "" },
+    "paddingTop": { "type": "number", "default": 80 },
+    "paddingBottom": { "type": "number", "default": 80 },
+    "enableScrollAnimation": { "type": "boolean", "default": true }
+  },
+  "editorScript": "file:./index.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

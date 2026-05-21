@@ -77,6 +77,7 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 | Block | Pattern |
 |-------|---------|
 | `nextora/scrolling-promotion` | CSS-only marquee, `render.php`, no `viewScript`; items repeater in editor |
+| `nextora/arc-gallery-section` | Arc layout + `arc-math.ts` / PHP mirror, live editor preview, `view.ts` scroll reveal |
 | `nextora/image-gallery-grid` | Scroll reveal (GSAP) |
 | `nextora/image-gallery-slide` | Swiper init / loading |
 

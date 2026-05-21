@@ -7,7 +7,7 @@
  * @var WP_Block             $block      Block instance.
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! function_exists( 'nextora_scrolling_promotion_resolve_color' ) ) {
 	/**
@@ -31,9 +31,9 @@ if ( ! function_exists( 'nextora_scrolling_promotion_resolve_color' ) ) {
 
 if ( ! function_exists( 'nextora_scrolling_promotion_render_separator' ) ) {
 	/**
-	 * @param string               $type    dot|dash|pipe|star|custom|none.
-	 * @param string               $custom  Custom character.
-	 * @param array<string, mixed> $atts    Block attributes for classes.
+	 * @param string               $type   dot|dash|pipe|star|custom|none.
+	 * @param string               $custom Custom character.
+	 * @param array<string, mixed> $atts   Block attributes for classes.
 	 */
 	function nextora_scrolling_promotion_render_separator( string $type, string $custom, array $atts ): string {
 		if ( 'none' === $type ) {
@@ -61,9 +61,9 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_separator' ) ) {
 
 if ( ! function_exists( 'nextora_scrolling_promotion_render_items' ) ) {
 	/**
-	 * @param list<array{text: string}> $items      Promotion lines.
-	 * @param bool                     $aria_hidden Duplicate set for screen readers.
-	 * @param array<string, mixed>     $attributes  Block attributes.
+	 * @param list<array{text: string}> $items       Promotion lines.
+	 * @param bool                      $aria_hidden Duplicate set for screen readers.
+	 * @param array<string, mixed>      $attributes  Block attributes.
 	 */
 	function nextora_scrolling_promotion_render_items( array $items, bool $aria_hidden, array $attributes ): string {
 		$type   = isset( $attributes['separatorType'] ) ? (string) $attributes['separatorType'] : 'dot';
@@ -143,16 +143,16 @@ $border_width = isset( $attributes['borderWidth'] ) ? (int) $attributes['borderW
 $border_width = max( 1, min( 3, $border_width ) );
 
 $text_color = nextora_scrolling_promotion_resolve_color(
-	isset( $attributes['textColor'] ) ? (string) $attributes['textColor'] : ''
+	isset( $attributes['textColor'] ) ? (string) $attributes['textColor'] : '',
 );
 $bg_color = nextora_scrolling_promotion_resolve_color(
-	isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : ''
+	isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '',
 );
 $sep_color = nextora_scrolling_promotion_resolve_color(
-	isset( $attributes['separatorColor'] ) ? (string) $attributes['separatorColor'] : ''
+	isset( $attributes['separatorColor'] ) ? (string) $attributes['separatorColor'] : '',
 );
 $border_color = nextora_scrolling_promotion_resolve_color(
-	isset( $attributes['borderColor'] ) ? (string) $attributes['borderColor'] : ''
+	isset( $attributes['borderColor'] ) ? (string) $attributes['borderColor'] : '',
 );
 
 $aria_label = isset( $attributes['ariaLabel'] ) ? trim( (string) $attributes['ariaLabel'] ) : '';
@@ -161,7 +161,8 @@ if ( '' === $aria_label ) {
 }
 $aria_label = (string) apply_filters( 'nextora_scrolling_promotion_aria_label', $aria_label, $attributes );
 
-$items = (array) apply_filters( 'nextora_scrolling_promotion_items', $items, $attributes );
+/** @var list<array{text: string}> $items */
+$items = array_values( (array) apply_filters( 'nextora_scrolling_promotion_items', $items, $attributes ) );
 
 $css_vars = array(
 	'--nextora-marquee-bg'              => '' !== $bg_color ? $bg_color : 'transparent',
@@ -196,7 +197,7 @@ if ( ! $pause_on_hover ) {
 $wrapper_classes = (array) apply_filters(
 	'nextora_scrolling_promotion_wrapper_classes',
 	$wrapper_classes,
-	$attributes
+	$attributes,
 );
 
 $wrapper_extra = array(
@@ -205,11 +206,11 @@ $wrapper_extra = array(
 	'role'  => 'region',
 );
 
-$wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra, is_object( $block ?? null ) ? $block : null );
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 $wrapper_attributes = (string) apply_filters(
 	'nextora_scrolling_promotion_wrapper_attributes',
 	$wrapper_attributes,
-	$attributes
+	$attributes,
 );
 
 $inner_class = 'nextora-scrolling-promotion__inner nextora-scrolling-promotion__inner--' . esc_attr( $direction );
@@ -217,7 +218,7 @@ $items_html  = nextora_scrolling_promotion_render_items( $items, false, $attribu
 $dup_html    = nextora_scrolling_promotion_render_items( $items, true, $attributes );
 
 ?>
-<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> aria-label="<?php echo esc_attr( $aria_label ); ?>">
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?> aria-label="<?php echo esc_attr( $aria_label ); ?>">
 	<div class="nextora-scrolling-promotion__track">
 		<div class="<?php echo esc_attr( $inner_class ); ?>">
 			<?php

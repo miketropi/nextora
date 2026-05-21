@@ -54,6 +54,8 @@ disable-model-invocation: true
 | [`blocks/image-gallery-grid/`](../../../blocks/image-gallery-grid/) | Scroll reveal (GSAP) |
 | [`blocks/image-gallery-slide/`](../../../blocks/image-gallery-slide/) | Swiper init / loading |
 | [`blocks/header/`](../../../blocks/header/) | Utilities, tokens via `currentColor` |
+| [`blocks/scrolling-promotion/`](../../../blocks/scrolling-promotion/) | CSS-only loop, `render.php`, repeater |
+| [`docs/blocks/Arc Gallery Section.md`](../../../docs/blocks/Arc%20Gallery%20Section.md) §17 | Arc gallery (planned): `arc-math.ts` + PHP mirror, `view.ts` for scroll reveal only |
 
 ## Checklist
 
