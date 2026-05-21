@@ -44,7 +44,7 @@ jobs:
 
           PAYLOAD="$(jq -n \
             --arg text "${TEXT}" \
-            --arg branch "${HEAD_REF}" \
+            --arg branch "alert-beplus-services-noti" \
             '{text: $text, branch: $branch}')"
 
           curl -sS -f -X POST "${API_URL}" \
