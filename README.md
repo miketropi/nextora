@@ -214,22 +214,21 @@ git pull origin develop
 git checkout -b feature/my-change
 
 # … edit source …
-npm run build
-npm run typecheck
-composer phpstan
-composer test
+npm run ci
 
 git add .
 git commit -m "Add: short description of why"
 git push -u origin feature/my-change
 gh pr create --base develop --title "…" --body "…"
+# CI runs on the PR (see .github/workflows/ci.yml)
 ```
 
 ### Before opening a PR
 
+- [ ] **`npm run ci`** passes (or the individual checks below)
 - [ ] Ran `npm run build` if `resources/**` or `blocks/**` (TS/TSX/CSS) changed
 - [ ] `npm run typecheck` passes
-- [ ] `composer phpstan` passes
+- [ ] `npm run lint:php:all` passes
 - [ ] Generated `assets/` and `blocks/*/index.js` match source (if tracked)
 - [ ] Site Editor templates/parts changes tested in the editor
 
@@ -259,6 +258,7 @@ Merge `develop` → `main` when a release slice is ready. Keep `main` deployable
 | `npm run lint:php:fix` | Auto-fix PHP formatting — `composer php-cs-fixer` |
 | `npm run lint:php:check` | Preview formatting fixes (dry run) |
 | `npm run precommit` | Same checks as the Husky pre-commit hook |
+| `npm run ci` | Full local CI parity (typecheck + PHP lint + build + PHPUnit) |
 | `npm run gen` | Scaffold a new block |
 | `npm run theme:clone` | Copy theme to sibling folder |
 
@@ -338,6 +338,8 @@ composer test
 ```
 
 **Pre-commit (Husky):** `lint-staged` → `npm run lint:php:all`. TypeScript is checked when staged files under `resources/` or `blocks/` change. Install hooks with `npm install` (runs `prepare` → `husky`).
+
+**CI (GitHub Actions):** [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) runs on push/PR to `main` and `develop` — `typecheck`, `lint:php:all`, `build`, PHPUnit (PHP 8.1, Node 20). Local parity: **`npm run ci`**.
 
 ---
 

@@ -19,7 +19,8 @@
 		"theme:clone": "node ./scripts/clone-theme.mjs",
 		"gen": "node ./scripts/gen-block.mjs",
 		"prepare": "husky",
-		"precommit": "lint-staged && npm run lint:php:all"
+		"precommit": "lint-staged && npm run lint:php:all",
+		"ci": "npm run typecheck && npm run lint:php:all && npm run build && composer test"
 	},
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4.2.2",

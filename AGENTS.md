@@ -119,6 +119,8 @@ Auto-fix formatting: **`npm run lint:php:fix`**, then re-run the two checks abov
 
 **Git pre-commit (Husky):** staged PHP is auto-formatted, then **`npm run lint:php:all`** runs. TypeScript **`npm run typecheck`** runs when staged `resources/**` or `blocks/**` `.ts`/`.tsx` files change. Manual dry-run: **`npm run precommit`**.
 
+**CI:** GitHub Actions (`.github/workflows/ci.yml`) on `main` / `develop` — full gate via **`npm run ci`** locally.
+
 Also:
 
 - `npm run build`
