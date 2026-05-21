@@ -303,7 +303,7 @@
 }
 
 /* --------------------------------------------------------------------------
- * Primary nav — mobile portal (`header-nav.ts` + `header-hooks.php`)
+ * Primary nav — mobile portal (`header-nav.ts` + `nextora/header` block)
  * Cloned menu mounts under `body`; avoids header overflow / stacking issues.
  * -------------------------------------------------------------------------- */
 

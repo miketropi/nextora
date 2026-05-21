@@ -7,14 +7,12 @@ parameters:
 	level: 8
 	paths:
 		- functions.php
-		- index.php
-		- header.php
-		- footer.php
-		- page.php
-		- single.php
 		- inc
+		- blocks
 	excludePaths:
 		analyse:
 			- vendor
 			- node_modules
 			- tests
+			- blocks/*/index.js
+			- blocks/*/view.js

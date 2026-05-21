@@ -1,5 +1,7 @@
 # Custom Header Block — Technical Documentation
 
+> **Status:** Historical planning doc. Nextora is now a **block theme** (`templates/`, `parts/`). Implemented block: `nextora/header` in `blocks/header/`. See [`docs/blocks.md`](./blocks.md) and [`docs/extensibility.md`](./extensibility.md).
+
 > **Block Name:** `mytheme/header`
 > **Category:** Theme Blocks
 > **Render:** Server-Side (PHP) + Editor UI (React/JS)

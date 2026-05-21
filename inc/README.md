@@ -1,17 +1,15 @@
 # `inc/` — PHP modules
 
-Procedural theme code is grouped by role. `functions.php` loads these files in dependency order (see comments there).
+Procedural theme code is grouped by role. `functions.php` loads these files in dependency order.
 
 | Directory | Role |
 |-----------|------|
-| **`bootstrap/`** | Very early defines (e.g. `NEXTORA_VERSION`) before Composer autoload. |
+| **`bootstrap/`** | Early defines (`NEXTORA_VERSION`, `NEXTORA_DIR`, `NEXTORA_URI`). |
 | **`setup/`** | Theme support, text domain, nav menu registration (`after_setup_theme`). |
-| **`navigation/`** | Navigation block ↔ classic menu locations. |
-| **`hooks/`** | Header/footer extensibility (`render_block`, `do_action`). |
+| **`navigation/`** | `core/navigation` ↔ menu locations; header block walker + Woo cart helpers. |
 | **`features/`** | Self-contained features (e.g. `spotlight-search/`). See `features/README.md`. |
-| **`template/`** | Article/loop helpers and post placeholders. |
-| **`comments/`** | Comment form args, list callback, navigation filters. |
-| **`assets/`** | Scripts, styles, font URLs, editor integration. |
+| **`comments/`** | Comment form args, Tiptap KSES, navigation filters. |
+| **`assets/`** | Scripts, styles, editor integration, `wp_localize_script`. |
 | **`Core/`** | PSR-4 classes (`Nextora\Core\…`). Composer maps `Nextora\` → `inc/`. |
 
-Add new files to the folder that matches the concern, then `require_once` from `functions.php` (or from another `inc` file if it is a private helper used in one feature only).
+Add new files to the folder that matches the concern, then `require_once` from `functions.php` (or from a feature `load.php` when scoped to one feature).

@@ -10,18 +10,18 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 
 ## What this theme is
 
-- **Hybrid WordPress theme**: classic PHP templates (`header.php`, `footer.php`, `index.php`, `page.php`, `single.php`) plus **`theme.json` v3** and block **template parts** in `parts/*.html` (loaded via `block_template_part()` in the shell templates).
-- **Stack**: PHP 8.1+ (`declare(strict_types=1);`), **Tailwind CSS v4** (PostCSS), **TypeScript** bundled with **esbuild** (minified in `build:ts`), **npm dependencies** for comments UI (Tiptap, Lucide). Optional Composer autoload + PHPStan/PHPUnit.
+- **WordPress block theme (FSE):** HTML templates in `templates/`, template parts in `parts/`, global styles in **`theme.json` v3**. No classic root PHP templates (`header.php`, `single.php`, etc.).
+- **Stack**: PHP 8.1+ (`declare(strict_types=1);`), **Tailwind CSS v4** (PostCSS), **TypeScript** bundled with **esbuild**, npm deps for comments UI (Tiptap, Lucide), GSAP, Swiper. Optional Composer autoload + PHPStan/PHPUnit.
 
 ## Docs index (`docs/`)
 
 | Doc | Purpose |
 |-----|---------|
-| [`docs/extensibility.md`](./docs/extensibility.md) | Hooks, filters, header/footer, page heading, article title/meta/share, paths to PHP/CSS |
+| [`docs/extensibility.md`](./docs/extensibility.md) | Hooks, filters, header block, navigation, comments |
 | [`docs/modal.md`](./docs/modal.md) | Modal layer (`data-nextora-modal`, `openModalDialog`, events, a11y) |
-| [`docs/spotlight-search.md`](./docs/spotlight-search.md) | Header spotlight search, REST, `window.nextoraSpotlight` |
+| [`docs/spotlight-search.md`](./docs/spotlight-search.md) | Spotlight search, REST, `window.nextoraSpotlight` |
 | [`docs/comments-tiptap.md`](./docs/comments-tiptap.md) | Tiptap comment field, KSES, `window.nextoraComments` |
-| [`docs/blocks.md`](./docs/blocks.md) | Theme block standards: `theme.json` tokens, style overrides, scroll animation toggle, JS init loading, consistent controls |
+| [`docs/blocks.md`](./docs/blocks.md) | Theme block standards |
 
 ## Naming and constants
 
@@ -35,99 +35,92 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 | Area | Edit (source) | Do not edit as source |
 |------|----------------|------------------------|
 | Global styles / presets | `theme.json` | — |
-| Tailwind tokens / `@import` order | `resources/css/app.css` (`@theme` maps to `--wp--preset--*`; feature CSS in `resources/css/modules/`) | `assets/css/app.css` |
+| Block templates / parts | `templates/*.html`, `parts/*.html` | — |
+| Tailwind tokens / `@import` order | `resources/css/app.css` | `assets/css/app.css` |
 | Feature CSS slices | `resources/css/modules/**/*.css` | `assets/css/app.css` |
 | Front-end JS | `resources/ts/main.ts`, `resources/ts/**/*.ts` | `assets/js/main.js` |
-| Theme blocks (editor) | `blocks/<name>/` (e.g. `block.json`, `*.tsx`, `render.php`); build via `npm run build:blocks` | `blocks/<name>/index.js`, `index.asset.php` (generated) |
+| Theme blocks (editor) | `blocks/<name>/` | `blocks/<name>/index.js`, `index.asset.php` |
 | PHP behavior | `functions.php`, `inc/**/*.php` | — |
-| Markup | `template-parts/*.php`, `parts/*.html`, root `*.php` templates | — |
 
-After changing CSS, TS, or block sources, run **`npm run build`** (or **`npm run watch`**) so `assets/` and compiled block bundles stay in sync. The theme skips loading compiled CSS/JS if they are missing or unreadable.
+After changing CSS, TS, or block sources, run **`npm run build`** (or **`npm run watch`**).
 
 ### Theme blocks (`blocks/`)
 
-- **Standards (read first for new/changed blocks):** [`docs/blocks.md`](./docs/blocks.md) — use **`theme.json` / CSS variables** by default; add **color/background overrides** in the sidebar only when needed; **`enableScrollAnimation`** toggle + GSAP scroll reveal on content blocks; **loading → ready** init for JS layout (carousel/slider); keep **panel labels, help text, and control patterns** aligned across blocks.
-- **Registration**: `blocks/blocks.php` — on `init`, globs each subdirectory of `blocks/` and calls `register_block_type( $block_dir )`. Each block folder needs **`block.json`** plus the **built** `index.js` and **`index.asset.php`** (dependency manifest for WordPress).
-- **Build**: `scripts/build-blocks.mjs` (esbuild; `@wordpress/*` imports shim to `window.wp.*`). **`npm run build`** runs `build:css`, `build:ts`, and **`build:blocks`**. **`npm run watch`** includes **`watch:blocks`**.
-- **Scaffold**: **`npm run gen -- --name=slug --ns=nextora`** → `scripts/gen-block.mjs` (includes `enableScrollAnimation` and `style.css` stub when `ns` is `nextora`).
-- **Cursor**: rule [`.cursor/rules/nextora-blocks.mdc`](./.cursor/rules/nextora-blocks.mdc); skills **`nextora-add-theme-block`**, **`nextora-theme-styling-and-tokens`**.
-- **Examples in repo**: `blocks/hero-section/`, `blocks/spotlight-search/` (header modal + live search; default placement in `parts/header.html`), `blocks/header/` (all-in-one site header), `blocks/image-gallery-grid/` (scroll reveal), `blocks/image-gallery-slide/` (Swiper init).
+- **Standards:** [`docs/blocks.md`](./docs/blocks.md)
+- **Registration**: `blocks/blocks.php` — globs `blocks/*/block.json`, requires built `index.js` + `index.asset.php`.
+- **Build**: `scripts/build-blocks.mjs` — `@wordpress/*` → `window.wp.*`.
+- **Scaffold**: `npm run gen -- --name=slug --ns=nextora`
+- **Examples**: `blocks/header/`, `blocks/spotlight-search/`, `blocks/hero-section/`, `blocks/post-grid/`, `blocks/image-gallery-grid/`, `blocks/image-gallery-slide/`, `blocks/call-to-action/`
+
+### Default template parts
+
+- **`parts/header.html`** — `nextora/header` (logo, nav, spotlight search, Woo cart/account)
+- **`parts/footer.html`** — footer `core/navigation` + credits
 
 ### `resources/css/app.css` import order
 
-Imports are intentional: **base** → **components** → **prose** → **overrides** (see file header comment). Current modules:
+**base** → **components** → **prose** → **overrides**
 
 - **Base**: `body.css`, `nav-menus.css`, `layout-shell.css`, `search-form.css`, `articles-shell.css`, `comments.css`, `pagination.css`, `entry-column.css`
 - **Components**: `buttons.css`, `form-fields.css`, `modal.css`, `spotlight-search.css`
 - **Prose**: `entry-content.css`
 - **Overrides**: `layout-tweaks.css`
 
-`@theme` also defines **Nextora-specific tokens** (e.g. `--nextora-nav-*`, `--nextora-pagination-*`, `--nextora-comments-*`) used by `nav-menus.css`, pagination, and comments — keep new menu/pagination/comment colors in `@theme` when possible.
+`@theme` defines **Nextora-specific tokens** (`--nextora-nav-*`, `--nextora-pagination-*`, `--nextora-comments-*`).
 
 ### `resources/ts` entry (`main.ts`)
 
-Boot order matters where noted:
+Boot order matters:
 
-1. `initHeaderSticky()` — `header-sticky.ts`; sets `--nextora-header-sticky-top` / `--nextora-header-sticky-translate-y` on sticky `nextora/header` blocks (`window.nextoraHeaderSticky.hideAfter`, filter `nextora_header_block_sticky_hide_after`).
-2. `initHeaderNavigation()` — mobile primary nav is an ~90% off-canvas sheet docked to the inline end (theme preset colors/spacing); GSAP animates backdrop opacity + panel slide only (`header-nav.ts`); strings from `wp_localize_script` → `window.nextoraNav` in `inc/assets/assets.php`
-3. `mountHeaderMiniCartPortalToBody()` — `mini-cart-portal.ts`; reparents the header block mini cart modal under `document.body` before modal wiring
-4. `mountSpotlightSearchPortalToBody()` — `spotlight-search-portal.ts`; reparents `[data-nextora-spotlight-search-portal]` to `document.body` (trigger stays in header)
-5. `initModals()` / `attachModalGlobals()` — `lib/modal.ts`; `window.nextoraModal` localized in `assets.php`
-6. `bindHeaderMiniCartAfterAjaxAdd()` — `mini-cart-portal.ts`; Woo AJAX add-to-cart → open mini cart
-7. `initSpotlightSearch()` — `lib/spotlight-search.ts`; `window.nextoraSpotlight`
-8. `initArticleShare()` — `lib/article-share.ts`; `window.nextoraArticleShare` (filter `nextora_article_share_script_vars`)
-9. `initCommentTiptap()` — `lib/comment-tiptap.ts`; Tiptap + Lucide bundles; `window.nextoraComments`
-
-**npm `dependencies`**: `@tiptap/*`, `lucide`. **devDependencies**: Tailwind, PostCSS, esbuild, TypeScript.
+1. `initHeaderSticky()` — `header-sticky.ts`
+2. `initHeaderNavigation()` — `header-nav.ts` (GSAP mobile drawer)
+3. `mountHeaderMiniCartPortalToBody()` — `mini-cart-portal.ts`
+4. `mountSpotlightSearchPortalToBody()` — `spotlight-search-portal.ts`
+5. `initModals()` / `attachModalGlobals()` — `lib/modal.ts`
+6. `bindHeaderMiniCartAfterAjaxAdd()`
+7. `initSpotlightSearch()` — `lib/spotlight-search.ts`
+8. `initArticleShare()` — `lib/article-share.ts` (for `[data-nextora-article-share]` markup)
+9. `initCommentTiptap()` — `lib/comment-tiptap.ts`
 
 ## PHP load map (`functions.php`)
 
-Not exhaustive — key includes:
-
-- `inc/setup/theme-support.php` — `add_theme_support` (including **WooCommerce** and **`giftflow`** for the GiftFlow plugin)
-- `inc/setup/elementor.php` — Elementor: hide duplicate **page heading** on Elementor-built singulars; **Elementor Pro** Theme Builder **`header`** / **`footer`** locations in `header.php` / `footer.php` (via `elementor_theme_do_location`)
-- `inc/navigation/navigation.php` — Navigation block ↔ menu locations (`render_block` filter)
-- `inc/features/spotlight-search/load.php` — Spotlight search feature (modal, form, REST localization, block merge; see `inc/features/spotlight-search/README.md`)
-- `inc/hooks/header-hooks.php`, `inc/hooks/footer-hooks.php`
-- `inc/template/article-template.php`, `article-share.php`, `page-heading.php`, `post-placeholder.php`
-- `inc/comments/comments.php`
-- `inc/assets/assets.php` — fonts, `nextora-app` / `nextora-main`, all `wp_localize_script` payloads for front-end JS
-- **`blocks/blocks.php`** — registers all theme blocks under `blocks/*/`
+- `inc/setup/theme-support.php` — WooCommerce, GiftFlow, Elementor, nav menus, `custom-logo`
+- `inc/setup/elementor.php` — Elementor editor settings
+- `inc/navigation/navigation.php` — `core/navigation` ↔ menu locations
+- `inc/navigation/header-block-woocommerce.php` — mini cart fragments
+- `inc/features/spotlight-search/load.php` — search modal + REST localization
+- `inc/comments/comments.php` — comment form + Tiptap KSES
+- `inc/assets/assets.php` — fonts, `nextora-app`, `nextora-main`, `wp_localize_script`
+- `blocks/blocks.php` — registers theme blocks
 
 ### GiftFlow and WooCommerce
 
-- **GiftFlow**: `add_theme_support( 'giftflow' )` in `inc/setup/theme-support.php`. Campaign singular layout uses **`giftflow.php`** at the theme root: `get_header()` / `get_footer()`, wide content shell, **`giftflow_content()`** (provided by the plugin). Most campaign UI/CSS comes from **GiftFlow**, not Nextora.
-- **WooCommerce**: theme support in `theme-support.php`; **`woocommerce.php`** at theme root for shop overrides when needed.
+- **GiftFlow**: `add_theme_support( 'giftflow' )` — campaign UI from the plugin
+- **WooCommerce**: theme support; mini cart/account in `nextora/header` block
 
 ## Design system alignment
 
-- **Colors / fonts / spacing**: `theme.json`; mirror new palette in `resources/css/app.css` `@theme` (with fallbacks) so utilities (`text-primary`, `bg-base`, etc.) match the editor.
-- **Fonts**: Hanken Grotesk — `NEXTORA_GOOGLE_FONT_STYLESHEET` and preconnect in `inc/assets/assets.php`; families in `theme.json`.
-- **Tailwind**: Preflight is **disabled** (see top of `resources/css/app.css`) so block editor chrome is not reset.
-- **Layout**: Use `theme.json` `layout.contentSize` / `wideSize` and classes like `.nextora-content-shell`; avoid fighting core constrained layouts.
+- **Colors / fonts / spacing**: `theme.json`; mirror in `resources/css/app.css` `@theme`
+- **Tailwind**: Preflight **disabled** (block editor chrome)
+- **Layout**: `theme.json` `layout.contentSize` / `wideSize`, `.nextora-content-shell`
 
-## Navigation (header menu)
+## Navigation
 
-- **PHP**: `inc/navigation/navigation.php` — replaces empty `core/navigation` with `wp_nav_menu()` when `__unstableLocation` is set; classes `nextora-header-menu`, `nextora-navigation-from-location--primary|footer`.
-- **CSS**: `resources/css/modules/base/nav-menus.css` — desktop flyouts (**CSS** `:focus-within` + `(hover: hover)` hover); mobile **~90% off-canvas** sheet using **`base` background / `contrast` text** and shared `--nextora-nav-panel-*` borders/shadow (`app.css` drawer tokens + `--nextora-nav-portal-backdrop`), in a **portal** under `body`. Header **mini cart** uses the same drawer tokens and `nextora-modal` UI; at runtime `mountHeaderMiniCartPortalToBody()` (`mini-cart-portal.ts`) moves the live mini cart root to **`document.body`** (`data-nextora-header-mini-cart-portal` in `blocks/header/render.php`) so it matches the nav portal stacking layer; width **~90%** on phone and **`min(26rem, 92vw)`** from `768px` (`blocks/header/style.css`).
-- **JS**: `resources/ts/header-nav.ts` — **GSAP** panel slide + backdrop fade when motion is allowed; class `nextora-primary-nav-portal--gsap` disables conflicting CSS transitions; **`button.nextora-submenu-toggle`** accordion (portal mount only, see `bindPortalSubmenuAccordions`), Escape / backdrop / resize. Falls back to CSS transitions when `prefers-reduced-motion: reduce`.
-
-## Article / loop templates
-
-- **`nextora_content_article_vars()`**, **`nextora_get_related_posts_query()`**, and filters such as `nextora_show_related_posts`, `nextora_related_posts_limit`, `nextora_related_posts_query_args` live in **`inc/template/article-template.php`**. Prefer extending that API rather than duplicating class strings across `template-parts/`.
-- **Singular post**: `single.php` uses optional sidebar (`nextora_show_single_post_sidebar`), `nextora_render_page_heading()`, and `template-parts/content-article.php` with `content_type` `post`.
-- Other classic templates: `home.php`, `archive.php`, `page.php`, `search.php`, `index.php`.
+- **PHP**: `inc/navigation/navigation.php` — `core/navigation` with `__unstableLocation` → `wp_nav_menu()`
+- **Header block**: `nextora/header` uses its own menu picker + walker (`Nextora_Header_Block_Menu_Walker`)
+- **CSS**: `resources/css/modules/base/nav-menus.css`
+- **JS**: `resources/ts/header-nav.ts` — portal + GSAP drawer on mobile
 
 ## Quality checks (from theme root)
 
-- `npm run build` — CSS + front-end JS + theme blocks
-- `npm run typecheck` — TypeScript
-- `npm run lint:php` — PHPStan (`composer phpstan`)
-- `composer test` — PHPUnit
+- `npm run build`
+- `npm run typecheck`
+- `npm run lint:php` / `composer phpstan`
+- `composer test`
 
 ## Cloning
 
-- `npm run theme:clone -- --slug=...` — sibling theme with rewritten slug/namespace/constants.
+- `npm run theme:clone -- --slug=...`
 
 ## WordPress version
 

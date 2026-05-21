@@ -1,161 +1,351 @@
 # Nextora
 
-Hybrid WordPress theme used as a core starter: classic PHP templates plus `theme.json`, block-based template parts, and optional **theme blocks** in `blocks/`. Built with [Tailwind CSS v4](https://tailwindcss.com/), TypeScript, [PHPStan](https://phpstan.org/), and [PHPUnit](https://phpunit.de/).
+WordPress **block theme** (FSE): HTML templates under `templates/`, template parts under `parts/`, global styles in `theme.json` v3, plus first-party Gutenberg blocks in `blocks/`. Built with **Tailwind CSS v4**, **TypeScript**, **PHPStan**, and **PHPUnit**.
 
-**Agent / AI context:** see [`AGENTS.md`](./AGENTS.md) for load order, build pipeline, hooks, and file-level conventions.
+**For AI / Cursor agents:** [`AGENTS.md`](./AGENTS.md) — load order, build pipeline, hooks, and file conventions.
+
+---
 
 ## Requirements
 
-- WordPress 6.4+ (tested with 6.7 in `style.css`)
-- PHP 8.1+
-- [Node.js](https://nodejs.org/) 18+ (for asset builds)
-- [Composer](https://getcomposer.org/) (for PHP tooling and autoloading)
-
-## Installation
-
-1. Copy or clone this folder into `wp-content/themes/nextora/`.
-2. From the theme directory:
-
-   ```bash
-   composer install
-   npm install
-   npm run build
-   ```
-
-3. Activate **Nextora** under **Appearance → Themes**.
-
-The theme runs without `vendor/` (Composer is optional at runtime) but needs compiled assets: run `npm run build` if `assets/css/app.css`, `assets/js/main.js`, or block `index.js` files under `blocks/` are missing or stale.
-
-### Integrations
-
-- **WooCommerce**: `add_theme_support( 'woocommerce' )` and related gallery features in `inc/setup/theme-support.php`.
-- **GiftFlow**: `add_theme_support( 'giftflow' )` in the same file. Campaign views can use **`giftflow.php`**, which delegates content to the plugin’s `giftflow_content()`.
-- **Elementor**: `inc/setup/elementor.php` (loaded from `functions.php`) — skips the theme **page heading** band when a singular is built with Elementor; with **Elementor Pro**, **Theme Builder** templates can replace the block **header** / **footer** parts (`elementor_theme_do_location`). Prose/button/form CSS already avoids clashing with Elementor widgets (see `resources/css/modules/`).
-
-## Project layout
-
-| Path | Purpose |
+| Tool | Version |
 |------|---------|
-| `style.css` | Theme metadata (required by WordPress) |
-| `functions.php` | Bootstrap, constants, loads `inc/**` and `blocks/blocks.php` (see `inc/README.md`) |
-| `theme.json` | Global styles, color/spacing/typography presets (v3) |
-| `AGENTS.md` | Concise briefing for agents: build steps, `inc/` map, blocks, GiftFlow |
-| `header.php` / `footer.php` | Classic shell; call `block_template_part()` |
-| `parts/*.html` | Block markup for header/footer (hybrid template parts) |
-| `index.php`, `home.php`, `archive.php`, `page.php`, `single.php`, `search.php` | Main templates |
-| `woocommerce.php` | WooCommerce template overrides when needed |
-| `giftflow.php` | GiftFlow campaign singular shell (`giftflow_content()`) |
-| `template-parts/*.php` | Article cards, page heading, sidebars, loops |
-| `blocks/` | First-party Gutenberg blocks (`block.json` + TS/PHP); registered by `blocks/blocks.php` |
-| `scripts/build-blocks.mjs` | esbuild pipeline for `blocks/*` → `index.js` + `index.asset.php` |
-| `scripts/gen-block.mjs` | Scaffold a new block (`npm run gen`) |
-| `inc/` | PHP modules by area + `Nextora\*` PSR-4 classes (`inc/README.md`) |
-| `resources/css/app.css` | Tailwind source (`@theme` maps WP presets; modules under `resources/css/modules/`) |
-| `resources/ts/main.ts` | Front-end TypeScript entry |
-| `assets/css/app.css` | Compiled CSS (generated — do not hand-edit as source) |
-| `assets/js/main.js` | Compiled JS (generated) |
-| `scripts/clone-theme.mjs` | Duplicate theme with renamed slug/namespace (`npm run theme:clone`) |
+| WordPress | 6.4+ (see `style.css`) |
+| PHP | 8.1+ |
+| Node.js | 18+ |
+| Composer | Optional at runtime; required for PHP tooling |
 
-## Tailwind and CSS variables
+---
 
-Editor and front output expose WordPress preset variables such as `--wp--preset--color--primary`. In `resources/css/app.css`, the `@theme` block maps Tailwind color/font tokens to those variables (with hex fallbacks). Align new colors in both `theme.json` and `@theme` when you extend the palette.
-
-## npm scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run build` | `build:css` + `build:ts` + **`build:blocks`** (full theme build) |
-| `npm run build:css` | PostCSS / Tailwind → `assets/css/app.css` |
-| `npm run build:ts` | esbuild → `assets/js/main.js` (minified) |
-| `npm run build:blocks` | `node scripts/build-blocks.mjs` — compiles each `blocks/<name>/` entry to `index.js` + `index.asset.php` |
-| `npm run watch` | Watches CSS, TS, and blocks concurrently (`&` between processes) |
-| `npm run watch:blocks` | Watch mode for theme blocks only |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run lint:php` | Runs `composer phpstan` |
-| `npm run gen` | Scaffold a new block (`scripts/gen-block.mjs`) |
-| `npm run theme:clone` | See [Cloning a new theme](#cloning-a-new-theme) |
-
-## Composer scripts
-
-| Command | Description |
-|---------|-------------|
-| `composer phpstan` | Static analysis (`phpstan.neon`, WordPress stubs) |
-| `composer test` | PHPUnit (`tests/`) |
-
-## Cloning a new theme
-
-From this directory:
+## Quick start
 
 ```bash
-npm run theme:clone -- --slug=my-project --name="My Project"
-```
-
-Optional: `--namespace=MyProject` (defaults to PascalCase from the slug, e.g. `my-project` → `MyProject`).
-
-The script creates a sibling folder under `wp-content/themes/<slug>/`, skips `node_modules`, `vendor`, and `.git`, and rewrites identifiers (text domain, `NEXTORA_*` constants, `nextora_` function prefix, PSR-4 namespaces, package names, and a few CSS/body classes). Then in the new theme:
-
-```bash
+# From wp-content/themes/nextora/
 composer install
 npm install
 npm run build
 ```
 
-## Theme blocks
+Activate **Nextora** under **Appearance → Themes**.
 
-Blocks live under `blocks/<block-name>/` with a `block.json`. Source is typically TypeScript/TSX (`index.tsx`, `edit.tsx`) plus **`render.php`** for this scaffold (dynamic block, `save: () => null`). After editing block sources, run **`npm run build`** or **`npm run build:blocks`**. Registration is automatic via **`blocks/blocks.php`** (see **`AGENTS.md`** for the esbuild / `window.wp.*` setup).
+The theme runs without `vendor/`, but **compiled assets are required**. If `assets/css/app.css`, `assets/js/main.js`, or any `blocks/*/index.js` is missing, run `npm run build`.
 
-### Scaffold a block (`npm run gen`)
+During development:
 
-The script is [`scripts/gen-block.mjs`](./scripts/gen-block.mjs). Run it from the **theme root** (same as `npm run gen`).
+```bash
+npm run watch
+```
 
-#### CLI options
+Edit templates in **Appearance → Editor** (Site Editor). Default header/footer live in `parts/header.html` and `parts/footer.html`.
+
+---
+
+## Architecture
+
+Nextora is a **block theme**: WordPress renders `templates/*.html` and `parts/*.html` directly. PHP in `inc/` and `blocks/*/render.php` adds behavior; compiled CSS/JS comes from `resources/`.
+
+```mermaid
+flowchart TB
+  subgraph wp [WordPress block theme]
+    TJ[theme.json — presets, templateParts]
+    TPL[templates/*.html]
+    PARTS[parts/*.html]
+  end
+
+  subgraph php [PHP layer]
+    FN[functions.php]
+    INC[inc/ modules + Nextora\ PSR-4]
+    BLK[blocks/blocks.php]
+    REN[blocks/*/render.php SSR]
+  end
+
+  subgraph build [Build pipeline]
+    CSS[resources/css/app.css]
+    TS[resources/ts/main.ts]
+    BTS[blocks/*/index.tsx]
+    OUT1[assets/css/app.css]
+    OUT2[assets/js/main.js]
+    OUT3[blocks/*/index.js]
+  end
+
+  TPL --> PARTS
+  PARTS --> BLK
+  TPL --> BLK
+  FN --> INC
+  FN --> BLK
+  BLK --> REN
+  TJ --> CSS
+  CSS --> OUT1
+  TS --> OUT2
+  BTS --> OUT3
+  INC --> OUT1
+  INC --> OUT2
+```
+
+### Render flow
+
+1. WordPress resolves a **block template** (`templates/single.html`, `templates/home.html`, …).
+2. Templates include **template parts** via `<!-- wp:template-part {"slug":"header",…} /-->` (header/footer areas declared in `theme.json`).
+3. **`nextora/header`** (default in `parts/header.html`) renders logo, nav, search, and optional WooCommerce utilities via `blocks/header/render.php`.
+4. Other **dynamic theme blocks** SSR through their own `render.php`; editor scripts load from `blocks/<name>/index.js`.
+5. **`inc/assets/assets.php`** enqueues global `assets/css/app.css` and `assets/js/main.js`.
+
+There are **no classic PHP templates** (`header.php`, `single.php`, etc.) in this theme.
+
+### Templates and parts
+
+| Path | Role |
+|------|------|
+| `templates/index.html` | Blog / posts index fallback |
+| `templates/home.html` | Front page when “latest posts” |
+| `templates/front-page.html` | Static front page |
+| `templates/single.html` | Single post |
+| `templates/page.html` | Page |
+| `templates/archive.html` | Archives |
+| `templates/search.html` | Search results |
+| `templates/404.html` | Not found |
+| `parts/header.html` | Site header (`nextora/header` by default) |
+| `parts/footer.html` | Site footer (navigation + credits) |
+
+### Source vs generated (do not hand-edit generated files)
+
+| Edit (source) | Generated (run build) |
+|---------------|------------------------|
+| `resources/css/app.css`, `resources/css/modules/**` | `assets/css/app.css` |
+| `resources/ts/**` | `assets/js/main.js` |
+| `blocks/<name>/*.tsx`, `render.php`, `style.css` | `blocks/<name>/index.js`, `index.asset.php` |
+| Block view scripts (`view.ts`) | `blocks/<name>/view.js` (+ `view.css` when present) |
+
+After changing CSS, TS, or block sources → **`npm run build`** or **`npm run watch`**.
+
+### Project layout
+
+| Path | Role |
+|------|------|
+| `theme.json` | Global colors, typography, spacing, `templateParts`, block styles |
+| `style.css` | Theme metadata (required by WordPress) |
+| `functions.php` | Bootstrap; loads `inc/**`, registers blocks |
+| `templates/*.html` | Block templates (Site Editor) |
+| `parts/*.html` | Template parts (header, footer) |
+| `inc/` | PHP by concern — see [`inc/README.md`](./inc/README.md) |
+| `blocks/` | Theme blocks (`block.json` + TS + `render.php`) |
+| `resources/css/` | Tailwind source + CSS modules |
+| `resources/ts/` | Front-end TypeScript (`main.ts` entry) |
+| `docs/` | Feature docs (hooks, modal, blocks, search, comments) |
+| `scripts/` | Build, scaffold, and clone tooling |
+
+### PHP load order (`functions.php`)
+
+```
+inc/bootstrap/constants.php
+vendor/autoload.php          (if present)
+inc/setup/theme-support.php
+inc/setup/elementor.php
+inc/navigation/navigation.php
+inc/navigation/header-block-woocommerce.php
+inc/navigation/class-nextora-header-block-walker.php
+inc/features/spotlight-search/load.php
+inc/comments/comments.php
+inc/assets/assets.php
+blocks/blocks.php
+```
+
+### Front-end boot order (`resources/ts/main.ts`)
+
+1. `initHeaderSticky()` — sticky `nextora/header`
+2. `initHeaderNavigation()` — mobile nav portal + GSAP drawer
+3. `mountHeaderMiniCartPortalToBody()` — Woo mini cart portal
+4. `mountSpotlightSearchPortalToBody()` — spotlight search portal
+5. `initModals()` / `attachModalGlobals()`
+6. `bindHeaderMiniCartAfterAjaxAdd()`
+7. `initSpotlightSearch()`
+8. `initArticleShare()` — copy-link for `[data-nextora-article-share]` markup
+9. `initCommentTiptap()`
+
+### Naming conventions
+
+| Kind | Pattern | Example |
+|------|---------|---------|
+| Text domain / slug | `nextora` | `__('…', 'nextora')` |
+| PHP functions | `nextora_*` | `nextora_get_*()` |
+| PHP constants | `NEXTORA_*` | `NEXTORA_DIR`, `NEXTORA_URI`, `NEXTORA_VERSION` |
+| PSR-4 namespace | `Nextora\` | `Nextora\Core\ThemeConfig` |
+| Block names | `nextora/<slug>` | `nextora/header` |
+
+### Theme blocks
+
+| Block | Purpose |
+|-------|---------|
+| `nextora/header` | Site header — logo, nav, search, Woo utilities |
+| `nextora/spotlight-search` | Standalone live search modal |
+| `nextora/hero-section` | Hero band |
+| `nextora/call-to-action` | CTA band |
+| `nextora/post-grid` | Post grid with pagination |
+| `nextora/image-gallery-grid` | Image grid + scroll reveal |
+| `nextora/image-gallery-slide` | Swiper carousel |
+
+Standards: [`docs/blocks.md`](./docs/blocks.md).
+
+### Integrations
+
+- **WooCommerce** — theme support in `inc/setup/theme-support.php`; mini cart in `nextora/header`
+- **GiftFlow** — `add_theme_support( 'giftflow' )`; campaign UI from the plugin
+- **Elementor** — `inc/setup/elementor.php`; editor settings + separate core block assets
+
+---
+
+## Git workflow
+
+Remote: `origin` → `github.com:miketropi/nextora`
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Stable / release-ready |
+| `develop` | Integration branch for ongoing work |
+| `feature/*`, `fix/*`, … | Short-lived topic branches |
+
+### Typical flow
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/my-change
+
+# … edit source …
+npm run build
+npm run typecheck
+composer phpstan
+composer test
+
+git add .
+git commit -m "Add: short description of why"
+git push -u origin feature/my-change
+gh pr create --base develop --title "…" --body "…"
+```
+
+### Before opening a PR
+
+- [ ] Ran `npm run build` if `resources/**` or `blocks/**` (TS/TSX/CSS) changed
+- [ ] `npm run typecheck` passes
+- [ ] `composer phpstan` passes
+- [ ] Generated `assets/` and `blocks/*/index.js` match source (if tracked)
+- [ ] Site Editor templates/parts changes tested in the editor
+
+### Merging to `main`
+
+Merge `develop` → `main` when a release slice is ready. Keep `main` deployable.
+
+---
+
+## Scripts reference
+
+### npm scripts
+
+| Command | What it does |
+|---------|----------------|
+| `npm run build` | Full build: CSS + TS + blocks |
+| `npm run build:css` | PostCSS/Tailwind → `assets/css/app.css` |
+| `npm run build:ts` | esbuild (minified) → `assets/js/main.js` |
+| `npm run build:blocks` | esbuild all `blocks/*/index.tsx` → `index.js` + `index.asset.php` |
+| `npm run watch` | Concurrent watch: CSS + TS + blocks |
+| `npm run watch:css` | PostCSS watch |
+| `npm run watch:ts` | esbuild watch + sourcemaps |
+| `npm run watch:blocks` | Block esbuild watch |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint:php` | Alias for `composer phpstan` |
+| `npm run gen` | Scaffold a new block |
+| `npm run theme:clone` | Copy theme to sibling folder |
+
+Pass extra args after `--`:
+
+```bash
+npm run gen -- --name=my-block --ns nextora
+npm run theme:clone -- --slug=my-shop --name="My Shop"
+```
+
+#### `npm run gen` — block scaffold
 
 | Flag | Required | Default | Description |
 |------|----------|---------|-------------|
-| `--name` | **Yes** | — | Folder name and block slug segment. **Pattern:** `^[a-z][a-z0-9-]*$` (lowercase, hyphens, must start with a letter). Creates `blocks/<name>/`. |
-| `--title` | No | Derived from `--name` | Human-readable block title in the inserter (words capitalized from slug, e.g. `hero-banner` → `Hero Banner`). |
-| `--category` | No | `text` | WordPress block category slug in `block.json` (e.g. `text`, `design`, `widgets`, `embed`). |
-| `--ns` | No | `mytheme` | Block **namespace** (`name` becomes `<ns>/<name>`), `textdomain` in `block.json`, and the text domain passed to `__()` in the generated `edit.tsx`. **For this theme, pass `--ns nextora`** so the block name and i18n match the theme. |
+| `--name` | **Yes** | — | Block folder + slug (`^[a-z][a-z0-9-]*$`) |
+| `--title` | No | Title Case from slug | Inserter label |
+| `--category` | No | `text` (`theme` when `--ns nextora`) | Block category |
+| `--ns` | No | `mytheme` | Namespace + textdomain → `<ns>/<name>` |
 
-If `blocks/<name>/` already exists, the script exits with an error.
+#### `npm run theme:clone` — duplicate theme
 
-#### Examples
+| Flag | Required | Default | Description |
+|------|----------|---------|-------------|
+| `--slug` | **Yes** | — | New folder under `wp-content/themes/` |
+| `--name` | **Yes** | — | Human-readable theme name |
+| `--namespace` | No | PascalCase from slug | PHP namespace |
+
+### Composer scripts
+
+| Command | What it does |
+|---------|----------------|
+| `composer install` | Dev deps + PSR-4 autoload |
+| `composer phpstan` | Static analysis |
+| `composer test` | PHPUnit |
+
+---
+
+## Theme constants & globals
+
+| Constant | Defined in | Purpose |
+|----------|------------|---------|
+| `NEXTORA_VERSION` | `inc/bootstrap/constants.php` | Theme version |
+| `NEXTORA_DIR` | `inc/bootstrap/constants.php` | Absolute theme path |
+| `NEXTORA_URI` | `inc/bootstrap/constants.php` | Theme URL |
+
+| Global | Feature |
+|--------|---------|
+| `window.nextoraNav` | Mobile nav labels |
+| `window.nextoraHeaderSticky` | Sticky header |
+| `window.nextoraModal` | Modal layer |
+| `window.nextoraSpotlight` | Spotlight search |
+| `window.nextoraComments` | Tiptap comment field |
+
+Hooks and filters: [`docs/extensibility.md`](./docs/extensibility.md).
+
+---
+
+## Tailwind and design tokens
+
+WordPress exposes presets as CSS variables (`--wp--preset--color--primary`, etc.). In `resources/css/app.css`, `@theme` maps Tailwind utilities to those variables.
+
+Extend colors/fonts in both **`theme.json`** and **`@theme`** so editor and front stay aligned.
+
+CSS import order: **base → components → prose → overrides** (see `resources/css/app.css` header).
+
+---
+
+## Quality checks
 
 ```bash
-# Minimal (remember to set namespace for Nextora)
-npm run gen -- --name hero-banner --ns nextora
-
-# Full options
-npm run gen -- --name hero-banner --title "Hero banner" --category design --ns nextora
-
-# Equivalent without npm
-node ./scripts/gen-block.mjs --name hero-banner --ns nextora
+npm run build
+npm run typecheck
+composer phpstan
+composer test
 ```
 
-#### Generated files
-
-For `blocks/<name>/` the script writes:
-
-| File | Role |
-|------|------|
-| `block.json` | `apiVersion` 3, `editorScript`, `render`, default **supports** (align wide/full, color, spacing, typography), sample `heading` / `content` attributes |
-| `index.tsx` | `registerBlockType` from metadata, dynamic block (`save: () => null`) |
-| `edit.tsx` | `RichText` heading + body, `InspectorControls` panel, TypeScript `Attributes` / `EditProps` |
-| `render.php` | Server render with `get_block_wrapper_attributes()`, `wp_kses` / `wp_kses_post` |
-
-**Not** generated: `index.js` / `index.asset.php` — run **`npm run build:blocks`** (or **`npm run build`**) after scaffolding.
-
-#### Next steps
-
-1. `npm run build:blocks` (or `npm run build`)
-2. Reload the block editor — the block appears under the category you set
-3. Adjust `edit.tsx`, `render.php`, and `block.json` as needed
+---
 
 ## Further reading
 
-- [Bridging the gap: Hybrid themes](https://developer.wordpress.org/news/2024/12/bridging-the-gap-hybrid-themes/) (WordPress Developer Blog)
-- [Theme handbook: Global settings & styles](https://developer.wordpress.org/themes/global-settings-and-styles/)
-- In-repo: [`AGENTS.md`](./AGENTS.md), [`inc/README.md`](./inc/README.md), [`docs/`](./docs/)
+| Doc | Topic |
+|-----|-------|
+| [`AGENTS.md`](./AGENTS.md) | Agent briefing |
+| [`inc/README.md`](./inc/README.md) | PHP module layout |
+| [`docs/blocks.md`](./docs/blocks.md) | Block standards |
+| [`docs/extensibility.md`](./docs/extensibility.md) | Hooks and filters |
+| [`docs/modal.md`](./docs/modal.md) | Modal layer |
+| [`docs/spotlight-search.md`](./docs/spotlight-search.md) | Live search |
+| [`docs/comments-tiptap.md`](./docs/comments-tiptap.md) | Comment editor |
+| [Block themes handbook](https://developer.wordpress.org/themes/block-themes/) | WordPress block themes |
+| [Global settings & styles](https://developer.wordpress.org/themes/global-settings-and-styles/) | `theme.json` |
+
+---
 
 ## License
 
