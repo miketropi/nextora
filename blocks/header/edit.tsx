@@ -92,7 +92,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
         <PanelBody title={__('Logo', 'nextora')} initialOpen>
           <p className="components-help-text" style={{ marginTop: 0 }}>
             {__(
-              'Image: uses the Customizer site logo if set, otherwise the uploaded image below. Text: always uses the text below (or the site title if empty), even when a site logo exists.',
+              'Image: uses the logo uploaded below (saved on this block), or the site title when none is set. Text: uses the text below (or the site title if empty).',
               'nextora'
             )}
           </p>
@@ -138,7 +138,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             onChange={(v) => setAttributes({ logoWidth: v })}
             min={40}
             max={400}
-            help={__('Applies to the site logo and the fallback image.', 'nextora')}
+            help={__('Applies to the uploaded logo image.', 'nextora')}
           />
           <TextControl
             label={__('Home link (optional)', 'nextora')}

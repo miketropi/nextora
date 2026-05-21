@@ -119,6 +119,58 @@ if ( ! function_exists( 'nextora_header_block_sanitize_inner_max_width' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_header_block_render_logo_image' ) ) {
+	/**
+	 * Logo `<img>` from a block-uploaded media attachment.
+	 *
+	 * @param int $attachment_id Attachment post ID.
+	 * @param int $max_width     Max display width in pixels.
+	 */
+	function nextora_header_block_render_logo_image( int $attachment_id, int $max_width ): string {
+		if ( $attachment_id <= 0 || ! wp_attachment_is_image( $attachment_id ) ) {
+			return '';
+		}
+
+		$img = wp_get_attachment_image(
+			$attachment_id,
+			'full',
+			false,
+			array(
+				'class'    => 'nextora-header-block__logo-img',
+				'style'    => sprintf( 'max-width:%dpx;width:auto;height:auto;', $max_width ),
+				'loading'  => 'eager',
+				'decoding' => 'async',
+			)
+		);
+
+		return is_string( $img ) ? $img : '';
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_get_block_logo_attachment_id' ) ) {
+	/**
+	 * Resolve the block-uploaded logo attachment ID from saved attributes.
+	 *
+	 * Prefer `logoImageId`; fall back to resolving `logoImageUrl` when the ID was not persisted.
+	 *
+	 * @param array<string, mixed> $atts Block attributes.
+	 */
+	function nextora_header_block_get_block_logo_attachment_id( array $atts ): int {
+		$id = isset( $atts['logoImageId'] ) ? (int) $atts['logoImageId'] : 0;
+		if ( $id > 0 && wp_attachment_is_image( $id ) ) {
+			return $id;
+		}
+
+		$url = isset( $atts['logoImageUrl'] ) && is_string( $atts['logoImageUrl'] ) ? trim( $atts['logoImageUrl'] ) : '';
+		if ( '' === $url ) {
+			return 0;
+		}
+
+		$resolved = attachment_url_to_postid( $url );
+		return $resolved > 0 && wp_attachment_is_image( $resolved ) ? $resolved : 0;
+	}
+}
+
 if ( ! function_exists( 'nextora_header_block_render_simple_search_form' ) ) {
 	/**
 	 * HTML5 search markup for header “simple” mode: underline field plus icon-only submit.
@@ -187,46 +239,34 @@ $render_logo = static function ( array $atts ): string {
 
 	$logo_type = isset( $atts['logoType'] ) && 'text' === $atts['logoType'] ? 'text' : 'image';
 
+	$block_logo_id  = 'image' === $logo_type ? nextora_header_block_get_block_logo_attachment_id( $atts ) : 0;
+	$block_logo_url = isset( $atts['logoImageUrl'] ) && is_string( $atts['logoImageUrl'] ) ? trim( $atts['logoImageUrl'] ) : '';
+	$logo_text      = isset( $atts['logoText'] ) && is_string( $atts['logoText'] ) ? trim( $atts['logoText'] ) : '';
+	$logo_label     = '' !== $logo_text ? $logo_text : get_bloginfo( 'name' );
+	$logo_img_style = sprintf( 'max-width:%dpx;width:auto;height:auto;', $logo_w );
+
 	ob_start();
 	?>
 	<div class="nextora-header-block__logo">
 		<a class="nextora-header-block__logo-link" href="<?php echo esc_url( $logo_href ); ?>" rel="home">
 			<?php if ( 'text' === $logo_type ) : ?>
-				<span class="nextora-header-block__logo-text">
-					<?php
-					$text = isset( $atts['logoText'] ) && is_string( $atts['logoText'] ) ? trim( $atts['logoText'] ) : '';
-					echo esc_html( '' !== $text ? $text : get_bloginfo( 'name' ) );
-					?>
-				</span>
-			<?php elseif ( function_exists( 'has_custom_logo' ) && has_custom_logo() ) : ?>
+				<span class="nextora-header-block__logo-text"><?php echo esc_html( $logo_label ); ?></span>
+			<?php elseif ( $block_logo_id > 0 ) : ?>
 				<?php
-				echo wp_get_attachment_image(
-					(int) get_theme_mod( 'custom_logo' ),
-					'full',
-					false,
-					array(
-						'class'   => 'nextora-header-block__logo-img',
-						'style'   => sprintf( 'max-width:%dpx;height:auto;', $logo_w ),
-						'loading' => 'eager',
-					)
-				);
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in wp_get_attachment_image().
+				echo nextora_header_block_render_logo_image( $block_logo_id, $logo_w );
 				?>
-			<?php elseif ( 'image' === $logo_type && ! empty( $atts['logoImageUrl'] ) && is_string( $atts['logoImageUrl'] ) ) : ?>
+			<?php elseif ( '' !== $block_logo_url ) : ?>
 				<img
 					class="nextora-header-block__logo-img"
-					src="<?php echo esc_url( $atts['logoImageUrl'] ); ?>"
-					alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>"
-					style="<?php echo esc_attr( sprintf( 'max-width:%dpx;height:auto;', $logo_w ) ); ?>"
+					src="<?php echo esc_url( $block_logo_url ); ?>"
+					alt="<?php echo esc_attr( $logo_label ); ?>"
+					style="<?php echo esc_attr( $logo_img_style ); ?>"
 					loading="eager"
 					decoding="async"
 				/>
 			<?php else : ?>
-				<span class="nextora-header-block__logo-text">
-					<?php
-					$text = isset( $atts['logoText'] ) && is_string( $atts['logoText'] ) ? trim( $atts['logoText'] ) : '';
-					echo esc_html( '' !== $text ? $text : get_bloginfo( 'name' ) );
-					?>
-				</span>
+				<span class="nextora-header-block__logo-text"><?php echo esc_html( $logo_label ); ?></span>
 			<?php endif; ?>
 		</a>
 	</div>
@@ -408,7 +448,7 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 		<?php endif; ?>
 
 		<?php
-		if ( $show_cart && $woo_on() && function_exists( 'wc_get_cart_url' ) ) :
+		if ( $show_cart && function_exists( 'wc_get_cart_url' ) ) :
 			$cart     = ( function_exists( 'WC' ) && WC() && isset( WC()->cart ) ) ? WC()->cart : null;
 			$cart_ok  = $cart instanceof \WC_Cart;
 			$rest_ssr = defined( 'REST_REQUEST' ) && REST_REQUEST;
@@ -511,7 +551,7 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 					<span class="nextora-header-block__account-icon" aria-hidden="true">
 						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.7"/></svg>
 					</span>
-					<?php if ( ! isset( $atts['myAccountIconOnly'] ) || ! (bool) $atts['myAccountIconOnly'] ) : ?>
+					<?php if ( $show_acct_text ) : ?>
 						<span class="nextora-header-block__account-text">
 							<?php echo is_user_logged_in() ? esc_html( wp_get_current_user()->display_name ) : esc_html__( 'Sign in', 'nextora' ); ?>
 						</span>
@@ -566,13 +606,6 @@ $raw_border = isset( $attributes['bottomBorderColor'] ) ? (string) $attributes['
 $san_border = nextora_header_block_sanitize_border_color( $raw_border );
 if ( ! empty( $attributes['showBottomBorder'] ) && '' !== $san_border ) {
 	$wrapper_attributes = nextora_header_block_append_border_color_to_wrapper( $wrapper_attributes, $san_border );
-}
-
-$nav_style_fragment = function_exists( 'nextora_header_block_nav_color_inline_declarations' )
-	? nextora_header_block_nav_color_inline_declarations( $attributes )
-	: '';
-if ( '' !== $nav_style_fragment ) {
-	$wrapper_attributes = nextora_header_block_append_inline_style_declarations( $wrapper_attributes, $nav_style_fragment );
 }
 
 $open_label  = __( 'Open menu', 'nextora' );
