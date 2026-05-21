@@ -22,7 +22,7 @@
 		}
 	},
 	"scripts": {
-		"phpstan": "phpstan analyse --memory-limit=512M",
-		"test": "phpunit"
+		"phpstan": "@php vendor/bin/phpstan analyse --memory-limit=1G",
+		"test": "@php vendor/bin/phpunit"
 	}
 }
