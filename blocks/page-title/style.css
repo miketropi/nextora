@@ -1,0 +1,93 @@
+.wp-block-nextora-page-title,
+.nextora-page-title {
+  position: relative;
+  overflow: clip;
+  display: grid;
+  align-items: center;
+  box-sizing: border-box;
+  padding: var(--wp--preset--spacing--xl, 4rem) var(--wp--preset--spacing--lg, 1.5rem);
+  min-height: 268px;
+  color: var(--wp--preset--color--contrast, #0f172a);
+  background: var(--wp--preset--color--base, #fff);
+  --nextora-page-title-overlay-color: var(--wp--preset--color--contrast, #0f172a);
+  --nextora-page-title-overlay-opacity: 0.3;
+}
+
+
+
+.nextora-page-title__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transform-origin: center center;
+  will-change: transform;
+  --nextora-page-title-parallax-progress: 0;
+  --nextora-page-title-parallax-travel: 0px;
+  --nextora-page-title-parallax-scale-delta: 0.08;
+}
+
+/* progress driven by scroll direction: down = zoom in, up = return to scale 1 */
+.nextora-page-title--parallax .nextora-page-title__bg {
+  inset: -8% 0;
+  width: 100%;
+  height: 116%;
+  transform: translate3d(
+      0,
+      calc(var(--nextora-page-title-parallax-progress, 0) * var(--nextora-page-title-parallax-travel, 0px)),
+      0
+    )
+    scale(calc(1 + var(--nextora-page-title-parallax-progress, 0) * var(--nextora-page-title-parallax-scale-delta, 0.08)));
+}
+
+.nextora-page-title__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-color: var(--nextora-page-title-overlay-color);
+  opacity: var(--nextora-page-title-overlay-opacity);
+}
+
+.nextora-page-title--scroll-reveal.nextora-page-title--reveal-pending:not(.nextora-page-title--ready) .nextora-page-title__inner {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+/* No-JS / script failure: show content once loading finishes. */
+.nextora-page-title--scroll-reveal:not(.nextora-page-title--reveal-pending) .nextora-page-title__inner,
+.nextora-page-title--scroll-reveal.nextora-page-title--ready .nextora-page-title__inner {
+  opacity: 1;
+  transform: none;
+}
+
+.nextora-page-title__bg--video video,
+.nextora-page-title__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nextora-page-title__inner {
+  position: relative;
+  z-index: 2;
+  width: min(100%, var(--wp--style--global--wide-size, 1200px));
+  margin-inline: auto;
+}
+
+.nextora-page-title .wp-block-breadcrumbs,
+.nextora-page-title .breadcrumbs,
+.nextora-page-title nav[aria-label="Breadcrumb"] {
+  margin-bottom: 0.75rem;
+  font-size: var(--wp--preset--font-size--sm, 0.875rem);
+  color: inherit;
+  opacity: 0.82;
+}
+
+.nextora-page-title .wp-block-post-title,
+.nextora-page-title h1 {
+  margin: 0;
+  color: inherit;
+}
