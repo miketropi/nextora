@@ -55,7 +55,8 @@ disable-model-invocation: true
 | [`blocks/image-gallery-slide/`](../../../blocks/image-gallery-slide/) | Swiper init / loading |
 | [`blocks/header/`](../../../blocks/header/) | Utilities, tokens via `currentColor` |
 | [`blocks/scrolling-promotion/`](../../../blocks/scrolling-promotion/) | CSS-only loop, `render.php`, repeater |
-| [`docs/blocks/Arc Gallery Section.md`](../../../docs/blocks/Arc%20Gallery%20Section.md) §17 | Arc gallery (planned): `arc-math.ts` + PHP mirror, `view.ts` for scroll reveal only |
+| [`docs/blocks/Arc Gallery Section.md`](../../../docs/blocks/Arc%20Gallery%20Section.md) §17 | Arc gallery: `arc-math.ts` + PHP mirror, `view.ts` for scroll reveal only |
+| [`docs/blocks/Our Team Section Block.md`](../../../docs/blocks/Our%20Team%20Section%20Block.md) §15 | Team section (planned): Swiper via `view.ts`, `members[]` repeater preferred over InnerBlocks |
 
 ## Checklist
 

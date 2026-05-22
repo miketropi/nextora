@@ -37,3 +37,8 @@ $arc_gallery_styles = __DIR__ . '/arc-gallery-section/register-styles.php';
 if ( is_readable( $arc_gallery_styles ) ) {
 	require_once $arc_gallery_styles;
 }
+
+$team_section_styles = __DIR__ . '/team-section/register-styles.php';
+if ( is_readable( $team_section_styles ) ) {
+	require_once $team_section_styles;
+}

@@ -53,6 +53,23 @@
 	gap: 4px;
 }
 
+.nextora-scrolling-promotion__inspector-media {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 6px;
+}
+
+.nextora-scrolling-promotion__inspector-media-preview {
+	display: block;
+	max-height: 48px;
+	width: auto;
+	max-width: 100%;
+	object-fit: contain;
+	border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+	border-radius: 2px;
+}
+
 @keyframes nextora-marquee-scroll-left {
 	0% {
 		transform: translateX(0);

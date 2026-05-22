@@ -40,15 +40,29 @@ This document specifies a Gutenberg block that renders a **continuous horizontal
 
 | Attribute | Type | Default | Control | Description |
 |---|---|---|---|---|
-| `items` | `array` | `[{"text":"Your promotion here"}]` | Repeater UI | Array of objects, each with a `text` (string) property. These are the messages that scroll. |
+| `items` | `array` | `[{"itemType":"text","text":"Your promotion here",...}]` | Repeater UI | Array of promotion items (text, image, or both). |
+| `imageHeight` | `number` | `32` | RangeControl (16–120) | Height in px for image / text+image items |
 
 Each item in the `items` array:
 
 ```json
 {
-  "text": "Free shipping on all orders over $50"
+  "itemType": "text",
+  "text": "Free shipping on all orders over $50",
+  "imageId": 0,
+  "imageUrl": "",
+  "imageAlt": ""
 }
 ```
+
+| `itemType` | Values | Description |
+|---|---|---|
+| `itemType` | `"text"` \| `"image"` \| `"text-image"` | Text only, logo/image only, or label beside image |
+| `imageId` | `number` | Attachment ID from the media library |
+| `imageUrl` | `string` | Fallback URL when ID is missing |
+| `imageAlt` | `string` | Alt text for image items (falls back to attachment alt) |
+
+Supported image MIME types in the editor: JPEG, PNG, GIF, WebP, AVIF, SVG (when SVG uploads are enabled).
 
 ### 3.2 Animation Attributes
 

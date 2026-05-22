@@ -80,6 +80,7 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 | `nextora/arc-gallery-section` | Arc layout + `arc-math.ts` / PHP mirror, live editor preview, `view.ts` scroll reveal |
 | `nextora/image-gallery-grid` | Scroll reveal (GSAP) |
 | `nextora/image-gallery-slide` | Swiper init / loading |
+| `nextora/team-section` | Swiper member carousel, `members[]` repeater, scroll reveal; see [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md) |
 
 ## Related docs
 
@@ -87,3 +88,4 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 - [`docs/modal.md`](./modal.md), [`docs/spotlight-search.md`](./spotlight-search.md) — shared UI patterns.
 - Skill: `.cursor/skills/nextora-add-theme-block/SKILL.md`
 - Skill: `.cursor/skills/nextora-theme-styling-and-tokens/SKILL.md`
+- Planned: [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md) (§15 Nextora addendum — not implemented)
