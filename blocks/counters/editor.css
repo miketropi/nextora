@@ -1,0 +1,45 @@
+/**
+ * Counters — editor-only styles (inspector repeater).
+ */
+
+.nextora-counters__inspector-items {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.nextora-counters__inspector-item {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	background: #fff;
+}
+
+.nextora-counters__inspector-item-fields {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 8px;
+}
+
+.nextora-counters__inspector-item-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+@media (max-width: 782px) {
+	.nextora-counters__inspector-item-fields {
+		grid-template-columns: 1fr;
+	}
+}
+
+.nextora-counters__font-size-control + .nextora-counters__font-size-control {
+	margin-top: 16px;
+}
+
+.nextora-counters__font-size-control .components-font-size-picker__header {
+	display: none;
+}
