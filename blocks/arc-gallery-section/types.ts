@@ -17,6 +17,7 @@ export interface ArcGallerySectionAttributes {
 	galleryOverflow: boolean;
 	eyebrowText: string;
 	headingText: string;
+	descriptionText: string;
 	headingLevel: number;
 	textAlign: string;
 	contentMaxWidth: string;

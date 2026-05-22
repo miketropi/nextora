@@ -64,6 +64,7 @@ This document specifies a Gutenberg block that renders a **creative section with
 |---|---|---|---|---|
 | `eyebrowText` | `string` | `""` | RichText | Small text above the heading (eyebrow) |
 | `headingText` | `string` | `""` | RichText | Main heading text |
+| `descriptionText` | `string` | `""` | RichText | Supporting copy below the heading (bold, italic, links) |
 | `headingLevel` | `number` | `2` | SelectControl (1–6) | Heading HTML tag level (h1–h6) |
 | `textAlign` | `string` | `"center"` | AlignmentToolbar | Text alignment: `"left"`, `"center"`, `"right"` |
 | `contentMaxWidth` | `string` | `"700px"` | TextControl | Max-width of the text + buttons area |

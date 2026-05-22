@@ -356,8 +356,9 @@ $gallery_label = sprintf(
 	count( $images ),
 );
 
-$eyebrow_html = isset( $attributes['eyebrowText'] ) ? (string) $attributes['eyebrowText'] : '';
-$heading_html = isset( $attributes['headingText'] ) ? (string) $attributes['headingText'] : '';
+$eyebrow_html      = isset( $attributes['eyebrowText'] ) ? (string) $attributes['eyebrowText'] : '';
+$heading_html      = isset( $attributes['headingText'] ) ? (string) $attributes['headingText'] : '';
+$description_html  = isset( $attributes['descriptionText'] ) ? (string) $attributes['descriptionText'] : '';
 
 $content_attrs = 'class="nextora-arc-gallery__content" style="max-width:' . esc_attr( $content_max ) . ';"';
 if ( $enable_scroll ) {
@@ -420,6 +421,12 @@ if ( $enable_scroll ) {
 				wp_kses_post( $heading_html ),
 			);
 			?>
+		<?php endif; ?>
+
+		<?php if ( '' !== trim( wp_strip_all_tags( $description_html ) ) ) : ?>
+			<div class="nextora-arc-gallery__description">
+				<?php echo wp_kses_post( $description_html ); ?>
+			</div>
 		<?php endif; ?>
 
 		<?php
