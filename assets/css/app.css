@@ -373,6 +373,10 @@
     width: calc(var(--spacing) * 12);
     height: calc(var(--spacing) * 12);
   }
+  .size-full {
+    width: 100%;
+    height: 100%;
+  }
   .h-full {
     height: 100%;
   }
