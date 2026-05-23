@@ -146,7 +146,7 @@
 
 .nextora-testimonial-carousel__slide-author-line {
 	margin: 0;
-	font-size: 0.875rem;
+	font-size: 1rem;
 	color: var(
 		--nextora-testimonial-slide-author-color,
 		var(--nextora-testimonial-author-color, var(--wp--preset--color--secondary, #525252))
@@ -172,7 +172,7 @@
 }
 
 .nextora-testimonial-carousel__trust-text {
-	font-size: 0.8125rem;
+	font-size: 0.9rem;
 	font-weight: 500;
 	color: var(--nextora-testimonial-trust-color, var(--wp--preset--color--secondary, #525252));
 }

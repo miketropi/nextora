@@ -16,7 +16,7 @@
 		--nextora-arc-padding-bottom,
 		var(--wp--preset--spacing--50, clamp(2.5rem, 8vw, 4.5rem))
 	);
-	font-family: var(--wp--preset--font-family--sans, inherit);
+	/* font-family: var(--wp--preset--font-family--sans, inherit); */
 	overflow: hidden;
 	box-sizing: border-box;
 	border: none;
@@ -99,7 +99,7 @@
 }
 
 .nextora-arc-gallery__heading {
-	font-family: var(--wp--preset--font-family--sans, inherit);
+	/* font-family: var(--wp--preset--font-family--sans, inherit); */
 	font-size: var(--wp--preset--font-size--x-large, clamp(1.5rem, 3.5vw, 2.125rem));
 	font-weight: 600;
 	line-height: 1.2;
