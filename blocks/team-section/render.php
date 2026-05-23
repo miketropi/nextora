@@ -29,23 +29,24 @@ if ( ! function_exists( 'nextora_team_section_resolve_color' ) ) {
 	}
 }
 
-if ( ! function_exists( 'nextora_team_section_social_icon_svg' ) ) {
+if ( ! function_exists( 'nextora_team_section_social_platform_label' ) ) {
 	/**
-	 * Inline SVG for a social platform (18×18, currentColor).
+	 * Human-readable label for a social platform slug.
 	 */
-	function nextora_team_section_social_icon_svg( string $platform ): string {
-		$paths = array(
-			'linkedin'  => '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-13h4v1.5"/><path d="M2 9h4v13H2z"/><circle cx="4" cy="4" r="2"/>',
-			'twitter'   => '<path d="M22 4s-.7 2.1-2 3.5c1.6 1.4 3.3 4.3 3.3 4.3s-2.1-.9-4.1-1.2c-1.8 2.4-4.8 3.6-7.2 3.4-3.5-.2-6.6-2.4-6.6-6.1 0-1.5.6-2.8 1.6-3.8-5.5.3-9.2 4.8-9.2 4.8S4.5 3 10 6.5c1.2-4.8 5.5-7.5 10-6.5z"/>',
-			'github'    => '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 18 4.77 5.07 5.07 0 0 0 17.91 1S16.73.65 13 2.48a13.38 13.38 0 0 0-7 0C2.27.65 1.09 1 1.09 1A5.07 5.07 0 0 0 0 4.77 5.44 5.44 0 0 0 1.5 9.91c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 7 20.13V22"/>',
-			'instagram' => '<rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>',
-			'facebook'  => '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
-			'website'   => '<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
-			'email'     => '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="m22 6-10 7L2 6"/>',
+	function nextora_team_section_social_platform_label( string $platform ): string {
+		$labels = array(
+			'linkedin'  => __( 'LinkedIn', 'nextora' ),
+			'twitter'   => __( 'Twitter / X', 'nextora' ),
+			'github'    => __( 'GitHub', 'nextora' ),
+			'instagram' => __( 'Instagram', 'nextora' ),
+			'facebook'  => __( 'Facebook', 'nextora' ),
+			'website'   => __( 'Website', 'nextora' ),
+			'email'     => __( 'Email', 'nextora' ),
 		);
-		$key  = sanitize_key( $platform );
-		$body = isset( $paths[ $key ] ) ? $paths[ $key ] : $paths['website'];
-		return '<svg class="nextora-team-section__social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' . $body . '</svg>';
+
+		$key = sanitize_key( $platform );
+
+		return isset( $labels[ $key ] ) ? $labels[ $key ] : ucfirst( $key );
 	}
 }
 
@@ -195,9 +196,9 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 				if ( '' === $url ) {
 					continue;
 				}
-				$label = ucfirst( $platform );
-				$out  .= '<a class="nextora-team-section__card-social-link" href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr( sprintf( /* translators: 1: platform, 2: member name */ __( '%1$s profile of %2$s', 'nextora' ), $label, $name ) ) . '">';
-				$out  .= nextora_team_section_social_icon_svg( $platform );
+				$label = nextora_team_section_social_platform_label( $platform );
+				$out  .= '<a class="nextora-team-section__card-social-link" href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">';
+				$out  .= esc_html( $label );
 				$out  .= '</a>';
 			}
 			$out .= '</div>';
@@ -282,10 +283,6 @@ if ( ! in_array( $pag_type, array( 'bullets', 'fraction', 'progressbar' ), true 
 	$pag_type = 'bullets';
 }
 $show_arrows = ! empty( $attributes['showArrows'] );
-$arrow_style = isset( $attributes['arrowStyle'] ) ? (string) $attributes['arrowStyle'] : 'minimal';
-if ( ! in_array( $arrow_style, array( 'minimal', 'circle', 'square' ), true ) ) {
-	$arrow_style = 'minimal';
-}
 $free_mode   = ! empty( $attributes['freeMode'] );
 $grab_cursor = ! isset( $attributes['grabCursor'] ) || (bool) $attributes['grabCursor'];
 
@@ -365,7 +362,6 @@ $wrapper_classes = array(
 );
 if ( $show_arrows ) {
 	$wrapper_classes[] = 'nextora-team-section--arrows';
-	$wrapper_classes[] = 'nextora-team-section--arrow-' . sanitize_html_class( $arrow_style );
 }
 
 $wrapper_classes = (array) apply_filters(
@@ -378,6 +374,9 @@ $wrapper_extra = array(
 	'class' => implode( ' ', $wrapper_classes ),
 	'style' => $inline_style,
 );
+if ( $enable_scroll ) {
+	$wrapper_extra['data-nextora-scroll-reveal'] = '1';
+}
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 $wrapper_attributes = (string) apply_filters(
@@ -386,12 +385,10 @@ $wrapper_attributes = (string) apply_filters(
 	$attributes,
 );
 
-$reveal_attr = $enable_scroll ? ' data-nextora-scroll-reveal="1"' : '';
-
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<div class="nextora-team-section__inner">
-		<header class="nextora-team-section__header nextora-team-section__header--<?php echo esc_attr( $header_layout ); ?>"<?php echo $reveal_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
+		<header class="nextora-team-section__header nextora-team-section__header--<?php echo esc_attr( $header_layout ); ?>">
 			<div class="nextora-team-section__header-main">
 				<?php if ( '' !== trim( wp_strip_all_tags( $eyebrow_html ) ) ) : ?>
 					<p class="nextora-team-section__eyebrow"><?php echo wp_kses_post( $eyebrow_html ); ?></p>

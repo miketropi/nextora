@@ -81,6 +81,7 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 | `nextora/image-gallery-grid` | Scroll reveal (GSAP) |
 | `nextora/image-gallery-slide` | Swiper init / loading |
 | `nextora/team-section` | Swiper member carousel, `members[]` repeater, scroll reveal; see [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md) |
+| `nextora/testimonial-carousel` | Fade testimonial carousel, `testimonials[]` repeater, trust avatars; see [`docs/blocks/Testimonial Carousel.md`](./blocks/Testimonial%20Carousel.md) |
 
 ## Related docs
 
@@ -88,4 +89,4 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 - [`docs/modal.md`](./modal.md), [`docs/spotlight-search.md`](./spotlight-search.md) — shared UI patterns.
 - Skill: `.cursor/skills/nextora-add-theme-block/SKILL.md`
 - Skill: `.cursor/skills/nextora-theme-styling-and-tokens/SKILL.md`
-- Planned: [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md) (§15 Nextora addendum — not implemented)
+- Block specs: [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md), [`docs/blocks/Testimonial Carousel.md`](./blocks/Testimonial%20Carousel.md)

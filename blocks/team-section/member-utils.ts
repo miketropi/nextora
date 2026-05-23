@@ -18,15 +18,15 @@ export function normalizeMembers(members: TeamMember[] | undefined): TeamMember[
 		const fy = typeof focal?.y === 'number' ? focal.y : 0.3;
 
 		const tags = Array.isArray(raw?.tags)
-			? raw.tags.map((t) => (typeof t === 'string' ? t.trim() : '')).filter(Boolean)
+			? raw.tags.map((t) => (typeof t === 'string' ? t : ''))
 			: [];
 
 		const socialLinks: TeamSocialLink[] = Array.isArray(raw?.socialLinks)
 			? raw.socialLinks
-					.filter((l) => l && typeof l.url === 'string' && l.url.trim() !== '')
+					.filter((l) => l && typeof l === 'object')
 					.map((l) => ({
 						platform: typeof l.platform === 'string' ? l.platform : 'website',
-						url: l.url,
+						url: typeof l.url === 'string' ? l.url : '',
 					}))
 			: [];
 

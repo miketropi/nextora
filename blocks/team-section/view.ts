@@ -12,6 +12,10 @@ import './style.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const SCROLL_INIT_ATTR = 'data-nextora-team-scroll-init';
+const REVEAL_START_RATIO = 0.85;
+const REVEAL_FALLBACK_MS = 1800;
+
 type SwiperOpts = {
 	loop?: boolean;
 	autoplay?: boolean;
@@ -83,29 +87,112 @@ function getOpts(root: HTMLElement): SwiperOpts {
 	}
 }
 
-function initScrollReveal(section: HTMLElement): void {
-	if (prefersReducedMotion()) {
-		return;
-	}
-	const target = section.querySelector<HTMLElement>(
-		'.nextora-team-section__header[data-nextora-scroll-reveal="1"]',
-	);
-	if (!target || target.getAttribute('data-nextora-team-scroll-init') === '1') {
-		return;
-	}
-	target.setAttribute('data-nextora-team-scroll-init', '1');
+function isRevealStartPassed(section: HTMLElement): boolean {
+	const rect = section.getBoundingClientRect();
+	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+	return rect.top <= viewportHeight * REVEAL_START_RATIO && rect.bottom > 0;
+}
 
-	gsap.from(target, {
-		opacity: 0,
-		y: 24,
-		duration: 0.85,
-		ease: 'power2.out',
-		scrollTrigger: {
-			trigger: section,
-			start: 'top 88%',
-			once: true,
+function setRevealReady(section: HTMLElement): void {
+	section.classList.add('nextora-team-section--reveal-ready');
+	section.classList.remove('nextora-team-section--reveal-pending');
+}
+
+function clearRevealStyles(targets: HTMLElement[]): void {
+	if (targets.length === 0) {
+		return;
+	}
+	gsap.set(targets, { clearProps: 'opacity,transform,translate,rotate,scale' });
+}
+
+function scheduleRevealFallback(section: HTMLElement, targets: HTMLElement[]): void {
+	window.setTimeout(() => {
+		if (section.classList.contains('nextora-team-section--reveal-ready')) {
+			return;
+		}
+		gsap.killTweensOf(targets);
+		clearRevealStyles(targets);
+		setRevealReady(section);
+	}, REVEAL_FALLBACK_MS);
+}
+
+function initScrollReveal(section: HTMLElement): void {
+	if (section.getAttribute('data-nextora-scroll-reveal') !== '1') {
+		return;
+	}
+	if (section.getAttribute(SCROLL_INIT_ATTR) === '1') {
+		return;
+	}
+	section.setAttribute(SCROLL_INIT_ATTR, '1');
+
+	if (prefersReducedMotion()) {
+		setRevealReady(section);
+		return;
+	}
+
+	const header = section.querySelector<HTMLElement>('.nextora-team-section__header');
+	const carousel = section.querySelector<HTMLElement>('.nextora-team-section__carousel-root');
+	const targets = [header, carousel].filter((el): el is HTMLElement => el !== null);
+
+	if (targets.length === 0) {
+		setRevealReady(section);
+		return;
+	}
+
+	section.classList.add('nextora-team-section--reveal-pending');
+	gsap.set(targets, { opacity: 0, y: 32, force3D: true });
+
+	const timeline = gsap.timeline({
+		paused: true,
+		defaults: { ease: 'power3.out' },
+		onComplete: () => {
+			clearRevealStyles(targets);
+			setRevealReady(section);
 		},
 	});
+
+	if (header) {
+		timeline.to(header, { opacity: 1, y: 0, duration: 1 }, 0);
+	}
+
+	if (carousel) {
+		timeline.to(
+			carousel,
+			{
+				opacity: 1,
+				y: 0,
+				duration: 1.05,
+			},
+			header ? 0.18 : 0,
+		);
+	}
+
+	const playReveal = (): void => {
+		if (section.classList.contains('nextora-team-section--reveal-ready')) {
+			return;
+		}
+		timeline.play();
+	};
+
+	scheduleRevealFallback(section, targets);
+
+	if (isRevealStartPassed(section)) {
+		playReveal();
+		return;
+	}
+
+	ScrollTrigger.create({
+		trigger: section,
+		start: `top ${REVEAL_START_RATIO * 100}%`,
+		once: true,
+		onEnter: playReveal,
+	});
+
+	ScrollTrigger.refresh();
+
+	if (isRevealStartPassed(section)) {
+		playReveal();
+	}
 }
 
 function initSwiperIn(container: Element | Document): void {
@@ -127,6 +214,9 @@ function initSwiperIn(container: Element | Document): void {
 		if (slideCount < 1) {
 			section?.classList.remove('nextora-team-section--loading');
 			section?.classList.add('nextora-team-section--ready');
+			if (section) {
+				initScrollReveal(section);
+			}
 			return;
 		}
 
@@ -178,6 +268,17 @@ function initSwiperIn(container: Element | Document): void {
 				: 'bullets';
 
 		root.dataset.nextoraTeamSwiperPending = '1';
+
+		const finishSection = (): void => {
+			delete root.dataset.nextoraTeamSwiperPending;
+			root.dataset.nextoraTeamSwiperInited = '1';
+			section?.classList.remove('nextora-team-section--loading');
+			section?.classList.add('nextora-team-section--ready');
+			if (section) {
+				initScrollReveal(section);
+			}
+			ScrollTrigger.refresh();
+		};
 
 		const tryMount = (tick = 0): void => {
 			if (el.clientWidth < 2 && tick < 60) {
@@ -237,11 +338,7 @@ function initSwiperIn(container: Element | Document): void {
 			requestAnimationFrame(refresh);
 			requestAnimationFrame(() => requestAnimationFrame(refresh));
 			window.setTimeout(refresh, 200);
-
-			delete root.dataset.nextoraTeamSwiperPending;
-			root.dataset.nextoraTeamSwiperInited = '1';
-			section?.classList.remove('nextora-team-section--loading');
-			section?.classList.add('nextora-team-section--ready');
+			window.setTimeout(finishSection, 220);
 		};
 
 		tryMount();
@@ -249,14 +346,13 @@ function initSwiperIn(container: Element | Document): void {
 }
 
 function initIn(container: Element | Document): void {
-	container.querySelectorAll<HTMLElement>('.nextora-team-section').forEach((section) => {
-		initScrollReveal(section);
-	});
 	initSwiperIn(container);
 }
 
 function run(): void {
 	initIn(document);
+	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load' });
+	ScrollTrigger.refresh();
 }
 
 if (document.readyState === 'loading') {
@@ -265,4 +361,5 @@ if (document.readyState === 'loading') {
 	run();
 }
 
+window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
 window.addEventListener('nextora-team-section-reinit', () => initIn(document));

@@ -2,8 +2,6 @@ export type TeamHeaderLayout = 'split' | 'stacked' | 'left-aligned';
 
 export type TeamButtonStyle = 'outline' | 'solid' | 'link';
 
-export type TeamArrowStyle = 'minimal' | 'circle' | 'square';
-
 export type TeamPaginationType = 'bullets' | 'fraction' | 'progressbar';
 
 export type TeamSocialPlatform =
@@ -69,7 +67,6 @@ export interface TeamSectionAttributes {
 	showPagination: boolean;
 	paginationType: TeamPaginationType;
 	showArrows: boolean;
-	arrowStyle: TeamArrowStyle;
 	freeMode: boolean;
 	grabCursor: boolean;
 	backgroundColor: string;

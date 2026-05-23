@@ -1,9 +1,8 @@
 import type { CSSProperties } from 'react';
-import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 import {
 	InspectorControls,
-	MediaUpload,
-	MediaUploadCheck,
 	PanelColorSettings,
 	RichText,
 	URLInput,
@@ -11,6 +10,7 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
+	Modal,
 	PanelBody,
 	RangeControl,
 	SelectControl,
@@ -19,18 +19,12 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import type { TeamMember, TeamSectionAttributes } from './types';
-import { TEAM_SECTION_MEDIA_TYPES } from './types';
 import { buildSectionStyleVars, createMemberId, normalizeMembers } from './member-utils';
+import MemberEditForm from './member-edit-form';
 
 interface EditProps {
 	attributes: TeamSectionAttributes;
 	setAttributes: (attrs: Partial<TeamSectionAttributes>) => void;
-}
-
-interface WPMedia {
-	id?: number;
-	url?: string;
-	alt?: string;
 }
 
 const headerLayoutOptions = [
@@ -51,22 +45,6 @@ const paginationTypeOptions = [
 	{ label: __('Progress bar', 'nextora'), value: 'progressbar' },
 ];
 
-const arrowStyleOptions = [
-	{ label: __('Minimal', 'nextora'), value: 'minimal' },
-	{ label: __('Circle', 'nextora'), value: 'circle' },
-	{ label: __('Square', 'nextora'), value: 'square' },
-];
-
-const socialPlatformOptions = [
-	{ label: 'LinkedIn', value: 'linkedin' },
-	{ label: 'Twitter / X', value: 'twitter' },
-	{ label: 'GitHub', value: 'github' },
-	{ label: 'Instagram', value: 'instagram' },
-	{ label: 'Facebook', value: 'facebook' },
-	{ label: __('Website', 'nextora'), value: 'website' },
-	{ label: __('Email', 'nextora'), value: 'email' },
-];
-
 const HEADING_LEVELS = [
 	{ label: 'H1', value: '1' },
 	{ label: 'H2', value: '2' },
@@ -81,7 +59,12 @@ function clampHeading(level: number): number {
 }
 
 export default function TeamSectionEdit({ attributes, setAttributes }: EditProps) {
+	const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+
 	const members = normalizeMembers(attributes.members);
+	const editingMember = editingMemberId
+		? members.find((m) => m.id === editingMemberId)
+		: undefined;
 	const photoIds = members.map((m) => m.photoId).filter((id) => id > 0);
 
 	const mediaRecords = useSelect(
@@ -129,7 +112,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		showPagination = true,
 		paginationType = 'bullets',
 		showArrows = false,
-		arrowStyle = 'minimal',
 		freeMode = false,
 		grabCursor = true,
 		backgroundColor = '',
@@ -184,10 +166,11 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 	};
 
 	const addMember = (): void => {
+		const id = createMemberId();
 		setMembers([
 			...members,
 			{
-				id: createMemberId(),
+				id,
 				photoId: 0,
 				photoAlt: '',
 				photoFocalPoint: { x: 0.5, y: 0.3 },
@@ -202,6 +185,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 				cardBorderRadius,
 			},
 		]);
+		setEditingMemberId(id);
 	};
 
 	const removeMember = (id: string): void => {
@@ -209,6 +193,13 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 			return;
 		}
 		setMembers(members.filter((m) => m.id !== id));
+		if (editingMemberId === id) {
+			setEditingMemberId(null);
+		}
+	};
+
+	const openMemberEditor = (id: string): void => {
+		setEditingMemberId(id);
 	};
 
 	const moveMember = (id: string, delta: number): void => {
@@ -228,175 +219,31 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		<>
 			<InspectorControls>
 				<PanelBody title={__('Members', 'nextora')} initialOpen>
+					<p className="nextora-team-section__inspector-members-help">
+						{__(
+							'Use Edit to open the member form in a larger dialog with photo, bio, tags, and social links.',
+							'nextora',
+						)}
+					</p>
 					{members.map((member, index) => (
 						<div key={member.id} className="nextora-team-section__inspector-member">
-							<p className="components-base-control__label">
-								{__('Member', 'nextora') + ` ${index + 1}`}
-							</p>
-							<TextControl
-								label={__('Name', 'nextora')}
-								value={member.name}
-								onChange={(name) => patchMember(member.id, { name: name ?? '' })}
-							/>
-							<TextControl
-								label={__('Role', 'nextora')}
-								value={member.role}
-								onChange={(role) => patchMember(member.id, { role: role ?? '' })}
-							/>
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={(media: WPMedia) =>
-										patchMember(member.id, {
-											photoId: media.id ?? 0,
-											photoAlt: media.alt ?? '',
-										})
-									}
-									allowedTypes={[...TEAM_SECTION_MEDIA_TYPES]}
-									value={member.photoId > 0 ? member.photoId : undefined}
-									render={({ open }) => (
-										<div className="nextora-team-section__inspector-media">
-											{member.photoId > 0 && mediaUrlById.get(member.photoId) ? (
-												<img
-													src={mediaUrlById.get(member.photoId)}
-													alt=""
-													className="nextora-team-section__inspector-media-preview"
-												/>
-											) : null}
-											<Button variant="secondary" onClick={open}>
-												{member.photoId
-													? __('Replace photo', 'nextora')
-													: __('Choose photo', 'nextora')}
-											</Button>
-										</div>
-									)}
-								/>
-							</MediaUploadCheck>
-							{member.photoId > 0 && (
-								<TextControl
-									label={__('Photo alt text', 'nextora')}
-									value={member.photoAlt}
-									onChange={(photoAlt) =>
-										patchMember(member.id, { photoAlt: photoAlt ?? '' })
-									}
-								/>
-							)}
-							<p className="components-base-control__label">{__('Tags', 'nextora')}</p>
-								{member.tags.map((tag, tagIndex) => (
-									<div key={`${member.id}-tag-${tagIndex}`} className="nextora-team-section__inspector-tag-row">
-										<TextControl
-											label={__('Tag', 'nextora')}
-											value={tag}
-											onChange={(v) => {
-												const tags = [...member.tags];
-												tags[tagIndex] = v ?? '';
-												patchMember(member.id, { tags });
-											}}
-										/>
-										<Button
-											variant="secondary"
-											isDestructive
-											onClick={() => {
-												const tags = member.tags.filter((_, i) => i !== tagIndex);
-												patchMember(member.id, { tags });
-											}}
-										>
-											{__('Remove', 'nextora')}
-										</Button>
-									</div>
-								))}
-								<Button
-									variant="secondary"
-									onClick={() => patchMember(member.id, { tags: [...member.tags, ''] })}
-								>
-									{__('Add tag', 'nextora')}
+							<div className="nextora-team-section__inspector-member-summary">
+								<p className="nextora-team-section__inspector-member-name">
+									{member.name || sprintf(__('Member %d', 'nextora'), index + 1)}
+								</p>
+								{member.role ? (
+									<p className="nextora-team-section__inspector-member-role">{member.role}</p>
+								) : null}
+							</div>
+							<div className="nextora-team-section__inspector-member-actions">
+								<Button variant="primary" onClick={() => openMemberEditor(member.id)}>
+									{__('Edit', 'nextora')}
 								</Button>
-							<TextControl
-								label={__('Bio', 'nextora')}
-								value={member.bio}
-								onChange={(bio) => patchMember(member.id, { bio: bio ?? '' })}
-							/>
-							<RangeControl
-								label={__('Bio line clamp', 'nextora')}
-								value={member.bioLineClamp}
-								onChange={(bioLineClamp) =>
-									patchMember(member.id, { bioLineClamp: bioLineClamp ?? 3 })
-								}
-								min={1}
-								max={5}
-							/>
-							<ToggleControl
-								label={__('Show social links', 'nextora')}
-								checked={member.showSocialLinks}
-								onChange={(showSocialLinks) =>
-									patchMember(member.id, { showSocialLinks })
-								}
-							/>
-							{member.showSocialLinks && (
-								<>
-									{member.socialLinks.map((link, linkIndex) => (
-										<div
-											key={`${member.id}-social-${linkIndex}`}
-											className="nextora-team-section__inspector-social-row"
-										>
-											<SelectControl
-												label={__('Platform', 'nextora')}
-												value={link.platform}
-												options={socialPlatformOptions}
-												onChange={(platform) => {
-													const socialLinks = [...member.socialLinks];
-													socialLinks[linkIndex] = {
-														...socialLinks[linkIndex],
-														platform: platform ?? 'website',
-													};
-													patchMember(member.id, { socialLinks });
-												}}
-											/>
-											<p className="components-base-control__label">{__('URL', 'nextora')}</p>
-											<URLInput
-												value={link.url}
-												onChange={(url) => {
-													const socialLinks = [...member.socialLinks];
-													socialLinks[linkIndex] = {
-														...socialLinks[linkIndex],
-														url: url ?? '',
-													};
-													patchMember(member.id, { socialLinks });
-												}}
-											/>
-											<Button
-												variant="secondary"
-												isDestructive
-												onClick={() => {
-													const socialLinks = member.socialLinks.filter(
-														(_, i) => i !== linkIndex,
-													);
-													patchMember(member.id, { socialLinks });
-												}}
-											>
-												{__('Remove', 'nextora')}
-											</Button>
-										</div>
-									))}
-									<Button
-										variant="secondary"
-										onClick={() =>
-											patchMember(member.id, {
-												socialLinks: [
-													...member.socialLinks,
-													{ platform: 'linkedin', url: '' },
-												],
-											})
-										}
-									>
-										{__('Add social link', 'nextora')}
-									</Button>
-								</>
-							)}
-							<div className="nextora-team-section__inspector-tag-row">
 								<Button
 									variant="secondary"
 									disabled={index === 0}
 									onClick={() => moveMember(member.id, -1)}
+									label={__('Move up', 'nextora')}
 								>
 									{__('Up', 'nextora')}
 								</Button>
@@ -404,6 +251,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 									variant="secondary"
 									disabled={index >= members.length - 1}
 									onClick={() => moveMember(member.id, 1)}
+									label={__('Move down', 'nextora')}
 								>
 									{__('Down', 'nextora')}
 								</Button>
@@ -413,7 +261,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 									disabled={members.length <= 1}
 									onClick={() => removeMember(member.id)}
 								>
-									{__('Remove member', 'nextora')}
+									{__('Remove', 'nextora')}
 								</Button>
 							</div>
 						</div>
@@ -605,18 +453,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						checked={showArrows}
 						onChange={(v) => setAttributes({ showArrows: v })}
 					/>
-					{showArrows && (
-						<SelectControl
-							label={__('Arrow style', 'nextora')}
-							value={arrowStyle}
-							options={arrowStyleOptions}
-							onChange={(v) =>
-								setAttributes({
-									arrowStyle: (v as TeamSectionAttributes['arrowStyle']) ?? 'minimal',
-								})
-							}
-						/>
-					)}
 				</PanelBody>
 
 				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
@@ -633,13 +469,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						onChange={(v) => setAttributes({ paddingBottom: v ?? 80 })}
 						min={0}
 						max={200}
-					/>
-					<RangeControl
-						label={__('Card border radius (px)', 'nextora')}
-						value={cardBorderRadius}
-						onChange={(v) => setAttributes({ cardBorderRadius: v ?? 16 })}
-						min={0}
-						max={30}
 					/>
 				</PanelBody>
 
@@ -729,6 +558,33 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 				</PanelBody>
 			</InspectorControls>
 
+			{editingMember && (
+				<Modal
+					className="nextora-team-section__member-modal"
+					title={
+						editingMember.name
+							? sprintf(__('Edit member: %s', 'nextora'), editingMember.name)
+							: __('Edit team member', 'nextora')
+					}
+					onRequestClose={() => setEditingMemberId(null)}
+				>
+					<MemberEditForm
+						member={editingMember}
+						photoUrl={
+							editingMember.photoId > 0
+								? mediaUrlById.get(editingMember.photoId)
+								: undefined
+						}
+						onPatch={(patch) => patchMember(editingMember.id, patch)}
+					/>
+					<div className="nextora-team-section__member-modal-footer">
+						<Button variant="primary" onClick={() => setEditingMemberId(null)}>
+							{__('Done', 'nextora')}
+						</Button>
+					</div>
+				</Modal>
+			)}
+
 			<div {...blockProps}>
 				<div className="nextora-team-section__inner">
 					<header
@@ -792,7 +648,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 							return (
 								<article
 									key={member.id}
-									className="nextora-team-section__card"
+									className="nextora-team-section__card nextora-team-section__card--editable"
 									style={
 										{
 											'--nextora-team-bio-clamp': member.bioLineClamp,
@@ -800,9 +656,16 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 										} as CSSProperties
 									}
 								>
-									<p className="nextora-team-section__member-badge">
+									{/* <p className="nextora-team-section__member-badge">
 										{__('Member', 'nextora')} {index + 1}
-									</p>
+									</p> */}
+									<button
+										type="button"
+										className="nextora-team-section__card-edit"
+										onClick={() => openMemberEditor(member.id)}
+									>
+										{__('Edit member', 'nextora')}
+									</button>
 									<div
 										className={
 											photoUrl
@@ -817,7 +680,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 												className="nextora-team-section__card-img"
 											/>
 										) : (
-											__('Add photo in sidebar', 'nextora')
+											__('Click Edit member to add a photo', 'nextora')
 										)}
 									</div>
 									<div className="nextora-team-section__card-body">

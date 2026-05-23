@@ -113,7 +113,6 @@
     "showPagination": { "type": "boolean", "default": true },
     "paginationType": { "type": "string", "default": "bullets" },
     "showArrows": { "type": "boolean", "default": false },
-    "arrowStyle": { "type": "string", "default": "minimal" },
     "freeMode": { "type": "boolean", "default": false },
     "grabCursor": { "type": "boolean", "default": true },
     "backgroundColor": { "type": "string", "default": "" },

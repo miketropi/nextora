@@ -3,6 +3,7 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
+    --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
     --color-white: #fff;
     --spacing: 0.25rem;
     --container-2xl: 42rem;
