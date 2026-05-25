@@ -1,0 +1,81 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/testimonials",
+  "title": "Testimonials",
+  "category": "design",
+  "description": "Split-layout testimonial slider with image, heading, and paragraph per item.",
+  "keywords": ["testimonial", "quote", "slider", "carousel", "nextora"],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    }
+  },
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Real Lives, Lasting Change"
+    },
+    "headingLevel": {
+      "type": "number",
+      "default": 2
+    },
+    "showAccent": {
+      "type": "boolean",
+      "default": true
+    },
+    "accentColor": {
+      "type": "string",
+      "default": ""
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": false
+    },
+    "autoplayDelay": {
+      "type": "number",
+      "default": 5000
+    },
+    "speed": {
+      "type": "number",
+      "default": 600
+    },
+    "showPagination": {
+      "type": "boolean",
+      "default": true
+    },
+    "showNav": {
+      "type": "boolean",
+      "default": false
+    },
+    "loop": {
+      "type": "boolean",
+      "default": true
+    },
+    "pauseOnHover": {
+      "type": "boolean",
+      "default": true
+    },
+    "effect": {
+      "type": "string",
+      "default": "slide"
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

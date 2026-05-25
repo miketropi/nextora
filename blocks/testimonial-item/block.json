@@ -1,0 +1,50 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/testimonial-item",
+  "title": "Testimonial item",
+  "category": "design",
+  "parent": ["nextora/testimonials"],
+  "description": "A single testimonial slide with image and text columns.",
+  "keywords": ["testimonial", "item", "nextora"],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "inserter": false,
+    "color": {
+      "background": true
+    }
+  },
+  "attributes": {},
+  "template": [
+    [
+      "core/image",
+      {
+        "align": "full",
+        "sizeSlug": "large",
+        "linkDestination": "none",
+        "className": "nextora-testimonial-item__image"
+      }
+    ],
+    [
+      "core/heading",
+      {
+        "level": 3,
+        "placeholder": "Heading",
+        "className": "nextora-testimonial-item__heading"
+      }
+    ],
+    [
+      "core/paragraph",
+      {
+        "placeholder": "Write testimonial text…",
+        "className": "nextora-testimonial-item__paragraph"
+      }
+    ]
+  ],
+  "templateLock": "contentOnly",
+  "editorScript": "file:./index.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "render": "file:./render.php"
+}
