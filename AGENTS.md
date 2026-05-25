@@ -19,6 +19,7 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 |-----|---------|
 | [`docs/extensibility.md`](./docs/extensibility.md) | Hooks, filters, header block, navigation, comments |
 | [`docs/modal.md`](./docs/modal.md) | Modal layer (`data-nextora-modal`, `openModalDialog`, events, a11y) |
+| [`docs/scroll-animations.md`](./docs/scroll-animations.md) | Class-driven GSAP scroll reveals (`animation-fade-in-up`, data-* attrs) |
 | [`docs/spotlight-search.md`](./docs/spotlight-search.md) | Spotlight search, REST, `window.nextoraSpotlight` |
 | [`docs/comments-tiptap.md`](./docs/comments-tiptap.md) | Tiptap comment field, KSES, `window.nextoraComments` |
 | [`docs/blocks.md`](./docs/blocks.md) | Theme block standards |
@@ -81,6 +82,7 @@ Boot order matters:
 7. `initSpotlightSearch()` — `lib/spotlight-search.ts`
 8. `initArticleShare()` — `lib/article-share.ts` (for `[data-nextora-article-share]` markup)
 9. `initCommentTiptap()` — `lib/comment-tiptap.ts`
+10. `initScrollAnimations()` — `lib/scroll-animations/` (class-driven GSAP reveals)
 
 ## PHP load map (`functions.php`)
 

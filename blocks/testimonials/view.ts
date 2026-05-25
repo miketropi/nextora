@@ -21,8 +21,8 @@ import './style.css';
 gsap.registerPlugin(ScrollTrigger);
 
 const SCROLL_INIT_ATTR = 'data-nextora-testimonials-scroll-init';
-const REVEAL_START_RATIO = 0.85;
-const REVEAL_FALLBACK_MS = 1800;
+/** Shrink viewport bottom ~15% so reveal fires near the 85% line (like ScrollTrigger `top 85%`). */
+const REVEAL_ROOT_MARGIN = '0px 0px -15% 0px';
 
 type SwiperOpts = {
 	effect?: string;
@@ -50,12 +50,6 @@ function getOpts(root: HTMLElement): SwiperOpts {
 	}
 }
 
-function isRevealStartPassed(section: HTMLElement): boolean {
-	const rect = section.getBoundingClientRect();
-	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-	return rect.top <= viewportHeight * REVEAL_START_RATIO && rect.bottom > 0;
-}
-
 function setRevealReady(section: HTMLElement): void {
 	section.classList.add('nextora-testimonials--reveal-ready');
 	section.classList.remove('nextora-testimonials--reveal-pending');
@@ -68,15 +62,15 @@ function clearRevealStyles(targets: HTMLElement[]): void {
 	gsap.set(targets, { clearProps: 'opacity,transform,translate,rotate,scale' });
 }
 
-function scheduleRevealFallback(section: HTMLElement, targets: HTMLElement[]): void {
-	window.setTimeout(() => {
-		if (section.classList.contains('nextora-testimonials--reveal-ready')) {
-			return;
-		}
-		gsap.killTweensOf(targets);
-		clearRevealStyles(targets);
-		setRevealReady(section);
-	}, REVEAL_FALLBACK_MS);
+function getContentRevealTargets(section: HTMLElement): HTMLElement[] {
+	const contentInner = section.querySelector<HTMLElement>('.nextora-testimonials__content-inner');
+	if (!contentInner) {
+		return [];
+	}
+
+	return Array.from(contentInner.children).filter(
+		(child): child is HTMLElement => child instanceof HTMLElement,
+	);
 }
 
 function initScrollReveal(section: HTMLElement): void {
@@ -93,11 +87,10 @@ function initScrollReveal(section: HTMLElement): void {
 		return;
 	}
 
-	const media = section.querySelector<HTMLElement>('.nextora-testimonials__media');
-	const content = section.querySelector<HTMLElement>('.nextora-testimonials__content-inner');
-	const targets = [media, content].filter((el): el is HTMLElement => el !== null);
+	const contentInner = section.querySelector<HTMLElement>('.nextora-testimonials__content-inner');
+	const targets = getContentRevealTargets(section);
 
-	if (targets.length === 0) {
+	if (!contentInner || targets.length === 0) {
 		setRevealReady(section);
 		return;
 	}
@@ -105,53 +98,47 @@ function initScrollReveal(section: HTMLElement): void {
 	section.classList.add('nextora-testimonials--reveal-pending');
 	gsap.set(targets, { opacity: 0, y: 28, force3D: true });
 
-	const timeline = gsap.timeline({
-		paused: true,
-		defaults: { ease: 'power3.out' },
-		onComplete: () => {
-			clearRevealStyles(targets);
-			setRevealReady(section);
-		},
-	});
-
-	targets.forEach((target, index) => {
-		timeline.to(
-			target,
-			{
-				opacity: 1,
-				y: 0,
-				duration: 0.95,
-			},
-			index * 0.12,
-		);
-	});
-
+	let played = false;
 	const playReveal = (): void => {
-		if (section.classList.contains('nextora-testimonials--reveal-ready')) {
+		if (played || section.classList.contains('nextora-testimonials--reveal-ready')) {
 			return;
 		}
-		timeline.play();
+		played = true;
+
+		gsap.to(targets, {
+			opacity: 1,
+			y: 0,
+			duration: 0.95,
+			stagger: 0.12,
+			ease: 'power3.out',
+			onComplete: () => {
+				clearRevealStyles(targets);
+				setRevealReady(section);
+			},
+		});
 	};
 
-	scheduleRevealFallback(section, targets);
-
-	if (isRevealStartPassed(section)) {
+	if (typeof IntersectionObserver === 'undefined') {
 		playReveal();
 		return;
 	}
 
-	ScrollTrigger.create({
-		trigger: section,
-		start: `top ${REVEAL_START_RATIO * 100}%`,
-		once: true,
-		onEnter: playReveal,
-	});
+	const observer = new IntersectionObserver(
+		(entries) => {
+			const entry = entries[0];
+			if (!entry?.isIntersecting) {
+				return;
+			}
+			playReveal();
+			observer.disconnect();
+		},
+		{
+			threshold: 0,
+			rootMargin: REVEAL_ROOT_MARGIN,
+		},
+	);
 
-	ScrollTrigger.refresh();
-
-	if (isRevealStartPassed(section)) {
-		playReveal();
-	}
+	observer.observe(contentInner);
 }
 
 function syncMediaStack(root: HTMLElement, activeIndex: number): void {
@@ -213,7 +200,7 @@ function initSwiperRoot(root: HTMLElement): void {
 		if (section) {
 			initScrollReveal(section);
 		}
-		ScrollTrigger.refresh();
+		scheduleScrollRefresh();
 	};
 
 	const tryMount = (tick = 0): void => {
@@ -278,20 +265,34 @@ function initSwiperRoot(root: HTMLElement): void {
 		contentSwiper.on('slideChange', syncMedia);
 		syncMedia();
 
-		requestAnimationFrame(() => ScrollTrigger.refresh());
+		scheduleScrollRefresh();
 		window.setTimeout(finishSection, 220);
 	};
 
 	tryMount();
 }
 
+let pendingScrollRefresh = false;
+
+function scheduleScrollRefresh(): void {
+	if (pendingScrollRefresh) {
+		return;
+	}
+	pendingScrollRefresh = true;
+	requestAnimationFrame(() => {
+		pendingScrollRefresh = false;
+		ScrollTrigger.refresh();
+	});
+}
+
 function initIn(container: Element | Document): void {
 	container.querySelectorAll<HTMLElement>('.nextora-testimonials__root').forEach(initSwiperRoot);
+	scheduleScrollRefresh();
 }
 
 function run(): void {
 	initIn(document);
-	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load' });
+	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize' });
 	ScrollTrigger.refresh();
 }
 
@@ -301,5 +302,11 @@ if (document.readyState === 'loading') {
 	run();
 }
 
-window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+window.addEventListener(
+	'load',
+	() => {
+		ScrollTrigger.refresh(true);
+	},
+	{ once: true },
+);
 window.addEventListener('nextora-testimonials-reinit', () => initIn(document));

@@ -19,19 +19,13 @@
 .nextora-testimonials[data-nextora-scroll-reveal='1'].nextora-testimonials--reveal-pending:not(
 		.nextora-testimonials--reveal-ready
 	)
-	.nextora-testimonials__media,
-.nextora-testimonials[data-nextora-scroll-reveal='1'].nextora-testimonials--reveal-pending:not(
-		.nextora-testimonials--reveal-ready
-	)
-	.nextora-testimonials__content-inner {
+	.nextora-testimonials__content-inner > * {
 	opacity: 0;
 	transform: translate3d(0, 1.5rem, 0);
 }
 
 .nextora-testimonials[data-nextora-scroll-reveal='1'].nextora-testimonials--reveal-ready
-	.nextora-testimonials__media,
-.nextora-testimonials[data-nextora-scroll-reveal='1'].nextora-testimonials--reveal-ready
-	.nextora-testimonials__content-inner {
+	.nextora-testimonials__content-inner > * {
 	opacity: 1;
 	transform: none;
 }
