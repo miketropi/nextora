@@ -1,275 +1,567 @@
-// @ts-nocheck
-import { __ } from '@wordpress/i18n';
+import type { CSSProperties } from 'react';
+import { useState } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 import {
-  InspectorControls,
-  InnerBlocks,
-  RichText,
-  useBlockProps,
-  useInnerBlocksProps,
+	FontSizePicker,
+	InspectorControls,
+	PanelColorSettings,
+	RichText,
+	useBlockProps,
 } from '@wordpress/block-editor';
 import {
-  ColorPalette,
-  PanelBody,
-  RangeControl,
-  SelectControl,
-  ToggleControl,
+	BaseControl,
+	Button,
+	Modal,
+	PanelBody,
+	RangeControl,
+	SelectControl,
+	ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { useMemo } from '@wordpress/element';
+import type {
+	TestimonialItem,
+	TestimonialsAttributes,
+} from './types';
+import {
+	buildAuthorMeta,
+	buildSectionStyleVars,
+	createTestimonialId,
+	normalizeTestimonials,
+} from './testimonial-utils';
+import { buildTypographyStyleVars } from './testimonials-styles';
+import TestimonialEditForm from './testimonial-edit-form';
 
-const ITEMS_TEMPLATE = [['nextora/testimonial-item', {}]];
+interface EditProps {
+	attributes: TestimonialsAttributes;
+	setAttributes: (attrs: Partial<TestimonialsAttributes>) => void;
+}
 
-const HEADING_LEVEL_OPTIONS = [
-  { label: __('H1', 'nextora'), value: '1' },
-  { label: __('H2', 'nextora'), value: '2' },
-  { label: __('H3', 'nextora'), value: '3' },
-  { label: __('H4', 'nextora'), value: '4' },
-  { label: __('H5', 'nextora'), value: '5' },
-  { label: __('H6', 'nextora'), value: '6' },
+const effectOptions = [
+	{ label: __('Fade', 'nextora'), value: 'fade' },
+	{ label: __('Slide', 'nextora'), value: 'slide' },
 ];
 
-const FALLBACK_COLORS = [
-  { name: __('Primary', 'nextora'), slug: 'primary', color: 'var(--wp--preset--color--primary)' },
-  { name: __('Contrast', 'nextora'), slug: 'contrast', color: 'var(--wp--preset--color--contrast)' },
-  { name: __('Secondary', 'nextora'), slug: 'secondary', color: 'var(--wp--preset--color--secondary)' },
+const imagePositionOptions = [
+	{ label: __('Left', 'nextora'), value: 'left' },
+	{ label: __('Right', 'nextora'), value: 'right' },
 ];
 
-function resolveAccentColor(raw) {
-  const value = String(raw || '').trim();
-  if (!value) {
-    return 'var(--wp--preset--color--primary)';
-  }
-  if (/^#[0-9a-f]{3,8}$/i.test(value)) {
-    return value;
-  }
-  if (/^var\(--wp--preset--color--[a-z0-9-]+\)$/i.test(value)) {
-    return value;
-  }
-  if (/^[a-z0-9-]+$/i.test(value)) {
-    return `var(--wp--preset--color--${value.toLowerCase()})`;
-  }
-  return 'var(--wp--preset--color--primary)';
+function normalizeFontSizeAttribute(
+	value: number | string | undefined,
+	selectedItem?: { slug?: string },
+): string {
+	if (value === undefined) {
+		return '';
+	}
+	if (selectedItem?.slug) {
+		return selectedItem.slug;
+	}
+	return String(value);
 }
 
-function normalizePaletteValue(color) {
-  if (!color) {
-    return '';
-  }
-  if (color.startsWith('var(--wp--preset--color--')) {
-    return color.replace('var(--wp--preset--color--', '').replace(')', '');
-  }
-  return color;
+interface TestimonialEditorItemProps {
+	item: TestimonialItem;
+	index: number;
+	total: number;
+	portraitUrl?: string;
+	imagePosition: 'left' | 'right';
+	onEdit: () => void;
+	onMoveUp: () => void;
+	onMoveDown: () => void;
+	onRemove: () => void;
 }
 
-function useThemeColorPalette() {
-  const themeColors = useSelect((select) => {
-    try {
-      const settings = select('core/block-editor')?.getSettings?.() ?? {};
-      if (Array.isArray(settings.colors) && settings.colors.length) {
-        return settings.colors;
-      }
-      if (Array.isArray(settings.color?.palette) && settings.color.palette.length) {
-        return settings.color.palette;
-      }
-    } catch {
-      /* noop */
-    }
-    return [];
-  }, []);
+function TestimonialEditorItem({
+	item,
+	index,
+	total,
+	portraitUrl,
+	imagePosition,
+	onEdit,
+	onMoveUp,
+	onMoveDown,
+	onRemove,
+}: TestimonialEditorItemProps) {
+	const authorMeta = buildAuthorMeta(item.authorAge, item.authorLocation);
 
-  return useMemo(() => {
-    if (!Array.isArray(themeColors) || !themeColors.length) {
-      return FALLBACK_COLORS;
-    }
-    return themeColors.filter(
-      (entry) =>
-        entry &&
-        typeof entry.color === 'string' &&
-        typeof entry.slug === 'string' &&
-        typeof entry.name === 'string',
-    );
-  }, [themeColors]);
+	return (
+		<article className="nextora-testimonials__editor-item">
+			<div className="nextora-testimonials__editor-item-controls">
+				<button
+					type="button"
+					className="nextora-testimonials__editor-item-edit"
+					onClick={onEdit}
+				>
+					{__('Edit', 'nextora')}
+				</button>
+				<button
+					type="button"
+					className="nextora-testimonials__editor-item-remove"
+					onClick={onRemove}
+					disabled={total <= 1}
+					aria-label={__('Remove testimonial', 'nextora')}
+				>
+					{__('Remove', 'nextora')}
+				</button>
+			</div>
+
+			<div
+				className={[
+					'nextora-testimonials__layout',
+					'nextora-testimonials__layout--item-preview',
+					`nextora-testimonials--image-${imagePosition}`,
+				].join(' ')}
+			>
+				<div className="nextora-testimonials__media">
+					<figure className="nextora-testimonials__figure">
+						{portraitUrl ? (
+							<img src={portraitUrl} alt="" className="nextora-testimonials__portrait" />
+						) : (
+							<div className="nextora-testimonials__portrait-placeholder" aria-hidden />
+						)}
+					</figure>
+				</div>
+
+				<div className="nextora-testimonials__content">
+					<div className="nextora-testimonials__content-inner">
+						<div className="nextora-testimonials__quote">
+							<p>
+								{item.quoteText ||
+									__('Click Edit to add a quote…', 'nextora')}
+							</p>
+						</div>	
+						{(item.authorName || authorMeta) && (
+							<footer className="nextora-testimonials__author">
+								{item.authorName && (
+									<strong className="nextora-testimonials__author-name">
+										{item.authorName}
+									</strong>
+								)}
+								{authorMeta && (
+									<span className="nextora-testimonials__author-meta">{authorMeta}</span>
+								)}
+							</footer>
+						)}
+					</div>
+				</div>
+			</div>
+
+			<div className="nextora-testimonials__editor-item-toolbar">
+				<span className="nextora-testimonials__editor-item-index">
+					{sprintf(/* translators: %d: slide number */ __('Item %d', 'nextora'), index + 1)}
+				</span>
+				<div className="nextora-testimonials__editor-item-actions">
+					<Button
+						icon="arrow-up-alt2"
+						label={__('Move up', 'nextora')}
+						onClick={onMoveUp}
+						disabled={index === 0}
+						size="small"
+					/>
+					<Button
+						icon="arrow-down-alt2"
+						label={__('Move down', 'nextora')}
+						onClick={onMoveDown}
+						disabled={index >= total - 1}
+						size="small"
+					/>
+				</div>
+			</div>
+		</article>
+	);
 }
 
-function AccentSvg({ color }) {
-  return (
-    <div className="nextora-testimonials__accent" aria-hidden="true" style={{ color }}>
-      <svg width="80" height="24" viewBox="0 0 80 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M2 12 C12 2, 22 22, 32 12 S52 2, 62 12 S72 22, 78 12"
-          stroke="currentColor"
-          strokeWidth="3"
-          strokeLinecap="round"
-          fill="none"
-        />
-      </svg>
-    </div>
-  );
-}
+export default function TestimonialsEdit({ attributes, setAttributes }: EditProps) {
+	const [editingId, setEditingId] = useState<string | null>(null);
 
-export default function Edit({ attributes, setAttributes }) {
-  const {
-    heading,
-    headingLevel = 2,
-    showAccent = true,
-    accentColor = '',
-    autoplay = false,
-    autoplayDelay = 5000,
-    speed = 600,
-    showPagination = true,
-    showNav = false,
-    loop = true,
-    pauseOnHover = true,
-    effect = 'slide',
-    enableScrollAnimation = true,
-  } = attributes;
+	const testimonials = normalizeTestimonials(attributes.testimonials);
+	const editingItem = editingId ? testimonials.find((t) => t.id === editingId) : undefined;
 
-  const palette = useThemeColorPalette();
-  const accentResolved = resolveAccentColor(accentColor);
-  const headingTag = `h${Math.min(6, Math.max(1, headingLevel || 2))}`;
+	const mediaIds = testimonials.map((t) => t.portraitId).filter((id) => id > 0);
 
-  const blockProps = useBlockProps({
-    className: 'nextora-testimonials nextora-testimonials--editor',
-    style: { '--nextora-testimonials-accent': accentResolved },
-  });
+	const mediaRecords = useSelect(
+		(select) => {
+			const { getMedia } = select('core') as {
+				getMedia: (id: number) => { source_url?: string } | undefined;
+			};
+			return mediaIds.map((id) => getMedia(id));
+		},
+		[mediaIds.join(',')],
+	);
 
-  const innerBlocksProps = useInnerBlocksProps(
-    { className: 'nextora-testimonials__items-editor' },
-    {
-      allowedBlocks: ['nextora/testimonial-item'],
-      template: ITEMS_TEMPLATE,
-      templateLock: false,
-      renderAppender: InnerBlocks.ButtonBlockAppender,
-    },
-  );
+	const mediaUrlById = new Map<number, string>();
+	mediaIds.forEach((id, i) => {
+		const url = mediaRecords[i]?.source_url;
+		if (url) {
+			mediaUrlById.set(id, url);
+		}
+	});
 
-  return (
-    <>
-      <InspectorControls>
-        <PanelBody title={__('Content', 'nextora')} initialOpen>
-          <SelectControl
-            label={__('Heading level', 'nextora')}
-            value={String(headingLevel)}
-            options={HEADING_LEVEL_OPTIONS}
-            onChange={(value) => setAttributes({ headingLevel: parseInt(value || '2', 10) })}
-          />
-          <ToggleControl
-            label={__('Show accent', 'nextora')}
-            checked={showAccent !== false}
-            onChange={(value) => setAttributes({ showAccent: value })}
-          />
-        </PanelBody>
+	const {
+		headingText = '',
+		headingLevel = 2,
+		headingFontSize = '',
+		quoteFontSize = '',
+		imagePosition = 'left',
+		imageColumnRatio = 50,
+		showPagination = true,
+		showArrows = false,
+		contentBackgroundColor = '',
+		effect = 'fade',
+		speed = 600,
+		loop = true,
+		autoplay = true,
+		autoplayDelay = 6000,
+		pauseOnHover = true,
+		headingColor = '',
+		quoteColor = '',
+		authorNameColor = '',
+		authorMetaColor = '',
+		paginationColor = '',
+		paginationActiveColor = '',
+		enableScrollAnimation = true,
+	} = attributes;
 
-        <PanelBody title={__('Colors', 'nextora')} initialOpen={false}>
-          <p className="components-base-control__label">{__('Accent color', 'nextora')}</p>
-          <ColorPalette
-            colors={palette}
-            value={normalizePaletteValue(accentColor)}
-            onChange={(value) => setAttributes({ accentColor: typeof value === 'string' ? value : '' })}
-            clearable
-          />
-          <p className="components-base-control__help">
-            {__('Decorative line above the section heading. Empty = theme default.', 'nextora')}
-          </p>
-        </PanelBody>
+	const typographyVars = buildTypographyStyleVars({
+		headingFontSize,
+		quoteFontSize,
+	});
 
-        <PanelBody title={__('Settings', 'nextora')} initialOpen={false}>
-          <SelectControl
-            label={__('Effect', 'nextora')}
-            value={effect}
-            options={[
-              { label: __('Slide', 'nextora'), value: 'slide' },
-              { label: __('Fade', 'nextora'), value: 'fade' },
-            ]}
-            onChange={(value) => setAttributes({ effect: value || 'slide' })}
-          />
-          <ToggleControl
-            label={__('Loop', 'nextora')}
-            checked={loop !== false}
-            onChange={(value) => setAttributes({ loop: value })}
-          />
-          <RangeControl
-            label={__('Speed (ms)', 'nextora')}
-            value={speed}
-            onChange={(value) => setAttributes({ speed: value ?? 600 })}
-            min={100}
-            max={2000}
-            step={50}
-          />
-        </PanelBody>
+	const blockProps = useBlockProps({
+		className: [
+			'nextora-testimonials',
+			'nextora-testimonials--editor',
+			`nextora-testimonials--image-${imagePosition}`,
+		].join(' '),
+		style: {
+			...buildSectionStyleVars({
+				imageColumnRatio,
+				contentBackgroundColor,
+				headingColor,
+				quoteColor,
+				authorNameColor,
+				authorMetaColor,
+				paginationColor,
+				paginationActiveColor,
+			}),
+			...typographyVars,
+		} as CSSProperties,
+	});
 
-        <PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
-          <ToggleControl
-            label={__('Enable autoplay', 'nextora')}
-            checked={autoplay === true}
-            onChange={(value) => setAttributes({ autoplay: value })}
-          />
-          {autoplay ? (
-            <>
-              <RangeControl
-                label={__('Autoplay interval (ms)', 'nextora')}
-                value={autoplayDelay}
-                onChange={(value) => setAttributes({ autoplayDelay: value ?? 5000 })}
-                min={1000}
-                max={10000}
-                step={250}
-              />
-              <ToggleControl
-                label={__('Pause on hover', 'nextora')}
-                checked={pauseOnHover !== false}
-                onChange={(value) => setAttributes({ pauseOnHover: value })}
-              />
-            </>
-          ) : null}
-        </PanelBody>
+	const setTestimonials = (next: TestimonialItem[]): void => {
+		setAttributes({ testimonials: next });
+	};
 
-        <PanelBody title={__('Navigation', 'nextora')} initialOpen={false}>
-          <ToggleControl
-            label={__('Show pagination', 'nextora')}
-            checked={showPagination !== false}
-            onChange={(value) => setAttributes({ showPagination: value })}
-          />
-          <ToggleControl
-            label={__('Show navigation', 'nextora')}
-            checked={showNav === true}
-            onChange={(value) => setAttributes({ showNav: value })}
-          />
-        </PanelBody>
+	const patchItem = (id: string, patch: Partial<TestimonialItem>): void => {
+		setTestimonials(testimonials.map((t) => (t.id === id ? { ...t, ...patch } : t)));
+	};
 
-        <PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
-          <ToggleControl
-            label={__('Animate on scroll', 'nextora')}
-            help={__(
-              'Fade or move content in when it enters the viewport. Disabled automatically when the visitor prefers reduced motion.',
-              'nextora',
-            )}
-            checked={enableScrollAnimation !== false}
-            onChange={(value) => setAttributes({ enableScrollAnimation: value })}
-          />
-        </PanelBody>
-      </InspectorControls>
+	const addTestimonial = (): void => {
+		const id = createTestimonialId();
+		setTestimonials([
+			...testimonials,
+			{
+				id,
+				quoteText: '',
+				authorName: '',
+				authorAge: '',
+				authorLocation: '',
+				portraitId: 0,
+				portraitAlt: '',
+			},
+		]);
+		setEditingId(id);
+	};
 
-      <section {...blockProps}>
-        <div className="nextora-testimonials__layout">
-          <div className="nextora-testimonials__heading-panel">
-            {showAccent !== false ? <AccentSvg color={accentResolved} /> : null}
-            <RichText
-              tagName={headingTag}
-              className="nextora-testimonials__heading"
-              value={heading}
-              onChange={(value) => setAttributes({ heading: value })}
-              placeholder={__('Real Lives, Lasting Change', 'nextora')}
-              allowedFormats={[]}
-            />
-          </div>
-          <div className="nextora-testimonials__carousel-editor">
-            <div {...innerBlocksProps} />
-            <p className="nextora-testimonials__editor-hint components-base-control__help">
-              {__('Slider motion runs on the site, not in the editor.', 'nextora')}
-            </p>
-          </div>
-        </div>
-      </section>
-    </>
-  );
+	const removeTestimonial = (id: string): void => {
+		if (testimonials.length <= 1) {
+			return;
+		}
+		setTestimonials(testimonials.filter((t) => t.id !== id));
+		if (editingId === id) {
+			setEditingId(null);
+		}
+	};
+
+	const moveTestimonial = (id: string, delta: number): void => {
+		const index = testimonials.findIndex((t) => t.id === id);
+		const target = index + delta;
+		if (index < 0 || target < 0 || target >= testimonials.length) {
+			return;
+		}
+		const next = [...testimonials];
+		const tmp = next[index];
+		next[index] = next[target];
+		next[target] = tmp;
+		setTestimonials(next);
+	};
+
+	const headingTag = `h${Math.max(2, Math.min(4, headingLevel))}` as 'h2' | 'h3' | 'h4';
+
+	return (
+		<>
+			<InspectorControls>
+				<PanelBody title={__('Content', 'nextora')} initialOpen>
+					<Button variant="secondary" onClick={addTestimonial}>
+						{__('Add testimonial', 'nextora')}
+					</Button>
+				</PanelBody>
+
+				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
+					<SelectControl
+						label={__('Portrait position', 'nextora')}
+						value={imagePosition}
+						options={imagePositionOptions}
+						onChange={(v) =>
+							setAttributes({ imagePosition: (v as 'left' | 'right') ?? 'left' })
+						}
+					/>
+					<RangeControl
+						label={__('Portrait column width (%)', 'nextora')}
+						value={imageColumnRatio}
+						onChange={(v) => setAttributes({ imageColumnRatio: v ?? 50 })}
+						min={40}
+						max={60}
+					/>
+				</PanelBody>
+
+				<PanelBody title={__('Carousel', 'nextora')} initialOpen={false}>
+					<SelectControl
+						label={__('Transition', 'nextora')}
+						value={effect}
+						options={effectOptions}
+						onChange={(v) => setAttributes({ effect: (v as 'fade' | 'slide') ?? 'fade' })}
+					/>
+					<RangeControl
+						label={__('Speed (ms)', 'nextora')}
+						value={speed}
+						onChange={(v) => setAttributes({ speed: v ?? 600 })}
+						min={200}
+						max={2000}
+						step={100}
+					/>
+					<ToggleControl
+						label={__('Loop', 'nextora')}
+						checked={loop}
+						onChange={(loopValue) => setAttributes({ loop: loopValue })}
+					/>
+				</PanelBody>
+
+				<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
+					<ToggleControl
+						label={__('Enable autoplay', 'nextora')}
+						checked={autoplay}
+						onChange={(autoplayValue) => setAttributes({ autoplay: autoplayValue })}
+					/>
+					{autoplay && (
+						<>
+							<RangeControl
+								label={__('Delay (ms)', 'nextora')}
+								value={autoplayDelay}
+								onChange={(v) => setAttributes({ autoplayDelay: v ?? 6000 })}
+								min={2000}
+								max={15000}
+								step={500}
+							/>
+							<ToggleControl
+								label={__('Pause on hover', 'nextora')}
+								checked={pauseOnHover}
+								onChange={(pauseOnHoverValue) =>
+									setAttributes({ pauseOnHover: pauseOnHoverValue })
+								}
+							/>
+						</>
+					)}
+				</PanelBody>
+
+				<PanelBody title={__('Navigation', 'nextora')} initialOpen={false}>
+					<ToggleControl
+						label={__('Show pagination', 'nextora')}
+						checked={showPagination}
+						onChange={(showPaginationValue) =>
+							setAttributes({ showPagination: showPaginationValue })
+						}
+					/>
+					<ToggleControl
+						label={__('Show arrows', 'nextora')}
+						checked={showArrows}
+						onChange={(showArrowsValue) => setAttributes({ showArrows: showArrowsValue })}
+					/>
+				</PanelBody>
+
+				<PanelColorSettings
+					title={__('Colors', 'nextora')}
+					colorSettings={[
+						{
+							value: contentBackgroundColor,
+							onChange: (v) => setAttributes({ contentBackgroundColor: v ?? '' }),
+							label: __('Content panel background', 'nextora'),
+						},
+						{
+							value: headingColor,
+							onChange: (v) => setAttributes({ headingColor: v ?? '' }),
+							label: __('Heading color', 'nextora'),
+						},
+						{
+							value: quoteColor,
+							onChange: (v) => setAttributes({ quoteColor: v ?? '' }),
+							label: __('Quote color', 'nextora'),
+						},
+						{
+							value: authorNameColor,
+							onChange: (v) => setAttributes({ authorNameColor: v ?? '' }),
+							label: __('Author name color', 'nextora'),
+						},
+						{
+							value: authorMetaColor,
+							onChange: (v) => setAttributes({ authorMetaColor: v ?? '' }),
+							label: __('Author meta color', 'nextora'),
+						},
+						{
+							value: paginationColor,
+							onChange: (v) => setAttributes({ paginationColor: v ?? '' }),
+							label: __('Pagination ring color', 'nextora'),
+						},
+						{
+							value: paginationActiveColor,
+							onChange: (v) => setAttributes({ paginationActiveColor: v ?? '' }),
+							label: __('Active pagination color', 'nextora'),
+						},
+					]}
+				/>
+
+				<PanelBody title={__('Typography', 'nextora')} initialOpen={false}>
+					<BaseControl
+						className="nextora-testimonials__font-size-control"
+						label={__('Heading font size', 'nextora')}
+						id="nextora-testimonials-heading-font-size"
+						help={__(
+							'Default uses the theme Extra Large preset.',
+							'nextora',
+						)}
+					>
+						<FontSizePicker
+							value={headingFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									headingFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+					<BaseControl
+						className="nextora-testimonials__font-size-control"
+						label={__('Quote font size', 'nextora')}
+						id="nextora-testimonials-quote-font-size"
+						help={__(
+							'Default uses the theme Medium preset.',
+							'nextora',
+						)}
+					>
+						<FontSizePicker
+							value={quoteFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									quoteFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+				</PanelBody>
+
+				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
+					<ToggleControl
+						label={__('Animate on scroll', 'nextora')}
+						help={__(
+							'Fade or move content in when it enters the viewport. Disabled automatically when the visitor prefers reduced motion.',
+							'nextora',
+						)}
+						checked={enableScrollAnimation}
+						onChange={(enableScrollAnimationValue) =>
+							setAttributes({ enableScrollAnimation: enableScrollAnimationValue })
+						}
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{editingItem && (
+				<Modal
+					className="nextora-testimonials__item-modal"
+					title={
+						editingItem.authorName
+							? sprintf(__('Edit testimonial: %s', 'nextora'), editingItem.authorName)
+							: __('Edit testimonial', 'nextora')
+					}
+					onRequestClose={() => setEditingId(null)}
+					shouldCloseOnClickOutside={false}
+					headerActions={
+						<div className="nextora-testimonials__item-modal-header-actions">
+							<Button size="compact" variant="tertiary" onClick={() => setEditingId(null)}>
+								{__('Cancel', 'nextora')}
+							</Button>
+							<Button size="compact" variant="primary" onClick={() => setEditingId(null)}>
+								{__('Save', 'nextora')}
+							</Button>
+						</div>
+					}
+				>
+					<TestimonialEditForm
+						item={editingItem}
+						portraitUrl={
+							editingItem.portraitId > 0
+								? mediaUrlById.get(editingItem.portraitId)
+								: undefined
+						}
+						onPatch={(patch) => patchItem(editingItem.id, patch)}
+					/>
+				</Modal>
+			)}
+
+			<div {...blockProps}>
+				<div className="nextora-testimonials__editor-section">
+					<div className="nextora-testimonials__content nextora-testimonials__content--section-preview">
+						<div className="nextora-testimonials__content-inner">
+							<div className="nextora-testimonials__header">
+								<RichText
+									tagName={headingTag}
+									className="nextora-testimonials__heading"
+									value={headingText}
+									onChange={(v) => setAttributes({ headingText: v })}
+									placeholder={__('Section heading…', 'nextora')}
+									allowedFormats={[]}
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div className="nextora-testimonials__editor-list" aria-label={__('Testimonials', 'nextora')}>
+					{testimonials.map((item, index) => (
+						<TestimonialEditorItem
+							key={item.id}
+							item={item}
+							index={index}
+							total={testimonials.length}
+							portraitUrl={
+								item.portraitId > 0 ? mediaUrlById.get(item.portraitId) : undefined
+							}
+							imagePosition={imagePosition}
+							onEdit={() => setEditingId(item.id)}
+							onMoveUp={() => moveTestimonial(item.id, -1)}
+							onMoveDown={() => moveTestimonial(item.id, 1)}
+							onRemove={() => removeTestimonial(item.id)}
+						/>
+					))}
+				</div>
+
+				<div className="nextora-testimonials__editor-add">
+					<Button variant="secondary" onClick={addTestimonial}>
+						{__('Add testimonial', 'nextora')}
+					</Button>
+				</div>
+			</div>
+		</>
+	);
 }
