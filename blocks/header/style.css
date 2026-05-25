@@ -614,6 +614,67 @@
 	white-space: nowrap;
 }
 
+/* CTA button — after utility icons */
+.nextora-header-block__cta-wrap {
+	display: inline-flex;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.nextora-header-block__cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	min-height: 2.5rem;
+	padding: 0.5em 1.125em;
+	border: 2px solid transparent;
+	border-radius: 30rem;
+	font-family: inherit;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 300;
+	line-height: 1.25;
+	text-decoration: none;
+	white-space: nowrap;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease,
+		border-color 0.2s ease,
+		opacity 0.2s ease;
+
+	&:hover {
+		opacity: .8;
+	}
+}
+
+.nextora-header-block__cta--solid {
+	background-color: var(--wp--preset--color--primary, #000);
+	color: var(--wp--preset--color--base, #fff);
+}
+
+.nextora-header-block__cta--solid:hover,
+.nextora-header-block__cta--solid:focus-visible {
+	background-color: var(--wp--preset--color--contrast, #0a0a0a);
+	color: var(--wp--preset--color--base, #fff);
+}
+
+.nextora-header-block__cta--outline {
+	background-color: transparent;
+	border-color: var(--wp--preset--color--primary, #000);
+	color: var(--wp--preset--color--primary, #000);
+}
+
+.nextora-header-block__cta--outline:hover,
+.nextora-header-block__cta--outline:focus-visible {
+	background-color: var(--wp--preset--color--primary, #000);
+	color: var(--wp--preset--color--base, #fff);
+}
+
+.nextora-header-block__cta:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+}
+
 /* Mini-cart trigger: native `<button>` reset beyond utility rules */
 button.nextora-header-block__cart-link.nextora-header-block__cart-trigger {
 	appearance: none;
@@ -799,6 +860,10 @@ button.nextora-header-block__cart-link.nextora-header-block__cart-trigger {
 	}
 
 	.nextora-header-block__utilities--hide-cart-mobile .nextora-header-block__cart {
+		display: none !important;
+	}
+
+	.nextora-header-block__utilities--hide-cta-mobile .nextora-header-block__cta-wrap {
 		display: none !important;
 	}
 }

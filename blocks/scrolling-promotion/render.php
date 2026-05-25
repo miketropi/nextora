@@ -59,11 +59,129 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_separator' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_scrolling_promotion_normalize_item_type' ) ) {
+	/**
+	 * @param array<string, mixed> $item Raw item from attributes.
+	 */
+	function nextora_scrolling_promotion_normalize_item_type( array $item ): string {
+		$type = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
+		if ( in_array( $type, array( 'text', 'image', 'text-image' ), true ) ) {
+			return $type;
+		}
+		return 'text';
+	}
+}
+
+if ( ! function_exists( 'nextora_scrolling_promotion_item_has_content' ) ) {
+	/**
+	 * @param array<string, mixed> $item Normalized item row.
+	 */
+	function nextora_scrolling_promotion_item_has_content( array $item ): bool {
+		$type = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
+		$text = isset( $item['text'] ) ? trim( (string) $item['text'] ) : '';
+
+		if ( 'text' === $type ) {
+			return '' !== $text;
+		}
+
+		$image_id  = isset( $item['imageId'] ) ? (int) $item['imageId'] : 0;
+		$image_url = isset( $item['imageUrl'] ) ? trim( (string) $item['imageUrl'] ) : '';
+
+		if ( 'image' === $type ) {
+			return $image_id > 0 || '' !== $image_url;
+		}
+
+		return '' !== $text || $image_id > 0 || '' !== $image_url;
+	}
+}
+
+if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
+	/**
+	 * @param array<string, mixed> $item Normalized item row.
+	 */
+	function nextora_scrolling_promotion_render_item_image( array $item ): string {
+		$image_id  = isset( $item['imageId'] ) ? (int) $item['imageId'] : 0;
+		$image_url = isset( $item['imageUrl'] ) ? trim( (string) $item['imageUrl'] ) : '';
+		$image_alt = isset( $item['imageAlt'] ) ? trim( (string) $item['imageAlt'] ) : '';
+
+		if ( $image_id > 0 ) {
+			$alt = $image_alt;
+			if ( '' === $alt ) {
+				$alt = (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true );
+			}
+			$html = wp_get_attachment_image(
+				$image_id,
+				'full',
+				false,
+				array(
+					'class'    => 'nextora-scrolling-promotion__media',
+					'alt'      => $alt,
+					'loading'  => 'lazy',
+					'decoding' => 'async',
+				),
+			);
+			if ( is_string( $html ) && '' !== $html ) {
+				return $html;
+			}
+		}
+
+		if ( '' === $image_url ) {
+			return '';
+		}
+
+		return sprintf(
+			'<img class="nextora-scrolling-promotion__media" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+			esc_url( $image_url ),
+			esc_attr( $image_alt ),
+		);
+	}
+}
+
+if ( ! function_exists( 'nextora_scrolling_promotion_render_item_body' ) ) {
+	/**
+	 * @param array<string, mixed> $item Normalized item row.
+	 */
+	function nextora_scrolling_promotion_render_item_body( array $item ): string {
+		$type = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
+		$text = isset( $item['text'] ) ? trim( (string) $item['text'] ) : '';
+		$img  = nextora_scrolling_promotion_render_item_image( $item );
+
+		$parts = array();
+
+		if ( 'image' === $type ) {
+			if ( '' !== $img ) {
+				$parts[] = $img;
+			}
+			return implode( '', $parts );
+		}
+
+		if ( 'text-image' === $type ) {
+			$inner = '';
+			if ( '' !== $img ) {
+				$inner .= $img;
+			}
+			if ( '' !== $text ) {
+				$inner .= '<span class="nextora-scrolling-promotion__text">' . esc_html( $text ) . '</span>';
+			}
+			if ( '' === $inner ) {
+				return '';
+			}
+			return '<span class="nextora-scrolling-promotion__item-body nextora-scrolling-promotion__item-body--text-image">' . $inner . '</span>';
+		}
+
+		if ( '' === $text ) {
+			return '';
+		}
+
+		return '<span class="nextora-scrolling-promotion__text">' . esc_html( $text ) . '</span>';
+	}
+}
+
 if ( ! function_exists( 'nextora_scrolling_promotion_render_items' ) ) {
 	/**
-	 * @param list<array{text: string}> $items       Promotion lines.
-	 * @param bool                      $aria_hidden Duplicate set for screen readers.
-	 * @param array<string, mixed>      $attributes  Block attributes.
+	 * @param list<array<string, mixed>> $items       Promotion items.
+	 * @param bool                       $aria_hidden Duplicate set for screen readers.
+	 * @param array<string, mixed>       $attributes  Block attributes.
 	 */
 	function nextora_scrolling_promotion_render_items( array $items, bool $aria_hidden, array $attributes ): string {
 		$type   = isset( $attributes['separatorType'] ) ? (string) $attributes['separatorType'] : 'dot';
@@ -71,17 +189,20 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_items' ) ) {
 		$sep    = nextora_scrolling_promotion_render_separator( $type, $custom, $attributes );
 		$out    = '';
 
-		foreach ( $items as $index => $item ) {
-			$text = isset( $item['text'] ) ? trim( (string) $item['text'] ) : '';
-			if ( '' === $text ) {
+		foreach ( $items as $item ) {
+			if ( ! nextora_scrolling_promotion_item_has_content( $item ) ) {
 				continue;
 			}
 
+			$item_type   = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
+			$body        = nextora_scrolling_promotion_render_item_body( $item );
 			$hidden_attr = $aria_hidden ? ' aria-hidden="true"' : '';
-			$out        .= '<span class="nextora-scrolling-promotion__item"' . $hidden_attr . '>';
-			$out        .= $sep;
-			$out        .= '<span class="nextora-scrolling-promotion__text">' . esc_html( $text ) . '</span>';
-			$out        .= '</span>';
+			$item_class  = 'nextora-scrolling-promotion__item nextora-scrolling-promotion__item--' . sanitize_html_class( $item_type );
+
+			$out .= '<span class="' . esc_attr( $item_class ) . '"' . $hidden_attr . '>';
+			$out .= $sep;
+			$out .= $body;
+			$out .= '</span>';
 		}
 
 		return $out;
@@ -95,14 +216,26 @@ foreach ( $raw_items as $item ) {
 	if ( ! is_array( $item ) ) {
 		continue;
 	}
-	$text = isset( $item['text'] ) ? trim( (string) $item['text'] ) : '';
-	if ( '' !== $text ) {
-		$items[] = array( 'text' => $text );
+	$normalized = array(
+		'itemType' => nextora_scrolling_promotion_normalize_item_type( $item ),
+		'text'     => isset( $item['text'] ) ? trim( (string) $item['text'] ) : '',
+		'imageId'  => isset( $item['imageId'] ) ? (int) $item['imageId'] : 0,
+		'imageUrl' => isset( $item['imageUrl'] ) ? trim( (string) $item['imageUrl'] ) : '',
+		'imageAlt' => isset( $item['imageAlt'] ) ? trim( (string) $item['imageAlt'] ) : '',
+	);
+	if ( nextora_scrolling_promotion_item_has_content( $normalized ) ) {
+		$items[] = $normalized;
 	}
 }
 
 if ( array() === $items ) {
-	$items[] = array( 'text' => __( 'Your promotion here', 'nextora' ) );
+	$items[] = array(
+		'itemType' => 'text',
+		'text'     => __( 'Your promotion here', 'nextora' ),
+		'imageId'  => 0,
+		'imageUrl' => '',
+		'imageAlt' => '',
+	);
 }
 
 $direction = isset( $attributes['direction'] ) && 'right' === $attributes['direction'] ? 'right' : 'left';
@@ -135,6 +268,9 @@ $padding_vertical = max( 0, min( 60, $padding_vertical ) );
 $item_gap = isset( $attributes['itemGap'] ) ? (int) $attributes['itemGap'] : 40;
 $item_gap = max( 16, min( 120, $item_gap ) );
 
+$image_height = isset( $attributes['imageHeight'] ) ? (int) $attributes['imageHeight'] : 32;
+$image_height = max( 16, min( 120, $image_height ) );
+
 $separator_size = isset( $attributes['separatorSize'] ) ? (int) $attributes['separatorSize'] : 6;
 $separator_size = max( 4, min( 16, $separator_size ) );
 
@@ -161,7 +297,7 @@ if ( '' === $aria_label ) {
 }
 $aria_label = (string) apply_filters( 'nextora_scrolling_promotion_aria_label', $aria_label, $attributes );
 
-/** @var list<array{text: string}> $items */
+/** @var list<array<string, mixed>> $items */
 $items = array_values( (array) apply_filters( 'nextora_scrolling_promotion_items', $items, $attributes ) );
 
 $css_vars = array(
@@ -173,6 +309,7 @@ $css_vars = array(
 	'--nextora-marquee-letter-spacing'  => $letter_spacing . 'px',
 	'--nextora-marquee-padding'         => $padding_vertical . 'px',
 	'--nextora-marquee-gap'             => $item_gap . 'px',
+	'--nextora-marquee-image-height'    => $image_height . 'px',
 	'--nextora-marquee-speed'           => $speed . 's',
 	'--nextora-marquee-sep-size'        => $separator_size . 'px',
 	'--nextora-marquee-sep-color'       => '' !== $sep_color ? $sep_color : 'currentColor',

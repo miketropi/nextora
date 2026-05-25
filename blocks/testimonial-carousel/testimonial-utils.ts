@@ -1,0 +1,94 @@
+import type { TestimonialItem, TrustAvatar } from './types';
+
+export function createTestimonialId(): string {
+	if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+		return crypto.randomUUID();
+	}
+	return `testimonial-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+export function normalizeTestimonials(items: TestimonialItem[] | undefined): TestimonialItem[] {
+	if (!Array.isArray(items) || items.length === 0) {
+		return [];
+	}
+
+	return items.map((raw, index) => ({
+		id: typeof raw?.id === 'string' && raw.id !== '' ? raw.id : String(index + 1),
+		quoteText: typeof raw?.quoteText === 'string' ? raw.quoteText : '',
+		authorName: typeof raw?.authorName === 'string' ? raw.authorName : '',
+		authorRole: typeof raw?.authorRole === 'string' ? raw.authorRole : '',
+		authorPhotoId: typeof raw?.authorPhotoId === 'number' ? raw.authorPhotoId : 0,
+		authorPhotoAlt: typeof raw?.authorPhotoAlt === 'string' ? raw.authorPhotoAlt : '',
+		showAuthorPhoto: Boolean(raw?.showAuthorPhoto),
+		rating:
+			typeof raw?.rating === 'number' ? Math.max(0, Math.min(5, Math.round(raw.rating))) : 0,
+		quoteColor: typeof raw?.quoteColor === 'string' ? raw.quoteColor : '',
+		authorColor: typeof raw?.authorColor === 'string' ? raw.authorColor : '',
+	}));
+}
+
+export function normalizeTrustAvatars(avatars: TrustAvatar[] | undefined): TrustAvatar[] {
+	if (!Array.isArray(avatars)) {
+		return [];
+	}
+
+	return avatars
+		.filter((a) => a && typeof a === 'object')
+		.map((a, index) => ({
+			id: typeof a.id === 'number' ? a.id : 0,
+			alt: typeof a.alt === 'string' ? a.alt : `Avatar ${index + 1}`,
+		}));
+}
+
+export function buildSectionStyleVars(attrs: {
+	backgroundColor?: string;
+	paddingTop?: number;
+	paddingBottom?: number;
+	contentMaxWidth?: string;
+	topIconSize?: number;
+	topIconColor?: string;
+	paginationColor?: string;
+	paginationActiveColor?: string;
+	arrowColor?: string;
+	arrowBorderColor?: string;
+	quoteColor?: string;
+	labelColor?: string;
+	authorColor?: string;
+	authorNameColor?: string;
+	trustColor?: string;
+	starColor?: string;
+	trustAvatarSize?: number;
+	trustAvatarOverlap?: number;
+	trustAvatarBorderWidth?: number;
+	trustAvatarBorderColor?: string;
+}): Record<string, string> {
+	const vars: Record<string, string> = {
+		'--nextora-testimonial-padding-top': `${attrs.paddingTop ?? 80}px`,
+		'--nextora-testimonial-padding-bottom': `${attrs.paddingBottom ?? 80}px`,
+		'--nextora-testimonial-max-width': attrs.contentMaxWidth || '680px',
+		'--nextora-testimonial-icon-size': `${attrs.topIconSize ?? 20}px`,
+		'--nextora-testimonial-avatar-size': `${attrs.trustAvatarSize ?? 36}px`,
+		'--nextora-testimonial-avatar-overlap': `${attrs.trustAvatarOverlap ?? 10}px`,
+		'--nextora-testimonial-avatar-border': `${attrs.trustAvatarBorderWidth ?? 2.5}px`,
+	};
+
+	if (attrs.backgroundColor) vars['--nextora-testimonial-bg'] = attrs.backgroundColor;
+	if (attrs.topIconColor) vars['--nextora-testimonial-icon-color'] = attrs.topIconColor;
+	if (attrs.paginationColor) vars['--nextora-testimonial-dot-color'] = attrs.paginationColor;
+	if (attrs.paginationActiveColor) {
+		vars['--nextora-testimonial-dot-active'] = attrs.paginationActiveColor;
+	}
+	if (attrs.arrowColor) vars['--nextora-testimonial-arrow-color'] = attrs.arrowColor;
+	if (attrs.arrowBorderColor) vars['--nextora-testimonial-arrow-border'] = attrs.arrowBorderColor;
+	if (attrs.quoteColor) vars['--nextora-testimonial-quote-color'] = attrs.quoteColor;
+	if (attrs.labelColor) vars['--nextora-testimonial-label-color'] = attrs.labelColor;
+	if (attrs.authorColor) vars['--nextora-testimonial-author-color'] = attrs.authorColor;
+	if (attrs.authorNameColor) vars['--nextora-testimonial-author-name-color'] = attrs.authorNameColor;
+	if (attrs.trustColor) vars['--nextora-testimonial-trust-color'] = attrs.trustColor;
+	if (attrs.starColor) vars['--nextora-testimonial-star-color'] = attrs.starColor;
+	if (attrs.trustAvatarBorderColor) {
+		vars['--nextora-testimonial-avatar-border-color'] = attrs.trustAvatarBorderColor;
+	}
+
+	return vars;
+}

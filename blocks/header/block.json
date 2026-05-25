@@ -94,6 +94,31 @@
       "type": "boolean",
       "default": true
     },
+    "showCtaButton": {
+      "type": "boolean",
+      "default": false
+    },
+    "ctaButtonText": {
+      "type": "string",
+      "default": ""
+    },
+    "ctaButtonUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "ctaButtonTarget": {
+      "type": "boolean",
+      "default": false
+    },
+    "ctaButtonStyle": {
+      "type": "string",
+      "enum": ["solid", "outline"],
+      "default": "solid"
+    },
+    "showCtaButtonMobile": {
+      "type": "boolean",
+      "default": true
+    },
     "stickyHeader": {
       "type": "boolean",
       "default": false

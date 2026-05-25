@@ -420,12 +420,14 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 
 	$hide_search_m = isset( $atts['showSearchMobile'] ) && ! (bool) $atts['showSearchMobile'];
 	$hide_cart_m   = isset( $atts['showCartMobile'] ) && ! (bool) $atts['showCartMobile'];
+	$hide_cta_m    = isset( $atts['showCtaButtonMobile'] ) && ! (bool) $atts['showCtaButtonMobile'];
+	$show_cta      = ! empty( $atts['showCtaButton'] );
 
 	ob_start();
 
 	do_action( 'nextora_header_block_utilities_start', $atts );
 	?>
-	<div class="nextora-header-block__utilities<?php echo $hide_search_m ? ' nextora-header-block__utilities--hide-search-mobile' : ''; ?><?php echo $hide_cart_m ? ' nextora-header-block__utilities--hide-cart-mobile' : ''; ?>">
+	<div class="nextora-header-block__utilities<?php echo $hide_search_m ? ' nextora-header-block__utilities--hide-search-mobile' : ''; ?><?php echo $hide_cart_m ? ' nextora-header-block__utilities--hide-cart-mobile' : ''; ?><?php echo $hide_cta_m ? ' nextora-header-block__utilities--hide-cta-mobile' : ''; ?>">
 		<?php if ( $show_search && apply_filters( 'nextora_show_header_search_modal', true ) ) : ?>
 			<?php if ( isset( $atts['searchMode'] ) && 'simple' === $atts['searchMode'] ) : ?>
 				<div class="nextora-header-block__search nextora-header-block__search--simple">
@@ -563,6 +565,30 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 				</a>
 			</div>
 		<?php endif; ?>
+
+		<?php
+		if ( $show_cta ) :
+			$cta_text = isset( $atts['ctaButtonText'] ) ? trim( (string) $atts['ctaButtonText'] ) : '';
+			if ( '' !== $cta_text ) :
+				$cta_url   = isset( $atts['ctaButtonUrl'] ) ? trim( (string) $atts['ctaButtonUrl'] ) : '';
+				$cta_url   = '' !== $cta_url ? esc_url( $cta_url ) : '#';
+				$cta_new   = ! empty( $atts['ctaButtonTarget'] );
+				$cta_style = isset( $atts['ctaButtonStyle'] ) && 'outline' === $atts['ctaButtonStyle'] ? 'outline' : 'solid';
+				$cta_class = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style );
+				?>
+				<div class="nextora-header-block__cta-wrap">
+					<a
+						class="<?php echo esc_attr( $cta_class ); ?>"
+						href="<?php echo esc_url( $cta_url ); ?>"
+						<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+					>
+						<?php echo esc_html( $cta_text ); ?>
+					</a>
+				</div>
+				<?php
+			endif;
+		endif;
+		?>
 
 		<?php do_action( 'nextora_header_block_utilities_end', $atts ); ?>
 	</div>
