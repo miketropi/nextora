@@ -1,0 +1,85 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/testimonials",
+  "title": "Testimonials",
+  "category": "design",
+  "description": "Split-screen testimonial carousel with portrait photos, section heading, and ring pagination.",
+  "keywords": ["testimonial", "quote", "reviews", "carousel", "swiper", "nextora"],
+  "textdomain": "nextora",
+  "icon": "format-quote",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "margin": true
+    }
+  },
+  "attributes": {
+    "testimonials": {
+      "type": "array",
+      "default": [
+        {
+          "id": "1",
+          "quoteText": "Thanks to the sponsorship program, I was able to continue my education and now I'm pursuing my dream career in engineering.",
+          "authorName": "Zainab",
+          "authorAge": "16 Years",
+          "authorLocation": "Lagos, Nigeria",
+          "portraitId": 0,
+          "portraitAlt": ""
+        },
+        {
+          "id": "2",
+          "quoteText": "The support changed everything for my family. We finally have hope for a better future.",
+          "authorName": "Amara",
+          "authorAge": "14 Years",
+          "authorLocation": "Nairobi, Kenya",
+          "portraitId": 0,
+          "portraitAlt": ""
+        },
+        {
+          "id": "3",
+          "quoteText": "I never thought I could go back to school. Now I'm top of my class and dreaming bigger.",
+          "authorName": "Fatou",
+          "authorAge": "15 Years",
+          "authorLocation": "Dakar, Senegal",
+          "portraitId": 0,
+          "portraitAlt": ""
+        }
+      ]
+    },
+    "headingText": { "type": "string", "default": "Real Lives, Lasting Change" },
+    "headingLevel": { "type": "number", "default": 2 },
+    "headingFontSize": { "type": "string", "default": "" },
+    "quoteFontSize": { "type": "string", "default": "" },
+    "imagePosition": { "type": "string", "default": "left" },
+    "imageColumnRatio": { "type": "number", "default": 50 },
+    "showPagination": { "type": "boolean", "default": true },
+    "showArrows": { "type": "boolean", "default": false },
+    "contentBackgroundColor": { "type": "string", "default": "" },
+    "effect": { "type": "string", "default": "fade" },
+    "speed": { "type": "number", "default": 600 },
+    "loop": { "type": "boolean", "default": true },
+    "autoplay": { "type": "boolean", "default": true },
+    "autoplayDelay": { "type": "number", "default": 6000 },
+    "pauseOnHover": { "type": "boolean", "default": true },
+    "headingColor": { "type": "string", "default": "" },
+    "quoteColor": { "type": "string", "default": "" },
+    "authorNameColor": { "type": "string", "default": "" },
+    "authorMetaColor": { "type": "string", "default": "" },
+    "paginationColor": { "type": "string", "default": "" },
+    "paginationActiveColor": { "type": "string", "default": "" },
+    "enableScrollAnimation": { "type": "boolean", "default": true }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "style": "file:./view.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}
