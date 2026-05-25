@@ -162,6 +162,14 @@
 	height: auto;
 }
 
+.nextora-testimonials--effect-fade-up .nextora-testimonials__content-swiper {
+	overflow: hidden;
+}
+
+.nextora-testimonials--effect-fade-up .nextora-testimonials__content-swiper .swiper-slide {
+	will-change: opacity, transform;
+}
+
 .nextora-testimonials__content-inner .nextora-testimonials__quote {
 	margin-block: 0;
 	margin: 0 0 var(--wp--preset--spacing--30, 1rem) ;

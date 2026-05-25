@@ -1,4 +1,4 @@
-export type TestimonialsEffect = 'fade' | 'slide';
+export type TestimonialsEffect = 'fade' | 'slide' | 'fadeUp';
 
 export type TestimonialsImagePosition = 'left' | 'right';
 

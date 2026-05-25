@@ -23,6 +23,7 @@ gsap.registerPlugin(ScrollTrigger);
 const SCROLL_INIT_ATTR = 'data-nextora-testimonials-scroll-init';
 /** Shrink viewport bottom ~15% so reveal fires near the 85% line (like ScrollTrigger `top 85%`). */
 const REVEAL_ROOT_MARGIN = '0px 0px -15% 0px';
+const FADE_UP_OFFSET = 28;
 
 type SwiperOpts = {
 	effect?: string;
@@ -141,6 +142,52 @@ function initScrollReveal(section: HTMLElement): void {
 	observer.observe(contentInner);
 }
 
+type SlideEffect = 'fade' | 'slide' | 'fadeUp';
+
+function resolveSlideEffect(raw: string | undefined): SlideEffect {
+	if (raw === 'slide') {
+		return 'slide';
+	}
+	if (raw === 'fadeUp') {
+		return 'fadeUp';
+	}
+	return 'fade';
+}
+
+function initFadeUpSlides(contentEl: HTMLElement): void {
+	const slides = contentEl.querySelectorAll<HTMLElement>('.swiper-slide');
+	slides.forEach((slide) => {
+		gsap.set(slide, { opacity: 0, y: FADE_UP_OFFSET, force3D: true });
+	});
+	const active = contentEl.querySelector<HTMLElement>('.swiper-slide-active');
+	if (active) {
+		gsap.set(active, { opacity: 1, y: 0 });
+	}
+}
+
+function runFadeUpTransition(contentEl: HTMLElement, speedMs: number): void {
+	const duration = speedMs / 1000;
+	contentEl.querySelectorAll<HTMLElement>('.swiper-slide').forEach((slide) => {
+		if (slide.classList.contains('swiper-slide-active')) {
+			gsap.to(slide, {
+				opacity: 1,
+				y: 0,
+				duration,
+				ease: 'power3.out',
+				overwrite: true,
+			});
+			return;
+		}
+		gsap.to(slide, {
+			opacity: 0,
+			y: FADE_UP_OFFSET,
+			duration: duration * 0.65,
+			ease: 'power2.in',
+			overwrite: true,
+		});
+	});
+}
+
 function syncMediaStack(root: HTMLElement, activeIndex: number): void {
 	root.querySelectorAll<HTMLElement>('.nextora-testimonials__media-item').forEach((item, index) => {
 		item.classList.toggle('is-active', index === activeIndex);
@@ -179,8 +226,11 @@ function initSwiperRoot(root: HTMLElement): void {
 	const opts = getOpts(root);
 	const showArrows = opts.showArrows === true;
 	const showPagination = opts.showPagination !== false;
-	const effect = opts.effect === 'slide' ? 'slide' : 'fade';
+	let effect = resolveSlideEffect(opts.effect);
 	const reduced = prefersReducedMotion();
+	if (effect === 'fadeUp' && reduced) {
+		effect = 'slide';
+	}
 	const useLoop = Boolean(opts.loop) && slideCount > 1;
 	const speed = typeof opts.speed === 'number' ? opts.speed : 600;
 
@@ -210,6 +260,7 @@ function initSwiperRoot(root: HTMLElement): void {
 		}
 
 		const modules = [Pagination, Autoplay, Keyboard, A11y];
+		const swiperEffect = effect === 'fadeUp' ? 'slide' : effect;
 		if (effect === 'fade') {
 			modules.push(EffectFade);
 		}
@@ -217,13 +268,15 @@ function initSwiperRoot(root: HTMLElement): void {
 			modules.push(Navigation);
 		}
 
+		const swiperSpeed = effect === 'fadeUp' ? 0 : speed;
+
 		const contentSwiper = new Swiper(contentEl, {
 			modules,
-			effect,
+			effect: swiperEffect,
 			...(effect === 'fade' ? { fadeEffect: { crossFade: true } } : {}),
 			slidesPerView: 1,
 			loop: useLoop,
-			speed,
+			speed: swiperSpeed,
 			watchOverflow: true,
 			observer: true,
 			observeParents: true,
@@ -261,7 +314,15 @@ function initSwiperRoot(root: HTMLElement): void {
 			syncMediaStack(root, targetIndex);
 		};
 
-		contentSwiper.on('slideChangeTransitionStart', syncMedia);
+		if (effect === 'fadeUp') {
+			initFadeUpSlides(contentEl);
+			contentSwiper.on('slideChangeTransitionStart', () => {
+				runFadeUpTransition(contentEl, speed);
+				syncMedia();
+			});
+		} else {
+			contentSwiper.on('slideChangeTransitionStart', syncMedia);
+		}
 		contentSwiper.on('slideChange', syncMedia);
 		syncMedia();
 
