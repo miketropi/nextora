@@ -125,7 +125,7 @@
 	flex-direction: column;
 	min-width: 0;
 	overflow: hidden;
-	background-color: var(--nextora-testimonials-content-bg, var(--wp--preset--color--base, #fff));
+	background-color: var(--nextora-testimonials-content-bg, var(--wp--preset--color--surface, #FBF7EF));
 	color: inherit;
 }
 
@@ -136,7 +136,6 @@
 	flex: 1;
 	min-height: 0;
 	padding: var(--wp--preset--spacing--50, 3rem) var(--wp--preset--spacing--40, 2rem);
-	background: var(--wp--preset--color--surface, #FBF7EF);
 }
 
 
