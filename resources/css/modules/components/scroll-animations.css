@@ -1,0 +1,22 @@
+/**
+ * Scroll animation utilities — class-driven reveals (GSAP + ScrollTrigger in main.js).
+ *
+ * Prevents flash of unstyled content before JS sets initial GSAP state.
+ * `prefers-reduced-motion`: elements stay visible; JS skips tweens.
+ */
+
+.nextora-scroll-animation--pending,
+[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),
+[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),
+[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]) {
+	opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-scroll-animation--pending,
+	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),
+	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),
+	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]) {
+		opacity: 1;
+	}
+}

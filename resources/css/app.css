@@ -208,6 +208,7 @@
 @import "./modules/components/form-fields.css";
 @import "./modules/components/modal.css";
 @import "./modules/components/spotlight-search.css";
+@import "./modules/components/scroll-animations.css";
 @import "./modules/components/hero-section.css";
 @import "./modules/prose/entry-content.css";
 @import "./modules/overrides/layout-tweaks.css";

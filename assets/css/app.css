@@ -2815,6 +2815,14 @@
     }
   }
 }
+.nextora-scroll-animation--pending, [class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]) {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nextora-scroll-animation--pending,	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]) {
+    opacity: 1;
+  }
+}
 @layer components {
   .wp-block-nextora-hero-section .nextora-hero__grid--legacy,	.wp-block-nextora-hero-section.nextora-hero--legacy .nextora-hero__grid {
     grid-template-columns: 1fr;

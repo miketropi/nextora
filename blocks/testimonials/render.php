@@ -222,10 +222,12 @@ if ( ! in_array( $image_position, array( 'left', 'right' ), true ) ) {
 
 $image_ratio = isset( $attributes['imageColumnRatio'] ) ? max( 40, min( 60, (int) $attributes['imageColumnRatio'] ) ) : 50;
 
-$effect = isset( $attributes['effect'] ) ? sanitize_key( (string) $attributes['effect'] ) : 'fade';
-if ( ! in_array( $effect, array( 'fade', 'slide' ), true ) ) {
-	$effect = 'fade';
-}
+$effect_raw = isset( $attributes['effect'] ) ? sanitize_key( (string) $attributes['effect'] ) : 'fade';
+$effect     = match ( $effect_raw ) {
+	'slide' => 'slide',
+	'fadeup' => 'fadeUp',
+	default => 'fade',
+};
 $speed       = isset( $attributes['speed'] ) ? max( 200, min( 2000, (int) $attributes['speed'] ) ) : 600;
 $loop        = ! isset( $attributes['loop'] ) || (bool) $attributes['loop'];
 $autoplay    = ! isset( $attributes['autoplay'] ) || (bool) $attributes['autoplay'];
@@ -289,10 +291,17 @@ foreach ( $css_vars as $key => $value ) {
 }
 $inline_style = implode( ';', $style_parts );
 
+$effect_class = match ( $effect ) {
+	'fadeUp' => 'fade-up',
+	'slide' => 'slide',
+	default => 'fade',
+};
+
 $wrapper_classes = array(
 	'nextora-testimonials',
 	'nextora-testimonials--loading',
 	'nextora-testimonials--image-' . $image_position,
+	'nextora-testimonials--effect-' . $effect_class,
 );
 
 $wrapper_classes = (array) apply_filters(

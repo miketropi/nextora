@@ -38,6 +38,7 @@ interface EditProps {
 
 const effectOptions = [
 	{ label: __('Fade', 'nextora'), value: 'fade' },
+	{ label: __('Fade up', 'nextora'), value: 'fadeUp' },
 	{ label: __('Slide', 'nextora'), value: 'slide' },
 ];
 
@@ -330,7 +331,11 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 						label={__('Transition', 'nextora')}
 						value={effect}
 						options={effectOptions}
-						onChange={(v) => setAttributes({ effect: (v as 'fade' | 'slide') ?? 'fade' })}
+						onChange={(v) =>
+							setAttributes({
+								effect: (v as TestimonialsAttributes['effect']) ?? 'fade',
+							})
+						}
 					/>
 					<RangeControl
 						label={__('Speed (ms)', 'nextora')}
