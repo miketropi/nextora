@@ -17,7 +17,8 @@
     "resources/ts/**/*.ts",
     "resources/ts/**/*.d.ts",
     "blocks/**/*.ts",
-    "blocks/**/*.tsx"
+    "blocks/**/*.tsx",
+    "blocks/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",

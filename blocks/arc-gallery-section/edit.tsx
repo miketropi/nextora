@@ -55,6 +55,7 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 		galleryOverflow = true,
 		eyebrowText = '',
 		headingText = '',
+		descriptionText = '',
 		headingLevel = 2,
 		textAlign = 'center',
 		contentMaxWidth = '700px',
@@ -490,7 +491,7 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 					<RangeControl
 						label={__('Content vertical offset (px)', 'nextora')}
 						help={__(
-							'Move eyebrow, heading, and buttons up (negative) or down (positive).',
+							'Move eyebrow, heading, description, and buttons up (negative) or down (positive).',
 							'nextora',
 						)}
 						value={contentOffsetY}
@@ -606,6 +607,14 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 						placeholder={__('Your heading here…', 'nextora')}
 						allowedFormats={[]}
 						withoutInteractiveFormatting
+					/>
+					<RichText
+						tagName="div"
+						className="nextora-arc-gallery__description"
+						value={descriptionText}
+						onChange={(v) => setAttributes({ descriptionText: v })}
+						placeholder={__('Add a short description…', 'nextora')}
+						allowedFormats={['core/bold', 'core/italic', 'core/link']}
 					/>
 					<div className="nextora-arc-gallery__buttons">
 						{showPrimaryButton && (

@@ -42,6 +42,7 @@
     "galleryOverflow": { "type": "boolean", "default": true },
     "eyebrowText": { "type": "string", "default": "" },
     "headingText": { "type": "string", "default": "" },
+    "descriptionText": { "type": "string", "default": "" },
     "headingLevel": { "type": "number", "default": 2 },
     "textAlign": { "type": "string", "default": "center" },
     "contentMaxWidth": { "type": "string", "default": "700px" },

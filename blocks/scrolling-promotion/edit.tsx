@@ -3,6 +3,8 @@ import { useState } from '@wordpress/element';
 import {
 	BlockControls,
 	InspectorControls,
+	MediaUpload,
+	MediaUploadCheck,
 	PanelColorSettings,
 	useBlockProps,
 } from '@wordpress/block-editor';
@@ -19,11 +21,22 @@ import {
 	ToolbarGroup,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
-import type { ScrollingPromotionAttributes, ScrollingPromotionItem } from './types';
+import type {
+	ScrollingPromotionAttributes,
+	ScrollingPromotionItem,
+	ScrollingPromotionItemType,
+} from './types';
+import { SCROLLING_PROMOTION_ITEM_MEDIA_TYPES } from './types';
 
 interface EditProps {
 	attributes: ScrollingPromotionAttributes;
 	setAttributes: (attrs: Partial<ScrollingPromotionAttributes>) => void;
+}
+
+interface WPMediaSelection {
+	id?: number;
+	url?: string;
+	alt?: string;
 }
 
 const directionOptions = [
@@ -38,6 +51,12 @@ const separatorOptions = [
 	{ label: __('Star', 'nextora'), value: 'star' },
 	{ label: __('Custom', 'nextora'), value: 'custom' },
 	{ label: __('None', 'nextora'), value: 'none' },
+];
+
+const itemTypeOptions = [
+	{ label: __('Text', 'nextora'), value: 'text' },
+	{ label: __('Image', 'nextora'), value: 'image' },
+	{ label: __('Text + image', 'nextora'), value: 'text-image' },
 ];
 
 const fontWeightOptions = [
@@ -56,12 +75,31 @@ const textTransformOptions = [
 	{ label: __('Capitalize', 'nextora'), value: 'capitalize' },
 ];
 
+const EMPTY_ITEM: ScrollingPromotionItem = {
+	itemType: 'text',
+	text: '',
+	imageId: 0,
+	imageUrl: '',
+	imageAlt: '',
+};
+
+function normalizeItemType(raw: unknown): ScrollingPromotionItemType {
+	if (raw === 'image' || raw === 'text-image') {
+		return raw;
+	}
+	return 'text';
+}
+
 function normalizeItems(items: ScrollingPromotionItem[] | undefined): ScrollingPromotionItem[] {
 	if (!Array.isArray(items) || items.length === 0) {
-		return [{ text: __('Your promotion here', 'nextora') }];
+		return [{ ...EMPTY_ITEM, text: __('Your promotion here', 'nextora') }];
 	}
 	return items.map((item) => ({
+		itemType: normalizeItemType(item?.itemType),
 		text: typeof item?.text === 'string' ? item.text : '',
+		imageId: typeof item?.imageId === 'number' ? item.imageId : 0,
+		imageUrl: typeof item?.imageUrl === 'string' ? item.imageUrl : '',
+		imageAlt: typeof item?.imageAlt === 'string' ? item.imageAlt : '',
 	}));
 }
 
@@ -71,6 +109,7 @@ export default function ScrollingPromotionEdit({
 }: EditProps) {
 	const [previewAnimating, setPreviewAnimating] = useState(false);
 	const items = normalizeItems(attributes.items);
+	const imageHeight = attributes.imageHeight ?? 32;
 
 	const blockProps = useBlockProps({
 		className: [
@@ -81,13 +120,13 @@ export default function ScrollingPromotionEdit({
 			.join(' '),
 	});
 
-	const updateItem = (index: number, text: string): void => {
-		const next = items.map((item, i) => (i === index ? { text } : item));
+	const patchItem = (index: number, patch: Partial<ScrollingPromotionItem>): void => {
+		const next = items.map((item, i) => (i === index ? { ...item, ...patch } : item));
 		setAttributes({ items: next });
 	};
 
 	const addItem = (): void => {
-		setAttributes({ items: [...items, { text: '' }] });
+		setAttributes({ items: [...items, { ...EMPTY_ITEM }] });
 	};
 
 	const removeItem = (index: number): void => {
@@ -108,6 +147,20 @@ export default function ScrollingPromotionEdit({
 		next[target] = tmp;
 		setAttributes({ items: next });
 	};
+
+	const onSelectItemImage = (index: number, media: WPMediaSelection): void => {
+		patchItem(index, {
+			imageId: media.id ?? 0,
+			imageUrl: media.url ?? '',
+			imageAlt: media.alt ?? '',
+		});
+	};
+
+	const showTextField = (type: ScrollingPromotionItemType): boolean =>
+		type === 'text' || type === 'text-image';
+
+	const showImageField = (type: ScrollingPromotionItemType): boolean =>
+		type === 'image' || type === 'text-image';
 
 	return (
 		<>
@@ -133,11 +186,78 @@ export default function ScrollingPromotionEdit({
 								key={`item-${index}`}
 								className="nextora-scrolling-promotion__inspector-item"
 							>
-								<TextControl
-									label={__('Item', 'nextora') + ` ${index + 1}`}
-									value={item.text}
-									onChange={(text) => updateItem(index, text ?? '')}
+								<SelectControl
+									label={__('Item', 'nextora') + ` ${index + 1} — ` + __('Type', 'nextora')}
+									value={item.itemType}
+									options={itemTypeOptions}
+									onChange={(itemType) =>
+										patchItem(index, {
+											itemType: normalizeItemType(itemType),
+										})
+									}
 								/>
+								{showTextField(item.itemType) && (
+									<TextControl
+										label={__('Text', 'nextora')}
+										value={item.text}
+										onChange={(text) => patchItem(index, { text: text ?? '' })}
+									/>
+								)}
+								{showImageField(item.itemType) && (
+									<MediaUploadCheck>
+										<MediaUpload
+											onSelect={(media) => onSelectItemImage(index, media)}
+											allowedTypes={[...SCROLLING_PROMOTION_ITEM_MEDIA_TYPES]}
+											value={item.imageId > 0 ? item.imageId : undefined}
+											render={({ open }) => (
+												<div className="nextora-scrolling-promotion__inspector-media">
+													{item.imageUrl ? (
+														<img
+															src={item.imageUrl}
+															alt=""
+															className="nextora-scrolling-promotion__inspector-media-preview"
+														/>
+													) : null}
+													<Button variant="secondary" onClick={open}>
+														{item.imageUrl
+															? __('Replace image', 'nextora')
+															: __('Choose image', 'nextora')}
+													</Button>
+													{item.imageUrl ? (
+														<Button
+															variant="link"
+															isDestructive
+															onClick={() =>
+																patchItem(index, {
+																	imageId: 0,
+																	imageUrl: '',
+																	imageAlt: '',
+																})
+															}
+														>
+															{__('Remove image', 'nextora')}
+														</Button>
+													) : null}
+													<p className="components-base-control__help">
+														{__(
+															'JPEG, PNG, GIF, WebP, AVIF, or SVG (when allowed in Media).',
+															'nextora',
+														)}
+													</p>
+												</div>
+											)}
+										/>
+									</MediaUploadCheck>
+								)}
+								{showImageField(item.itemType) && item.imageUrl ? (
+									<TextControl
+										label={__('Image alt text', 'nextora')}
+										value={item.imageAlt}
+										onChange={(imageAlt) =>
+											patchItem(index, { imageAlt: imageAlt ?? '' })
+										}
+									/>
+								) : null}
 								<div className="nextora-scrolling-promotion__inspector-item-actions">
 									<Button
 										variant="secondary"
@@ -218,17 +338,15 @@ export default function ScrollingPromotionEdit({
 						/>
 					)}
 					{attributes.separatorType !== 'none' && (
-						<>
-							<RangeControl
-								label={__('Size (px)', 'nextora')}
-								value={attributes.separatorSize}
-								onChange={(separatorSize) =>
-									setAttributes({ separatorSize: separatorSize ?? 6 })
-								}
-								min={4}
-								max={16}
-							/>
-						</>
+						<RangeControl
+							label={__('Size (px)', 'nextora')}
+							value={attributes.separatorSize}
+							onChange={(separatorSize) =>
+								setAttributes({ separatorSize: separatorSize ?? 6 })
+							}
+							min={4}
+							max={16}
+						/>
 					)}
 				</PanelBody>
 
@@ -313,23 +431,32 @@ export default function ScrollingPromotionEdit({
 						min={16}
 						max={120}
 					/>
+					<RangeControl
+						label={__('Image height (px)', 'nextora')}
+						help={__(
+							'Height for image and text + image items. Width scales automatically.',
+							'nextora',
+						)}
+						value={imageHeight}
+						onChange={(v) => setAttributes({ imageHeight: v ?? 32 })}
+						min={16}
+						max={120}
+					/>
 					<ToggleControl
 						label={__('Show top and bottom borders', 'nextora')}
 						checked={attributes.showBorders}
 						onChange={(showBorders) => setAttributes({ showBorders })}
 					/>
 					{attributes.showBorders && (
-						<>
-							<RangeControl
-								label={__('Border width (px)', 'nextora')}
-								value={attributes.borderWidth}
-								onChange={(borderWidth) =>
-									setAttributes({ borderWidth: borderWidth ?? 1 })
-								}
-								min={1}
-								max={3}
-							/>
-						</>
+						<RangeControl
+							label={__('Border width (px)', 'nextora')}
+							value={attributes.borderWidth}
+							onChange={(borderWidth) =>
+								setAttributes({ borderWidth: borderWidth ?? 1 })
+							}
+							min={1}
+							max={3}
+						/>
 					)}
 				</PanelBody>
 
@@ -355,7 +482,7 @@ export default function ScrollingPromotionEdit({
 						placeholder={__('Promotional announcements', 'nextora')}
 						help={__(
 							'Describes this strip for screen readers. Leave empty for the default.',
-							'nextora'
+							'nextora',
 						)}
 					/>
 				</PanelBody>

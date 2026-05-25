@@ -4,3 +4,4 @@ vendor/
 .php-cs-fixer.cache
 *.log
 .DS_Store
+.php-cs-fixer.cache

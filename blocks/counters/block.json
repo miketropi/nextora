@@ -1,0 +1,106 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/counters",
+  "title": "Counters",
+  "category": "design",
+  "description": "Animated statistics grid with number count-up on scroll.",
+  "keywords": ["stats", "numbers", "counters", "figures", "nextora"],
+  "textdomain": "nextora",
+  "icon": "chart-bar",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    }
+  },
+  "attributes": {
+    "items": {
+      "type": "array",
+      "default": [
+        {
+          "id": "1",
+          "number": 100,
+          "suffix": "k+",
+          "prefix": "",
+          "label": "Books & Supplies Provided"
+        },
+        {
+          "id": "2",
+          "number": 50,
+          "suffix": "%",
+          "prefix": "",
+          "label": "Student Satisfaction Rate"
+        },
+        {
+          "id": "3",
+          "number": 20,
+          "suffix": "+",
+          "prefix": "",
+          "label": "Years of Experience"
+        }
+      ]
+    },
+    "columns": {
+      "type": "number",
+      "default": 3
+    },
+    "columnGap": {
+      "type": "string",
+      "default": ""
+    },
+    "divider": {
+      "type": "boolean",
+      "default": false
+    },
+    "dividerColor": {
+      "type": "string",
+      "default": ""
+    },
+    "textAlign": {
+      "type": "string",
+      "default": "center"
+    },
+    "enableCountUp": {
+      "type": "boolean",
+      "default": true
+    },
+    "countUpDuration": {
+      "type": "number",
+      "default": 2000
+    },
+    "countUpEasing": {
+      "type": "string",
+      "default": "easeOutCubic"
+    },
+    "numberColor": {
+      "type": "string",
+      "default": ""
+    },
+    "labelColor": {
+      "type": "string",
+      "default": ""
+    },
+    "numberFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "labelFontSize": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "render": "file:./render.php"
+}

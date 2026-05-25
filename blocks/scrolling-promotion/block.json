@@ -4,7 +4,7 @@
   "name": "nextora/scrolling-promotion",
   "title": "Scrolling Promotion",
   "category": "theme",
-  "description": "Continuous horizontal scrolling text marquee for promotions, announcements, and brand statements.",
+  "description": "Continuous horizontal scrolling marquee for text, logos, or text with images.",
   "keywords": ["marquee", "promotion", "announcement", "ticker", "nextora"],
   "textdomain": "nextora",
   "icon": "controls-repeat",
@@ -23,7 +23,15 @@
   "attributes": {
     "items": {
       "type": "array",
-      "default": [{ "text": "Your promotion here" }]
+      "default": [
+        {
+          "itemType": "text",
+          "text": "Your promotion here",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        }
+      ]
     },
     "direction": {
       "type": "string",
@@ -84,6 +92,10 @@
     "itemGap": {
       "type": "number",
       "default": 40
+    },
+    "imageHeight": {
+      "type": "number",
+      "default": 32
     },
     "showBorders": {
       "type": "boolean",
