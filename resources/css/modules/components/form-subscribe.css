@@ -1,0 +1,140 @@
+/**
+ * MC4WP subscribe — horizontal input group (white field + teal send button).
+ * Targets default Mailchimp for WordPress markup: `.mc4wp-form` > `.mc4wp-form-fields`.
+ * Parent sections (hero/CTA) supply background color; this module styles the control bar only.
+ */
+@layer components {
+	:where(.mc4wp-form) {
+		--nextora-form-subscribe-accent: var(--wp--preset--color--primary, #0a0a0a);
+		--nextora-form-subscribe-accent-hover: var(--wp--preset--color--primary, #0a0a0a);
+		--nextora-form-subscribe-border: color-mix(
+			in srgb,
+			var(--wp--preset--color--secondary, #525252) 28%,
+			transparent
+		);
+		--nextora-form-subscribe-control-h: 3rem;
+
+		width: 100%;
+		max-width: 36rem;
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	:where(.mc4wp-form .mc4wp-form-fields) {
+		display: flex;
+		align-items: stretch;
+		width: 100%;
+	}
+
+	:where(.mc4wp-form .mc4wp-form-fields p) {
+		display: contents;
+		margin: 0;
+	}
+
+	:where(.mc4wp-form .mc4wp-form-fields label) {
+		flex: 1 1 auto;
+		min-width: 0;
+		display: block;
+		margin: 0;
+		font-size: 0;
+		line-height: 0;
+	}
+	.mc4wp-form .mc4wp-response{
+		display: block;
+		width: 100%;
+	}
+	.mc4wp-form .mc4wp-response:empty{
+		display: none;
+	}
+
+	.mc4wp-form .mc4wp-form-fields input[type="email"] {
+		box-sizing: border-box;
+		display: block;
+		width: 100%;
+		max-width: none;
+		height: var(--nextora-form-subscribe-control-h);
+		margin: 0;
+		padding: 0 1rem;
+		border: 1px solid var(--nextora-form-subscribe-border);
+		border-right: 0;
+		border-radius: 0;
+		background-color: var(--wp--preset--color--base, #ffffff);
+		box-shadow: none;
+		font-family: inherit;
+		font-size: 0.9375rem;
+		line-height: 1.4;
+		color: var(--wp--preset--color--contrast, #0a0a0a);
+		transition:
+			border-color 0.15s ease,
+			box-shadow 0.15s ease;
+	}
+
+	.mc4wp-form .mc4wp-form-fields input[type="email"]::placeholder {
+		color: color-mix(
+			in srgb,
+			var(--wp--preset--color--secondary, #525252) 55%,
+			transparent
+		);
+		opacity: 1;
+		font-weight: 300; 
+	}
+
+	.mc4wp-form .mc4wp-form-fields input[type="email"]:focus-visible {
+		outline: none;
+		border-color: var(--nextora-form-subscribe-accent);
+		box-shadow: inset 0 0 0 1px var(--nextora-form-subscribe-accent);
+	}
+
+	.mc4wp-form .mc4wp-form-fields input[type="submit"] {
+		box-sizing: border-box;
+		flex: 0 0 var(--nextora-form-subscribe-control-h);
+		width: var(--nextora-form-subscribe-control-h);
+		height: var(--nextora-form-subscribe-control-h);
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		background-color: var(--nextora-form-subscribe-accent);
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 2 11 13'/%3E%3Cpath d='M22 2 15 22 11 13 2 9 22 2z'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 1.125rem;
+		color: transparent;
+		cursor: pointer;
+		font-size: 0;
+		line-height: 0;
+		overflow: hidden;
+		-webkit-appearance: none;
+		appearance: none;
+		transition:
+			background-color 0.2s ease,
+			opacity 0.2s ease;
+	}
+
+	.mc4wp-form .mc4wp-form-fields input[type="submit"]:hover {
+		background-color: var(--nextora-form-subscribe-accent-hover);
+	}
+
+	.mc4wp-form .mc4wp-form-fields input[type="submit"]:focus-visible {
+		outline: 2px solid var(--wp--preset--color--base, #ffffff);
+		outline-offset: -2px;
+	}
+
+	.mc4wp-form .mc4wp-form-fields input[type="submit"]:disabled {
+		opacity: 0.55;
+		cursor: not-allowed;
+	}
+
+	:where(.mc4wp-form .mc4wp-response) {
+		margin-block-start: 0.75rem;
+		font-size: 0.875rem;
+		line-height: 1.45;
+	}
+
+	@media (max-width: 639px) {
+		:where(.mc4wp-form) {
+			--nextora-form-subscribe-control-h: 2.75rem;
+		}
+	}
+}

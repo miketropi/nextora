@@ -4,6 +4,10 @@
 
 @import './style.css';
 
+.nextora-testimonials--editor {
+	--nextora-testimonials-portrait-placeholder-image: url('../../assets/images/placeholder/general-img-portrait.png');
+}
+
 .nextora-testimonials--editor .nextora-testimonials__editor-section {
 	margin-bottom: var(--wp--preset--spacing--30, 1.5rem);
 }

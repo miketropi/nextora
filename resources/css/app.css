@@ -206,6 +206,7 @@
 @import "./modules/base/entry-column.css";
 @import "./modules/components/buttons.css";
 @import "./modules/components/form-fields.css";
+@import "./modules/components/form-subscribe.css";
 @import "./modules/components/modal.css";
 @import "./modules/components/spotlight-search.css";
 @import "./modules/components/scroll-animations.css";

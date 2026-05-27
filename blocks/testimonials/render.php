@@ -267,8 +267,11 @@ $swiper_opts = (array) apply_filters( 'nextora_testimonials_swiper_options', $sw
 $opts_json   = wp_json_encode( $swiper_opts );
 $opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 
+$portrait_placeholder_url = get_theme_file_uri( 'assets/images/placeholder/general-img-portrait.png' );
+
 $css_vars = array(
-	'--nextora-testimonials-image-ratio'       => $image_ratio . '%',
+	'--nextora-testimonials-portrait-placeholder-image' => 'url(' . esc_url( $portrait_placeholder_url ) . ')',
+	'--nextora-testimonials-image-ratio'                => $image_ratio . '%',
 	'--nextora-testimonials-content-bg'        => '' !== $content_bg ? $content_bg : 'var(--wp--preset--color--base, #fff)',
 	'--nextora-testimonials-heading-color'     => '' !== $heading_color ? $heading_color : 'inherit',
 	'--nextora-testimonials-quote-color'       => '' !== $quote_color ? $quote_color : 'inherit',

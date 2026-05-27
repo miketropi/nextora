@@ -92,7 +92,7 @@ if ( ! function_exists( 'nextora_pt_sanitize_css_size' ) ) {
 			return $fallback;
 		}
 
-		if ( preg_match( '/^(auto|inherit|0|\d+(?:\.\d+)?(?:px|rem|em|vh|vw|dvh|svh|%))$/i', $raw ) ) {
+		if ( preg_match( '/^(auto|inherit|0|\d+(?:\.\d+)?(?:px|rem|em|vh|vw|dvh|svh|lvh|%))$/i', $raw ) ) {
 			return $raw;
 		}
 
@@ -108,7 +108,6 @@ $background_image_url = isset( $attributes['backgroundImageUrl'] ) ? esc_url_raw
 $background_video_url = isset( $attributes['backgroundVideoUrl'] ) ? esc_url_raw( trim( (string) $attributes['backgroundVideoUrl'] ) ) : '';
 $overlay_color = nextora_pt_resolve_color( isset( $attributes['overlayColor'] ) ? (string) $attributes['overlayColor'] : '' );
 $overlay_opacity = isset( $attributes['overlayOpacity'] ) ? max( 0, min( 1, (float) $attributes['overlayOpacity'] ) ) : 0.3;
-$min_height = nextora_pt_sanitize_css_size( isset( $attributes['minHeight'] ) ? (string) $attributes['minHeight'] : '', '320px' );
 $enable_parallax = ! empty( $attributes['enableParallax'] );
 $parallax_speed = isset( $attributes['parallaxSpeed'] ) ? max( 0, min( 1, (float) $attributes['parallaxSpeed'] ) ) : 0.4;
 $enable_scroll = ! array_key_exists( 'enableScrollAnimation', $attributes ) || ! empty( $attributes['enableScrollAnimation'] );
@@ -124,8 +123,13 @@ $use_image = 'image' === $background_type && '' !== $background_image_url;
 $use_video = 'video' === $background_type && '' !== $background_video_url;
 $use_overlay = ( $use_image || $use_video ) && $overlay_opacity > 0;
 
-$classes = array( 'wp-block-nextora-page-title', 'nextora-page-title' );
-$style_bits = array( 'min-height:' . $min_height );
+$classes    = array( 'wp-block-nextora-page-title', 'nextora-page-title' );
+$style_bits = array();
+
+$min_height = nextora_pt_sanitize_css_size( isset( $attributes['minHeight'] ) ? (string) $attributes['minHeight'] : '', '' );
+if ( '' !== $min_height ) {
+	$style_bits[] = '--nextora-page-title-min-height:' . $min_height;
+}
 
 if ( 'color' === $background_type && '' !== $background_color ) {
 	$style_bits[] = 'background-color:' . $background_color;

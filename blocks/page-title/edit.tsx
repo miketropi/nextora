@@ -170,10 +170,12 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
   const hasVideo = backgroundType === 'video' && backgroundVideoUrl.trim() !== '';
   const showOverlay = (hasImage || hasVideo) && overlayOpacity > 0;
 
+  const minHeightTrimmed = minHeight.trim();
+
   const blockProps = useBlockProps({
     className: 'nextora-page-title',
     style: {
-      minHeight,
+      ...(minHeightTrimmed ? { '--nextora-page-title-min-height': minHeightTrimmed } : {}),
       backgroundColor: backgroundType === 'color' ? resolveColor(backgroundColor) || undefined : undefined,
       ...(showOverlay
         ? {
@@ -191,8 +193,12 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
           <TextControl
             label={__('Minimum height', 'nextora')}
             value={minHeight}
-            help={__('Sets the minimum height for the section. Empty = theme default.', 'nextora')}
-            onChange={(value) => setAttributes({ minHeight: value })}
+            placeholder="268px"
+            help={__(
+              'Desktop (782px+). Tablet 85% and mobile 65% of this value. Empty = 268px. Use px, rem, em, %, vh, dvh, svh, or vw.',
+              'nextora',
+            )}
+            onChange={(value) => setAttributes({ minHeight: value ?? '' })}
           />
         </PanelBody>
 
@@ -341,13 +347,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
           />
         ) : null}
         <div className="nextora-page-title__inner">
-          <InnerBlocks
-            template={[
-              ['core/breadcrumbs', { showHomeLink: true, separator: '/' }],
-              ['core/post-title', { level: 1, isLink: false, textAlign: 'left' }],
-            ]}
-            templateLock="contentOnly"
-          />
+          <InnerBlocks />
         </div>
       </section>
     </>
