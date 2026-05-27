@@ -80,7 +80,6 @@
 		--nextora-counters-label-color,
 		color-mix(in srgb, currentColor 60%, transparent)
 	);
-	max-width: 18ch;
 }
 
 .nextora-counters--divider .nextora-counters__item {
