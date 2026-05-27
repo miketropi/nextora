@@ -4,7 +4,7 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 
 ## Cursor / IDE
 
-- **Cursor rules (concise constraints):** [`.cursor/rules/*.mdc`](./.cursor/rules/) — always-on and file-pattern rules for blocks, PHP, front-end, and `theme.json`/templates.
+- **Cursor rules (concise constraints):** [`.cursor/rules/*.mdc`](./.cursor/rules/) — always-on and file-pattern rules for blocks, PHP, front-end, accessibility, and `theme.json`/templates.
 - **Cursor skills (workflows):** [`.cursor/skills/`](./.cursor/skills/) — e.g. adding theme blocks, styling and token alignment. Invoke by skill name when relevant.
 - Long-form context stays in this file and in `docs/`; avoid duplicating large sections into rules.
 
@@ -23,6 +23,7 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 | [`docs/spotlight-search.md`](./docs/spotlight-search.md) | Spotlight search, REST, `window.nextoraSpotlight` |
 | [`docs/comments-tiptap.md`](./docs/comments-tiptap.md) | Tiptap comment field, KSES, `window.nextoraComments` |
 | [`docs/blocks.md`](./docs/blocks.md) | Theme block standards |
+| [`docs/accessibility.md`](./docs/accessibility.md) | WCAG 2.1 AA patterns, source map, block checklist, QA workflow |
 
 ## Naming and constants
 
