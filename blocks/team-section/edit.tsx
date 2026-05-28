@@ -118,8 +118,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		headingColor = '',
 		descriptionColor = '',
 		eyebrowColor = '',
-		paddingTop = 80,
-		paddingBottom = 80,
 		paginationColor = '',
 		paginationActiveColor = '',
 		cardBackgroundColor = '',
@@ -145,8 +143,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 			buttonBorderColor,
 			buttonTextColor,
 			buttonBorderRadius,
-			paddingTop,
-			paddingBottom,
 			contentMaxWidth,
 			paginationColor,
 			paginationActiveColor,
@@ -173,13 +169,11 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 				id,
 				photoId: 0,
 				photoAlt: '',
-				photoFocalPoint: { x: 0.5, y: 0.3 },
 				name: '',
 				role: '',
 				tags: [],
 				bio: '',
 				bioLineClamp: 3,
-				photoAspectRatio: '4/3',
 				showSocialLinks: false,
 				socialLinks: [],
 				cardBorderRadius,
@@ -455,23 +449,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 					/>
 				</PanelBody>
 
-				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
-					<RangeControl
-						label={__('Padding top (px)', 'nextora')}
-						value={paddingTop}
-						onChange={(v) => setAttributes({ paddingTop: v ?? 80 })}
-						min={0}
-						max={200}
-					/>
-					<RangeControl
-						label={__('Padding bottom (px)', 'nextora')}
-						value={paddingBottom}
-						onChange={(v) => setAttributes({ paddingBottom: v ?? 80 })}
-						min={0}
-						max={200}
-					/>
-				</PanelBody>
-
 				<PanelColorSettings
 					title={__('Colors', 'nextora')}
 					colorSettings={[
@@ -641,7 +618,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 					</header>
 
 					<div className="nextora-team-section__members-row" aria-label={__('Team members', 'nextora')}>
-						{members.map((member, index) => {
+						{members.map((member) => {
 							const photoUrl =
 								member.photoId > 0 ? mediaUrlById.get(member.photoId) : undefined;
 
@@ -656,9 +633,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 										} as CSSProperties
 									}
 								>
-									{/* <p className="nextora-team-section__member-badge">
-										{__('Member', 'nextora')} {index + 1}
-									</p> */}
 									<button
 										type="button"
 										className="nextora-team-section__card-edit"
@@ -679,9 +653,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 												alt=""
 												className="nextora-team-section__card-img"
 											/>
-										) : (
-											__('Click Edit member to add a photo', 'nextora')
-										)}
+										) : null}
 									</div>
 									<div className="nextora-team-section__card-body">
 										<h3 className="nextora-team-section__card-name">
