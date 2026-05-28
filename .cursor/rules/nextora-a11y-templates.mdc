@@ -1,0 +1,32 @@
+---
+description: Nextora FSE templates — landmarks, main, headings, skip link
+globs: templates/**,parts/**
+alwaysApply: false
+---
+
+# Nextora — template accessibility
+
+Guide: [`docs/accessibility.md`](../../docs/accessibility.md) § Page structure.
+
+## Landmarks
+
+- **Header:** template part `area: header` (`parts/header.html`) — wraps `nextora/header`.
+- **Main:** one `<main>` per template via `tagName: main` (classes `nextora-main`, `nextora-content-shell`).
+- **Footer:** template part `area: footer`; footer `core/navigation` should set **`ariaLabel`** (e.g. `"Footer"`).
+
+Do not replace landmarks with unlabeled `<div>`-only shells.
+
+## Headings
+
+- **Single:** `post-title` at level **1** in `templates/single.html`.
+- **Archives / index:** list titles below `h1` — avoid stacking multiple `h1` blocks on one view.
+- Site Editor content: authors control hierarchy; do not add extra `h1` in template parts without intent.
+
+## Skip link (site responsibility)
+
+Theme does **not** ship a skip link by default. When adding one, place it first in `parts/header.html`, target main (`href="#content"` + `id` on `<main>`), visible on `:focus`.
+
+```text
+❌ wp:group wrapper only — no header/main/footer tagName
+✅ wp:template-part tagName header + wp:group tagName main + footer part
+```

@@ -9,6 +9,45 @@
 
 declare( strict_types=1 );
 
+if ( ! function_exists( 'nextora_team_section_enqueue_view_script' ) ) {
+	/**
+	 * Ensure the block view script is queued (Swiper + scroll reveal).
+	 *
+	 * Dynamic blocks with a PHP render callback do not always get viewScript
+	 * auto-enqueued on the front end.
+	 */
+	function nextora_team_section_enqueue_view_script(): void {
+		if ( is_admin() ) {
+			return;
+		}
+
+		$block_type = WP_Block_Type_Registry::get_instance()->get_registered( 'nextora/team-section' );
+		if ( $block_type && ! empty( $block_type->view_script_handles ) && is_array( $block_type->view_script_handles ) ) {
+			foreach ( $block_type->view_script_handles as $handle ) {
+				if ( is_string( $handle ) && '' !== $handle ) {
+					wp_enqueue_script( $handle );
+				}
+			}
+			return;
+		}
+
+		$path = (string) get_template_directory() . '/blocks/team-section/view.js';
+		$uri  = (string) get_template_directory_uri() . '/blocks/team-section/view.js';
+		if ( is_readable( $path ) ) {
+			if ( ! wp_script_is( 'nextora-team-section-view-fallback', 'registered' ) ) {
+				wp_register_script(
+					'nextora-team-section-view-fallback',
+					$uri,
+					array(),
+					(string) filemtime( $path ),
+					true,
+				);
+			}
+			wp_enqueue_script( 'nextora-team-section-view-fallback' );
+		}
+	}
+}
+
 if ( ! function_exists( 'nextora_team_section_resolve_color' ) ) {
 	/**
 	 * Preset slug or hex → CSS color value.
@@ -57,12 +96,6 @@ if ( ! function_exists( 'nextora_team_section_normalize_member' ) ) {
 	 * @return array<string, mixed>
 	 */
 	function nextora_team_section_normalize_member( array $raw ): array {
-		$focal = isset( $raw['photoFocalPoint'] ) && is_array( $raw['photoFocalPoint'] ) ? $raw['photoFocalPoint'] : array();
-		$fx    = isset( $focal['x'] ) ? (float) $focal['x'] : 0.5;
-		$fy    = isset( $focal['y'] ) ? (float) $focal['y'] : 0.3;
-		$fx    = max( 0.0, min( 1.0, $fx ) );
-		$fy    = max( 0.0, min( 1.0, $fy ) );
-
 		$tags = array();
 		if ( isset( $raw['tags'] ) && is_array( $raw['tags'] ) ) {
 			foreach ( $raw['tags'] as $tag ) {
@@ -90,25 +123,18 @@ if ( ! function_exists( 'nextora_team_section_normalize_member' ) ) {
 			}
 		}
 
-		$ratio = isset( $raw['photoAspectRatio'] ) ? (string) $raw['photoAspectRatio'] : '4/3';
-		if ( ! in_array( $ratio, array( '1/1', '4/3', '3/4', '16/9' ), true ) ) {
-			$ratio = '4/3';
-		}
-
 		return array(
-			'id'                => isset( $raw['id'] ) ? (string) $raw['id'] : '',
-			'photoId'           => isset( $raw['photoId'] ) ? (int) $raw['photoId'] : 0,
-			'photoAlt'          => isset( $raw['photoAlt'] ) ? trim( (string) $raw['photoAlt'] ) : '',
-			'photoFocalPoint'   => array( 'x' => $fx, 'y' => $fy ),
-			'name'              => isset( $raw['name'] ) ? trim( (string) $raw['name'] ) : '',
-			'role'              => isset( $raw['role'] ) ? trim( (string) $raw['role'] ) : '',
-			'tags'              => $tags,
-			'bio'               => isset( $raw['bio'] ) ? trim( (string) $raw['bio'] ) : '',
-			'bioLineClamp'      => isset( $raw['bioLineClamp'] ) ? max( 1, min( 5, (int) $raw['bioLineClamp'] ) ) : 3,
-			'photoAspectRatio'  => $ratio,
-			'showSocialLinks'   => ! empty( $raw['showSocialLinks'] ),
-			'socialLinks'       => $social,
-			'cardBorderRadius'  => isset( $raw['cardBorderRadius'] ) ? max( 0, min( 30, (int) $raw['cardBorderRadius'] ) ) : 16,
+			'id'               => isset( $raw['id'] ) ? (string) $raw['id'] : '',
+			'photoId'          => isset( $raw['photoId'] ) ? (int) $raw['photoId'] : 0,
+			'photoAlt'         => isset( $raw['photoAlt'] ) ? trim( (string) $raw['photoAlt'] ) : '',
+			'name'             => isset( $raw['name'] ) ? trim( (string) $raw['name'] ) : '',
+			'role'             => isset( $raw['role'] ) ? trim( (string) $raw['role'] ) : '',
+			'tags'             => $tags,
+			'bio'              => isset( $raw['bio'] ) ? trim( (string) $raw['bio'] ) : '',
+			'bioLineClamp'     => isset( $raw['bioLineClamp'] ) ? max( 1, min( 5, (int) $raw['bioLineClamp'] ) ) : 3,
+			'showSocialLinks'  => ! empty( $raw['showSocialLinks'] ),
+			'socialLinks'      => $social,
+			'cardBorderRadius' => isset( $raw['cardBorderRadius'] ) ? max( 0, min( 30, (int) $raw['cardBorderRadius'] ) ) : 16,
 		);
 	}
 }
@@ -241,8 +267,6 @@ if ( '' === $content_max ) {
 	$content_max = '1200px';
 }
 
-$padding_top    = isset( $attributes['paddingTop'] ) ? max( 0, min( 200, (int) $attributes['paddingTop'] ) ) : 80;
-$padding_bottom = isset( $attributes['paddingBottom'] ) ? max( 0, min( 200, (int) $attributes['paddingBottom'] ) ) : 80;
 $card_radius    = isset( $attributes['cardBorderRadius'] ) ? max( 0, min( 30, (int) $attributes['cardBorderRadius'] ) ) : 16;
 
 $bg_color     = nextora_team_section_resolve_color( isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '' );
@@ -310,19 +334,9 @@ $swiper_opts = array(
 	'speed'               => $speed,
 	'freeMode'            => $free_mode,
 	'grabCursor'          => $grab_cursor,
-	'slidesPerView'       => $spv_mobile,
-	'slidesPerViewTablet' => $spv_tablet,
+	'slidesPerView'        => $spv_mobile,
+	'slidesPerViewTablet'  => $spv_tablet,
 	'slidesPerViewDesktop' => $spv_desktop,
-	'breakpoints'         => array(
-		'768'  => array(
-			'slidesPerView' => $spv_tablet,
-			'spaceBetween'  => $space,
-		),
-		'1024' => array(
-			'slidesPerView' => $spv_desktop,
-			'spaceBetween'  => $space,
-		),
-	),
 );
 
 $swiper_opts = (array) apply_filters( 'nextora_team_section_swiper_options', $swiper_opts, $attributes, $members );
@@ -331,23 +345,46 @@ $opts_json   = wp_json_encode( $swiper_opts );
 $opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 
 $css_vars = array(
-	'--nextora-team-bg'              => '' !== $bg_color ? $bg_color : 'transparent',
-	'--nextora-team-padding-top'     => $padding_top . 'px',
-	'--nextora-team-padding-bottom'  => $padding_bottom . 'px',
-	'--nextora-team-max-width'       => $content_max,
-	'--nextora-team-heading-color'   => '' !== $heading_c ? $heading_c : 'inherit',
-	'--nextora-team-desc-color'      => '' !== $desc_c ? $desc_c : 'var(--wp--preset--color--secondary, #525252)',
-	'--nextora-team-eyebrow-color'   => '' !== $eyebrow_c ? $eyebrow_c : 'var(--wp--preset--color--primary, inherit)',
-	'--nextora-team-btn-border'      => '' !== $btn_border_c ? $btn_border_c : 'var(--wp--preset--color--primary, currentColor)',
-	'--nextora-team-btn-text'        => '' !== $btn_text_c ? $btn_text_c : 'var(--wp--preset--color--primary, currentColor)',
-	'--nextora-team-btn-radius'      => $btn_radius . 'px',
-	'--nextora-team-dot-color'       => '' !== $dot_c ? $dot_c : 'color-mix(in srgb, currentColor 35%, transparent)',
-	'--nextora-team-dot-active'      => '' !== $dot_active_c ? $dot_active_c : 'var(--wp--preset--color--primary, currentColor)',
-	'--nextora-team-card-bg'         => '' !== $card_bg_c ? $card_bg_c : 'var(--wp--preset--color--base, #ffffff)',
-	'--nextora-team-tag-bg'          => '' !== $tag_bg_c ? $tag_bg_c : 'color-mix(in srgb, currentColor 8%, transparent)',
-	'--nextora-team-tag-color'       => '' !== $tag_text_c ? $tag_text_c : 'var(--wp--preset--color--secondary, #525252)',
-	'--nextora-team-card-radius'     => $card_radius . 'px',
+	'--nextora-team-photo-placeholder' => nextora_team_section_photo_placeholder_var(),
+	'--nextora-team-max-width'         => $content_max,
+	'--nextora-team-btn-radius'        => $btn_radius . 'px',
+	'--nextora-team-card-radius'       => $card_radius . 'px',
 );
+
+// Only emit color tokens when customized — inline vars beat `.is-style-*` preset rules.
+if ( '' !== $bg_color ) {
+	$css_vars['--nextora-team-bg'] = $bg_color;
+}
+if ( '' !== $heading_c ) {
+	$css_vars['--nextora-team-heading-color'] = $heading_c;
+}
+if ( '' !== $desc_c ) {
+	$css_vars['--nextora-team-desc-color'] = $desc_c;
+}
+if ( '' !== $eyebrow_c ) {
+	$css_vars['--nextora-team-eyebrow-color'] = $eyebrow_c;
+}
+if ( '' !== $btn_border_c ) {
+	$css_vars['--nextora-team-btn-border'] = $btn_border_c;
+}
+if ( '' !== $btn_text_c ) {
+	$css_vars['--nextora-team-btn-text'] = $btn_text_c;
+}
+if ( '' !== $dot_c ) {
+	$css_vars['--nextora-team-dot-color'] = $dot_c;
+}
+if ( '' !== $dot_active_c ) {
+	$css_vars['--nextora-team-dot-active'] = $dot_active_c;
+}
+if ( '' !== $card_bg_c ) {
+	$css_vars['--nextora-team-card-bg'] = $card_bg_c;
+}
+if ( '' !== $tag_bg_c ) {
+	$css_vars['--nextora-team-tag-bg'] = $tag_bg_c;
+}
+if ( '' !== $tag_text_c ) {
+	$css_vars['--nextora-team-tag-color'] = $tag_text_c;
+}
 
 $style_parts = array();
 foreach ( $css_vars as $key => $value ) {
@@ -360,8 +397,8 @@ $wrapper_classes = array(
 	'nextora-team-section--loading',
 	'nextora-team-section--header-' . sanitize_html_class( $header_layout ),
 );
-if ( $show_arrows ) {
-	$wrapper_classes[] = 'nextora-team-section--arrows';
+if ( $enable_scroll ) {
+	$wrapper_classes[] = 'nextora-team-section--reveal-pending';
 }
 
 $wrapper_classes = (array) apply_filters(
@@ -384,6 +421,8 @@ $wrapper_attributes = (string) apply_filters(
 	$wrapper_attributes,
 	$attributes,
 );
+
+nextora_team_section_enqueue_view_script();
 
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
@@ -439,7 +478,7 @@ $wrapper_attributes = (string) apply_filters(
 						echo nextora_team_section_render_member_slide( $member, $card_radius );
 					}
 					?>
-				</div> <!-- end of swiper-wrapper -->
+				</div>
 			</div>
 			<?php if ( $show_arrows && $slide_count > 1 ) : ?>
 				<button type="button" class="nextora-team-section__arrow nextora-team-section__arrow--prev" aria-label="<?php echo esc_attr__( 'Previous team member', 'nextora' ); ?>">

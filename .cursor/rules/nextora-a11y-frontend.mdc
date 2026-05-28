@@ -1,0 +1,31 @@
+---
+description: Nextora front-end a11y — modals, nav drawer, focus-visible, reduced motion
+globs: resources/**/*.ts,resources/**/*.css
+alwaysApply: false
+---
+
+# Nextora — front-end accessibility
+
+Details: [`docs/accessibility.md`](../../docs/accessibility.md), [`docs/modal.md`](../../docs/modal.md), [`docs/spotlight-search.md`](../../docs/spotlight-search.md).
+
+## TypeScript (`resources/ts/`)
+
+- **Modals** (`lib/modal.ts`): focus trap, Escape closes topmost, restore focus to trigger; emit `nextora:modalopen` / `nextora:modalclose`. Do not bypass when adding new overlays.
+- **Header nav** (`header-nav.ts`): mobile portal `role="dialog"`, `aria-modal`, `aria-expanded` on toggle, Escape + focus to first link / back to hamburger.
+- **Spotlight** (`lib/spotlight-search.ts`): combobox ARIA + `[data-spotlight-status]` live region; listen to modal events for focus/clear.
+- **Comments** (`lib/comment-tiptap.ts`): toolbar `role="toolbar"`; button `aria-label` from `window.nextoraComments`; keep sync `#comment` for POST.
+- **Scroll animations** (`lib/scroll-animations/`): call `prefersReducedMotion()` — no tweens when reduce is on.
+- **Block `view.ts`:** same reduced-motion guard; update dynamic ARIA state (`aria-expanded`, `aria-selected`) on interaction.
+
+## CSS (`resources/css/modules/`)
+
+- Use **`:focus-visible`**, not bare `:focus`, for new interactive styles.
+- Add **`@media (prefers-reduced-motion: reduce)`** when introducing animation, transition, or marquee motion.
+- New component focus rings: extend existing modules (`buttons.css`, `nav-menus.css`) before one-off rules.
+
+Compile with **`npm run build`** — do not edit `assets/css/app.css` or `assets/js/main.js` directly.
+
+```text
+❌ .my-btn:focus { outline: none; }
+✅ .my-btn:focus-visible { outline: 2px solid …; outline-offset: 2px; }
+```

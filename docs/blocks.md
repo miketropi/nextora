@@ -87,6 +87,7 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 ## Related docs
 
 - [`AGENTS.md`](../AGENTS.md) — theme overview and build pipeline.
+- [`docs/accessibility.md`](./accessibility.md) — WCAG patterns and block a11y checklist.
 - [`docs/modal.md`](./modal.md), [`docs/spotlight-search.md`](./spotlight-search.md) — shared UI patterns.
 - Skill: `.cursor/skills/nextora-add-theme-block/SKILL.md`
 - Skill: `.cursor/skills/nextora-theme-styling-and-tokens/SKILL.md`

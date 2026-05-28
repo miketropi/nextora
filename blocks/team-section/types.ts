@@ -18,22 +18,15 @@ export interface TeamSocialLink {
 	url: string;
 }
 
-export interface TeamFocalPoint {
-	x: number;
-	y: number;
-}
-
 export interface TeamMember {
 	id: string;
 	photoId: number;
 	photoAlt: string;
-	photoFocalPoint: TeamFocalPoint;
 	name: string;
 	role: string;
 	tags: string[];
 	bio: string;
 	bioLineClamp: number;
-	photoAspectRatio: string;
 	showSocialLinks: boolean;
 	socialLinks: TeamSocialLink[];
 	cardBorderRadius: number;
@@ -73,8 +66,6 @@ export interface TeamSectionAttributes {
 	headingColor: string;
 	descriptionColor: string;
 	eyebrowColor: string;
-	paddingTop: number;
-	paddingBottom: number;
 	paginationColor: string;
 	paginationActiveColor: string;
 	cardBackgroundColor: string;
