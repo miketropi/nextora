@@ -22,6 +22,6 @@ final class ThemeConfigTest extends TestCase {
 	}
 
 	public function test_version_reads_constant(): void {
-		$this->assertSame( '1.0.0', ThemeConfig::version() );
+		$this->assertSame( '0.0.1', ThemeConfig::version() );
 	}
 }

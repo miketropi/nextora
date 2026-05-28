@@ -9,7 +9,7 @@
 declare( strict_types=1 );
 
 if ( ! defined( 'NEXTORA_VERSION' ) ) {
-	define( 'NEXTORA_VERSION', '1.0.0' );
+	define( 'NEXTORA_VERSION', '0.0.1' );
 }
 
 if ( ! defined( 'NEXTORA_DIR' ) ) {
