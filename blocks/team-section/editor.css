@@ -2,6 +2,8 @@
  * Our Team section — editor-only styles.
  */
 
+@import './style.css';
+
 .nextora-team-section--editor .nextora-team-section__members-row {
 	display: flex;
 	flex-wrap: nowrap;
@@ -18,22 +20,7 @@
 }
 
 .nextora-team-section--editor .nextora-team-section__card-photo--empty {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	min-height: 140px;
-	background: color-mix(in srgb, currentColor 6%, transparent);
-	color: color-mix(in srgb, currentColor 45%, transparent);
-	font-size: 0.8125rem;
-}
-
-.nextora-team-section--editor .nextora-team-section__member-badge {
-	font-size: 0.6875rem;
-	font-weight: 600;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	color: color-mix(in srgb, currentColor 50%, transparent);
-	margin-bottom: 0.25rem;
+	min-height: 0;
 }
 
 .nextora-team-section__inspector-member {
@@ -190,33 +177,4 @@
 .nextora-team-section__inspector-member:last-child {
 	border-bottom: none;
 	margin-bottom: 0;
-}
-
-.nextora-team-section__inspector-media {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 6px;
-}
-
-.nextora-team-section__inspector-media-preview {
-	max-height: 56px;
-	width: auto;
-	max-width: 100%;
-	object-fit: contain;
-	border-radius: 4px;
-}
-
-.nextora-team-section__inspector-tag-row,
-.nextora-team-section__inspector-social-row {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 4px;
-	align-items: flex-end;
-}
-
-.nextora-team-section__inspector-tag-row .components-base-control,
-.nextora-team-section__inspector-social-row .components-base-control {
-	flex: 1;
-	min-width: 120px;
 }

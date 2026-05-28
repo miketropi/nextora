@@ -18,6 +18,7 @@
       "link": true
     },
     "spacing": {
+      "padding": true,
       "margin": true
     }
   },
@@ -29,13 +30,11 @@
           "id": "1",
           "photoId": 0,
           "photoAlt": "",
-          "photoFocalPoint": { "x": 0.5, "y": 0.3 },
           "name": "Alex Morgan",
           "role": "Creative Director",
           "tags": ["Design", "Strategy"],
           "bio": "Leads brand and product design with a focus on accessible, human-centered experiences.",
           "bioLineClamp": 3,
-          "photoAspectRatio": "4/3",
           "showSocialLinks": false,
           "socialLinks": [],
           "cardBorderRadius": 16
@@ -44,13 +43,11 @@
           "id": "2",
           "photoId": 0,
           "photoAlt": "",
-          "photoFocalPoint": { "x": 0.5, "y": 0.3 },
           "name": "Jordan Lee",
           "role": "Head of Engineering",
           "tags": ["Development", "DevOps"],
           "bio": "Builds scalable platforms and mentors engineering teams across the organization.",
           "bioLineClamp": 3,
-          "photoAspectRatio": "4/3",
           "showSocialLinks": false,
           "socialLinks": [],
           "cardBorderRadius": 16
@@ -59,13 +56,11 @@
           "id": "3",
           "photoId": 0,
           "photoAlt": "",
-          "photoFocalPoint": { "x": 0.5, "y": 0.3 },
           "name": "Sam Rivera",
           "role": "Community Lead",
           "tags": ["Outreach", "Events"],
           "bio": "Connects partners and volunteers to programs that create lasting community impact.",
           "bioLineClamp": 3,
-          "photoAspectRatio": "4/3",
           "showSocialLinks": false,
           "socialLinks": [],
           "cardBorderRadius": 16
@@ -74,13 +69,11 @@
           "id": "4",
           "photoId": 0,
           "photoAlt": "",
-          "photoFocalPoint": { "x": 0.5, "y": 0.3 },
           "name": "Taylor Kim",
           "role": "Operations Manager",
           "tags": ["Operations", "Finance"],
           "bio": "Keeps programs running smoothly with clear processes and thoughtful resource planning.",
           "bioLineClamp": 3,
-          "photoAspectRatio": "4/3",
           "showSocialLinks": false,
           "socialLinks": [],
           "cardBorderRadius": 16
@@ -119,8 +112,6 @@
     "headingColor": { "type": "string", "default": "" },
     "descriptionColor": { "type": "string", "default": "" },
     "eyebrowColor": { "type": "string", "default": "" },
-    "paddingTop": { "type": "number", "default": 80 },
-    "paddingBottom": { "type": "number", "default": 80 },
     "paginationColor": { "type": "string", "default": "" },
     "paginationActiveColor": { "type": "string", "default": "" },
     "cardBackgroundColor": { "type": "string", "default": "" },

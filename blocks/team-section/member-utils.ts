@@ -1,5 +1,19 @@
 import type { TeamMember, TeamSocialLink } from './types';
 
+declare global {
+	interface Window {
+		nextoraTeamSection?: {
+			photoPlaceholderUrl?: string;
+		};
+	}
+}
+
+function teamPhotoPlaceholderVar(): string {
+	const url =
+		typeof window !== 'undefined' ? window.nextoraTeamSection?.photoPlaceholderUrl : undefined;
+	return url ? `url("${url}")` : 'none';
+}
+
 export function createMemberId(): string {
 	if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
 		return crypto.randomUUID();
@@ -13,10 +27,6 @@ export function normalizeMembers(members: TeamMember[] | undefined): TeamMember[
 	}
 
 	return members.map((raw, index) => {
-		const focal = raw?.photoFocalPoint;
-		const fx = typeof focal?.x === 'number' ? focal.x : 0.5;
-		const fy = typeof focal?.y === 'number' ? focal.y : 0.3;
-
 		const tags = Array.isArray(raw?.tags)
 			? raw.tags.map((t) => (typeof t === 'string' ? t : ''))
 			: [];
@@ -37,19 +47,12 @@ export function normalizeMembers(members: TeamMember[] | undefined): TeamMember[
 					: String(index + 1),
 			photoId: typeof raw?.photoId === 'number' ? raw.photoId : 0,
 			photoAlt: typeof raw?.photoAlt === 'string' ? raw.photoAlt : '',
-			photoFocalPoint: { x: fx, y: fy },
 			name: typeof raw?.name === 'string' ? raw.name : '',
 			role: typeof raw?.role === 'string' ? raw.role : '',
 			tags,
 			bio: typeof raw?.bio === 'string' ? raw.bio : '',
 			bioLineClamp:
 				typeof raw?.bioLineClamp === 'number' ? Math.max(1, Math.min(5, raw.bioLineClamp)) : 3,
-			photoAspectRatio:
-				raw?.photoAspectRatio === '1/1' ||
-				raw?.photoAspectRatio === '3/4' ||
-				raw?.photoAspectRatio === '16/9'
-					? raw.photoAspectRatio
-					: '4/3',
 			showSocialLinks: Boolean(raw?.showSocialLinks),
 			socialLinks,
 			cardBorderRadius:
@@ -68,8 +71,6 @@ export function buildSectionStyleVars(attrs: {
 	buttonBorderColor?: string;
 	buttonTextColor?: string;
 	buttonBorderRadius?: number;
-	paddingTop?: number;
-	paddingBottom?: number;
 	contentMaxWidth?: string;
 	paginationColor?: string;
 	paginationActiveColor?: string;
@@ -79,8 +80,7 @@ export function buildSectionStyleVars(attrs: {
 	cardBorderRadius?: number;
 }): Record<string, string> {
 	const vars: Record<string, string> = {
-		'--nextora-team-padding-top': `${attrs.paddingTop ?? 80}px`,
-		'--nextora-team-padding-bottom': `${attrs.paddingBottom ?? 80}px`,
+		'--nextora-team-photo-placeholder': teamPhotoPlaceholderVar(),
 		'--nextora-team-max-width': attrs.contentMaxWidth || '1200px',
 		'--nextora-team-btn-radius': `${attrs.buttonBorderRadius ?? 50}px`,
 		'--nextora-team-card-radius': `${attrs.cardBorderRadius ?? 16}px`,

@@ -13,8 +13,8 @@ import './style.css';
 gsap.registerPlugin(ScrollTrigger);
 
 const SCROLL_INIT_ATTR = 'data-nextora-team-scroll-init';
-const REVEAL_START_RATIO = 0.85;
-const REVEAL_FALLBACK_MS = 1800;
+const REVEAL_START = 'top 88%';
+const REVEAL_FALLBACK_MS = 2800;
 
 type SwiperOpts = {
 	loop?: boolean;
@@ -87,12 +87,6 @@ function getOpts(root: HTMLElement): SwiperOpts {
 	}
 }
 
-function isRevealStartPassed(section: HTMLElement): boolean {
-	const rect = section.getBoundingClientRect();
-	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-	return rect.top <= viewportHeight * REVEAL_START_RATIO && rect.bottom > 0;
-}
-
 function setRevealReady(section: HTMLElement): void {
 	section.classList.add('nextora-team-section--reveal-ready');
 	section.classList.remove('nextora-team-section--reveal-pending');
@@ -139,7 +133,6 @@ function initScrollReveal(section: HTMLElement): void {
 		return;
 	}
 
-	section.classList.add('nextora-team-section--reveal-pending');
 	gsap.set(targets, { opacity: 0, y: 32, force3D: true });
 
 	const timeline = gsap.timeline({
@@ -167,32 +160,38 @@ function initScrollReveal(section: HTMLElement): void {
 		);
 	}
 
+	let played = false;
+
 	const playReveal = (): void => {
-		if (section.classList.contains('nextora-team-section--reveal-ready')) {
+		if (played || section.classList.contains('nextora-team-section--reveal-ready')) {
 			return;
 		}
+		played = true;
 		timeline.play();
 	};
 
 	scheduleRevealFallback(section, targets);
 
-	if (isRevealStartPassed(section)) {
-		playReveal();
-		return;
-	}
-
 	ScrollTrigger.create({
 		trigger: section,
-		start: `top ${REVEAL_START_RATIO * 100}%`,
+		start: REVEAL_START,
 		once: true,
 		onEnter: playReveal,
 	});
 
 	ScrollTrigger.refresh();
+}
 
-	if (isRevealStartPassed(section)) {
-		playReveal();
+function markSectionReady(section: HTMLElement | null): void {
+	if (!section) {
+		return;
 	}
+	section.classList.remove('nextora-team-section--loading');
+	section.classList.add('nextora-team-section--ready');
+	requestAnimationFrame(() => {
+		initScrollReveal(section);
+		ScrollTrigger.refresh();
+	});
 }
 
 function initSwiperIn(container: Element | Document): void {
@@ -212,11 +211,7 @@ function initSwiperIn(container: Element | Document): void {
 		const opts = getOpts(root);
 		const slideCount = el.querySelectorAll('.swiper-slide').length;
 		if (slideCount < 1) {
-			section?.classList.remove('nextora-team-section--loading');
-			section?.classList.add('nextora-team-section--ready');
-			if (section) {
-				initScrollReveal(section);
-			}
+			markSectionReady(section);
 			return;
 		}
 
@@ -272,12 +267,7 @@ function initSwiperIn(container: Element | Document): void {
 		const finishSection = (): void => {
 			delete root.dataset.nextoraTeamSwiperPending;
 			root.dataset.nextoraTeamSwiperInited = '1';
-			section?.classList.remove('nextora-team-section--loading');
-			section?.classList.add('nextora-team-section--ready');
-			if (section) {
-				initScrollReveal(section);
-			}
-			ScrollTrigger.refresh();
+			markSectionReady(section);
 		};
 
 		const tryMount = (tick = 0): void => {
@@ -345,13 +335,9 @@ function initSwiperIn(container: Element | Document): void {
 	});
 }
 
-function initIn(container: Element | Document): void {
-	initSwiperIn(container);
-}
-
 function run(): void {
-	initIn(document);
-	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load' });
+	initSwiperIn(document);
+	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize' });
 	ScrollTrigger.refresh();
 }
 
@@ -362,4 +348,7 @@ if (document.readyState === 'loading') {
 }
 
 window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
-window.addEventListener('nextora-team-section-reinit', () => initIn(document));
+window.addEventListener('nextora-team-section-reinit', () => {
+	initSwiperIn(document);
+	ScrollTrigger.refresh();
+});
