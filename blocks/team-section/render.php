@@ -126,6 +126,7 @@ if ( ! function_exists( 'nextora_team_section_normalize_member' ) ) {
 		return array(
 			'id'               => isset( $raw['id'] ) ? (string) $raw['id'] : '',
 			'photoId'          => isset( $raw['photoId'] ) ? (int) $raw['photoId'] : 0,
+			'photoUrl'         => isset( $raw['photoUrl'] ) ? trim( (string) $raw['photoUrl'] ) : '',
 			'photoAlt'         => isset( $raw['photoAlt'] ) ? trim( (string) $raw['photoAlt'] ) : '',
 			'name'             => isset( $raw['name'] ) ? trim( (string) $raw['name'] ) : '',
 			'role'             => isset( $raw['role'] ) ? trim( (string) $raw['role'] ) : '',
@@ -135,6 +136,33 @@ if ( ! function_exists( 'nextora_team_section_normalize_member' ) ) {
 			'showSocialLinks'  => ! empty( $raw['showSocialLinks'] ),
 			'socialLinks'      => $social,
 			'cardBorderRadius' => isset( $raw['cardBorderRadius'] ) ? max( 0, min( 30, (int) $raw['cardBorderRadius'] ) ) : 16,
+		);
+	}
+}
+
+if ( ! function_exists( 'nextora_team_section_render_member_photo_fallback' ) ) {
+	/**
+	 * URL photo when no attachment is available.
+	 *
+	 * @param array<string, mixed> $member Normalized member.
+	 */
+	function nextora_team_section_render_member_photo_fallback( array $member ): string {
+		$photo_url = isset( $member['photoUrl'] ) ? trim( (string) $member['photoUrl'] ) : '';
+		$photo_alt = isset( $member['photoAlt'] ) ? trim( (string) $member['photoAlt'] ) : '';
+
+		if ( '' === $photo_url ) {
+			return '';
+		}
+
+		$url = esc_url( $photo_url );
+		if ( '' === $url ) {
+			return '';
+		}
+
+		return sprintf(
+			'<img class="nextora-team-section__card-img" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+			$url,
+			esc_attr( $photo_alt ),
 		);
 	}
 }
@@ -189,7 +217,11 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 			);
 			if ( is_string( $img ) && '' !== $img ) {
 				$out .= $img;
+			} else {
+				$out .= nextora_team_section_render_member_photo_fallback( $member ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
 			}
+		} else {
+			$out .= nextora_team_section_render_member_photo_fallback( $member ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
 		}
 
 		$out .= '</div><div class="nextora-team-section__card-body">';

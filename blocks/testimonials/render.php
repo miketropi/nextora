@@ -65,6 +65,7 @@ if ( ! function_exists( 'nextora_testimonials_normalize_item' ) ) {
 			'authorAge'      => isset( $raw['authorAge'] ) ? trim( (string) $raw['authorAge'] ) : '',
 			'authorLocation' => isset( $raw['authorLocation'] ) ? trim( (string) $raw['authorLocation'] ) : '',
 			'portraitId'     => isset( $raw['portraitId'] ) ? (int) $raw['portraitId'] : 0,
+			'portraitUrl'    => isset( $raw['portraitUrl'] ) ? trim( (string) $raw['portraitUrl'] ) : '',
 			'portraitAlt'    => isset( $raw['portraitAlt'] ) ? trim( (string) $raw['portraitAlt'] ) : '',
 		);
 	}
@@ -86,6 +87,30 @@ if ( ! function_exists( 'nextora_testimonials_build_author_meta' ) ) {
 			return '';
 		}
 		return '/ ' . implode( ' - ', $parts );
+	}
+}
+
+if ( ! function_exists( 'nextora_testimonials_render_portrait_fallback' ) ) {
+	/**
+	 * URL portrait or placeholder when no attachment is available.
+	 *
+	 * @param array<string, mixed> $item Normalized testimonial.
+	 */
+	function nextora_testimonials_render_portrait_fallback( array $item, string $alt ): string {
+		$portrait_url = isset( $item['portraitUrl'] ) ? trim( (string) $item['portraitUrl'] ) : '';
+
+		if ( '' !== $portrait_url ) {
+			$url = esc_url( $portrait_url );
+			if ( '' !== $url ) {
+				return sprintf(
+					'<img class="nextora-testimonials__portrait" src="%1$s" alt="%2$s" loading="lazy" decoding="async" sizes="(min-width: 768px) 50vw, 100vw" />',
+					$url,
+					esc_attr( $alt ),
+				);
+			}
+		}
+
+		return '<div class="nextora-testimonials__portrait-placeholder" aria-hidden="true"></div>';
 	}
 }
 
@@ -126,10 +151,10 @@ if ( ! function_exists( 'nextora_testimonials_render_portrait' ) ) {
 			if ( is_string( $img ) && '' !== $img ) {
 				$out .= $img;
 			} else {
-				$out .= '<div class="nextora-testimonials__portrait-placeholder" aria-hidden="true"></div>';
+				$out .= nextora_testimonials_render_portrait_fallback( $item, $alt );
 			}
 		} else {
-			$out .= '<div class="nextora-testimonials__portrait-placeholder" aria-hidden="true"></div>';
+			$out .= nextora_testimonials_render_portrait_fallback( $item, $alt );
 		}
 
 		$out .= '</figure>';
@@ -267,8 +292,11 @@ $swiper_opts = (array) apply_filters( 'nextora_testimonials_swiper_options', $sw
 $opts_json   = wp_json_encode( $swiper_opts );
 $opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 
+$portrait_placeholder_url = get_theme_file_uri( 'assets/images/placeholder/general-img-portrait.png' );
+
 $css_vars = array(
-	'--nextora-testimonials-image-ratio'       => $image_ratio . '%',
+	'--nextora-testimonials-portrait-placeholder-image' => 'url(' . esc_url( $portrait_placeholder_url ) . ')',
+	'--nextora-testimonials-image-ratio'                => $image_ratio . '%',
 	'--nextora-testimonials-content-bg'        => '' !== $content_bg ? $content_bg : 'var(--wp--preset--color--base, #fff)',
 	'--nextora-testimonials-heading-color'     => '' !== $heading_color ? $heading_color : 'inherit',
 	'--nextora-testimonials-quote-color'       => '' !== $quote_color ? $quote_color : 'inherit',

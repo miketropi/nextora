@@ -46,6 +46,7 @@ export function normalizeMembers(members: TeamMember[] | undefined): TeamMember[
 					? raw.id
 					: String(index + 1),
 			photoId: typeof raw?.photoId === 'number' ? raw.photoId : 0,
+			photoUrl: typeof raw?.photoUrl === 'string' ? raw.photoUrl : '',
 			photoAlt: typeof raw?.photoAlt === 'string' ? raw.photoAlt : '',
 			name: typeof raw?.name === 'string' ? raw.name : '',
 			role: typeof raw?.role === 'string' ? raw.role : '',
@@ -61,6 +62,17 @@ export function normalizeMembers(members: TeamMember[] | undefined): TeamMember[
 					: 16,
 		};
 	});
+}
+
+export function resolvePhotoUrl(
+	member: TeamMember,
+	mediaUrlById: Map<number, string>,
+): string | undefined {
+	if (member.photoId > 0) {
+		return mediaUrlById.get(member.photoId);
+	}
+	const url = member.photoUrl.trim();
+	return url !== '' ? url : undefined;
 }
 
 export function buildSectionStyleVars(attrs: {

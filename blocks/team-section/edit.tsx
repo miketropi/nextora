@@ -19,7 +19,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import type { TeamMember, TeamSectionAttributes } from './types';
-import { buildSectionStyleVars, createMemberId, normalizeMembers } from './member-utils';
+import { buildSectionStyleVars, createMemberId, normalizeMembers, resolvePhotoUrl } from './member-utils';
 import MemberEditForm from './member-edit-form';
 
 interface EditProps {
@@ -168,6 +168,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 			{
 				id,
 				photoId: 0,
+				photoUrl: '',
 				photoAlt: '',
 				name: '',
 				role: '',
@@ -547,11 +548,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 				>
 					<MemberEditForm
 						member={editingMember}
-						photoUrl={
-							editingMember.photoId > 0
-								? mediaUrlById.get(editingMember.photoId)
-								: undefined
-						}
+						photoUrl={resolvePhotoUrl(editingMember, mediaUrlById)}
 						onPatch={(patch) => patchMember(editingMember.id, patch)}
 					/>
 					<div className="nextora-team-section__member-modal-footer">
@@ -619,8 +616,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 
 					<div className="nextora-team-section__members-row" aria-label={__('Team members', 'nextora')}>
 						{members.map((member) => {
-							const photoUrl =
-								member.photoId > 0 ? mediaUrlById.get(member.photoId) : undefined;
+							const photoUrl = resolvePhotoUrl(member, mediaUrlById);
 
 							return (
 								<article

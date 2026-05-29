@@ -9,6 +9,7 @@ export interface TestimonialItem {
 	authorAge: string;
 	authorLocation: string;
 	portraitId: number;
+	portraitUrl: string;
 	portraitAlt: string;
 }
 

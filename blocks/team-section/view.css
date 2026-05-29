@@ -517,7 +517,7 @@ button.swiper-pagination-bullet {
   font-weight: 700;
   line-height: 1.15;
   color: var(--nextora-team-heading-color, inherit);
-  margin: .5rem 0 .75rem;
+  margin: 0 0 0.75rem;
 }
 .nextora-team-section__description {
   font-size: var(--wp--preset--font-size--base, 1rem);

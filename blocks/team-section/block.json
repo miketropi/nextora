@@ -29,6 +29,7 @@
         {
           "id": "1",
           "photoId": 0,
+          "photoUrl": "",
           "photoAlt": "",
           "name": "Alex Morgan",
           "role": "Creative Director",
@@ -42,6 +43,7 @@
         {
           "id": "2",
           "photoId": 0,
+          "photoUrl": "",
           "photoAlt": "",
           "name": "Jordan Lee",
           "role": "Head of Engineering",
@@ -55,6 +57,7 @@
         {
           "id": "3",
           "photoId": 0,
+          "photoUrl": "",
           "photoAlt": "",
           "name": "Sam Rivera",
           "role": "Community Lead",
@@ -68,6 +71,7 @@
         {
           "id": "4",
           "photoId": 0,
+          "photoUrl": "",
           "photoAlt": "",
           "name": "Taylor Kim",
           "role": "Operations Manager",
