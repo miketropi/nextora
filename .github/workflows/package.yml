@@ -56,3 +56,30 @@ jobs:
           files: ${{ steps.zip.outputs.path }}
           fail_on_unmatched_files: true
           generate_release_notes: true
+
+      - name: Send notification
+        if: success()
+        env:
+          POST_MESSAGE_CMS_TOKEN: ${{ secrets.POST_MESSAGE_CMS_TOKEN }}
+          API_URL: https://post-message-cms.beplus-agency.cloud/api/v1/messages
+          TAG: ${{ github.ref_name }}
+          ZIP_NAME: ${{ steps.zip.outputs.name }}
+          RELEASE_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "${POST_MESSAGE_CMS_TOKEN}" ]; then
+            echo "POST_MESSAGE_CMS_TOKEN secret is not set — skipping notification."
+            exit 0
+          fi
+
+          TEXT="Released ${TAG}: ${ZIP_NAME} — ${REPO} ${RELEASE_URL}"
+
+          PAYLOAD="$(jq -n \
+            --arg text "${TEXT}" \
+            --arg branch "alert-beplus-services-noti" \
+            '{text: $text, branch: $branch}')"
+
+          curl -sS -f -X POST "${API_URL}" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${POST_MESSAGE_CMS_TOKEN}" \
+            -d "${PAYLOAD}"
