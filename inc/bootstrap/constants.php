@@ -8,9 +8,7 @@
 
 declare( strict_types=1 );
 
-if ( ! defined( 'NEXTORA_VERSION' ) ) {
-	define( 'NEXTORA_VERSION', '0.0.1' );
-}
+require_once __DIR__ . '/version.php';
 
 if ( ! defined( 'NEXTORA_DIR' ) ) {
 	define( 'NEXTORA_DIR', get_template_directory() );

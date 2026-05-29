@@ -10,8 +10,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', '/tmp/wordpress/' );
 }
 
-if ( ! defined( 'NEXTORA_VERSION' ) ) {
-	define( 'NEXTORA_VERSION', '0.0.1' );
-}
-
+require dirname( __DIR__ ) . '/inc/bootstrap/version.php';
 require dirname( __DIR__ ) . '/vendor/autoload.php';
