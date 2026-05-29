@@ -21,6 +21,7 @@ export interface TeamSocialLink {
 export interface TeamMember {
 	id: string;
 	photoId: number;
+	photoUrl: string;
 	photoAlt: string;
 	name: string;
 	role: string;

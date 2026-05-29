@@ -27,6 +27,7 @@ import {
 	buildSectionStyleVars,
 	createTestimonialId,
 	normalizeTestimonials,
+	resolvePortraitUrl,
 } from './testimonial-utils';
 import { buildTypographyStyleVars } from './testimonials-styles';
 import TestimonialEditForm from './testimonial-edit-form';
@@ -268,6 +269,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 				authorAge: '',
 				authorLocation: '',
 				portraitId: 0,
+				portraitUrl: '',
 				portraitAlt: '',
 			},
 		]);
@@ -514,11 +516,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 				>
 					<TestimonialEditForm
 						item={editingItem}
-						portraitUrl={
-							editingItem.portraitId > 0
-								? mediaUrlById.get(editingItem.portraitId)
-								: undefined
-						}
+						portraitUrl={resolvePortraitUrl(editingItem, mediaUrlById)}
 						onPatch={(patch) => patchItem(editingItem.id, patch)}
 					/>
 				</Modal>
@@ -549,9 +547,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 							item={item}
 							index={index}
 							total={testimonials.length}
-							portraitUrl={
-								item.portraitId > 0 ? mediaUrlById.get(item.portraitId) : undefined
-							}
+							portraitUrl={resolvePortraitUrl(item, mediaUrlById)}
 							imagePosition={imagePosition}
 							onEdit={() => setEditingId(item.id)}
 							onMoveUp={() => moveTestimonial(item.id, -1)}

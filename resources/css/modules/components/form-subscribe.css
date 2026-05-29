@@ -13,7 +13,7 @@
 			transparent
 		);
 		--nextora-form-subscribe-control-h: 3rem;
-
+		margin: 0 !important;
 		width: 100%;
 		max-width: 36rem;
 		margin: 0;
