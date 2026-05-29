@@ -15,7 +15,7 @@ final class ThemeConfig {
 	public const SLUG = 'nextora';
 
 	public static function version(): string {
-		return defined( 'NEXTORA_VERSION' ) ? (string) NEXTORA_VERSION : '1.0.0';
+		return defined( 'NEXTORA_VERSION' ) ? (string) NEXTORA_VERSION : '0.0.1';
 	}
 
 	/**
