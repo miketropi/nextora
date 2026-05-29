@@ -6,3 +6,4 @@ vendor/
 .DS_Store
 .php-cs-fixer.cache
 .opencode/qdrant-status.json
+nextora-v*.zip

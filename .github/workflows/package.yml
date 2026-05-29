@@ -1,0 +1,85 @@
+name: Package Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: package-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Build and attach ZIP
+    runs-on: ubuntu-latest
+
+    env:
+      HUSKY: '0'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      - name: TypeScript check
+        run: npm run typecheck
+
+      - name: Create ZIP package
+        run: npm run build:package
+
+      - name: Find ZIP artifact
+        id: zip
+        run: |
+          ZIP=$(ls nextora-v*.zip)
+          echo "path=${ZIP}" >> $GITHUB_OUTPUT
+          echo "name=$(basename ${ZIP})" >> $GITHUB_OUTPUT
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+          files: ${{ steps.zip.outputs.path }}
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+
+      - name: Send notification
+        if: success()
+        env:
+          POST_MESSAGE_CMS_TOKEN: ${{ secrets.POST_MESSAGE_CMS_TOKEN }}
+          API_URL: https://post-message-cms.beplus-agency.cloud/api/v1/messages
+          TAG: ${{ github.ref_name }}
+          ZIP_NAME: ${{ steps.zip.outputs.name }}
+          RELEASE_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "${POST_MESSAGE_CMS_TOKEN}" ]; then
+            echo "POST_MESSAGE_CMS_TOKEN secret is not set — skipping notification."
+            exit 0
+          fi
+
+          TEXT="Released ${TAG}: ${ZIP_NAME} — ${REPO} ${RELEASE_URL}"
+
+          PAYLOAD="$(jq -n \
+            --arg text "${TEXT}" \
+            --arg branch "alert-beplus-services-noti" \
+            '{text: $text, branch: $branch}')"
+
+          curl -sS -f -X POST "${API_URL}" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${POST_MESSAGE_CMS_TOKEN}" \
+            -d "${PAYLOAD}"
