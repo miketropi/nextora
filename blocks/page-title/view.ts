@@ -16,6 +16,8 @@ const SCROLL_INIT_ATTR = 'data-nextora-page-title-scroll-init';
 const PARALLAX_INIT_ATTR = 'data-nextora-page-title-parallax-init';
 const REVEAL_START_RATIO = 0.88;
 const REVEAL_FALLBACK_MS = 1500;
+/** Allow sub-pixel rounding when checking full visibility. */
+const PARALLAX_VISIBILITY_EPSILON = 2;
 
 function prefersReducedMotion(): boolean {
   return (
@@ -152,7 +154,10 @@ type ParallaxInstance = {
   root: HTMLElement;
   bg: HTMLElement;
   speed: number;
+  /** Receives scroll-driven progress while the section is fully on screen. */
   active: boolean;
+  /** Keeps the current zoom when the user has scrolled past the section. */
+  hold: boolean;
   progress: number;
 };
 
@@ -165,6 +170,82 @@ let lastScrollY = 0;
 
 function getScrollY(): number {
   return window.scrollY || document.documentElement.scrollTop || 0;
+}
+
+/**
+ * Parallax runs only when the section background is fully on screen.
+ * Shorter sections: fully contained in the viewport.
+ * Taller sections: span the viewport (top ≤ 0 and bottom ≥ viewport height).
+ */
+function isSectionFullyVisible(root: HTMLElement): boolean {
+  const rect = root.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+
+  if (rect.height < 1 || rect.width < 1) {
+    return false;
+  }
+
+  const horizontallyVisible =
+    rect.left >= -PARALLAX_VISIBILITY_EPSILON && rect.right <= viewportWidth + PARALLAX_VISIBILITY_EPSILON;
+  if (!horizontallyVisible) {
+    return false;
+  }
+
+  if (rect.height <= viewportHeight + PARALLAX_VISIBILITY_EPSILON) {
+    return (
+      rect.top >= -PARALLAX_VISIBILITY_EPSILON && rect.bottom <= viewportHeight + PARALLAX_VISIBILITY_EPSILON
+    );
+  }
+
+  return (
+    rect.top <= PARALLAX_VISIBILITY_EPSILON && rect.bottom >= viewportHeight - PARALLAX_VISIBILITY_EPSILON
+  );
+}
+
+function isSectionBelowViewport(root: HTMLElement): boolean {
+  const rect = root.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  return rect.top > viewportHeight + PARALLAX_VISIBILITY_EPSILON;
+}
+
+/**
+ * Update whether scroll affects progress and whether the current zoom is frozen.
+ * - Fully visible: scroll updates progress (zoom in/out).
+ * - Scrolled past (above viewport): freeze progress until the user scrolls back.
+ * - Still below the section: reset to rest.
+ */
+function updateParallaxEngagement(instance: ParallaxInstance): void {
+  const fullyVisible = isSectionFullyVisible(instance.root);
+  const belowViewport = isSectionBelowViewport(instance.root);
+
+  if (belowViewport) {
+    instance.active = false;
+    instance.hold = false;
+    if (instance.progress !== 0) {
+      resetParallaxInstance(instance);
+    }
+    return;
+  }
+
+  if (fullyVisible) {
+    instance.active = true;
+    instance.hold = true;
+    applyParallaxStyles(instance);
+    return;
+  }
+
+  instance.active = false;
+  instance.hold = instance.progress > 0;
+  if (instance.hold) {
+    applyParallaxStyles(instance);
+  }
+}
+
+function refreshAllParallaxEngagement(): void {
+  parallaxInstances.forEach((instance) => {
+    updateParallaxEngagement(instance);
+  });
 }
 
 function getParallaxMetrics(instance: ParallaxInstance): { travel: number; scaleDelta: number } {
@@ -188,6 +269,8 @@ function resetParallaxInstance(instance: ParallaxInstance): void {
 }
 
 function handleParallaxScroll(): void {
+  refreshAllParallaxEngagement();
+
   const scrollY = getScrollY();
   const delta = scrollY - lastScrollY;
   lastScrollY = scrollY;
@@ -220,8 +303,9 @@ function scheduleParallaxUpdate(): void {
 }
 
 function refreshParallaxMetrics(): void {
+  refreshAllParallaxEngagement();
   parallaxInstances.forEach((instance) => {
-    if (instance.active) {
+    if (instance.active || instance.hold) {
       applyParallaxStyles(instance);
     }
   });
@@ -254,19 +338,13 @@ function ensureParallaxObserver(): IntersectionObserver | null {
           return;
         }
 
-        instance.active = entry.isIntersecting;
-        if (entry.isIntersecting) {
-          lastScrollY = getScrollY();
-          applyParallaxStyles(instance);
-        } else {
-          resetParallaxInstance(instance);
-        }
+        updateParallaxEngagement(instance);
       });
     },
     {
       root: null,
-      rootMargin: '25% 0px 25% 0px',
-      threshold: 0.01,
+      rootMargin: '0px',
+      threshold: [0, 0.25, 0.5, 0.75, 1],
     },
   );
 
@@ -279,6 +357,7 @@ function registerParallaxInstance(root: HTMLElement, bg: HTMLElement, speed: num
     bg,
     speed,
     active: false,
+    hold: false,
     progress: 0,
   };
 
@@ -291,9 +370,7 @@ function registerParallaxInstance(root: HTMLElement, bg: HTMLElement, speed: num
     observer.observe(root);
   }
 
-  instance.active = true;
-  lastScrollY = getScrollY();
-  applyParallaxStyles(instance);
+  updateParallaxEngagement(instance);
 }
 
 function bindBgImageRefresh(root: HTMLElement): void {

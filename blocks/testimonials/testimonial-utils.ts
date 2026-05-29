@@ -19,8 +19,20 @@ export function normalizeTestimonials(items: TestimonialItem[] | undefined): Tes
 		authorAge: typeof raw?.authorAge === 'string' ? raw.authorAge : '',
 		authorLocation: typeof raw?.authorLocation === 'string' ? raw.authorLocation : '',
 		portraitId: typeof raw?.portraitId === 'number' ? raw.portraitId : 0,
+		portraitUrl: typeof raw?.portraitUrl === 'string' ? raw.portraitUrl : '',
 		portraitAlt: typeof raw?.portraitAlt === 'string' ? raw.portraitAlt : '',
 	}));
+}
+
+export function resolvePortraitUrl(
+	item: TestimonialItem,
+	mediaUrlById: Map<number, string>,
+): string | undefined {
+	if (item.portraitId > 0) {
+		return mediaUrlById.get(item.portraitId);
+	}
+	const url = item.portraitUrl.trim();
+	return url !== '' ? url : undefined;
 }
 
 export function buildAuthorMeta(age: string, location: string): string {

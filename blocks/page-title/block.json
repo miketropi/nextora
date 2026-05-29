@@ -29,7 +29,7 @@
       "margin": true
     },
     "dimensions": {
-      "minHeight": true
+      "minHeight": false
     }
   },
   "attributes": {

@@ -32,6 +32,7 @@
           "authorAge": "16 Years",
           "authorLocation": "Lagos, Nigeria",
           "portraitId": 0,
+          "portraitUrl": "",
           "portraitAlt": ""
         },
         {
@@ -41,6 +42,7 @@
           "authorAge": "14 Years",
           "authorLocation": "Nairobi, Kenya",
           "portraitId": 0,
+          "portraitUrl": "",
           "portraitAlt": ""
         },
         {
@@ -50,6 +52,7 @@
           "authorAge": "15 Years",
           "authorLocation": "Dakar, Senegal",
           "portraitId": 0,
+          "portraitUrl": "",
           "portraitAlt": ""
         }
       ]

@@ -147,13 +147,42 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
   const colorPalette = useThemeColorPalette();
   const resolvedOverlayColor = resolveColor(overlayColor);
 
+  const resolvedBackgroundImageUrl = useSelect(
+    (select) => {
+      const url = backgroundImageUrl.trim();
+      if (url) {
+        return url;
+      }
+      if (backgroundImageId <= 0) {
+        return '';
+      }
+      const media = (
+        select('core') as {
+          getMedia?: (id: number) => { source_url?: string } | undefined;
+        }
+      ).getMedia?.(backgroundImageId);
+      return typeof media?.source_url === 'string' ? media.source_url : '';
+    },
+    [backgroundImageId, backgroundImageUrl],
+  );
+
+  const hasImage = backgroundType === 'image' && resolvedBackgroundImageUrl !== '';
+  const hasVideo = backgroundType === 'video' && backgroundVideoUrl.trim() !== '';
+  const showOverlay = (hasImage || hasVideo) && overlayOpacity > 0;
+
+  const minHeightTrimmed = minHeight.trim();
+
   const blockProps = useBlockProps({
     className: 'nextora-page-title',
     style: {
-      minHeight,
+      ...(minHeightTrimmed ? { '--nextora-page-title-min-height': minHeightTrimmed } : {}),
       backgroundColor: backgroundType === 'color' ? resolveColor(backgroundColor) || undefined : undefined,
-      '--nextora-page-title-overlay-color': resolvedOverlayColor || 'var(--wp--preset--color--contrast, #0f172a)',
-      '--nextora-page-title-overlay-opacity': String(overlayOpacity),
+      ...(showOverlay
+        ? {
+            '--nextora-page-title-overlay-color': resolvedOverlayColor || 'var(--wp--preset--color--contrast, #0f172a)',
+            '--nextora-page-title-overlay-opacity': String(overlayOpacity),
+          }
+        : {}),
     } as CSSProperties,
   });
 
@@ -164,8 +193,12 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
           <TextControl
             label={__('Minimum height', 'nextora')}
             value={minHeight}
-            help={__('Sets the minimum height for the section. Empty = theme default.', 'nextora')}
-            onChange={(value) => setAttributes({ minHeight: value })}
+            placeholder="268px"
+            help={__(
+              'Desktop (782px+). Tablet 85% and mobile 65% of this value. Empty = 268px. Use px, rem, em, %, vh, dvh, svh, or vw.',
+              'nextora',
+            )}
+            onChange={(value) => setAttributes({ minHeight: value ?? '' })}
           />
         </PanelBody>
 
@@ -296,13 +329,15 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
       </InspectorControls>
 
       <section {...blockProps}>
-        {backgroundType === 'image' && backgroundImageUrl ? <div className="nextora-page-title__bg" style={{ backgroundImage: `url(${backgroundImageUrl})` }} /> : null}
-        {backgroundType === 'video' && backgroundVideoUrl ? (
+        {hasImage ? (
+          <div className="nextora-page-title__bg" style={{ backgroundImage: `url(${resolvedBackgroundImageUrl})` }} />
+        ) : null}
+        {hasVideo ? (
           <div className="nextora-page-title__bg nextora-page-title__bg--video">
             <video autoPlay muted loop playsInline src={backgroundVideoUrl} />
           </div>
         ) : null}
-        {backgroundType === 'image' || backgroundType === 'video' ? (
+        {showOverlay ? (
           <div
             className="nextora-page-title__overlay"
             style={{
@@ -312,13 +347,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
           />
         ) : null}
         <div className="nextora-page-title__inner">
-          <InnerBlocks
-            template={[
-              ['core/breadcrumbs', { showHomeLink: true, separator: '/' }],
-              ['core/post-title', { level: 1, isLink: false, textAlign: 'left' }],
-            ]}
-            templateLock="contentOnly"
-          />
+          <InnerBlocks />
         </div>
       </section>
     </>

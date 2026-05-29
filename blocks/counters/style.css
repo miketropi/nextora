@@ -80,7 +80,6 @@
 		--nextora-counters-label-color,
 		color-mix(in srgb, currentColor 60%, transparent)
 	);
-	max-width: 18ch;
 }
 
 .nextora-counters--divider .nextora-counters__item {
@@ -101,7 +100,12 @@
 	}
 }
 
-@media (max-width: 599px) {
+@media (max-width: 768px) {
+	.wp-block-nextora-counters.nextora-counters {
+		column-gap: var(--nextora-counters-gap, var(--wp--preset--spacing--20, 1rem));
+	}
+}
+@media (max-width: 370px) {
 	.wp-block-nextora-counters.nextora-counters {
 		--nextora-counters-cols: 1;
 	}
