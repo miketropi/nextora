@@ -1,0 +1,112 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/testimonial-carousel",
+  "title": "Testimonial Carousel",
+  "category": "design",
+  "description": "Minimalist centered testimonial carousel with fade transitions, trust counter, and avatar stack.",
+  "keywords": ["testimonial", "quote", "reviews", "carousel", "swiper", "nextora"],
+  "textdomain": "nextora",
+  "icon": "format-quote",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "margin": true
+    }
+  },
+  "attributes": {
+    "testimonials": {
+      "type": "array",
+      "default": [
+        {
+          "id": "1",
+          "quoteText": "From the ancient wonders to the stunning landscapes, enjoy every step of your journey with us!",
+          "authorName": "Elena Papadopoulos",
+          "authorRole": "Happy Traveler",
+          "authorPhotoId": 0,
+          "authorPhotoAlt": "",
+          "showAuthorPhoto": false,
+          "rating": 5,
+          "quoteColor": "",
+          "authorColor": ""
+        },
+        {
+          "id": "2",
+          "quoteText": "The team went above and beyond to make our experience seamless, thoughtful, and truly memorable.",
+          "authorName": "Marco Silva",
+          "authorRole": "Product Lead",
+          "authorPhotoId": 0,
+          "authorPhotoAlt": "",
+          "showAuthorPhoto": false,
+          "rating": 5,
+          "quoteColor": "",
+          "authorColor": ""
+        },
+        {
+          "id": "3",
+          "quoteText": "Professional, warm, and detail-oriented — exactly what we needed for a complex project launch.",
+          "authorName": "Kim Nguyen",
+          "authorRole": "Operations Director",
+          "authorPhotoId": 0,
+          "authorPhotoAlt": "",
+          "showAuthorPhoto": false,
+          "rating": 0,
+          "quoteColor": "",
+          "authorColor": ""
+        }
+      ]
+    },
+    "showTopIcon": { "type": "boolean", "default": true },
+    "topIconType": { "type": "string", "default": "sparkle" },
+    "customIconSvg": { "type": "string", "default": "" },
+    "topIconSize": { "type": "number", "default": 20 },
+    "topIconColor": { "type": "string", "default": "" },
+    "showTopLabel": { "type": "boolean", "default": true },
+    "topLabelText": { "type": "string", "default": "Testimonials" },
+    "effect": { "type": "string", "default": "fade" },
+    "speed": { "type": "number", "default": 600 },
+    "autoplay": { "type": "boolean", "default": true },
+    "autoplayDelay": { "type": "number", "default": 6000 },
+    "pauseOnHover": { "type": "boolean", "default": true },
+    "loop": { "type": "boolean", "default": true },
+    "showPagination": { "type": "boolean", "default": true },
+    "showArrows": { "type": "boolean", "default": false },
+    "arrowPosition": { "type": "string", "default": "below-dots" },
+    "showTrustIndicator": { "type": "boolean", "default": true },
+    "trustText": { "type": "string", "default": "3500+ people trust us" },
+    "trustAvatars": { "type": "array", "default": [] },
+    "trustAvatarSize": { "type": "number", "default": 36 },
+    "trustAvatarOverlap": { "type": "number", "default": 10 },
+    "trustAvatarBorderWidth": { "type": "number", "default": 2.5 },
+    "trustAvatarBorderColor": { "type": "string", "default": "" },
+    "trustAvatarFallback": { "type": "string", "default": "initials" },
+    "trustPosition": { "type": "string", "default": "below-quote" },
+    "backgroundColor": { "type": "string", "default": "" },
+    "contentMaxWidth": { "type": "string", "default": "680px" },
+    "paddingTop": { "type": "number", "default": 80 },
+    "paddingBottom": { "type": "number", "default": 80 },
+    "paginationColor": { "type": "string", "default": "" },
+    "paginationActiveColor": { "type": "string", "default": "" },
+    "arrowColor": { "type": "string", "default": "" },
+    "arrowBorderColor": { "type": "string", "default": "" },
+    "quoteColor": { "type": "string", "default": "" },
+    "labelColor": { "type": "string", "default": "" },
+    "authorColor": { "type": "string", "default": "" },
+    "authorNameColor": { "type": "string", "default": "" },
+    "trustColor": { "type": "string", "default": "" },
+    "starColor": { "type": "string", "default": "" },
+    "enableScrollAnimation": { "type": "boolean", "default": true }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "style": "file:./view.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

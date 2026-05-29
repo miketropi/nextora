@@ -1,0 +1,12 @@
+.editor-styles-wrapper .wp-block-nextora-page-title,
+.editor-styles-wrapper .nextora-page-title {
+  border: 1px dashed rgba(100, 116, 139, 0.35);
+}
+
+.editor-styles-wrapper .nextora-page-title__inner {
+  max-width: 100%;
+}
+
+.editor-styles-wrapper .nextora-page-title__overlay {
+  opacity: 0.3;
+}

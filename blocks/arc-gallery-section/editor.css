@@ -1,0 +1,81 @@
+/**
+ * Arc gallery section — editor.
+ */
+
+.nextora-arc-gallery--editor {
+	border: 1px dashed color-mix(in srgb, currentColor 25%, transparent);
+}
+
+.nextora-arc-gallery--editor .nextora-arc-gallery__stage {
+	min-height: 120px;
+	/* Let clicks reach content below / overlapping the arc */
+	pointer-events: none;
+}
+
+.nextora-arc-gallery--editor .nextora-arc-gallery__item {
+	pointer-events: none;
+}
+
+.nextora-arc-gallery--editor .nextora-arc-gallery__content {
+	position: relative;
+	z-index: 5;
+	pointer-events: auto;
+}
+
+.nextora-arc-gallery--editor .nextora-arc-gallery__eyebrow,
+.nextora-arc-gallery--editor .nextora-arc-gallery__heading,
+.nextora-arc-gallery--editor .nextora-arc-gallery__description,
+.nextora-arc-gallery--editor .nextora-arc-gallery__buttons,
+.nextora-arc-gallery--editor .nextora-arc-gallery__btn {
+	pointer-events: auto;
+	cursor: text;
+}
+
+.nextora-arc-gallery--editor .nextora-arc-gallery__btn--link {
+	cursor: text;
+}
+
+/* Front-end GSAP hide state must not apply in the editor */
+.nextora-arc-gallery--editor .nextora-arc-gallery__media {
+	opacity: 1 !important;
+}
+
+.nextora-arc-gallery--editor .nextora-arc-gallery__placeholder {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 200px;
+	color: color-mix(in srgb, currentColor 55%, transparent);
+	font-size: 0.875rem;
+}
+
+.nextora-arc-gallery__inspector-images {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.nextora-arc-gallery__inspector-image-row {
+	display: flex;
+	gap: 8px;
+	align-items: flex-start;
+}
+
+.nextora-arc-gallery__inspector-thumb {
+	width: 48px;
+	height: 48px;
+	object-fit: cover;
+	border-radius: 4px;
+	flex-shrink: 0;
+}
+
+.nextora-arc-gallery__inspector-image-fields {
+	flex: 1;
+	min-width: 0;
+}
+
+.nextora-arc-gallery__inspector-image-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}

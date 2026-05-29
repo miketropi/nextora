@@ -1,6 +1,12 @@
 // @ts-nocheck
 import { __ } from '@wordpress/i18n';
-import { useBlockProps, InspectorControls, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
+import {
+  useBlockProps,
+  InspectorControls,
+  MediaUpload,
+  MediaUploadCheck,
+  URLInput,
+} from '@wordpress/block-editor';
 import { useMemo } from '@wordpress/element';
 import {
   Disabled,
@@ -35,6 +41,12 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     myAccountIconOnly,
     showSearchMobile,
     showCartMobile,
+    showCtaButton,
+    ctaButtonText,
+    ctaButtonUrl,
+    ctaButtonTarget,
+    ctaButtonStyle,
+    showCtaButtonMobile,
     stickyHeader,
     stickyStyle,
     showBottomBorder,
@@ -233,6 +245,53 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             onChange={(v) => setAttributes({ showCartMobile: v })}
             disabled={!showMiniCart}
           />
+
+          <p className="components-help-text" style={{ margin: '1rem 0 0.35rem' }}>
+            {__('Call to action', 'nextora')}
+          </p>
+          <ToggleControl
+            label={__('Show CTA button', 'nextora')}
+            checked={showCtaButton}
+            onChange={(v) => setAttributes({ showCtaButton: v })}
+            help={__(
+              'Appears after the utility icons (search, cart, account).',
+              'nextora',
+            )}
+          />
+          {showCtaButton && (
+            <>
+              <TextControl
+                label={__('Button text', 'nextora')}
+                value={ctaButtonText}
+                onChange={(v) => setAttributes({ ctaButtonText: v ?? '' })}
+                placeholder={__('Get started', 'nextora')}
+              />
+              <p className="components-base-control__label">{__('Button URL', 'nextora')}</p>
+              <URLInput
+                value={ctaButtonUrl}
+                onChange={(url) => setAttributes({ ctaButtonUrl: url ?? '' })}
+              />
+              <ToggleControl
+                label={__('Open in new tab', 'nextora')}
+                checked={ctaButtonTarget}
+                onChange={(v) => setAttributes({ ctaButtonTarget: v })}
+              />
+              <SelectControl
+                label={__('Button style', 'nextora')}
+                value={ctaButtonStyle}
+                options={[
+                  { label: __('Solid', 'nextora'), value: 'solid' },
+                  { label: __('Outline', 'nextora'), value: 'outline' },
+                ]}
+                onChange={(v) => setAttributes({ ctaButtonStyle: v || 'solid' })}
+              />
+              <ToggleControl
+                label={__('Show CTA on small screens', 'nextora')}
+                checked={showCtaButtonMobile}
+                onChange={(v) => setAttributes({ showCtaButtonMobile: v })}
+              />
+            </>
+          )}
         </PanelBody>
 
         <PanelBody title={__('Layout', 'nextora')} initialOpen={false}>

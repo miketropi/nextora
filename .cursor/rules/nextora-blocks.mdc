@@ -39,7 +39,7 @@ Full standards: [`docs/blocks.md`](../../docs/blocks.md). Skills: `nextora-add-t
 
 ## Consistency
 
-- Reuse panel titles and help copy from sibling blocks; `textdomain` **`nextora`**; compare **header**, **spotlight-search**, **image-gallery-*** before shipping.
+- PHP `render.php`: run **`npm run lint:php`** + **`npm run lint:php:check`** after edits (see [`nextora-php.mdc`](../../.cursor/rules/nextora-php.mdc)).
 
 ```text
 ❌ New block with hard-coded #333 and no scroll toggle

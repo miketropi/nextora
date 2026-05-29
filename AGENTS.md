@@ -4,7 +4,7 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 
 ## Cursor / IDE
 
-- **Cursor rules (concise constraints):** [`.cursor/rules/*.mdc`](./.cursor/rules/) — always-on and file-pattern rules for blocks, PHP, front-end, and `theme.json`/templates.
+- **Cursor rules (concise constraints):** [`.cursor/rules/*.mdc`](./.cursor/rules/) — always-on and file-pattern rules for blocks, PHP, front-end, accessibility, and `theme.json`/templates.
 - **Cursor skills (workflows):** [`.cursor/skills/`](./.cursor/skills/) — e.g. adding theme blocks, styling and token alignment. Invoke by skill name when relevant.
 - Long-form context stays in this file and in `docs/`; avoid duplicating large sections into rules.
 
@@ -19,9 +19,11 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 |-----|---------|
 | [`docs/extensibility.md`](./docs/extensibility.md) | Hooks, filters, header block, navigation, comments |
 | [`docs/modal.md`](./docs/modal.md) | Modal layer (`data-nextora-modal`, `openModalDialog`, events, a11y) |
+| [`docs/scroll-animations.md`](./docs/scroll-animations.md) | Class-driven GSAP scroll reveals (`animation-fade-in-up`, data-* attrs) |
 | [`docs/spotlight-search.md`](./docs/spotlight-search.md) | Spotlight search, REST, `window.nextoraSpotlight` |
 | [`docs/comments-tiptap.md`](./docs/comments-tiptap.md) | Tiptap comment field, KSES, `window.nextoraComments` |
 | [`docs/blocks.md`](./docs/blocks.md) | Theme block standards |
+| [`docs/accessibility.md`](./docs/accessibility.md) | WCAG 2.1 AA patterns, source map, block checklist, QA workflow |
 
 ## Naming and constants
 
@@ -81,6 +83,7 @@ Boot order matters:
 7. `initSpotlightSearch()` — `lib/spotlight-search.ts`
 8. `initArticleShare()` — `lib/article-share.ts` (for `[data-nextora-article-share]` markup)
 9. `initCommentTiptap()` — `lib/comment-tiptap.ts`
+10. `initScrollAnimations()` — `lib/scroll-animations/` (class-driven GSAP reveals)
 
 ## PHP load map (`functions.php`)
 
@@ -113,9 +116,18 @@ Boot order matters:
 
 ## Quality checks (from theme root)
 
+PHP changes are not done until **`npm run lint:php:all`** passes (PHPStan + style lint).
+
+Auto-fix formatting: **`npm run lint:php:fix`**, then re-run the two checks above.
+
+**Git pre-commit (Husky):** staged PHP is auto-formatted, then **`npm run lint:php:all`** runs. TypeScript **`npm run typecheck`** runs when staged `resources/**` or `blocks/**` `.ts`/`.tsx` files change. Manual dry-run: **`npm run precommit`**.
+
+**CI:** GitHub Actions (`.github/workflows/ci.yml`) on `main` / `develop` — full gate via **`npm run ci`** locally.
+
+Also:
+
 - `npm run build`
 - `npm run typecheck`
-- `npm run lint:php` / `composer phpstan`
 - `composer test`
 
 ## Cloning

@@ -1,11 +1,12 @@
 <?php
+
 /**
  * Spotlight search — optional legacy PHP hook (`nextora_header_after_primary_nav`).
  *
  * @package Nextora
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

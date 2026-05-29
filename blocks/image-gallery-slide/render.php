@@ -2,15 +2,16 @@
 /**
  * Image gallery (slider) — server render + Swiper markup (view.js).
  *
- * @var array    $attributes Block attributes.
- * @var string   $content    Unused.
- * @var WP_Block $block      Block instance.
+ * @var array<string, mixed> $attributes Block attributes.
+ * @var string               $content    Unused.
+ * @var WP_Block             $block      Block instance.
  */
 
 /**
  * Allow hex or var(--…) for slide matting color.
  *
  * @param string $raw User input.
+ *
  * @return string Safe value or empty string.
  */
 if ( ! function_exists( 'nextora_ig_sanitize_slide_bg' ) ) {
@@ -23,7 +24,7 @@ if ( ! function_exists( 'nextora_ig_sanitize_slide_bg' ) ) {
 		if ( $hex ) {
 			return $hex;
 		}
-		$compact = preg_replace( '/\s+/', ' ', $raw );
+		$compact = preg_replace( '/\s+/', ' ', $raw ) ?? '';
 		if ( preg_match( '/^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$/i', $compact )
 			|| preg_match( '/^rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*(?:0|1|0?\.\d+)\s*\)$/i', $compact ) ) {
 			return $compact;
@@ -105,8 +106,8 @@ $ig_style_attr = $ig_style_arr ? ' style="' . esc_attr( implode( ';', $ig_style_
 $wrapper = get_block_wrapper_attributes();
 ?>
 <div class="inline-grid overflow-hidden"> 
-	<div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-		<div class="<?php echo $ig_class_attr; ?>" data-swiper-opts="<?php echo esc_attr( $opts_string ); ?>"<?php echo $ig_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr in variable. ?>>
+	<div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
+		<div class="<?php echo $ig_class_attr; ?>" data-swiper-opts="<?php echo esc_attr( $opts_string ); ?>"<?php echo $ig_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_attr in variable.?>>
 			<div class="swiper nextora-ig__swiper">
 				<div class="swiper-wrapper">
 					<?php foreach ( $ids as $attachment_id ) : ?>
@@ -119,7 +120,7 @@ $wrapper = get_block_wrapper_attributes();
 								'class'    => 'nextora-ig__img',
 								'loading'  => 'lazy',
 								'decoding' => 'async',
-							)
+							),
 						);
 						if ( ! $image ) {
 							continue;
@@ -132,7 +133,7 @@ $wrapper = get_block_wrapper_attributes();
 						?>
 						<div class="swiper-slide">
 							<div class="nextora-ig__media">
-								<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attachment image. ?>
+								<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attachment image.?>
 							</div>
 							<?php if ( $show_captions && $caption ) : ?>
 								<p class="nextora-ig__caption"><?php echo esc_html( $caption ); ?></p>

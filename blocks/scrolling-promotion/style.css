@@ -1,0 +1,189 @@
+/**
+ * Scrolling promotion marquee — front-end (CSS-only animation).
+ */
+
+.nextora-scrolling-promotion {
+	overflow: hidden;
+	/* width: 100%; */
+	background-color: var(--nextora-marquee-bg, transparent);
+	/* border-top: var(--nextora-marquee-border-width, 0) solid var(--nextora-marquee-border-color, transparent);
+	border-bottom: var(--nextora-marquee-border-width, 0) solid var(--nextora-marquee-border-color, transparent); */
+	box-sizing: border-box;
+	border:  none;
+}
+
+.nextora-scrolling-promotion__track {
+	overflow: hidden;
+	padding: var(--nextora-marquee-padding, 16px) 0;
+	position: relative;
+}
+
+.nextora-scrolling-promotion__inner {
+	display: flex;
+	align-items: center;
+	white-space: nowrap;
+	width: max-content;
+	gap: 0;
+}
+
+.nextora-scrolling-promotion__inner--left {
+	animation: nextora-marquee-scroll-left var(--nextora-marquee-speed, 30s) linear infinite;
+}
+
+.nextora-scrolling-promotion__inner--right {
+	animation: nextora-marquee-scroll-right var(--nextora-marquee-speed, 30s) linear infinite;
+}
+
+.nextora-scrolling-promotion:hover .nextora-scrolling-promotion__inner {
+	animation-play-state: paused;
+}
+
+.nextora-scrolling-promotion--no-pause-on-hover:hover .nextora-scrolling-promotion__inner {
+	animation-play-state: running;
+}
+
+.nextora-scrolling-promotion:focus-within .nextora-scrolling-promotion__inner {
+	animation-play-state: paused;
+}
+
+@keyframes nextora-marquee-scroll-left {
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(-50%);
+	}
+}
+
+@keyframes nextora-marquee-scroll-right {
+	0% {
+		transform: translateX(-50%);
+	}
+	100% {
+		transform: translateX(0);
+	}
+}
+
+.nextora-scrolling-promotion__item {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--nextora-marquee-gap, 40px);
+	padding: 0 calc(var(--nextora-marquee-gap, 40px) / 2);
+	font-size: var(--nextora-marquee-font-size, 1rem);
+	font-weight: var(--nextora-marquee-font-weight, 500);
+	text-transform: var(--nextora-marquee-text-transform, none);
+	letter-spacing: var(--nextora-marquee-letter-spacing, 0);
+	color: var(--nextora-marquee-text, inherit);
+	flex-shrink: 0;
+}
+
+.nextora-scrolling-promotion__sep {
+	width: var(--nextora-marquee-sep-size, 6px);
+	height: var(--nextora-marquee-sep-size, 6px);
+	border-radius: 50%;
+	background-color: var(--nextora-marquee-sep-color, currentColor);
+	opacity: 0.4;
+	flex-shrink: 0;
+}
+
+.nextora-scrolling-promotion__sep--dash {
+	width: 20px;
+	height: 2px;
+	border-radius: 1px;
+}
+
+.nextora-scrolling-promotion__sep--pipe {
+	width: 2px;
+	height: 1em;
+	border-radius: 0;
+}
+
+.nextora-scrolling-promotion__sep--star,
+.nextora-scrolling-promotion__sep--custom {
+	width: auto;
+	height: auto;
+	background: none;
+	font-size: var(--nextora-marquee-sep-size, 12px);
+	line-height: 1;
+	opacity: 0.6;
+}
+
+.nextora-scrolling-promotion__item-body--text-image {
+	display: inline-flex;
+	align-items: center;
+	gap: calc(var(--nextora-marquee-gap, 40px) * 0.35);
+}
+
+.nextora-scrolling-promotion__media {
+	display: block;
+	height: var(--nextora-marquee-image-height, 32px);
+	width: auto;
+	max-width: min(240px, 40vw);
+	object-fit: contain;
+	flex-shrink: 0;
+}
+
+.nextora-scrolling-promotion__item--image .nextora-scrolling-promotion__media {
+	max-width: min(280px, 45vw);
+}
+
+@media (max-width: 480px) {
+	.nextora-scrolling-promotion__track {
+		padding-top: calc(var(--nextora-marquee-padding, 16px) * 0.75);
+		padding-bottom: calc(var(--nextora-marquee-padding, 16px) * 0.75);
+	}
+
+	.nextora-scrolling-promotion__item {
+		gap: calc(var(--nextora-marquee-gap, 40px) * 0.75);
+		padding-inline: calc(var(--nextora-marquee-gap, 40px) * 0.375);
+	}
+}
+
+/* Block style presets (see register-styles.php). */
+.is-style-bold-statement.nextora-scrolling-promotion {
+	--nextora-marquee-font-size: clamp(1.25rem, 4vw, 32px);
+	--nextora-marquee-font-weight: 700;
+	--nextora-marquee-text-transform: uppercase;
+	--nextora-marquee-padding: 24px;
+	--nextora-marquee-sep-size: 10px;
+}
+
+.is-style-dark-strip.nextora-scrolling-promotion {
+	--nextora-marquee-bg: #0a0a0a;
+	--nextora-marquee-text: #ffffff;
+	--nextora-marquee-font-size: clamp(0.8125rem, 2vw, 14px);
+	--nextora-marquee-font-weight: 400;
+	--nextora-marquee-text-transform: uppercase;
+	--nextora-marquee-padding: 14px;
+}
+
+.is-style-announcement-bar.nextora-scrolling-promotion {
+	--nextora-marquee-bg: var(--wp--preset--color--primary, #000000);
+	--nextora-marquee-text: var(--wp--preset--color--base, #ffffff);
+	--nextora-marquee-font-size: clamp(0.8125rem, 2vw, 14px);
+	--nextora-marquee-font-weight: 500;
+	--nextora-marquee-padding: 12px;
+}
+
+.is-style-minimal.nextora-scrolling-promotion {
+	--nextora-marquee-font-size: clamp(0.75rem, 2vw, 13px);
+	--nextora-marquee-font-weight: 400;
+	--nextora-marquee-text-transform: uppercase;
+	--nextora-marquee-padding: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-scrolling-promotion__inner {
+		animation: none !important;
+		flex-wrap: wrap;
+		white-space: normal;
+		justify-content: center;
+		width: 100%;
+		max-width: 100%;
+		gap: 8px 24px;
+	}
+
+	.nextora-scrolling-promotion__item[aria-hidden="true"] {
+		display: none;
+	}
+}

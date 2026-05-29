@@ -5,6 +5,7 @@
 
 import { initArticleShare } from "./lib/article-share";
 import { initCommentTiptap } from "./lib/comment-tiptap";
+import { attachScrollAnimationGlobals, initScrollAnimations } from "./lib/scroll-animations";
 import { initHeaderSticky } from "./header-sticky";
 import { initHeaderNavigation } from "./header-nav";
 import { bindHeaderMiniCartAfterAjaxAdd, mountHeaderMiniCartPortalToBody } from "./mini-cart-portal";
@@ -25,3 +26,5 @@ attachModalGlobals();
 initSpotlightSearch();
 initArticleShare();
 initCommentTiptap();
+attachScrollAnimationGlobals();
+initScrollAnimations();

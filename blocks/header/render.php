@@ -4,12 +4,12 @@
  *
  * @package Nextora
  *
- * @var array         $attributes Block attributes.
- * @var string        $content    Inner blocks (unused).
- * @var WP_Block|null $block      Block instance.
+ * @var array<string, mixed> $attributes Block attributes.
+ * @var string               $content    Inner blocks (unused).
+ * @var WP_Block|null        $block      Block instance.
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -46,14 +46,18 @@ if ( ! function_exists( 'nextora_header_block_sanitize_border_color' ) ) {
 
 		// Theme palette (CSS variable).
 		if ( preg_match( '/^var\(\s*--wp--preset--color--[a-z0-9_-]+\s*\)$/i', $value ) ) {
-			return preg_replace( '/\s+/', ' ', $value );
+			$normalized = preg_replace( '/\s+/', ' ', $value );
+
+			return is_string( $normalized ) ? $normalized : '';
 		}
 
 		// rgb()/rgba() and hsl()/hsla() — comma or space + slash; reject obvious injection.
 		if ( strlen( $value ) <= 140
 			&& ! preg_match( '/[;<>{}]|url\s*\(|expression\s*\(/i', $value )
 			&& preg_match( '/^(?:rgb|hsl)a?\([^)]+\)$/i', $value ) ) {
-			return preg_replace( '/\s+/', ' ', $value );
+			$normalized = preg_replace( '/\s+/', ' ', $value );
+
+			return is_string( $normalized ) ? $normalized : '';
 		}
 
 		return '';
@@ -83,7 +87,7 @@ if ( ! function_exists( 'nextora_header_block_append_border_color_to_wrapper' ) 
 				'/\bstyle="[^"]*"/',
 				'style="' . esc_attr( $new_css ) . '"',
 				$wrapper_attributes,
-				1
+				1,
 			);
 		}
 
@@ -140,7 +144,7 @@ if ( ! function_exists( 'nextora_header_block_render_logo_image' ) ) {
 				'style'    => sprintf( 'max-width:%dpx;width:auto;height:auto;', $max_width ),
 				'loading'  => 'eager',
 				'decoding' => 'async',
-			)
+			),
 		);
 
 		return is_string( $img ) ? $img : '';
@@ -280,7 +284,7 @@ $render_logo = static function ( array $atts ): string {
 /**
  * Nav markup.
  *
- * @param array<string, mixed> $atts         Attributes.
+ * @param array<string, mixed> $atts        Attributes.
  * @param string               $menu_dom_id Menu ul id.
  * @param string               $uid         Instance id.
  */
@@ -406,8 +410,8 @@ $render_nav = static function ( array $atts, string $menu_dom_id, string $uid ):
 /**
  * Utilities column.
  *
- * @param array<string, mixed> $atts       Attributes.
- * @param string               $block_uid  Unique id prefix for this header instance (drawer DOM id).
+ * @param array<string, mixed> $atts      Attributes.
+ * @param string               $block_uid Unique id prefix for this header instance (drawer DOM id).
  */
 $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on ): string {
 	$show_search = ! isset( $atts['showSearch'] ) || (bool) $atts['showSearch'];
@@ -416,12 +420,14 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 
 	$hide_search_m = isset( $atts['showSearchMobile'] ) && ! (bool) $atts['showSearchMobile'];
 	$hide_cart_m   = isset( $atts['showCartMobile'] ) && ! (bool) $atts['showCartMobile'];
+	$hide_cta_m    = isset( $atts['showCtaButtonMobile'] ) && ! (bool) $atts['showCtaButtonMobile'];
+	$show_cta      = ! empty( $atts['showCtaButton'] );
 
 	ob_start();
 
 	do_action( 'nextora_header_block_utilities_start', $atts );
 	?>
-	<div class="nextora-header-block__utilities<?php echo $hide_search_m ? ' nextora-header-block__utilities--hide-search-mobile' : ''; ?><?php echo $hide_cart_m ? ' nextora-header-block__utilities--hide-cart-mobile' : ''; ?>">
+	<div class="nextora-header-block__utilities<?php echo $hide_search_m ? ' nextora-header-block__utilities--hide-search-mobile' : ''; ?><?php echo $hide_cart_m ? ' nextora-header-block__utilities--hide-cart-mobile' : ''; ?><?php echo $hide_cta_m ? ' nextora-header-block__utilities--hide-cta-mobile' : ''; ?>">
 		<?php if ( $show_search && apply_filters( 'nextora_show_header_search_modal', true ) ) : ?>
 			<?php if ( isset( $atts['searchMode'] ) && 'simple' === $atts['searchMode'] ) : ?>
 				<div class="nextora-header-block__search nextora-header-block__search--simple">
@@ -449,15 +455,15 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 
 		<?php
 		if ( $show_cart && function_exists( 'wc_get_cart_url' ) ) :
-			$cart     = ( function_exists( 'WC' ) && WC() && isset( WC()->cart ) ) ? WC()->cart : null;
-			$cart_ok  = $cart instanceof \WC_Cart;
+			$cart     = function_exists( 'WC' ) && isset( WC()->cart ) ? WC()->cart : null;
+			$cart_ok  = $cart instanceof WC_Cart;
 			$rest_ssr = defined( 'REST_REQUEST' ) && REST_REQUEST;
 
 			// ServerSideRender (block editor) often runs before WooCommerce initializes the cart on the request.
 			if ( ! $cart_ok && $rest_ssr && function_exists( 'wc_load_cart' ) ) {
 				wc_load_cart();
-				$cart    = ( function_exists( 'WC' ) && WC() && isset( WC()->cart ) ) ? WC()->cart : null;
-				$cart_ok = $cart instanceof \WC_Cart;
+				$cart    = function_exists( 'WC' ) && isset( WC()->cart ) ? WC()->cart : null;
+				$cart_ok = $cart instanceof WC_Cart;
 			}
 
 			$show_cart_markup = $cart_ok || $rest_ssr;
@@ -560,6 +566,30 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 			</div>
 		<?php endif; ?>
 
+		<?php
+		if ( $show_cta ) :
+			$cta_text = isset( $atts['ctaButtonText'] ) ? trim( (string) $atts['ctaButtonText'] ) : '';
+			if ( '' !== $cta_text ) :
+				$cta_url   = isset( $atts['ctaButtonUrl'] ) ? trim( (string) $atts['ctaButtonUrl'] ) : '';
+				$cta_url   = '' !== $cta_url ? esc_url( $cta_url ) : '#';
+				$cta_new   = ! empty( $atts['ctaButtonTarget'] );
+				$cta_style = isset( $atts['ctaButtonStyle'] ) && 'outline' === $atts['ctaButtonStyle'] ? 'outline' : 'solid';
+				$cta_class = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style );
+				?>
+				<div class="nextora-header-block__cta-wrap">
+					<a
+						class="<?php echo esc_attr( $cta_class ); ?>"
+						href="<?php echo esc_url( $cta_url ); ?>"
+						<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+					>
+						<?php echo esc_html( $cta_text ); ?>
+					</a>
+				</div>
+				<?php
+			endif;
+		endif;
+		?>
+
 		<?php do_action( 'nextora_header_block_utilities_end', $atts ); ?>
 	</div>
 	<?php
@@ -600,7 +630,7 @@ $wrapper_extra = array(
 	'role'  => 'banner',
 );
 
-$wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra, is_object( $block ?? null ) ? $block : null );
+$wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 
 $raw_border = isset( $attributes['bottomBorderColor'] ) ? (string) $attributes['bottomBorderColor'] : '';
 $san_border = nextora_header_block_sanitize_border_color( $raw_border );
@@ -665,7 +695,7 @@ if ( '' !== $san_inner_max ) {
 ob_start();
 if ( 'two-row' === $header_layout ) :
 	?>
-		<div class="nextora-header-block__inner"<?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr(). ?>>
+		<div class="nextora-header-block__inner"<?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr().?>>
 			<div class="nextora-header-block__row nextora-header-block__row--top">
 				<?php
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Logo region markup.
@@ -690,7 +720,7 @@ if ( 'two-row' === $header_layout ) :
 	<?php
 else :
 	?>
-		<div class="nextora-header-block__inner"<?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr(). ?>>
+		<div class="nextora-header-block__inner"<?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr().?>>
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Logo region markup.
 			echo $logo_markup;
@@ -710,7 +740,7 @@ else :
 endif;
 $header_inner_markup = (string) ob_get_clean();
 ?>
-<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<?php
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner layout rows.
 	echo $header_inner_markup;

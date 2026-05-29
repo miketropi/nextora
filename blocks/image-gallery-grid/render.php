@@ -2,14 +2,15 @@
 /**
  * Image gallery (grid) — server render, CSS grid (no JavaScript).
  *
- * @var array    $attributes Block attributes.
- * @var string   $content    Unused.
- * @var WP_Block $block      Block instance.
+ * @var array<string, mixed> $attributes Block attributes.
+ * @var string               $content    Unused.
+ * @var WP_Block             $block      Block instance.
  */
 
 if ( ! function_exists( 'nextora_ig_sanitize_slide_bg' ) ) {
 	/**
 	 * @param string $raw User input.
+	 *
 	 * @return string Safe value or empty string.
 	 */
 	function nextora_ig_sanitize_slide_bg( string $raw ): string {
@@ -21,7 +22,7 @@ if ( ! function_exists( 'nextora_ig_sanitize_slide_bg' ) ) {
 		if ( $hex ) {
 			return $hex;
 		}
-		$compact = preg_replace( '/\s+/', ' ', $raw );
+		$compact = preg_replace( '/\s+/', ' ', $raw ) ?? '';
 		if ( preg_match( '/^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$/i', $compact )
 			|| preg_match( '/^rgba\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*(?:0|1|0?\.\d+)\s*\)$/i', $compact ) ) {
 			return $compact;
@@ -93,7 +94,6 @@ $wrapper = get_block_wrapper_attributes(
 		'class' => implode( ' ', $classes ),
 		'style' => implode( ';', $style_bits ),
 	),
-	isset( $block ) && $block instanceof WP_Block ? $block : null
 );
 
 $list_classes = array( 'nextora-igg__list' );
@@ -104,7 +104,7 @@ if ( $is_creative ) {
 	$list_tag_attrs = ' class="' . esc_attr( implode( ' ', $list_classes ) ) . '" role="list"';
 }
 ?>
-<div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<ul<?php echo $list_tag_attrs; ?>>
 		<?php foreach ( $ids as $attachment_id ) : ?>
 			<?php
@@ -116,7 +116,7 @@ if ( $is_creative ) {
 					'class'   => 'nextora-igg__img',
 					'loading' => 'lazy',
 					'decoding' => 'async',
-				)
+				),
 			);
 			if ( ! $image ) {
 				continue;
@@ -129,7 +129,7 @@ if ( $is_creative ) {
 			?>
 			<li class="nextora-igg__item">
 				<div class="nextora-igg__media">
-					<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 				</div>
 				<?php if ( $show_captions && $caption ) : ?>
 					<div class="nextora-igg__caption"><?php echo esc_html( $caption ); ?></div>

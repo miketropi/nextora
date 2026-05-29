@@ -1,0 +1,54 @@
+/**
+ * Scroll animation utilities — class-driven reveals (GSAP + ScrollTrigger in main.js).
+ *
+ * Prevents flash of unstyled content before JS sets initial GSAP state.
+ * `prefers-reduced-motion`: elements stay visible; JS skips tweens.
+ */
+
+.nextora-scroll-animation--pending,
+[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),
+[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),
+[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]) {
+	opacity: 0;
+}
+
+/*
+ * Block editor + pattern previews: scroll animation JS does not run in admin
+ * iframes, so keep animated blocks visible. Public frontend is unaffected
+ * (.editor-styles-wrapper is not present on the live site).
+ */
+:where(
+	.editor-styles-wrapper,
+	.block-editor-block-preview__content,
+	.block-editor-inserter__preview-content
+)
+	.nextora-scroll-animation--pending,
+:where(
+	.editor-styles-wrapper,
+	.block-editor-block-preview__content,
+	.block-editor-inserter__preview-content
+)
+	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),
+:where(
+	.editor-styles-wrapper,
+	.block-editor-block-preview__content,
+	.block-editor-inserter__preview-content
+)
+	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),
+:where(
+	.editor-styles-wrapper,
+	.block-editor-block-preview__content,
+	.block-editor-inserter__preview-content
+)
+	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]) {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-scroll-animation--pending,
+	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),
+	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),
+	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]) {
+		opacity: 1;
+	}
+}

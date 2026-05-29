@@ -72,9 +72,23 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 - [ ] `view.ts` (if needed): scroll reveal + init loading pattern; reduced motion.
 - [ ] `npm run build:blocks` (and `npm run build` if CSS/TS global).
 
+## Reference blocks (by pattern)
+
+| Block | Pattern |
+|-------|---------|
+| `nextora/scrolling-promotion` | CSS-only marquee, `render.php`, no `viewScript`; items repeater in editor |
+| `nextora/arc-gallery-section` | Arc layout + `arc-math.ts` / PHP mirror, live editor preview, `view.ts` scroll reveal |
+| `nextora/image-gallery-grid` | Scroll reveal (GSAP) |
+| `nextora/image-gallery-slide` | Swiper init / loading |
+| `nextora/team-section` | Swiper member carousel, `members[]` repeater, scroll reveal; see [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md) |
+| `nextora/testimonial-carousel` | Fade testimonial carousel, `testimonials[]` repeater, trust avatars; see [`docs/blocks/Testimonial Carousel.md`](./blocks/Testimonial%20Carousel.md) |
+| `nextora/testimonials` | Split-screen portrait + quote carousel, ring pagination; see [`docs/blocks/testimonials.md`](./blocks/testimonials.md) |
+
 ## Related docs
 
 - [`AGENTS.md`](../AGENTS.md) — theme overview and build pipeline.
+- [`docs/accessibility.md`](./accessibility.md) — WCAG patterns and block a11y checklist.
 - [`docs/modal.md`](./modal.md), [`docs/spotlight-search.md`](./spotlight-search.md) — shared UI patterns.
 - Skill: `.cursor/skills/nextora-add-theme-block/SKILL.md`
 - Skill: `.cursor/skills/nextora-theme-styling-and-tokens/SKILL.md`
+- Block specs: [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md), [`docs/blocks/Testimonial Carousel.md`](./blocks/Testimonial%20Carousel.md)

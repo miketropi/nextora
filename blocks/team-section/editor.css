@@ -1,0 +1,180 @@
+/**
+ * Our Team section — editor-only styles.
+ */
+
+@import './style.css';
+
+.nextora-team-section--editor .nextora-team-section__members-row {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: 1rem;
+	overflow-x: auto;
+	padding-bottom: 0.5rem;
+	margin-top: 1.5rem;
+	-webkit-overflow-scrolling: touch;
+}
+
+.nextora-team-section--editor .nextora-team-section__card {
+	flex: 0 0 min(280px, 85vw);
+	max-width: min(280px, 85vw);
+}
+
+.nextora-team-section--editor .nextora-team-section__card-photo--empty {
+	min-height: 0;
+}
+
+.nextora-team-section__inspector-member {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding-bottom: 12px;
+	margin-bottom: 12px;
+	border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.nextora-team-section__inspector-members-help {
+	margin: 0 0 12px;
+	font-size: 12px;
+	line-height: 1.45;
+	color: color-mix(in srgb, currentColor 65%, transparent);
+}
+
+.nextora-team-section__inspector-member-summary {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.nextora-team-section__inspector-member-name {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.nextora-team-section__inspector-member-role {
+	margin: 0;
+	font-size: 12px;
+	color: color-mix(in srgb, currentColor 60%, transparent);
+}
+
+.nextora-team-section__inspector-member-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.nextora-team-section--editor .nextora-team-section__card--editable {
+	position: relative;
+}
+
+.nextora-team-section--editor .nextora-team-section__card-edit {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 2;
+	padding: 0.25rem 0.625rem;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	line-height: 1.3;
+	color: inherit;
+	background: color-mix(in srgb, var(--wp--preset--color--base, #fff) 92%, transparent);
+	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+	border-radius: 999px;
+	cursor: pointer;
+}
+
+.nextora-team-section--editor .nextora-team-section__card-edit:hover,
+.nextora-team-section--editor .nextora-team-section__card-edit:focus-visible {
+	background: var(--wp--preset--color--base, #fff);
+	outline: 2px solid var(--wp-admin-theme-color, #3858e9);
+	outline-offset: 1px;
+}
+
+.nextora-team-section__member-modal .components-modal__frame {
+	max-width: 720px;
+	width: calc(100vw - 2rem);
+}
+
+.nextora-team-section__member-form {
+	display: grid;
+	gap: 1.25rem;
+}
+
+@media (min-width: 600px) {
+	.nextora-team-section__member-form {
+		grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+		align-items: start;
+	}
+}
+
+.nextora-team-section__member-form-photo,
+.nextora-team-section__member-form-fields,
+.nextora-team-section__member-form-section {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.nextora-team-section__member-form-media {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.nextora-team-section__member-form-media-preview {
+	display: block;
+	width: auto;
+	max-width: 100%;
+	max-height: 220px;
+	object-fit: contain;
+	border-radius: 8px;
+}
+
+.nextora-team-section__member-form-media-empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 140px;
+	padding: 1rem;
+	font-size: 0.8125rem;
+	text-align: center;
+	color: color-mix(in srgb, currentColor 55%, transparent);
+	background: color-mix(in srgb, currentColor 6%, transparent);
+	border-radius: 8px;
+}
+
+.nextora-team-section__member-form-media-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+.nextora-team-section__member-form-row,
+.nextora-team-section__member-form-social {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: flex-end;
+	padding-bottom: 8px;
+	border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.nextora-team-section__member-form-row .components-base-control,
+.nextora-team-section__member-form-social .components-base-control {
+	flex: 1;
+	min-width: 160px;
+}
+
+.nextora-team-section__member-modal-footer {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 1.25rem;
+	padding-top: 1rem;
+	border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.nextora-team-section__inspector-member:last-child {
+	border-bottom: none;
+	margin-bottom: 0;
+}
