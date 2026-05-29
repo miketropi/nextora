@@ -141,7 +141,7 @@ if ( ! function_exists( 'nextora_header_block_render_logo_image' ) ) {
 			false,
 			array(
 				'class'    => 'nextora-header-block__logo-img',
-				'style'    => sprintf( 'max-width:%dpx;width:auto;height:auto;', $max_width ),
+				'style'    => sprintf( 'max-width:%dpx;', $max_width ),
 				'loading'  => 'eager',
 				'decoding' => 'async',
 			),
