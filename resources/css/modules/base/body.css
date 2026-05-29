@@ -16,7 +16,6 @@
 		width: 100%;
 		max-width: none;
 	}
-
 	/*
 	 * Header shell: no sticky here — only `.nextora-header-block--sticky-*` sticks (see blocks/header/style.css).
 	 * Visible overflow so block-level sticky is not clipped by the template part or classic `.site-header`.
@@ -25,7 +24,6 @@
 	header.wp-block-template-part {
 		overflow: visible;
 	}
-
 	.site-header .alignfull {
 		overflow: visible;
 	}
@@ -80,4 +78,41 @@
 	/* html :where([style*=--nextora-arc-img-border-color]) {
     border-style: none !important;
 	} */
+}
+footer.wp-block-template-part{
+	margin-block-start: 0;
+}
+/**
+ * Block utility — add `nextora-links-no-underline` in Additional CSS class(es).
+ * Removes underline from prose links inside the block; underline returns on hover.
+ */
+.nextora-links-style-decoration
+	:where(
+		a:where(
+			:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)
+		)
+	) {
+	text-decoration: none;
+	text-decoration-line: none;
+}
+
+.nextora-links-style-decoration
+	:where(
+		a:where(
+			:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)
+		):not(h1 a, h2 a, h3 a, h4 a, h5 a, h6 a):hover
+	) {
+	text-decoration: underline;
+	text-decoration-line: underline;
+	text-underline-offset: 3px;
+}
+
+.nextora-links-style-decoration
+	:where(
+		a:where(
+			:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)
+		):is(:focus, :focus-visible)
+	) {
+	text-decoration: none;
+	text-decoration-line: none;
 }

@@ -1253,6 +1253,22 @@
     overflow: hidden;
   }
 }
+footer.wp-block-template-part {
+  margin-block-start: 0;
+}
+.nextora-links-style-decoration	:where(	a:where(	:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)	)	) {
+  text-decoration: none;
+  text-decoration-line: none;
+}
+.nextora-links-style-decoration	:where(	a:where(	:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)	):not(h1 a, h2 a, h3 a, h4 a, h5 a, h6 a):hover	) {
+  text-decoration: underline;
+  text-decoration-line: underline;
+  text-underline-offset: 3px;
+}
+.nextora-links-style-decoration	:where(	a:where(	:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)	):is(:focus, :focus-visible)	) {
+  text-decoration: none;
+  text-decoration-line: none;
+}
 .nextora-navigation-from-location {
   --nextora-nav-submenu-bg: var(--nextora-nav-panel-bg);
   --nextora-nav-submenu-border: var(--nextora-nav-panel-border);
@@ -2353,6 +2369,20 @@
   .mc4wp-form .mc4wp-form-fields input[type="submit"]:disabled {
     opacity: 0.55;
     cursor: not-allowed;
+  }
+  .nextora-form-subscribe-style-1 .mc4wp-form .mc4wp-form-fields input[type="submit"] {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: 5.5rem;
+    padding: 0 1.25rem;
+    background-image: none;
+    color: var(--wp--preset--color--base, #ffffff);
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.25;
+    overflow: visible;
+    white-space: nowrap;
   }
   :where(.mc4wp-form .mc4wp-response) {
     margin-block-start: 0.75rem;

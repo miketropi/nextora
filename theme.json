@@ -18,6 +18,11 @@
 			"name": "footer",
 			"title": "Footer",
 			"area": "footer"
+		},
+		{
+			"name": "footer-newsletter",
+			"title": "Footer Newsletter",
+			"area": "footer"
 		}
 	],
 	"settings": {

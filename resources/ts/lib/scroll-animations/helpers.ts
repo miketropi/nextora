@@ -6,6 +6,7 @@ import {
 	DEFAULT_SCROLL_START,
 	INIT_ATTR,
 	SCROLL_REVEAL_ONCE,
+	SCROLL_REVEAL_TRIGGER_ID,
 } from "./constants";
 import { animationPresets } from "./presets";
 import { parseScrollAnimationOptions } from "./parse-options";
@@ -13,6 +14,9 @@ import type { AnimationClassName } from "./constants";
 import type { ScrollAnimationOptions } from "./types";
 
 let pluginRegistered = false;
+
+/** Tweens already handed off from ScrollTrigger to time-based playback at page bottom. */
+const bottomRevealPlayed = new WeakSet<gsap.core.Animation>();
 
 export function ensureGsapPlugins(): void {
 	if (pluginRegistered) {
@@ -64,6 +68,7 @@ function buildScrollTweenVars(
 			trigger: el,
 			start: DEFAULT_SCROLL_START,
 			once: SCROLL_REVEAL_ONCE,
+			id: SCROLL_REVEAL_TRIGGER_ID,
 		},
 		onComplete: () => {
 			gsap.set(el, { clearProps: "opacity,transform,translate,rotate,scale" });
@@ -142,4 +147,70 @@ export function initElementAnimations(el: HTMLElement): void {
 	}
 
 	markInitialized(el);
+}
+
+function getScrollerScrollTop(scroller: Element | Window): number {
+	if (scroller === window || scroller === document.documentElement) {
+		return window.scrollY;
+	}
+
+	return (scroller as Element).scrollTop;
+}
+
+function resolveMaxScroll(scroller: Element | Window): number {
+	if (scroller === window || scroller === document.documentElement) {
+		return ScrollTrigger.maxScroll(window);
+	}
+
+	if (scroller instanceof HTMLElement) {
+		return ScrollTrigger.maxScroll(scroller);
+	}
+
+	return ScrollTrigger.maxScroll(window);
+}
+
+function isAtPageBottom(scroller: Element | Window): boolean {
+	const maxScroll = resolveMaxScroll(scroller);
+	const scrollTop = getScrollerScrollTop(scroller);
+	return Math.abs(scrollTop - maxScroll) <= 2;
+}
+
+/** Detach scroll control and play the reveal tween with its configured duration/ease. */
+function playBottomReveal(st: ScrollTrigger): void {
+	const tween = st.animation;
+	if (!tween || st.progress > 0 || bottomRevealPlayed.has(tween)) {
+		return;
+	}
+
+	bottomRevealPlayed.add(tween);
+	st.kill(false);
+	tween.play();
+}
+
+/**
+ * When the user has scrolled to the page bottom, play any reveal tweens that have
+ * not fired yet (footer / last-section blocks where `top 85%` is unreachable).
+ */
+export function revealBottomAnchoredTriggers(): void {
+	if (prefersReducedMotion()) {
+		return;
+	}
+
+	ScrollTrigger.getAll().forEach((st) => {
+		if (st.vars?.id !== SCROLL_REVEAL_TRIGGER_ID) {
+			return;
+		}
+
+		const tween = st.animation;
+		if (!tween || st.progress > 0 || bottomRevealPlayed.has(tween)) {
+			return;
+		}
+
+		const scroller = st.scroller ?? window;
+		if (!isAtPageBottom(scroller)) {
+			return;
+		}
+
+		playBottomReveal(st);
+	});
 }
