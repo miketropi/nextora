@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 concurrency:
   group: package-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -49,6 +52,7 @@ jobs:
       - name: Upload to release
         uses: softprops/action-gh-release@v2
         with:
+          token: ${{ secrets.RELEASE_TOKEN }}
           files: ${{ steps.zip.outputs.path }}
           fail_on_unmatched_files: true
           generate_release_notes: true
