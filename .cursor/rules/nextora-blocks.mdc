@@ -62,10 +62,13 @@ Full standards: [`docs/blocks.md`](../../docs/blocks.md). Skills: `nextora-add-t
 
 ## Consistency
 
+- **Shared components** — When two or more blocks share the same type of UI (buttons, carousel arrows, pagination dots, card hovers, scroll reveal), copy the reference block's styling exactly: same tokens, font sizes, spacing, weights, border widths, hover states, and transition values. Before adding a new button or carousel, check `docs/blocks.md` § Shared component styles for the canonical reference block.
 - PHP `render.php`: run **`npm run lint:php`** + **`npm run lint:php:check`** after edits (see [`nextora-php.mdc`](../../.cursor/rules/nextora-php.mdc)).
 - `view.ts` / block CSS: run **`npm run build:blocks`** (or full **`npm run build`**).
 
 ```text
+❌ New block's "View All" button uses 13px / weight 500 / 1px border while team-section uses 0.875rem / weight 600 / 1.5px
+✅ Copy team-section button styling exactly — fonts, gap, padding, border, hover, icon class, colour fallback
 ❌ New block with hard-coded #333 and no scroll toggle
 ✅ Presets + optional overrides + enableScrollAnimation + build:blocks
 ```

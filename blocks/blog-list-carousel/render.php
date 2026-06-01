@@ -256,7 +256,7 @@ $css_vars = array(
     '--nextora-blc-title-color'   => '' !== $title_color ? $title_color : 'var(--wp--preset--color--contrast, #1A1A2E)',
     '--nextora-blc-excerpt-color' => '' !== $excerpt_color ? $excerpt_color : 'var(--wp--preset--color--secondary, #6B7280)',
     '--nextora-blc-meta-color'    => '' !== $meta_color ? $meta_color : 'var(--wp--preset--color--secondary, #9CA3AF)',
-    '--nextora-blc-viewall-color' => '' !== $view_all_color ? $view_all_color : 'var(--wp--preset--color--secondary, #6B7280)',
+    '--nextora-blc-viewall-color' => '' !== $view_all_color ? $view_all_color : 'var(--wp--preset--color--primary, #6B7280)',
     '--nextora-blc-dot-color'     => '' !== $dot_color ? $dot_color : 'color-mix(in srgb, currentColor 35%, transparent)',
     '--nextora-blc-dot-active'    => '' !== $dot_active ? $dot_active : 'var(--wp--preset--color--primary, currentColor)',
     '--nextora-blc-img-radius'    => $img_radius . 'px',
@@ -305,7 +305,7 @@ if ( $show_heading && '' !== $heading_text ) {
 }
 
 // ── View all ──
-$arrow_svg  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+$arrow_svg  = '<svg class="nextora-blc__viewall-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 $view_all_html = '';
 if ( $show_view_all && '' !== $view_all_url ) {
     $target_attr = $view_all_target ? ' target="_blank" rel="noopener noreferrer"' : '';
