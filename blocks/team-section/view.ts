@@ -13,8 +13,8 @@ import './style.css';
 gsap.registerPlugin(ScrollTrigger);
 
 const SCROLL_INIT_ATTR = 'data-nextora-team-scroll-init';
-const REVEAL_START = 'top 88%';
-const REVEAL_FALLBACK_MS = 2800;
+const REVEAL_START_RATIO = 0.88;
+const REVEAL_FALLBACK_MS = 4000;
 
 type SwiperOpts = {
 	loop?: boolean;
@@ -79,6 +79,12 @@ function prefersReducedMotion(): boolean {
 	);
 }
 
+function isRevealStartPassed(section: HTMLElement): boolean {
+	const rect = section.getBoundingClientRect();
+	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+	return rect.top <= viewportHeight * REVEAL_START_RATIO && rect.bottom > 0;
+}
+
 function getOpts(root: HTMLElement): SwiperOpts {
 	try {
 		return JSON.parse(root.getAttribute('data-swiper-opts') || '{}') as SwiperOpts;
@@ -102,6 +108,10 @@ function clearRevealStyles(targets: HTMLElement[]): void {
 function scheduleRevealFallback(section: HTMLElement, targets: HTMLElement[]): void {
 	window.setTimeout(() => {
 		if (section.classList.contains('nextora-team-section--reveal-ready')) {
+			return;
+		}
+		// Avoid showing the section before the user scrolls to it.
+		if (!isRevealStartPassed(section)) {
 			return;
 		}
 		gsap.killTweensOf(targets);
@@ -172,14 +182,31 @@ function initScrollReveal(section: HTMLElement): void {
 
 	scheduleRevealFallback(section, targets);
 
+	if (isRevealStartPassed(section)) {
+		playReveal();
+		return;
+	}
+
 	ScrollTrigger.create({
 		trigger: section,
-		start: REVEAL_START,
+		start: `top ${REVEAL_START_RATIO * 100}%`,
 		once: true,
 		onEnter: playReveal,
 	});
 
 	ScrollTrigger.refresh();
+
+	if (isRevealStartPassed(section)) {
+		playReveal();
+	}
+}
+
+function initAllScrollReveals(container: Element | Document = document): void {
+	container
+		.querySelectorAll<HTMLElement>('.nextora-team-section[data-nextora-scroll-reveal="1"]')
+		.forEach((section) => {
+			initScrollReveal(section);
+		});
 }
 
 function markSectionReady(section: HTMLElement | null): void {
@@ -189,7 +216,6 @@ function markSectionReady(section: HTMLElement | null): void {
 	section.classList.remove('nextora-team-section--loading');
 	section.classList.add('nextora-team-section--ready');
 	requestAnimationFrame(() => {
-		initScrollReveal(section);
 		ScrollTrigger.refresh();
 	});
 }
@@ -336,6 +362,7 @@ function initSwiperIn(container: Element | Document): void {
 }
 
 function run(): void {
+	initAllScrollReveals(document);
 	initSwiperIn(document);
 	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize' });
 	ScrollTrigger.refresh();
@@ -349,6 +376,7 @@ if (document.readyState === 'loading') {
 
 window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
 window.addEventListener('nextora-team-section-reinit', () => {
+	initAllScrollReveals(document);
 	initSwiperIn(document);
 	ScrollTrigger.refresh();
 });
