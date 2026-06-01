@@ -178,10 +178,11 @@
 	overflow: hidden;
 	border-radius: var(--nextora-blc-img-radius, 8px);
 	margin-bottom: 14px;
+	aspect-ratio: var(--nextora-blc-img-ratio, 16/10);
 }
 .nextora-blc__card-img {
 	width: 100%;
-	aspect-ratio: var(--nextora-blc-img-ratio, 16/10);
+	height: 100%;
 	object-fit: cover;
 	display: block;
 	transition: transform 0.4s ease;
@@ -213,7 +214,7 @@
 
 /* Title */
 .nextora-blc__card-title {
-	font-size: 16px;
+	font-size: var(--wp--preset--font-size--base, 1rem);
 	font-weight: 600;
 	color: var(--nextora-blc-title-color, var(--wp--preset--color--contrast, #1A1A2E));
 	line-height: 1.35;
