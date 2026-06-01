@@ -4,16 +4,6 @@
     "AGENTS.md",
     ".cursor/rules/*.mdc"
   ],
-  "lsp": {
-    "php intelephense": {
-      "initialization": {
-        "files": {
-          "maxSize": 4000000
-        }
-      }
-    },
-    "typescript": {}
-  },
   "permission": {
     "skill": {
       "gsap-*": "allow",
