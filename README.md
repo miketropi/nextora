@@ -158,11 +158,12 @@ blocks/blocks.php
 2. `initHeaderNavigation()` — mobile nav portal + GSAP drawer
 3. `mountHeaderMiniCartPortalToBody()` — Woo mini cart portal
 4. `mountSpotlightSearchPortalToBody()` — spotlight search portal
-5. `initModals()` / `attachModalGlobals()`
-6. `bindHeaderMiniCartAfterAjaxAdd()`
+5. `initModals()` / `bindHeaderMiniCartAfterAjaxAdd()`
+6. `attachModalGlobals()`
 7. `initSpotlightSearch()`
 8. `initArticleShare()` — copy-link for `[data-nextora-article-share]` markup
 9. `initCommentTiptap()`
+10. `attachScrollAnimationGlobals()` / `initScrollAnimations()` — GSAP scroll reveals
 
 ### Naming conventions
 
@@ -185,6 +186,9 @@ blocks/blocks.php
 | `nextora/post-grid` | Post grid with pagination |
 | `nextora/image-gallery-grid` | Image grid + scroll reveal |
 | `nextora/image-gallery-slide` | Swiper carousel |
+| `nextora/scrolling-promotion` | CSS-only marquee / promotion bar |
+| `nextora/testimonial-carousel` | Fade testimonial carousel |
+| `nextora/page-title` | Dynamic page/single heading |
 
 Standards: [`docs/blocks.md`](./docs/blocks.md).
 

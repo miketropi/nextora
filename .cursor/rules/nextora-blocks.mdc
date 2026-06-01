@@ -12,6 +12,7 @@ Full standards: [`docs/blocks.md`](../../docs/blocks.md). Skills: `nextora-add-t
 
 - Folders under `blocks/` with `block.json` → [`blocks/blocks.php`](../../blocks/blocks.php).
 - Built **`index.js`** + **`index.asset.php`** via [`scripts/build-blocks.mjs`](../../scripts/build-blocks.mjs); `@wordpress/*` → `window.wp.*`.
+- **`view.ts`** builds to `view.js` via esbuild in the build pipeline.
 - Scaffold: `npm run gen -- --name=slug --ns=nextora` → **`npm run build:blocks`**.
 
 ## Theme scheme (required)
@@ -31,15 +32,38 @@ Full standards: [`docs/blocks.md`](../../docs/blocks.md). Skills: `nextora-add-t
 - PHP: `data-nextora-scroll-reveal="1"` when on; JS in `view.ts` with GSAP ScrollTrigger, **`once: true`**, skip if **`prefers-reduced-motion: reduce`**.
 - Reference: [`blocks/image-gallery-grid/view.ts`](../../blocks/image-gallery-grid/view.ts).
 
+## Editor & render conventions
+
+- `block.json`: use `textdomain` `nextora`, category `theme` for chrome blocks or `media`/`design` for content blocks.
+- `render.php`: escape output; `get_block_wrapper_attributes()`; guard `WP_Block` with `instanceof` before `render()`.
+- `edit.tsx`: align panel titles (**Settings**, **Layout**, **Animation**, **Colors**) with existing blocks; use consistent help text.
+- `save.tsx`: minimal or server-rendered — prefer `useBlockProps.save()` with no dynamic content in save.
+
 ## JS layout (slider / carousel)
 
 - Reserve space in CSS; root **`nextora-{slug}--loading`** → **`--ready`** after init.
 - Use **`data-nextora-{slug}-init-pending`** / **`data-nextora-{slug}-inited`**; idempotent init.
 - Reference: [`blocks/image-gallery-slide/view.ts`](../../blocks/image-gallery-slide/view.ts).
 
+## Reference blocks
+
+| Block | Pattern |
+|-------|---------|
+| `nextora/header` | Nav ARIA, drawer portal, Woo mini cart dialog |
+| `nextora/spotlight-search` | Modal + REST search |
+| `nextora/hero-section` | Layout, supports, scroll reveal |
+| `nextora/scrolling-promotion` | CSS-only marquee, `render.php`, repeater items |
+| `nextora/image-gallery-grid` | Scroll reveal (GSAP) |
+| `nextora/image-gallery-slide` | Swiper init / loading states |
+| `nextora/testimonial-carousel` | Fade Swiper, `testimonials[]` repeater |
+| `nextora/call-to-action` | Override attributes, scroll reveal |
+| `nextora/page-title` | Dynamic heading, reduced motion |
+| `nextora/post-grid` | Query block, pagination |
+
 ## Consistency
 
 - PHP `render.php`: run **`npm run lint:php`** + **`npm run lint:php:check`** after edits (see [`nextora-php.mdc`](../../.cursor/rules/nextora-php.mdc)).
+- `view.ts` / block CSS: run **`npm run build:blocks`** (or full **`npm run build`**).
 
 ```text
 ❌ New block with hard-coded #333 and no scroll toggle

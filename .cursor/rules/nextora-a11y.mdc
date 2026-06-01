@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Nextora — accessibility
 
-Full guide: [`docs/accessibility.md`](../../docs/accessibility.md). Target **WCAG 2.1 AA** for theme-owned UI (blocks, TS, CSS, templates). Plugin/content (Woo checkout, Elementor pages) is shared responsibility.
+Full guide: [`docs/accessibility.md`](../../docs/accessibility.md). Target **WCAG 2.1 AA** for theme-owned UI (blocks, TS, CSS, templates). Plugin/content (Woo checkout, Elementor pages) is shared responsibility. All new theme UI must meet AA on first commit — no deferred a11y.
 
 ## Must-do on every a11y touch
 
