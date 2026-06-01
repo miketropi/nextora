@@ -22938,6 +22938,7 @@ ${nextLine.slice(indentLevel + 2)}`;
   var INIT_ATTR = "data-nextora-scroll-animation-init";
   var DEFAULT_SCROLL_START = "top 85%";
   var SCROLL_REVEAL_ONCE = true;
+  var SCROLL_REVEAL_TRIGGER_ID = "nextora-scroll-reveal";
   var DEFAULT_DURATION = 0.8;
   var DEFAULT_EASE = "power3.out";
   var DEFAULT_DISTANCE = 40;
@@ -29693,6 +29694,7 @@ ${nextLine.slice(indentLevel + 2)}`;
 
   // resources/ts/lib/scroll-animations/helpers.ts
   var pluginRegistered = false;
+  var bottomRevealPlayed = /* @__PURE__ */ new WeakSet();
   function ensureGsapPlugins() {
     if (pluginRegistered) {
       return;
@@ -29729,7 +29731,8 @@ ${nextLine.slice(indentLevel + 2)}`;
       scrollTrigger: {
         trigger: el,
         start: DEFAULT_SCROLL_START,
-        once: SCROLL_REVEAL_ONCE
+        once: SCROLL_REVEAL_ONCE,
+        id: SCROLL_REVEAL_TRIGGER_ID
       },
       onComplete: () => {
         gsapWithCSS.set(el, { clearProps: "opacity,transform,translate,rotate,scale" });
@@ -29796,11 +29799,63 @@ ${nextLine.slice(indentLevel + 2)}`;
     }
     markInitialized(el);
   }
+  function getScrollerScrollTop(scroller) {
+    if (scroller === window || scroller === document.documentElement) {
+      return window.scrollY;
+    }
+    return scroller.scrollTop;
+  }
+  function resolveMaxScroll(scroller) {
+    if (scroller === window || scroller === document.documentElement) {
+      return ScrollTrigger2.maxScroll(window);
+    }
+    if (scroller instanceof HTMLElement) {
+      return ScrollTrigger2.maxScroll(scroller);
+    }
+    return ScrollTrigger2.maxScroll(window);
+  }
+  function isAtPageBottom(scroller) {
+    const maxScroll = resolveMaxScroll(scroller);
+    const scrollTop = getScrollerScrollTop(scroller);
+    return Math.abs(scrollTop - maxScroll) <= 2;
+  }
+  function playBottomReveal(st) {
+    const tween = st.animation;
+    if (!tween || st.progress > 0 || bottomRevealPlayed.has(tween)) {
+      return;
+    }
+    bottomRevealPlayed.add(tween);
+    st.kill(false);
+    tween.play();
+  }
+  function revealBottomAnchoredTriggers() {
+    if (prefersReducedMotion()) {
+      return;
+    }
+    ScrollTrigger2.getAll().forEach((st) => {
+      if (st.vars?.id !== SCROLL_REVEAL_TRIGGER_ID) {
+        return;
+      }
+      const tween = st.animation;
+      if (!tween || st.progress > 0 || bottomRevealPlayed.has(tween)) {
+        return;
+      }
+      const scroller = st.scroller ?? window;
+      if (!isAtPageBottom(scroller)) {
+        return;
+      }
+      playBottomReveal(st);
+    });
+  }
 
   // resources/ts/lib/scroll-animations/scroll-animations.ts
   var observer = null;
   var debounceTimer = 0;
   var booted = false;
+  function refreshScrollTriggers() {
+    ScrollTrigger2.refresh();
+    revealBottomAnchoredTriggers();
+  }
   function collectTargets(root2 = document) {
     const selector3 = `${getAnimationSelector()}, ${PARALLAX_SELECTOR}`;
     const nodes = root2.querySelectorAll(selector3);
@@ -29827,14 +29882,14 @@ ${nextLine.slice(indentLevel + 2)}`;
       markPending(el);
       initElementAnimations(el);
     });
-    ScrollTrigger2.refresh();
+    refreshScrollTriggers();
     return targets.length;
   }
   function scheduleRescan() {
     window.clearTimeout(debounceTimer);
     debounceTimer = window.setTimeout(() => {
       if (scanScrollAnimations() > 0) {
-        ScrollTrigger2.refresh();
+        refreshScrollTriggers();
       }
     }, MUTATION_DEBOUNCE_MS);
   }
@@ -29866,10 +29921,11 @@ ${nextLine.slice(indentLevel + 2)}`;
     ScrollTrigger2.config({
       autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize"
     });
+    ScrollTrigger2.addEventListener("scrollEnd", revealBottomAnchoredTriggers);
   }
   function onWindowLoad() {
     scanScrollAnimations();
-    ScrollTrigger2.refresh();
+    refreshScrollTriggers();
   }
   function initScrollAnimations() {
     const boot = () => {
