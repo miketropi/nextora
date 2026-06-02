@@ -2,6 +2,27 @@
  * nextora/blog-list-carousel — editor-only styles.
  */
 
+@import './style.css';
+
+/*
+ * Dimensions padding/background apply on the SSR root (same as front-end).
+ * Reset the editor shell so spacing is not doubled or visually offset.
+ */
+.nextora-blog-list-carousel-block--editor.wp-block-nextora-blog-list-carousel {
+	padding: 0 !important;
+	margin: 0;
+	background: transparent !important;
+}
+
+.nextora-blog-list-carousel-block--editor > div {
+	width: 100%;
+}
+
+.nextora-blog-list-carousel-block--editor .nextora-blog-list-carousel.wp-block-nextora-blog-list-carousel {
+	width: 100%;
+	box-sizing: border-box;
+}
+
 .nextora-blog-list-carousel-block--editor {
 	position: relative;
 }
@@ -32,6 +53,21 @@
 
 .nextora-blog-list-carousel-block--editor .swiper-slide:last-child {
 	margin-right: 0;
+}
+
+/* Preserve card image sizing / radius in the block editor canvas */
+.nextora-blog-list-carousel-block--editor .nextora-blc__card-image {
+	border-radius: var(--nextora-blc-img-radius, 8px);
+	aspect-ratio: var(--nextora-blc-img-ratio, 4/3);
+}
+
+.nextora-blog-list-carousel-block--editor .nextora-blc__card-img,
+.nextora-blog-list-carousel-block--editor .nextora-blc__card-img-placeholder {
+	width: 100% !important;
+	height: 100% !important;
+	max-width: none;
+	object-fit: cover;
+	border-radius: var(--nextora-blc-img-radius, 8px);
 }
 
 /* Loading / reveal states — don't hide in editor */

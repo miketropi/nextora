@@ -11,6 +11,7 @@ import {
 	SelectControl,
 	TextControl,
 	ToggleControl,
+	TextareaControl,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import type { BlogListCarouselAttributes } from './types';
@@ -97,9 +98,13 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		excludeIds = '',
 		offset = 0,
 		ignoreSticky = true,
-		headingText = '',
-		headingLevel = 2,
+		headingText = __('Latest Posts', 'nextora'),
+		headingLevel = 4,
 		showHeading = true,
+		descriptionText = __(
+			'Explore our latest articles, tips, and stories from the blog.',
+			'nextora',
+		),
 		showViewAll = true,
 		viewAllText = 'view all',
 		viewAllUrl = '',
@@ -107,7 +112,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		viewAllTarget = false,
 		headerLayout = 'split',
 		showImage = true,
-		imageAspectRatio = '16-10',
+		imageAspectRatio = '4-3',
 		imageSize = 'medium_large',
 		imageBorderRadius = 8,
 		showTitle = true,
@@ -121,6 +126,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		showAuthor = false,
 		showReadMore = false,
 		readMoreText = 'Read More →',
+		readMoreColor = '',
 		cardLinkBehavior = 'full-card',
 		slidesPerView = 3,
 		slidesPerViewTablet = 2,
@@ -138,14 +144,13 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		grabCursor = true,
 		backgroundColor = '',
 		headingColor = '',
+		descriptionColor = '',
 		titleColor = '',
 		excerptColor = '',
 		metaColor = '',
 		viewAllColor = '',
 		paginationColor = '',
 		paginationActiveColor = '',
-		paddingTop = 80,
-		paddingBottom = 80,
 		contentMaxWidth = '1200px',
 		cardBorderRadius = 0,
 		cardBackground = '',
@@ -289,6 +294,17 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							/>
 						</>
 					)}
+					<TextareaControl
+						label={__('Description', 'nextora')}
+						value={descriptionText}
+						onChange={(v) => setAttributes({ descriptionText: v })}
+						placeholder={__(
+							'Explore our latest articles, tips, and stories from the blog.',
+							'nextora',
+						)}
+						rows={3}
+						help={__('Shown below the heading.', 'nextora')}
+					/>
 					<SelectControl
 						label={__('Header layout', 'nextora')}
 						value={headerLayout}
@@ -563,6 +579,11 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							label: __('Heading', 'nextora'),
 						},
 						{
+							value: descriptionColor,
+							onChange: (v) => setAttributes({ descriptionColor: v ?? '' }),
+							label: __('Description', 'nextora'),
+						},
+						{
 							value: titleColor,
 							onChange: (v) => setAttributes({ titleColor: v ?? '' }),
 							label: __('Card title', 'nextora'),
@@ -582,6 +603,21 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							onChange: (v) => setAttributes({ viewAllColor: v ?? '' }),
 							label: __('"View All" button', 'nextora'),
 						},
+						{
+							value: cardBackground,
+							onChange: (v) => setAttributes({ cardBackground: v ?? '' }),
+							label: __('Card background', 'nextora'),
+						},
+						...(showReadMore
+							? [
+									{
+										value: readMoreColor,
+										onChange: (v: string | undefined) =>
+											setAttributes({ readMoreColor: v ?? '' }),
+										label: __('"Read More" link', 'nextora'),
+									},
+								]
+							: []),
 						...(showPagination
 							? [
 									{
@@ -608,20 +644,6 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						value={contentMaxWidth}
 						onChange={(v) => setAttributes({ contentMaxWidth: v ?? '1200px' })}
 						help={__('e.g. 1200px, 72rem', 'nextora')}
-					/>
-					<RangeControl
-						label={__('Padding top (px)', 'nextora')}
-						value={paddingTop}
-						onChange={(v) => setAttributes({ paddingTop: v ?? 80 })}
-						min={0}
-						max={200}
-					/>
-					<RangeControl
-						label={__('Padding bottom (px)', 'nextora')}
-						value={paddingBottom}
-						onChange={(v) => setAttributes({ paddingBottom: v ?? 80 })}
-						min={0}
-						max={200}
 					/>
 					<RangeControl
 						label={__('Card border radius', 'nextora')}
