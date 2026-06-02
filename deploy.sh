@@ -48,3 +48,13 @@ ssh -i "$SSH_KEY" -p "${VPS_PORT:-22}" "$VPS_USER@$VPS_HOST" bash -s <<EOF
 EOF
 
 echo "✓ Deployed to $VPS_HOST:$THEME_DIR"
+
+if [ -n "${SLACK_API_TOKEN:-}" ]; then
+  MESSAGE="Theme \`nextora\` deployed to \`$VPS_HOST\` → \`$THEME_DIR\`"
+  echo "▶ Sending notification..."
+  curl -sS -X POST https://post-message-cms.beplus-agency.cloud/api/v1/messages \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer ${SLACK_API_TOKEN}" \
+    -d "{\"text\": \"${MESSAGE}\", \"branch\": \"alert-beplus-services-noti\"}" \
+    && echo "" || echo "  (notification skipped — curl failed)"
+fi
