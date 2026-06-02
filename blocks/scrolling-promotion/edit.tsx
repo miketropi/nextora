@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
+import type { CSSProperties } from 'react';
 import {
 	BlockControls,
 	InspectorControls,
@@ -27,6 +28,7 @@ import type {
 	ScrollingPromotionItemType,
 } from './types';
 import { SCROLLING_PROMOTION_ITEM_MEDIA_TYPES } from './types';
+import { initScrollingPromotionMarquee } from './marquee-loop';
 
 interface EditProps {
 	attributes: ScrollingPromotionAttributes;
@@ -108,16 +110,38 @@ export default function ScrollingPromotionEdit({
 	setAttributes,
 }: EditProps) {
 	const [previewAnimating, setPreviewAnimating] = useState(false);
+	const editorRootRef = useRef<HTMLDivElement>(null);
 	const items = normalizeItems(attributes.items);
 	const imageHeight = attributes.imageHeight ?? 32;
 
+	useEffect(() => {
+		if (!previewAnimating) {
+			return;
+		}
+
+		const root = editorRootRef.current?.querySelector<HTMLElement>(
+			'.nextora-scrolling-promotion',
+		);
+		if (!root) {
+			return;
+		}
+
+		delete root.dataset.nextoraMarqueeReady;
+		root.classList.remove('nextora-scrolling-promotion--ready');
+		void initScrollingPromotionMarquee(root);
+	}, [previewAnimating, attributes]);
+
 	const blockProps = useBlockProps({
+		ref: editorRootRef,
 		className: [
 			'nextora-scrolling-promotion--editor',
 			previewAnimating ? 'is-preview-animating' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
+		style: {
+			'--nextora-marquee-image-height': `${imageHeight}px`,
+		} as CSSProperties,
 	});
 
 	const patchItem = (index: number, patch: Partial<ScrollingPromotionItem>): void => {
@@ -308,7 +332,7 @@ export default function ScrollingPromotionEdit({
 						label={__('Speed (seconds per cycle)', 'nextora')}
 						help={__('Higher values scroll more slowly.', 'nextora')}
 						value={attributes.speed}
-						onChange={(speed) => setAttributes({ speed: speed ?? 30 })}
+						onChange={(speed) => setAttributes({ speed: speed ?? 50 })}
 						min={5}
 						max={120}
 					/>

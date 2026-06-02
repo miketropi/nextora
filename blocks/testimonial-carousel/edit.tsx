@@ -31,6 +31,8 @@ import {
 	createTestimonialId,
 	normalizeTestimonials,
 	normalizeTrustAvatars,
+	resolveAuthorPhotoUrl,
+	resolveTrustAvatarUrl,
 } from './testimonial-utils';
 import TestimonialEditForm from './testimonial-edit-form';
 import { ChevronLeftIcon, ChevronRightIcon, StarRating, TopIconSvg } from './icons';
@@ -198,6 +200,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 				authorName: '',
 				authorRole: '',
 				authorPhotoId: 0,
+				authorPhotoUrl: '',
 				authorPhotoAlt: '',
 				showAuthorPhoto: false,
 				rating: 0,
@@ -240,7 +243,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 		const next = [...trustAvatars];
 		list.forEach((item) => {
 			if (item?.id) {
-				next.push({ id: item.id, alt: item.alt ?? '' });
+				next.push({ id: item.id, url: '', alt: item.alt ?? '' });
 			}
 		});
 		if (next.length !== trustAvatars.length) {
@@ -266,7 +269,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 				{trustAvatars.length > 0 && (
 					<div className="nextora-testimonial-carousel__avatars">
 						{trustAvatars.map((avatar, index) => {
-							const url = avatar.id > 0 ? mediaUrlById.get(avatar.id) : undefined;
+							const url = resolveTrustAvatarUrl(avatar, mediaUrlById);
 							return url ? (
 								<img
 									key={`${avatar.id}-${index}`}
@@ -681,11 +684,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 				>
 					<TestimonialEditForm
 						item={editingItem}
-						authorPhotoUrl={
-							editingItem.authorPhotoId > 0
-								? mediaUrlById.get(editingItem.authorPhotoId)
-								: undefined
-						}
+						authorPhotoUrl={resolveAuthorPhotoUrl(editingItem, mediaUrlById)}
 						onPatch={(patch) => patchItem(editingItem.id, patch)}
 					/>
 					<div className="nextora-testimonial-carousel__item-modal-footer">
@@ -726,7 +725,10 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 					)}
 
 					<div className="nextora-testimonial-carousel__slides-editor">
-						{testimonials.map((item, index) => (
+						{testimonials.map((item, index) => {
+							const authorPhotoUrl = resolveAuthorPhotoUrl(item, mediaUrlById);
+
+							return (
 							<article
 								key={item.id}
 								className="nextora-testimonial-carousel__slide nextora-testimonial-carousel__slide--editor"
@@ -747,11 +749,9 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 										__('Write testimonial quote…', 'nextora')}
 								</blockquote>
 								<div className="nextora-testimonial-carousel__slide-author">
-									{item.showAuthorPhoto &&
-									item.authorPhotoId > 0 &&
-									mediaUrlById.get(item.authorPhotoId) ? (
+									{item.showAuthorPhoto && authorPhotoUrl ? (
 										<img
-											src={mediaUrlById.get(item.authorPhotoId)}
+											src={authorPhotoUrl}
 											alt=""
 											className="nextora-testimonial-carousel__slide-author-photo"
 										/>
@@ -778,7 +778,8 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 									</p>
 								</div>
 							</article>
-						))}
+							);
+						})}
 					</div>
 
 					{trustPosition === 'below-quote' && renderTrustPreview()}

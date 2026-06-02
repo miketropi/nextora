@@ -12,6 +12,13 @@ export interface ArcPosition {
 	rotation: number;
 }
 
+/** Pixel offsets from stage center — used for carousel interpolation. */
+export interface ArcPositionNumeric {
+	x: number;
+	y: number;
+	rotation: number;
+}
+
 export interface ArcMathInput {
 	count: number;
 	arcRadius: number;
@@ -92,7 +99,7 @@ export function buildArcLayout(
 	const scale = getResponsiveArcScale(viewportWidth);
 	const scaled = applyResponsiveScale(normalizeArcMathInput(partial), scale);
 	const resolved = resolveArcLayout(scaled);
-	const positions = calculateArcPositions(scaled);
+	const positions = calculateArcPositions({ ...scaled, ...resolved });
 
 	return { scale, resolved, positions };
 }
@@ -205,47 +212,100 @@ export function resolveArcLayout(input: ArcMathInput): ArcMathInput {
 	};
 }
 
+/**
+ * Arc coordinates for a virtual slot index (supports negative / overflow slots).
+ */
+export function calculateArcPositionForSlotNumeric(
+	slot: number,
+	count: number,
+	input: ArcMathInput,
+): ArcPositionNumeric {
+	const resolved = resolveArcLayout({ ...input, count });
+
+	if (count <= 0) {
+		return { x: 0, y: 0, rotation: 0 };
+	}
+
+	if (count === 1) {
+		return {
+			x: 0,
+			y: Math.round((resolved.galleryHeight - resolved.imageHeight) / 2),
+			rotation: 0,
+		};
+	}
+
+	const spreadRad = (resolved.arcSpread * Math.PI) / 180;
+	const halfSpread = spreadRad / 2;
+	const t = (slot / (count - 1)) * 2 - 1;
+	const angle = t * halfSpread;
+	const x = resolved.arcRadius * Math.sin(angle);
+	const y = resolved.arcRadius * (1 - Math.cos(angle));
+	const rotationDeg = (angle * 180) / Math.PI;
+
+	return {
+		x,
+		y,
+		rotation: Math.round(rotationDeg * 10) / 10,
+	};
+}
+
+export function interpolateArcPositionNumeric(
+	a: ArcPositionNumeric,
+	b: ArcPositionNumeric,
+	t: number,
+): ArcPositionNumeric {
+	return {
+		x: a.x + (b.x - a.x) * t,
+		y: a.y + (b.y - a.y) * t,
+		rotation: a.rotation + (b.rotation - a.rotation) * t,
+	};
+}
+
+export function arcPositionNumericAtFractionalSlot(
+	slot: number,
+	count: number,
+	input: ArcMathInput,
+): ArcPositionNumeric {
+	const floorSlot = Math.floor(slot);
+	const ceilSlot = Math.ceil(slot);
+	if (floorSlot === ceilSlot) {
+		return calculateArcPositionForSlotNumeric(floorSlot, count, input);
+	}
+	const t = slot - floorSlot;
+	return interpolateArcPositionNumeric(
+		calculateArcPositionForSlotNumeric(floorSlot, count, input),
+		calculateArcPositionForSlotNumeric(ceilSlot, count, input),
+		t,
+	);
+}
+
+export function arcPositionNumericToCss(
+	pos: ArcPositionNumeric,
+	imageWidth: number,
+): ArcPosition {
+	return {
+		left: `calc(50% + ${Math.round(pos.x - imageWidth / 2)}px)`,
+		top: `${Math.round(pos.y)}px`,
+		rotation: Math.round(pos.rotation * 10) / 10,
+	};
+}
+
 export function calculateArcPositions(input: ArcMathInput): ArcPosition[] {
-	const {
-		count,
-		arcRadius,
-		arcSpread,
-		galleryHeight,
-		imageWidth,
-		imageHeight,
-	} = resolveArcLayout(input);
+	const { count, imageWidth } = resolveArcLayout(input);
 
 	if (count <= 0) {
 		return [];
 	}
 
-	if (count === 1) {
-		return [
-			{
-				left: `calc(50% - ${imageWidth / 2}px)`,
-				top: `${Math.round((galleryHeight - imageHeight) / 2)}px`,
-				rotation: 0,
-			},
-		];
-	}
-
-	const spreadRad = (arcSpread * Math.PI) / 180;
-	const halfSpread = spreadRad / 2;
 	const positions: ArcPosition[] = [];
 
 	for (let i = 0; i < count; i++) {
-		const t = (i / (count - 1)) * 2 - 1;
-		const angle = t * halfSpread;
-		const x = arcRadius * Math.sin(angle);
-		const yArc = arcRadius * (1 - Math.cos(angle));
-		const y = yArc;
-		const rotationDeg = (angle * 180) / Math.PI;
-
-		positions.push({
-			left: `calc(50% + ${Math.round(x - imageWidth / 2)}px)`,
-			top: `${Math.round(y)}px`,
-			rotation: Math.round(rotationDeg * 10) / 10,
-		});
+		positions.push(
+			arcPositionNumericToCss(
+				calculateArcPositionForSlotNumeric(i, count, input),
+				imageWidth,
+			),
+		);
 	}
 
 	return positions;
@@ -256,11 +316,11 @@ export function normalizeArcMathInput(
 ): ArcMathInput {
 	return {
 		count: Math.max(0, partial.count),
-		arcRadius: clamp(partial.arcRadius ?? 600, RADIUS_MIN, RADIUS_MAX),
-		arcSpread: clamp(partial.arcSpread ?? 50, SPREAD_MIN, SPREAD_MAX),
+		arcRadius: clamp(partial.arcRadius ?? 1500, RADIUS_MIN, RADIUS_MAX),
+		arcSpread: clamp(partial.arcSpread ?? 48, SPREAD_MIN, SPREAD_MAX),
 		galleryHeight: clamp(partial.galleryHeight ?? 380, GALLERY_HEIGHT_MIN, GALLERY_HEIGHT_MAX),
-		imageWidth: clamp(partial.imageWidth ?? 220, 120, 400),
-		imageHeight: clamp(partial.imageHeight ?? 280, 150, 500),
+		imageWidth: clamp(partial.imageWidth ?? 311, 120, 400),
+		imageHeight: clamp(partial.imageHeight ?? 416, 150, 500),
 		arcDirection: 'down',
 	};
 }

@@ -18,6 +18,7 @@ export function normalizeTestimonials(items: TestimonialItem[] | undefined): Tes
 		authorName: typeof raw?.authorName === 'string' ? raw.authorName : '',
 		authorRole: typeof raw?.authorRole === 'string' ? raw.authorRole : '',
 		authorPhotoId: typeof raw?.authorPhotoId === 'number' ? raw.authorPhotoId : 0,
+		authorPhotoUrl: typeof raw?.authorPhotoUrl === 'string' ? raw.authorPhotoUrl : '',
 		authorPhotoAlt: typeof raw?.authorPhotoAlt === 'string' ? raw.authorPhotoAlt : '',
 		showAuthorPhoto: Boolean(raw?.showAuthorPhoto),
 		rating:
@@ -25,6 +26,17 @@ export function normalizeTestimonials(items: TestimonialItem[] | undefined): Tes
 		quoteColor: typeof raw?.quoteColor === 'string' ? raw.quoteColor : '',
 		authorColor: typeof raw?.authorColor === 'string' ? raw.authorColor : '',
 	}));
+}
+
+export function resolveAuthorPhotoUrl(
+	item: Pick<TestimonialItem, 'authorPhotoId' | 'authorPhotoUrl'>,
+	mediaUrlById: Map<number, string>,
+): string | undefined {
+	if (item.authorPhotoId > 0) {
+		return mediaUrlById.get(item.authorPhotoId);
+	}
+	const url = item.authorPhotoUrl.trim();
+	return url !== '' ? url : undefined;
 }
 
 export function normalizeTrustAvatars(avatars: TrustAvatar[] | undefined): TrustAvatar[] {
@@ -36,8 +48,20 @@ export function normalizeTrustAvatars(avatars: TrustAvatar[] | undefined): Trust
 		.filter((a) => a && typeof a === 'object')
 		.map((a, index) => ({
 			id: typeof a.id === 'number' ? a.id : 0,
+			url: typeof a.url === 'string' ? a.url : '',
 			alt: typeof a.alt === 'string' ? a.alt : `Avatar ${index + 1}`,
 		}));
+}
+
+export function resolveTrustAvatarUrl(
+	avatar: TrustAvatar,
+	mediaUrlById: Map<number, string>,
+): string | undefined {
+	if (avatar.id > 0) {
+		return mediaUrlById.get(avatar.id);
+	}
+	const url = avatar.url.trim();
+	return url !== '' ? url : undefined;
 }
 
 export function buildSectionStyleVars(attrs: {

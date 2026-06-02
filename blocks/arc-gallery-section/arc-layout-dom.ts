@@ -5,10 +5,13 @@
  */
 
 import {
+	ARC_RESPONSIVE_DESKTOP_MIN,
 	buildArcLayout,
 	type ArcLayoutBuildResult,
 	type ArcMathInput,
 } from './arc-math';
+
+export const MOBILE_STAGE_BOTTOM_PADDING = 0;
 
 export interface ArcLayoutBaseConfig {
 	count: number;
@@ -37,6 +40,79 @@ export function parseArcLayoutBase(root: HTMLElement): ArcLayoutBaseConfig | nul
 	} catch {
 		return null;
 	}
+}
+
+/** Max bottom edge of in-viewport frames (px from stage top), excluding padding. */
+export function measureVisibleArcBottom(
+	stage: HTMLElement,
+	viewportWidth: number,
+): number | null {
+	const stageRect = stage.getBoundingClientRect();
+	let maxBottom = 0;
+	let found = false;
+
+	for (const item of stage.querySelectorAll<HTMLElement>('.nextora-arc-gallery__item')) {
+		if (item.style.visibility === 'hidden') {
+			continue;
+		}
+
+		const rect = item.getBoundingClientRect();
+		if (rect.width < 8 || rect.height < 8) {
+			continue;
+		}
+
+		if (rect.right < -32 || rect.left > viewportWidth + 32) {
+			continue;
+		}
+
+		found = true;
+		maxBottom = Math.max(maxBottom, rect.bottom - stageRect.top);
+	}
+
+	if (!found || maxBottom <= 0) {
+		return null;
+	}
+
+	return maxBottom;
+}
+
+export function measureVisibleArcStageHeight(
+	stage: HTMLElement,
+	viewportWidth: number,
+	contentOffsetY = 0,
+): number | null {
+	const maxBottom = measureVisibleArcBottom(stage, viewportWidth);
+	if (maxBottom === null) {
+		return null;
+	}
+
+	// Content uses margin-top: contentOffsetY (often negative on mobile).
+	return Math.ceil(maxBottom + MOBILE_STAGE_BOTTOM_PADDING - contentOffsetY);
+}
+
+export function applyMobileTightStageHeight(
+	root: HTMLElement,
+	stage: HTMLElement,
+	resolved: ArcMathInput,
+	viewportWidth: number,
+): ArcMathInput {
+	if (viewportWidth >= ARC_RESPONSIVE_DESKTOP_MIN) {
+		return resolved;
+	}
+
+	const offsetRaw = getComputedStyle(root)
+		.getPropertyValue('--nextora-arc-content-offset-y')
+		.trim();
+	const contentOffsetY = Number.parseFloat(offsetRaw) || 0;
+	const measured = measureVisibleArcStageHeight(stage, viewportWidth, contentOffsetY);
+	if (!measured || measured >= resolved.galleryHeight) {
+		return resolved;
+	}
+
+	stage.style.height = `${measured}px`;
+	root.style.setProperty('--nextora-arc-gallery-height', `${measured}px`);
+
+	return { ...resolved, galleryHeight: measured };
 }
 
 export function applyArcLayoutToDom(
@@ -99,7 +175,11 @@ export function applyArcLayoutToDom(
 		item.style.setProperty('--nextora-arc-rotation', `${pos.rotation}deg`);
 	});
 
+	const tightened = stage
+		? applyMobileTightStageHeight(root, stage, resolved, viewportWidth)
+		: resolved;
+
 	root.dataset.nextoraArcScale = String(Math.round(scale * 1000) / 1000);
 
-	return layout;
+	return { scale, resolved: tightened, positions };
 }
