@@ -9,6 +9,45 @@
 
 declare( strict_types=1 );
 
+if ( ! function_exists( 'nextora_scrolling_promotion_enqueue_view_script' ) ) {
+	/**
+	 * Ensure the block view script is queued (marquee loop fill).
+	 *
+	 * Dynamic blocks with a PHP render callback do not always get viewScript
+	 * auto-enqueued on the front end.
+	 */
+	function nextora_scrolling_promotion_enqueue_view_script(): void {
+		if ( is_admin() ) {
+			return;
+		}
+
+		$block_type = WP_Block_Type_Registry::get_instance()->get_registered( 'nextora/scrolling-promotion' );
+		if ( $block_type && ! empty( $block_type->view_script_handles ) && is_array( $block_type->view_script_handles ) ) {
+			foreach ( $block_type->view_script_handles as $handle ) {
+				if ( is_string( $handle ) && '' !== $handle ) {
+					wp_enqueue_script( $handle );
+				}
+			}
+			return;
+		}
+
+		$path = (string) get_template_directory() . '/blocks/scrolling-promotion/view.js';
+		$uri  = (string) get_template_directory_uri() . '/blocks/scrolling-promotion/view.js';
+		if ( is_readable( $path ) ) {
+			if ( ! wp_script_is( 'nextora-scrolling-promotion-view-fallback', 'registered' ) ) {
+				wp_register_script(
+					'nextora-scrolling-promotion-view-fallback',
+					$uri,
+					array(),
+					(string) filemtime( $path ),
+					true,
+				);
+			}
+			wp_enqueue_script( 'nextora-scrolling-promotion-view-fallback' );
+		}
+	}
+}
+
 if ( ! function_exists( 'nextora_scrolling_promotion_resolve_color' ) ) {
 	/**
 	 * Preset slug or hex → CSS color value.
@@ -25,6 +64,33 @@ if ( ! function_exists( 'nextora_scrolling_promotion_resolve_color' ) ) {
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
 			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
 		}
+		return '';
+	}
+}
+
+if ( ! function_exists( 'nextora_scrolling_promotion_get_color_attr' ) ) {
+	/**
+	 * Read a color from block attributes or nested style.color (block toolbar).
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 */
+	function nextora_scrolling_promotion_get_color_attr( array $attributes, string $attribute_key ): string {
+		$raw = isset( $attributes[ $attribute_key ] ) ? trim( (string) $attributes[ $attribute_key ] ) : '';
+		if ( '' !== $raw ) {
+			return nextora_scrolling_promotion_resolve_color( $raw );
+		}
+
+		$style = isset( $attributes['style'] ) && is_array( $attributes['style'] ) ? $attributes['style'] : array();
+		$color = isset( $style['color'] ) && is_array( $style['color'] ) ? $style['color'] : array();
+
+		if ( 'textColor' === $attribute_key && isset( $color['text'] ) ) {
+			return nextora_scrolling_promotion_resolve_color( (string) $color['text'] );
+		}
+
+		if ( 'backgroundColor' === $attribute_key && isset( $color['background'] ) ) {
+			return nextora_scrolling_promotion_resolve_color( (string) $color['background'] );
+		}
+
 		return '';
 	}
 }
@@ -95,20 +161,44 @@ if ( ! function_exists( 'nextora_scrolling_promotion_item_has_content' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_scrolling_promotion_media_inline_style' ) ) {
+	/**
+	 * Inline sizing for logo / image items (overrides attachment width/height attrs).
+	 */
+	function nextora_scrolling_promotion_media_inline_style( int $image_height ): string {
+		$image_height = max( 16, min( 120, $image_height ) );
+
+		return sprintf(
+			'height:%1$dpx;width:auto;object-fit:contain',
+			$image_height,
+		);
+	}
+}
+
 if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 	/**
 	 * @param array<string, mixed> $item Normalized item row.
 	 */
-	function nextora_scrolling_promotion_render_item_image( array $item ): string {
-		$image_id  = isset( $item['imageId'] ) ? (int) $item['imageId'] : 0;
-		$image_url = isset( $item['imageUrl'] ) ? trim( (string) $item['imageUrl'] ) : '';
-		$image_alt = isset( $item['imageAlt'] ) ? trim( (string) $item['imageAlt'] ) : '';
+	function nextora_scrolling_promotion_render_item_image( array $item, int $image_height ): string {
+		$image_id    = isset( $item['imageId'] ) ? (int) $item['imageId'] : 0;
+		$image_url   = isset( $item['imageUrl'] ) ? trim( (string) $item['imageUrl'] ) : '';
+		$image_alt   = isset( $item['imageAlt'] ) ? trim( (string) $item['imageAlt'] ) : '';
+		$inline_style = nextora_scrolling_promotion_media_inline_style( $image_height );
 
 		if ( $image_id > 0 ) {
 			$alt = $image_alt;
 			if ( '' === $alt ) {
 				$alt = (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true );
 			}
+
+			$filter = static function ( array $attr ) use ( $inline_style ): array {
+				unset( $attr['width'], $attr['height'] );
+				$attr['style'] = $inline_style;
+
+				return $attr;
+			};
+			add_filter( 'wp_get_attachment_image_attributes', $filter );
+
 			$html = wp_get_attachment_image(
 				$image_id,
 				'full',
@@ -118,8 +208,12 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 					'alt'      => $alt,
 					'loading'  => 'lazy',
 					'decoding' => 'async',
+					'style'    => $inline_style,
 				),
 			);
+
+			remove_filter( 'wp_get_attachment_image_attributes', $filter );
+
 			if ( is_string( $html ) && '' !== $html ) {
 				return $html;
 			}
@@ -130,9 +224,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 		}
 
 		return sprintf(
-			'<img class="nextora-scrolling-promotion__media" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+			'<img class="nextora-scrolling-promotion__media" src="%1$s" alt="%2$s" style="%3$s" loading="lazy" decoding="async" />',
 			esc_url( $image_url ),
 			esc_attr( $image_alt ),
+			esc_attr( $inline_style ),
 		);
 	}
 }
@@ -141,10 +236,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_body' ) ) {
 	/**
 	 * @param array<string, mixed> $item Normalized item row.
 	 */
-	function nextora_scrolling_promotion_render_item_body( array $item ): string {
+	function nextora_scrolling_promotion_render_item_body( array $item, int $image_height ): string {
 		$type = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
 		$text = isset( $item['text'] ) ? trim( (string) $item['text'] ) : '';
-		$img  = nextora_scrolling_promotion_render_item_image( $item );
+		$img  = nextora_scrolling_promotion_render_item_image( $item, $image_height );
 
 		$parts = array();
 
@@ -189,13 +284,16 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_items' ) ) {
 		$sep    = nextora_scrolling_promotion_render_separator( $type, $custom, $attributes );
 		$out    = '';
 
+		$image_height = isset( $attributes['imageHeight'] ) ? (int) $attributes['imageHeight'] : 32;
+		$image_height = max( 16, min( 120, $image_height ) );
+
 		foreach ( $items as $item ) {
 			if ( ! nextora_scrolling_promotion_item_has_content( $item ) ) {
 				continue;
 			}
 
 			$item_type   = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
-			$body        = nextora_scrolling_promotion_render_item_body( $item );
+			$body        = nextora_scrolling_promotion_render_item_body( $item, $image_height );
 			$hidden_attr = $aria_hidden ? ' aria-hidden="true"' : '';
 			$item_class  = 'nextora-scrolling-promotion__item nextora-scrolling-promotion__item--' . sanitize_html_class( $item_type );
 
@@ -278,18 +376,16 @@ $show_borders = ! empty( $attributes['showBorders'] );
 $border_width = isset( $attributes['borderWidth'] ) ? (int) $attributes['borderWidth'] : 1;
 $border_width = max( 1, min( 3, $border_width ) );
 
-$text_color = nextora_scrolling_promotion_resolve_color(
-	isset( $attributes['textColor'] ) ? (string) $attributes['textColor'] : '',
-);
-$bg_color = nextora_scrolling_promotion_resolve_color(
-	isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '',
-);
-$sep_color = nextora_scrolling_promotion_resolve_color(
+$text_color = nextora_scrolling_promotion_get_color_attr( $attributes, 'textColor' );
+$bg_color   = nextora_scrolling_promotion_get_color_attr( $attributes, 'backgroundColor' );
+$sep_color  = nextora_scrolling_promotion_resolve_color(
 	isset( $attributes['separatorColor'] ) ? (string) $attributes['separatorColor'] : '',
 );
 $border_color = nextora_scrolling_promotion_resolve_color(
 	isset( $attributes['borderColor'] ) ? (string) $attributes['borderColor'] : '',
 );
+
+nextora_scrolling_promotion_enqueue_view_script();
 
 $aria_label = isset( $attributes['ariaLabel'] ) ? trim( (string) $attributes['ariaLabel'] ) : '';
 if ( '' === $aria_label ) {
@@ -313,7 +409,9 @@ $css_vars = array(
 	'--nextora-marquee-speed'           => $speed . 's',
 	'--nextora-marquee-sep-size'        => $separator_size . 'px',
 	'--nextora-marquee-sep-color'       => '' !== $sep_color ? $sep_color : 'currentColor',
-	'--nextora-marquee-border-color'    => $show_borders && '' !== $border_color ? $border_color : 'transparent',
+	'--nextora-marquee-border-color'    => $show_borders
+		? ( '' !== $border_color ? $border_color : 'currentColor' )
+		: 'transparent',
 	'--nextora-marquee-border-width'    => $show_borders ? $border_width . 'px' : '0px',
 );
 
@@ -350,18 +448,26 @@ $wrapper_attributes = (string) apply_filters(
 	$attributes,
 );
 
-$inner_class = 'nextora-scrolling-promotion__inner nextora-scrolling-promotion__inner--' . esc_attr( $direction );
-$items_html  = nextora_scrolling_promotion_render_items( $items, false, $attributes );
-$dup_html    = nextora_scrolling_promotion_render_items( $items, true, $attributes );
+$inner_class   = 'nextora-scrolling-promotion__inner nextora-scrolling-promotion__inner--' . esc_attr( $direction );
+$sequence_html = nextora_scrolling_promotion_render_items( $items, false, $attributes );
+$dup_html      = nextora_scrolling_promotion_render_items( $items, true, $attributes );
 
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?> aria-label="<?php echo esc_attr( $aria_label ); ?>">
 	<div class="nextora-scrolling-promotion__track">
 		<div class="<?php echo esc_attr( $inner_class ); ?>">
-			<?php
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_html().
-			echo $items_html . $dup_html;
-			?>
+			<div class="nextora-scrolling-promotion__half" data-nextora-marquee-half="primary">
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_html().
+				echo $sequence_html;
+				?>
+			</div>
+			<div class="nextora-scrolling-promotion__half" data-nextora-marquee-half="duplicate" aria-hidden="true">
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_html().
+				echo $dup_html;
+				?>
+			</div>
 		</div>
 	</div>
 </div>

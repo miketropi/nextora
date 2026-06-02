@@ -16,7 +16,6 @@ import {
 	Notice,
 	PanelBody,
 	PanelRow,
-	Placeholder,
 	RangeControl,
 	SelectControl,
 	TextControl,
@@ -25,6 +24,7 @@ import {
 import { useSelect } from '@wordpress/data';
 import { useMemo, useCallback, useRef, useState, useEffect } from '@wordpress/element';
 import { buildArcLayout } from './arc-math';
+import { resolveDisplayImages, resolveArcGalleryImageSrc } from './placeholder-utils';
 
 const ALLOWED_MEDIA = ['image'];
 
@@ -44,18 +44,22 @@ function clamp(n, min, max) {
 export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 	const {
 		images = [],
-		imageWidth = 220,
-		imageHeight = 280,
+		imageWidth = 311,
+		imageHeight = 416,
 		imageBorderRadius = 6,
 		imageBorderWidth = 3,
-		imageBorderColor = '#ffffff',
-		arcRadius = 600,
-		arcSpread = 50,
-		galleryHeight = 380,
-		galleryOverflow = true,
-		eyebrowText = '',
-		headingText = '',
-		descriptionText = '',
+		imageBorderColor = '',
+		arcRadius = 1500,
+		arcSpread = 48,
+		eyebrowText = __('Protecting People & Planet', 'nextora'),
+		headingText = __(
+			"Join Save the World in Creating a Future That's Worth Inheriting",
+			'nextora',
+		),
+		descriptionText = __(
+			'Save the World restores forests, protects clean water, and helps communities face climate change together.',
+			'nextora',
+		),
 		headingLevel = 2,
 		textAlign = 'center',
 		contentMaxWidth = '700px',
@@ -72,14 +76,16 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 		backgroundColor = '',
 		textColor = '',
 		eyebrowColor = '',
+		descriptionColor = '',
 		primaryButtonBg = '',
 		primaryButtonColor = '',
-		paddingTop = 80,
-		paddingBottom = 80,
+		secondaryButtonColor = '',
 		enableScrollAnimation = true,
+		enableGalleryScrollAnimation = true,
 	} = attributes;
 
 	const imageList = Array.isArray(images) ? images : [];
+	const displayImages = useMemo(() => resolveDisplayImages(imageList), [imageList]);
 	const ids = imageList.map((img) => img?.id).filter(Boolean);
 
 	const mediaMap = useSelect(
@@ -124,10 +130,9 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 		() =>
 			buildArcLayout(
 				{
-					count: imageList.length,
+					count: displayImages.length,
 					arcRadius,
 					arcSpread,
-					galleryHeight,
 					imageWidth,
 					imageHeight,
 					arcDirection: 'down',
@@ -135,10 +140,9 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 				containerWidth,
 			),
 		[
-			imageList.length,
+			displayImages.length,
 			arcRadius,
 			arcSpread,
-			galleryHeight,
 			imageWidth,
 			imageHeight,
 			containerWidth,
@@ -148,19 +152,16 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 	const { resolved: resolvedLayout, positions, scale: arcScale } = arcLayout;
 
 	const cssVars = {
-		'--nextora-arc-bg': backgroundColor || 'transparent',
-		'--nextora-arc-padding-top': `${paddingTop}px`,
-		'--nextora-arc-padding-bottom': `${paddingBottom}px`,
-		'--nextora-arc-text': textColor || 'var(--wp--preset--color--contrast)',
-		'--nextora-arc-eyebrow': eyebrowColor || 'var(--wp--preset--color--secondary)',
-		'--nextora-arc-btn-bg': primaryButtonBg || 'var(--wp--preset--color--primary)',
-		'--nextora-arc-btn-color': primaryButtonColor || 'var(--wp--preset--color--base)',
+		'--nextora-arc-bg': backgroundColor || undefined,
+		'--nextora-arc-text': textColor || undefined,
+		'--nextora-arc-eyebrow': eyebrowColor || undefined,
+		'--nextora-arc-description': descriptionColor || undefined,
+		'--nextora-arc-link': secondaryButtonColor || undefined,
+		'--nextora-arc-btn-bg': primaryButtonBg || undefined,
+		'--nextora-arc-btn-color': primaryButtonColor || undefined,
 		'--nextora-arc-img-radius': `${Math.max(0, Math.round(imageBorderRadius * arcScale))}px`,
 		'--nextora-arc-img-border': `${Math.max(0, Math.round(imageBorderWidth * arcScale))}px`,
-		'--nextora-arc-img-border-color':
-			imageBorderColor && imageBorderColor !== '#ffffff'
-				? imageBorderColor
-				: 'var(--wp--preset--color--base)',
+		'--nextora-arc-img-border-color': imageBorderColor || undefined,
 		'--nextora-arc-gallery-height': `${resolvedLayout.galleryHeight}px`,
 		'--nextora-arc-content-offset-y': `${Math.round(contentOffsetY * arcScale)}px`,
 	};
@@ -171,15 +172,10 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 			'nextora-arc-gallery',
 			'nextora-arc-gallery--editor',
 			`nextora-arc-gallery--align-${textAlign}`,
-			galleryOverflow ? 'nextora-arc-gallery--overflow-visible' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
-		style: {
-			...cssVars,
-			paddingTop: `${paddingTop}px`,
-			paddingBottom: `${paddingBottom}px`,
-		},
+		style: cssVars,
 	});
 
 	const headingTag = `h${clamp(headingLevel, 1, 6)}`;
@@ -253,11 +249,7 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 					)}
 					<div className="nextora-arc-gallery__inspector-images" style={{ marginTop: 12 }}>
 						{imageList.map((img, index) => {
-							const media = mediaMap[img.id];
-							const thumb =
-								media?.media_details?.sizes?.thumbnail?.source_url ||
-								media?.source_url ||
-								'';
+							const thumb = resolveArcGalleryImageSrc(img, mediaMap, 'thumbnail');
 							return (
 								<div key={`img-${img.id}-${index}`} className="nextora-arc-gallery__inspector-image-row">
 									{thumb ? (
@@ -316,7 +308,7 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 						label={__('Arc radius', 'nextora')}
 						help={__('Larger = flatter curve; smaller = more dramatic.', 'nextora')}
 						value={arcRadius}
-						onChange={(v) => setAttributes({ arcRadius: v ?? 600 })}
+						onChange={(v) => setAttributes({ arcRadius: v ?? 1500 })}
 						min={300}
 						max={1500}
 					/>
@@ -324,22 +316,9 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 						label={__('Arc spread (degrees)', 'nextora')}
 						help={__('Total angle of the fan.', 'nextora')}
 						value={arcSpread}
-						onChange={(v) => setAttributes({ arcSpread: v ?? 50 })}
+						onChange={(v) => setAttributes({ arcSpread: v ?? 48 })}
 						min={20}
 						max={90}
-					/>
-					<RangeControl
-						label={__('Gallery height (px)', 'nextora')}
-						value={galleryHeight}
-						onChange={(v) => setAttributes({ galleryHeight: v ?? 380 })}
-						min={250}
-						max={600}
-					/>
-					<ToggleControl
-						label={__('Allow overflow', 'nextora')}
-						help={__('Let edge images extend past the section bounds.', 'nextora')}
-						checked={galleryOverflow}
-						onChange={(v) => setAttributes({ galleryOverflow: v })}
 					/>
 				</PanelBody>
 
@@ -347,14 +326,14 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 					<RangeControl
 						label={__('Width (px)', 'nextora')}
 						value={imageWidth}
-						onChange={(v) => setAttributes({ imageWidth: v ?? 220 })}
+						onChange={(v) => setAttributes({ imageWidth: v ?? 311 })}
 						min={120}
 						max={400}
 					/>
 					<RangeControl
 						label={__('Height (px)', 'nextora')}
 						value={imageHeight}
-						onChange={(v) => setAttributes({ imageHeight: v ?? 280 })}
+						onChange={(v) => setAttributes({ imageHeight: v ?? 416 })}
 						min={150}
 						max={500}
 					/>
@@ -441,6 +420,11 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 							label: __('Heading', 'nextora'),
 						},
 						{
+							value: descriptionColor,
+							onChange: (v) => setAttributes({ descriptionColor: v ?? '' }),
+							label: __('Description', 'nextora'),
+						},
+						{
 							value: eyebrowColor,
 							onChange: (v) => setAttributes({ eyebrowColor: v ?? '' }),
 							label: __('Eyebrow', 'nextora'),
@@ -459,29 +443,25 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 									},
 								]
 							: []),
+						...(showSecondaryButton
+							? [
+									{
+										value: secondaryButtonColor,
+										onChange: (v) =>
+											setAttributes({ secondaryButtonColor: v ?? '' }),
+										label: __('Secondary button', 'nextora'),
+									},
+								]
+							: []),
 						{
 							value: imageBorderColor,
-							onChange: (v) => setAttributes({ imageBorderColor: v ?? '#ffffff' }),
+							onChange: (v) => setAttributes({ imageBorderColor: v ?? '' }),
 							label: __('Image border', 'nextora'),
 						},
 					]}
 				/>
 
 				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
-					<RangeControl
-						label={__('Padding top (px)', 'nextora')}
-						value={paddingTop}
-						onChange={(v) => setAttributes({ paddingTop: v ?? 80 })}
-						min={0}
-						max={200}
-					/>
-					<RangeControl
-						label={__('Padding bottom (px)', 'nextora')}
-						value={paddingBottom}
-						onChange={(v) => setAttributes({ paddingBottom: v ?? 80 })}
-						min={0}
-						max={200}
-					/>
 					<TextControl
 						label={__('Content max width', 'nextora')}
 						value={contentMaxWidth}
@@ -511,12 +491,23 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 					<ToggleControl
 						label={__('Animate on scroll', 'nextora')}
 						help={__(
-							'Fade content in when it enters the viewport. Disabled when the visitor prefers reduced motion.',
+							'Fade gallery images and content in when they enter the viewport. Disabled when the visitor prefers reduced motion.',
 							'nextora',
 						)}
 						checked={enableScrollAnimation !== false}
 						onChange={(v) => setAttributes({ enableScrollAnimation: v })}
 					/>
+					{displayImages.length >= 2 && (
+						<ToggleControl
+							label={__('Gallery scroll animation', 'nextora')}
+							help={__(
+								'Advance the arc gallery with scroll while the block is in view (scroll down = next, scroll up = previous). Drag and swipe still work. Disabled when the visitor prefers reduced motion.',
+								'nextora',
+							)}
+							checked={enableGalleryScrollAnimation !== false}
+							onChange={(v) => setAttributes({ enableGalleryScrollAnimation: v })}
+						/>
+					)}
 				</PanelBody>
 			</InspectorControls>
 
@@ -525,65 +516,44 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 					className="nextora-arc-gallery__stage"
 					style={{ height: `${resolvedLayout.galleryHeight}px` }}
 				>
-					{imageList.length === 0 ? (
-						<Placeholder
-							className="nextora-arc-gallery__placeholder"
-							icon="format-gallery"
-							label={__('Arc gallery', 'nextora')}
-							instructions={__('Select images in the sidebar to build the arc.', 'nextora')}
-						>
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={onSelectImages}
-									allowedTypes={ALLOWED_MEDIA}
-									multiple
-									gallery
-									render={({ open }) => (
-										<Button variant="primary" onClick={open}>
-											{__('Select images', 'nextora')}
-										</Button>
-									)}
-								/>
-							</MediaUploadCheck>
-						</Placeholder>
-					) : (
-						imageList.map((img, index) => {
-							const pos = positions[index];
-							if (!pos) {
-								return null;
-							}
-							const media = mediaMap[img.id];
-							const src =
-								media?.media_details?.sizes?.large?.source_url ||
-								media?.source_url ||
-								'';
-							const itemStyle = {
-								width: `${resolvedLayout.imageWidth}px`,
-								height: `${resolvedLayout.imageHeight}px`,
-								left: pos.left,
-								top: pos.top,
-								'--nextora-arc-rotation': `${pos.rotation}deg`,
-							};
-							return (
-								<div
-									key={`arc-${img.id}-${index}`}
-									className="nextora-arc-gallery__item"
-									style={itemStyle}
-								>
-									{src ? (
-										<div
-											className="nextora-arc-gallery__media"
-											role="img"
-											aria-label={img.alt || ''}
-											style={{
-												backgroundImage: `url(${src})`,
-											}}
-										/>
-									) : null}
-								</div>
-							);
-						})
-					)}
+					{displayImages.map((img, index) => {
+						const pos = positions[index];
+						if (!pos) {
+							return null;
+						}
+						const src = resolveArcGalleryImageSrc(img, mediaMap);
+						const itemStyle = {
+							width: `${resolvedLayout.imageWidth}px`,
+							height: `${resolvedLayout.imageHeight}px`,
+							left: pos.left,
+							top: pos.top,
+							'--nextora-arc-rotation': `${pos.rotation}deg`,
+						};
+						return (
+							<div
+								key={`arc-${img.id}-${index}`}
+								className="nextora-arc-gallery__item"
+								style={itemStyle}
+							>
+								{src ? (
+									<div
+										className={[
+											'nextora-arc-gallery__media',
+											img.isPlaceholder ? 'nextora-arc-gallery__media--placeholder' : '',
+										]
+											.filter(Boolean)
+											.join(' ')}
+										{...(img.isPlaceholder
+											? { 'aria-hidden': true }
+											: { role: 'img', 'aria-label': img.alt || '' })}
+										style={{
+											backgroundImage: `url(${src})`,
+										}}
+									/>
+								) : null}
+							</div>
+						);
+					})}
 				</div>
 
 				<div
