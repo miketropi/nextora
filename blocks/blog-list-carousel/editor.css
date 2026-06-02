@@ -1,0 +1,60 @@
+/**
+ * nextora/blog-list-carousel — editor-only styles.
+ */
+
+.nextora-blog-list-carousel-block--editor {
+	position: relative;
+}
+
+/* ── Carousel preview in editor (Swiper JS not active) ── */
+.nextora-blog-list-carousel-block--editor .nextora-blc__swiper {
+	overflow: visible;
+}
+
+.nextora-blog-list-carousel-block--editor .swiper-wrapper {
+	display: flex !important;
+	flex-direction: row !important;
+	transform: none !important;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-snap-type: x mandatory;
+	-webkit-overflow-scrolling: touch;
+	gap: 0;
+	padding-bottom: 8px;
+}
+
+.nextora-blog-list-carousel-block--editor .swiper-slide {
+	flex-shrink: 0;
+	scroll-snap-align: start;
+	width: calc((100% - 48px) / 3);
+	margin-right: 24px;
+}
+
+.nextora-blog-list-carousel-block--editor .swiper-slide:last-child {
+	margin-right: 0;
+}
+
+/* Loading / reveal states — don't hide in editor */
+.nextora-blog-list-carousel-block--editor .nextora-blog-list-carousel--loading .nextora-blc__swiper {
+	opacity: 1;
+}
+
+.nextora-blog-list-carousel-block--editor
+	.nextora-blog-list-carousel[data-nextora-scroll-reveal='1']
+	.nextora-blc__header,
+.nextora-blog-list-carousel-block--editor
+	.nextora-blog-list-carousel[data-nextora-scroll-reveal='1']
+	.nextora-blc__carousel-root,
+.nextora-blog-list-carousel-block--editor
+	.nextora-blog-list-carousel[data-nextora-scroll-reveal='1']
+	.nextora-blc__pagination {
+	opacity: 1;
+	transform: none;
+}
+
+/* Spinner keyframe */
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

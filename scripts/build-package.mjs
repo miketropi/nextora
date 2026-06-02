@@ -45,40 +45,60 @@ if ( fs.existsSync( zipPath ) ) {
 }
 
 const excludes = [
+	// Tooling & deps
 	`${ THEME_SLUG }/node_modules/*`,
+	`${ THEME_SLUG }/vendor/*`,
+	'*.zip',
+
+	// VCS & CI
 	`${ THEME_SLUG }/.git/*`,
 	`${ THEME_SLUG }/.github/*`,
 	`${ THEME_SLUG }/.husky/*`,
+	`${ THEME_SLUG }/.gitignore`,
+	`${ THEME_SLUG }/.nvmrc`,
+	`${ THEME_SLUG }/.lintstagedrc.cjs`,
+
+	// Agent config (Cursor / OpenCode / Claude)
 	`${ THEME_SLUG }/.cursor/*`,
 	`${ THEME_SLUG }/.opencode/*`,
-	`${ THEME_SLUG }/vendor/*`,
+	`${ THEME_SLUG }/.codegraph/*`,
+	`${ THEME_SLUG }/.claude/*`,
+	`${ THEME_SLUG }/AGENTS.md`,
+	`${ THEME_SLUG }/opencode.jsonc`,
+	`${ THEME_SLUG }/.mcp.json`,
+	`${ THEME_SLUG }/README.md`,
+
+	// Source (compiled output lives in assets/ and blocks/*/index.js)
 	`${ THEME_SLUG }/resources/*`,
+	`${ THEME_SLUG }/scripts/*`,
+	`${ THEME_SLUG }/docs/*`,
+
+	// Block TypeScript / editor source (not needed at runtime)
+	`${ THEME_SLUG }/blocks/*/*.ts`,
+	`${ THEME_SLUG }/blocks/*/*.tsx`,
+	`${ THEME_SLUG }/blocks/*/*.d.ts`,
+
+	// Test tooling
 	`${ THEME_SLUG }/tests/*`,
 	`${ THEME_SLUG }/stubs/*`,
-	`${ THEME_SLUG }/docs/*`,
-	`${ THEME_SLUG }/scripts/*`,
 	`${ THEME_SLUG }/.phpunit.cache/*`,
-	`${ THEME_SLUG }/.php-cs-fixer.cache`,
-	`${ THEME_SLUG }/.gitignore`,
-	`${ THEME_SLUG }/.lintstagedrc.cjs`,
-	`${ THEME_SLUG }/.nvmrc`,
-	`${ THEME_SLUG }/.php-cs-fixer.dist.php`,
-	`${ THEME_SLUG }/AGENTS.md`,
+	`${ THEME_SLUG }/phpunit.xml.dist`,
+
+	// Dev tool config
 	`${ THEME_SLUG }/composer.json`,
 	`${ THEME_SLUG }/composer.lock`,
 	`${ THEME_SLUG }/package.json`,
 	`${ THEME_SLUG }/package-lock.json`,
 	`${ THEME_SLUG }/phpstan-bootstrap.php`,
 	`${ THEME_SLUG }/phpstan.neon`,
-	`${ THEME_SLUG }/phpunit.xml.dist`,
 	`${ THEME_SLUG }/tsconfig.json`,
 	`${ THEME_SLUG }/postcss.config.mjs`,
 	`${ THEME_SLUG }/tailwind-watch.config.json`,
-	`${ THEME_SLUG }/${ THEME_SLUG }-v*.zip`,
+	`${ THEME_SLUG }/.php-cs-fixer.dist.php`,
+	`${ THEME_SLUG }/.php-cs-fixer.cache`,
+
+	// Built sourcemaps (not needed in production)
 	`${ THEME_SLUG }/assets/js/*.map`,
-	`${ THEME_SLUG }/blocks/*/index.tsx`,
-	`${ THEME_SLUG }/blocks/*/view.ts`,
-	`${ THEME_SLUG }/blocks/*/*.d.ts`,
 ];
 
 const excludeArgs = excludes.map( ( e ) => `-x "${ e }"` ).join( ' ' );
