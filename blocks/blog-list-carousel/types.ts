@@ -13,6 +13,7 @@ export interface BlogListCarouselAttributes {
 	headingText: string;
 	headingLevel: number;
 	showHeading: boolean;
+	descriptionText: string;
 	showViewAll: boolean;
 	viewAllText: string;
 	viewAllUrl: string;
@@ -34,6 +35,7 @@ export interface BlogListCarouselAttributes {
 	showAuthor: boolean;
 	showReadMore: boolean;
 	readMoreText: string;
+	readMoreColor: string;
 	cardLinkBehavior: string;
 	slidesPerView: number;
 	slidesPerViewTablet: number;
@@ -51,14 +53,13 @@ export interface BlogListCarouselAttributes {
 	grabCursor: boolean;
 	backgroundColor: string;
 	headingColor: string;
+	descriptionColor: string;
 	titleColor: string;
 	excerptColor: string;
 	metaColor: string;
 	viewAllColor: string;
 	paginationColor: string;
 	paginationActiveColor: string;
-	paddingTop: number;
-	paddingBottom: number;
 	contentMaxWidth: string;
 	cardBorderRadius: number;
 	cardBackground: string;
