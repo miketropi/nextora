@@ -18,6 +18,7 @@
 		"lint:php:fix": "composer php-cs-fixer",
 		"lint:php:check": "composer php-cs-fixer:check",
 		"theme:clone": "node ./scripts/clone-theme.mjs",
+		"deploy": "bash deploy.sh",
 		"gen": "node ./scripts/gen-block.mjs",
 		"prepare": "husky",
 		"precommit": "lint-staged && npm run lint:php:all",
