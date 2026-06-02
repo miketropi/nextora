@@ -80,15 +80,19 @@
     },
     "headingText": {
       "type": "string",
-      "default": ""
+      "default": "Latest Posts"
     },
     "headingLevel": {
       "type": "number",
-      "default": 2
+      "default": 4
     },
     "showHeading": {
       "type": "boolean",
       "default": true
+    },
+    "descriptionText": {
+      "type": "string",
+      "default": "Explore our latest articles, tips, and stories from the blog."
     },
     "showViewAll": {
       "type": "boolean",
@@ -120,7 +124,7 @@
     },
     "imageAspectRatio": {
       "type": "string",
-      "default": "16-10"
+      "default": "4-3"
     },
     "imageSize": {
       "type": "string",
@@ -173,6 +177,10 @@
     "readMoreText": {
       "type": "string",
       "default": "Read More \u2192"
+    },
+    "readMoreColor": {
+      "type": "string",
+      "default": ""
     },
     "cardLinkBehavior": {
       "type": "string",
@@ -242,6 +250,10 @@
       "type": "string",
       "default": ""
     },
+    "descriptionColor": {
+      "type": "string",
+      "default": ""
+    },
     "titleColor": {
       "type": "string",
       "default": ""
@@ -265,14 +277,6 @@
     "paginationActiveColor": {
       "type": "string",
       "default": ""
-    },
-    "paddingTop": {
-      "type": "number",
-      "default": 80
-    },
-    "paddingBottom": {
-      "type": "number",
-      "default": 80
     },
     "contentMaxWidth": {
       "type": "string",

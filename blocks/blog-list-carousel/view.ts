@@ -51,6 +51,43 @@ function getOpts(root: HTMLElement): SwiperOpts {
 	}
 }
 
+function bindBrokenImageFallback(container: Element | Document): void {
+	container.querySelectorAll<HTMLElement>('.nextora-blog-list-carousel').forEach((section) => {
+		const fallbackSrc =
+			section.dataset.nextoraBlcPlaceholderSrc ||
+			section.querySelector<HTMLImageElement>('.nextora-blc__card-img-placeholder')?.src ||
+			'';
+
+		if (!fallbackSrc) {
+			return;
+		}
+
+		section
+			.querySelectorAll<HTMLImageElement>(
+				'.nextora-blc__card-img:not(.nextora-blc__card-img-placeholder)',
+			)
+			.forEach((img) => {
+				if (img.dataset.nextoraBlcFallbackBound === '1') {
+					return;
+				}
+				img.dataset.nextoraBlcFallbackBound = '1';
+
+				const src = img.dataset.nextoraBlcFallbackSrc || fallbackSrc;
+				img.addEventListener(
+					'error',
+					() => {
+						img.onerror = null;
+						img.src = src;
+						img.alt = '';
+						img.setAttribute('aria-hidden', 'true');
+						img.classList.add('nextora-blc__card-img-placeholder');
+					},
+					{ once: true },
+				);
+			});
+	});
+}
+
 function isRevealStartPassed(section: HTMLElement): boolean {
 	const rect = section.getBoundingClientRect();
 	const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
@@ -286,6 +323,7 @@ function initSwiperIn(container: Element | Document): void {
 }
 
 function initIn(container: Element | Document): void {
+	bindBrokenImageFallback(container);
 	initSwiperIn(container);
 }
 

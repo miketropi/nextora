@@ -216,11 +216,11 @@
 	background: var(--wp--preset--color--secondary, #525252);
 }
 
-.nextora-testimonial-carousel__pagination {
+.nextora-testimonial-carousel__pagination.swiper-pagination {
 	display: flex;
 	justify-content: center;
 	gap: 0.375rem;
-	margin-top: 1.75rem;
+	margin-top: var(--wp--preset--spacing--40);
 	position: relative;
 }
 
