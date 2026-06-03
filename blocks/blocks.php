@@ -42,3 +42,8 @@ $team_section_styles = __DIR__ . '/team-section/register-styles.php';
 if ( is_readable( $team_section_styles ) ) {
 	require_once $team_section_styles;
 }
+
+$instagram_feed_styles = __DIR__ . '/instagram-feed/register-styles.php';
+if ( is_readable( $instagram_feed_styles ) ) {
+	require_once $instagram_feed_styles;
+}
