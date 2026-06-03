@@ -2575,9 +2575,15 @@ footer.wp-block-template-part {
   html.nextora-modal-scroll-lock {
     overflow: hidden;
     width: 100%;
+    box-sizing: border-box;
+    padding-right: var(--nextora-modal-scrollbar-width, 0px);
     top: var(--nextora-modal-scroll-y, 0);
     left: 0;
     right: 0;
+  }
+  html.nextora-modal-scroll-lock .nextora-header-block--is-pinned {
+    padding-right: var(--nextora-modal-scrollbar-width, 0px);
+    box-sizing: border-box;
   }
   @media (prefers-reduced-motion: reduce) {
     .nextora-modal,	.nextora-modal__surface {

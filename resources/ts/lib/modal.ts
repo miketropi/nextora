@@ -37,6 +37,33 @@ type ModalStackEntry = {
 const stack: ModalStackEntry[] = [];
 let scrollLocked = false;
 
+function getScrollbarWidth(): number {
+	return Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+}
+
+function lockScroll(lock: boolean): void {
+	const doc = document.documentElement;
+	if (lock) {
+		if (!scrollLocked) {
+			const y = window.scrollY;
+			const scrollbarWidth = getScrollbarWidth();
+			doc.dataset.nextoraModalScrollY = String(y);
+			doc.style.setProperty("--nextora-modal-scroll-y", `-${y}px`);
+			doc.style.setProperty("--nextora-modal-scrollbar-width", `${scrollbarWidth}px`);
+			doc.classList.add("nextora-modal-scroll-lock");
+			scrollLocked = true;
+		}
+	} else if (scrollLocked && stack.length === 0) {
+		const y = Number(doc.dataset.nextoraModalScrollY || 0);
+		doc.classList.remove("nextora-modal-scroll-lock");
+		doc.style.removeProperty("--nextora-modal-scroll-y");
+		doc.style.removeProperty("--nextora-modal-scrollbar-width");
+		delete doc.dataset.nextoraModalScrollY;
+		window.scrollTo(0, y);
+		scrollLocked = false;
+	}
+}
+
 function getCloseLabel(): string {
 	return window.nextoraModal?.closeLabel?.trim() || "Close dialog";
 }
@@ -45,26 +72,6 @@ function getFocusable(container: HTMLElement): HTMLElement[] {
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
 		(el) => el.offsetParent !== null || el === document.activeElement
 	);
-}
-
-function lockScroll(lock: boolean): void {
-	const doc = document.documentElement;
-	if (lock) {
-		if (!scrollLocked) {
-			const y = window.scrollY;
-			doc.dataset.nextoraModalScrollY = String(y);
-			doc.style.setProperty("--nextora-modal-scroll-y", `-${y}px`);
-			doc.classList.add("nextora-modal-scroll-lock");
-			scrollLocked = true;
-		}
-	} else if (scrollLocked && stack.length === 0) {
-		const y = Number(doc.dataset.nextoraModalScrollY || 0);
-		doc.classList.remove("nextora-modal-scroll-lock");
-		doc.style.removeProperty("--nextora-modal-scroll-y");
-		delete doc.dataset.nextoraModalScrollY;
-		window.scrollTo(0, y);
-		scrollLocked = false;
-	}
 }
 
 function isModalRoot(el: Element | null): el is HTMLElement {

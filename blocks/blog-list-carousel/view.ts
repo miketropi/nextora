@@ -259,12 +259,13 @@ function initSwiperIn(container: Element | Document): void {
 			const gap = typeof opts.spaceBetween === 'number' && !Number.isNaN(opts.spaceBetween)
 				? opts.spaceBetween : 24;
 
-			const cap = (n: number) => Math.max(1, Math.min(roundSpv(n), Math.max(1, slideCount)));
+			// Honor carousel settings even when fewer posts exist (e.g. 3 columns, 1 post).
+			const slidesPerViewFor = (n: number) => Math.max(1, roundSpv(n));
 
 			// eslint-disable-next-line no-new
 			new Swiper(el, {
 				modules: [Pagination, Navigation, Autoplay, Keyboard, A11y],
-				slidesPerView: cap(mobileSpv),
+				slidesPerView: slidesPerViewFor(mobileSpv),
 				spaceBetween: Math.max(0, gap),
 				speed: typeof opts.speed === 'number' ? opts.speed : 500,
 				loop: Boolean(opts.loop) && slideCount >= 4,
@@ -278,15 +279,15 @@ function initSwiperIn(container: Element | Document): void {
 				breakpointsBase: 'container',
 				breakpoints: {
 					480: {
-						slidesPerView: cap(mobileSpv),
+						slidesPerView: slidesPerViewFor(mobileSpv),
 						spaceBetween: Math.max(0, Math.min(12, gap)),
 					},
 					768: {
-						slidesPerView: cap(tabletSpv),
+						slidesPerView: slidesPerViewFor(tabletSpv),
 						spaceBetween: Math.max(0, Math.min(24, gap)),
 					},
 					1024: {
-						slidesPerView: cap(baseSpv),
+						slidesPerView: slidesPerViewFor(baseSpv),
 						spaceBetween: Math.max(0, gap),
 					},
 				},

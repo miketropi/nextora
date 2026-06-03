@@ -30494,21 +30494,18 @@ ${nextLine.slice(indentLevel + 2)}`;
   var DISMISS_ATTR = "data-nextora-modal-dismiss";
   var stack = [];
   var scrollLocked = false;
-  function getCloseLabel() {
-    return window.nextoraModal?.closeLabel?.trim() || "Close dialog";
-  }
-  function getFocusable(container) {
-    return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(
-      (el) => el.offsetParent !== null || el === document.activeElement
-    );
+  function getScrollbarWidth() {
+    return Math.max(0, window.innerWidth - document.documentElement.clientWidth);
   }
   function lockScroll(lock) {
     const doc3 = document.documentElement;
     if (lock) {
       if (!scrollLocked) {
         const y = window.scrollY;
+        const scrollbarWidth = getScrollbarWidth();
         doc3.dataset.nextoraModalScrollY = String(y);
         doc3.style.setProperty("--nextora-modal-scroll-y", `-${y}px`);
+        doc3.style.setProperty("--nextora-modal-scrollbar-width", `${scrollbarWidth}px`);
         doc3.classList.add("nextora-modal-scroll-lock");
         scrollLocked = true;
       }
@@ -30516,10 +30513,19 @@ ${nextLine.slice(indentLevel + 2)}`;
       const y = Number(doc3.dataset.nextoraModalScrollY || 0);
       doc3.classList.remove("nextora-modal-scroll-lock");
       doc3.style.removeProperty("--nextora-modal-scroll-y");
+      doc3.style.removeProperty("--nextora-modal-scrollbar-width");
       delete doc3.dataset.nextoraModalScrollY;
       window.scrollTo(0, y);
       scrollLocked = false;
     }
+  }
+  function getCloseLabel() {
+    return window.nextoraModal?.closeLabel?.trim() || "Close dialog";
+  }
+  function getFocusable(container) {
+    return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(
+      (el) => el.offsetParent !== null || el === document.activeElement
+    );
   }
   function isModalRoot(el) {
     return el instanceof HTMLElement && el.hasAttribute(ROOT_ATTR);
