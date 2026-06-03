@@ -190,7 +190,6 @@
 
 .nextora-instagram-feed__tile-video {
 	pointer-events: none;
-	background: #000;
 }
 
 .nextora-instagram-feed__tile:hover .nextora-instagram-feed__tile-img:not(.nextora-instagram-feed__tile-img--placeholder),
