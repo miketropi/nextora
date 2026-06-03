@@ -934,9 +934,6 @@
     -webkit-user-select: none;
     user-select: none;
   }
-  .backface-hidden {
-    backface-visibility: hidden;
-  }
   .group-hover\:scale-\[1\.02\] {
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
