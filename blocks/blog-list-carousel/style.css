@@ -364,7 +364,7 @@ a.nextora-blc__card-cat:focus-visible {
 	display: flex;
 	justify-content: center;
 	gap: 6px;
-	margin-top: 1.5rem;
+	margin-top: var(--wp--preset--spacing--40);
 	position: relative;
 }
 .nextora-blc__pagination .swiper-pagination-bullet {
