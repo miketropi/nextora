@@ -97,6 +97,7 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 | `nextora/team-section` | Swiper member carousel, `members[]` repeater, scroll reveal; see [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md) |
 | `nextora/testimonial-carousel` | Fade testimonial carousel, `testimonials[]` repeater, trust avatars; see [`docs/blocks/Testimonial Carousel.md`](./blocks/Testimonial%20Carousel.md) |
 | `nextora/testimonials` | Split-screen portrait + quote carousel, ring pagination; see [`docs/blocks/testimonials.md`](./blocks/testimonials.md) |
+| `nextora/instagram-feed` | Curated Instagram tiles, Swiper carousel, lightbox modal; see [`docs/blocks/Instagram.md`](./blocks/Instagram.md) |
 
 ## Related docs
 

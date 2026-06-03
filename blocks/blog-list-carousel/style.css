@@ -91,8 +91,7 @@
 }
 
 .nextora-blc__heading {
-	font-size: clamp(1.5rem, 3vw, 2.25rem);
-	font-weight: 600;
+	font-size: var(--wp--preset--font-size--x-large, clamp(1.5rem, 3vw, 2.5rem));
 	color: var(--nextora-blc-heading-color, var(--wp--preset--color--contrast, #1A1A2E));
 	line-height: 1.15;
 	margin: 0;
@@ -361,12 +360,12 @@ a.nextora-blc__card-cat:focus-visible {
 }
 
 /* ── Pagination ── */
-.nextora-blc__pagination {
+.nextora-blc__pagination.swiper-pagination{
 	display: flex;
 	justify-content: center;
 	gap: 6px;
 	margin-top: 1.5rem;
-	position: inherit;
+	position: relative;
 }
 .nextora-blc__pagination .swiper-pagination-bullet {
 	width: 7px;
