@@ -1,0 +1,14 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "login": true,
+  "landingPage": "/wp-admin/options-permalink.php",
+  "steps": [
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "blogname": "Nextora_Test_Env",
+        "permalink_structure": "/%postname%/"
+      }
+    }
+  ]
+}
