@@ -5,6 +5,7 @@
 .nextora-scrolling-promotion {
 	overflow: hidden;
 	width: 100%;
+	border: none;
 	background-color: var(--nextora-marquee-bg, transparent);
 	border-top: var(--nextora-marquee-border-width, 0) solid var(--nextora-marquee-border-color, transparent);
 	border-bottom: var(--nextora-marquee-border-width, 0) solid var(--nextora-marquee-border-color, transparent);
