@@ -54,18 +54,19 @@
 	align-items: center;
 	justify-content: center;
 	min-height: 2.25rem;
-	padding: 0.35rem 0.2rem;
+	padding: 0.35rem 0.7rem !important;
 	font-size: 0.875rem;
 	font-weight: 500;
-	line-height: 1.2;
 	color: var(--nextora-pagination-fg);
-	text-decoration: underline solid transparent;
-	text-decoration-thickness: 2px;
-	text-underline-offset: 0.28em;
 	border-radius: 0.25rem;
 	transition:
 		color var(--nextora-pagination-t),
 		text-decoration-color var(--nextora-pagination-t);
+	min-width: 2.25rem;
+	background: var(--wp--preset--color--surface,#fafafa);
+	box-sizing: border-box;
+	text-decoration: auto;
+	line-height: inherit;
 }
 
 .nextora-pagination-wrap a.page-numbers:hover,
@@ -76,8 +77,8 @@
 
 .nextora-pagination-wrap .page-numbers:not(ul).current {
 	font-weight: 600;
-	color: var(--nextora-pagination-current-fg);
-	text-decoration-color: var(--nextora-pagination-current-underline);
+	background: var(--wp--preset--color--primary, #000000);
+	color: var(--wp--preset--color--base, #fff) !important;
 }
 
 .nextora-pagination-wrap .page-numbers:not(ul).dots {
