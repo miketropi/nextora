@@ -22951,7 +22951,9 @@ ${nextLine.slice(indentLevel + 2)}`;
     "animation-fade-in-left",
     "animation-fade-in-right",
     "animation-zoom-in",
-    "animation-zoom-out"
+    "animation-zoom-out",
+    "animation-fade-list-grid",
+    "animation-inner-fade"
   ];
   var ANIMATION_SELECTOR = ANIMATION_CLASS_NAMES.map((c) => `.${c}`).join(", ");
   var PARALLAX_SELECTOR = ".animation-parallax, [data-parallax-speed]";
@@ -22985,6 +22987,16 @@ ${nextLine.slice(indentLevel + 2)}`;
     "animation-zoom-out": () => ({
       from: { opacity: 0, scale: 1.15 },
       to: { opacity: 1, scale: 1 }
+    }),
+    /** Same motion as `animation-fade-in-up`; each `ul > li` has its own viewport trigger. */
+    "animation-fade-list-grid": ({ distance }) => ({
+      from: { opacity: 0, y: distance },
+      to: { opacity: 1, y: 0 }
+    }),
+    /** Direct children `> *` (wired in helpers). */
+    "animation-inner-fade": ({ distance }) => ({
+      from: { opacity: 0, y: distance },
+      to: { opacity: 1, y: 0 }
     })
   };
   function registerScrollAnimationPreset(className, factory) {
@@ -29705,6 +29717,22 @@ ${nextLine.slice(indentLevel + 2)}`;
   function prefersReducedMotion() {
     return typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
+  function getFadeListGridItems(el) {
+    return Array.from(el.querySelectorAll("ul > li")).filter((li) => {
+      const parentUl = li.parentElement;
+      if (!parentUl || parentUl.tagName !== "UL") {
+        return false;
+      }
+      if (parentUl.closest("nav") !== null) {
+        return false;
+      }
+      const ulInsideListItem = parentUl.closest("li");
+      return !(ulInsideListItem && el.contains(ulInsideListItem));
+    });
+  }
+  function getInnerFadeTargets(el) {
+    return Array.from(el.children).filter((child) => child instanceof HTMLElement);
+  }
   function resolveAnimationClass(el) {
     for (const className of ANIMATION_CLASS_NAMES) {
       if (el.classList.contains(className)) {
@@ -29723,21 +29751,66 @@ ${nextLine.slice(indentLevel + 2)}`;
     gsapWithCSS.set(el, { clearProps: "opacity,transform,translate,rotate,scale" });
     markInitialized(el);
   }
-  function buildScrollTweenVars(el, options) {
+  function buildScrollTweenVars(trigger, options, target) {
+    const node = target ?? trigger;
     return {
       delay: options.delay,
       duration: options.duration,
       ease: options.ease,
       scrollTrigger: {
-        trigger: el,
+        trigger,
         start: DEFAULT_SCROLL_START,
         once: SCROLL_REVEAL_ONCE,
         id: SCROLL_REVEAL_TRIGGER_ID
       },
       onComplete: () => {
-        gsapWithCSS.set(el, { clearProps: "opacity,transform,translate,rotate,scale" });
+        gsapWithCSS.set(node, { clearProps: "opacity,transform,translate,rotate,scale" });
       }
     };
+  }
+  function initFadeListGridAnimation(el, options) {
+    const items = getFadeListGridItems(el);
+    if (!items.length) {
+      markInitialized(el);
+      return;
+    }
+    const { from: from2, to } = animationPresets["animation-fade-list-grid"]({ distance: options.distance });
+    el.classList.remove("nextora-scroll-animation--pending");
+    items.forEach((item) => {
+      item.classList.add("nextora-scroll-animation--pending");
+      gsapWithCSS.fromTo(item, from2, {
+        ...to,
+        ...buildScrollTweenVars(item, options, item),
+        onComplete: () => {
+          item.classList.remove("nextora-scroll-animation--pending");
+          item.classList.add("nextora-scroll-animation--ready");
+          gsapWithCSS.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
+        }
+      });
+    });
+    markInitialized(el);
+  }
+  function initInnerFadeAnimation(el, options) {
+    const targets = getInnerFadeTargets(el);
+    if (!targets.length) {
+      markInitialized(el);
+      return;
+    }
+    const { from: from2, to } = animationPresets["animation-inner-fade"]({ distance: options.distance });
+    el.classList.remove("nextora-scroll-animation--pending");
+    targets.forEach((target) => {
+      target.classList.add("nextora-scroll-animation--pending");
+      gsapWithCSS.fromTo(target, from2, {
+        ...to,
+        ...buildScrollTweenVars(target, options, target),
+        onComplete: () => {
+          target.classList.remove("nextora-scroll-animation--pending");
+          target.classList.add("nextora-scroll-animation--ready");
+          gsapWithCSS.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
+        }
+      });
+    });
+    markInitialized(el);
   }
   function initElementAnimations(el) {
     if (el.getAttribute(INIT_ATTR) === "1") {
@@ -29751,11 +29824,26 @@ ${nextLine.slice(indentLevel + 2)}`;
     }
     el.setAttribute(INIT_ATTR, "1");
     if (prefersReducedMotion()) {
+      if (animationClass === "animation-fade-list-grid") {
+        getFadeListGridItems(el).forEach((item) => {
+          gsapWithCSS.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
+          item.classList.remove("nextora-scroll-animation--pending");
+        });
+      } else if (animationClass === "animation-inner-fade") {
+        getInnerFadeTargets(el).forEach((target) => {
+          gsapWithCSS.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
+          target.classList.remove("nextora-scroll-animation--pending");
+        });
+      }
       skipAnimation(el);
       return;
     }
     ensureGsapPlugins();
-    if (animationClass) {
+    if (animationClass === "animation-fade-list-grid") {
+      initFadeListGridAnimation(el, options);
+    } else if (animationClass === "animation-inner-fade") {
+      initInnerFadeAnimation(el, options);
+    } else if (animationClass) {
       const factory = animationPresets[animationClass];
       if (!factory) {
         markInitialized(el);
@@ -29867,7 +29955,20 @@ ${nextLine.slice(indentLevel + 2)}`;
     });
   }
   function markPending(el) {
-    if (prefersReducedMotion() || resolveAnimationClass(el) === null) {
+    const animationClass = resolveAnimationClass(el);
+    if (prefersReducedMotion() || animationClass === null) {
+      return;
+    }
+    if (animationClass === "animation-fade-list-grid") {
+      getFadeListGridItems(el).forEach((item) => {
+        item.classList.add("nextora-scroll-animation--pending");
+      });
+      return;
+    }
+    if (animationClass === "animation-inner-fade") {
+      getInnerFadeTargets(el).forEach((target) => {
+        target.classList.add("nextora-scroll-animation--pending");
+      });
       return;
     }
     el.classList.add("nextora-scroll-animation--pending");

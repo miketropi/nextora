@@ -4,6 +4,7 @@ export interface BlogListCarouselAttributes {
 	orderBy: string;
 	order: string;
 	categories: number[];
+	queryRelated: boolean;
 	tags: number[];
 	taxonomyQuery: string;
 	taxonomyTerms: string[];

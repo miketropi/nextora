@@ -61,3 +61,33 @@
 		}
 	}
 }
+/**
+ * Search form in the header
+ */
+.wp-block-search__inside-wrapper {
+	border-radius: 8px;
+}
+.wp-block-search__inside-wrapper input {
+	border-radius: 8px;
+}
+.wp-block-search__icon-button.wp-block-search__button-inside .wp-block-search__inside-wrapper {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 2px;
+    border: none;
+    position: relative;
+}
+.wp-block-search__icon-button.wp-block-search__button-inside .wp-block-search__inside-wrapper .wp-block-search__input{
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 40%, transparent);
+    padding: 0.5rem 0.6rem 0.5rem 2.5rem;
+}
+.wp-block-search__icon-button.wp-block-search__button-inside .wp-block-search__button {
+	margin: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--wp--preset--color--secondary, #64748b);
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+}

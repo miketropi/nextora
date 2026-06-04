@@ -41,6 +41,18 @@ export const animationPresets: Record<AnimationClassName, AnimationPresetFactory
 		from: { opacity: 0, scale: 1.15 },
 		to: { opacity: 1, scale: 1 },
 	}),
+
+	/** Same motion as `animation-fade-in-up`; each `ul > li` has its own viewport trigger. */
+	"animation-fade-list-grid": ({ distance }) => ({
+		from: { opacity: 0, y: distance },
+		to: { opacity: 1, y: 0 },
+	}),
+
+	/** Direct children `> *` (wired in helpers). */
+	"animation-inner-fade": ({ distance }) => ({
+		from: { opacity: 0, y: distance },
+		to: { opacity: 1, y: 0 },
+	}),
 };
 
 /**

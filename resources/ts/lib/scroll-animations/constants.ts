@@ -27,6 +27,8 @@ export const ANIMATION_CLASS_NAMES = [
 	"animation-fade-in-right",
 	"animation-zoom-in",
 	"animation-zoom-out",
+	"animation-fade-list-grid",
+	"animation-inner-fade",
 ] as const;
 
 export type AnimationClassName = (typeof ANIMATION_CLASS_NAMES)[number];
