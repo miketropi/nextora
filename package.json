@@ -22,7 +22,9 @@
 		"gen": "node ./scripts/gen-block.mjs",
 		"prepare": "husky",
 		"precommit": "lint-staged && npm run lint:php:all",
-		"ci": "npm run typecheck && npm run lint:php:all && npm run build && composer test"
+		"ci": "npm run typecheck && npm run lint:php:all && npm run build && composer test",
+		"test:wp": "bash scripts/wp-test.sh",
+    "test:wp:reset": "bash scripts/wp-test.sh --reset"
 	},
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4.2.2",
