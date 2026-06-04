@@ -10,6 +10,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { INIT_ATTR, MUTATION_DEBOUNCE_MS, PARALLAX_SELECTOR } from "./constants";
 import {
 	ensureGsapPlugins,
+	getFadeListGridItems,
+	getInnerFadeTargets,
 	initElementAnimations,
 	prefersReducedMotion,
 	revealBottomAnchoredTriggers,
@@ -39,9 +41,25 @@ function collectTargets(root: ParentNode = document): HTMLElement[] {
 }
 
 function markPending(el: HTMLElement): void {
-	if (prefersReducedMotion() || resolveAnimationClass(el) === null) {
+	const animationClass = resolveAnimationClass(el);
+	if (prefersReducedMotion() || animationClass === null) {
 		return;
 	}
+
+	if (animationClass === "animation-fade-list-grid") {
+		getFadeListGridItems(el).forEach((item) => {
+			item.classList.add("nextora-scroll-animation--pending");
+		});
+		return;
+	}
+
+	if (animationClass === "animation-inner-fade") {
+		getInnerFadeTargets(el).forEach((target) => {
+			target.classList.add("nextora-scroll-animation--pending");
+		});
+		return;
+	}
+
 	el.classList.add("nextora-scroll-animation--pending");
 }
 

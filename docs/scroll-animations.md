@@ -15,6 +15,8 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-fade-in-right` | Fade + move from right |
 | `animation-zoom-in` | Fade + scale up |
 | `animation-zoom-out` | Fade + scale down |
+| `animation-fade-list-grid` | Each `ul > li` fades in up (`animation-fade-in-up`) when **that item** enters the viewport |
+| `animation-inner-fade` | Each **direct child** (`> p`, `> div`, `> h4`, …) fades in up when it enters the viewport |
 | `animation-parallax` | Vertical parallax while scrolling (use with `data-parallax-speed`) |
 
 ## Data attributes (optional)
@@ -44,6 +46,33 @@ Add on the same element as the animation class:
   <!-- nested blocks -->
 </div>
 <!-- /wp:group -->
+```
+
+### List grid (`animation-fade-list-grid`)
+
+Put the class on a wrapper that contains a `<ul>`. Only **grid/post rows** animate (`ul > li` whose list is not inside another `li`) — e.g. post cards in `nextora/post-grid`, not category/tag `li` nested inside a card. Each item uses the same motion as **`animation-fade-in-up`** and has its **own** ScrollTrigger: every card already in the viewport reveals together (e.g. three columns), and items farther down reveal when you scroll them into view.
+
+```html
+<div class="wp-block-group animation-fade-list-grid" data-duration="0.8" data-distance="40">
+  <ul>
+    <li>First</li>
+    <li>Second</li>
+    <li>Third</li>
+  </ul>
+</div>
+```
+
+### Inner wrapper fade (`animation-inner-fade`)
+
+Put the class on a wrapper (e.g. `entry-content`, post content Group). **Every direct child** gets `animation-fade-in-up` motion with its own viewport trigger — paragraphs, headings, lists, quotes, etc.
+
+```html
+<div class="entry-content wp-block-post-content animation-inner-fade" data-duration="0.8">
+  <p>First paragraph</p>
+  <blockquote>Quote</blockquote>
+  <h4>Heading</h4>
+  <ul class="wp-block-list">…</ul>
+</div>
 ```
 
 ### Staggered children (Group / Columns)
