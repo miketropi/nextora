@@ -6,6 +6,16 @@
 			"name": "home-save-the-world",
 			"title": "Home — Save the World",
 			"postTypes": ["page", "post"]
+		},
+		{
+			"name": "about-us",
+			"title": "About Us",
+			"postTypes": ["page", "post"]
+		},
+		{
+			"name": "page-full-width",
+			"title": "Page — Full Width",
+			"postTypes": ["page", "post"]
 		}
 	],
 	"templateParts": [
