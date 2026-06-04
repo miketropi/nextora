@@ -116,3 +116,13 @@ footer.wp-block-template-part{
 	text-decoration: none;
 	text-decoration-line: none;
 }
+/* post grid */
+.nextora-post-grid .nextora-post-grid__item .nextora-post-grid__categories a{
+    text-transform: none;
+    text-decoration: auto;
+	font-weight: 400;
+	color: var(--wp--preset--color--secondary, #9CA3AF);
+}
+:where(.wp-block-search__input){
+	box-shadow: none;
+}

@@ -146,8 +146,6 @@
 		var(--wp--preset--color--base, #fafafa)
 	);
     }
-    --nextora-pagination-current-fg: var(--wp--preset--color--contrast, #0f172a);
-    --nextora-pagination-current-underline: var(--wp--preset--color--contrast, #0f172a);
     --nextora-pagination-dots: var(--wp--preset--color--secondary, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
       --nextora-pagination-dots: color-mix(
@@ -1272,6 +1270,15 @@ footer.wp-block-template-part {
   text-decoration: none;
   text-decoration-line: none;
 }
+.nextora-post-grid .nextora-post-grid__item .nextora-post-grid__categories a {
+  text-transform: none;
+  text-decoration: auto;
+  font-weight: 400;
+  color: var(--wp--preset--color--secondary, #9CA3AF);
+}
+:where(.wp-block-search__input) {
+  box-shadow: none;
+}
 .nextora-navigation-from-location {
   --nextora-nav-submenu-bg: var(--nextora-nav-panel-bg);
   --nextora-nav-submenu-border: var(--nextora-nav-panel-border);
@@ -2101,16 +2108,17 @@ footer.wp-block-template-part {
   align-items: center;
   justify-content: center;
   min-height: 2.25rem;
-  padding: 0.35rem 0.2rem;
+  padding: 0.35rem 0.7rem !important;
   font-size: 0.875rem;
   font-weight: 500;
-  line-height: 1.2;
   color: var(--nextora-pagination-fg);
-  text-decoration: underline solid transparent;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.28em;
   border-radius: 0.25rem;
   transition: color var(--nextora-pagination-t),	text-decoration-color var(--nextora-pagination-t);
+  min-width: 2.25rem;
+  background: var(--wp--preset--color--surface,#fafafa);
+  box-sizing: border-box;
+  text-decoration: auto;
+  line-height: inherit;
 }
 .nextora-pagination-wrap a.page-numbers:hover, .nextora-pagination-wrap a.page-numbers:focus-visible {
   color: var(--nextora-pagination-hover-fg);
@@ -2118,8 +2126,8 @@ footer.wp-block-template-part {
 }
 .nextora-pagination-wrap .page-numbers:not(ul).current {
   font-weight: 600;
-  color: var(--nextora-pagination-current-fg);
-  text-decoration-color: var(--nextora-pagination-current-underline);
+  background: var(--wp--preset--color--primary, #000000);
+  color: var(--wp--preset--color--base, #fff) !important;
 }
 .nextora-pagination-wrap .page-numbers:not(ul).dots {
   min-height: auto;
@@ -2226,6 +2234,7 @@ footer.wp-block-template-part {
     flex: 1 1 auto;
     min-width: 0;
     max-width: none;
+    box-shadow: none;
   }
   :where(	.nextora-form input[type="text"],	.nextora-form input[type="email"],	.nextora-form input[type="url"],	.nextora-form input[type="tel"],	.nextora-form input[type="number"],	.nextora-form input[type="password"],	.nextora-form input[type="search"],	.nextora-form input[type="date"],	.nextora-form input[type="datetime-local"],	.nextora-form input[type="time"],	.nextora-form input[type="month"],	.nextora-form input[type="week"],	.nextora-form textarea,	.nextora-form select,	.nextora-main .nextora-field:not(.elementor-field),	.nextora-main .elementor-widget-html input[type="text"]:not([class]),	.nextora-main .elementor-widget-html input[type="email"]:not([class]),	.nextora-main .elementor-widget-html input[type="url"]:not([class]),	.nextora-main .elementor-widget-html input[type="tel"]:not([class]),	.nextora-main .elementor-widget-html input[type="number"]:not([class]),	.nextora-main .elementor-widget-html input[type="password"]:not([class]),	.nextora-main .elementor-widget-html input[type="search"]:not([class]),	.nextora-main .elementor-widget-html textarea:not([class]),	.nextora-main .elementor-widget-html select:not([class]),	.wp-block-search__input,	.editor-styles-wrapper .wp-block-search__input,	.wp-block-post-comments-form input[type="text"],	.wp-block-post-comments-form input[type="email"],	.wp-block-post-comments-form input[type="url"],	.wp-block-post-comments-form textarea,	.wp-block-post-comments-form select	)::placeholder {
     color: var(--wp--preset--color--secondary, #64748b);
@@ -3334,9 +3343,6 @@ footer.wp-block-template-part {
 }
 .nextora-container--title :where(p) {
   margin-block-end: 0;
-}
-.nextora-singular--page .nextora-content-shell--wide-size {
-  --wp--style--global--content-size: var(--wp--style--global--wide-size, 1200px);
 }
 @media (max-width: 1024px) {
   .nextora-header-container {
