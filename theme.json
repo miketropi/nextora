@@ -3,8 +3,14 @@
 	"version": 3,
 	"customTemplates": [
 		{
-			"name": "home-save-the-world",
-			"title": "Home — Save the World",
+			"name": "about-us",
+			"title": "About Us",
+			"postTypes": ["page", "post"]
+		},
+		{
+			"name": "page-full-width",
+			"title": "Page — Full Width",
+			"description": "A page with a full width layout",
 			"postTypes": ["page", "post"]
 		}
 	],
@@ -424,7 +430,8 @@
 				},
 				":hover": {
 					"color": {
-						"background": "var(--wp--preset--color--base)",
+						"background": "color-mix(in srgb, var(--wp--preset--color--base) 80%, var(--wp--preset--color--contrast) 20%)",
+	
 						"text": "var(--wp--preset--color--contrast)"
 					}
 				}

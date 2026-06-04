@@ -13,8 +13,120 @@ import {
 	ToggleControl,
 	TextareaControl,
 } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
+import { useEffect } from '@wordpress/element';
 import ServerSideRender from '@wordpress/server-side-render';
 import type { BlogListCarouselAttributes } from './types';
+
+function normalizeTemplateSlug(slugOrId: string): string {
+	const trimmed = slugOrId.trim();
+	if ('' === trimmed) {
+		return '';
+	}
+	if (trimmed.includes('//')) {
+		return trimmed.split('//').pop() ?? trimmed;
+	}
+	return trimmed;
+}
+
+function isSingleTemplateSlug(slugOrId: string, postType: string): boolean {
+	const slug = normalizeTemplateSlug(slugOrId);
+	if ('' === slug) {
+		return false;
+	}
+	return (
+		slug === 'single' ||
+		slug === `single-${postType}` ||
+		slug.startsWith('single-')
+	);
+}
+
+function useIsSinglePostContext(blockPostType: string): boolean {
+	return (
+		useSelect(
+			(select) => {
+				const postType = blockPostType || 'post';
+
+				const editorStore = select('core/editor') as
+					| {
+							getCurrentPostType?: () => string;
+							getEditedPostSlug?: () => string;
+							getEditedPostAttribute?: (key: string) => unknown;
+							getCurrentPostId?: () => number | string;
+					  }
+					| undefined;
+
+				const currentPostType = editorStore?.getCurrentPostType?.() ?? '';
+				if (currentPostType === postType) {
+					return true;
+				}
+
+				const slugCandidates: string[] = [];
+				const editedSlug = editorStore?.getEditedPostSlug?.();
+				if (typeof editedSlug === 'string' && '' !== editedSlug) {
+					slugCandidates.push(editedSlug);
+				}
+				const attrSlug = editorStore?.getEditedPostAttribute?.('slug');
+				if (typeof attrSlug === 'string' && '' !== attrSlug) {
+					slugCandidates.push(attrSlug);
+				}
+
+				const siteStore = select('core/edit-site') as
+					| {
+							getEditedPostId?: () => string | number;
+							getEditedPostType?: () => string;
+							getEditedPostSlug?: () => string;
+					  }
+					| undefined;
+
+				const editedTemplateId = siteStore?.getEditedPostId?.();
+				if (
+					(typeof editedTemplateId === 'string' || typeof editedTemplateId === 'number') &&
+					'' !== String(editedTemplateId)
+				) {
+					slugCandidates.push(String(editedTemplateId));
+				}
+				const siteSlug = siteStore?.getEditedPostSlug?.();
+				if (typeof siteSlug === 'string' && '' !== siteSlug) {
+					slugCandidates.push(siteSlug);
+				}
+
+				const coreStore = select('core') as
+					| {
+							getEntityRecord?: (
+								kind: string,
+								name: string,
+								id: number | string,
+							) => { slug?: string } | undefined;
+					  }
+					| undefined;
+
+				const templateEntityId =
+					editedTemplateId ?? editorStore?.getCurrentPostId?.();
+				if (
+					coreStore?.getEntityRecord &&
+					(typeof templateEntityId === 'string' || typeof templateEntityId === 'number') &&
+					('wp_template' === currentPostType ||
+						siteStore?.getEditedPostType?.() === 'wp_template')
+				) {
+					const record = coreStore.getEntityRecord(
+						'postType',
+						'wp_template',
+						templateEntityId,
+					);
+					if (typeof record?.slug === 'string' && '' !== record.slug) {
+						slugCandidates.push(record.slug);
+					}
+				}
+
+				return slugCandidates.some((candidate) =>
+					isSingleTemplateSlug(candidate, postType),
+				);
+			},
+			[blockPostType],
+		) ?? false
+	);
+}
 
 interface EditProps {
 	attributes: BlogListCarouselAttributes;
@@ -92,6 +204,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		orderBy = 'date',
 		order = 'desc',
 		categories = [],
+		queryRelated = false,
 		tags = [],
 		taxonomyQuery = '',
 		taxonomyTerms = [],
@@ -158,6 +271,14 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		enableScrollAnimation = true,
 	} = attributes;
 
+	const isSingleContext = useIsSinglePostContext(postType);
+
+	useEffect(() => {
+		if (queryRelated && !isSingleContext) {
+			setAttributes({ queryRelated: false });
+		}
+	}, [queryRelated, isSingleContext, setAttributes]);
+
 	const blockProps = useBlockProps({
 		className: 'nextora-blog-list-carousel-block--editor',
 	});
@@ -192,6 +313,23 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						options={orderOptions}
 						onChange={(v) => setAttributes({ order: v })}
 					/>
+					<ToggleControl
+						label={__('Query related', 'nextora')}
+						checked={queryRelated}
+						disabled={!isSingleContext}
+						onChange={(v) => setAttributes({ queryRelated: v })}
+						help={
+							isSingleContext
+								? __(
+										'On single posts, load other posts from the same categories and exclude the current post. Category IDs below are ignored.',
+										'nextora',
+									)
+								: __(
+										'Available only when editing a single post or the single post template.',
+										'nextora',
+									)
+						}
+					/>
 					<TextControl
 						label={__('Category IDs', 'nextora')}
 						value={
@@ -206,7 +344,12 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 									: [],
 							})
 						}
-						help={__('Comma-separated category IDs. Empty = all categories.', 'nextora')}
+						disabled={queryRelated}
+						help={
+							queryRelated
+								? __('Disabled while Query related is on.', 'nextora')
+								: __('Comma-separated category IDs. Empty = all categories.', 'nextora')
+						}
 					/>
 					<TextControl
 						label={__('Tag IDs', 'nextora')}

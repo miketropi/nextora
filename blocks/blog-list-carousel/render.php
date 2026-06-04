@@ -179,11 +179,30 @@ $args = array(
     'no_found_rows'       => true,
 );
 
-// Categories
-$categories = isset( $attributes['categories'] ) && is_array( $attributes['categories'] )
-    ? $attributes['categories'] : array();
-if ( array() !== $categories ) {
-    $args['category__in'] = array_map( 'intval', $categories );
+$query_related = isset( $attributes['queryRelated'] ) && (bool) $attributes['queryRelated'];
+
+if ( $query_related && is_singular( $post_type ) ) {
+    $current_post_id = (int) get_queried_object_id();
+    if ( $current_post_id <= 0 ) {
+        $current_post_id = (int) get_the_ID();
+    }
+
+    if ( $current_post_id > 0 ) {
+        $related_cats = wp_get_post_categories( $current_post_id, array( 'fields' => 'ids' ) );
+        if ( is_array( $related_cats ) && array() !== $related_cats ) {
+            $args['category__in'] = array_map( 'intval', $related_cats );
+        } else {
+            $args['post__in'] = array( 0 );
+        }
+
+        $args['post__not_in'] = array( $current_post_id );
+    }
+} else {
+    $categories = isset( $attributes['categories'] ) && is_array( $attributes['categories'] )
+        ? $attributes['categories'] : array();
+    if ( array() !== $categories ) {
+        $args['category__in'] = array_map( 'intval', $categories );
+    }
 }
 
 // Tags
@@ -212,7 +231,15 @@ if ( '' !== $tax_query_slug && array() !== $tax_terms ) {
 $exclude = isset( $attributes['excludeIds'] ) && is_string( $attributes['excludeIds'] )
     ? trim( $attributes['excludeIds'] ) : '';
 if ( '' !== $exclude ) {
-    $args['post__not_in'] = array_map( 'intval', explode( ',', $exclude ) );
+    $manual_exclude = array_filter(
+    	array_map( 'intval', explode( ',', $exclude ) ),
+    	static fn( int $id ): bool => $id > 0,
+    );
+    $existing_exclude = isset( $args['post__not_in'] ) && is_array( $args['post__not_in'] )
+        ? $args['post__not_in'] : array();
+    $args['post__not_in'] = array_values(
+    	array_unique( array_merge( $existing_exclude, $manual_exclude ) ),
+    );
 }
 
 /**
