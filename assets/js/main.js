@@ -30586,6 +30586,174 @@ ${nextLine.slice(indentLevel + 2)}`;
     });
   }
 
+  // resources/ts/header-follow-us.ts
+  var ROOT_SELECTOR = "[data-nextora-header-follow-us]";
+  var TOGGLE_SELECTOR = "[data-nextora-header-follow-us-toggle]";
+  var PANEL_SELECTOR = "[data-nextora-header-follow-us-panel]";
+  var SCRIM_SELECTOR = "[data-nextora-header-follow-us-scrim]";
+  var VIEWPORT_GUTTER = 16;
+  function prefersReducedMotion3() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+  function clearPanelPosition(panel) {
+    panel.style.removeProperty("top");
+    panel.style.removeProperty("left");
+    panel.style.removeProperty("right");
+    panel.style.removeProperty("width");
+    panel.style.removeProperty("max-height");
+    panel.style.removeProperty("visibility");
+    panel.style.removeProperty("pointer-events");
+  }
+  function positionStackedPanel(toggle, panel) {
+    const rect = toggle.getBoundingClientRect();
+    const top = Math.round(rect.bottom + 8);
+    const maxHeight = Math.max(180, window.innerHeight - top - VIEWPORT_GUTTER);
+    panel.style.top = `${top}px`;
+    panel.style.left = `${VIEWPORT_GUTTER}px`;
+    panel.style.right = `${VIEWPORT_GUTTER}px`;
+    panel.style.width = "auto";
+    panel.style.maxHeight = `${maxHeight}px`;
+  }
+  function panelOverflowsViewport(root2, panel) {
+    root2.classList.remove("nextora-header-block__follow-us--stacked");
+    clearPanelPosition(panel);
+    const wasHidden = panel.hidden;
+    panel.hidden = false;
+    panel.style.visibility = "hidden";
+    panel.style.pointerEvents = "none";
+    const panelRect = panel.getBoundingClientRect();
+    const overflows = panelRect.left < VIEWPORT_GUTTER || panelRect.right > window.innerWidth - VIEWPORT_GUTTER;
+    panel.style.visibility = "";
+    panel.style.pointerEvents = "";
+    panel.hidden = wasHidden;
+    return overflows;
+  }
+  function applyPanelLayout(root2, toggle, panel, scrim) {
+    const stacked = panelOverflowsViewport(root2, panel);
+    root2.classList.toggle("nextora-header-block__follow-us--stacked", stacked);
+    clearPanelPosition(panel);
+    if (stacked) {
+      positionStackedPanel(toggle, panel);
+      document.documentElement.classList.add("nextora-header-follow-us-open");
+      if (scrim) {
+        scrim.hidden = false;
+      }
+      return;
+    }
+    document.documentElement.classList.remove("nextora-header-follow-us-open");
+    if (scrim) {
+      scrim.hidden = true;
+    }
+  }
+  function closePanel(root2, toggle, panel, scrim) {
+    root2.classList.remove("nextora-header-block__follow-us--open", "nextora-header-block__follow-us--stacked");
+    document.documentElement.classList.remove("nextora-header-follow-us-open");
+    toggle.setAttribute("aria-expanded", "false");
+    panel.hidden = true;
+    clearPanelPosition(panel);
+    if (scrim) {
+      scrim.hidden = true;
+    }
+  }
+  function openPanel(root2, toggle, panel, scrim) {
+    document.querySelectorAll(ROOT_SELECTOR).forEach((other) => {
+      if (other === root2) {
+        return;
+      }
+      const otherToggle = other.querySelector(TOGGLE_SELECTOR);
+      const otherPanel = other.querySelector(PANEL_SELECTOR);
+      const otherScrim = other.querySelector(SCRIM_SELECTOR);
+      if (otherToggle && otherPanel) {
+        closePanel(other, otherToggle, otherPanel, otherScrim);
+      }
+    });
+    panel.hidden = false;
+    applyPanelLayout(root2, toggle, panel, scrim);
+    root2.classList.add("nextora-header-block__follow-us--open");
+    toggle.setAttribute("aria-expanded", "true");
+  }
+  function bindFollowUsRoot(root2) {
+    if (root2.dataset.nextoraHeaderFollowUsBound === "1") {
+      return;
+    }
+    const toggle = root2.querySelector(TOGGLE_SELECTOR);
+    const panel = root2.querySelector(PANEL_SELECTOR);
+    const scrim = root2.querySelector(SCRIM_SELECTOR);
+    if (!toggle || !panel) {
+      return;
+    }
+    root2.dataset.nextoraHeaderFollowUsBound = "1";
+    const handleReposition = () => {
+      if (!root2.classList.contains("nextora-header-block__follow-us--open")) {
+        return;
+      }
+      applyPanelLayout(root2, toggle, panel, scrim);
+    };
+    toggle.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const isOpen = root2.classList.contains("nextora-header-block__follow-us--open");
+      if (isOpen) {
+        closePanel(root2, toggle, panel, scrim);
+        return;
+      }
+      openPanel(root2, toggle, panel, scrim);
+    });
+    panel.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+    scrim?.addEventListener("click", (event) => {
+      event.preventDefault();
+      closePanel(root2, toggle, panel, scrim);
+    });
+    toggle.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closePanel(root2, toggle, panel, scrim);
+      }
+    });
+    window.addEventListener("resize", handleReposition);
+    if (!prefersReducedMotion3()) {
+      window.addEventListener("scroll", handleReposition, { passive: true });
+    }
+  }
+  function initHeaderFollowUs() {
+    document.querySelectorAll(ROOT_SELECTOR).forEach(bindFollowUsRoot);
+    if (document.documentElement.dataset.nextoraHeaderFollowUsDocBound === "1") {
+      return;
+    }
+    document.documentElement.dataset.nextoraHeaderFollowUsDocBound = "1";
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Node)) {
+        return;
+      }
+      document.querySelectorAll(ROOT_SELECTOR).forEach((root2) => {
+        if (root2.contains(target)) {
+          return;
+        }
+        const toggle = root2.querySelector(TOGGLE_SELECTOR);
+        const panel = root2.querySelector(PANEL_SELECTOR);
+        const scrim = root2.querySelector(SCRIM_SELECTOR);
+        if (toggle && panel && root2.classList.contains("nextora-header-block__follow-us--open")) {
+          closePanel(root2, toggle, panel, scrim);
+        }
+      });
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+      document.querySelectorAll(ROOT_SELECTOR).forEach((root2) => {
+        const toggle = root2.querySelector(TOGGLE_SELECTOR);
+        const panel = root2.querySelector(PANEL_SELECTOR);
+        const scrim = root2.querySelector(SCRIM_SELECTOR);
+        if (toggle && panel && root2.classList.contains("nextora-header-block__follow-us--open")) {
+          closePanel(root2, toggle, panel, scrim);
+        }
+      });
+    });
+  }
+
   // resources/ts/lib/modal.ts
   var FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
   var OPEN_CLASS = "nextora-modal--open";
@@ -31268,6 +31436,7 @@ ${nextLine.slice(indentLevel + 2)}`;
   root.classList.add("nextora-js");
   initHeaderSticky();
   initHeaderNavigation();
+  initHeaderFollowUs();
   mountHeaderMiniCartPortalToBody();
   mountSpotlightSearchPortalToBody();
   initModals();

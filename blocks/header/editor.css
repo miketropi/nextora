@@ -16,3 +16,36 @@
 	gap: 0.5rem;
 	margin-bottom: 0.75rem;
 }
+
+/**
+ * ServerSideRender preview: mirror logo max-width from style.css so the canvas
+ * respects sidebar width controls (block `style` is not always applied to SSR HTML).
+ */
+.nextora-header-block--editor .nextora-header-block__logo-img {
+	display: block;
+	width: auto;
+	height: auto;
+	max-width: min(100%, var(--nextora-header-logo-max-width, 150px));
+}
+
+.nextora-header-block--editor .nextora-header-block__logo-img--mobile {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	.nextora-header-block--editor .nextora-header-block__logo-img--desktop {
+		display: none;
+	}
+
+	.nextora-header-block--editor .nextora-header-block__logo-img--mobile {
+		display: block;
+		max-width: min(100%, var(--nextora-header-logo-max-width-mobile, var(--nextora-header-logo-max-width, 150px)));
+	}
+
+	.nextora-header-block--editor
+		.nextora-header-block__logo-img:not(.nextora-header-block__logo-img--desktop):not(
+			.nextora-header-block__logo-img--mobile
+		) {
+		max-width: min(100%, var(--nextora-header-logo-max-width-mobile, var(--nextora-header-logo-max-width, 150px)));
+	}
+}
