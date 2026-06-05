@@ -49,6 +49,18 @@
       "type": "number",
       "default": 150
     },
+    "logoImageIdMobile": {
+      "type": "number",
+      "default": 0
+    },
+    "logoImageUrlMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "logoWidthMobile": {
+      "type": "number",
+      "default": 0
+    },
     "logoLink": {
       "type": "string",
       "default": ""
@@ -64,6 +76,53 @@
     "menuDepth": {
       "type": "number",
       "default": 4
+    },
+    "showFollowUs": {
+      "type": "boolean",
+      "default": false
+    },
+    "showFollowUsMobile": {
+      "type": "boolean",
+      "default": true
+    },
+    "followUsLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "followUsSupportText": {
+      "type": "string",
+      "default": ""
+    },
+    "followUsEmail": {
+      "type": "string",
+      "default": ""
+    },
+    "followUsPhone": {
+      "type": "string",
+      "default": ""
+    },
+    "followUsContactButtonText": {
+      "type": "string",
+      "default": ""
+    },
+    "followUsContactButtonUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "followUsContactButtonTarget": {
+      "type": "boolean",
+      "default": false
+    },
+    "followUsSocials": {
+      "type": "array",
+      "default": [
+        { "network": "instagram", "url": "", "enabled": true },
+        { "network": "facebook", "url": "", "enabled": true },
+        { "network": "pinterest", "url": "", "enabled": true },
+        { "network": "youtube", "url": "", "enabled": true },
+        { "network": "tiktok", "url": "", "enabled": true },
+        { "network": "x", "url": "", "enabled": true }
+      ]
     },
     "showSearch": {
       "type": "boolean",
