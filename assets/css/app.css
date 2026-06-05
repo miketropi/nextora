@@ -227,9 +227,6 @@
   .start {
     inset-inline-start: var(--spacing);
   }
-  .start\! {
-    inset-inline-start: var(--spacing) !important;
-  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -334,9 +331,6 @@
   }
   .inline {
     display: inline;
-  }
-  .inline\! {
-    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -829,9 +823,6 @@
   .italic {
     font-style: italic;
   }
-  .italic\! {
-    font-style: italic !important;
-  }
   .\!no-underline {
     text-decoration-line: none !important;
   }
@@ -843,9 +834,6 @@
   }
   .underline {
     text-decoration-line: underline;
-  }
-  .underline\! {
-    text-decoration-line: underline !important;
   }
   .decoration-secondary\/30 {
     text-decoration-color: var(--color-secondary);

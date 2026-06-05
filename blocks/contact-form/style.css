@@ -11,7 +11,7 @@
 	padding: var(--wp--preset--spacing--60, 2.5rem);
 	border-radius: 0.75rem;
 	box-sizing: border-box;
-	max-width: 42rem;
+	max-width: 60rem;
 	margin-inline: auto;
 }
 
@@ -148,7 +148,7 @@
 	font-weight: 600;
 	line-height: 1.4;
 	border: none;
-	border-radius: 50px;
+	border-radius: 0.375rem;
 	cursor: pointer;
 	background: var(--nextora-contact-form-btn-bg);
 	color: var(--nextora-contact-form-btn-text);
