@@ -1,0 +1,70 @@
+/**
+ * nextora/google-maps — front-end + editor canvas.
+ */
+.nextora-google-maps {
+	--nextora-google-maps-height: 450px;
+	width: 100%;
+	display: block;
+	overflow: hidden;
+	position: relative;
+	height: var(--nextora-google-maps-height);
+	line-height: 0;
+	/* Dimensions panel border-radius clips iframe/canvas via overflow: hidden. */
+}
+
+.nextora-google-maps__iframe,
+.nextora-google-maps__canvas {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	display: block;
+}
+
+/**
+ * Iframe embed: Google’s keyless / embed UI has no reliable URL flag to hide controls.
+ * Shift + clip the iframe when “Show map controls” is off (info card, zoom, footer).
+ */
+.nextora-google-maps--hide-controls .nextora-google-maps__iframe {
+	position: absolute;
+	top: -10rem;
+	left: 0;
+	width: 100%;
+	height: calc(100% + 10rem + 4.75rem);
+	max-width: none;
+	border: 0;
+}
+
+.nextora-google-maps__fallback {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	padding: var(--wp--preset--spacing--40, 1.5rem);
+	margin: 0;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.5;
+	text-align: center;
+	color: var(--wp--preset--color--contrast, inherit);
+	background-color: var(--wp--preset--color--surface, #f4f4f4);
+}
+
+.nextora-google-maps--loading .nextora-google-maps__canvas {
+	opacity: 0.85;
+	transition: opacity 0.25s ease;
+}
+
+.nextora-google-maps--ready .nextora-google-maps__canvas {
+	opacity: 1;
+}
+
+.nextora-google-maps--error .nextora-google-maps__canvas {
+	display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-google-maps--loading .nextora-google-maps__canvas {
+		opacity: 1;
+		transition: none;
+	}
+}
