@@ -75,6 +75,14 @@ declare global {
 		nextoraCommentTiptap?: {
 			mounts?: Partial<CommentTiptapMountConfig>[];
 		};
+		/** Clear a mounted Tiptap surface by host element id (e.g. contact form reset). */
+		nextoraClearTiptapHost?: (hostId: string) => void;
+		/** Mount one Tiptap surface (contact form fallback when PHP mounts miss). */
+		nextoraMountTiptapConfig?: (config: Partial<CommentTiptapMountConfig>) => void;
+		/** Re-scan contact forms and mount any pending message editors. */
+		nextoraMountContactFormTiptap?: () => void;
+		/** Flush editor HTML into the synced textarea before REST submit. */
+		nextoraSyncTiptapHost?: (hostId: string) => void;
 	}
 }
 
@@ -225,12 +233,23 @@ function buildToolbar(editor: Editor): HTMLElement {
 
 const mountedHosts = new WeakSet<HTMLElement>();
 
+type TiptapMountEntry = {
+	editor: Editor;
+	textarea: HTMLTextAreaElement;
+};
+
+const mountRegistry = new Map<string, TiptapMountEntry>();
+
 function resolveMounts(): CommentTiptapMountConfig[] {
 	const raw = window.nextoraCommentTiptap?.mounts;
-	if (raw && raw.length > 0) {
-		return raw.map((partial) => ({ ...DEFAULT_MOUNT, ...partial }));
-	}
-	return [DEFAULT_MOUNT];
+	const mounts =
+		raw && raw.length > 0
+			? raw.map((partial) => ({ ...DEFAULT_MOUNT, ...partial }))
+			: [DEFAULT_MOUNT];
+
+	return mounts.filter(
+		(config) => document.getElementById(config.hostId) instanceof HTMLElement,
+	);
 }
 
 function mountCommentTiptap(config: CommentTiptapMountConfig): void {
@@ -252,7 +271,9 @@ function mountCommentTiptap(config: CommentTiptapMountConfig): void {
 
 	const shell = host.parentElement;
 	const toolbarMount =
-		shell?.querySelector<HTMLElement>(config.toolbarSelector) ?? null;
+		shell?.querySelector<HTMLElement>(config.toolbarSelector) ??
+		shell?.querySelector<HTMLElement>(".nextora-tiptap-toolbar") ??
+		null;
 
 	const editorAttrs: Record<string, string> = {
 		class:
@@ -301,6 +322,7 @@ function mountCommentTiptap(config: CommentTiptapMountConfig): void {
 	});
 
 	mountedHosts.add(host);
+	mountRegistry.set(config.hostId, { editor, textarea });
 
 	if (toolbarMount) {
 		toolbarMount.replaceChildren();
@@ -312,17 +334,88 @@ function mountCommentTiptap(config: CommentTiptapMountConfig): void {
 	});
 
 	const form = textarea.closest("form");
-	form?.addEventListener(
-		"submit",
-		(e) => {
-			syncTextarea(textarea, editor);
-			if (editor.isEmpty) {
-				e.preventDefault();
-				editor.commands.focus();
+	// Contact forms validate via blocks/contact-form/view.ts — do not intercept submit.
+	if (form && !form.hasAttribute("data-nextora-contact-form")) {
+		form.addEventListener(
+			"submit",
+			(e) => {
+				syncTextarea(textarea, editor);
+				if (editor.isEmpty) {
+					e.preventDefault();
+					editor.commands.focus();
+				}
+			},
+			{ capture: true },
+		);
+	}
+}
+
+function attachTiptapGlobals(): void {
+	window.nextoraClearTiptapHost = (hostId: string): void => {
+		const entry = mountRegistry.get(hostId);
+		if (!entry) {
+			return;
+		}
+		entry.editor.commands.clearContent(true);
+		syncTextarea(entry.textarea, entry.editor);
+	};
+
+	window.nextoraSyncTiptapHost = (hostId: string): void => {
+		const entry = mountRegistry.get(hostId);
+		if (!entry) {
+			return;
+		}
+		syncTextarea(entry.textarea, entry.editor);
+	};
+
+	window.nextoraMountTiptapConfig = (
+		partial: Partial<CommentTiptapMountConfig>,
+	): void => {
+		mountCommentTiptap({ ...DEFAULT_MOUNT, ...partial });
+	};
+}
+
+/**
+ * Mount contact-form message fields from DOM (does not rely on PHP mount list).
+ */
+function mountContactFormTiptapFromDom(): void {
+	document
+		.querySelectorAll<HTMLFormElement>('form[data-nextora-contact-form="1"]')
+		.forEach((form) => {
+			const host = form.querySelector<HTMLElement>(".nextora-tiptap-host[id]");
+			const textarea = form.querySelector<HTMLTextAreaElement>(
+				'textarea[name="message"]',
+			);
+			const label = form.querySelector<HTMLElement>(
+				'[id^="nextora-contact-form-message-label-"]',
+			);
+			if (!host?.id || !textarea?.id || mountedHosts.has(host)) {
+				return;
 			}
-		},
-		{ capture: true },
-	);
+
+			mountCommentTiptap({
+				hostId: host.id,
+				textareaSelector: `#${CSS.escape(textarea.id)}`,
+				labelId: label?.id ?? "",
+				toolbarSelector: ".nextora-tiptap-toolbar",
+			});
+		});
+}
+
+function bootCommentTiptap(): void {
+	attachTiptapGlobals();
+
+	for (const config of resolveMounts()) {
+		mountCommentTiptap(config);
+	}
+
+	mountContactFormTiptapFromDom();
+	window.nextoraMountContactFormTiptap = mountContactFormTiptapFromDom;
+
+	// Block view.js may register after main.js on the same page — retry briefly.
+	for (const delay of [0, 50, 150, 400]) {
+		window.setTimeout(mountContactFormTiptapFromDom, delay);
+	}
 }
 
 /**
@@ -330,7 +423,10 @@ function mountCommentTiptap(config: CommentTiptapMountConfig): void {
  * or the default Nextora comment form selectors when unset.
  */
 export function initCommentTiptap(): void {
-	for (const config of resolveMounts()) {
-		mountCommentTiptap(config);
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", bootCommentTiptap);
+		return;
 	}
+
+	bootCommentTiptap();
 }

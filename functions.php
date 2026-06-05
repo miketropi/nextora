@@ -28,5 +28,6 @@ require_once NEXTORA_DIR . '/inc/navigation/class-nextora-header-block-walker.ph
 require_once NEXTORA_DIR . '/inc/features/spotlight-search/load.php';
 require_once NEXTORA_DIR . '/inc/features/theme-updater/load.php';
 require_once NEXTORA_DIR . '/inc/comments/comments.php';
+require_once NEXTORA_DIR . '/inc/features/contact-form/load.php';
 require_once NEXTORA_DIR . '/inc/assets/assets.php';
 require_once NEXTORA_DIR . '/blocks/blocks.php';

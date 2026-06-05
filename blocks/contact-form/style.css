@@ -1,0 +1,226 @@
+/**
+ * Contact form — front-end styles.
+ */
+
+.wp-block-nextora-contact-form.nextora-contact-form,
+.nextora-contact-form {
+	--nextora-contact-form-bg: var(--wp--preset--color--surface, #f4f4f4);
+	--nextora-contact-form-btn-bg: var(--wp--preset--color--primary, #0a0a0a);
+	--nextora-contact-form-btn-text: var(--wp--preset--color--base, #ffffff);
+	background-color: var(--nextora-contact-form-bg);
+	padding: var(--wp--preset--spacing--60, 2.5rem);
+	border-radius: 0.75rem;
+	box-sizing: border-box;
+	max-width: 42rem;
+	margin-inline: auto;
+}
+
+.nextora-contact-form__heading {
+	font-size: var(--wp--preset--font-size--x-large, clamp(1.5rem, 3vw, 2rem));
+	font-weight: 800;
+	line-height: 1.15;
+	margin: 0 0 0.35rem;
+	color: inherit;
+}
+
+.nextora-contact-form .nextora-contact-form__subheading {
+	font-size: var(--wp--preset--font-size--small, 0.95rem);
+	line-height: 1.5;
+	color: var(--wp--preset--color--secondary, #525252);
+	margin: 0 0 1.75rem;
+}
+
+.nextora-contact-form__notice {
+	padding: 0.75rem 1rem;
+	border-radius: 0.375rem;
+	margin-bottom: 1rem;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.45;
+}
+
+.nextora-contact-form__notice--hidden {
+	display: none;
+}
+
+.nextora-contact-form__notice--success {
+	background-color: color-mix(in srgb, #22c55e 14%, var(--wp--preset--color--base, #fff));
+	color: color-mix(in srgb, #166534 85%, var(--wp--preset--color--contrast, #0a0a0a));
+	border: 1px solid color-mix(in srgb, #22c55e 35%, transparent);
+}
+
+.nextora-contact-form__notice--error {
+	background-color: color-mix(in srgb, #ef4444 12%, var(--wp--preset--color--base, #fff));
+	color: color-mix(in srgb, #991b1b 80%, var(--wp--preset--color--contrast, #0a0a0a));
+	border: 1px solid color-mix(in srgb, #ef4444 30%, transparent);
+}
+
+.nextora-contact-form__row {
+	width: 100%;
+	margin-bottom: 1.25rem;
+}
+
+.nextora-contact-form__row--two-col {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+}
+
+.nextora-contact-form__row .nextora-contact-form__field {
+	margin-bottom: 0;
+	width: 100%;
+	min-width: 0;
+}
+
+.nextora-contact-form__field {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	margin-bottom: 1.25rem;
+}
+
+.nextora-contact-form__input {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: none;
+	padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+
+.nextora-contact-form__label {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 600;
+	color: inherit;
+	margin-bottom: 0.35rem;
+	cursor: text;
+}
+
+.nextora-contact-form__required {
+	color: var(--wp--preset--color--primary, currentColor);
+}
+
+.nextora-contact-form__textarea {
+	width: 100%;
+	min-height: 9rem;
+	resize: vertical;
+}
+
+/* Invalid field — red border on inputs and message editor */
+.nextora-contact-form__field--error .nextora-contact-form__input,
+.nextora-contact-form__field--error .nextora-contact-form__textarea {
+	border-color: #ef4444;
+	box-shadow: 0 0 0 1px color-mix(in srgb, #ef4444 35%, transparent);
+}
+
+.nextora-contact-form__field--error .nextora-tiptap-shell {
+	border-color: #ef4444;
+	box-shadow: 0 0 0 1px color-mix(in srgb, #ef4444 35%, transparent);
+}
+
+.nextora-contact-form__tiptap-shell {
+	margin-bottom: 0;
+}
+
+/* Tiptap host reserve space before JS init (toolbar styles live in comments.css). */
+.nextora-contact-form .nextora-tiptap-shell > .nextora-tiptap-toolbar:empty {
+	min-height: 2.5rem;
+}
+
+.nextora-contact-form .nextora-tiptap-host {
+	min-height: 9rem;
+}
+
+.nextora-contact-form__honeypot {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+}
+
+.nextora-contact-form__submit {
+	display: block;
+	width: 100%;
+	margin-top: 0.5rem;
+	padding: 0.625rem 1.75rem;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 600;
+	line-height: 1.4;
+	border: none;
+	border-radius: 50px;
+	cursor: pointer;
+	background: var(--nextora-contact-form-btn-bg);
+	color: var(--nextora-contact-form-btn-text);
+	transition: opacity 0.2s ease;
+}
+
+.nextora-contact-form__submit:hover {
+	opacity: 0.9;
+}
+
+.nextora-contact-form__submit:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Tiptap prose inside contact form */
+.nextora-contact-form .nextora-tiptap-prose p {
+	margin: 0 0 0.5em;
+}
+
+.nextora-contact-form .nextora-tiptap-prose p:last-child {
+	margin-bottom: 0;
+}
+
+.nextora-contact-form .nextora-tiptap-prose blockquote {
+	margin: 0.5em 0;
+	padding-left: 0.85em;
+	border-left: 3px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 45%, transparent);
+}
+
+.nextora-contact-form .nextora-tiptap-prose code {
+	font-size: 0.9em;
+	padding: 0.1em 0.35em;
+	border-radius: 0.25rem;
+	background-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0a0a0a) 6%, transparent);
+}
+
+.nextora-contact-form .nextora-tiptap-prose a {
+	color: var(--wp--preset--color--primary, inherit);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+/* Scroll reveal */
+.nextora-contact-form[data-nextora-scroll-reveal='1'].nextora-contact-form--reveal-pending:not(
+		.nextora-contact-form--reveal-ready
+	) {
+	opacity: 0;
+	transform: translate3d(0, 1.5rem, 0);
+}
+
+.nextora-contact-form[data-nextora-scroll-reveal='1'].nextora-contact-form--reveal-ready {
+	opacity: 1;
+	transform: none;
+	transition:
+		opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+		transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-contact-form[data-nextora-scroll-reveal='1'].nextora-contact-form--reveal-pending {
+		opacity: 1;
+		transform: none;
+	}
+
+	.nextora-contact-form[data-nextora-scroll-reveal='1'].nextora-contact-form--reveal-ready {
+		transition: none;
+	}
+}
+
+@media (max-width: 600px) {
+	.nextora-contact-form__row--two-col {
+		grid-template-columns: 1fr;
+	}
+}

@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/contact-form",
+  "title": "Contact form",
+  "category": "design",
+  "description": "Get in touch form — emails the site admin and sends a confirmation to the visitor.",
+  "keywords": ["contact", "form", "email", "nextora"],
+  "textdomain": "nextora",
+  "icon": "email",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    }
+  },
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Get In Touch"
+    },
+    "subheading": {
+      "type": "string",
+      "default": "We'd love to hear from you! If you have any questions"
+    },
+    "buttonLabel": {
+      "type": "string",
+      "default": "Send Message"
+    },
+    "adminEmailSubject": {
+      "type": "string",
+      "default": "New contact form submission"
+    },
+    "userEmailSubject": {
+      "type": "string",
+      "default": "Thank you for contacting us"
+    },
+    "successMessage": {
+      "type": "string",
+      "default": "Thank you! Your message has been sent."
+    },
+    "headingLevel": {
+      "type": "number",
+      "default": 4
+    },
+    "enablePhoneField": {
+      "type": "boolean",
+      "default": true
+    },
+    "adminEmail": {
+      "type": "string",
+      "default": ""
+    },
+    "fullNameLabel": {
+      "type": "string",
+      "default": "Full Name"
+    },
+    "fullNamePlaceholder": {
+      "type": "string",
+      "default": "Enter your full name"
+    },
+    "phoneLabel": {
+      "type": "string",
+      "default": "Phone Number"
+    },
+    "phonePlaceholder": {
+      "type": "string",
+      "default": "Enter your phone number"
+    },
+    "emailLabel": {
+      "type": "string",
+      "default": "Email"
+    },
+    "emailPlaceholder": {
+      "type": "string",
+      "default": "Enter your email address"
+    },
+    "messageLabel": {
+      "type": "string",
+      "default": "Message"
+    },
+    "messagePlaceholder": {
+      "type": "string",
+      "default": "Your message"
+    },
+    "enableRichTextMessage": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    },
+    "sectionBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonTextColor": {
+      "type": "string",
+      "default": ""
+    },
+    "enableRecaptcha": {
+      "type": "boolean",
+      "default": false
+    },
+    "recaptchaSiteKey": {
+      "type": "string",
+      "default": ""
+    },
+    "recaptchaSecretKey": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "style": "file:./style.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}
