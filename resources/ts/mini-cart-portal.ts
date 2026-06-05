@@ -50,6 +50,10 @@ function triggerWcFragmentRefresh(): void {
  * (bubbles). We support both and retry jQuery binding in case `window.jQuery` is not ready yet.
  */
 export function bindHeaderMiniCartAfterAjaxAdd(): void {
+	if (!document.body) {
+		return;
+	}
+
 	document.body.addEventListener(
 		"wc-blocks_added_to_cart",
 		() => {

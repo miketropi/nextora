@@ -27,6 +27,10 @@ add_filter(
             'title'       => __( 'About Us', 'nextora' ),
             'description' => __( 'A page with a about us layout', 'nextora' ),
         );
+		$template_types['contact-us'] = array(
+			'title'       => __( 'Contact Us', 'nextora' ),
+			'description' => __( 'A page with a contact us layout with a contact form and a google map', 'nextora' ),
+		);
 		return $template_types;
 	},
 );

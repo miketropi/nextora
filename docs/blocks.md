@@ -98,6 +98,8 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 | `nextora/testimonial-carousel` | Fade testimonial carousel, `testimonials[]` repeater, trust avatars; see [`docs/blocks/Testimonial Carousel.md`](./blocks/Testimonial%20Carousel.md) |
 | `nextora/testimonials` | Split-screen portrait + quote carousel, ring pagination; see [`docs/blocks/testimonials.md`](./blocks/testimonials.md) |
 | `nextora/instagram-feed` | Curated Instagram tiles, Swiper carousel, lightbox modal; see [`docs/blocks/Instagram.md`](./blocks/Instagram.md) |
+| `nextora/contact-form` | Get-in-touch form, REST submit, dual email, Tiptap message field; see [`docs/blocks/Contact Form Block.md`](./blocks/Contact%20Form%20Block.md) |
+| `nextora/google-maps` | Iframe or JS API map embed, markers, directions; see [`docs/blocks/Google Maps Block.md`](./blocks/Google%20Maps%20Block.md) |
 
 ## Related docs
 

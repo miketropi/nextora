@@ -1,0 +1,80 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/google-maps",
+  "title": "Google Maps",
+  "category": "design",
+  "description": "Embeds a Google Map via iframe or JavaScript API with full editor controls.",
+  "keywords": ["map", "google", "location", "nextora"],
+  "textdomain": "nextora",
+  "icon": "location-alt",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "attributes": {
+    "mapMode": {
+      "type": "string",
+      "default": "iframe",
+      "enum": ["iframe", "api"]
+    },
+    "address": {
+      "type": "string",
+      "default": ""
+    },
+    "lat": {
+      "type": "number",
+      "default": 21.0285
+    },
+    "lng": {
+      "type": "number",
+      "default": 105.8542
+    },
+    "zoom": {
+      "type": "number",
+      "default": 15
+    },
+    "mapHeight": {
+      "type": "number",
+      "default": 450
+    },
+    "borderRadius": {
+      "type": "number",
+      "default": 0
+    },
+    "showControls": {
+      "type": "boolean",
+      "default": true
+    },
+    "markers": {
+      "type": "array",
+      "default": []
+    },
+    "mapStyleJson": {
+      "type": "string",
+      "default": ""
+    },
+    "showDirections": {
+      "type": "boolean",
+      "default": false
+    },
+    "apiKey": {
+      "type": "string",
+      "default": ""
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "style": "file:./style.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}
