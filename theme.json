@@ -12,6 +12,12 @@
 			"title": "Page — Full Width",
 			"description": "A page with a full width layout",
 			"postTypes": ["page", "post"]
+		},
+		{
+			"name": "contact-us",
+			"title": "Contact Us",
+			"description": "A page with a contact us layout with a contact form and a google map",
+			"postTypes": ["page", "post"]
 		}
 	],
 	"templateParts": [

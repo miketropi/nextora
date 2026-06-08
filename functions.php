@@ -19,7 +19,6 @@ if ( is_readable( NEXTORA_DIR . '/vendor/autoload.php' ) ) {
 }
 
 require_once NEXTORA_DIR . '/inc/setup/theme-support.php';
-require_once NEXTORA_DIR . '/inc/setup/custom-templates.php';
 require_once NEXTORA_DIR . '/inc/setup/pattern-categories.php';
 require_once NEXTORA_DIR . '/inc/setup/elementor.php';
 require_once NEXTORA_DIR . '/inc/navigation/navigation.php';
