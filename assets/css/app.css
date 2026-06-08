@@ -1322,6 +1322,66 @@ footer.wp-block-template-part {
   text-decoration: none;
   transition: background 0.2s,	color 0.2s;
 }
+.frequently-asked-questions .wp-block-accordion-panel[inert], .frequently-asked-questions .wp-block-accordion-panel[aria-hidden='true'] {
+  display: block !important;
+  margin-block-start: 0;
+  border: none;
+}
+.frequently-asked-questions .wp-block-accordion-panel {
+  display: block !important;
+  overflow: hidden;
+  max-height: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),	padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.frequently-asked-questions .wp-block-accordion-item.is-open > .wp-block-accordion-panel {
+  max-height: 80rem;
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+@supports (interpolate-size: allow-keywords) {
+  .frequently-asked-questions .wp-block-accordion-panel {
+    interpolate-size: allow-keywords;
+    max-height: none;
+    height: 0;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1),	padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .frequently-asked-questions .wp-block-accordion-item.is-open > .wp-block-accordion-panel {
+    max-height: none;
+    height: auto;
+  }
+}
+.frequently-asked-questions .wp-block-accordion-heading__toggle-icon {
+  font-size: 0;
+  line-height: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: inherit;
+  transform-origin: center;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.frequently-asked-questions .wp-block-accordion-heading__toggle-icon::after {
+  content: '';
+  display: block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+.frequently-asked-questions	.wp-block-accordion-item.is-open	> .wp-block-accordion-heading	.wp-block-accordion-heading__toggle-icon {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .frequently-asked-questions .wp-block-accordion-panel,	.frequently-asked-questions .wp-block-accordion-heading__toggle-icon {
+    transition: none;
+  }
+}
+.frequently-asked-questions .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__toggle-title {
+  text-decoration: none;
+}
 .nextora-navigation-from-location {
   --nextora-nav-submenu-bg: var(--nextora-nav-panel-bg);
   --nextora-nav-submenu-border: var(--nextora-nav-panel-border);
