@@ -61,6 +61,20 @@ When adding controls, align with existing blocks:
 | Spacing / align | `supports.align` `wide` / `full`; `category`: **`theme`** for site chrome blocks, **`media`** / **`design`** for content as appropriate. |
 | Text domain | Always **`nextora`**. Block name: **`nextora/{slug}`**. |
 
+### Shared component styles
+
+When two or more blocks share the same type of UI element, they **must use the same visual styling** — identical tokens, sizes, spacing, and behaviour. Before building a new variant, check whether an existing block already has the component and copy its approach.
+
+| Component | Reference block(s) | What to match |
+|---|---|---|
+| CTA / "View All" / action button | **Team section**, **Hero section**, **Call to action** | Font size (`--wp--preset--font-size--small`), weight (`600`), border width (`1.5px` on outline), padding (`0.625rem 1.75rem`), radius (`50px`), hover opacity (`0.9`), icon class + sizing, CSS variable naming |
+| Carousel arrows | **Image gallery slide** | `aria-label` wording, SVG chevron paths, button dimensions, hover/focus states |
+| Pagination dots | **Testimonial carousel**, **Image gallery slide** | Bullet size (7px), active width (20px), transition (width + border-radius + background), ARIA |
+| Card / grid hover | **Post grid**, **Image gallery grid** | Image scale amount (`1.02`–`1.04`), transition duration (`0.3`–`0.4s`), title color shift |
+| Scroll reveal | **Testimonial carousel**, **Image gallery grid** | `--reveal-pending`/`--reveal-ready` class system, GSAP timeline (`power3.out`, `0.95s` per element, `0.12s` stagger), fallback timeout (`1800ms`) |
+
+**Sidebar controls for shared components must also match:** use the same panel title, control labels, and help text as the reference block. If the reference uses `PanelColorSettings` for a colour, the new block must too — not inline `ColorPicker` in a `PanelBody`.
+
 Before shipping, compare sidebar structure and help strings with the closest existing block; reuse panel titles (**Settings**, **Layout**, **Animation**, **Colors**).
 
 ## Checklist (new block)
@@ -83,6 +97,9 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 | `nextora/team-section` | Swiper member carousel, `members[]` repeater, scroll reveal; see [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md) |
 | `nextora/testimonial-carousel` | Fade testimonial carousel, `testimonials[]` repeater, trust avatars; see [`docs/blocks/Testimonial Carousel.md`](./blocks/Testimonial%20Carousel.md) |
 | `nextora/testimonials` | Split-screen portrait + quote carousel, ring pagination; see [`docs/blocks/testimonials.md`](./blocks/testimonials.md) |
+| `nextora/instagram-feed` | Curated Instagram tiles, Swiper carousel, lightbox modal; see [`docs/blocks/Instagram.md`](./blocks/Instagram.md) |
+| `nextora/contact-form` | Get-in-touch form, REST submit, dual email, Tiptap message field; see [`docs/blocks/Contact Form Block.md`](./blocks/Contact%20Form%20Block.md) |
+| `nextora/google-maps` | Iframe or JS API map embed, markers, directions; see [`docs/blocks/Google Maps Block.md`](./blocks/Google%20Maps%20Block.md) |
 
 ## Related docs
 

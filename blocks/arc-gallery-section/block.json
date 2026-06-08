@@ -18,7 +18,8 @@
       "link": true
     },
     "spacing": {
-      "margin": true
+      "margin": true,
+      "padding": true
     },
     "typography": {
       "fontSize": true,
@@ -30,19 +31,17 @@
       "type": "array",
       "default": []
     },
-    "imageWidth": { "type": "number", "default": 220 },
-    "imageHeight": { "type": "number", "default": 280 },
+    "imageWidth": { "type": "number", "default": 311 },
+    "imageHeight": { "type": "number", "default": 416 },
     "imageBorderRadius": { "type": "number", "default": 6 },
     "imageBorderWidth": { "type": "number", "default": 3 },
-    "imageBorderColor": { "type": "string", "default": "#ffffff" },
-    "arcRadius": { "type": "number", "default": 600 },
-    "arcSpread": { "type": "number", "default": 50 },
+    "imageBorderColor": { "type": "string", "default": "" },
+    "arcRadius": { "type": "number", "default": 1500 },
+    "arcSpread": { "type": "number", "default": 48 },
     "arcDirection": { "type": "string", "default": "down" },
-    "galleryHeight": { "type": "number", "default": 380 },
-    "galleryOverflow": { "type": "boolean", "default": true },
-    "eyebrowText": { "type": "string", "default": "" },
-    "headingText": { "type": "string", "default": "" },
-    "descriptionText": { "type": "string", "default": "" },
+    "eyebrowText": { "type": "string", "default": "Protecting People & Planet" },
+    "headingText": { "type": "string", "default": "Join Save the World in Creating a Future That's Worth Inheriting" },
+    "descriptionText": { "type": "string", "default": "Save the World restores forests, protects clean water, and helps communities face climate change together." },
     "headingLevel": { "type": "number", "default": 2 },
     "textAlign": { "type": "string", "default": "center" },
     "contentMaxWidth": { "type": "string", "default": "700px" },
@@ -59,11 +58,12 @@
     "backgroundColor": { "type": "string", "default": "" },
     "textColor": { "type": "string", "default": "" },
     "eyebrowColor": { "type": "string", "default": "" },
+    "descriptionColor": { "type": "string", "default": "" },
     "primaryButtonBg": { "type": "string", "default": "" },
     "primaryButtonColor": { "type": "string", "default": "" },
-    "paddingTop": { "type": "number", "default": 80 },
-    "paddingBottom": { "type": "number", "default": 80 },
-    "enableScrollAnimation": { "type": "boolean", "default": true }
+    "secondaryButtonColor": { "type": "string", "default": "" },
+    "enableScrollAnimation": { "type": "boolean", "default": true },
+    "enableGalleryScrollAnimation": { "type": "boolean", "default": true }
   },
   "editorScript": "file:./index.js",
   "style": "file:./style.css",

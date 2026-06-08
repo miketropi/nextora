@@ -1,6 +1,7 @@
 /**
- * MC4WP subscribe — horizontal input group (white field + teal send button).
+ * MC4WP subscribe — horizontal input group (white field + accent submit control).
  * Targets default Mailchimp for WordPress markup: `.mc4wp-form` > `.mc4wp-form-fields`.
+ * Default: icon-only square button. Wrapper `.nextora-form-subscribe-style-1` shows submit label text.
  * Parent sections (hero/CTA) supply background color; this module styles the control bar only.
  */
 @layer components {
@@ -124,6 +125,22 @@
 	.mc4wp-form .mc4wp-form-fields input[type="submit"]:disabled {
 		opacity: 0.55;
 		cursor: not-allowed;
+	}
+
+	/* Text submit — add class on a parent wrapping the MC4WP form block. */
+	.nextora-form-subscribe-style-1 .mc4wp-form .mc4wp-form-fields input[type="submit"] {
+		flex: 0 0 auto;
+		width: auto;
+		min-width: 5.5rem;
+		padding: 0 1.25rem;
+		background-image: none;
+		color: var(--wp--preset--color--base, #ffffff);
+		font-family: inherit;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		line-height: 1.25;
+		overflow: visible;
+		white-space: nowrap;
 	}
 
 	:where(.mc4wp-form .mc4wp-response) {

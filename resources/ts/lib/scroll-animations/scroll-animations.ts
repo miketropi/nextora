@@ -10,8 +10,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { INIT_ATTR, MUTATION_DEBOUNCE_MS, PARALLAX_SELECTOR } from "./constants";
 import {
 	ensureGsapPlugins,
+	getFadeListGridItems,
+	getInnerFadeTargets,
 	initElementAnimations,
 	prefersReducedMotion,
+	revealBottomAnchoredTriggers,
 	resolveAnimationClass,
 } from "./helpers";
 import { getAnimationSelector, registerScrollAnimationPreset } from "./presets";
@@ -20,6 +23,11 @@ import { parseScrollAnimationOptions } from "./parse-options";
 let observer: MutationObserver | null = null;
 let debounceTimer = 0;
 let booted = false;
+
+function refreshScrollTriggers(): void {
+	ScrollTrigger.refresh();
+	revealBottomAnchoredTriggers();
+}
 
 function collectTargets(root: ParentNode = document): HTMLElement[] {
 	const selector = `${getAnimationSelector()}, ${PARALLAX_SELECTOR}`;
@@ -33,9 +41,25 @@ function collectTargets(root: ParentNode = document): HTMLElement[] {
 }
 
 function markPending(el: HTMLElement): void {
-	if (prefersReducedMotion() || resolveAnimationClass(el) === null) {
+	const animationClass = resolveAnimationClass(el);
+	if (prefersReducedMotion() || animationClass === null) {
 		return;
 	}
+
+	if (animationClass === "animation-fade-list-grid") {
+		getFadeListGridItems(el).forEach((item) => {
+			item.classList.add("nextora-scroll-animation--pending");
+		});
+		return;
+	}
+
+	if (animationClass === "animation-inner-fade") {
+		getInnerFadeTargets(el).forEach((target) => {
+			target.classList.add("nextora-scroll-animation--pending");
+		});
+		return;
+	}
+
 	el.classList.add("nextora-scroll-animation--pending");
 }
 
@@ -53,7 +77,7 @@ export function scanScrollAnimations(root: ParentNode = document): number {
 		initElementAnimations(el);
 	});
 
-	ScrollTrigger.refresh();
+	refreshScrollTriggers();
 	return targets.length;
 }
 
@@ -61,7 +85,7 @@ function scheduleRescan(): void {
 	window.clearTimeout(debounceTimer);
 	debounceTimer = window.setTimeout(() => {
 		if (scanScrollAnimations() > 0) {
-			ScrollTrigger.refresh();
+			refreshScrollTriggers();
 		}
 	}, MUTATION_DEBOUNCE_MS);
 }
@@ -97,11 +121,12 @@ function configureScrollTrigger(): void {
 	ScrollTrigger.config({
 		autoRefreshEvents: "visibilitychange,DOMContentLoaded,load,resize",
 	});
+	ScrollTrigger.addEventListener("scrollEnd", revealBottomAnchoredTriggers);
 }
 
 function onWindowLoad(): void {
 	scanScrollAnimations();
-	ScrollTrigger.refresh();
+	refreshScrollTriggers();
 }
 
 /**

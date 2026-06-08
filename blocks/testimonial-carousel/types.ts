@@ -10,6 +10,7 @@ export type TestimonialAvatarFallback = 'initials' | 'icon' | 'none';
 
 export interface TrustAvatar {
 	id: number;
+	url: string;
 	alt: string;
 }
 
@@ -19,6 +20,7 @@ export interface TestimonialItem {
 	authorName: string;
 	authorRole: string;
 	authorPhotoId: number;
+	authorPhotoUrl: string;
 	authorPhotoAlt: string;
 	showAuthorPhoto: boolean;
 	rating: number;

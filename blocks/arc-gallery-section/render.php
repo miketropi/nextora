@@ -195,33 +195,77 @@ foreach ( $raw_images as $item ) {
 	if ( ! is_array( $item ) ) {
 		continue;
 	}
-	$id = isset( $item['id'] ) ? absint( $item['id'] ) : 0;
-	if ( ! $id || ! wp_attachment_is_image( $id ) ) {
+
+	$id  = isset( $item['id'] ) ? absint( $item['id'] ) : 0;
+	$alt = isset( $item['alt'] ) ? (string) $item['alt'] : '';
+	$url = isset( $item['url'] ) ? trim( (string) $item['url'] ) : '';
+
+	if ( $id > 0 && wp_attachment_is_image( $id ) ) {
+		$images[] = array(
+			'id'  => $id,
+			'alt' => $alt,
+		);
 		continue;
 	}
-	$images[] = array(
-		'id'  => $id,
-		'alt' => isset( $item['alt'] ) ? (string) $item['alt'] : '',
-	);
+
+	if ( '' !== $url ) {
+		$safe_url = esc_url_raw( $url );
+		if ( '' !== $safe_url ) {
+			$images[] = array(
+				'id'            => 0,
+				'alt'           => $alt,
+				'url'           => $safe_url,
+				'isPlaceholder' => ! empty( $item['isPlaceholder'] ),
+			);
+			continue;
+		}
+	}
+
+	if ( function_exists( 'nextora_arc_gallery_section_photo_placeholder_url' ) ) {
+		$slot_placeholder = nextora_arc_gallery_section_photo_placeholder_url();
+		if ( '' !== $slot_placeholder ) {
+			$images[] = array(
+				'id'            => 0,
+				'alt'           => $alt,
+				'url'           => $slot_placeholder,
+				'isPlaceholder' => true,
+			);
+		}
+	}
 }
 
-/** @var list<array{id: int, alt: string}> $images */
+/** @var list<array{id: int, alt: string, url?: string, isPlaceholder?: bool}> $images */
 $images = array_values( (array) apply_filters( 'nextora_arc_gallery_section_images', $images, $attributes ) );
 
-$image_width  = isset( $attributes['imageWidth'] ) ? (int) $attributes['imageWidth'] : 220;
+$using_placeholder_images = array() === $images;
+if ( $using_placeholder_images && function_exists( 'nextora_arc_gallery_section_photo_placeholder_url' ) ) {
+	$placeholder_url = nextora_arc_gallery_section_photo_placeholder_url();
+	$placeholder_count = function_exists( 'nextora_arc_gallery_section_default_image_count' )
+		? nextora_arc_gallery_section_default_image_count()
+		: 5;
+
+	for ( $i = 0; $i < $placeholder_count; $i++ ) {
+		$images[] = array(
+			'id'            => 0,
+			'alt'           => '',
+			'url'           => $placeholder_url,
+			'isPlaceholder' => true,
+		);
+	}
+}
+
+$image_width  = isset( $attributes['imageWidth'] ) ? (int) $attributes['imageWidth'] : 311;
 $image_width  = max( 120, min( 400, $image_width ) );
-$image_height = isset( $attributes['imageHeight'] ) ? (int) $attributes['imageHeight'] : 280;
+$image_height = isset( $attributes['imageHeight'] ) ? (int) $attributes['imageHeight'] : 416;
 $image_height = max( 150, min( 500, $image_height ) );
 
-$arc_radius = isset( $attributes['arcRadius'] ) ? (int) $attributes['arcRadius'] : 600;
+$arc_radius = isset( $attributes['arcRadius'] ) ? (int) $attributes['arcRadius'] : 1500;
 $arc_radius = max( 300, min( 1500, $arc_radius ) );
-$arc_spread = isset( $attributes['arcSpread'] ) ? (int) $attributes['arcSpread'] : 50;
+$arc_spread = isset( $attributes['arcSpread'] ) ? (int) $attributes['arcSpread'] : 48;
 $arc_spread = max( 20, min( 90, $arc_spread ) );
 
-$gallery_height = isset( $attributes['galleryHeight'] ) ? (int) $attributes['galleryHeight'] : 380;
-$gallery_height = max( 250, min( 600, $gallery_height ) );
-
-$gallery_overflow = ! isset( $attributes['galleryOverflow'] ) || (bool) $attributes['galleryOverflow'];
+/** Resolved from arc geometry (not a block attribute). */
+$gallery_height = 380;
 
 $image_radius = isset( $attributes['imageBorderRadius'] ) ? (int) $attributes['imageBorderRadius'] : 6;
 $image_radius = max( 0, min( 24, $image_radius ) );
@@ -230,23 +274,20 @@ $image_border = max( 0, min( 8, $image_border ) );
 
 $raw_border_color = isset( $attributes['imageBorderColor'] ) ? trim( (string) $attributes['imageBorderColor'] ) : '';
 $image_border_color = nextora_arc_gallery_resolve_color( $raw_border_color );
-if ( '' === $image_border_color ) {
+if ( '' === $image_border_color && '' !== $raw_border_color ) {
 	$hex = sanitize_hex_color( $raw_border_color );
-	$image_border_color = $hex && '#ffffff' !== strtolower( $hex )
-		? $hex
-		: 'var(--wp--preset--color--base)';
+	if ( $hex && '#ffffff' !== strtolower( $hex ) ) {
+		$image_border_color = $hex;
+	}
 }
-
-$padding_top    = isset( $attributes['paddingTop'] ) ? (int) $attributes['paddingTop'] : 80;
-$padding_top    = max( 0, min( 200, $padding_top ) );
-$padding_bottom = isset( $attributes['paddingBottom'] ) ? (int) $attributes['paddingBottom'] : 80;
-$padding_bottom = max( 0, min( 200, $padding_bottom ) );
 
 $text_color = nextora_arc_gallery_resolve_color( isset( $attributes['textColor'] ) ? (string) $attributes['textColor'] : '' );
 $bg_color   = nextora_arc_gallery_resolve_color( isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '' );
 $eyebrow_c  = nextora_arc_gallery_resolve_color( isset( $attributes['eyebrowColor'] ) ? (string) $attributes['eyebrowColor'] : '' );
+$desc_c     = nextora_arc_gallery_resolve_color( isset( $attributes['descriptionColor'] ) ? (string) $attributes['descriptionColor'] : '' );
 $btn_bg     = nextora_arc_gallery_resolve_color( isset( $attributes['primaryButtonBg'] ) ? (string) $attributes['primaryButtonBg'] : '' );
 $btn_color  = nextora_arc_gallery_resolve_color( isset( $attributes['primaryButtonColor'] ) ? (string) $attributes['primaryButtonColor'] : '' );
+$link_c     = nextora_arc_gallery_resolve_color( isset( $attributes['secondaryButtonColor'] ) ? (string) $attributes['secondaryButtonColor'] : '' );
 
 $text_align = isset( $attributes['textAlign'] ) ? (string) $attributes['textAlign'] : 'center';
 if ( ! in_array( $text_align, array( 'left', 'center', 'right' ), true ) ) {
@@ -266,6 +307,13 @@ $heading_level = max( 1, min( 6, $heading_level ) );
 $heading_tag   = 'h' . $heading_level;
 
 $enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
+
+// Backward compat: gallery scroll was bundled with animate-on-scroll before this attribute existed.
+if ( isset( $attributes['enableGalleryScrollAnimation'] ) ) {
+	$enable_gallery_scroll = (bool) $attributes['enableGalleryScrollAnimation'];
+} else {
+	$enable_gallery_scroll = $enable_scroll;
+}
 
 $arc_base_config = array(
 	'arcRadius'          => $arc_radius,
@@ -292,19 +340,37 @@ $arc_spread     = $resolved_layout['arc_spread'];
 $gallery_height = $resolved_layout['gallery_height'];
 
 $css_vars = array(
-	'--nextora-arc-bg'               => '' !== $bg_color ? $bg_color : 'transparent',
-	'--nextora-arc-padding-top'      => $padding_top . 'px',
-	'--nextora-arc-padding-bottom'   => $padding_bottom . 'px',
-	'--nextora-arc-text'             => '' !== $text_color ? $text_color : 'var(--wp--preset--color--contrast)',
-	'--nextora-arc-eyebrow'          => '' !== $eyebrow_c ? $eyebrow_c : 'var(--wp--preset--color--secondary)',
-	'--nextora-arc-btn-bg'           => '' !== $btn_bg ? $btn_bg : 'var(--wp--preset--color--primary)',
-	'--nextora-arc-btn-color'        => '' !== $btn_color ? $btn_color : 'var(--wp--preset--color--base)',
-	'--nextora-arc-img-radius'       => $image_radius . 'px',
-	'--nextora-arc-img-border'       => $image_border . 'px',
-	'--nextora-arc-img-border-color' => $image_border_color,
-	'--nextora-arc-gallery-height'  => $gallery_height . 'px',
-	'--nextora-arc-content-offset-y' => $content_offset_y . 'px',
+	'--nextora-arc-img-radius'         => $image_radius . 'px',
+	'--nextora-arc-img-border'         => $image_border . 'px',
+	'--nextora-arc-gallery-height'     => $gallery_height . 'px',
+	'--nextora-arc-content-offset-y'   => $content_offset_y . 'px',
 );
+
+// Only emit color tokens when customized — inline vars beat `.is-style-*` preset rules.
+if ( '' !== $bg_color ) {
+	$css_vars['--nextora-arc-bg'] = $bg_color;
+}
+if ( '' !== $text_color ) {
+	$css_vars['--nextora-arc-text'] = $text_color;
+}
+if ( '' !== $eyebrow_c ) {
+	$css_vars['--nextora-arc-eyebrow'] = $eyebrow_c;
+}
+if ( '' !== $desc_c ) {
+	$css_vars['--nextora-arc-description'] = $desc_c;
+}
+if ( '' !== $link_c ) {
+	$css_vars['--nextora-arc-link'] = $link_c;
+}
+if ( '' !== $btn_bg ) {
+	$css_vars['--nextora-arc-btn-bg'] = $btn_bg;
+}
+if ( '' !== $btn_color ) {
+	$css_vars['--nextora-arc-btn-color'] = $btn_color;
+}
+if ( '' !== $image_border_color ) {
+	$css_vars['--nextora-arc-img-border-color'] = $image_border_color;
+}
 
 $style_parts = array();
 foreach ( $css_vars as $key => $value ) {
@@ -312,13 +378,28 @@ foreach ( $css_vars as $key => $value ) {
 }
 $inline_style = implode( ';', $style_parts );
 
+// Legacy paddingTop/paddingBottom attributes (pre-Dimensions panel).
+$block_style     = isset( $attributes['style'] ) && is_array( $attributes['style'] ) ? $attributes['style'] : array();
+$spacing_padding = isset( $block_style['spacing']['padding'] ) && is_array( $block_style['spacing']['padding'] )
+	? $block_style['spacing']['padding']
+	: array();
+
+if ( empty( $spacing_padding['top'] ) && isset( $attributes['paddingTop'] ) ) {
+	$legacy_top = max( 0, min( 200, (int) $attributes['paddingTop'] ) );
+	$style_parts[] = 'padding-top:' . $legacy_top . 'px';
+}
+
+if ( empty( $spacing_padding['bottom'] ) && isset( $attributes['paddingBottom'] ) ) {
+	$legacy_bottom = max( 0, min( 200, (int) $attributes['paddingBottom'] ) );
+	$style_parts[] = 'padding-bottom:' . $legacy_bottom . 'px';
+}
+
+$inline_style = implode( ';', $style_parts );
+
 $wrapper_classes = array(
 	'nextora-arc-gallery',
 	'nextora-arc-gallery--align-' . sanitize_html_class( $text_align ),
 );
-if ( $gallery_overflow ) {
-	$wrapper_classes[] = 'nextora-arc-gallery--overflow-visible';
-}
 
 $wrapper_classes = (array) apply_filters( 'nextora_arc_gallery_section_wrapper_classes', $wrapper_classes, $attributes );
 
@@ -335,6 +416,12 @@ $wrapper_extra = array(
 if ( $enable_scroll ) {
 	$wrapper_extra['data-nextora-arc-animate'] = '1';
 }
+if ( count( $images ) >= 2 ) {
+	$wrapper_extra['data-nextora-arc-carousel'] = '1';
+}
+if ( $enable_gallery_scroll && count( $images ) >= 2 ) {
+	$wrapper_extra['data-nextora-arc-gallery-scroll'] = '1';
+}
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 $wrapper_attributes = (string) apply_filters( 'nextora_arc_gallery_section_wrapper_attributes', $wrapper_attributes, $attributes );
@@ -350,11 +437,13 @@ $positions = nextora_arc_gallery_calculate_positions(
 
 $positions = (array) apply_filters( 'nextora_arc_gallery_section_arc_positions', $positions, $attributes, $images );
 
-$gallery_label = sprintf(
-	/* translators: %d: number of images */
-	_n( 'Gallery of %d image arranged in an arc', 'Gallery of %d images arranged in an arc', count( $images ), 'nextora' ),
-	count( $images ),
-);
+$gallery_label = $using_placeholder_images
+	? __( 'Gallery preview with placeholder images arranged in an arc', 'nextora' )
+	: sprintf(
+		/* translators: %d: number of images */
+		_n( 'Gallery of %d image arranged in an arc', 'Gallery of %d images arranged in an arc', count( $images ), 'nextora' ),
+		count( $images ),
+	);
 
 $eyebrow_html      = isset( $attributes['eyebrowText'] ) ? (string) $attributes['eyebrowText'] : '';
 $heading_html      = isset( $attributes['headingText'] ) ? (string) $attributes['headingText'] : '';
@@ -372,6 +461,10 @@ if ( $enable_scroll ) {
 		style="height:<?php echo esc_attr( (string) $gallery_height ); ?>px;"
 		role="group"
 		aria-label="<?php echo esc_attr( $gallery_label ); ?>"
+		<?php if ( count( $images ) >= 2 ) : ?>
+			data-nextora-arc-carousel="1"
+			tabindex="0"
+		<?php endif; ?>
 	>
 		<?php if ( array() !== $images ) : ?>
 			<?php foreach ( $images as $index => $image ) : ?>
@@ -389,16 +482,34 @@ if ( $enable_scroll ) {
 					$pos['top'],
 					(string) $pos['rotation'],
 				);
-				$alt = '' !== $image['alt'] ? $image['alt'] : get_post_meta( $image['id'], '_wp_attachment_image_alt', true );
-				$alt = is_string( $alt ) ? $alt : '';
-				$img_url = wp_get_attachment_image_url( $image['id'], 'large' );
+				$image_id        = (int) $image['id'];
+				$image_url       = isset( $image['url'] ) ? trim( (string) $image['url'] ) : '';
+				$is_placeholder  = ! empty( $image['isPlaceholder'] );
+				$alt             = '' !== $image['alt'] ? $image['alt'] : get_post_meta( $image_id, '_wp_attachment_image_alt', true );
+				$alt             = is_string( $alt ) ? $alt : '';
+
+				if ( $image_id > 0 ) {
+					$img_url = wp_get_attachment_image_url( $image_id, 'large' );
+				} elseif ( '' !== $image_url ) {
+					$img_url = esc_url( $image_url );
+				} else {
+					$img_url = '';
+				}
 				?>
 				<div class="nextora-arc-gallery__item" style="<?php echo esc_attr( $item_style ); ?>">
 					<?php if ( is_string( $img_url ) && '' !== $img_url ) : ?>
 						<div
-							class="nextora-arc-gallery__media"
-							role="img"
-							aria-label="<?php echo esc_attr( $alt ); ?>"
+							class="<?php echo esc_attr(
+								$is_placeholder
+									? 'nextora-arc-gallery__media nextora-arc-gallery__media--placeholder'
+									: 'nextora-arc-gallery__media',
+							); ?>"
+							<?php if ( $is_placeholder ) : ?>
+								aria-hidden="true"
+							<?php else : ?>
+								role="img"
+								aria-label="<?php echo esc_attr( $alt ); ?>"
+							<?php endif; ?>
 							data-nextora-arc-media-url="<?php echo esc_url( $img_url ); ?>"
 							style="background-image:url(<?php echo esc_url( $img_url ); ?>);"
 						></div>

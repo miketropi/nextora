@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Server-side render: nextora/header.
  *
@@ -23,7 +24,8 @@ if ( ! function_exists( 'nextora_header_block_sanitize_border_color' ) ) {
 	 *
 	 * @param string $value Raw attribute.
 	 */
-	function nextora_header_block_sanitize_border_color( string $value ): string {
+	function nextora_header_block_sanitize_border_color( string $value ): string
+	{
 		$value = trim( $value );
 		if ( '' === $value ) {
 			return '';
@@ -52,9 +54,11 @@ if ( ! function_exists( 'nextora_header_block_sanitize_border_color' ) ) {
 		}
 
 		// rgb()/rgba() and hsl()/hsla() — comma or space + slash; reject obvious injection.
-		if ( strlen( $value ) <= 140
+		if (
+			strlen( $value ) <= 140
 			&& ! preg_match( '/[;<>{}]|url\s*\(|expression\s*\(/i', $value )
-			&& preg_match( '/^(?:rgb|hsl)a?\([^)]+\)$/i', $value ) ) {
+			&& preg_match( '/^(?:rgb|hsl)a?\([^)]+\)$/i', $value )
+		) {
 			$normalized = preg_replace( '/\s+/', ' ', $value );
 
 			return is_string( $normalized ) ? $normalized : '';
@@ -72,7 +76,8 @@ if ( ! function_exists( 'nextora_header_block_append_border_color_to_wrapper' ) 
 	 * @param string $wrapper_attributes Output from get_block_wrapper_attributes().
 	 * @param string $san_border         Sanitized color value.
 	 */
-	function nextora_header_block_append_border_color_to_wrapper( string $wrapper_attributes, string $san_border ): string {
+	function nextora_header_block_append_border_color_to_wrapper( string $wrapper_attributes, string $san_border ): string
+	{
 		if ( '' === $san_border ) {
 			return $wrapper_attributes;
 		}
@@ -101,7 +106,8 @@ if ( ! function_exists( 'nextora_header_block_sanitize_inner_max_width' ) ) {
 	 *
 	 * @param string $value Raw attribute.
 	 */
-	function nextora_header_block_sanitize_inner_max_width( string $value ): string {
+	function nextora_header_block_sanitize_inner_max_width( string $value ): string
+	{
 		$value = trim( $value );
 		if ( '' === $value || strlen( $value ) > 120 ) {
 			return '';
@@ -123,16 +129,42 @@ if ( ! function_exists( 'nextora_header_block_sanitize_inner_max_width' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_header_block_logo_img_inline_style' ) ) {
+	/**
+	 * Inline max-width for logo images (editor SSR preview + front end).
+	 *
+	 * @param int $max_width Max display width in pixels.
+	 */
+	function nextora_header_block_logo_img_inline_style( int $max_width ): string
+	{
+		if ( $max_width < 1 ) {
+			return 'width:auto;height:auto;';
+		}
+
+		return sprintf( 'max-width:min(100%%, %dpx);width:auto;height:auto;', $max_width );
+	}
+}
+
 if ( ! function_exists( 'nextora_header_block_render_logo_image' ) ) {
 	/**
 	 * Logo `<img>` from a block-uploaded media attachment.
 	 *
-	 * @param int $attachment_id Attachment post ID.
-	 * @param int $max_width     Max display width in pixels.
+	 * @param int    $attachment_id  Attachment post ID.
+	 * @param string $modifier_class Optional BEM modifier class(es) on the `<img>`.
+	 * @param int    $max_width      Max display width in pixels.
 	 */
-	function nextora_header_block_render_logo_image( int $attachment_id, int $max_width ): string {
+	function nextora_header_block_render_logo_image(
+		int $attachment_id,
+		string $modifier_class = '',
+		int $max_width = 0,
+	): string {
 		if ( $attachment_id <= 0 || ! wp_attachment_is_image( $attachment_id ) ) {
 			return '';
+		}
+
+		$class = 'nextora-header-block__logo-img';
+		if ( '' !== $modifier_class ) {
+			$class .= ' ' . $modifier_class;
 		}
 
 		$img = wp_get_attachment_image(
@@ -140,8 +172,8 @@ if ( ! function_exists( 'nextora_header_block_render_logo_image' ) ) {
 			'full',
 			false,
 			array(
-				'class'    => 'nextora-header-block__logo-img',
-				'style'    => sprintf( 'max-width:%dpx;width:auto;height:auto;', $max_width ),
+				'class'    => $class,
+				'style'    => nextora_header_block_logo_img_inline_style( $max_width ),
 				'loading'  => 'eager',
 				'decoding' => 'async',
 			),
@@ -157,15 +189,23 @@ if ( ! function_exists( 'nextora_header_block_get_block_logo_attachment_id' ) ) 
 	 *
 	 * Prefer `logoImageId`; fall back to resolving `logoImageUrl` when the ID was not persisted.
 	 *
-	 * @param array<string, mixed> $atts Block attributes.
+	 * @param array<string, mixed> $atts    Block attributes.
+	 * @param string               $variant `default` or `mobile`.
 	 */
-	function nextora_header_block_get_block_logo_attachment_id( array $atts ): int {
-		$id = isset( $atts['logoImageId'] ) ? (int) $atts['logoImageId'] : 0;
+	function nextora_header_block_get_block_logo_attachment_id( array $atts, string $variant = 'default' ): int
+	{
+		if ( 'mobile' === $variant ) {
+			$id  = isset( $atts['logoImageIdMobile'] ) ? (int) $atts['logoImageIdMobile'] : 0;
+			$url = isset( $atts['logoImageUrlMobile'] ) && is_string( $atts['logoImageUrlMobile'] ) ? trim( $atts['logoImageUrlMobile'] ) : '';
+		} else {
+			$id  = isset( $atts['logoImageId'] ) ? (int) $atts['logoImageId'] : 0;
+			$url = isset( $atts['logoImageUrl'] ) && is_string( $atts['logoImageUrl'] ) ? trim( $atts['logoImageUrl'] ) : '';
+		}
+
 		if ( $id > 0 && wp_attachment_is_image( $id ) ) {
 			return $id;
 		}
 
-		$url = isset( $atts['logoImageUrl'] ) && is_string( $atts['logoImageUrl'] ) ? trim( $atts['logoImageUrl'] ) : '';
 		if ( '' === $url ) {
 			return 0;
 		}
@@ -175,13 +215,76 @@ if ( ! function_exists( 'nextora_header_block_get_block_logo_attachment_id' ) ) 
 	}
 }
 
+if ( ! function_exists( 'nextora_header_block_get_block_logo_image_url' ) ) {
+	/**
+	 * Raw logo image URL from block attributes (when attachment ID is unavailable).
+	 *
+	 * @param array<string, mixed> $atts    Block attributes.
+	 * @param string               $variant `default` or `mobile`.
+	 */
+	function nextora_header_block_get_block_logo_image_url( array $atts, string $variant = 'default' ): string
+	{
+		if ( 'mobile' === $variant ) {
+			$url = isset( $atts['logoImageUrlMobile'] ) && is_string( $atts['logoImageUrlMobile'] ) ? trim( $atts['logoImageUrlMobile'] ) : '';
+		} else {
+			$url = isset( $atts['logoImageUrl'] ) && is_string( $atts['logoImageUrl'] ) ? trim( $atts['logoImageUrl'] ) : '';
+		}
+
+		return $url;
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_render_logo_image_markup' ) ) {
+	/**
+	 * Render logo `<img>` from attachment ID or raw URL.
+	 *
+	 * @param int    $attachment_id  Attachment post ID.
+	 * @param string $image_url      Fallback image URL.
+	 * @param string $alt            Accessible label.
+	 * @param string $modifier_class Optional BEM modifier class(es) on the `<img>`.
+	 * @param int    $max_width      Max display width in pixels.
+	 */
+	function nextora_header_block_render_logo_image_markup(
+		int $attachment_id,
+		string $image_url,
+		string $alt,
+		string $modifier_class = '',
+		int $max_width = 0,
+	): string {
+		if ( $attachment_id > 0 ) {
+			$markup = nextora_header_block_render_logo_image( $attachment_id, $modifier_class, $max_width );
+			if ( '' !== $markup ) {
+				return $markup;
+			}
+		}
+
+		if ( '' === $image_url ) {
+			return '';
+		}
+
+		$class = 'nextora-header-block__logo-img';
+		if ( '' !== $modifier_class ) {
+			$class .= ' ' . $modifier_class;
+		}
+
+		return sprintf(
+			'<img class="%1$s" src="%2$s" alt="%3$s" style="%4$s" loading="eager" decoding="async" />',
+			esc_attr( $class ),
+			esc_url( $image_url ),
+			esc_attr( $alt ),
+			esc_attr( nextora_header_block_logo_img_inline_style( $max_width ) ),
+		);
+	}
+}
+
 if ( ! function_exists( 'nextora_header_block_render_simple_search_form' ) ) {
 	/**
 	 * HTML5 search markup for header “simple” mode: underline field plus icon-only submit.
 	 *
 	 * The submit is painted on the logical start (overlaid). DOM order puts the input first so tab order is field → button.
 	 */
-	function nextora_header_block_render_simple_search_form(): void {
+	function nextora_header_block_render_simple_search_form(): void
+	{
 		$form_action  = home_url( '/' );
 		$placeholder = apply_filters( 'nextora_header_simple_search_placeholder', __( 'Search …', 'nextora' ) );
 		if ( ! is_string( $placeholder ) ) {
@@ -193,7 +296,7 @@ if ( ! function_exists( 'nextora_header_block_render_simple_search_form' ) ) {
 		if ( ! is_string( $icon_svg ) || '' === trim( $icon_svg ) ) {
 			$icon_svg = '<svg class="nextora-header-block__search-submit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" /><path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>';
 		}
-		?>
+?>
 		<form role="search" method="get" class="search-form" action="<?php echo esc_url( $form_action ); ?>">
 			<div class="nextora-header-block__search-simple-field">
 				<label>
@@ -204,8 +307,7 @@ if ( ! function_exists( 'nextora_header_block_render_simple_search_form' ) ) {
 						name="s"
 						value="<?php echo esc_attr( $search_query ); ?>"
 						placeholder="<?php echo esc_attr( $placeholder ); ?>"
-						autocomplete="off"
-					/>
+						autocomplete="off" />
 				</label>
 				<button type="submit" class="search-submit">
 					<span class="screen-reader-text"><?php echo esc_html_x( 'Search', 'submit button', 'nextora' ); ?></span>
@@ -216,7 +318,275 @@ if ( ! function_exists( 'nextora_header_block_render_simple_search_form' ) ) {
 				</button>
 			</div>
 		</form>
-		<?php
+	<?php
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_get_follow_us_social_icon_svg' ) ) {
+	/**
+	 * Monochrome social icon SVG for the Follow Us panel.
+	 *
+	 * @param string $network Network slug.
+	 */
+	function nextora_header_block_get_follow_us_social_icon_svg( string $network ): string
+	{
+		$icons = array(
+			'instagram' => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>',
+			'facebook'  => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+			'pinterest' => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641 0 12.017 0z"/></svg>',
+			'youtube'   => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>',
+			'tiktok'    => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>',
+			'x'         => '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+		);
+
+		$network = sanitize_key( $network );
+
+		return isset( $icons[$network] ) ? $icons[$network] : '';
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_get_follow_us_social_label' ) ) {
+	/**
+	 * Accessible label for a social network link.
+	 *
+	 * @param string $network Network slug.
+	 */
+	function nextora_header_block_get_follow_us_social_label( string $network ): string
+	{
+		$labels = array(
+			'instagram' => __( 'Instagram', 'nextora' ),
+			'facebook'  => __( 'Facebook', 'nextora' ),
+			'pinterest' => __( 'Pinterest', 'nextora' ),
+			'youtube'   => __( 'YouTube', 'nextora' ),
+			'tiktok'    => __( 'TikTok', 'nextora' ),
+			'x'         => __( 'X', 'nextora' ),
+		);
+
+		$network = sanitize_key( $network );
+
+		return isset( $labels[$network] ) ? $labels[$network] : ucfirst( $network );
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_normalize_follow_us_socials' ) ) {
+	/**
+	 * Normalize saved Follow Us social rows.
+	 *
+	 * @param array<string, mixed> $atts Block attributes.
+	 *
+	 * @return list<array{network: string, url: string, enabled: bool}>
+	 */
+	function nextora_header_block_normalize_follow_us_socials( array $atts ): array
+	{
+		$defaults = array(
+			array(
+				'network' => 'instagram',
+				'url'     => '',
+				'enabled' => true,
+			),
+			array(
+				'network' => 'facebook',
+				'url'     => '',
+				'enabled' => true,
+			),
+			array(
+				'network' => 'pinterest',
+				'url'     => '',
+				'enabled' => true,
+			),
+			array(
+				'network' => 'youtube',
+				'url'     => '',
+				'enabled' => true,
+			),
+			array(
+				'network' => 'tiktok',
+				'url'     => '',
+				'enabled' => true,
+			),
+			array(
+				'network' => 'x',
+				'url'     => '',
+				'enabled' => true,
+			),
+		);
+
+		$raw = isset( $atts['followUsSocials'] ) && is_array( $atts['followUsSocials'] ) ? $atts['followUsSocials'] : $defaults;
+		$raw = (array) apply_filters( 'nextora_header_block_follow_us_socials', $raw, $atts );
+
+		$by_network = array();
+		foreach ( $raw as $row ) {
+			if ( ! is_array( $row ) ) {
+				continue;
+			}
+			$network = isset( $row['network'] ) && is_string( $row['network'] ) ? sanitize_key( $row['network'] ) : '';
+			if ( '' === $network ) {
+				continue;
+			}
+			$url = isset( $row['url'] ) && is_string( $row['url'] ) ? trim( $row['url'] ) : '';
+			$by_network[$network] = array(
+				'network' => $network,
+				'url'     => $url,
+				'enabled' => ! isset( $row['enabled'] ) || (bool) $row['enabled'],
+			);
+		}
+
+		$out = array();
+		foreach ( $defaults as $default_row ) {
+			$network = $default_row['network'];
+			$out[]   = $by_network[$network] ?? $default_row;
+		}
+
+		return $out;
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
+	/**
+	 * Follow Us trigger + dropdown panel markup.
+	 *
+	 * @param array<string, mixed> $atts Block attributes.
+	 * @param string               $uid  Unique instance id.
+	 */
+	function nextora_header_block_render_follow_us( array $atts, string $uid ): string
+	{
+		do_action( 'nextora_header_block_before_follow_us', $atts );
+
+		$panel_id = sanitize_html_class( $uid ) . '-follow-us-panel';
+		$label    = isset( $atts['followUsLabel'] ) && is_string( $atts['followUsLabel'] ) ? trim( $atts['followUsLabel'] ) : '';
+		$label    = '' !== $label ? $label : __( 'Follow Us', 'nextora' );
+
+		$support = isset( $atts['followUsSupportText'] ) && is_string( $atts['followUsSupportText'] ) ? trim( $atts['followUsSupportText'] ) : '';
+		$support = '' !== $support ? $support : __( "We're here to help! Reach out anytime.", 'nextora' );
+
+		$email = isset( $atts['followUsEmail'] ) && is_string( $atts['followUsEmail'] ) ? sanitize_email( trim( $atts['followUsEmail'] ) ) : '';
+		$phone = isset( $atts['followUsPhone'] ) && is_string( $atts['followUsPhone'] ) ? trim( $atts['followUsPhone'] ) : '';
+
+		$cta_text = isset( $atts['followUsContactButtonText'] ) && is_string( $atts['followUsContactButtonText'] ) ? trim( $atts['followUsContactButtonText'] ) : '';
+		$cta_text = '' !== $cta_text ? $cta_text : __( 'Contact Us', 'nextora' );
+		$cta_url  = isset( $atts['followUsContactButtonUrl'] ) && is_string( $atts['followUsContactButtonUrl'] ) ? trim( $atts['followUsContactButtonUrl'] ) : '';
+		$cta_url  = '' !== $cta_url ? esc_url( $cta_url ) : '#';
+		$cta_new  = ! empty( $atts['followUsContactButtonTarget'] );
+
+		$socials = nextora_header_block_normalize_follow_us_socials( $atts );
+		$links   = array();
+		foreach ( $socials as $social ) {
+			if ( ! $social['enabled'] || '' === $social['url'] ) {
+				continue;
+			}
+			$links[] = $social;
+		}
+
+		$chevron_svg = '<svg class="nextora-header-block__follow-us-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+		ob_start();
+	?>
+		<div class="nextora-header-block__follow-us" data-nextora-header-follow-us>
+			<button
+				type="button"
+				class="nextora-header-block__follow-us-toggle"
+				data-nextora-header-follow-us-toggle
+				aria-expanded="false"
+				aria-controls="<?php echo esc_attr( $panel_id ); ?>">
+				<span class="nextora-header-block__follow-us-toggle-text"><?php echo esc_html( $label ); ?></span>
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Theme SVG.
+				echo $chevron_svg;
+				?>
+			</button>
+			<div
+				class="nextora-header-block__follow-us-scrim"
+				data-nextora-header-follow-us-scrim
+				hidden
+				tabindex="-1"
+				aria-hidden="true"></div>
+			<div
+				id="<?php echo esc_attr( $panel_id ); ?>"
+				class="nextora-header-block__follow-us-panel"
+				data-nextora-header-follow-us-panel
+				hidden>
+				<?php if ( array() !== $links ) : ?>
+					<ul class="nextora-header-block__follow-us-socials" role="list">
+						<?php foreach ( $links as $social ) : ?>
+							<?php
+							$icon = nextora_header_block_get_follow_us_social_icon_svg( $social['network'] );
+							if ( '' === $icon ) {
+								continue;
+							}
+							$social_label = nextora_header_block_get_follow_us_social_label( $social['network'] );
+							?>
+							<li>
+								<a
+									class="nextora-header-block__follow-us-social-link"
+									href="<?php echo esc_url( $social['url'] ); ?>"
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="<?php echo esc_attr( $social_label ); ?>">
+									<?php
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Theme SVG.
+									echo $icon;
+									?>
+								</a>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
+
+				<?php if ( '' !== $support ) : ?>
+					<p class="nextora-header-block__follow-us-support"><?php echo esc_html( $support ); ?></p>
+				<?php endif; ?>
+
+				<?php if ( '' !== $email || '' !== $phone ) : ?>
+					<div class="nextora-header-block__follow-us-contacts">
+						<?php if ( '' !== $email ) : ?>
+							<a class="nextora-header-block__follow-us-contact" href="<?php echo esc_url( 'mailto:' . $email ); ?>">
+								<span class="nextora-header-block__follow-us-contact-icon" aria-hidden="true">
+									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail-icon lucide-mail">
+										<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
+										<rect x="2" y="4" width="20" height="16" rx="2" />
+									</svg></span>
+								<span class="nextora-header-block__follow-us-contact-text"><?php echo esc_html( $email ); ?></span>
+								<span class="nextora-header-block__follow-us-contact-chevron" aria-hidden="true">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+									</svg>
+								</span>
+							</a>
+						<?php endif; ?>
+						<?php if ( '' !== $phone ) : ?>
+							<?php
+							$phone_href = preg_replace( '/[^0-9+]/', '', $phone );
+							$phone_href = is_string( $phone_href ) ? $phone_href : '';
+							?>
+							<a class="nextora-header-block__follow-us-contact" href="<?php echo esc_url( 'tel:' . $phone_href ); ?>">
+								<span class="nextora-header-block__follow-us-contact-icon" aria-hidden="true">
+									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone-icon lucide-phone">
+										<path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
+									</svg> </span>
+								<span class="nextora-header-block__follow-us-contact-text"><?php echo esc_html( $phone ); ?></span>
+								<span class="nextora-header-block__follow-us-contact-chevron" aria-hidden="true">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+									</svg>
+								</span>
+							</a>
+						<?php endif; ?>
+					</div>
+				<?php endif; ?>
+
+				<a
+					class="nextora-header-block__follow-us-cta"
+					href="<?php echo esc_url( $cta_url ); ?>"
+					<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>>
+					<?php echo esc_html( $cta_text ); ?>
+				</a>
+			</div>
+		</div>
+	<?php
+
+		do_action( 'nextora_header_block_after_follow_us', $atts );
+
+		return (string) ob_get_clean();
 	}
 }
 
@@ -241,40 +611,72 @@ $render_logo = static function ( array $atts ): string {
 		$logo_w = 150;
 	}
 
+	$logo_w_mobile = isset( $atts['logoWidthMobile'] ) ? (int) $atts['logoWidthMobile'] : 0;
+	if ( $logo_w_mobile < 1 ) {
+		$logo_w_mobile = $logo_w;
+	}
+
 	$logo_type = isset( $atts['logoType'] ) && 'text' === $atts['logoType'] ? 'text' : 'image';
 
-	$block_logo_id  = 'image' === $logo_type ? nextora_header_block_get_block_logo_attachment_id( $atts ) : 0;
-	$block_logo_url = isset( $atts['logoImageUrl'] ) && is_string( $atts['logoImageUrl'] ) ? trim( $atts['logoImageUrl'] ) : '';
-	$logo_text      = isset( $atts['logoText'] ) && is_string( $atts['logoText'] ) ? trim( $atts['logoText'] ) : '';
-	$logo_label     = '' !== $logo_text ? $logo_text : get_bloginfo( 'name' );
-	$logo_img_style = sprintf( 'max-width:%dpx;width:auto;height:auto;', $logo_w );
+	$block_logo_id        = 'image' === $logo_type ? nextora_header_block_get_block_logo_attachment_id( $atts ) : 0;
+	$block_logo_url       = 'image' === $logo_type ? nextora_header_block_get_block_logo_image_url( $atts ) : '';
+	$block_logo_mobile_id  = 'image' === $logo_type ? nextora_header_block_get_block_logo_attachment_id( $atts, 'mobile' ) : 0;
+	$block_logo_mobile_url = 'image' === $logo_type ? nextora_header_block_get_block_logo_image_url( $atts, 'mobile' ) : '';
+	$has_desktop_logo      = $block_logo_id > 0 || '' !== $block_logo_url;
+	$has_mobile_logo       = $block_logo_mobile_id > 0 || '' !== $block_logo_mobile_url;
+	$use_dual_logos        = $has_desktop_logo && $has_mobile_logo;
+	$logo_text            = isset( $atts['logoText'] ) && is_string( $atts['logoText'] ) ? trim( $atts['logoText'] ) : '';
+	$logo_label           = '' !== $logo_text ? $logo_text : get_bloginfo( 'name' );
+	$logo_style           = sprintf(
+		'--nextora-header-logo-max-width:%1$dpx;--nextora-header-logo-max-width-mobile:%2$dpx;',
+		$logo_w,
+		$logo_w_mobile,
+	);
 
 	ob_start();
 	?>
-	<div class="nextora-header-block__logo">
+	<div class="nextora-header-block__logo" style="<?php echo esc_attr( $logo_style ); ?>">
 		<a class="nextora-header-block__logo-link" href="<?php echo esc_url( $logo_href ); ?>" rel="home">
 			<?php if ( 'text' === $logo_type ) : ?>
 				<span class="nextora-header-block__logo-text"><?php echo esc_html( $logo_label ); ?></span>
-			<?php elseif ( $block_logo_id > 0 ) : ?>
+			<?php elseif ( $has_desktop_logo || $has_mobile_logo ) : ?>
 				<?php
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in wp_get_attachment_image().
-				echo nextora_header_block_render_logo_image( $block_logo_id, $logo_w );
+				if ( $use_dual_logos ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in helper.
+					echo nextora_header_block_render_logo_image_markup(
+						$block_logo_id,
+						$block_logo_url,
+						$logo_label,
+						'nextora-header-block__logo-img--desktop',
+						$logo_w,
+					);
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in helper.
+					echo nextora_header_block_render_logo_image_markup(
+						$block_logo_mobile_id,
+						$block_logo_mobile_url,
+						$logo_label,
+						'nextora-header-block__logo-img--mobile',
+						$logo_w_mobile,
+					);
+				} else {
+					$single_logo_id  = $has_desktop_logo ? $block_logo_id : $block_logo_mobile_id;
+					$single_logo_url = $has_desktop_logo ? $block_logo_url : $block_logo_mobile_url;
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in helper.
+					echo nextora_header_block_render_logo_image_markup(
+						$single_logo_id,
+						$single_logo_url,
+						$logo_label,
+						'',
+						$logo_w,
+					);
+				}
 				?>
-			<?php elseif ( '' !== $block_logo_url ) : ?>
-				<img
-					class="nextora-header-block__logo-img"
-					src="<?php echo esc_url( $block_logo_url ); ?>"
-					alt="<?php echo esc_attr( $logo_label ); ?>"
-					style="<?php echo esc_attr( $logo_img_style ); ?>"
-					loading="eager"
-					decoding="async"
-				/>
 			<?php else : ?>
 				<span class="nextora-header-block__logo-text"><?php echo esc_html( $logo_label ); ?></span>
 			<?php endif; ?>
 		</a>
 	</div>
-	<?php
+<?php
 
 	do_action( 'nextora_header_block_after_logo', $atts );
 
@@ -389,18 +791,17 @@ $render_nav = static function ( array $atts, string $menu_dom_id, string $uid ):
 	$nav_classes = array_filter( array_map( 'trim', $nav_classes ) );
 
 	ob_start();
-	?>
+?>
 	<nav
 		class="<?php echo esc_attr( implode( ' ', $nav_classes ) ); ?>"
 		aria-label="<?php echo esc_attr( $aria ); ?>"
-		data-nextora-header-block-nav="<?php echo esc_attr( $uid ); ?>"
-	>
+		data-nextora-header-block-nav="<?php echo esc_attr( $uid ); ?>">
 		<?php
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- From wp_nav_menu().
 		echo $nav_html;
 		?>
 	</nav>
-	<?php
+<?php
 
 	do_action( 'nextora_header_block_after_nav', $atts );
 
@@ -414,10 +815,12 @@ $render_nav = static function ( array $atts, string $menu_dom_id, string $uid ):
  * @param string               $block_uid Unique id prefix for this header instance (drawer DOM id).
  */
 $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on ): string {
-	$show_search = ! isset( $atts['showSearch'] ) || (bool) $atts['showSearch'];
-	$show_cart   = ( ! isset( $atts['showMiniCart'] ) || (bool) $atts['showMiniCart'] ) && $woo_on();
-	$show_acct   = ( ! isset( $atts['showMyAccount'] ) || (bool) $atts['showMyAccount'] ) && $woo_on();
+	$show_follow   = ! empty( $atts['showFollowUs'] );
+	$show_search   = ! isset( $atts['showSearch'] ) || (bool) $atts['showSearch'];
+	$show_cart     = ( ! isset( $atts['showMiniCart'] ) || (bool) $atts['showMiniCart'] ) && $woo_on();
+	$show_acct     = ( ! isset( $atts['showMyAccount'] ) || (bool) $atts['showMyAccount'] ) && $woo_on();
 
+	$hide_follow_m = isset( $atts['showFollowUsMobile'] ) && ! (bool) $atts['showFollowUsMobile'];
 	$hide_search_m = isset( $atts['showSearchMobile'] ) && ! (bool) $atts['showSearchMobile'];
 	$hide_cart_m   = isset( $atts['showCartMobile'] ) && ! (bool) $atts['showCartMobile'];
 	$hide_cta_m    = isset( $atts['showCtaButtonMobile'] ) && ! (bool) $atts['showCtaButtonMobile'];
@@ -426,8 +829,15 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 	ob_start();
 
 	do_action( 'nextora_header_block_utilities_start', $atts );
-	?>
-	<div class="nextora-header-block__utilities<?php echo $hide_search_m ? ' nextora-header-block__utilities--hide-search-mobile' : ''; ?><?php echo $hide_cart_m ? ' nextora-header-block__utilities--hide-cart-mobile' : ''; ?><?php echo $hide_cta_m ? ' nextora-header-block__utilities--hide-cta-mobile' : ''; ?>">
+?>
+	<div class="nextora-header-block__utilities<?php echo $hide_follow_m ? ' nextora-header-block__utilities--hide-follow-us-mobile' : ''; ?><?php echo $hide_search_m ? ' nextora-header-block__utilities--hide-search-mobile' : ''; ?><?php echo $hide_cart_m ? ' nextora-header-block__utilities--hide-cart-mobile' : ''; ?><?php echo $hide_cta_m ? ' nextora-header-block__utilities--hide-cta-mobile' : ''; ?>">
+		<?php if ( $show_follow && function_exists( 'nextora_header_block_render_follow_us' ) ) : ?>
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in helper.
+			echo nextora_header_block_render_follow_us( $atts, $block_uid );
+			?>
+		<?php endif; ?>
+
 		<?php if ( $show_search && apply_filters( 'nextora_show_header_search_modal', true ) ) : ?>
 			<?php if ( isset( $atts['searchMode'] ) && 'simple' === $atts['searchMode'] ) : ?>
 				<div class="nextora-header-block__search nextora-header-block__search--simple">
@@ -479,17 +889,20 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 				$cart_aria = function_exists( 'nextora_header_block_mini_cart_aria_label' )
 					? nextora_header_block_mini_cart_aria_label( $cart_count, $atts )
 					: __( 'Open shopping cart', 'nextora' );
-				?>
+		?>
 				<div class="nextora-header-block__cart">
 					<button
 						type="button"
 						class="nextora-header-block__cart-link nextora-header-block__cart-trigger"
 						data-nextora-modal-open="<?php echo esc_attr( $drawer_id ); ?>"
 						aria-haspopup="dialog"
-						aria-label="<?php echo esc_attr( $cart_aria ); ?>"
-					>
+						aria-label="<?php echo esc_attr( $cart_aria ); ?>">
 						<span class="nextora-header-block__cart-icon" aria-hidden="true">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 7h15l-1.5 9h-12L6 7Zm0 0L5 3H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.35" fill="currentColor"/><circle cx="18" cy="20" r="1.35" fill="currentColor"/></svg>
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M6 7h15l-1.5 9h-12L6 7Zm0 0L5 3H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+								<circle cx="9" cy="20" r="1.35" fill="currentColor" />
+								<circle cx="18" cy="20" r="1.35" fill="currentColor" />
+							</svg>
 						</span>
 						<?php
 						echo function_exists( 'nextora_header_block_mini_cart_badge_html' )
@@ -505,8 +918,7 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 					hidden
 					data-nextora-modal
 					data-nextora-header-mini-cart-portal
-					aria-hidden="true"
-				>
+					aria-hidden="true">
 					<div class="nextora-modal__scrim" data-nextora-modal-dismiss tabindex="-1"></div>
 					<div
 						class="nextora-modal__surface"
@@ -514,8 +926,7 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 						role="dialog"
 						aria-modal="true"
 						aria-labelledby="<?php echo esc_attr( $drawer_title_id ); ?>"
-						tabindex="-1"
-					>
+						tabindex="-1">
 						<header class="nextora-modal__header">
 							<h2 id="<?php echo esc_attr( $drawer_title_id ); ?>" class="nextora-modal__title">
 								<?php echo esc_html( $cart_title ); ?>
@@ -524,10 +935,11 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 								type="button"
 								class="nextora-modal__close"
 								data-nextora-modal-dismiss
-								aria-label="<?php esc_attr_e( 'Close cart', 'nextora' ); ?>"
-							>
+								aria-label="<?php esc_attr_e( 'Close cart', 'nextora' ); ?>">
 								<span class="nextora-modal__close-icon" aria-hidden="true">
-									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+										<path d="M18 6 6 18M6 6l12 12" />
+									</svg>
 								</span>
 							</button>
 						</header>
@@ -541,7 +953,7 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 						</div>
 					</div>
 				</div>
-				<?php
+		<?php
 				do_action( 'nextora_header_block_after_cart', $atts );
 			endif;
 		endif;
@@ -555,7 +967,10 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 			<div class="nextora-header-block__account">
 				<a class="<?php echo esc_attr( $acct_class ); ?>" href="<?php echo esc_url( wc_get_account_endpoint_url( 'dashboard' ) ); ?>" aria-label="<?php esc_attr_e( 'My account', 'nextora' ); ?>">
 					<span class="nextora-header-block__account-icon" aria-hidden="true">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.7"/></svg>
+						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+							<circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.7" />
+						</svg>
 					</span>
 					<?php if ( $show_acct_text ) : ?>
 						<span class="nextora-header-block__account-text">
@@ -575,24 +990,23 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 				$cta_new   = ! empty( $atts['ctaButtonTarget'] );
 				$cta_style = isset( $atts['ctaButtonStyle'] ) && 'outline' === $atts['ctaButtonStyle'] ? 'outline' : 'solid';
 				$cta_class = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style );
-				?>
+		?>
 				<div class="nextora-header-block__cta-wrap">
 					<a
 						class="<?php echo esc_attr( $cta_class ); ?>"
 						href="<?php echo esc_url( $cta_url ); ?>"
-						<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
-					>
+						<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>>
 						<?php echo esc_html( $cta_text ); ?>
 					</a>
 				</div>
-				<?php
+		<?php
 			endif;
 		endif;
 		?>
 
 		<?php do_action( 'nextora_header_block_utilities_end', $atts ); ?>
 	</div>
-	<?php
+<?php
 	return (string) ob_get_clean();
 };
 
@@ -663,8 +1077,7 @@ ob_start();
 	data-nextora-nav-close-label="<?php echo esc_attr( $close_label ); ?>"
 	aria-expanded="false"
 	aria-controls="<?php echo esc_attr( $portal_panel ); ?>"
-	aria-label="<?php echo esc_attr( $open_label ); ?>"
->
+	aria-label="<?php echo esc_attr( $open_label ); ?>">
 	<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
 	<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
 	<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
@@ -694,38 +1107,13 @@ if ( '' !== $san_inner_max ) {
 
 ob_start();
 if ( 'two-row' === $header_layout ) :
-	?>
-		<div class="nextora-header-block__inner"<?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr().?>>
-			<div class="nextora-header-block__row nextora-header-block__row--top">
-				<?php
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Logo region markup.
-				echo $logo_markup;
-				?>
-				<div class="nextora-header-block__actions">
-					<?php
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Utilities column markup.
-					echo $utils_markup;
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Toggle control markup.
-					echo $menu_toggle_markup;
-					?>
-				</div>
-			</div>
-			<div class="nextora-header-block__row nextora-header-block__row--nav">
-				<?php
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Nav + clone source wrapper.
-				echo $nav_source_markup;
-				?>
-			</div>
-		</div>
-	<?php
-else :
-	?>
-		<div class="nextora-header-block__inner"<?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr().?>>
+?>
+	<div class="nextora-header-block__inner" <?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr().
+												?>>
+		<div class="nextora-header-block__row nextora-header-block__row--top">
 			<?php
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Logo region markup.
 			echo $logo_markup;
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Nav + clone source wrapper.
-			echo $nav_source_markup;
 			?>
 			<div class="nextora-header-block__actions">
 				<?php
@@ -736,11 +1124,39 @@ else :
 				?>
 			</div>
 		</div>
-	<?php
+		<div class="nextora-header-block__row nextora-header-block__row--nav">
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Nav + clone source wrapper.
+			echo $nav_source_markup;
+			?>
+		</div>
+	</div>
+<?php
+else :
+?>
+	<div class="nextora-header-block__inner" <?php echo $inner_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_attr().
+												?>>
+		<?php
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Logo region markup.
+		echo $logo_markup;
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Nav + clone source wrapper.
+		echo $nav_source_markup;
+		?>
+		<div class="nextora-header-block__actions">
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Utilities column markup.
+			echo $utils_markup;
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Toggle control markup.
+			echo $menu_toggle_markup;
+			?>
+		</div>
+	</div>
+<?php
 endif;
 $header_inner_markup = (string) ob_get_clean();
 ?>
-<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
+<div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?>>
 	<?php
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inner layout rows.
 	echo $header_inner_markup;

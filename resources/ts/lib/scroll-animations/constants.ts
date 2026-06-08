@@ -7,6 +7,9 @@ export const DEFAULT_SCROLL_START = "top 85%";
 /** Reveal animations fire once and stay visible (no reverse on scroll up). */
 export const SCROLL_REVEAL_ONCE = true;
 
+/** ScrollTrigger id for class-driven reveal tweens (excludes parallax). */
+export const SCROLL_REVEAL_TRIGGER_ID = "nextora-scroll-reveal";
+
 export const DEFAULT_DURATION = 0.8;
 export const DEFAULT_EASE = "power3.out";
 export const DEFAULT_DISTANCE = 40;
@@ -24,6 +27,8 @@ export const ANIMATION_CLASS_NAMES = [
 	"animation-fade-in-right",
 	"animation-zoom-in",
 	"animation-zoom-out",
+	"animation-fade-list-grid",
+	"animation-inner-fade",
 ] as const;
 
 export type AnimationClassName = (typeof ANIMATION_CLASS_NAMES)[number];

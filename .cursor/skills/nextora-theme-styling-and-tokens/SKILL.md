@@ -28,6 +28,8 @@ disable-model-invocation: true
 ## Checklist
 
 - [ ] `theme.json` updated for user-facing preset changes.
-- [ ] `@theme` in `app.css` updated where utilities must match presets.
-- [ ] New module imported in correct **base / components / prose / overrides** section.
+- [ ] `@theme` in `app.css` updated where utilities must match presets (mirror all palette colors, font families, and critical spacing tokens).
+- [ ] New module imported in correct **base / components / prose / overrides** section in `app.css`.
+- [ ] `@source` globs extended if new markup directories are introduced (`parts/`, `templates/`, `blocks/`, `inc/`).
 - [ ] `npm run build:css` (or `npm run build`) executed.
+- [ ] Do not edit `assets/css/app.css` directly.

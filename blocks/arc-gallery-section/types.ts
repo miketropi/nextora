@@ -1,6 +1,8 @@
 export interface ArcGalleryImage {
 	id: number;
+	url: string;
 	alt: string;
+	isPlaceholder?: boolean;
 }
 
 export interface ArcGallerySectionAttributes {
@@ -13,8 +15,6 @@ export interface ArcGallerySectionAttributes {
 	arcRadius: number;
 	arcSpread: number;
 	arcDirection: string;
-	galleryHeight: number;
-	galleryOverflow: boolean;
 	eyebrowText: string;
 	headingText: string;
 	descriptionText: string;
@@ -34,9 +34,10 @@ export interface ArcGallerySectionAttributes {
 	backgroundColor: string;
 	textColor: string;
 	eyebrowColor: string;
+	descriptionColor: string;
 	primaryButtonBg: string;
 	primaryButtonColor: string;
-	paddingTop: number;
-	paddingBottom: number;
+	secondaryButtonColor: string;
 	enableScrollAnimation: boolean;
+	enableGalleryScrollAnimation: boolean;
 }

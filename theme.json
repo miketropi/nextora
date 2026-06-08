@@ -3,8 +3,20 @@
 	"version": 3,
 	"customTemplates": [
 		{
-			"name": "home-save-the-world",
-			"title": "Home — Save the World",
+			"name": "about-us",
+			"title": "About Us",
+			"postTypes": ["page", "post"]
+		},
+		{
+			"name": "page-full-width",
+			"title": "Page — Full Width",
+			"description": "A page with a full width layout",
+			"postTypes": ["page", "post"]
+		},
+		{
+			"name": "contact-us",
+			"title": "Contact Us",
+			"description": "A page with a contact us layout with a contact form and a google map",
 			"postTypes": ["page", "post"]
 		}
 	],
@@ -17,6 +29,11 @@
 		{
 			"name": "footer",
 			"title": "Footer",
+			"area": "footer"
+		},
+		{
+			"name": "footer-newsletter",
+			"title": "Footer Newsletter",
 			"area": "footer"
 		}
 	],
@@ -419,7 +436,8 @@
 				},
 				":hover": {
 					"color": {
-						"background": "var(--wp--preset--color--base)",
+						"background": "color-mix(in srgb, var(--wp--preset--color--base) 80%, var(--wp--preset--color--contrast) 20%)",
+	
 						"text": "var(--wp--preset--color--contrast)"
 					}
 				}

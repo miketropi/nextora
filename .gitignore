@@ -7,3 +7,4 @@ vendor/
 .php-cs-fixer.cache
 .opencode/qdrant-status.json
 nextora-v*.zip
+.env

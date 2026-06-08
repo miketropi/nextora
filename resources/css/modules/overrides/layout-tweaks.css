@@ -10,13 +10,6 @@
 	margin-block-end: 0;
 }
 
-/**
- * Static pages: block "content" width follows theme.json `layout.wideSize` (see `page.php` shell).
- * Re-maps --wp--style--global--content-size inside the shell so core constrained layouts match.
- */
-.nextora-singular--page .nextora-content-shell--wide-size {
-	--wp--style--global--content-size: var(--wp--style--global--wide-size, 1200px);
-}
 
 /**
  * Header container width

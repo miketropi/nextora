@@ -62,6 +62,7 @@ if ( ! function_exists( 'nextora_testimonial_carousel_normalize_item' ) ) {
 			'authorName'      => isset( $raw['authorName'] ) ? trim( (string) $raw['authorName'] ) : '',
 			'authorRole'      => isset( $raw['authorRole'] ) ? trim( (string) $raw['authorRole'] ) : '',
 			'authorPhotoId'   => isset( $raw['authorPhotoId'] ) ? (int) $raw['authorPhotoId'] : 0,
+			'authorPhotoUrl'  => isset( $raw['authorPhotoUrl'] ) ? trim( (string) $raw['authorPhotoUrl'] ) : '',
 			'authorPhotoAlt'  => isset( $raw['authorPhotoAlt'] ) ? trim( (string) $raw['authorPhotoAlt'] ) : '',
 			'showAuthorPhoto' => ! empty( $raw['showAuthorPhoto'] ),
 			'rating'          => $rating,
@@ -101,8 +102,9 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 
 		$name      = (string) $item['authorName'];
 		$role      = (string) $item['authorRole'];
-		$photo_id  = (int) $item['authorPhotoId'];
-		$show_photo = ! empty( $item['showAuthorPhoto'] ) && $photo_id > 0;
+		$photo_id   = (int) $item['authorPhotoId'];
+		$photo_url  = isset( $item['authorPhotoUrl'] ) ? trim( (string) $item['authorPhotoUrl'] ) : '';
+		$show_photo = ! empty( $item['showAuthorPhoto'] ) && ( $photo_id > 0 || '' !== $photo_url );
 		$rating    = (int) $item['rating'];
 
 		$slide_style = '';
@@ -121,25 +123,47 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 
 		if ( $show_photo ) {
 			$alt = (string) $item['authorPhotoAlt'];
-			if ( '' === $alt ) {
+			if ( '' === $alt && $photo_id > 0 ) {
 				$alt = (string) get_post_meta( $photo_id, '_wp_attachment_image_alt', true );
 			}
 			if ( '' === $alt && '' !== $name ) {
 				$alt = $name;
 			}
-			$img = wp_get_attachment_image(
-				$photo_id,
-				'thumbnail',
-				false,
-				array(
-					'class'    => 'nextora-testimonial-carousel__slide-author-photo',
-					'alt'      => $alt,
-					'loading'  => 'lazy',
-					'decoding' => 'async',
-				),
-			);
-			if ( is_string( $img ) && '' !== $img ) {
-				$out .= $img;
+			if ( '' === $alt ) {
+				$alt = __( 'Author photo', 'nextora' );
+			}
+
+			$photo_markup = '';
+			if ( $photo_id > 0 ) {
+				$img = wp_get_attachment_image(
+					$photo_id,
+					'thumbnail',
+					false,
+					array(
+						'class'    => 'nextora-testimonial-carousel__slide-author-photo',
+						'alt'      => $alt,
+						'loading'  => 'lazy',
+						'decoding' => 'async',
+					),
+				);
+				if ( is_string( $img ) && '' !== $img ) {
+					$photo_markup = $img;
+				}
+			}
+
+			if ( '' === $photo_markup && '' !== $photo_url ) {
+				$safe_url = esc_url( $photo_url );
+				if ( '' !== $safe_url ) {
+					$photo_markup = sprintf(
+						'<img class="nextora-testimonial-carousel__slide-author-photo" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+						$safe_url,
+						esc_attr( $alt ),
+					);
+				}
+			}
+
+			if ( '' !== $photo_markup ) {
+				$out .= $photo_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
 			}
 		}
 
@@ -193,6 +217,7 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_trust' ) ) {
 					continue;
 				}
 				$id  = isset( $avatar['id'] ) ? (int) $avatar['id'] : 0;
+				$url = isset( $avatar['url'] ) ? trim( (string) $avatar['url'] ) : '';
 				$alt = isset( $avatar['alt'] ) ? trim( (string) $avatar['alt'] ) : '';
 				if ( $id > 0 ) {
 					$img = wp_get_attachment_image(
@@ -208,6 +233,16 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_trust' ) ) {
 					);
 					if ( is_string( $img ) && '' !== $img ) {
 						$out .= $img;
+						++$index;
+					}
+				} elseif ( '' !== $url ) {
+					$safe_url = esc_url( $url );
+					if ( '' !== $safe_url ) {
+						$out .= sprintf(
+							'<img class="nextora-testimonial-carousel__avatar" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+							$safe_url,
+							esc_attr( '' !== $alt ? $alt : __( 'Trust avatar', 'nextora' ) ),
+						);
 						++$index;
 					}
 				} elseif ( 'initials' === $fallback && '' !== $alt ) {

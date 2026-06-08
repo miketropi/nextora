@@ -216,11 +216,11 @@
 	background: var(--wp--preset--color--secondary, #525252);
 }
 
-.nextora-testimonial-carousel__pagination {
+.nextora-testimonial-carousel__pagination.swiper-pagination {
 	display: flex;
 	justify-content: center;
 	gap: 0.375rem;
-	margin-top: 1.75rem;
+	margin-top: var(--wp--preset--spacing--40);
 	position: relative;
 }
 
@@ -302,32 +302,4 @@
 	.nextora-testimonial-carousel--ready .nextora-testimonial-carousel__swiper {
 		transition: none;
 	}
-}
-
-.is-style-soft-band.nextora-testimonial-carousel {
-	--nextora-testimonial-bg: color-mix(
-		in srgb,
-		var(--wp--preset--color--base, #fff) 92%,
-		var(--wp--preset--color--primary, #000) 8%
-	);
-}
-
-.is-style-contrast-band.nextora-testimonial-carousel {
-	--nextora-testimonial-bg: var(--wp--preset--color--contrast, #0a0a0a);
-	--nextora-testimonial-quote-color: var(--wp--preset--color--base, #fff);
-	--nextora-testimonial-label-color: color-mix(
-		in srgb,
-		var(--wp--preset--color--base, #fff) 72%,
-		transparent
-	);
-	--nextora-testimonial-author-color: color-mix(
-		in srgb,
-		var(--wp--preset--color--base, #fff) 65%,
-		transparent
-	);
-	--nextora-testimonial-trust-color: color-mix(
-		in srgb,
-		var(--wp--preset--color--base, #fff) 72%,
-		transparent
-	);
 }
