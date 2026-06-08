@@ -32,6 +32,11 @@
 			"area": "footer"
 		},
 		{
+			"name": "footer-4-columns",
+			"title": "Footer 4 Columns",
+			"area": "footer"
+		},
+		{
 			"name": "footer-newsletter",
 			"title": "Footer Newsletter",
 			"area": "footer"
