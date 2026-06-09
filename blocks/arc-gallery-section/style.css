@@ -222,9 +222,10 @@
 		color-mix(in srgb, var(--wp--preset--color--contrast, #0a0a0a) 8%, transparent);
 }
 
-.nextora-arc-gallery__btn--primary:hover {
+.nextora-arc-gallery__btn--primary:hover, .nextora-arc-gallery__btn--primary:focus{
 	color: var(--nextora-arc-btn-color, var(--wp--preset--color--base, #fff));
 	opacity: .8;
+	text-decoration: none;
 }
 
 .nextora-arc-gallery__btn--primary.is-outline {

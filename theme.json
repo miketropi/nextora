@@ -50,6 +50,11 @@
 			"area": "footer"
 		},
 		{
+			"name": "footer-4-columns",
+			"title": "Footer 4 Columns",
+			"area": "footer"
+		},
+		{
 			"name": "footer-newsletter",
 			"title": "Footer Newsletter",
 			"area": "footer"
@@ -450,13 +455,6 @@
 						"right": "1.25em",
 						"bottom": "0.65em",
 						"left": "1.25em"
-					}
-				},
-				":hover": {
-					"color": {
-						"background": "color-mix(in srgb, var(--wp--preset--color--base) 80%, var(--wp--preset--color--contrast) 20%)",
-	
-						"text": "var(--wp--preset--color--contrast)"
 					}
 				}
 			}
