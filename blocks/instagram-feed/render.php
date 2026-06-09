@@ -814,7 +814,11 @@ nextora_instagram_feed_enqueue_view_script();
 								<?php echo esc_html( $lightbox_handle ); ?>
 							</p>
 							<button type="button" class="nextora-modal__close" data-nextora-modal-dismiss aria-label="<?php echo esc_attr__( 'Close', 'nextora' ); ?>">
-								<span class="nextora-modal__close-icon" aria-hidden="true">&times;</span>
+								<span class="nextora-modal__close-icon" aria-hidden="true">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+										<path d="M18 6 6 18M6 6l12 12" />
+									</svg>
+								</span>
 							</button>
 						</div>
 						<?php if ( $lightbox_caption ) : ?>
