@@ -228,6 +228,9 @@
   .start {
     inset-inline-start: var(--spacing);
   }
+  .start\! {
+    inset-inline-start: var(--spacing) !important;
+  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -332,6 +335,9 @@
   }
   .inline {
     display: inline;
+  }
+  .inline\! {
+    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -833,6 +839,9 @@
   .italic {
     font-style: italic;
   }
+  .italic\! {
+    font-style: italic !important;
+  }
   .\!no-underline {
     text-decoration-line: none !important;
   }
@@ -844,6 +853,9 @@
   }
   .underline {
     text-decoration-line: underline;
+  }
+  .underline\! {
+    text-decoration-line: underline !important;
   }
   .decoration-secondary\/30 {
     text-decoration-color: var(--color-secondary);
@@ -2313,6 +2325,9 @@ footer.wp-block-template-part {
     text-decoration: none;
     text-decoration-line: none;
   }
+  :where(	a.wp-block-button__link:not(:disabled):hover,	a.wp-element-button:not(:disabled):hover,	button.wp-block-button__link:not(:disabled):hover,	a.wp-block-file__button:not(:disabled):hover,	button.wp-block-search__button:not(:disabled):hover,	a.elementor-button:not(:disabled):hover,	button.elementor-button:not(:disabled):hover,	.nextora-main button:not(:disabled):hover,	.nextora-main input[type="submit"]:not(:disabled):hover,	.nextora-main input[type="button"]:not(:disabled):hover,	.nextora-main input[type="reset"]:not(:disabled):hover,	.elementor-widget-container button:not(:disabled):hover,	.elementor-widget-container input[type="submit"]:not(:disabled):hover,	.elementor-widget-container input[type="button"]:not(:disabled):hover,	.elementor-widget-container input[type="reset"]:not(:disabled):hover	) {
+    opacity: 0.8;
+  }
   :where(	.nextora-main button:not([class]),	.nextora-main input[type="submit"]:not([class]),	.nextora-main input[type="button"]:not([class]),	.nextora-main input[type="reset"]:not([class]),	.elementor-widget-html button:not([class]),	.elementor-widget-html input[type="submit"]:not([class]),	.elementor-widget-html input[type="button"]:not([class]),	.elementor-widget-html input[type="reset"]:not([class])	) {
     display: inline-flex;
     align-items: center;
@@ -2331,10 +2346,6 @@ footer.wp-block-template-part {
     @supports (color: color-mix(in lab, red, red)) {
       box-shadow: 0 1px 2px color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 8%, transparent);
     }
-  }
-  :where(	.nextora-main button:not([class]):hover,	.nextora-main input[type="submit"]:not([class]):hover,	.nextora-main input[type="button"]:not([class]):hover,	.nextora-main input[type="reset"]:not([class]):hover,	.elementor-widget-html button:not([class]):hover,	.elementor-widget-html input[type="submit"]:not([class]):hover,	.elementor-widget-html input[type="button"]:not([class]):hover,	.elementor-widget-html input[type="reset"]:not([class]):hover	) {
-    background-color: var(--wp--preset--color--contrast, #0f172a);
-    color: var(--wp--preset--color--base, #fafafa);
   }
   :where(	.nextora-main button:not([class]):disabled,	.nextora-main input[type="submit"]:not([class]):disabled,	.nextora-main input[type="button"]:not([class]):disabled,	.nextora-main input[type="reset"]:not([class]):disabled,	.elementor-widget-html button:not([class]):disabled,	.elementor-widget-html input[type="submit"]:not([class]):disabled,	.elementor-widget-html input[type="button"]:not([class]):disabled,	.elementor-widget-html input[type="reset"]:not([class]):disabled	) {
     opacity: 0.55;
