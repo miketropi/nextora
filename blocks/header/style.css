@@ -137,6 +137,12 @@
 	);
 }
 
+@media(max-width: 768px) {
+	.nextora-header-block__inner {
+		grid-template-columns: 1fr auto;
+	}
+}
+
 /* Layout: two rows (mobile: top row only; ≥768px: + menu row) */
 .nextora-header-block--layout-two-row .nextora-header-block__inner {
 	display: flex;
@@ -370,7 +376,7 @@
 	background: transparent;
 	color: inherit;
 	font: inherit;
-	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-size: inherit;
 	font-weight: 500;
 	line-height: 1.2;
 	cursor: pointer;
@@ -592,6 +598,7 @@
 	flex-wrap: nowrap;
 	align-items: center;
 	gap: var(--wp--preset--spacing--05, 0.5rem);
+	line-height: 0;
 }
 
 /**
