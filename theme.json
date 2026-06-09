@@ -18,6 +18,24 @@
 			"title": "Contact Us",
 			"description": "A page with a contact us layout with a contact form and a google map",
 			"postTypes": ["page", "post"]
+		},
+		{
+			"name": "theme-terms-conditions",
+			"title": "Terms & Conditions",
+			"description": "A page with a terms and conditions layout",
+			"postTypes": ["page", "post"]
+		},
+		{
+			"name": "theme-privacy-policy",
+			"title": "Privacy Policy",
+			"description": "A page with a privacy policy layout",
+			"postTypes": ["page", "post"]
+		},
+		{
+			"name": "frequently-asked-questions",
+			"title": "Frequently Asked Questions",
+			"description": "A page with a frequently asked questions layout",
+			"postTypes": ["page", "post"]
 		}
 	],
 	"templateParts": [

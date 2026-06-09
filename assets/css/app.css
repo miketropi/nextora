@@ -51,6 +51,7 @@
 		4vw,
 		var(--wp--preset--spacing--30, 2.75rem)
 	);
+    --nextora-nav-header-link: var(--wp--preset--color--contrast, #333);
     --nextora-nav-header-link-hover-underline: var(--wp--preset--color--base, #fafafa);
     @supports (color: color-mix(in lab, red, red)) {
       --nextora-nav-header-link-hover-underline: color-mix(
@@ -595,8 +596,14 @@
   .bg-base {
     background-color: var(--color-base);
   }
+  .bg-contrast {
+    background-color: var(--color-contrast);
+  }
   .bg-primary {
     background-color: var(--color-primary);
+  }
+  .bg-secondary {
+    background-color: var(--color-secondary);
   }
   .bg-secondary\/5 {
     background-color: var(--color-secondary);
@@ -807,6 +814,9 @@
     @supports (color: color-mix(in lab, red, red)) {
       color: color-mix(in oklab, var(--color-secondary) 80%, transparent);
     }
+  }
+  .text-surface {
+    color: var(--color-surface);
   }
   .text-white {
     color: var(--color-white);
