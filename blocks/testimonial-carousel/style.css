@@ -118,7 +118,6 @@
 	margin: 0;
 	padding: 0;
 	border: none;
-	font-family: var(--wp--preset--font-family--sans, inherit);
 	font-size: clamp(1.25rem, 3vw, 1.75rem);
 	font-weight: 500;
 	line-height: 1.45;
