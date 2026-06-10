@@ -929,7 +929,7 @@
 /* Drawer overlay may be portaled to body — keep above sticky header / nav portal */
 .nextora-header-block__cart--woo .wc-block-components-drawer__screen-overlay,
 body > .wc-block-components-drawer__screen-overlay {
-	z-index: 100000;
+	z-index: 1000;
 }
 
 .nextora-header-block__cart-icon,
