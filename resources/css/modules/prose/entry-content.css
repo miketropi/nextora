@@ -205,7 +205,7 @@
 		}
 
 		& :where(th, td) {
-			border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 55%, transparent);
+			border-color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 55%, transparent);
 			padding: 0.55em 0.7em;
 			text-align: start;
 			vertical-align: top;
