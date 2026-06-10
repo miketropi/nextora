@@ -499,17 +499,33 @@
 		gap: 1rem;
 	}
 
+	.nextora-modal__surface--instagram {
+		width: min(94vw, 30rem);
+		max-height: min(92vh, 52rem);
+		max-height: min(92dvh, 52rem);
+	}
+
 	.nextora-instagram-feed__lightbox-layout {
 		grid-template-columns: 1fr;
-		grid-template-rows: auto 1fr;
+		grid-template-rows: auto minmax(0, 1fr);
+		min-height: 0;
 	}
 
 	.nextora-instagram-feed__lightbox-media {
-		min-height: 50vw;
+		min-height: 40vw;
+	}
+
+	/* Keep media + sidebar within the surface; tall portrait images must not push the sidebar off-screen. */
+	.nextora-instagram-feed__lightbox-img,
+	.nextora-instagram-feed__lightbox-video {
+		max-height: 50vh;
+		max-height: 50dvh;
 	}
 
 	.nextora-instagram-feed__lightbox-sidebar {
-		max-height: 40vh;
+		max-height: 36vh;
+		max-height: 36dvh;
+		padding: 1.125rem 1.25rem 1.25rem;
 	}
 }
 
