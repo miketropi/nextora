@@ -30811,6 +30811,19 @@ ${nextLine.slice(indentLevel + 2)}`;
     });
   }
 
+  // resources/ts/mini-cart-portal.ts
+  function mountHeaderMiniCartPortalToBody() {
+    document.querySelectorAll(
+      ".nextora-header-block__cart--woo .wc-block-components-drawer__screen-overlay"
+    ).forEach((el) => {
+      if (el.parentElement !== document.body) {
+        document.body.appendChild(el);
+      }
+    });
+  }
+  function bindHeaderMiniCartAfterAjaxAdd() {
+  }
+
   // resources/ts/lib/modal.ts
   var FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
   var OPEN_CLASS = "nextora-modal--open";
@@ -31079,79 +31092,6 @@ ${nextLine.slice(indentLevel + 2)}`;
     window.nextoraOpenModal = openModalById;
     window.nextoraOpenModalDialog = openModalDialog;
     window.nextoraCloseModal = closeModal;
-  }
-
-  // resources/ts/mini-cart-portal.ts
-  function mountHeaderMiniCartPortalToBody() {
-    document.querySelectorAll("[data-nextora-header-mini-cart-portal]").forEach((el) => {
-      if (el.parentElement !== document.body) {
-        document.body.appendChild(el);
-      }
-    });
-  }
-  function getMiniCartModalId() {
-    const el = document.querySelector("[data-nextora-header-mini-cart-portal][id]");
-    const id = el?.id?.trim();
-    return id || null;
-  }
-  function openHeaderMiniCartSoon(ms = 0) {
-    const id = getMiniCartModalId();
-    if (!id) {
-      return;
-    }
-    window.setTimeout(() => {
-      openModalById(id);
-    }, ms);
-  }
-  function triggerWcFragmentRefresh() {
-    const $ = window.jQuery;
-    if (typeof $ !== "function") {
-      return;
-    }
-    try {
-      $(document.body).trigger?.("wc_fragment_refresh");
-    } catch {
-    }
-  }
-  function bindHeaderMiniCartAfterAjaxAdd() {
-    if (!document.body) {
-      return;
-    }
-    document.body.addEventListener(
-      "wc-blocks_added_to_cart",
-      () => {
-        triggerWcFragmentRefresh();
-        openHeaderMiniCartSoon(120);
-      },
-      false
-    );
-    let jqBound = false;
-    const tryBindJqAddedToCart = () => {
-      if (jqBound) {
-        return;
-      }
-      const jQueryFactory = window.jQuery;
-      if (typeof jQueryFactory !== "function") {
-        return;
-      }
-      jQueryFactory(($) => {
-        $(document.body).on("added_to_cart", () => {
-          openHeaderMiniCartSoon(0);
-        });
-      });
-      jqBound = true;
-    };
-    tryBindJqAddedToCart();
-    if (!jqBound) {
-      let attempts = 0;
-      const maxAttempts = 80;
-      const id = window.setInterval(() => {
-        tryBindJqAddedToCart();
-        if (jqBound || ++attempts >= maxAttempts) {
-          window.clearInterval(id);
-        }
-      }, 50);
-    }
   }
 
   // resources/ts/lib/spotlight-search.ts

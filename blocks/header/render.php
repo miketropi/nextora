@@ -864,94 +864,17 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 		<?php endif; ?>
 
 		<?php
-		if ( $show_cart && function_exists( 'wc_get_cart_url' ) ) :
-			$cart     = function_exists( 'WC' ) && isset( WC()->cart ) ? WC()->cart : null;
-			$cart_ok  = $cart instanceof WC_Cart;
-			$rest_ssr = defined( 'REST_REQUEST' ) && REST_REQUEST;
+		if ( $show_cart && function_exists( 'nextora_header_block_render_woo_mini_cart' ) ) :
+			$cart_markup = nextora_header_block_render_woo_mini_cart( $atts );
 
-			// ServerSideRender (block editor) often runs before WooCommerce initializes the cart on the request.
-			if ( ! $cart_ok && $rest_ssr && function_exists( 'wc_load_cart' ) ) {
-				wc_load_cart();
-				$cart    = function_exists( 'WC' ) && isset( WC()->cart ) ? WC()->cart : null;
-				$cart_ok = $cart instanceof WC_Cart;
-			}
-
-			$show_cart_markup = $cart_ok || $rest_ssr;
-
-			if ( $show_cart_markup ) :
-				$cart_count      = $cart_ok ? (int) $cart->get_cart_contents_count() : 0;
-				$drawer_id       = 'nextora-mini-cart-' . preg_replace( '/[^a-zA-Z0-9_-]/', '', $block_uid );
-				$drawer_title_id = $drawer_id . '-title';
-				$cart_title      = apply_filters( 'nextora_header_block_mini_cart_title', __( 'Cart', 'nextora' ), $atts );
-				$cart_title      = is_string( $cart_title ) ? $cart_title : __( 'Cart', 'nextora' );
-
+			if ( '' !== trim( $cart_markup ) ) :
 				do_action( 'nextora_header_block_before_cart', $atts );
-				$cart_aria = function_exists( 'nextora_header_block_mini_cart_aria_label' )
-					? nextora_header_block_mini_cart_aria_label( $cart_count, $atts )
-					: __( 'Open shopping cart', 'nextora' );
 		?>
-				<div class="nextora-header-block__cart">
-					<button
-						type="button"
-						class="nextora-header-block__cart-link nextora-header-block__cart-trigger"
-						data-nextora-modal-open="<?php echo esc_attr( $drawer_id ); ?>"
-						aria-haspopup="dialog"
-						aria-label="<?php echo esc_attr( $cart_aria ); ?>">
-						<span class="nextora-header-block__cart-icon" aria-hidden="true">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M6 7h15l-1.5 9h-12L6 7Zm0 0L5 3H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
-								<circle cx="9" cy="20" r="1.35" fill="currentColor" />
-								<circle cx="18" cy="20" r="1.35" fill="currentColor" />
-							</svg>
-						</span>
-						<?php
-						echo function_exists( 'nextora_header_block_mini_cart_badge_html' )
-							? nextora_header_block_mini_cart_badge_html( $cart_count )
-							: '<span class="nextora-header-block__cart-badge" aria-hidden="true"></span>';
-						?>
-					</button>
-				</div>
-
-				<div
-					id="<?php echo esc_attr( $drawer_id ); ?>"
-					class="nextora-modal nextora-modal--drawer-end nextora-header-block__mini-cart-modal"
-					hidden
-					data-nextora-modal
-					data-nextora-header-mini-cart-portal
-					aria-hidden="true">
-					<div class="nextora-modal__scrim" data-nextora-modal-dismiss tabindex="-1"></div>
-					<div
-						class="nextora-modal__surface"
-						data-nextora-modal-surface
-						role="dialog"
-						aria-modal="true"
-						aria-labelledby="<?php echo esc_attr( $drawer_title_id ); ?>"
-						tabindex="-1">
-						<header class="nextora-modal__header">
-							<h2 id="<?php echo esc_attr( $drawer_title_id ); ?>" class="nextora-modal__title">
-								<?php echo esc_html( $cart_title ); ?>
-							</h2>
-							<button
-								type="button"
-								class="nextora-modal__close"
-								data-nextora-modal-dismiss
-								aria-label="<?php esc_attr_e( 'Close cart', 'nextora' ); ?>">
-								<span class="nextora-modal__close-icon" aria-hidden="true">
-									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-										<path d="M18 6 6 18M6 6l12 12" />
-									</svg>
-								</span>
-							</button>
-						</header>
-						<div class="nextora-modal__body nextora-header-block__mini-cart-body woocommerce">
-							<?php
-							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce template / core markup.
-							echo '<div class="widget_shopping_cart_content" data-nextora-mini-cart-fragments="1">';
-							woocommerce_mini_cart();
-							echo '</div>';
-							?>
-						</div>
-					</div>
+				<div class="nextora-header-block__cart nextora-header-block__cart--woo">
+					<?php
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce block markup.
+					echo $cart_markup;
+					?>
 				</div>
 		<?php
 				do_action( 'nextora_header_block_after_cart', $atts );

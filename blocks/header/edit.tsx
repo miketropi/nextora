@@ -445,6 +445,10 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             label={__('Shopping cart', 'nextora')}
             checked={showMiniCart}
             onChange={(v) => setAttributes({ showMiniCart: v })}
+            help={__(
+              'Uses the official WooCommerce Mini-Cart block (drawer and live cart updates).',
+              'nextora',
+            )}
           />
           <ToggleControl
             label={__('My account', 'nextora')}
