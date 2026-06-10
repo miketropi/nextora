@@ -514,9 +514,14 @@ function initSwiperIn(container: Element | Document): void {
 
 		const cap = (n: number) => Math.max(1, Math.min(roundSpv(n), Math.max(1, slideCount)));
 
+		/*
+		 * `breakpointsBase: 'container'` compares against the swiper element, which is
+		 * narrower than the viewport (section max-width + inner padding). Thresholds are
+		 * lowered so tablet kicks in at ~768px viewports and desktop at ~1024px.
+		 */
 		const defaultBreakpoints: Record<number, { slidesPerView: number; spaceBetween: number }> = {
-			768: { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) },
-			1024: { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) },
+			640: { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) },
+			940: { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) },
 		};
 
 		const wantLoop = Boolean(opts.loop) && slideCount > 1;

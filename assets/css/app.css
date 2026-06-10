@@ -1263,6 +1263,10 @@
   html.nextora-primary-nav-drawer-open {
     overflow: hidden;
   }
+  header.wp-block-template-part {
+    position: relative;
+    z-index: 999;
+  }
 }
 footer.wp-block-template-part {
   margin-block-start: 0;

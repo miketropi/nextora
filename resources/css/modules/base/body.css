@@ -73,6 +73,11 @@
 	/* html :where([style*=--nextora-arc-img-border-color]) {
     border-style: none !important;
 	} */
+
+	header.wp-block-template-part {
+		position: relative;
+		z-index: 999;
+	}
 }
 footer.wp-block-template-part {
 	margin-block-start: 0;
