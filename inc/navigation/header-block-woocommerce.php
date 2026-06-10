@@ -1,7 +1,7 @@
 <?php
 
 /**
- * WooCommerce: mini cart fragments for {@see nextora/header} block (badge + drawer HTML).
+ * WooCommerce: {@see woocommerce/mini-cart} block output for {@see nextora/header}.
  *
  * @package Nextora
  */
@@ -13,80 +13,76 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Markup for the header mini-cart quantity badge (hidden when count is 0).
- *
- * @param int $count Cart item count.
+ * Editor placeholder when WooCommerce skips SSR cart markup (REST / admin).
  */
-function nextora_header_block_mini_cart_badge_html( int $count ): string {
-	$inner = $count > 0
-		? '<span class="nextora-header-block__cart-count">' . esc_html( (string) $count ) . '</span>'
-		: '';
+function nextora_header_block_woo_mini_cart_editor_placeholder(): string {
+	$icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+		<path d="M6 7h15l-1.5 9h-12L6 7Zm0 0L5 3H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+		<circle cx="9" cy="20" r="1.35" fill="currentColor" />
+		<circle cx="18" cy="20" r="1.35" fill="currentColor" />
+	</svg>';
 
-	return '<span class="nextora-header-block__cart-badge" aria-hidden="true">' . $inner . '</span>';
+	return '<div class="nextora-header-block__cart-placeholder" aria-hidden="true">'
+		. '<span class="nextora-header-block__cart-placeholder-icon">' . $icon . '</span>'
+		. '</div>';
 }
 
 /**
- * Accessible label for the mini-cart trigger, optionally including quantity.
+ * Render the WooCommerce Mini-Cart block in the header utilities column.
  *
- * @param int                  $count Cart item count.
- * @param array<string, mixed> $atts  Block attributes (for filters).
+ * @param array<string, mixed> $atts Block attributes (for filters).
  */
-function nextora_header_block_mini_cart_aria_label( int $count, array $atts = array() ): string {
-	$base = apply_filters( 'nextora_header_block_mini_cart_open_label', __( 'Open shopping cart', 'nextora' ), $atts );
-	$base = is_string( $base ) ? $base : __( 'Open shopping cart', 'nextora' );
-
-	if ( $count < 1 ) {
-		return $base;
+function nextora_header_block_render_woo_mini_cart( array $atts = array() ): string {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return '';
 	}
 
-	$with_count = sprintf(
-		/* translators: %d: number of products in the cart */
-		_n(
-			'Open shopping cart, %d item',
-			'Open shopping cart, %d items',
-			$count,
-			'nextora',
+	$registry = WP_Block_Type_Registry::get_instance();
+	if ( ! $registry->is_registered( 'woocommerce/mini-cart' ) ) {
+		return '';
+	}
+
+	/**
+	 * Mini-Cart block attributes passed to {@see render_block()}.
+	 *
+	 * @param array<string, mixed> $block_atts WooCommerce block attributes.
+	 * @param array<string, mixed> $atts       Header block attributes.
+	 */
+	$block_atts = apply_filters(
+		'nextora_header_block_woo_mini_cart_attributes',
+		array(
+			'miniCartIcon'           => 'cart',
+			'onCartClickBehaviour'   => 'open_drawer',
+			'addToCartBehaviour'     => 'open_drawer',
+			'hasHiddenPrice'         => true,
+			'productCountVisibility' => 'greater_than_zero',
 		),
-		$count,
+		$atts,
 	);
-	return (string) apply_filters( 'nextora_header_block_mini_cart_aria_label', $with_count, $count, $atts );
-}
 
-/**
- * Refresh cart badge and mini cart panel HTML on add-to-cart / cart AJAX (`wc-cart-fragments`).
- * The block renders the drawer outside the cart widget, so Woo does not add a default
- * `widget_shopping_cart_content` fragment for it — register an explicit selector.
- *
- * @param array<string, string> $fragments Fragments.
- *
- * @return array<string, string>
- */
-function nextora_header_block_cart_fragments( array $fragments ): array {
-	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
-		if ( function_exists( 'wc_load_cart' ) ) {
-			wc_load_cart();
-		}
-		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
-			return $fragments;
-		}
+	if ( ! is_array( $block_atts ) ) {
+		$block_atts = array();
 	}
 
-	$count = (int) WC()->cart->get_cart_contents_count();
+	$parsed = array(
+		'blockName'    => 'woocommerce/mini-cart',
+		'attrs'        => $block_atts,
+		'innerBlocks'  => array(),
+		'innerHTML'    => '',
+		'innerContent' => array(),
+	);
 
-	$fragments['.nextora-header-block__cart-badge'] = nextora_header_block_mini_cart_badge_html( $count );
+	$markup = (string) render_block( $parsed );
 
-	ob_start();
-	woocommerce_mini_cart();
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce markup for fragment JSON.
-	$mini_inner = ob_get_clean();
+	if ( '' === trim( $markup ) && defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		return nextora_header_block_woo_mini_cart_editor_placeholder();
+	}
 
-	$mini_wrapped = '<div class="widget_shopping_cart_content" data-nextora-mini-cart-fragments="1">' . $mini_inner . '</div>';
-
-	// Core passes this key from `WC_AJAX::get_refreshed_fragments()`; keep it so `add-to-cart` / session restore hit the header mini cart.
-	$fragments['div.widget_shopping_cart_content'] = $mini_wrapped;
-	$fragments['[data-nextora-mini-cart-fragments]'] = $mini_wrapped;
-
-	return $fragments;
+	/**
+	 * Filter rendered WooCommerce Mini-Cart block HTML in the header.
+	 *
+	 * @param string               $markup Rendered block HTML.
+	 * @param array<string, mixed> $atts   Header block attributes.
+	 */
+	return (string) apply_filters( 'nextora_header_block_woo_mini_cart_output', $markup, $atts );
 }
-
-add_filter( 'woocommerce_add_to_cart_fragments', 'nextora_header_block_cart_fragments' );

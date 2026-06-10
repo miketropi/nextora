@@ -5,19 +5,28 @@
 		{
 			"name": "about-us",
 			"title": "About Us",
-			"postTypes": ["page", "post"]
+			"postTypes": [
+				"page",
+				"post"
+			]
 		},
 		{
 			"name": "page-full-width",
 			"title": "Page — Full Width",
 			"description": "A page with a full width layout",
-			"postTypes": ["page", "post"]
+			"postTypes": [
+				"page",
+				"post"
+			]
 		},
 		{
 			"name": "contact-us",
 			"title": "Contact Us",
 			"description": "A page with a contact us layout with a contact form and a google map",
-			"postTypes": ["page", "post"]
+			"postTypes": [
+				"page",
+				"post"
+			]
 		}
 	],
 	"templateParts": [
@@ -99,49 +108,65 @@
 							"fontFamily": "Hanken Grotesk",
 							"fontWeight": "300",
 							"fontStyle": "normal",
-							"src": ["file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-300.woff2"]
+							"src": [
+								"file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-300.woff2"
+							]
 						},
 						{
 							"fontFamily": "Hanken Grotesk",
 							"fontWeight": "300",
 							"fontStyle": "italic",
-							"src": ["file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-300italic.woff2"]
+							"src": [
+								"file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-300italic.woff2"
+							]
 						},
 						{
 							"fontFamily": "Hanken Grotesk",
 							"fontWeight": "400",
 							"fontStyle": "normal",
-							"src": ["file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-regular.woff2"]
+							"src": [
+								"file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-regular.woff2"
+							]
 						},
 						{
 							"fontFamily": "Hanken Grotesk",
 							"fontWeight": "400",
 							"fontStyle": "italic",
-							"src": ["file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-italic.woff2"]
+							"src": [
+								"file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-italic.woff2"
+							]
 						},
 						{
 							"fontFamily": "Hanken Grotesk",
 							"fontWeight": "600",
 							"fontStyle": "normal",
-							"src": ["file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-600.woff2"]
+							"src": [
+								"file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-600.woff2"
+							]
 						},
 						{
 							"fontFamily": "Hanken Grotesk",
 							"fontWeight": "600",
 							"fontStyle": "italic",
-							"src": ["file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-600italic.woff2"]
+							"src": [
+								"file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-600italic.woff2"
+							]
 						},
 						{
 							"fontFamily": "Hanken Grotesk",
 							"fontWeight": "700",
 							"fontStyle": "normal",
-							"src": ["file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-700.woff2"]
+							"src": [
+								"file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-700.woff2"
+							]
 						},
 						{
 							"fontFamily": "Hanken Grotesk",
 							"fontWeight": "700",
 							"fontStyle": "italic",
-							"src": ["file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-700italic.woff2"]
+							"src": [
+								"file:./assets/fonts/hanken-grotesk/hanken-grotesk-v12-latin_vietnamese-700italic.woff2"
+							]
 						}
 					]
 				},
@@ -154,49 +179,65 @@
 							"fontFamily": "Josefin Sans",
 							"fontWeight": "300",
 							"fontStyle": "normal",
-							"src": ["file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-300.woff2"]
+							"src": [
+								"file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-300.woff2"
+							]
 						},
 						{
 							"fontFamily": "Josefin Sans",
 							"fontWeight": "300",
 							"fontStyle": "italic",
-							"src": ["file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-300italic.woff2"]
+							"src": [
+								"file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-300italic.woff2"
+							]
 						},
 						{
 							"fontFamily": "Josefin Sans",
 							"fontWeight": "400",
 							"fontStyle": "normal",
-							"src": ["file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-regular.woff2"]
+							"src": [
+								"file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-regular.woff2"
+							]
 						},
 						{
 							"fontFamily": "Josefin Sans",
 							"fontWeight": "400",
 							"fontStyle": "italic",
-							"src": ["file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-italic.woff2"]
+							"src": [
+								"file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-italic.woff2"
+							]
 						},
 						{
 							"fontFamily": "Josefin Sans",
 							"fontWeight": "600",
 							"fontStyle": "normal",
-							"src": ["file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-600.woff2"]
+							"src": [
+								"file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-600.woff2"
+							]
 						},
 						{
 							"fontFamily": "Josefin Sans",
 							"fontWeight": "600",
 							"fontStyle": "italic",
-							"src": ["file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-600italic.woff2"]
+							"src": [
+								"file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-600italic.woff2"
+							]
 						},
 						{
 							"fontFamily": "Josefin Sans",
 							"fontWeight": "700",
 							"fontStyle": "normal",
-							"src": ["file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-700.woff2"]
+							"src": [
+								"file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-700.woff2"
+							]
 						},
 						{
 							"fontFamily": "Josefin Sans",
 							"fontWeight": "700",
 							"fontStyle": "italic",
-							"src": ["file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-700italic.woff2"]
+							"src": [
+								"file:./assets/fonts/josefin-sans/josefin-sans-v34-latin_vietnamese-700italic.woff2"
+							]
 						}
 					]
 				}
@@ -268,7 +309,14 @@
 					"name": "6"
 				}
 			],
-			"units": ["px", "em", "rem", "%", "vh", "vw"]
+			"units": [
+				"px",
+				"em",
+				"rem",
+				"%",
+				"vh",
+				"vw"
+			]
 		}
 	},
 	"styles": {
@@ -442,6 +490,16 @@
 			}
 		},
 		"blocks": {
+			"core/group": {
+				"spacing": {
+					"padding": {
+						"top": "var(--wp--preset--spacing--30)",
+						"bottom": "var(--wp--preset--spacing--30)",
+						"right": "0",
+						"left": "0"
+					}
+				}
+			},
 			"core/paragraph": {
 				"typography": {
 					"lineHeight": "1.65"
