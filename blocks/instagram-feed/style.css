@@ -433,6 +433,40 @@
 	line-height: 1.3;
 }
 
+.nextora-instagram-feed__lightbox-header .nextora-modal__close {
+	width: 1.5rem;
+	height: 1.5rem;
+	margin: 0;
+	opacity: 1;
+	background: transparent;
+	transition: none;
+}
+
+.nextora-instagram-feed__lightbox-header .nextora-modal__close:hover,
+.nextora-instagram-feed__lightbox-header .nextora-modal__close:focus-visible {
+	opacity: 1;
+	background: transparent;
+}
+
+.nextora-instagram-feed__lightbox-header .nextora-modal__close-icon {
+	display: flex;
+	line-height: 0;
+	transition:
+		transform 0.25s ease,
+		opacity 0.2s ease;
+}
+
+.nextora-instagram-feed__lightbox-header .nextora-modal__close-icon svg {
+	width: 1.5rem;
+	height: 1.5rem
+}
+
+.nextora-instagram-feed__lightbox-header .nextora-modal__close:hover .nextora-modal__close-icon,
+.nextora-instagram-feed__lightbox-header .nextora-modal__close:focus-visible .nextora-modal__close-icon {
+	opacity: 1;
+	transform: rotate(90deg);
+}
+
 .nextora-instagram-feed__lightbox-caption {
 	flex: 1;
 	overflow-y: auto;
@@ -465,32 +499,50 @@
 		gap: 1rem;
 	}
 
+	.nextora-modal__surface--instagram {
+		width: min(94vw, 30rem);
+		max-height: min(92vh, 52rem);
+		max-height: min(92dvh, 52rem);
+	}
+
 	.nextora-instagram-feed__lightbox-layout {
 		grid-template-columns: 1fr;
-		grid-template-rows: auto 1fr;
+		grid-template-rows: auto minmax(0, 1fr);
+		min-height: 0;
 	}
 
 	.nextora-instagram-feed__lightbox-media {
-		min-height: 50vw;
+		min-height: 40vw;
+	}
+
+	/* Keep media + sidebar within the surface; tall portrait images must not push the sidebar off-screen. */
+	.nextora-instagram-feed__lightbox-img,
+	.nextora-instagram-feed__lightbox-video {
+		max-height: 50vh;
+		max-height: 50dvh;
 	}
 
 	.nextora-instagram-feed__lightbox-sidebar {
-		max-height: 40vh;
+		max-height: 36vh;
+		max-height: 36dvh;
+		padding: 1.125rem 1.25rem 1.25rem;
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.nextora-instagram-feed__tile-img,
 	.nextora-instagram-feed__tile-media img,
-	.nextora-instagram-feed__tile-icon {
+	.nextora-instagram-feed__tile-icon,
+	.nextora-instagram-feed__lightbox-header .nextora-modal__close-icon {
 		transition: none;
-		will-change: auto;
 	}
 
 	.nextora-instagram-feed__tile:hover .nextora-instagram-feed__tile-img,
 	.nextora-instagram-feed__tile:hover .nextora-instagram-feed__tile-media img,
 	.nextora-instagram-feed__tile:focus-visible .nextora-instagram-feed__tile-img,
-	.nextora-instagram-feed__tile:focus-visible .nextora-instagram-feed__tile-media img {
+	.nextora-instagram-feed__tile:focus-visible .nextora-instagram-feed__tile-media img,
+	.nextora-instagram-feed__lightbox-header .nextora-modal__close:hover .nextora-modal__close-icon,
+	.nextora-instagram-feed__lightbox-header .nextora-modal__close:focus-visible .nextora-modal__close-icon {
 		transform: none;
 	}
 }
