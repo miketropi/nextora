@@ -1,0 +1,64 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/plugin-notice",
+  "title": "Plugin Notice",
+  "category": "design",
+  "description": "Dotted-border notice with a message and links to supported plugins.",
+  "keywords": ["plugin", "notice", "announcement", "nextora"],
+  "textdomain": "nextora",
+  "icon": "admin-plugins",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    }
+  },
+  "attributes": {
+    "message": {
+      "type": "string",
+      "default": "A compatible plugin is required to use this feature. Choose a recommended plugin below or connect another supported option."
+    },
+    "pluginsLabel": {
+      "type": "string",
+      "default": "Recommended plugins:"
+    },
+    "plugins": {
+      "type": "array",
+      "default": [
+        {
+          "id": "mailchimp-for-wp",
+          "name": "Mailchimp for WordPress",
+          "url": "https://wordpress.org/plugins/mailchimp-for-wp/"
+        },
+        {
+          "id": "newsletter",
+          "name": "Newsletter",
+          "url": "https://wordpress.org/plugins/newsletter/"
+        }
+      ]
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "render": "file:./render.php"
+}

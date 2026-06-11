@@ -1,0 +1,92 @@
+/**
+ * nextora/plugin-notice — front-end + editor canvas.
+ */
+.wp-block-nextora-plugin-notice,
+.nextora-plugin-notice {
+	--nextora-plugin-notice-border: var(--wp--preset--color--secondary, #525252);
+	--nextora-plugin-notice-gap: var(--wp--preset--spacing--20, 1rem);
+	--nextora-plugin-notice-pad-x: var(--wp--preset--spacing--30, 1.5rem);
+	--nextora-plugin-notice-pad-y: 1.5rem;
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+	color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+
+.nextora-plugin-notice__inner {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--nextora-plugin-notice-gap);
+	padding: var(--nextora-plugin-notice-pad-y) var(--nextora-plugin-notice-pad-x);
+	border: 2px dotted var(--nextora-plugin-notice-border);
+	border-radius: 8px;
+	background-color: var(--wp--preset--color--base, #ffffff);
+}
+
+.nextora-plugin-notice__message {
+	margin: 0 0 0.5rem 0 !important;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 500;
+	line-height: 1.45;
+	letter-spacing: 0.01em;
+}
+
+.nextora-plugin-notice__message a {
+	color: inherit;
+	text-underline-offset: 0.15em;
+}
+
+.nextora-plugin-notice__message a:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+}
+
+.nextora-plugin-notice__plugins {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.45;
+}
+
+.nextora-plugin-notice__plugins-label {
+	font-weight: 600;
+	display: block;
+	margin: 0 0 0.3rem 0;
+}
+
+.nextora-plugin-notice__plugin-name {
+	font-weight: 400;
+	color: inherit;
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+a.nextora-plugin-notice__plugin-name:hover {
+	color: var(--wp--preset--color--primary, #0a0a0a);
+	
+}
+
+a.nextora-plugin-notice__plugin-name:focus-visible,
+.nextora-plugin-notice__plugins a:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
+	outline-offset: 2px;
+}
+
+span.nextora-plugin-notice__plugin-name {
+	text-decoration: none;
+}
+
+.nextora-plugin-notice__empty {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.45;
+	color: color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 75%, transparent);
+	font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-plugin-notice__message a,
+	.nextora-plugin-notice__plugins a {
+		transition: none;
+	}
+}

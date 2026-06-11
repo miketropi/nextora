@@ -1633,10 +1633,6 @@ body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-customer-de
     }
 }
 /* mini cart */
-.admin-bar .wc-block-mini-cart__drawer .wc-block-components-drawer__content {
-    height: 100dvh;
-    margin-top: 0;
-}
 .wc-block-mini-cart__drawer .wp-block-woocommerce-mini-cart-contents .wc-block-components-notices{
     display: contents;
 }
