@@ -1,8 +1,5 @@
 /**
- * MC4WP subscribe — horizontal input group (white field + accent submit control).
- * Targets default Mailchimp for WordPress markup: `.mc4wp-form` > `.mc4wp-form-fields`.
- * Default: icon-only square button. Wrapper `.nextora-form-subscribe-style-1` shows submit label text.
- * Parent sections (hero/CTA) supply background color; this module styles the control bar only.
+ * Plugin MC4WP: Mailchimp for WordPress
  */
 @layer components {
 	:where(.mc4wp-form) {
@@ -92,25 +89,21 @@
 		flex: 0 0 var(--nextora-form-subscribe-control-h);
 		width: var(--nextora-form-subscribe-control-h);
 		height: var(--nextora-form-subscribe-control-h);
-		margin: 0;
-		padding: 0;
-		border: 0;
 		border-radius: 0;
-		background-color: var(--nextora-form-subscribe-accent);
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 2 11 13'/%3E%3Cpath d='M22 2 15 22 11 13 2 9 22 2z'/%3E%3C/svg%3E");
-		background-repeat: no-repeat;
-		background-position: center;
-		background-size: 1.125rem;
-		color: transparent;
 		cursor: pointer;
-		font-size: 0;
-		line-height: 0;
-		overflow: hidden;
-		-webkit-appearance: none;
-		appearance: none;
-		transition:
-			background-color 0.2s ease,
-			opacity 0.2s ease;
+		flex: 0 0 auto;
+		width: auto;
+		min-width: 5.5rem;
+		padding: 0 1.25rem;
+		background-image: none;
+		color: var(--wp--preset--color--base, #ffffff);
+		font-family: inherit;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		line-height: 1.25;
+		overflow: visible;
+		white-space: nowrap;
+		text-transform: capitalize;
 	}
 
 	.mc4wp-form .mc4wp-form-fields input[type="submit"]:hover {
@@ -127,22 +120,6 @@
 		cursor: not-allowed;
 	}
 
-	/* Text submit — add class on a parent wrapping the MC4WP form block. */
-	.nextora-form-subscribe-style-1 .mc4wp-form .mc4wp-form-fields input[type="submit"] {
-		flex: 0 0 auto;
-		width: auto;
-		min-width: 5.5rem;
-		padding: 0 1.25rem;
-		background-image: none;
-		color: var(--wp--preset--color--base, #ffffff);
-		font-family: inherit;
-		font-size: 0.9375rem;
-		font-weight: 600;
-		line-height: 1.25;
-		overflow: visible;
-		white-space: nowrap;
-	}
-
 	:where(.mc4wp-form .mc4wp-response) {
 		margin-block-start: 0.75rem;
 		font-size: 0.875rem;
@@ -154,4 +131,44 @@
 			--nextora-form-subscribe-control-h: 2.75rem;
 		}
 	}
+}
+/* plugin Newsletter */
+.wp-block-tnp-minimal{
+	padding: 0 !important;
+}
+.wp-block-tnp-minimal p{
+	margin-bottom: 0.5rem !important;
+}
+.wp-block-tnp-minimal .tnp-subscription-minimal input.tnp-email{
+	margin: 0;
+	min-height: 3rem;
+    padding-left: 1rem;
+    background: #fff;
+}
+.wp-block-tnp-minimal .tnp-subscription-minimal form{
+	display: flex;
+}
+.wp-block-tnp-minimal .tnp-subscription-minimal input.tnp-submit{
+	background: var(--wp--preset--color--primary, #0a0a0a) !important;
+}
+.wp-block-tnp-minimal .tnp-subscription{
+    margin: 0;
+}
+.wp-block-tnp-minimal .tnp-subscription input.tnp-submit{
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+    border-radius: 0px;
+    padding: 0.67rem 1.6rem;
+	background: var(--wp--preset--color--primary, #0a0a0a) !important;
+}
+
+.wp-block-tnp-minimal .tnp-form-field-email:focus-visible{
+	outline: none !important;
+	border-color: var(--nextora-form-subscribe-accent) !important;
+	box-shadow: inset 0 0 0 1px var(--nextora-form-subscribe-accent) !important;
+}
+.wp-block-tnp-minimal .tnp-form-field-email:disabled{
+	opacity: 0.55;
+	cursor: not-allowed;
 }

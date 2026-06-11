@@ -1,0 +1,37 @@
+.nextora-plugin-notice__panel-help {
+	margin-top: 0;
+	margin-bottom: 1rem;
+}
+
+.nextora-plugin-notice__inspector-plugins {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-block-end: 0.75rem;
+}
+
+.nextora-plugin-notice__inspector-plugin {
+	padding: 0.75rem;
+	border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+	border-radius: 2px;
+}
+
+.nextora-plugin-notice__inspector-plugin-label {
+	margin: 0 0 0.5rem;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: color-mix(in srgb, currentColor 65%, transparent);
+}
+
+.nextora-plugin-notice__preset-actions {
+	margin-block-start: 0.25rem;
+}
+
+.nextora-plugin-notice__preset-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
