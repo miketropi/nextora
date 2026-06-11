@@ -554,7 +554,7 @@ while ( $query->have_posts() ) :
     if ( $show_title && '' !== $title ) {
         if ( 'title-only' === $card_link_behavior || 'full-card' === $card_link_behavior ) {
             $title_html = sprintf(
-            	'<h3 class="nextora-blc__card-title"><a href="%s">%s</a></h3>',
+            	'<h4 class="nextora-blc__card-title"><a href="%s">%s</a></h4>',
             	$permalink,
             	esc_html( $title ),
             );

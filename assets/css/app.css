@@ -3679,6 +3679,7 @@ body.woocommerce-cart .wc-block-components-totals-wrapper.wp-block-woocommerce-c
 body.woocommerce-cart .wc-block-components-panel__button {
   margin-bottom: 0;
   border-bottom: none;
+  font-size: 1rem;
 }
 body.woocommerce-cart .wc-block-components-totals-coupon .wc-block-components-panel__content {
   margin-top: 0.75rem;
@@ -4877,7 +4878,7 @@ body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-customer-de
     width: 100%;
   }
 }
-.wc-block-mini-cart__drawer .wp-block-woocommerce-mini-cart-contents .wc-block-components-notices {
+<<<<<<< HEAD ======= >>>>>>> 5b6daaab353825a0dda1ae554a4fbf934366d826 .wc-block-mini-cart__drawer .wp-block-woocommerce-mini-cart-contents .wc-block-components-notices {
   display: contents;
 }
 .wc-block-mini-cart__drawer h2.wc-block-mini-cart__title {

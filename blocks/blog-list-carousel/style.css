@@ -261,10 +261,10 @@
 
 /* Title */
 .nextora-blc__card .nextora-blc__card-title {
-	font-size: var(--wp--preset--font-size--base, 1rem);
+	/* font-size: var(--wp--preset--font-size--base, 1rem); */
 	font-weight: 600;
 	color: var(--nextora-blc-title-color, var(--wp--preset--color--contrast, #1A1A2E));
-	line-height: 1.35;
+	/* line-height: 1.35; */
 	margin: 0 0 8px;
 	display: -webkit-box;
 	-webkit-line-clamp: var(--nextora-blc-title-clamp, 2);
@@ -282,8 +282,8 @@
 
 /* Excerpt */
 .nextora-blc__card-excerpt {
-	font-size: 14px;
-	line-height: 1.6;
+	font-size: .95rem;
+	/* line-height: 1.6; */
 	color: var(--nextora-blc-excerpt-color, var(--wp--preset--color--secondary, #6B7280));
 	padding: 0 0 14px;
 	display: -webkit-box;
@@ -301,7 +301,7 @@
 	margin-top: auto;
 }
 .nextora-blc__card-date {
-	font-size: 12px;
+	font-size: .95rem;
 	color: var(--nextora-blc-meta-color, var(--wp--preset--color--secondary, #9CA3AF));
 }
 .nextora-blc__card-divider {
@@ -314,7 +314,7 @@
 .nextora-blc__card-cat {
 	position: relative;
 	z-index: 2;
-	font-size: 11px;
+	font-size: .8rem;
 	color: var(--nextora-blc-meta-color, var(--wp--preset--color--secondary, #9CA3AF));
 	background: color-mix(in srgb, var(--wp--preset--color--secondary, #6B7280) 8%, transparent);
 	padding: 2px 8px;
