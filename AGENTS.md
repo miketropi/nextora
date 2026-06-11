@@ -69,7 +69,7 @@ After changing CSS, TS, or block sources, run **`npm run build`** (or **`npm run
 **base** → **components** → **prose** → **overrides**
 
 - **Base**: `body.css`, `nav-menus.css`, `layout-shell.css`, `search-form.css`, `articles-shell.css`, `comments.css`, `pagination.css`, `entry-column.css`
-- **Components**: `buttons.css`, `form-fields.css`, `form-subscribe.css`, `modal.css`, `spotlight-search.css`, `scroll-animations.css`, `hero-section.css`
+- **Components**: `buttons.css`, `form-fields.css`, `custom-form.css`, `modal.css`, `spotlight-search.css`, `scroll-animations.css`, `hero-section.css`
 - **Prose**: `entry-content.css`
 - **Overrides**: `layout-tweaks.css`
 
