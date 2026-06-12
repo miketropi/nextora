@@ -3,7 +3,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "npm run build:css && npm run build:ts && npm run build:blocks",
+		"build": "npm run build:icons && npm run build:css && npm run build:ts && npm run build:blocks",
+		"build:icons": "node ./scripts/build-lucide-icons.mjs",
 		"build:css": "postcss ./resources/css/app.css -o ./assets/css/app.css --verbose",
 		"build:ts": "esbuild ./resources/ts/main.ts --bundle --outfile=./assets/js/main.js --target=es2020 --platform=browser --minify",
 		"build:blocks": "node ./scripts/build-blocks.mjs",
@@ -42,6 +43,7 @@
 		"glob": "^13.0.6",
 		"husky": "^9.1.7",
 		"lint-staged": "^17.0.5",
+		"lucide-static": "^1.7.0",
 		"postcss": "^8.5.3",
 		"postcss-cli": "^11.0.1",
 		"tailwindcss": "^4.2.2",

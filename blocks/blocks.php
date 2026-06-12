@@ -47,3 +47,7 @@ $instagram_feed_styles = __DIR__ . '/instagram-feed/register-styles.php';
 if ( is_readable( $instagram_feed_styles ) ) {
 	require_once $instagram_feed_styles;
 }
+$icon_editor = __DIR__ . '/icon/register-editor.php';
+if ( is_readable( $icon_editor ) ) {
+	require_once $icon_editor;
+}

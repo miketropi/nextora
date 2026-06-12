@@ -1,0 +1,72 @@
+.nextora-icon-picker-modal.components-modal__frame {
+	width: min(96vw, 1120px);
+	max-width: 1120px;
+	max-height: 100%;
+}
+
+.nextora-icon-picker-modal .components-modal__content {
+	min-width: min(96vw, 1080px);
+	max-width: 100%;
+	max-height: min(88vh, 720px);
+	overflow: initial;
+}
+
+.nextora-icon-picker__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+	gap: 6px;
+	max-height: min(62vh, 520px);
+	overflow-y: auto;
+	border: 1px solid #eee;
+	border-radius: 6px;
+	padding: 10px;
+	margin-top: 8px;
+}
+
+.nextora-icon-picker__item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	padding: 8px 4px;
+	border: 2px solid transparent;
+	border-radius: 6px;
+	background: none;
+	cursor: pointer;
+	font-size: 0.65rem;
+	color: #555;
+	word-break: break-all;
+}
+
+.nextora-icon-picker__item:hover {
+	background: #f5f5f5;
+}
+
+.nextora-icon-picker__item:focus-visible {
+	outline: 2px solid #007cba;
+	outline-offset: 2px;
+}
+
+.nextora-icon-picker__item.is-selected {
+	border-color: #007cba;
+	background: #e5f3ff;
+}
+
+.nextora-icon-picker__name {
+	text-align: center;
+}
+
+.nextora-icon-picker__error {
+	color: #b32d2e;
+}
+
+/* Editor preview: scroll reveal JS does not run — keep icon visible */
+.editor-styles-wrapper
+	.wp-block-nextora-icon.nextora-icon[data-nextora-scroll-reveal='1'].nextora-icon--reveal-pending,
+.editor-styles-wrapper
+	.wp-block-nextora-icon.nextora-icon.nextora-icon--scroll-off {
+	opacity: 1;
+}
+.nextora-icon-picker-modal .components-modal__content .components-button{
+    margin-top: 26px;
+}

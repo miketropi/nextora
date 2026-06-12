@@ -1,0 +1,94 @@
+.wp-block-nextora-icon.nextora-icon {
+	display: flex;
+	line-height: 0;
+	border: none;
+}
+
+.wp-block-nextora-icon.nextora-icon--align-left {
+	justify-content: flex-start;
+}
+
+.wp-block-nextora-icon.nextora-icon--align-center {
+	justify-content: center;
+}
+
+.wp-block-nextora-icon.nextora-icon--align-right {
+	justify-content: flex-end;
+}
+
+.wp-block-nextora-icon.nextora-icon svg.lucide {
+	display: block;
+	flex-shrink: 0;
+}
+
+.wp-block-nextora-icon .nextora-icon__img {
+	display: block;
+	flex-shrink: 0;
+	object-fit: contain;
+}
+
+.wp-block-nextora-icon .nextora-icon__link {
+	display: inline-flex;
+	align-items: center;
+	color: inherit;
+	text-decoration: none;
+	transition: opacity 0.2s ease;
+}
+
+.wp-block-nextora-icon .nextora-icon__link:hover {
+	opacity: 0.75;
+}
+
+.wp-block-nextora-icon .nextora-icon__link:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+/* Stacked — filled background behind icon */
+.wp-block-nextora-icon.nextora-icon--style-stacked .nextora-icon__surface {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.65em;
+	background: var(--nextora-icon-bg, var(--wp--preset--color--surface, #f0f0f0));
+	border-radius: var(--nextora-icon-radius, 8px);
+	line-height: 0;
+}
+
+/* Framed — bordered container */
+.wp-block-nextora-icon.nextora-icon--style-framed .nextora-icon__surface {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.55em;
+	border: 1.5px solid var(--nextora-icon-border-color, currentColor);
+	border-radius: var(--nextora-icon-radius, 8px);
+	line-height: 0;
+}
+
+/* Opt out of parent theme scroll utilities when Animate on scroll is off */
+.wp-block-nextora-icon.nextora-icon[data-nextora-scroll-animation-init='1'],
+.wp-block-nextora-icon.nextora-icon.nextora-icon--scroll-off {
+	opacity: 1;
+}
+
+/* Scroll reveal — only when data-nextora-scroll-reveal="1" */
+.wp-block-nextora-icon.nextora-icon[data-nextora-scroll-reveal='1'].nextora-icon--reveal-pending:not(
+		.nextora-icon--reveal-ready
+	) {
+	opacity: 0;
+}
+
+.wp-block-nextora-icon.nextora-icon[data-nextora-scroll-reveal='1'].nextora-icon--reveal-ready {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-nextora-icon .nextora-icon__link {
+		transition: none;
+	}
+
+	.wp-block-nextora-icon.nextora-icon[data-nextora-scroll-reveal='1'].nextora-icon--reveal-pending {
+		opacity: 1;
+	}
+}
