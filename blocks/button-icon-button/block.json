@@ -1,0 +1,166 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "nextora/button-icon-button",
+	"title": "Button",
+	"category": "design",
+	"description": "Single icon button inside a Button Icon group.",
+	"keywords": ["button", "icon", "cta"],
+	"textdomain": "nextora",
+	"icon": "button",
+	"parent": ["nextora/button-icon"],
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": false
+		},
+		"spacing": {
+			"padding": true,
+			"margin": false,
+			"blockGap": false,
+			"__experimentalDefaultControls": {
+				"padding": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": false
+		}
+	},
+	"attributes": {
+		"text": {
+			"type": "string",
+			"default": "Button"
+		},
+		"url": {
+			"type": "string",
+			"default": "#"
+		},
+		"linkTarget": {
+			"type": "string",
+			"default": "_self"
+		},
+		"rel": {
+			"type": "string",
+			"default": ""
+		},
+		"linkType": {
+			"type": "string",
+			"default": "url",
+			"enum": ["url", "modal", "click-event"]
+		},
+		"modalId": {
+			"type": "string",
+			"default": ""
+		},
+		"modalTitle": {
+			"type": "string",
+			"default": ""
+		},
+		"modalWidth": {
+			"type": "number",
+			"default": 896
+		},
+		"clickEventId": {
+			"type": "string",
+			"default": ""
+		},
+		"clickEventScript": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonStyle": {
+			"type": "string",
+			"default": "fill",
+			"enum": ["fill", "outline"]
+		},
+		"borderRadius": {
+			"type": "number",
+			"default": 50
+		},
+		"iconPosition": {
+			"type": "string",
+			"default": "left",
+			"enum": ["left", "right", "only"]
+		},
+		"iconSource": {
+			"type": "string",
+			"default": "theme",
+			"enum": ["theme", "upload"]
+		},
+		"iconName": {
+			"type": "string",
+			"default": "arrow-right"
+		},
+		"uploadedIconUrl": {
+			"type": "string",
+			"default": ""
+		},
+		"uploadedIconId": {
+			"type": "number",
+			"default": 0
+		},
+		"iconSize": {
+			"type": "number",
+			"default": 20
+		},
+		"iconColor": {
+			"type": "string",
+			"default": ""
+		},
+		"strokeWidth": {
+			"type": "number",
+			"default": 2
+		},
+		"iconStyle": {
+			"type": "string",
+			"default": "default",
+			"enum": ["default", "stacked", "framed"]
+		},
+		"iconBorderRadius": {
+			"type": "number",
+			"default": 8
+		},
+		"backgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"textColor": {
+			"type": "string",
+			"default": ""
+		},
+		"borderColor": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverEffect": {
+			"type": "string",
+			"default": "opacity",
+			"enum": ["opacity", "none", "color-swap", "lift"]
+		},
+		"hoverBackgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverTextColor": {
+			"type": "string",
+			"default": ""
+		},
+		"hoverBorderColor": {
+			"type": "string",
+			"default": ""
+		},
+		"ariaLabel": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php",
+	"style": "file:./style.css",
+	"editorStyle": "file:./editor.css"
+}

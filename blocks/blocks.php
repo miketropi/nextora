@@ -51,3 +51,13 @@ $icon_editor = __DIR__ . '/icon/register-editor.php';
 if ( is_readable( $icon_editor ) ) {
 	require_once $icon_editor;
 }
+
+$button_icon_editor = __DIR__ . '/button-icon/register-editor.php';
+if ( is_readable( $button_icon_editor ) ) {
+	require_once $button_icon_editor;
+}
+
+$button_icon_button_editor = __DIR__ . '/button-icon-button/register-editor.php';
+if ( is_readable( $button_icon_button_editor ) ) {
+	require_once $button_icon_button_editor;
+}

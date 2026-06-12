@@ -13,6 +13,7 @@ import { bindHeaderMiniCartAfterAjaxAdd, mountHeaderMiniCartPortalToBody } from 
 import { attachModalGlobals, initModals } from "./lib/modal";
 import { initSpotlightSearch } from "./lib/spotlight-search";
 import { mountSpotlightSearchPortalToBody } from "./spotlight-search-portal";
+import { mountButtonIconModalPortalToBody } from "./button-icon-modal-portal";
 
 function bootNextora(): void {
 	document.documentElement.classList.add("nextora-js");
@@ -22,6 +23,7 @@ function bootNextora(): void {
 	initHeaderFollowUs();
 	mountHeaderMiniCartPortalToBody();
 	mountSpotlightSearchPortalToBody();
+	mountButtonIconModalPortalToBody();
 	initModals();
 	bindHeaderMiniCartAfterAjaxAdd();
 	attachModalGlobals();

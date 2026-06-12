@@ -1,0 +1,263 @@
+<?php
+
+/**
+ * Shared button markup builder for nextora/button-icon-button.
+ *
+ * @package Nextora
+ */
+
+declare( strict_types=1 );
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+require_once __DIR__ . '/../icon/lucide.php';
+
+if ( ! function_exists( 'nextora_button_icon_button_parts' ) ) {
+	/**
+	 * Build classes, CSS variables, and inner markup for one button.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 *
+	 * @return array{
+	 *     classes: string,
+	 *     style: string,
+	 *     inner_html: string,
+	 *     href: string,
+	 *     target: string,
+	 *     rel: string,
+	 *     aria_label: string,
+	 *     opens_modal: bool,
+	 *     modal_id: string,
+	 *     is_click_event: bool,
+	 *     click_event_id: string,
+	 *     click_event_script: string
+	 * }
+	 */
+	function nextora_button_icon_button_parts( array $attributes ): array {
+		$text                   = isset( $attributes['text'] ) ? (string) $attributes['text'] : 'Button';
+		$url                    = isset( $attributes['url'] ) ? trim( (string) $attributes['url'] ) : '#';
+		$link_target            = isset( $attributes['linkTarget'] ) ? (string) $attributes['linkTarget'] : '_self';
+		$rel                    = isset( $attributes['rel'] ) ? trim( (string) $attributes['rel'] ) : '';
+		$link_type              = isset( $attributes['linkType'] ) ? (string) $attributes['linkType'] : 'url';
+		$modal_id               = isset( $attributes['modalId'] ) ? trim( (string) $attributes['modalId'] ) : '';
+		$click_event_id         = isset( $attributes['clickEventId'] ) ? trim( (string) $attributes['clickEventId'] ) : '';
+		$click_event_script     = isset( $attributes['clickEventScript'] ) ? (string) $attributes['clickEventScript'] : '';
+		$button_style           = isset( $attributes['buttonStyle'] ) ? (string) $attributes['buttonStyle'] : 'fill';
+		$border_radius          = isset( $attributes['borderRadius'] ) ? max( 0, (int) $attributes['borderRadius'] ) : 50;
+		$icon_position          = isset( $attributes['iconPosition'] ) ? (string) $attributes['iconPosition'] : 'left';
+		$icon_source            = isset( $attributes['iconSource'] ) ? (string) $attributes['iconSource'] : 'theme';
+		$icon_name              = isset( $attributes['iconName'] ) ? sanitize_key( (string) $attributes['iconName'] ) : 'arrow-right';
+		$upload_url             = isset( $attributes['uploadedIconUrl'] ) ? (string) $attributes['uploadedIconUrl'] : '';
+		$icon_size              = isset( $attributes['iconSize'] ) ? max( 1, (int) $attributes['iconSize'] ) : 20;
+		$stroke_w               = isset( $attributes['strokeWidth'] ) ? (float) $attributes['strokeWidth'] : 2.0;
+		$icon_style             = isset( $attributes['iconStyle'] ) ? (string) $attributes['iconStyle'] : 'default';
+		$icon_border_radius     = isset( $attributes['iconBorderRadius'] ) ? max( 0, (int) $attributes['iconBorderRadius'] ) : 8;
+		$background_color       = isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '';
+		$text_color             = isset( $attributes['textColor'] ) ? (string) $attributes['textColor'] : '';
+		$border_color           = isset( $attributes['borderColor'] ) ? (string) $attributes['borderColor'] : '';
+		$icon_color             = isset( $attributes['iconColor'] ) ? (string) $attributes['iconColor'] : '';
+		$hover_effect           = isset( $attributes['hoverEffect'] ) ? (string) $attributes['hoverEffect'] : 'opacity';
+		$hover_background_color = isset( $attributes['hoverBackgroundColor'] ) ? (string) $attributes['hoverBackgroundColor'] : '';
+		$hover_text_color       = isset( $attributes['hoverTextColor'] ) ? (string) $attributes['hoverTextColor'] : '';
+		$hover_border_color     = isset( $attributes['hoverBorderColor'] ) ? (string) $attributes['hoverBorderColor'] : '';
+		$aria_label             = isset( $attributes['ariaLabel'] ) ? trim( (string) $attributes['ariaLabel'] ) : '';
+
+		if ( '' === $url ) {
+			$url = '#';
+		}
+
+		$allowed_button_styles = array( 'fill', 'outline' );
+		if ( ! in_array( $button_style, $allowed_button_styles, true ) ) {
+			$button_style = 'fill';
+		}
+
+		$allowed_positions = array( 'left', 'right', 'only' );
+		if ( ! in_array( $icon_position, $allowed_positions, true ) ) {
+			$icon_position = 'left';
+		}
+
+		$allowed_icon_styles = array( 'default', 'stacked', 'framed' );
+		if ( ! in_array( $icon_style, $allowed_icon_styles, true ) ) {
+			$icon_style = 'default';
+		}
+
+		$allowed_hover_effects = array( 'opacity', 'none', 'color-swap', 'lift' );
+		if ( ! in_array( $hover_effect, $allowed_hover_effects, true ) ) {
+			$hover_effect = 'opacity';
+		}
+
+		$opens_modal = 'modal' === $link_type;
+		$is_click_event = 'click-event' === $link_type;
+		if ( $opens_modal ) {
+			$modal_id = preg_replace( '/[^a-zA-Z0-9_-]/', '', $modal_id ) ?? '';
+			if ( '' === $modal_id ) {
+				$modal_id = 'nextora-button-modal';
+			}
+		}
+		if ( $is_click_event ) {
+			$click_event_id = preg_replace( '/[^a-zA-Z0-9_-]/', '', $click_event_id ) ?? '';
+			if ( '' === $click_event_id ) {
+				$click_event_id = 'nextora-button-event';
+			}
+		}
+
+		$is_icon_only = 'only' === $icon_position;
+		$show_label   = ! $is_icon_only && '' !== trim( $text );
+
+		$resolved_icon_color = '' !== $icon_color
+			? nextora_icon_resolve_color( $icon_color )
+			: ( '' !== $text_color ? nextora_icon_resolve_color( $text_color ) : 'currentColor' );
+
+		$icon_markup = '';
+
+		if ( 'upload' === $icon_source && '' !== $upload_url ) {
+			$icon_markup = sprintf(
+				'<img src="%1$s" width="%2$d" height="%2$d" alt="" class="nextora-button-icon__img" aria-hidden="true" loading="lazy" decoding="async" />',
+				esc_url( $upload_url ),
+				$icon_size,
+			);
+		} elseif ( 'theme' === $icon_source ) {
+			$icon_markup = nextora_get_lucide_svg( $icon_name, $icon_size, $resolved_icon_color, $stroke_w, '' );
+		}
+
+		$has_surface = in_array( $icon_style, array( 'stacked', 'framed' ), true );
+		if ( '' !== $icon_markup && $has_surface ) {
+			$icon_markup = sprintf(
+				'<span class="nextora-button-icon__icon-surface">%s</span>',
+				$icon_markup,
+			);
+		}
+
+		$icon_html = '';
+		if ( '' !== $icon_markup ) {
+			$icon_html = sprintf(
+				'<span class="nextora-button-icon__icon nextora-button-icon__icon--%1$s" aria-hidden="true">%2$s</span>',
+				esc_attr( $icon_position ),
+				$icon_markup,
+			);
+		}
+
+		$label_html = $show_label
+			? sprintf(
+				'<span class="nextora-button-icon__label">%s</span>',
+				esc_html( $text ),
+			)
+			: '';
+
+		$button_inner = '';
+		if ( 'right' === $icon_position && ! $is_icon_only ) {
+			$button_inner = $label_html . $icon_html;
+		} elseif ( $is_icon_only ) {
+			$button_inner = $icon_html;
+		} else {
+			$button_inner = $icon_html . $label_html;
+		}
+
+		$link_rel = $rel;
+		if ( '_blank' === $link_target ) {
+			$link_rel = trim( $link_rel . ' noopener noreferrer' );
+		}
+
+		$effective_aria = '';
+		if ( $is_icon_only || ! $show_label ) {
+			$effective_aria = '' !== $aria_label ? $aria_label : trim( $text );
+		}
+
+		$style_vars = array(
+			sprintf( '--nextora-button-icon-radius:%dpx;', $border_radius ),
+			'--nextora-button-icon-gap:0.5rem;',
+			sprintf( '--nextora-button-icon-icon-size:%dpx;', $icon_size ),
+		);
+
+		if ( $has_surface ) {
+			$style_vars[] = sprintf( '--nextora-button-icon-icon-radius:%dpx;', $icon_border_radius );
+		}
+
+		if ( '' !== $background_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-button-icon-bg:%s;',
+				esc_attr( nextora_icon_resolve_color( $background_color ) ),
+			);
+		}
+
+		if ( '' !== $text_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-button-icon-text:%s;',
+				esc_attr( nextora_icon_resolve_color( $text_color ) ),
+			);
+		}
+
+		if ( '' !== $border_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-button-icon-border:%s;',
+				esc_attr( nextora_icon_resolve_color( $border_color ) ),
+			);
+		}
+
+		if ( 'stacked' === $icon_style && '' !== $background_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-button-icon-icon-bg:%s;',
+				esc_attr( nextora_icon_resolve_color( $background_color ) ),
+			);
+		}
+
+		if ( 'framed' === $icon_style && '' !== $border_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-button-icon-icon-border:%s;',
+				esc_attr( nextora_icon_resolve_color( $border_color ) ),
+			);
+		}
+
+		if ( '' !== $hover_background_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-button-icon-hover-bg:%s;',
+				esc_attr( nextora_icon_resolve_color( $hover_background_color ) ),
+			);
+		}
+
+		if ( '' !== $hover_text_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-button-icon-hover-text:%s;',
+				esc_attr( nextora_icon_resolve_color( $hover_text_color ) ),
+			);
+		}
+
+		if ( '' !== $hover_border_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-button-icon-hover-border:%s;',
+				esc_attr( nextora_icon_resolve_color( $hover_border_color ) ),
+			);
+		}
+
+		$item_classes = array(
+			'nextora-button-icon-button',
+			'nextora-button-icon-button--style-' . sanitize_html_class( $button_style ),
+			'nextora-button-icon-button--icon-' . sanitize_html_class( $icon_style ),
+			'nextora-button-icon-button--hover-' . sanitize_html_class( $hover_effect ),
+		);
+
+		if ( $opens_modal ) {
+			$item_classes[] = 'nextora-button-icon-button--opens-modal';
+		}
+		if ( $is_click_event ) {
+			$item_classes[] = 'nextora-button-icon-button--click-event';
+		}
+
+		return array(
+			'classes'            => implode( ' ', $item_classes ),
+			'style'              => implode( ' ', $style_vars ),
+			'inner_html'         => $button_inner,
+			'href'               => $url,
+			'target'             => in_array( $link_target, array( '_self', '_blank' ), true ) ? $link_target : '_self',
+			'rel'                => trim( $link_rel ),
+			'aria_label'         => $effective_aria,
+			'opens_modal'        => $opens_modal,
+			'modal_id'           => $modal_id,
+			'is_click_event'     => $is_click_event,
+			'click_event_id'     => $click_event_id,
+			'click_event_script' => $click_event_script,
+		);
+	}
+}
