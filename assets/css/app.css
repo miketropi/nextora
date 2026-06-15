@@ -427,6 +427,9 @@
   .grow {
     flex-grow: 1;
   }
+  .scale-3d {
+    scale: var(--tw-scale-x) var(--tw-scale-y) var(--tw-scale-z);
+  }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
   }
@@ -441,6 +444,15 @@
   }
   .list-none {
     list-style-type: none;
+  }
+  .columns-2 {
+    columns: 2;
+  }
+  .columns-3 {
+    columns: 3;
+  }
+  .columns-4 {
+    columns: 4;
   }
   .grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -763,6 +775,9 @@
   .tracking-wider {
     --tw-tracking: var(--tracking-wider);
     letter-spacing: var(--tracking-wider);
+  }
+  .text-wrap {
+    text-wrap: wrap;
   }
   .whitespace-nowrap {
     white-space: nowrap;
@@ -2758,6 +2773,14 @@ footer.wp-block-template-part {
   }
   .nextora-modal__surface--lg {
     width: min(100%, 42rem);
+  }
+  .nextora-modal__surface--xl {
+    width: min(100%, 56rem);
+    max-height: min(92vh, 860px);
+  }
+  .nextora-modal__surface--full {
+    width: min(100%, calc(100vw - (var(--nextora-modal-pad) * 2)));
+    max-height: min(96vh, 920px);
   }
   .nextora-modal__header {
     display: flex;
@@ -5005,6 +5028,21 @@ body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-customer-de
     padding-inline: var(--nextora-gutter);
   }
 }
+@property --tw-scale-x {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-scale-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+@property --tw-scale-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
 @property --tw-rotate-x {
   syntax: "*";
   inherits: false;
@@ -5219,6 +5257,9 @@ body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-customer-de
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
+      --tw-scale-x: 1;
+      --tw-scale-y: 1;
+      --tw-scale-z: 1;
       --tw-rotate-x: initial;
       --tw-rotate-y: initial;
       --tw-rotate-z: initial;

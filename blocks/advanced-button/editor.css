@@ -1,0 +1,77 @@
+/* Editor preview: scroll reveal JS does not run — keep buttons visible */
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-reveal='1'].nextora-advanced-button--reveal-pending,
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button.nextora-advanced-button.nextora-advanced-button--scroll-off {
+	opacity: 1;
+}
+
+.editor-styles-wrapper .wp-block-nextora-advanced-button .nextora-advanced-button__buttons,
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button
+	.nextora-advanced-button__buttons{
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+}
+
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button.nextora-advanced-button--align-left
+	.nextora-advanced-button__buttons,
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button.nextora-advanced-button--align-left
+	.block-editor-block-list__layout,
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button
+	.nextora-advanced-button__buttons.is-content-justification-left,
+.editor-styles-wrapper
+	.nextora-advanced-button__buttons.is-content-justification-left
+	.block-editor-block-list__layout {
+	justify-content: flex-start;
+}
+
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button.nextora-advanced-button--align-center
+	.nextora-advanced-button__buttons,
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button.nextora-advanced-button--align-center
+	.block-editor-block-list__layout,
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button
+	.nextora-advanced-button__buttons.is-content-justification-center,
+.editor-styles-wrapper
+	.nextora-advanced-button__buttons.is-content-justification-center
+	.block-editor-block-list__layout {
+	justify-content: center;
+}
+
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button.nextora-advanced-button--align-right
+	.nextora-advanced-button__buttons,
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button.nextora-advanced-button--align-right
+	.block-editor-block-list__layout,
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button
+	.nextora-advanced-button__buttons.is-content-justification-right,
+.editor-styles-wrapper
+	.nextora-advanced-button__buttons.is-content-justification-right
+	.block-editor-block-list__layout {
+	justify-content: flex-end;
+}
+
+.editor-styles-wrapper .wp-block-nextora-advanced-button .block-list-appender {
+	flex-shrink: 0;
+	position: relative;
+	margin: 0;
+	width: auto;
+}
+
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button
+	.block-list-appender
+	.block-editor-button-block-appender {
+	border-radius: 50px;
+}

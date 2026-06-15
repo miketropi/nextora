@@ -31431,6 +31431,15 @@ ${nextLine.slice(indentLevel + 2)}`;
     });
   }
 
+  // resources/ts/advanced-button-modal-portal.ts
+  function mountAdvancedButtonModalPortalToBody() {
+    document.querySelectorAll("[data-nextora-advanced-button-modal-portal]").forEach((el) => {
+      if (el.parentElement !== document.body) {
+        document.body.appendChild(el);
+      }
+    });
+  }
+
   // resources/ts/main.ts
   function bootNextora() {
     document.documentElement.classList.add("nextora-js");
@@ -31439,6 +31448,7 @@ ${nextLine.slice(indentLevel + 2)}`;
     initHeaderFollowUs();
     mountHeaderMiniCartPortalToBody();
     mountSpotlightSearchPortalToBody();
+    mountAdvancedButtonModalPortalToBody();
     initModals();
     bindHeaderMiniCartAfterAjaxAdd();
     attachModalGlobals();
