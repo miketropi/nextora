@@ -83,7 +83,7 @@
     },
     "showFollowUsMobile": {
       "type": "boolean",
-      "default": true
+      "default": false
     },
     "followUsLabel": {
       "type": "string",

@@ -445,14 +445,16 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 	/**
 	 * Follow Us trigger + dropdown panel markup.
 	 *
-	 * @param array<string, mixed> $atts Block attributes.
-	 * @param string               $uid  Unique instance id.
+	 * @param array<string, mixed> $atts    Block attributes.
+	 * @param string               $uid     Unique instance id.
+	 * @param string               $context `utilities` (header bar) or `drawer` (mobile canvas menu).
 	 */
-	function nextora_header_block_render_follow_us( array $atts, string $uid ): string
+	function nextora_header_block_render_follow_us( array $atts, string $uid, string $context = 'utilities' ): string
 	{
 		do_action( 'nextora_header_block_before_follow_us', $atts );
 
-		$panel_id = sanitize_html_class( $uid ) . '-follow-us-panel';
+		$is_drawer  = 'drawer' === $context;
+		$panel_id   = sanitize_html_class( $uid ) . '-follow-us-panel';
 		$label    = isset( $atts['followUsLabel'] ) && is_string( $atts['followUsLabel'] ) ? trim( $atts['followUsLabel'] ) : '';
 		$label    = '' !== $label ? $label : __( 'Follow Us', 'nextora' );
 
@@ -479,9 +481,17 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 
 		$chevron_svg = '<svg class="nextora-header-block__follow-us-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
+		$root_class = 'nextora-header-block__follow-us';
+		if ( $is_drawer ) {
+			$root_class .= ' nextora-header-block__follow-us--drawer';
+		}
+
 		ob_start();
 	?>
-		<div class="nextora-header-block__follow-us" data-nextora-header-follow-us>
+		<div
+			class="<?php echo esc_attr( $root_class ); ?>"
+			data-nextora-header-follow-us
+			<?php echo $is_drawer ? 'data-nextora-header-follow-us-drawer' : ''; ?>>
 			<button
 				type="button"
 				class="nextora-header-block__follow-us-toggle"
@@ -820,7 +830,8 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 	$show_cart     = ( ! isset( $atts['showMiniCart'] ) || (bool) $atts['showMiniCart'] ) && $woo_on();
 	$show_acct     = ( ! isset( $atts['showMyAccount'] ) || (bool) $atts['showMyAccount'] ) && $woo_on();
 
-	$hide_follow_m = isset( $atts['showFollowUsMobile'] ) && ! (bool) $atts['showFollowUsMobile'];
+	$show_follow_m   = isset( $atts['showFollowUsMobile'] ) && (bool) $atts['showFollowUsMobile'];
+	$hide_follow_m   = $show_follow && ! $show_follow_m;
 	$hide_search_m = isset( $atts['showSearchMobile'] ) && ! (bool) $atts['showSearchMobile'];
 	$hide_cart_m   = isset( $atts['showCartMobile'] ) && ! (bool) $atts['showCartMobile'];
 	$hide_cta_m    = isset( $atts['showCtaButtonMobile'] ) && ! (bool) $atts['showCtaButtonMobile'];
@@ -1014,6 +1025,14 @@ ob_start();
 	<?php
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- nav HTML from wp_nav_menu walker.
 	echo $nav_markup;
+
+	$show_follow_drawer = ! empty( $attributes['showFollowUs'] )
+		&& ( ! isset( $attributes['showFollowUsMobile'] ) || ! (bool) $attributes['showFollowUsMobile'] );
+
+	if ( $show_follow_drawer && function_exists( 'nextora_header_block_render_follow_us' ) ) :
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in helper.
+		echo nextora_header_block_render_follow_us( $attributes, $uid . '-drawer', 'drawer' );
+	endif;
 	?>
 </div>
 <?php
