@@ -341,9 +341,13 @@ export default function HeaderEdit({ attributes, setAttributes }) {
           {showFollowUs && (
             <>
               <ToggleControl
-                label={__('Show Follow Us on small screens', 'nextora')}
+                label={__('Show Follow Us in header bar on small screens', 'nextora')}
                 checked={showFollowUsMobile}
                 onChange={(v) => setAttributes({ showFollowUsMobile: v })}
+                help={__(
+                  'When off, Follow Us appears inside the mobile menu instead of the header bar.',
+                  'nextora'
+                )}
               />
               <TextControl
                 label={__('Trigger label', 'nextora')}

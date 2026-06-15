@@ -5,6 +5,7 @@
  */
 
 import gsap from "gsap";
+import { bindHeaderFollowUsIn, clearFollowUsBindingState } from "./header-follow-us";
 
 const DESKTOP_MQ = "(min-width: 768px)";
 /** Must match `--nextora-offcanvas-dur` in `resources/css/app.css` (seconds). */
@@ -178,18 +179,19 @@ function getOrCreatePortal(btn: HTMLButtonElement): PortalElements | null {
 }
 
 function cloneNavIntoMount(sourcePanel: HTMLElement, mount: HTMLElement): void {
-	const sourceNode =
-		sourcePanel.querySelector<HTMLElement>("nav") ??
-		(sourcePanel.firstElementChild instanceof HTMLElement ? sourcePanel.firstElementChild : null);
+	const clones: HTMLElement[] = [];
 
-	if (!sourceNode) {
-		mount.replaceChildren();
-		return;
-	}
+	sourcePanel.childNodes.forEach((node) => {
+		if (node instanceof HTMLElement) {
+			const clone = node.cloneNode(true) as HTMLElement;
+			dedupeCloneIds(clone);
+			clearFollowUsBindingState(clone);
+			clones.push(clone);
+		}
+	});
 
-	const clone = sourceNode.cloneNode(true) as HTMLElement;
-	dedupeCloneIds(clone);
-	mount.replaceChildren(clone);
+	mount.replaceChildren(...clones);
+	bindHeaderFollowUsIn(mount);
 }
 
 function focusFirstNavLink(panel: HTMLElement): void {
