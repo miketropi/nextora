@@ -30293,13 +30293,222 @@ ${nextLine.slice(indentLevel + 2)}`;
     }
   }
 
+  // resources/ts/header-follow-us.ts
+  var ROOT_SELECTOR = "[data-nextora-header-follow-us]";
+  var TOGGLE_SELECTOR = "[data-nextora-header-follow-us-toggle]";
+  var PANEL_SELECTOR = "[data-nextora-header-follow-us-panel]";
+  var SCRIM_SELECTOR = "[data-nextora-header-follow-us-scrim]";
+  var VIEWPORT_GUTTER = 16;
+  function prefersReducedMotion2() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+  function clearPanelPosition(panel) {
+    panel.style.removeProperty("top");
+    panel.style.removeProperty("left");
+    panel.style.removeProperty("right");
+    panel.style.removeProperty("width");
+    panel.style.removeProperty("max-height");
+    panel.style.removeProperty("visibility");
+    panel.style.removeProperty("pointer-events");
+  }
+  function positionStackedPanel(toggle, panel) {
+    const rect = toggle.getBoundingClientRect();
+    const top = Math.round(rect.bottom + 8);
+    const maxHeight = Math.max(180, window.innerHeight - top - VIEWPORT_GUTTER);
+    panel.style.top = `${top}px`;
+    panel.style.left = `${VIEWPORT_GUTTER}px`;
+    panel.style.right = `${VIEWPORT_GUTTER}px`;
+    panel.style.width = "auto";
+    panel.style.maxHeight = `${maxHeight}px`;
+  }
+  function panelOverflowsViewport(root, panel) {
+    root.classList.remove("nextora-header-block__follow-us--stacked");
+    clearPanelPosition(panel);
+    const wasHidden = panel.hidden;
+    panel.hidden = false;
+    panel.style.visibility = "hidden";
+    panel.style.pointerEvents = "none";
+    const panelRect = panel.getBoundingClientRect();
+    const overflows = panelRect.left < VIEWPORT_GUTTER || panelRect.right > window.innerWidth - VIEWPORT_GUTTER;
+    panel.style.visibility = "";
+    panel.style.pointerEvents = "";
+    panel.hidden = wasHidden;
+    return overflows;
+  }
+  function applyPanelLayout(root, toggle, panel, scrim) {
+    const stacked = panelOverflowsViewport(root, panel);
+    root.classList.toggle("nextora-header-block__follow-us--stacked", stacked);
+    clearPanelPosition(panel);
+    if (stacked) {
+      positionStackedPanel(toggle, panel);
+      document.documentElement.classList.add("nextora-header-follow-us-open");
+      if (scrim) {
+        scrim.hidden = false;
+      }
+      return;
+    }
+    document.documentElement.classList.remove("nextora-header-follow-us-open");
+    if (scrim) {
+      scrim.hidden = true;
+    }
+  }
+  function isDrawerFollowUs(root) {
+    return root.hasAttribute("data-nextora-header-follow-us-drawer");
+  }
+  function isFollowUsPortalClone(root) {
+    return root.closest("[data-nextora-nav-portal-mount]") !== null;
+  }
+  function shouldBindFollowUsRoot(root) {
+    if (!isDrawerFollowUs(root)) {
+      return true;
+    }
+    return isFollowUsPortalClone(root);
+  }
+  function clearFollowUsBindingState(root) {
+    if (root instanceof HTMLElement && root.matches(ROOT_SELECTOR)) {
+      delete root.dataset.nextoraHeaderFollowUsBound;
+    }
+    root.querySelectorAll(ROOT_SELECTOR).forEach((el) => {
+      delete el.dataset.nextoraHeaderFollowUsBound;
+    });
+  }
+  function syncDrawerFollowUsOverlay(root, open) {
+    if (!isDrawerFollowUs(root)) {
+      return;
+    }
+    const mount = root.closest("[data-nextora-nav-portal-mount]");
+    const portalPanel = root.closest(".nextora-primary-nav-portal__panel");
+    mount?.classList.toggle("nextora-primary-nav-portal__mount--follow-us-open", open);
+    portalPanel?.classList.toggle("nextora-primary-nav-portal__panel--follow-us-open", open);
+  }
+  function closePanel(root, toggle, panel, scrim) {
+    root.classList.remove("nextora-header-block__follow-us--open", "nextora-header-block__follow-us--stacked");
+    document.documentElement.classList.remove("nextora-header-follow-us-open");
+    toggle.setAttribute("aria-expanded", "false");
+    panel.hidden = true;
+    if (!isDrawerFollowUs(root)) {
+      clearPanelPosition(panel);
+    }
+    if (scrim) {
+      scrim.hidden = true;
+    }
+    syncDrawerFollowUsOverlay(root, false);
+  }
+  function openPanel(root, toggle, panel, scrim) {
+    document.querySelectorAll(ROOT_SELECTOR).forEach((other) => {
+      if (other === root) {
+        return;
+      }
+      const otherToggle = other.querySelector(TOGGLE_SELECTOR);
+      const otherPanel = other.querySelector(PANEL_SELECTOR);
+      const otherScrim = other.querySelector(SCRIM_SELECTOR);
+      if (otherToggle && otherPanel) {
+        closePanel(other, otherToggle, otherPanel, otherScrim);
+      }
+    });
+    panel.hidden = false;
+    if (isDrawerFollowUs(root)) {
+      root.classList.add("nextora-header-block__follow-us--open");
+      toggle.setAttribute("aria-expanded", "true");
+      syncDrawerFollowUsOverlay(root, true);
+      return;
+    }
+    applyPanelLayout(root, toggle, panel, scrim);
+    root.classList.add("nextora-header-block__follow-us--open");
+    toggle.setAttribute("aria-expanded", "true");
+  }
+  function bindFollowUsRoot(root) {
+    if (!shouldBindFollowUsRoot(root) || root.dataset.nextoraHeaderFollowUsBound === "1") {
+      return;
+    }
+    const toggle = root.querySelector(TOGGLE_SELECTOR);
+    const panel = root.querySelector(PANEL_SELECTOR);
+    const scrim = root.querySelector(SCRIM_SELECTOR);
+    if (!toggle || !panel) {
+      return;
+    }
+    root.dataset.nextoraHeaderFollowUsBound = "1";
+    const handleReposition = () => {
+      if (!root.classList.contains("nextora-header-block__follow-us--open") || isDrawerFollowUs(root)) {
+        return;
+      }
+      applyPanelLayout(root, toggle, panel, scrim);
+    };
+    toggle.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const isOpen = root.classList.contains("nextora-header-block__follow-us--open");
+      if (isOpen) {
+        closePanel(root, toggle, panel, scrim);
+        return;
+      }
+      openPanel(root, toggle, panel, scrim);
+    });
+    panel.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+    scrim?.addEventListener("click", (event) => {
+      event.preventDefault();
+      closePanel(root, toggle, panel, scrim);
+    });
+    toggle.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closePanel(root, toggle, panel, scrim);
+      }
+    });
+    window.addEventListener("resize", handleReposition);
+    if (!prefersReducedMotion2() && !isDrawerFollowUs(root)) {
+      window.addEventListener("scroll", handleReposition, { passive: true });
+    }
+  }
+  function bindHeaderFollowUsIn(root = document) {
+    root.querySelectorAll(ROOT_SELECTOR).forEach(bindFollowUsRoot);
+  }
+  function initHeaderFollowUs() {
+    bindHeaderFollowUsIn(document);
+    if (document.documentElement.dataset.nextoraHeaderFollowUsDocBound === "1") {
+      return;
+    }
+    document.documentElement.dataset.nextoraHeaderFollowUsDocBound = "1";
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof Node)) {
+        return;
+      }
+      document.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
+        if (!shouldBindFollowUsRoot(root) || root.contains(target)) {
+          return;
+        }
+        const toggle = root.querySelector(TOGGLE_SELECTOR);
+        const panel = root.querySelector(PANEL_SELECTOR);
+        const scrim = root.querySelector(SCRIM_SELECTOR);
+        if (toggle && panel && root.classList.contains("nextora-header-block__follow-us--open")) {
+          closePanel(root, toggle, panel, scrim);
+        }
+      });
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+      document.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
+        const toggle = root.querySelector(TOGGLE_SELECTOR);
+        const panel = root.querySelector(PANEL_SELECTOR);
+        const scrim = root.querySelector(SCRIM_SELECTOR);
+        if (toggle && panel && root.classList.contains("nextora-header-block__follow-us--open")) {
+          closePanel(root, toggle, panel, scrim);
+        }
+      });
+    });
+  }
+
   // resources/ts/header-nav.ts
   var DESKTOP_MQ = "(min-width: 768px)";
   var OFFCANVAS_DUR_S = 0.4;
   var PORTAL_CLOSE_MS = Math.round(OFFCANVAS_DUR_S * 1e3) + 80;
   var FOCUS_AFTER_OPEN_MS = 80;
   var OPEN_BACKDROP_GUARD_MS = 500;
-  function prefersReducedMotion2() {
+  function prefersReducedMotion3() {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
   function portalPanelOffscreenXPercent() {
@@ -30422,14 +30631,17 @@ ${nextLine.slice(indentLevel + 2)}`;
     return { root, backdrop, panel, mount, closeBtn };
   }
   function cloneNavIntoMount(sourcePanel, mount) {
-    const sourceNode = sourcePanel.querySelector("nav") ?? (sourcePanel.firstElementChild instanceof HTMLElement ? sourcePanel.firstElementChild : null);
-    if (!sourceNode) {
-      mount.replaceChildren();
-      return;
-    }
-    const clone = sourceNode.cloneNode(true);
-    dedupeCloneIds(clone);
-    mount.replaceChildren(clone);
+    const clones = [];
+    sourcePanel.childNodes.forEach((node) => {
+      if (node instanceof HTMLElement) {
+        const clone = node.cloneNode(true);
+        dedupeCloneIds(clone);
+        clearFollowUsBindingState(clone);
+        clones.push(clone);
+      }
+    });
+    mount.replaceChildren(...clones);
+    bindHeaderFollowUsIn(mount);
   }
   function focusFirstNavLink(panel) {
     panel.querySelector("a[href]")?.focus();
@@ -30516,7 +30728,7 @@ ${nextLine.slice(indentLevel + 2)}`;
         setExpandedLabel(false);
         document.documentElement.classList.remove("nextora-primary-nav-drawer-open");
         killPortalGsap(p);
-        if (prefersReducedMotion2()) {
+        if (prefersReducedMotion3()) {
           clearCloseTimer();
           p.root.classList.remove("nextora-primary-nav-portal--open");
           p.root.classList.remove("nextora-primary-nav-portal--gsap");
@@ -30556,7 +30768,7 @@ ${nextLine.slice(indentLevel + 2)}`;
         void p.root.getBoundingClientRect();
         requestAnimationFrame(() => {
           killPortalGsap(p);
-          if (prefersReducedMotion2()) {
+          if (prefersReducedMotion3()) {
             p.root.classList.add("nextora-primary-nav-portal--open");
           } else {
             runPortalOpenGsap(p);
@@ -30566,7 +30778,7 @@ ${nextLine.slice(indentLevel + 2)}`;
           document.documentElement.classList.add("nextora-primary-nav-drawer-open");
           window.setTimeout(
             () => focusFirstNavLink(p.panel),
-            prefersReducedMotion2() ? 0 : FOCUS_AFTER_OPEN_MS
+            prefersReducedMotion3() ? 0 : FOCUS_AFTER_OPEN_MS
           );
         });
         onEscape = (e) => {
@@ -30640,174 +30852,6 @@ ${nextLine.slice(indentLevel + 2)}`;
       }
       el.setAttribute("aria-expanded", next ? "true" : "false");
       li.classList.toggle("nextora-submenu--open", next);
-    });
-  }
-
-  // resources/ts/header-follow-us.ts
-  var ROOT_SELECTOR = "[data-nextora-header-follow-us]";
-  var TOGGLE_SELECTOR = "[data-nextora-header-follow-us-toggle]";
-  var PANEL_SELECTOR = "[data-nextora-header-follow-us-panel]";
-  var SCRIM_SELECTOR = "[data-nextora-header-follow-us-scrim]";
-  var VIEWPORT_GUTTER = 16;
-  function prefersReducedMotion3() {
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  }
-  function clearPanelPosition(panel) {
-    panel.style.removeProperty("top");
-    panel.style.removeProperty("left");
-    panel.style.removeProperty("right");
-    panel.style.removeProperty("width");
-    panel.style.removeProperty("max-height");
-    panel.style.removeProperty("visibility");
-    panel.style.removeProperty("pointer-events");
-  }
-  function positionStackedPanel(toggle, panel) {
-    const rect = toggle.getBoundingClientRect();
-    const top = Math.round(rect.bottom + 8);
-    const maxHeight = Math.max(180, window.innerHeight - top - VIEWPORT_GUTTER);
-    panel.style.top = `${top}px`;
-    panel.style.left = `${VIEWPORT_GUTTER}px`;
-    panel.style.right = `${VIEWPORT_GUTTER}px`;
-    panel.style.width = "auto";
-    panel.style.maxHeight = `${maxHeight}px`;
-  }
-  function panelOverflowsViewport(root, panel) {
-    root.classList.remove("nextora-header-block__follow-us--stacked");
-    clearPanelPosition(panel);
-    const wasHidden = panel.hidden;
-    panel.hidden = false;
-    panel.style.visibility = "hidden";
-    panel.style.pointerEvents = "none";
-    const panelRect = panel.getBoundingClientRect();
-    const overflows = panelRect.left < VIEWPORT_GUTTER || panelRect.right > window.innerWidth - VIEWPORT_GUTTER;
-    panel.style.visibility = "";
-    panel.style.pointerEvents = "";
-    panel.hidden = wasHidden;
-    return overflows;
-  }
-  function applyPanelLayout(root, toggle, panel, scrim) {
-    const stacked = panelOverflowsViewport(root, panel);
-    root.classList.toggle("nextora-header-block__follow-us--stacked", stacked);
-    clearPanelPosition(panel);
-    if (stacked) {
-      positionStackedPanel(toggle, panel);
-      document.documentElement.classList.add("nextora-header-follow-us-open");
-      if (scrim) {
-        scrim.hidden = false;
-      }
-      return;
-    }
-    document.documentElement.classList.remove("nextora-header-follow-us-open");
-    if (scrim) {
-      scrim.hidden = true;
-    }
-  }
-  function closePanel(root, toggle, panel, scrim) {
-    root.classList.remove("nextora-header-block__follow-us--open", "nextora-header-block__follow-us--stacked");
-    document.documentElement.classList.remove("nextora-header-follow-us-open");
-    toggle.setAttribute("aria-expanded", "false");
-    panel.hidden = true;
-    clearPanelPosition(panel);
-    if (scrim) {
-      scrim.hidden = true;
-    }
-  }
-  function openPanel(root, toggle, panel, scrim) {
-    document.querySelectorAll(ROOT_SELECTOR).forEach((other) => {
-      if (other === root) {
-        return;
-      }
-      const otherToggle = other.querySelector(TOGGLE_SELECTOR);
-      const otherPanel = other.querySelector(PANEL_SELECTOR);
-      const otherScrim = other.querySelector(SCRIM_SELECTOR);
-      if (otherToggle && otherPanel) {
-        closePanel(other, otherToggle, otherPanel, otherScrim);
-      }
-    });
-    panel.hidden = false;
-    applyPanelLayout(root, toggle, panel, scrim);
-    root.classList.add("nextora-header-block__follow-us--open");
-    toggle.setAttribute("aria-expanded", "true");
-  }
-  function bindFollowUsRoot(root) {
-    if (root.dataset.nextoraHeaderFollowUsBound === "1") {
-      return;
-    }
-    const toggle = root.querySelector(TOGGLE_SELECTOR);
-    const panel = root.querySelector(PANEL_SELECTOR);
-    const scrim = root.querySelector(SCRIM_SELECTOR);
-    if (!toggle || !panel) {
-      return;
-    }
-    root.dataset.nextoraHeaderFollowUsBound = "1";
-    const handleReposition = () => {
-      if (!root.classList.contains("nextora-header-block__follow-us--open")) {
-        return;
-      }
-      applyPanelLayout(root, toggle, panel, scrim);
-    };
-    toggle.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const isOpen = root.classList.contains("nextora-header-block__follow-us--open");
-      if (isOpen) {
-        closePanel(root, toggle, panel, scrim);
-        return;
-      }
-      openPanel(root, toggle, panel, scrim);
-    });
-    panel.addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
-    scrim?.addEventListener("click", (event) => {
-      event.preventDefault();
-      closePanel(root, toggle, panel, scrim);
-    });
-    toggle.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closePanel(root, toggle, panel, scrim);
-      }
-    });
-    window.addEventListener("resize", handleReposition);
-    if (!prefersReducedMotion3()) {
-      window.addEventListener("scroll", handleReposition, { passive: true });
-    }
-  }
-  function initHeaderFollowUs() {
-    document.querySelectorAll(ROOT_SELECTOR).forEach(bindFollowUsRoot);
-    if (document.documentElement.dataset.nextoraHeaderFollowUsDocBound === "1") {
-      return;
-    }
-    document.documentElement.dataset.nextoraHeaderFollowUsDocBound = "1";
-    document.addEventListener("click", (event) => {
-      const target = event.target;
-      if (!(target instanceof Node)) {
-        return;
-      }
-      document.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
-        if (root.contains(target)) {
-          return;
-        }
-        const toggle = root.querySelector(TOGGLE_SELECTOR);
-        const panel = root.querySelector(PANEL_SELECTOR);
-        const scrim = root.querySelector(SCRIM_SELECTOR);
-        if (toggle && panel && root.classList.contains("nextora-header-block__follow-us--open")) {
-          closePanel(root, toggle, panel, scrim);
-        }
-      });
-    });
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape") {
-        return;
-      }
-      document.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
-        const toggle = root.querySelector(TOGGLE_SELECTOR);
-        const panel = root.querySelector(PANEL_SELECTOR);
-        const scrim = root.querySelector(SCRIM_SELECTOR);
-        if (toggle && panel && root.classList.contains("nextora-header-block__follow-us--open")) {
-          closePanel(root, toggle, panel, scrim);
-        }
-      });
     });
   }
 
@@ -31431,6 +31475,15 @@ ${nextLine.slice(indentLevel + 2)}`;
     });
   }
 
+  // resources/ts/advanced-button-modal-portal.ts
+  function mountAdvancedButtonModalPortalToBody() {
+    document.querySelectorAll("[data-nextora-advanced-button-modal-portal]").forEach((el) => {
+      if (el.parentElement !== document.body) {
+        document.body.appendChild(el);
+      }
+    });
+  }
+
   // resources/ts/main.ts
   function bootNextora() {
     document.documentElement.classList.add("nextora-js");
@@ -31439,6 +31492,7 @@ ${nextLine.slice(indentLevel + 2)}`;
     initHeaderFollowUs();
     mountHeaderMiniCartPortalToBody();
     mountSpotlightSearchPortalToBody();
+    mountAdvancedButtonModalPortalToBody();
     initModals();
     bindHeaderMiniCartAfterAjaxAdd();
     attachModalGlobals();
