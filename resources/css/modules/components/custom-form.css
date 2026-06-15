@@ -7,7 +7,7 @@
 		--nextora-form-subscribe-accent-hover: var(--wp--preset--color--primary, #0a0a0a);
 		--nextora-form-subscribe-border: color-mix(
 			in srgb,
-			var(--wp--preset--color--secondary, #525252) 28%,
+			var(--wp--preset--color--paragraph, #525252) 28%,
 			transparent
 		);
 		--nextora-form-subscribe-control-h: 3rem;
@@ -71,7 +71,7 @@
 	.mc4wp-form .mc4wp-form-fields input[type="email"]::placeholder {
 		color: color-mix(
 			in srgb,
-			var(--wp--preset--color--secondary, #525252) 55%,
+			var(--wp--preset--color--paragraph, #525252) 55%,
 			transparent
 		);
 		opacity: 1;

@@ -55,7 +55,7 @@
 .nextora-comments .comment-meta-header {
 	margin-bottom: 0.4rem;
 	font-size: 0.875rem;
-	color: var(--wp--preset--color--secondary, #64748b);
+	color: var(--wp--preset--color--paragraph, #64748b);
 }
 
 .nextora-comments .comment-meta-header .fn,
@@ -87,7 +87,7 @@
 
 .nextora-comments .comment-edit-link a {
 	/* font-size: 0.75rem; */
-	color: var(--wp--preset--color--secondary, #64748b);
+	color: var(--wp--preset--color--paragraph, #64748b);
 	text-decoration: none;
 }
 
@@ -154,7 +154,7 @@
 .nextora-comments .nextora-tiptap-prose blockquote {
 	margin: 0.5em 0;
 	padding-left: 0.85em;
-	border-left: 3px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 45%, transparent);
+	border-left: 3px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 45%, transparent);
 	color: var(--wp--preset--color--contrast, #0f172a);
 }
 
@@ -179,7 +179,7 @@
 	gap: 0.35rem 0.5rem;
 	padding: 0.45rem 0.6rem;
 	/* background-color: color-mix(in srgb, var(--wp--preset--color--surface, #f1f5f9) 88%, var(--wp--preset--color--base, #fafafa)); */
-	border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 22%, transparent);
+	border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #64748b) 22%, transparent);
 }
 
 .nextora-tiptap-shell .nextora-tiptap-toolbar__group {
@@ -191,7 +191,7 @@
 .nextora-tiptap-shell .nextora-tiptap-toolbar__group--end {
 	padding-left: 0.45rem;
 	margin-left: 0.15rem;
-	border-left: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 28%, transparent);
+	border-left: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #64748b) 28%, transparent);
 }
 
 .nextora-tiptap-shell .nextora-tiptap-toolbar__btn {
@@ -203,7 +203,7 @@
 	height: 2rem;
 	padding: 0 0.4rem;
 	margin: 0;
-	border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 28%, transparent);
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #64748b) 28%, transparent);
 	border-radius: 0.375rem;
 	background-color: var(--wp--preset--color--base, #fafafa);
 	color: var(--wp--preset--color--contrast, #0f172a);
@@ -226,7 +226,7 @@
 
 .nextora-tiptap-shell .nextora-tiptap-toolbar__btn:hover {
 	background-color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 70%, var(--wp--preset--color--surface, #f1f5f9));
-	border-color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 45%, transparent);
+	border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #64748b) 45%, transparent);
 }
 
 .nextora-tiptap-shell .nextora-tiptap-toolbar__btn:focus-visible {

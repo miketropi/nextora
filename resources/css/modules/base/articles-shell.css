@@ -21,6 +21,6 @@
 	.nextora-container--title {
 		padding-block: clamp(0.5rem, 2vw, 1rem);
 		margin-bottom: clamp(0.75rem, 2.25vw, 1.25rem);
-		border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 25%, transparent);
+		border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 25%, transparent);
 	}
 }
