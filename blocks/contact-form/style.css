@@ -20,13 +20,12 @@
 	font-weight: 800;
 	line-height: 1.15;
 	margin: 0 0 0.35rem;
-	color: inherit;
 }
 
 .nextora-contact-form .nextora-contact-form__subheading {
 	font-size: var(--wp--preset--font-size--small, 0.95rem);
 	line-height: 1.5;
-	color: var(--wp--preset--color--secondary, #525252);
+	color: var(--wp--preset--color--paragraph, #525252);
 	margin: 0 0 1.75rem;
 }
 
@@ -89,7 +88,6 @@
 .nextora-contact-form__label {
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	font-weight: 600;
-	color: inherit;
 	margin-bottom: 0.35rem;
 	cursor: text;
 }
@@ -176,7 +174,7 @@
 .nextora-contact-form .nextora-tiptap-prose blockquote {
 	margin: 0.5em 0;
 	padding-left: 0.85em;
-	border-left: 3px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 45%, transparent);
+	border-left: 3px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 45%, transparent);
 }
 
 .nextora-contact-form .nextora-tiptap-prose code {

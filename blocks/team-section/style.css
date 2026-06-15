@@ -74,21 +74,21 @@
 
 .nextora-team-section__eyebrow {
 	font-weight: 600;
-	color: var(--nextora-team-eyebrow-color, var(--wp--preset--color--primary, inherit));
+	color: var(--nextora-team-eyebrow-color, var(--wp--preset--color--paragraph, #525252));
 	margin: 0 0 0.5rem;
 }
 
 .nextora-team-section__heading {
 	font-size: var(--wp--preset--font-size--x-large, clamp(1.5rem, 3vw, 2.5rem));
 	line-height: 1.15;
-	color: var(--nextora-team-heading-color, inherit);
+	color: var(--nextora-team-heading-color, var(--wp--preset--color--contrast, #0a0a0a));
 	margin: 0 0 0.75rem;
 }
 
 .nextora-team-section__description {
 	font-size: var(--wp--preset--font-size--base, 1rem);
 	line-height: 1.6;
-	color: var(--nextora-team-desc-color, var(--wp--preset--color--secondary, #525252));
+	color: var(--nextora-team-desc-color, var(--wp--preset--color--paragraph, #525252));
 	margin: 0;
 	max-width: 30rem;
 }
@@ -217,12 +217,12 @@
 	font-size: var(--wp--preset--font-size--base, 1rem);
 	font-weight: 600;
 	margin: 0 0 0.125rem;
-	color: var(--nextora-team-card-name-color, inherit);
+	color: var(--nextora-team-card-name-color, var(--wp--preset--color--contrast, #0a0a0a));
 }
 
 .nextora-team-section__card-role {
 	font-size: 0.9rem;
-	color: var(--nextora-team-desc-color, var(--wp--preset--color--secondary, #525252));
+	color: var(--nextora-team-desc-color, var(--wp--preset--color--paragraph, #525252));
 	margin: 0 0 0.625rem !important;
 }
 
@@ -238,14 +238,14 @@
 	padding: 0.2rem 0.75rem;
 	border-radius: 999px;
 	background: var(--nextora-team-tag-bg, color-mix(in srgb, currentColor 8%, transparent));
-	color: var(--nextora-team-tag-color, var(--wp--preset--color--secondary, #525252));
+	color: var(--nextora-team-tag-color, var(--wp--preset--color--paragraph, #525252));
 	font-weight: 500;
 }
 
 .nextora-team-section__card-bio {
 	font-size: 1rem;
 	line-height: 1.6;
-	color: var(--nextora-team-desc-color, var(--wp--preset--color--secondary, #525252));
+	color: var(--nextora-team-desc-color, var(--wp--preset--color--paragraph, #525252));
 	margin: 0;
 	display: -webkit-box;
 	-webkit-line-clamp: var(--nextora-team-bio-clamp, 3);

@@ -49,7 +49,7 @@ Every color in templates must reference these presets — **never hard-code hex 
 | `base` | `#ffffff` | `bg-base`, `text-base` | Primary background, white |
 | `contrast` | `#0a0a0a` | `bg-contrast`, `text-contrast` | Body text, dark backgrounds |
 | `primary` | `#000000` | `bg-primary`, `text-primary` | Links, button backgrounds |
-| `secondary` | `#525252` | `bg-secondary`, `text-secondary` | Muted text, borders, separators |
+| `secondary` | `#525252` | `bg-secondary`, `text-paragraph` | Muted text, borders, separators |
 | `surface` | `#f4f4f4` | `bg-surface`, `text-surface` | Light gray backgrounds, cards |
 
 **CSS variable syntax:** `var(--wp--preset--color--{slug})`

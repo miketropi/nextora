@@ -220,7 +220,7 @@ if ( $uses_recaptcha && '' !== $recaptcha_site_key && $source_post_id > 0 && fun
 	}
 }
 
-$tiptap_shell_class = 'nextora-tiptap-shell nextora-contact-form__tiptap-shell mb-0 max-w-none rounded-md border border-secondary/40 bg-base shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20';
+$tiptap_shell_class = 'nextora-tiptap-shell nextora-contact-form__tiptap-shell mb-0 max-w-none rounded-md border border-contrast/40 bg-base shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20';
 
 nextora_contact_form_enqueue_view_script();
 
