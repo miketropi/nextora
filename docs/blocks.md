@@ -100,8 +100,8 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 | `nextora/instagram-feed` | Curated Instagram tiles, Swiper carousel, lightbox modal; see [`docs/blocks/Instagram.md`](./blocks/Instagram.md) |
 | `nextora/contact-form` | Get-in-touch form, REST submit, dual email, Tiptap message field; see [`docs/blocks/Contact Form Block.md`](./blocks/Contact%20Form%20Block.md) |
 | `nextora/google-maps` | Iframe or JS API map embed, markers, directions; see [`docs/blocks/Google Maps Block.md`](./blocks/Google%20Maps%20Block.md) |
-| `nextora/icon` | Lucide theme icon or Media Library upload; inline SVG / `<img>`; see [`docs/blocks/Theme Icon Block.md`](./blocks/Theme%20Icon%20Block.md) |
-| `nextora/button-icon` | CTA button with label + Lucide/upload icon (fill/outline); see [`docs/blocks/Button Icon.md`](./blocks/Button%20Icon.md) |
+| `nextora/advanced-icon` | Lucide theme icon or Media Library upload; inline SVG / `<img>`; see [`docs/blocks/Theme Icon Block.md`](./blocks/Theme%20Icon%20Block.md) |
+| `nextora/advanced-button` | Advanced CTA buttons or icon-only items with Lucide/upload icons; see [`docs/blocks/Advanced Button.md`](./blocks/Advanced%20Button.md) |
 
 ## Related docs
 
@@ -110,4 +110,4 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 - [`docs/modal.md`](./modal.md), [`docs/spotlight-search.md`](./spotlight-search.md) — shared UI patterns.
 - Skill: `.cursor/skills/nextora-add-theme-block/SKILL.md`
 - Skill: `.cursor/skills/nextora-theme-styling-and-tokens/SKILL.md`
-- Block specs: [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md), [`docs/blocks/Testimonial Carousel.md`](./blocks/Testimonial%20Carousel.md)(./blocks/Testimonial%20Carousel.md), [`docs/blocks/Theme Icon Block.md`](./blocks/Theme%20Icon%20Block.md), [`docs/blocks/Button Icon.md`](./blocks/Button%20Icon%20Block.md)
+- Block specs: [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md), [`docs/blocks/Testimonial Carousel.md`](./blocks/Testimonial%20Carousel.md)(./blocks/Testimonial%20Carousel.md), [`docs/blocks/Theme Icon Block.md`](./blocks/Theme%20Icon%20Block.md), [`docs/blocks/Advanced Button.md`](./blocks/Button%20Icon%20Block.md)

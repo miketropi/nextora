@@ -47,17 +47,16 @@ $instagram_feed_styles = __DIR__ . '/instagram-feed/register-styles.php';
 if ( is_readable( $instagram_feed_styles ) ) {
 	require_once $instagram_feed_styles;
 }
-$icon_editor = __DIR__ . '/icon/register-editor.php';
-if ( is_readable( $icon_editor ) ) {
-	require_once $icon_editor;
+$advanced_icon_editor = __DIR__ . '/advanced-icon/register-editor.php';
+if ( is_readable( $advanced_icon_editor ) ) {
+	require_once $advanced_icon_editor;
+}
+$advanced_button_editor = __DIR__ . '/advanced-button/register-editor.php';
+if ( is_readable( $advanced_button_editor ) ) {
+	require_once $advanced_button_editor;
 }
 
-$button_icon_editor = __DIR__ . '/button-icon/register-editor.php';
-if ( is_readable( $button_icon_editor ) ) {
-	require_once $button_icon_editor;
-}
-
-$button_icon_button_editor = __DIR__ . '/button-icon-button/register-editor.php';
-if ( is_readable( $button_icon_button_editor ) ) {
-	require_once $button_icon_button_editor;
+$advanced_button_button_editor = __DIR__ . '/advanced-button-button/register-editor.php';
+if ( is_readable( $advanced_button_button_editor ) ) {
+	require_once $advanced_button_button_editor;
 }

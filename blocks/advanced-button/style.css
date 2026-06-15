@@ -1,0 +1,50 @@
+.wp-block-nextora-advanced-button.nextora-advanced-button {
+	display: block;
+	width: 100%;
+}
+
+.wp-block-nextora-advanced-button .nextora-advanced-button__buttons {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+}
+
+.wp-block-nextora-advanced-button.nextora-advanced-button--align-left .nextora-advanced-button__buttons,
+.wp-block-nextora-advanced-button .nextora-advanced-button__buttons.is-content-justification-left {
+	justify-content: flex-start;
+}
+
+.wp-block-nextora-advanced-button.nextora-advanced-button--align-center .nextora-advanced-button__buttons,
+.wp-block-nextora-advanced-button .nextora-advanced-button__buttons.is-content-justification-center {
+	justify-content: center;
+}
+
+.wp-block-nextora-advanced-button.nextora-advanced-button--align-right .nextora-advanced-button__buttons,
+.wp-block-nextora-advanced-button .nextora-advanced-button__buttons.is-content-justification-right {
+	justify-content: flex-end;
+}
+
+/* Opt out of parent theme scroll utilities when Animate on scroll is off */
+.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-animation-init='1'],
+.wp-block-nextora-advanced-button.nextora-advanced-button.nextora-advanced-button--scroll-off {
+	opacity: 1;
+}
+
+/* Scroll reveal */
+.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-reveal='1'].nextora-advanced-button--reveal-pending:not(
+		.nextora-advanced-button--reveal-ready
+	) {
+	opacity: 0;
+}
+
+.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-reveal='1'].nextora-advanced-button--reveal-ready {
+	opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-reveal='1'].nextora-advanced-button--reveal-pending {
+		opacity: 1;
+	}
+}
