@@ -7,7 +7,7 @@
  */
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { INIT_ATTR, MUTATION_DEBOUNCE_MS, PARALLAX_SELECTOR } from "./constants";
+import { INIT_ATTR, MUTATION_DEBOUNCE_MS, PARALLAX_SELECTOR, SPECIAL_ANIMATION_CLASS_NAMES } from "./constants";
 import {
 	ensureGsapPlugins,
 	getFadeListGridItems,
@@ -57,6 +57,11 @@ function markPending(el: HTMLElement): void {
 		getInnerFadeTargets(el).forEach((target) => {
 			target.classList.add("nextora-scroll-animation--pending");
 		});
+		return;
+	}
+
+	if ((SPECIAL_ANIMATION_CLASS_NAMES as readonly string[]).includes(animationClass)) {
+		el.classList.add("nextora-scroll-animation--pending");
 		return;
 	}
 

@@ -18,6 +18,60 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-fade-list-grid` | Each `ul > li` fades in up (`animation-fade-in-up`) when **that item** enters the viewport |
 | `animation-inner-fade` | Each **direct child** (`> p`, `> div`, `> h4`, …) fades in up when it enters the viewport |
 | `animation-parallax` | Vertical parallax while scrolling (use with `data-parallax-speed`) |
+| `animation-image-clip-reveal` | Image wipe reveal via `clip-path` (targets nested `img`, or the `img` itself) |
+| `animation-text-reveal-words` | Split heading into words; stagger fade + slide in on scroll |
+| `animation-text-reveal-chars` | Split heading into characters; stagger fade + slide in on scroll |
+| `animation-text-reveal-chars-rise` | Characters rise in with perspective + `back.out` easing |
+| `animation-text-reveal-chars-scrub` | Characters brighten and slide in while scrolling (scrubbed) |
+
+## Image & text reveal presets
+
+These map from legacy Elementor utility classes (`at-animation-*`) to theme-native names. Add the class on a **Heading**, **Image**, or **Group** block wrapper via **Advanced → Additional CSS class(es)**.
+
+| Class | Effect | Default timing |
+|-------|--------|----------------|
+| `animation-image-clip-reveal` | Horizontal clip-path wipe on `img` | `duration: 1.5`, `ease: power2.out`, trigger `top 90%` |
+| `animation-text-reveal-words` | Word stagger, slide from right | `duration: 1`, `delay: 0.5`, `stagger: 0.05`, `distance: 20` |
+| `animation-text-reveal-chars` | Character stagger, slide from right | `duration: 1`, `delay: 0.1`, `stagger: 0.03`, `distance: 20`, `ease: power2.out` |
+| `animation-text-reveal-chars-rise` | 3D-style character rise | `duration: 1`, `stagger: 0.02`, `distance: 50`, `ease: back.out(1.7)` |
+| `animation-text-reveal-chars-scrub` | Scroll-scrubbed character reveal | `duration: 0.7`, `stagger: 0.2`, scrub between `top 92%` → `top 60%` |
+
+All presets honor `data-delay`, `data-duration`, `data-ease`, `data-stagger`, and `data-distance` when set on the same element.
+
+### Image clip reveal
+
+Put the class on an **Image** block or a **Group/Cover** wrapper that contains an `img`:
+
+```html
+<!-- wp:image {"className":"animation-image-clip-reveal"} -->
+<figure class="wp-block-image animation-image-clip-reveal">
+  <img src="…" alt="…" />
+</figure>
+<!-- /wp:image -->
+```
+
+### Text reveal (headings)
+
+Put the class on the **Heading** block (not a parent Group). Text is split into spans at runtime — no GSAP SplitText plugin required.
+
+```html
+<!-- wp:heading {"className":"animation-text-reveal-chars"} -->
+<h2 class="wp-block-heading animation-text-reveal-chars">Animated headline</h2>
+<!-- /wp:heading -->
+```
+
+For scrubbed text, use `animation-text-reveal-chars-scrub` on longer headlines where scroll-linked motion reads well.
+
+**Legacy class mapping**
+
+| Old (Elementor) | New (Nextora) |
+|-----------------|---------------|
+| `at-animation-image-style-1` | `animation-image-clip-reveal` |
+| `at-animation-heading-style-1` | `animation-text-reveal-words` |
+| `at-animation-heading-style-2` | `animation-text-reveal-chars` |
+| `at-animation-heading-style-3` | `animation-text-reveal-chars-rise` |
+| `at-animation-heading-style-4` | `animation-text-reveal-chars-scrub` |
+
 
 ## Data attributes (optional)
 
@@ -110,13 +164,15 @@ Combine reveal + parallax on one wrapper when needed.
 
 ```text
 resources/ts/lib/scroll-animations/
-  constants.ts       # Defaults, class list, selectors
-  types.ts           # Shared TypeScript types
-  presets.ts         # Animation preset registry + registerScrollAnimationPreset()
-  parse-options.ts   # data-* parsing
-  helpers.ts         # GSAP wiring per element
-  scroll-animations.ts # scan, MutationObserver, boot
-  index.ts           # Public exports
+  constants.ts           # Defaults, class list, selectors
+  types.ts               # Shared TypeScript types
+  presets.ts             # Animation preset registry + registerScrollAnimationPreset()
+  parse-options.ts       # data-* parsing
+  split-text.ts          # DOM word/char splitter (no SplitText plugin)
+  special-animations.ts  # Image clip + text reveal handlers
+  helpers.ts             # GSAP wiring per element
+  scroll-animations.ts   # scan, MutationObserver, boot
+  index.ts               # Public exports
 
 resources/css/modules/components/scroll-animations.css  # FOUC guard
 resources/ts/main.ts                                    # initScrollAnimations()
