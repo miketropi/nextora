@@ -7,9 +7,11 @@ import {
 	INIT_ATTR,
 	SCROLL_REVEAL_ONCE,
 	SCROLL_REVEAL_TRIGGER_ID,
+	SPECIAL_ANIMATION_CLASS_NAMES,
 } from "./constants";
 import { animationPresets } from "./presets";
 import { parseScrollAnimationOptions } from "./parse-options";
+import { initSpecialScrollAnimation, skipSpecialScrollAnimation } from "./special-animations";
 import type { AnimationClassName } from "./constants";
 import type { ScrollAnimationOptions } from "./types";
 
@@ -57,6 +59,10 @@ export function getFadeListGridItems(el: HTMLElement): HTMLElement[] {
 /** Direct children for {@link animation-inner-fade} (`> p`, `> div`, `> h4`, …). */
 export function getInnerFadeTargets(el: HTMLElement): HTMLElement[] {
 	return Array.from(el.children).filter((child): child is HTMLElement => child instanceof HTMLElement);
+}
+
+function isSpecialAnimationClass(className: string): className is (typeof SPECIAL_ANIMATION_CLASS_NAMES)[number] {
+	return (SPECIAL_ANIMATION_CLASS_NAMES as readonly string[]).includes(className);
 }
 
 /** First matching animation utility class on the element. */
@@ -189,12 +195,19 @@ export function initElementAnimations(el: HTMLElement): void {
 				gsap.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
 				target.classList.remove("nextora-scroll-animation--pending");
 			});
+		} else if (animationClass && isSpecialAnimationClass(animationClass)) {
+			skipSpecialScrollAnimation(el, animationClass);
 		}
 		skipAnimation(el);
 		return;
 	}
 
 	ensureGsapPlugins();
+
+	if (animationClass && isSpecialAnimationClass(animationClass)) {
+		initSpecialScrollAnimation(el, animationClass, markInitialized);
+		return;
+	}
 
 	if (animationClass === "animation-fade-list-grid") {
 		initFadeListGridAnimation(el, options);
