@@ -6,6 +6,8 @@ import {
   MediaUpload,
   MediaUploadCheck,
   URLInput,
+  __experimentalSpacingSizesControl as SpacingSizesControl,
+  __experimentalBorderRadiusControl as BorderRadiusControl,
 } from '@wordpress/block-editor';
 import { useMemo } from '@wordpress/element';
 import {
@@ -77,6 +79,8 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     ctaButtonTarget,
     ctaButtonStyle,
     showCtaButtonMobile,
+    ctaButtonPadding,
+    ctaButtonBorderRadius,
     stickyHeader,
     stickyStyle,
     showBottomBorder,
@@ -155,6 +159,23 @@ export default function HeaderEdit({ attributes, setAttributes }) {
       (fallback) => byNetwork[fallback.network] ?? fallback
     );
   }, [followUsSocials]);
+
+  const ctaPaddingValues = useMemo(() => {
+    const raw = ctaButtonPadding && typeof ctaButtonPadding === 'object' ? ctaButtonPadding : {};
+    return {
+      top: raw.top,
+      right: raw.right,
+      bottom: raw.bottom,
+      left: raw.left,
+    };
+  }, [ctaButtonPadding]);
+
+  const ctaRadiusValues = useMemo(() => {
+    if (!ctaButtonBorderRadius || typeof ctaButtonBorderRadius !== 'object') {
+      return {};
+    }
+    return ctaButtonBorderRadius;
+  }, [ctaButtonBorderRadius]);
 
   const updateFollowUsSocial = (network, patch) => {
     const next = followUsSocialRows.map((row) =>
@@ -516,6 +537,25 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                 checked={showCtaButtonMobile}
                 onChange={(v) => setAttributes({ showCtaButtonMobile: v })}
               />
+              <SpacingSizesControl
+                label={__('Padding', 'nextora')}
+                values={ctaPaddingValues}
+                onChange={(next) =>
+                  setAttributes({
+                    ctaButtonPadding: next && typeof next === 'object' ? next : {},
+                  })
+                }
+                sides={['horizontal', 'vertical']}
+                minimumCustomValue={0}
+              />
+              <BorderRadiusControl
+                values={ctaRadiusValues}
+                onChange={(next) =>
+                  setAttributes({
+                    ctaButtonBorderRadius: next && typeof next === 'object' ? next : {},
+                  })
+                }
+              />
             </>
           )}
         </PanelBody>
@@ -634,6 +674,11 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               followUsContactButtonText,
               followUsContactButtonUrl,
               JSON.stringify(followUsSocialRows),
+              showCtaButton,
+              ctaButtonText,
+              ctaButtonStyle,
+              JSON.stringify(ctaPaddingValues),
+              JSON.stringify(ctaRadiusValues),
             ].join('|')}
             block={metadata.name}
             attributes={attributes}

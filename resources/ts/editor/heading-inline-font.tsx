@@ -5,15 +5,13 @@ import {
 	ToolbarGroup,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { addFilter } from '@wordpress/hooks';
+import { useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import {
 	applyFormat,
-	create,
 	registerFormatType,
-	toHTMLString,
+	removeFormat,
 } from '@wordpress/rich-text';
-import { createHigherOrderComponent } from '@wordpress/compose';
 
 const FORMAT_NAME = 'nextora/heading-font';
 
@@ -27,20 +25,23 @@ interface HeadingFontConfig {
 	fonts: HeadingFontFamily[];
 }
 
-interface BlockSelectionPoint {
-	clientId?: string;
-	attributeKey?: string;
-	offset?: number;
+interface GroupedEditorFontFamilies {
+	theme?: HeadingFontFamily[];
+	custom?: HeadingFontFamily[];
+	default?: HeadingFontFamily[];
+	[key: string]: HeadingFontFamily[] | undefined;
 }
 
-interface HeadingBlockEditProps {
-	name: string;
-	clientId: string;
-	isSelected: boolean;
-	attributes: {
-		content?: string;
-	};
-	setAttributes: (attrs: { content: string }) => void;
+interface RichTextValueWithSelection {
+	text: string;
+	start?: number;
+	end?: number;
+}
+
+interface FormatEditProps {
+	value: RichTextValueWithSelection;
+	onChange: (value: RichTextValueWithSelection) => void;
+	onFocus: () => void;
 }
 
 declare global {
@@ -49,136 +50,159 @@ declare global {
 	}
 }
 
-function buildFontStyle(fontFamily: string): string {
-	return `font-family:${fontFamily}`;
+function presetClassName(slug: string): string {
+	return `has-${slug}-font-family`;
 }
 
-function normalizeSelectionPoint(
-	point: BlockSelectionPoint | number | string | undefined,
-): BlockSelectionPoint | undefined {
-	if (typeof point === 'number') {
-		return { attributeKey: 'content', offset: point };
-	}
-
-	if (typeof point === 'string') {
-		return undefined;
-	}
-
-	return point;
+function buildFormatAttributes(font: HeadingFontFamily): Record<string, string> {
+	return {
+		class: presetClassName(font.slug),
+		style: `font-family:${font.fontFamily}`,
+		'data-font': font.slug,
+	};
 }
 
-function isContentSelection(
-	startPoint: BlockSelectionPoint | undefined,
-	endPoint: BlockSelectionPoint | undefined,
-	blockClientId: string,
-): boolean {
-	if (!startPoint || !endPoint) {
-		return false;
+function flattenEditorFontFamilies(
+	grouped: GroupedEditorFontFamilies | undefined,
+): HeadingFontFamily[] {
+	if (!grouped) {
+		return [];
 	}
 
-	if (startPoint.clientId !== blockClientId || endPoint.clientId !== blockClientId) {
-		return false;
+	const bySlug = new Map<string, HeadingFontFamily>();
+	const origins = ['theme', 'custom', 'default'];
+
+	for (const origin of origins) {
+		const group = grouped[origin];
+		if (!Array.isArray(group)) {
+			continue;
+		}
+
+		for (const family of group) {
+			if (!family?.slug || !family?.fontFamily) {
+				continue;
+			}
+
+			bySlug.set(family.slug, {
+				slug: family.slug,
+				name: family.name || family.slug,
+				fontFamily: family.fontFamily,
+			});
+		}
 	}
 
-	if (startPoint.attributeKey !== 'content' || endPoint.attributeKey !== 'content') {
-		return false;
+	for (const [key, group] of Object.entries(grouped)) {
+		if (origins.includes(key) || !Array.isArray(group)) {
+			continue;
+		}
+
+		for (const family of group) {
+			if (!family?.slug || !family?.fontFamily) {
+				continue;
+			}
+
+			bySlug.set(family.slug, {
+				slug: family.slug,
+				name: family.name || family.slug,
+				fontFamily: family.fontFamily,
+			});
+		}
 	}
 
-	return true;
+	return [...bySlug.values()];
 }
 
-function getSelectionOffset(point: BlockSelectionPoint | undefined): number | null {
-	if (!point || typeof point.offset !== 'number') {
+function hasTextSelection(value: RichTextValueWithSelection): boolean {
+	return (
+		typeof value.start === 'number' &&
+		typeof value.end === 'number' &&
+		value.start !== value.end
+	);
+}
+
+function HeadingFontFormatEdit({
+	value,
+	onChange,
+	onFocus,
+}: FormatEditProps): JSX.Element | null {
+	const selectionRef = useRef({ start: value.start, end: value.end });
+
+	selectionRef.current = { start: value.start, end: value.end };
+
+	const { isHeadingBlock, fonts } = useSelect((selectFn) => {
+		const blockEditor = selectFn('core/block-editor') as {
+			getSelectedBlock?: () => { name?: string } | null;
+			getSettings?: () => {
+				__experimentalFeatures?: {
+					typography?: {
+						fontFamilies?: GroupedEditorFontFamilies;
+					};
+				};
+			};
+		};
+
+		const grouped =
+			blockEditor.getSettings?.()?.__experimentalFeatures?.typography
+				?.fontFamilies;
+		const fromEditor = flattenEditorFontFamilies(grouped);
+
+		return {
+			isHeadingBlock:
+				blockEditor.getSelectedBlock?.()?.name === 'core/heading',
+			fonts:
+				fromEditor.length > 0
+					? fromEditor
+					: (window.nextoraHeadingFont?.fonts ?? []),
+		};
+	}, []);
+
+	if (!isHeadingBlock || fonts.length === 0) {
 		return null;
 	}
 
-	return point.offset;
-}
-
-function HeadingFontToolbar({
-	clientId,
-	isSelected,
-	attributes,
-	setAttributes,
-}: HeadingBlockEditProps): JSX.Element | null {
-	const fonts = window.nextoraHeadingFont?.fonts ?? [];
-
-	const { hasSelection, start, end } = useSelect(
-		(select) => {
-			if (!isSelected) {
-				return { hasSelection: false, start: 0, end: 0 };
-			}
-
-			const blockEditor = select('core/block-editor') as {
-				getSelectionStart?: () => BlockSelectionPoint | undefined;
-				getSelectionEnd?: () => BlockSelectionPoint | undefined;
-				getBlockSelectionStart?: (
-					id: string,
-				) => BlockSelectionPoint | string | undefined;
-				getBlockSelectionEnd?: (
-					id: string,
-				) => BlockSelectionPoint | string | undefined;
-			};
-
-			let startPoint = blockEditor.getSelectionStart?.();
-			let endPoint = blockEditor.getSelectionEnd?.();
-
-			if (!startPoint || !endPoint) {
-				startPoint = normalizeSelectionPoint(
-					blockEditor.getBlockSelectionStart?.(clientId),
-				);
-				endPoint = normalizeSelectionPoint(
-					blockEditor.getBlockSelectionEnd?.(clientId),
-				);
-			}
-			const startOffset = getSelectionOffset(startPoint);
-			const endOffset = getSelectionOffset(endPoint);
-
-			if (
-				startOffset === null ||
-				endOffset === null ||
-				!isContentSelection(startPoint, endPoint, clientId) ||
-				startOffset === endOffset
-			) {
-				return { hasSelection: false, start: 0, end: 0 };
-			}
-
-			return {
-				hasSelection: true,
-				start: Math.min(startOffset, endOffset),
-				end: Math.max(startOffset, endOffset),
-			};
-		},
-		[clientId, isSelected],
-	);
+	const hasSelection = hasTextSelection(value);
 
 	const applyFont = (font: HeadingFontFamily): void => {
-		const html = attributes.content ?? '';
-		if (!html || !hasSelection) {
+		const { start, end } = selectionRef.current;
+
+		if (
+			typeof start !== 'number' ||
+			typeof end !== 'number' ||
+			start === end
+		) {
 			return;
 		}
 
-		const value = create({ html });
-		const nextValue = applyFormat(
-			value,
-			{
-				type: FORMAT_NAME,
-				attributes: {
-					style: buildFontStyle(font.fontFamily),
+		onFocus();
+		onChange(
+			applyFormat(
+				value,
+				{
+					type: FORMAT_NAME,
+					attributes: buildFormatAttributes(font),
 				},
-			},
-			start,
-			end,
+				start,
+				end,
+			),
 		);
-
-		setAttributes({
-			content: toHTMLString({ value: nextValue }),
-		});
 	};
 
-	if (!isSelected || fonts.length === 0) {
-		return null;
-	}
+	const clearFont = (): void => {
+		const { start, end } = selectionRef.current;
+
+		if (
+			typeof start !== 'number' ||
+			typeof end !== 'number' ||
+			start === end
+		) {
+			return;
+		}
+
+		onFocus();
+		onChange(
+			removeFormat(value, { type: FORMAT_NAME }, start, end),
+		);
+	};
 
 	return (
 		<BlockControls group="inline">
@@ -202,6 +226,9 @@ function HeadingFontToolbar({
 								fonts.map((font) => (
 									<MenuItem
 										key={font.slug}
+										onMouseDown={(event) => {
+											event.preventDefault();
+										}}
 										onClick={() => {
 											applyFont(font);
 											onClose();
@@ -211,6 +238,19 @@ function HeadingFontToolbar({
 										{font.name}
 									</MenuItem>
 								))}
+							{hasSelection && (
+								<MenuItem
+									onMouseDown={(event) => {
+										event.preventDefault();
+									}}
+									onClick={() => {
+										clearFont();
+										onClose();
+									}}
+								>
+									{__('Remove font', 'nextora')}
+								</MenuItem>
+							)}
 						</>
 					)}
 				</ToolbarDropdownMenu>
@@ -219,37 +259,16 @@ function HeadingFontToolbar({
 	);
 }
 
-const withHeadingFontToolbar = createHigherOrderComponent(
-	(BlockEdit: (props: HeadingBlockEditProps) => JSX.Element) => {
-		return (props: HeadingBlockEditProps) => {
-			if (props.name !== 'core/heading') {
-				return <BlockEdit {...props} />;
-			}
-
-			return (
-				<>
-					<HeadingFontToolbar {...props} />
-					<BlockEdit {...props} />
-				</>
-			);
-		};
-	},
-	'nextora/withHeadingFontToolbar',
-);
-
 registerFormatType(FORMAT_NAME, {
 	title: __('Font', 'nextora'),
 	tagName: 'span',
 	className: 'nextora-heading-inline-font',
 	attributes: {
+		class: 'class',
 		style: 'style',
+		'data-font': 'data-font',
 	},
+	edit: HeadingFontFormatEdit,
 });
-
-addFilter(
-	'editor.BlockEdit',
-	'nextora/heading-inline-font-toolbar',
-	withHeadingFontToolbar,
-);
 
 export { FORMAT_NAME };

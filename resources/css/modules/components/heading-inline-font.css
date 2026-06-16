@@ -1,0 +1,10 @@
+/**
+ * Inline font spans inside headings (editor + front end).
+ * Weight/style follow the heading; font-family comes from inline style + preset class.
+ */
+:where(.nextora-heading-inline-font[data-font]) {
+	font-weight: inherit;
+	font-style: inherit;
+	text-transform: inherit;
+	letter-spacing: inherit;
+}

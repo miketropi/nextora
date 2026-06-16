@@ -28,7 +28,7 @@
 	--color-base: var(--wp--preset--color--base, #fafafa);
 	--color-contrast: var(--wp--preset--color--contrast, #0f172a);
 	--color-primary: var(--wp--preset--color--primary, #4f46e5);
-	--color-secondary: var(--wp--preset--color--secondary, #64748b);
+	--color-secondary: var(--wp--preset--color--paragraph, #64748b);
 	--color-surface: var(--wp--preset--color--surface, #f1f5f9);
 	--font-sans: var(
 		--wp--preset--font-family--sans,
@@ -75,7 +75,7 @@
 	--nextora-nav-header-link-hover-underline: color-mix(
 		in srgb,
 		var(--wp--preset--color--base, #fafafa) 72%,
-		var(--wp--preset--color--secondary, #64748b)
+		var(--wp--preset--color--paragraph, #64748b)
 	);
 	--nextora-nav-header-link-active-underline: var(--wp--preset--color--base, #fafafa);
 
@@ -157,7 +157,7 @@
 	--nextora-pagination-current-underline: var(--wp--preset--color--contrast, #0f172a);
 	--nextora-pagination-dots: color-mix(
 		in srgb,
-		var(--wp--preset--color--secondary, #64748b) 52%,
+		var(--wp--preset--color--paragraph, #64748b) 52%,
 		var(--wp--preset--color--base, #fafafa)
 	);
 	--nextora-pagination-focus-ring: var(--wp--preset--color--contrast, #0f172a);
@@ -211,6 +211,7 @@
 @import "./modules/components/spotlight-search.css";
 @import "./modules/components/scroll-animations.css";
 @import "./modules/components/hero-section.css";
+@import "./modules/components/heading-inline-font.css";
 @import "./modules/prose/entry-content.css";
 @import "./modules/base/woocommerce.css";
 @import "./modules/overrides/layout-tweaks.css";

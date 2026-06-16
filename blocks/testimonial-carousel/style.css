@@ -86,7 +86,7 @@
 	font-weight: 500;
 	letter-spacing: 0.16em;
 	text-transform: uppercase;
-	color: var(--nextora-testimonial-label-color, var(--wp--preset--color--secondary, #525252));
+	color: var(--nextora-testimonial-label-color, var(--wp--preset--color--contrast));
 }
 
 .nextora-testimonial-carousel__carousel-root {
@@ -122,8 +122,7 @@
 	font-weight: 500;
 	line-height: 1.45;
 	color: var(
-		--nextora-testimonial-slide-quote-color,
-		var(--nextora-testimonial-quote-color, inherit)
+		--nextora-testimonial-slide-quote-color,var(--wp--preset--color--contrast, currentColor)
 	);
 }
 
@@ -148,7 +147,7 @@
 	font-size: 1rem;
 	color: var(
 		--nextora-testimonial-slide-author-color,
-		var(--nextora-testimonial-author-color, var(--wp--preset--color--secondary, #525252))
+		var(--nextora-testimonial-author-color, var(--wp--preset--color--paragraph, #525252))
 	);
 }
 
@@ -173,7 +172,7 @@
 .nextora-testimonial-carousel__trust-text {
 	font-size: 0.9rem;
 	font-weight: 500;
-	color: var(--nextora-testimonial-trust-color, var(--wp--preset--color--secondary, #525252));
+	color: var(--nextora-testimonial-trust-color, var(--wp--preset--color--paragraph, #525252));
 }
 
 .nextora-testimonial-carousel__avatars {
@@ -212,7 +211,7 @@
 }
 
 .nextora-testimonial-carousel__avatar--count {
-	background: var(--wp--preset--color--secondary, #525252);
+	background: var(--wp--preset--color--paragraph, #525252);
 }
 
 .nextora-testimonial-carousel__pagination.swiper-pagination {
@@ -274,13 +273,13 @@
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
-	color: var(--nextora-testimonial-arrow-color, var(--wp--preset--color--secondary, #525252));
+	color: var(--nextora-testimonial-arrow-color, var(--wp--preset--color--paragraph, #525252));
 	transition: background 0.2s ease, color 0.2s ease;
 }
 
 .nextora-testimonial-carousel__arrow:hover,
 .nextora-testimonial-carousel__arrow:focus-visible {
-	background: var(--nextora-testimonial-arrow-color, var(--wp--preset--color--secondary, #525252));
+	background: var(--nextora-testimonial-arrow-color, var(--wp--preset--color--paragraph, #525252));
 	color: var(--wp--preset--color--base, #fff);
 }
 

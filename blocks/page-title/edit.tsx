@@ -30,7 +30,7 @@ const FALLBACK_COLORS: PaletteColor[] = [
   { name: __('Base', 'nextora'), slug: 'base', color: 'var(--wp--preset--color--base)' },
   { name: __('Contrast', 'nextora'), slug: 'contrast', color: 'var(--wp--preset--color--contrast)' },
   { name: __('Primary', 'nextora'), slug: 'primary', color: 'var(--wp--preset--color--primary)' },
-  { name: __('Secondary', 'nextora'), slug: 'secondary', color: 'var(--wp--preset--color--secondary)' },
+  { name: __('Secondary', 'nextora'), slug: 'secondary', color: 'var(--wp--preset--color--paragraph)' },
   { name: __('Accent', 'nextora'), slug: 'accent', color: 'var(--wp--preset--color--accent)' },
 ];
 
