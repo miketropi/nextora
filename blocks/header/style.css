@@ -1,8 +1,9 @@
 /**
  * Front-end layout for nextora/header (block theme).
- * Typography defaults: theme.json → styles.blocks["nextora/header"].
+ * Color defaults: theme.json → styles.blocks["nextora/header"] (background, text, link, button).
  * Nav: .nextora-navigation-from-location--primary + nav-menus.css (--nextora-nav-*).
- * Utilities (cart / account / hamburger): same hover + focus cues as primary nav on contrast headers.
+ * Icons / hamburger / utilities: --wp--style--color (block text from theme.json or sidebar).
+ * CTA: .wp-element-button — theme.json elements.button (solid) or outline override below.
  */
 
 .nextora-header-block {
@@ -1128,7 +1129,7 @@ body > .wc-block-components-drawer__screen-overlay {
 	white-space: nowrap;
 }
 
-/* CTA button — after utility icons */
+/* CTA — .wp-element-button skips header link ink; outline overrides block elements.button fill below. */
 .nextora-header-block__cta-wrap {
 	display: inline-flex;
 	align-items: center;
@@ -1141,13 +1142,7 @@ body > .wc-block-components-drawer__screen-overlay {
 	justify-content: center;
 	box-sizing: border-box;
 	min-height: 2.5rem;
-	padding: 0.5em 1.125em;
-	border: 2px solid transparent;
-	border-radius: 30rem;
 	font-family: inherit;
-	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	font-weight: 300;
-	line-height: 1.25;
 	text-decoration: none;
 	white-space: nowrap;
 	transition:
@@ -1155,32 +1150,24 @@ body > .wc-block-components-drawer__screen-overlay {
 		color 0.2s ease,
 		border-color 0.2s ease,
 		opacity 0.2s ease;
-
-	&:hover {
-		opacity: 0.8;
-	}
 }
 
-.nextora-header-block__cta--solid {
-	background-color: var(--wp--preset--color--primary, #000);
-	color: var(--wp--preset--color--base, #fff);
-}
-
-.nextora-header-block__cta--solid:hover,
-.nextora-header-block__cta--solid:focus-visible {
-	background-color: var(--wp--preset--color--contrast, #0a0a0a);
-	color: var(--wp--preset--color--base, #fff);
-}
-
-.nextora-header-block__cta--outline {
+.wp-block-nextora-header .nextora-header-block__cta.nextora-header-block__cta--outline.wp-element-button,
+.wp-block-nextora-header .nextora-header-block__cta.nextora-header-block__cta--outline.wp-element-button:visited {
 	background-color: transparent;
-	border-color: var(--wp--preset--color--primary, #000);
+	border: 2px solid var(--wp--preset--color--primary, #000);
+	border-radius: 30rem;
+	padding: 0.625rem 1.5rem;
 	color: var(--wp--preset--color--primary, #000);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 300;
+	line-height: 1.25;
 }
 
-.nextora-header-block__cta--outline:hover,
-.nextora-header-block__cta--outline:focus-visible {
+.wp-block-nextora-header .nextora-header-block__cta.nextora-header-block__cta--outline.wp-element-button:hover,
+.wp-block-nextora-header .nextora-header-block__cta.nextora-header-block__cta--outline.wp-element-button:focus-visible {
 	background-color: var(--wp--preset--color--primary, #000);
+	border-color: var(--wp--preset--color--primary, #000);
 	color: var(--wp--preset--color--base, #fff);
 }
 

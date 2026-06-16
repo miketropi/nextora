@@ -98,14 +98,16 @@
 
 .nextora-instagram-feed__btn--outline {
 	border: 1.5px solid
-		var(--nextora-instagram-btn-border, var(--wp--preset--color--contrast, currentColor));
-	color: var(--nextora-instagram-btn-text, inherit);
+		var(--nextora-instagram-btn-border, var(--wp--preset--color--primary, currentColor));
+	color: var(--nextora-instagram-btn-text, var(--wp--preset--color--primary, currentColor));
 	background: transparent;
+	
 }
 
 .nextora-instagram-feed__btn--outline:hover {
-	background: var(--nextora-instagram-btn-border, var(--wp--preset--color--contrast, currentColor));
+	background: var(--nextora-instagram-btn-border, var(--wp--preset--color--primary, currentColor));
 	color: var(--nextora-instagram-btn-text, var(--wp--preset--color--base, #fff));
+	text-decoration: none;
 }
 
 .nextora-instagram-feed__btn--solid {
@@ -117,7 +119,7 @@
 .nextora-instagram-feed__btn--link {
 	border: none;
 	background: none;
-	color: var(--nextora-instagram-btn-text, inherit);
+	color: var(--nextora-instagram-btn-text, var(--wp--preset--color--primary, currentColor));
 	padding-inline: 0;
 	text-decoration: underline;
 }

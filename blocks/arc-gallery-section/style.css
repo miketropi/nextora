@@ -224,7 +224,7 @@
 
 .nextora-arc-gallery__btn--primary:hover, .nextora-arc-gallery__btn--primary:focus{
 	color: var(--nextora-arc-btn-color, var(--wp--preset--color--base, #fff));
-	opacity: .8;
+	background: var(--nextora-arc-btn-bg, var(--wp--preset--color--secondary, #000));
 	text-decoration: none;
 }
 

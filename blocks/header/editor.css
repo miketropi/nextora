@@ -31,7 +31,9 @@
 .nextora-header-block--editor .nextora-header-block__logo-img--mobile {
 	display: none;
 }
-
+.block-editor-block-inspector__tabs .components-base-control.components-range-control.preset-input-control__preset-range{
+	margin-bottom: 0;
+}
 @media (max-width: 767px) {
 	.nextora-header-block--editor .nextora-header-block__logo-img--desktop {
 		display: none;

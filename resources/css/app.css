@@ -211,6 +211,7 @@
 @import "./modules/components/spotlight-search.css";
 @import "./modules/components/scroll-animations.css";
 @import "./modules/components/hero-section.css";
+@import "./modules/components/heading-inline-font.css";
 @import "./modules/prose/entry-content.css";
 @import "./modules/base/woocommerce.css";
 @import "./modules/overrides/layout-tweaks.css";

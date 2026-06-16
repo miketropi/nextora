@@ -600,6 +600,107 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_header_block_sanitize_css_length' ) ) {
+	/**
+	 * Sanitize a CSS length for padding, radius, etc.
+	 *
+	 * @param string $value Raw attribute value.
+	 */
+	function nextora_header_block_sanitize_css_length( string $value ): string
+	{
+		$value = trim( $value );
+		if ( '' === $value || '0' === $value ) {
+			return '';
+		}
+
+		if ( preg_match( '/^var:preset\|spacing\|([a-z0-9_-]+)$/i', $value, $preset_m ) ) {
+			return 'var(--wp--preset--spacing--' . strtolower( $preset_m[1] ) . ')';
+		}
+
+		if ( preg_match( '/^(\d+\.?\d*)(px|rem|em|%|vw|vh)$/i', $value, $length_m ) ) {
+			return $length_m[1] . strtolower( $length_m[2] );
+		}
+
+		return '';
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_build_cta_inline_style' ) ) {
+	/**
+	 * Optional CTA overrides from block attributes (empty = theme.json defaults).
+	 *
+	 * @param array<string, mixed> $atts Block attributes.
+	 */
+	function nextora_header_block_build_cta_inline_style( array $atts ): string
+	{
+		$declarations = array();
+
+		$padding = isset( $atts['ctaButtonPadding'] ) && is_array( $atts['ctaButtonPadding'] )
+			? $atts['ctaButtonPadding']
+			: array();
+
+		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+			if ( ! isset( $padding[ $side ] ) || ! is_scalar( $padding[ $side ] ) ) {
+				continue;
+			}
+
+			$san = nextora_header_block_sanitize_css_length( (string) $padding[ $side ] );
+			if ( '' !== $san ) {
+				$declarations[] = 'padding-' . $side . ':' . $san;
+			}
+		}
+
+		// Legacy px padding (pre–SpacingSizesControl).
+		if ( array() === $padding || ! array_filter( $padding ) ) {
+			$pad_y = isset( $atts['ctaButtonPaddingVertical'] ) ? (int) $atts['ctaButtonPaddingVertical'] : 0;
+			$pad_x = isset( $atts['ctaButtonPaddingHorizontal'] ) ? (int) $atts['ctaButtonPaddingHorizontal'] : 0;
+
+			if ( $pad_y > 0 ) {
+				$declarations[] = 'padding-top:' . $pad_y . 'px';
+				$declarations[] = 'padding-bottom:' . $pad_y . 'px';
+			}
+
+			if ( $pad_x > 0 ) {
+				$declarations[] = 'padding-left:' . $pad_x . 'px';
+				$declarations[] = 'padding-right:' . $pad_x . 'px';
+			}
+		}
+
+		$radius_raw = $atts['ctaButtonBorderRadius'] ?? null;
+		$corner_map = array(
+			'topLeft'     => 'border-top-left-radius',
+			'topRight'    => 'border-top-right-radius',
+			'bottomLeft'  => 'border-bottom-left-radius',
+			'bottomRight' => 'border-bottom-right-radius',
+		);
+
+		if ( is_string( $radius_raw ) ) {
+			$san_radius = nextora_header_block_sanitize_css_length( $radius_raw );
+			if ( '' !== $san_radius ) {
+				$declarations[] = 'border-radius:' . $san_radius;
+			}
+		} elseif ( is_array( $radius_raw ) ) {
+			foreach ( $corner_map as $corner => $property ) {
+				if ( ! isset( $radius_raw[ $corner ] ) || ! is_scalar( $radius_raw[ $corner ] ) ) {
+					continue;
+				}
+
+				$san_corner = nextora_header_block_sanitize_css_length( (string) $radius_raw[ $corner ] );
+				if ( '' !== $san_corner ) {
+					$declarations[] = $property . ':' . $san_corner;
+				}
+			}
+		} elseif ( isset( $atts['ctaButtonBorderRadius'] ) && is_numeric( $atts['ctaButtonBorderRadius'] ) ) {
+			$legacy_radius = (int) $atts['ctaButtonBorderRadius'];
+			if ( $legacy_radius > 0 ) {
+				$declarations[] = 'border-radius:' . $legacy_radius . 'px';
+			}
+		}
+
+		return implode( ';', $declarations );
+	}
+}
+
 $woo_on = static function (): bool {
 	return class_exists( 'WooCommerce', false );
 };
@@ -923,13 +1024,15 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 				$cta_url   = '' !== $cta_url ? esc_url( $cta_url ) : '#';
 				$cta_new   = ! empty( $atts['ctaButtonTarget'] );
 				$cta_style = isset( $atts['ctaButtonStyle'] ) && 'outline' === $atts['ctaButtonStyle'] ? 'outline' : 'solid';
-				$cta_class = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style );
+				$cta_class = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style ) . ' wp-element-button';
+				$cta_style_attr = nextora_header_block_build_cta_inline_style( $atts );
 		?>
 				<div class="nextora-header-block__cta-wrap">
 					<a
 						class="<?php echo esc_attr( $cta_class ); ?>"
 						href="<?php echo esc_url( $cta_url ); ?>"
-						<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>>
+						<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+						<?php echo '' !== $cta_style_attr ? 'style="' . esc_attr( $cta_style_attr ) . '"' : ''; ?>>
 						<?php echo esc_html( $cta_text ); ?>
 					</a>
 				</div>
