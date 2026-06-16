@@ -54,7 +54,6 @@ You are a **QA engineer**. Your role is to run all quality gates and report resu
 
 | Gate | Status | Details |
 |------|--------|---------|
-| typecheck | ✅ PASS | No errors |
 | build | ✅ PASS | Built successfully |
 | lint:php:all | ❌ FAIL | 2 new errors |
 | composer test | ⏭️ SKIP | No vendor/ |

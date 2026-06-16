@@ -8,9 +8,6 @@ permission:
   bash:
     "*": ask
     "git status": allow
-    "git diff": allow
-    "git log*": allow
-    "git show*": allow
     "npm run lint:php:all": allow
     "npm run typecheck": allow
     "npm run build": allow

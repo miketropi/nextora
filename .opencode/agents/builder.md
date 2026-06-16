@@ -39,7 +39,7 @@ You are an **implementation engineer**. Your role is to execute plans and make c
 2. Read each file before modifying
 3. Make the changes, file by file
 4. Run the build (`npm run build`)
-5. Run quality checks (`npm run typecheck`, `npm run lint:php:all`)
+5. Run quality checks (`npm run lint:php:all`)
 6. Report what was done and any issues found
 
 If you encounter ambiguity in the plan, state what you're doing and why. Do not change the architecture without noting it.

@@ -114,7 +114,7 @@ function ColorField({
   help?: string;
 }) {
   return (
-    <div className="nextora-page-title__color-field">
+    <div className="nextora-advanced-container__color-field">
       <p className="components-base-control__label" style={{ marginBottom: '0.5rem' }}>
         {label}
       </p>
@@ -173,14 +173,14 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
   const minHeightTrimmed = minHeight.trim();
 
   const blockProps = useBlockProps({
-    className: 'nextora-page-title',
+    className: 'nextora-advanced-container',
     style: {
-      ...(minHeightTrimmed ? { '--nextora-page-title-min-height': minHeightTrimmed } : {}),
+      ...(minHeightTrimmed ? { '--nextora-ac-min-height': minHeightTrimmed } : {}),
       backgroundColor: backgroundType === 'color' ? resolveColor(backgroundColor) || undefined : undefined,
       ...(showOverlay
         ? {
-            '--nextora-page-title-overlay-color': resolvedOverlayColor || 'var(--wp--preset--color--contrast, #0f172a)',
-            '--nextora-page-title-overlay-opacity': String(overlayOpacity),
+            '--nextora-ac-overlay-color': resolvedOverlayColor || 'var(--wp--preset--color--contrast, #0f172a)',
+            '--nextora-ac-overlay-opacity': String(overlayOpacity),
           }
         : {}),
     } as CSSProperties,
@@ -312,7 +312,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
           <ToggleControl
             label={__('Enable parallax', 'nextora')}
             checked={enableParallax}
-            help={__('Move the background more strongly as the section scrolls. Disabled automatically when the visitor prefers reduced motion.', 'nextora')}
+            help={__('Move the background independently as the section scrolls using a smooth GSAP-driven effect. Disabled automatically when the visitor prefers reduced motion.', 'nextora')}
             onChange={(value) => setAttributes({ enableParallax: value })}
           />
           {enableParallax ? (
@@ -322,7 +322,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
               min={0}
               max={1}
               step={0.05}
-              onChange={(value) => setAttributes({ parallaxSpeed: value ?? 0.4 })}
+              onChange={(value) => setAttributes({ parallaxSpeed: value ?? 0.5 })}
             />
           ) : null}
         </PanelBody>
@@ -330,23 +330,23 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
 
       <section {...blockProps}>
         {hasImage ? (
-          <div className="nextora-page-title__bg" style={{ backgroundImage: `url(${resolvedBackgroundImageUrl})` }} />
+          <div className="nextora-advanced-container__bg" style={{ backgroundImage: `url(${resolvedBackgroundImageUrl})` }} />
         ) : null}
         {hasVideo ? (
-          <div className="nextora-page-title__bg nextora-page-title__bg--video">
+          <div className="nextora-advanced-container__bg nextora-advanced-container__bg--video">
             <video autoPlay muted loop playsInline src={backgroundVideoUrl} />
           </div>
         ) : null}
         {showOverlay ? (
           <div
-            className="nextora-page-title__overlay"
+            className="nextora-advanced-container__overlay"
             style={{
               backgroundColor: resolvedOverlayColor || undefined,
               opacity: overlayOpacity,
             }}
           />
         ) : null}
-        <div className="nextora-page-title__inner">
+        <div className="nextora-advanced-container__inner">
           <InnerBlocks template={[['core/group', {}, []]]} />
         </div>
       </section>
