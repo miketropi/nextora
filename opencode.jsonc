@@ -10,6 +10,18 @@
       "nextora-*": "allow"
     }
   },
+  "agent": {
+    "build": {
+      "permission": {
+        "task": {
+          "planner": "allow",
+          "builder": "allow",
+          "reviewer": "allow",
+          "qa": "allow"
+        }
+      }
+    }
+  },
   "mcp": {
     "codegraph": {
       "type": "local",

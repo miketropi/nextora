@@ -888,6 +888,9 @@
     -webkit-user-select: none;
     user-select: none;
   }
+  .\[file\:line\] {
+    file: line;
+  }
   .backface-hidden {
     backface-visibility: hidden;
   }

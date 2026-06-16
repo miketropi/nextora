@@ -347,7 +347,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
           />
         ) : null}
         <div className="nextora-page-title__inner">
-          <InnerBlocks />
+          <InnerBlocks template={[['core/group', {}, []]]} />
         </div>
       </section>
     </>

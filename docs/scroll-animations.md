@@ -151,6 +151,8 @@ Put the animation class on the **parent** and `data-stagger` — each direct chi
 
 Combine reveal + parallax on one wrapper when needed.
 
+**Theme blocks with built-in GSAP parallax:** `nextora/advanced-container` and `nextora/page-title` each have an **Enable parallax** toggle and a **Parallax speed** slider (0–1). When enabled, the block's background element moves with a smooth GSAP scrub-driven y-translate — no CSS `background-attachment: fixed` required. Both honour `prefers-reduced-motion: reduce`.
+
 ## HTML example (non-Gutenberg)
 
 ```html

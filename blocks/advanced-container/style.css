@@ -1,0 +1,87 @@
+.wp-block-nextora-advanced-container,
+.nextora-advanced-container {
+  position: relative;
+  overflow: clip;
+  display: grid;
+  align-items: center;
+  box-sizing: border-box;
+  padding: var(--wp--preset--spacing--xl, 4rem) var(--wp--preset--spacing--lg, 1.5rem);
+  --nextora-ac-min-height: 268px;
+  --nextora-ac-min-height-scale-mobile: 0.65;
+  --nextora-ac-min-height-scale-tablet: 0.85;
+  min-height: calc(var(--nextora-ac-min-height) * var(--nextora-ac-min-height-scale-mobile));
+  color: var(--wp--preset--color--contrast, #0f172a);
+  background: var(--wp--preset--color--surface, #f4f4f4);
+  --nextora-ac-overlay-color: var(--wp--preset--color--contrast, #0f172a);
+  --nextora-ac-overlay-opacity: 0.3;
+}
+
+@media (min-width: 600px) {
+  .wp-block-nextora-advanced-container,
+  .nextora-advanced-container {
+    min-height: calc(var(--nextora-ac-min-height) * var(--nextora-ac-min-height-scale-tablet));
+  }
+}
+
+@media (min-width: 782px) {
+  .wp-block-nextora-advanced-container,
+  .nextora-advanced-container {
+    min-height: var(--nextora-ac-min-height);
+  }
+}
+
+.nextora-advanced-container__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Parallax: GSAP-driven y-translate (view.ts). Extend bg sizing so movement doesn't expose edges. */
+.nextora-advanced-container--parallax .nextora-advanced-container__bg {
+  height: 120%;
+  top: -10%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nextora-advanced-container--parallax .nextora-advanced-container__bg {
+    height: 100%;
+    top: 0;
+    transform: none;
+  }
+}
+
+.nextora-advanced-container__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-color: var(--nextora-ac-overlay-color);
+  opacity: var(--nextora-ac-overlay-opacity);
+}
+
+.nextora-advanced-container--scroll-reveal.nextora-advanced-container--reveal-pending:not(.nextora-advanced-container--ready) .nextora-advanced-container__inner {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+/* No-JS / script failure: show content once loading finishes. */
+.nextora-advanced-container--scroll-reveal:not(.nextora-advanced-container--reveal-pending) .nextora-advanced-container__inner,
+.nextora-advanced-container--scroll-reveal.nextora-advanced-container--ready .nextora-advanced-container__inner {
+  opacity: 1;
+  transform: none;
+}
+
+.nextora-advanced-container__bg--video video,
+.nextora-advanced-container__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nextora-advanced-container__inner {
+  position: relative;
+  z-index: 2;
+}
