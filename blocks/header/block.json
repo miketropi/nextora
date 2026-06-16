@@ -178,6 +178,14 @@
       "type": "boolean",
       "default": true
     },
+    "ctaButtonPadding": {
+      "type": "object",
+      "default": {}
+    },
+    "ctaButtonBorderRadius": {
+      "type": "object",
+      "default": {}
+    },
     "stickyHeader": {
       "type": "boolean",
       "default": false

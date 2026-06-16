@@ -3,6 +3,8 @@ declare module '@wordpress/rich-text' {
 		text: string;
 		formats?: unknown;
 		replacements?: unknown;
+		start?: number;
+		end?: number;
 	}
 
 	export function registerFormatType(
@@ -12,13 +14,18 @@ declare module '@wordpress/rich-text' {
 			tagName: string;
 			className?: string;
 			attributes?: Record<string, string>;
-			edit?: (props: unknown) => JSX.Element | null;
+			edit?: (props: FormatEditProps) => JSX.Element | null;
 		},
 	): void;
 
-	export function create(options: { html: string }): RichTextValue;
-
-	export function toHTMLString(options: { value: RichTextValue }): string;
+	export interface FormatEditProps {
+		isActive: boolean;
+		activeAttributes: Record<string, string>;
+		value: RichTextValue;
+		onChange: (value: RichTextValue) => void;
+		onFocus: () => void;
+		contentRef: { readonly current: HTMLElement | null };
+	}
 
 	export function applyFormat(
 		value: RichTextValue,
@@ -29,13 +36,11 @@ declare module '@wordpress/rich-text' {
 		startIndex?: number,
 		endIndex?: number,
 	): RichTextValue;
-}
 
-declare module '@wordpress/compose' {
-	export function createHigherOrderComponent<
-		T extends (...args: never[]) => unknown,
-	>(
-		mapFn: T,
-		namespace: string,
-	): T;
+	export function removeFormat(
+		value: RichTextValue,
+		format: { type: string },
+		startIndex?: number,
+		endIndex?: number,
+	): RichTextValue;
 }

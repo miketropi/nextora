@@ -98,39 +98,7 @@ footer.wp-block-template-part {
 .nextora-font-weight-bold{
 	font-weight: 700;
 }
-/**
- * Block utility — add `nextora-links-no-underline` in Additional CSS class(es).
- * Removes underline from prose links inside the block; underline returns on hover.
- */
-.nextora-links-style-decoration
-	:where(a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button))) {
-	text-decoration: none;
-	text-decoration-line: none;
-}
 
-.nextora-links-style-decoration
-	:where(
-		a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)):not(
-				h1 a,
-				h2 a,
-				h3 a,
-				h4 a,
-				h5 a,
-				h6 a
-			):hover
-	) {
-	text-decoration: underline;
-	text-decoration-line: underline;
-	text-underline-offset: 3px;
-}
-
-.nextora-links-style-decoration
-	:where(
-		a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)):is(:focus, :focus-visible)
-	) {
-	text-decoration: none;
-	text-decoration-line: none;
-}
 /* post grid */
 .nextora-post-grid .nextora-post-grid__item .nextora-post-grid__categories a {
 	text-transform: none;

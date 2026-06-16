@@ -162,6 +162,7 @@
 	background: var(--nextora-blc-viewall-border, var(--wp--preset--color--primary));
 	border-color: var(--nextora-blc-viewall-border, var(--wp--preset--color--primary));
 	color: var(--wp--preset--color--base, #fff) !important;
+	text-decoration: none;
 }
 
 .nextora-blc__viewall--pill-solid {

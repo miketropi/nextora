@@ -228,6 +228,9 @@
   .start {
     inset-inline-start: var(--spacing);
   }
+  .start\! {
+    inset-inline-start: var(--spacing) !important;
+  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -1223,19 +1226,6 @@ footer.wp-block-template-part {
 }
 .nextora-font-weight-bold {
   font-weight: 700;
-}
-.nextora-links-style-decoration	:where(a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button))) {
-  text-decoration: none;
-  text-decoration-line: none;
-}
-.nextora-links-style-decoration	:where(	a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)):not(	h1 a,	h2 a,	h3 a,	h4 a,	h5 a,	h6 a	):hover	) {
-  text-decoration: underline;
-  text-decoration-line: underline;
-  text-underline-offset: 3px;
-}
-.nextora-links-style-decoration	:where(	a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)):is(:focus, :focus-visible)	) {
-  text-decoration: none;
-  text-decoration-line: none;
 }
 .nextora-post-grid .nextora-post-grid__item .nextora-post-grid__categories a {
   text-transform: none;
@@ -2272,9 +2262,6 @@ footer.wp-block-template-part {
     text-decoration: none;
     text-decoration-line: none;
   }
-  :where(	a.wp-block-button__link:not(:disabled):hover,	a.wp-element-button:not(:disabled):hover,	button.wp-block-button__link:not(:disabled):hover,	a.wp-block-file__button:not(:disabled):hover,	button.wp-block-search__button:not(:disabled):hover,	a.elementor-button:not(:disabled):hover,	button.elementor-button:not(:disabled):hover,	.nextora-main button:not(:disabled):hover,	.nextora-main input[type="submit"]:not(:disabled):hover,	.nextora-main input[type="button"]:not(:disabled):hover,	.nextora-main input[type="reset"]:not(:disabled):hover,	.elementor-widget-container button:not(:disabled):hover,	.elementor-widget-container input[type="submit"]:not(:disabled):hover,	.elementor-widget-container input[type="button"]:not(:disabled):hover,	.elementor-widget-container input[type="reset"]:not(:disabled):hover	) {
-    opacity: 0.8;
-  }
   :where(	.nextora-main button:not([class]),	.nextora-main input[type="submit"]:not([class]),	.nextora-main input[type="button"]:not([class]),	.nextora-main input[type="reset"]:not([class]),	.elementor-widget-html button:not([class]),	.elementor-widget-html input[type="submit"]:not([class]),	.elementor-widget-html input[type="button"]:not([class]),	.elementor-widget-html input[type="reset"]:not([class])	) {
     display: inline-flex;
     align-items: center;
@@ -3302,6 +3289,12 @@ footer.wp-block-template-part {
       position: static;
     }
   }
+}
+:where(.nextora-heading-inline-font[data-font]) {
+  font-weight: inherit;
+  font-style: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
 }
 .theme-global-prose, .entry-content.nextora-entry, .editor-styles-wrapper .block-editor-block-list__layout, .entry-content, .wp-block-post-content {
   & :where(a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button))) {

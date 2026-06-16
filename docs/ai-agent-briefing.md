@@ -159,7 +159,6 @@ Every color in templates must reference these presets — **never hard-code hex 
 .nextora-main             — applied to <main> tag
 .nextora-content-shell     — constrains content to layout width
 .nextora-content-shell--wide-size  — allows wide-aligned children
-.nextora-links-style-decoration     — enables underline styles on links within
 .wp-site-blocks           — WordPress core class (on outer group)
 ```
 
@@ -510,8 +509,8 @@ These theme blocks can be used in templates. Use the exact names and attribute k
 ### 11.5 Footer template part (with contrast background)
 
 ```html
-<!-- wp:group {"align":"full","className":"nextora-links-style-decoration","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|30","right":"var:preset|spacing|30"}},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"backgroundColor":"contrast","textColor":"base","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull nextora-links-style-decoration has-base-color has-contrast-background-color has-text-color has-background has-link-color" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--30)">
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50","left":"var:preset|spacing|30","right":"var:preset|spacing|30"}},"elements":{"link":{"color":{"text":"var:preset|color|base"}}}},"backgroundColor":"contrast","textColor":"base","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull has-base-color has-contrast-background-color has-text-color has-background has-link-color" style="padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--30)">
     <!-- columns with nav links, social icons, etc. -->
 </div>
 <!-- /wp:group -->
