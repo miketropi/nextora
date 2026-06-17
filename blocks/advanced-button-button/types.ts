@@ -39,9 +39,15 @@ export interface AdvancedButtonButtonAttributes extends Record< string, unknown 
 	strokeWidth: number;
 	iconStyle: IconStyle;
 	iconBorderRadius: number;
-	backgroundColor: string;
-	textColor: string;
-	borderColor: string;
+	buttonBackgroundColor: string;
+	buttonTextColor: string;
+	buttonBorderColor: string;
+	/** @deprecated Legacy alias — migrated to buttonBackgroundColor. */
+	backgroundColor?: string;
+	/** @deprecated Legacy alias — migrated to buttonTextColor. */
+	textColor?: string;
+	/** @deprecated Legacy alias — migrated to buttonBorderColor. */
+	borderColor?: string;
 	hoverEffect: HoverEffect;
 	hoverBackgroundColor: string;
 	hoverTextColor: string;
@@ -54,6 +60,11 @@ declare global {
 	interface Window {
 		nextoraIconBlock?: {
 			iconsUrl: string;
+			paletteEntries?: Array<{
+				slug: string;
+				color: string;
+				name?: string;
+			}>;
 		};
 	}
 }

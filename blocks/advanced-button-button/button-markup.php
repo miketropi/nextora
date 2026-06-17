@@ -14,6 +14,31 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/../advanced-icon/lucide.php';
 
+if ( ! function_exists( 'nextora_advanced_button_button_color_attr' ) ) {
+	/**
+	 * Read a scoped colour attribute with legacy fallback.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @param string               $key        Primary attribute key.
+	 * @param string               $legacy_key Legacy attribute key.
+	 */
+	function nextora_advanced_button_button_color_attr(
+		array $attributes,
+		string $key,
+		string $legacy_key = '',
+	): string {
+		if ( isset( $attributes[ $key ] ) && '' !== (string) $attributes[ $key ] ) {
+			return trim( (string) $attributes[ $key ] );
+		}
+
+		if ( '' !== $legacy_key && isset( $attributes[ $legacy_key ] ) ) {
+			return trim( (string) $attributes[ $legacy_key ] );
+		}
+
+		return '';
+	}
+}
+
 if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 	/**
 	 * Build classes, CSS variables, and inner markup for one button.
@@ -54,9 +79,9 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 		$stroke_w               = isset( $attributes['strokeWidth'] ) ? (float) $attributes['strokeWidth'] : 2.0;
 		$icon_style             = isset( $attributes['iconStyle'] ) ? (string) $attributes['iconStyle'] : 'default';
 		$icon_border_radius     = isset( $attributes['iconBorderRadius'] ) ? max( 0, (int) $attributes['iconBorderRadius'] ) : 8;
-		$background_color       = isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '';
-		$text_color             = isset( $attributes['textColor'] ) ? (string) $attributes['textColor'] : '';
-		$border_color           = isset( $attributes['borderColor'] ) ? (string) $attributes['borderColor'] : '';
+		$background_color       = nextora_advanced_button_button_color_attr( $attributes, 'buttonBackgroundColor', 'backgroundColor' );
+		$text_color             = nextora_advanced_button_button_color_attr( $attributes, 'buttonTextColor', 'textColor' );
+		$border_color           = nextora_advanced_button_button_color_attr( $attributes, 'buttonBorderColor', 'borderColor' );
 		$icon_color             = isset( $attributes['iconColor'] ) ? (string) $attributes['iconColor'] : '';
 		$hover_effect           = isset( $attributes['hoverEffect'] ) ? (string) $attributes['hoverEffect'] : 'opacity';
 		$hover_background_color = isset( $attributes['hoverBackgroundColor'] ) ? (string) $attributes['hoverBackgroundColor'] : '';
