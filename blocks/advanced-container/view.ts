@@ -4,6 +4,7 @@
  * Dynamic blocks often do not auto-enqueue `viewScript`;
  * render.php enqueues this file when needed.
  */
+import { initHoverReveal } from './hover-reveal';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -125,6 +126,9 @@ function initParallax(root: HTMLElement): void {
   if (!root.classList.contains('nextora-advanced-container--parallax')) {
     return;
   }
+  if (root.classList.contains('nextora-advanced-container--bg-anim')) {
+    return;
+  }
   if (root.getAttribute(PARALLAX_INIT_ATTR) === '1') {
     return;
   }
@@ -186,6 +190,7 @@ function initRoot(root: HTMLElement): void {
 
   initScrollReveal(root);
   initParallax(root);
+  initHoverReveal(root);
   bindBgImageRefresh(root);
 }
 

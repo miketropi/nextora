@@ -67,6 +67,26 @@
 	.wp-block-nextora-advanced-icon.nextora-advanced-icon.nextora-advanced-icon--scroll-off {
 	opacity: 1;
 }
+
+/*
+ * Block list wrapper used to pick up has-*-background-color from the legacy
+ * backgroundColor attribute name. Keep background on __surface only.
+ */
+.editor-styles-wrapper
+	.block-editor-block-list__block.wp-block-nextora-advanced-icon.has-background,
+.editor-styles-wrapper
+	.block-editor-block-list__block.wp-block-nextora-advanced-icon[class*='-background-color'] {
+	background: transparent !important;
+	align-self: flex-start;
+	width: fit-content;
+	max-width: 100%;
+}
+
+.editor-styles-wrapper .wp-block-nextora-advanced-icon.nextora-advanced-icon {
+	align-self: flex-start;
+	width: fit-content;
+	max-width: 100%;
+}
 .nextora-icon-picker-modal .components-modal__content .components-button{
     margin-top: 26px;
 }

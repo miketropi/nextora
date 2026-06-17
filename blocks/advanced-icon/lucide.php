@@ -56,6 +56,204 @@ if ( ! function_exists( 'nextora_icon_enqueue_view_script' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_icon_normalize_hex_for_compare' ) ) {
+	/**
+	 * Normalize #abc / #aabbcc for palette hex comparison.
+	 */
+	function nextora_icon_normalize_hex_for_compare( string $hex ): string {
+		$sanitized = sanitize_hex_color( $hex );
+		if ( ! is_string( $sanitized ) || '' === $sanitized ) {
+			return '';
+		}
+
+		$sanitized = strtolower( $sanitized );
+		if ( 4 === strlen( $sanitized ) ) {
+			return sprintf(
+				'#%1$s%1$s%2$s%2$s%3$s%3$s',
+				$sanitized[1],
+				$sanitized[2],
+				$sanitized[3],
+			);
+		}
+
+		return $sanitized;
+	}
+}
+
+if ( ! function_exists( 'nextora_icon_collect_palette_entries' ) ) {
+	/**
+	 * Flat list of theme palette entries from active + style variation JSON files.
+	 *
+	 * @return list<array{slug: string, color: string}>
+	 */
+	function nextora_icon_collect_palette_entries(): array {
+		static $cache = null;
+
+		if ( null !== $cache ) {
+			return $cache;
+		}
+
+		/** @var list<array{slug: string, color: string}> $entries */
+		$entries = array();
+		$seen    = array();
+
+		$add_palette = static function ( array $palette ) use ( &$entries, &$seen ): void {
+			foreach ( $palette as $entry ) {
+				if ( ! is_array( $entry ) ) {
+					continue;
+				}
+
+				$slug  = isset( $entry['slug'] ) ? sanitize_key( (string) $entry['slug'] ) : '';
+				$color = isset( $entry['color'] ) ? trim( (string) $entry['color'] ) : '';
+
+				if ( '' === $slug || '' === $color || ! preg_match( '/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i', $color ) ) {
+					continue;
+				}
+
+				$key = $slug . '|' . strtolower( $color );
+				if ( isset( $seen[ $key ] ) ) {
+					continue;
+				}
+
+				$seen[ $key ] = true;
+				$entries[]    = array(
+					'slug'  => $slug,
+					'color' => $color,
+				);
+			}
+		};
+
+		if ( function_exists( 'wp_get_global_settings' ) ) {
+			$palette = wp_get_global_settings( array( 'color', 'palette' ) );
+			if ( is_array( $palette ) ) {
+				$add_palette( $palette );
+			}
+		}
+
+		if ( class_exists( 'WP_Theme_JSON_Resolver' ) && is_callable( array( 'WP_Theme_JSON_Resolver', 'get_style_variations' ) ) ) {
+			$variations = WP_Theme_JSON_Resolver::get_style_variations();
+			if ( is_array( $variations ) ) {
+				foreach ( $variations as $variation ) {
+					if ( ! is_array( $variation ) ) {
+						continue;
+					}
+
+					$palette = $variation['settings']['color']['palette'] ?? array();
+					if ( is_array( $palette ) ) {
+						$add_palette( $palette );
+					}
+				}
+			}
+		}
+
+		$theme = wp_get_theme();
+		$dirs  = array_values(
+			array_unique(
+				array_filter(
+					array(
+						$theme->get_stylesheet_directory(),
+						$theme->get_template_directory(),
+					),
+				),
+			),
+		);
+
+		foreach ( $dirs as $dir ) {
+			$styles_dir = $dir . '/styles';
+			if ( ! is_dir( $styles_dir ) ) {
+				continue;
+			}
+
+			/** @var list<string> $files */
+			$files = array();
+			$root  = glob( $styles_dir . '/*.json' );
+			if ( is_array( $root ) ) {
+				$files = array_merge( $files, $root );
+			}
+
+			try {
+				$iterator = new RecursiveIteratorIterator(
+					new RecursiveDirectoryIterator( $styles_dir, FilesystemIterator::SKIP_DOTS ),
+				);
+
+				foreach ( $iterator as $file_info ) {
+					if ( ! $file_info instanceof SplFileInfo || ! $file_info->isFile() ) {
+						continue;
+					}
+
+					if ( 'json' !== strtolower( $file_info->getExtension() ) ) {
+						continue;
+					}
+
+					$files[] = $file_info->getPathname();
+				}
+			} catch ( UnexpectedValueException ) {
+				continue;
+			}
+
+			foreach ( array_unique( $files ) as $file ) {
+				if ( ! is_string( $file ) || ! is_readable( $file ) ) {
+					continue;
+				}
+
+				$data = json_decode( (string) file_get_contents( $file ), true );
+				if ( ! is_array( $data ) ) {
+					continue;
+				}
+
+				$palette = $data['settings']['color']['palette'] ?? array();
+				if ( is_array( $palette ) ) {
+					$add_palette( $palette );
+				}
+			}
+		}
+
+		if ( class_exists( 'WP_Theme_JSON_Resolver' ) ) {
+			$theme_data = WP_Theme_JSON_Resolver::get_merged_data();
+			$settings   = $theme_data->get_settings();
+			$palette    = $settings['color']['palette'] ?? array();
+			if ( is_array( $palette ) ) {
+				$add_palette( $palette );
+			}
+		}
+
+		$cache = $entries;
+
+		return $cache;
+	}
+}
+
+if ( ! function_exists( 'nextora_icon_hex_to_preset_slug' ) ) {
+	/**
+	 * Map a saved preset hex (legacy) back to its palette slug when possible.
+	 */
+	function nextora_icon_hex_to_preset_slug( string $hex ): string {
+		$target = nextora_icon_normalize_hex_for_compare( $hex );
+		if ( '' === $target ) {
+			return '';
+		}
+
+		/** @var array<string, int> $counts */
+		$counts = array();
+
+		foreach ( nextora_icon_collect_palette_entries() as $entry ) {
+			if ( nextora_icon_normalize_hex_for_compare( $entry['color'] ) !== $target ) {
+				continue;
+			}
+
+			$counts[ $entry['slug'] ] = ( $counts[ $entry['slug'] ] ?? 0 ) + 1;
+		}
+
+		if ( array() === $counts ) {
+			return '';
+		}
+
+		arsort( $counts );
+
+		return (string) array_key_first( $counts );
+	}
+}
+
 if ( ! function_exists( 'nextora_icon_resolve_color' ) ) {
 	/**
 	 * Map preset slug or hex to a CSS color value.
@@ -66,19 +264,44 @@ if ( ! function_exists( 'nextora_icon_resolve_color' ) ) {
 			return 'currentColor';
 		}
 
-		if ( preg_match( '/^#([0-9a-f]{3}|[0-9a-f]{6})$/i', $raw ) ) {
-			return $raw;
-		}
-
-		if ( preg_match( '/^var\(\s*--wp--preset--color--[a-z0-9_-]+\s*\)$/i', $raw ) ) {
-			return $raw;
-		}
-
-		if ( preg_match( '/^has-([a-z0-9-]+)-color$/i', $raw, $preset_m ) ) {
+		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $preset_m ) ) {
 			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $preset_m[1] ) ) . ')';
 		}
 
-		return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
+		$hex = sanitize_hex_color( $raw );
+		if ( is_string( $hex ) && '' !== $hex ) {
+			$preset_slug = nextora_icon_hex_to_preset_slug( $hex );
+			if ( '' !== $preset_slug ) {
+				return 'var(--wp--preset--color--' . sanitize_html_class( $preset_slug ) . ')';
+			}
+
+			return $hex;
+		}
+
+		if ( preg_match( '/^#([0-9a-f]{8})$/i', $raw ) ) {
+			$preset_slug = nextora_icon_hex_to_preset_slug( $raw );
+			if ( '' !== $preset_slug ) {
+				return 'var(--wp--preset--color--' . sanitize_html_class( $preset_slug ) . ')';
+			}
+
+			return strtolower( $raw );
+		}
+
+		if ( preg_match( '/^var\(\s*--wp--preset--color--[a-z0-9_-]+\s*\)$/i', $raw ) ) {
+			$normalized = preg_replace( '/\s+/', ' ', $raw );
+
+			return is_string( $normalized ) ? $normalized : $raw;
+		}
+
+		if ( preg_match( '/^has-([a-z0-9-]+)-color$/i', $raw, $class_m ) ) {
+			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $class_m[1] ) ) . ')';
+		}
+
+		if ( preg_match( '/^[a-z0-9-]+$/i', $raw ) ) {
+			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
+		}
+
+		return $raw;
 	}
 }
 

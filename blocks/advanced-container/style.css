@@ -11,9 +11,56 @@
   --nextora-ac-min-height-scale-tablet: 0.85;
   min-height: calc(var(--nextora-ac-min-height) * var(--nextora-ac-min-height-scale-mobile));
   color: var(--wp--preset--color--contrast, #0f172a);
-  background: var(--wp--preset--color--surface, #f4f4f4);
   --nextora-ac-overlay-color: var(--wp--preset--color--contrast, #0f172a);
   --nextora-ac-overlay-opacity: 0.3;
+}
+
+.wp-block-nextora-advanced-container:not(.nextora-advanced-container--fill-gradient):not([class*="-gradient-background"]),
+.nextora-advanced-container:not(.nextora-advanced-container--fill-gradient):not([class*="-gradient-background"]) {
+  background: var(--wp--preset--color--surface, #f4f4f4);
+}
+
+.nextora-advanced-container--fill-gradient {
+  background: var(--nextora-ac-section-bg);
+}
+
+.nextora-advanced-container--hover-reveal {
+  isolation: isolate;
+}
+
+.nextora-advanced-container--hover-reveal:not(.nextora-advanced-container--fill-gradient):not([class*="-gradient-background"]) {
+  background: transparent;
+}
+
+.nextora-advanced-container__bg-reveal {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.nextora-advanced-container__hover-mask,
+.nextora-advanced-container__hover-mask-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  display: block;
+}
+
+@media (hover: none) {
+  .nextora-advanced-container--hover-reveal .nextora-advanced-container__hover-mask {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nextora-advanced-container--hover-reveal .nextora-advanced-container__hover-mask {
+    display: none;
+  }
 }
 
 @media (min-width: 600px) {
@@ -58,8 +105,36 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
+}
+
+.nextora-advanced-container__overlay--solid {
   background-color: var(--nextora-ac-overlay-color);
   opacity: var(--nextora-ac-overlay-opacity);
+}
+
+.nextora-advanced-container__overlay--fade-right {
+  background: linear-gradient(
+    to right,
+    var(--nextora-ac-overlay-color),
+    transparent 70%
+  );
+  opacity: var(--nextora-ac-overlay-opacity);
+}
+
+.nextora-advanced-container__overlay--cinematic {
+  opacity: var(--nextora-ac-overlay-opacity);
+  background:
+    linear-gradient(
+      to top,
+      var(--nextora-ac-overlay-color) 6%,
+      color-mix(in srgb, var(--nextora-ac-overlay-color) 55%, transparent) 46%,
+      color-mix(in srgb, var(--nextora-ac-overlay-color) 25%, transparent)
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--nextora-ac-overlay-color) 80%, transparent),
+      transparent 62%
+    );
 }
 
 .nextora-advanced-container--scroll-reveal.nextora-advanced-container--reveal-pending:not(.nextora-advanced-container--ready) .nextora-advanced-container__inner {
@@ -79,6 +154,109 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Background image motion (CSS). Slightly oversized layer prevents edge gaps during transform. */
+.nextora-advanced-container--bg-anim .nextora-advanced-container__bg {
+  width: 115%;
+  height: 115%;
+  left: -7.5%;
+  top: -7.5%;
+  will-change: transform;
+  animation-duration: calc(var(--nextora-ac-bg-anim-base-duration, 22s) / var(--nextora-ac-bg-anim-speed, 1));
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.nextora-advanced-container--bg-anim-ken-burns .nextora-advanced-container__bg {
+  animation-name: nextora-ac-anim-ken-burns;
+}
+
+.nextora-advanced-container--bg-anim-slow-zoom .nextora-advanced-container__bg {
+  animation-name: nextora-ac-anim-slow-zoom;
+}
+
+.nextora-advanced-container--bg-anim-gentle-pan .nextora-advanced-container__bg {
+  animation-name: nextora-ac-anim-gentle-pan;
+}
+
+.nextora-advanced-container--bg-anim-subtle-drift .nextora-advanced-container__bg {
+  animation-name: nextora-ac-anim-subtle-drift;
+}
+
+.nextora-advanced-container--bg-anim-breathing .nextora-advanced-container__bg {
+  animation-name: nextora-ac-anim-breathing;
+}
+
+@keyframes nextora-ac-anim-ken-burns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+
+  100% {
+    transform: scale(1.14) translate(-3%, -2%);
+  }
+}
+
+@keyframes nextora-ac-anim-slow-zoom {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes nextora-ac-anim-gentle-pan {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  50% {
+    transform: translateX(-4%);
+  }
+}
+
+@keyframes nextora-ac-anim-subtle-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1.04);
+  }
+
+  33% {
+    transform: translate(-2.5%, -1.5%) scale(1.04);
+  }
+
+  66% {
+    transform: translate(2%, -2.5%) scale(1.04);
+  }
+}
+
+@keyframes nextora-ac-anim-breathing {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nextora-advanced-container--bg-anim .nextora-advanced-container__bg {
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
 }
 
 .nextora-advanced-container__inner {

@@ -1,0 +1,72 @@
+export type BoxContentLayoutMode = 'slider' | 'grid';
+export type BoxContentIconSource = 'theme' | 'upload';
+export type BoxContentIconStyle = 'default' | 'stacked' | 'framed';
+export type BoxContentCardTemplate = 'default' | 'ways';
+
+export interface BoxContentItem {
+	id: string;
+	title: string;
+	description: string;
+	showLink: boolean;
+	linkLabel: string;
+	linkUrl: string;
+	linkTarget: '_self' | '_blank';
+	iconSource?: BoxContentIconSource;
+	iconName: string;
+	uploadedIconId: number;
+	uploadedIconUrl: string;
+	iconColor: string;
+	iconSurfaceBackgroundColor: string;
+}
+
+export interface BoxContentAttributes {
+	items: BoxContentItem[];
+	contentMaxWidth: string;
+	cardTemplate: BoxContentCardTemplate;
+	layoutMode: BoxContentLayoutMode;
+	gridColumns: number;
+	gridMinWidth: number;
+	cardMinHeight: number;
+	cardPadding: Record<string, string>;
+	cardBorderWidth: number;
+	cardBorderRadius: number;
+	iconSource: BoxContentIconSource;
+	iconSize: number;
+	strokeWidth: number;
+	iconCircleSize: number;
+	iconCircleRadius: number;
+	iconStyle: BoxContentIconStyle;
+	iconColor: string;
+	iconSurfaceBackgroundColor: string;
+	iconSurfaceBorderColor: string;
+	iconHoverColor: string;
+	iconHoverSurfaceBackgroundColor: string;
+	slidesPerView: number;
+	slidesPerViewTablet: number;
+	slidesPerViewMobile: number;
+	spaceBetween: number;
+	speed: number;
+	loop: boolean;
+	autoplay: boolean;
+	autoplayDelay: number;
+	pauseOnHover: boolean;
+	showPagination: boolean;
+	showArrows: boolean;
+	grabCursor: boolean;
+	freeMode: boolean;
+	cardBorderColor: string;
+	cardBackgroundColor: string;
+	cardHoverBackgroundColor: string;
+	cardTitleColor: string;
+	cardDescriptionColor: string;
+	descriptionHoverColor: string;
+	linkColor: string;
+	linkHoverColor: string;
+	waysAccentColor1: string;
+	waysAccentColor2: string;
+	waysAccentColor3: string;
+	paginationColor: string;
+	paginationActiveColor: string;
+	arrowColor: string;
+	enableScrollAnimation: boolean;
+}

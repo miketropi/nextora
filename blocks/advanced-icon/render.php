@@ -25,8 +25,12 @@ $stroke_w         = isset( $attributes['strokeWidth'] ) ? (float) $attributes['s
 $align            = isset( $attributes['iconAlign'] ) ? (string) $attributes['iconAlign'] : 'left';
 $icon_style       = isset( $attributes['iconStyle'] ) ? (string) $attributes['iconStyle'] : 'default';
 $border_radius    = isset( $attributes['borderRadius'] ) ? max( 0, (int) $attributes['borderRadius'] ) : 8;
-$background_color = isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '';
-$border_color     = isset( $attributes['borderColor'] ) ? (string) $attributes['borderColor'] : '';
+$background_color = isset( $attributes['surfaceBackgroundColor'] )
+	? (string) $attributes['surfaceBackgroundColor']
+	: ( isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '' );
+$border_color     = isset( $attributes['surfaceBorderColor'] )
+	? (string) $attributes['surfaceBorderColor']
+	: ( isset( $attributes['borderColor'] ) ? (string) $attributes['borderColor'] : '' );
 $link_url         = isset( $attributes['linkUrl'] ) ? trim( (string) $attributes['linkUrl'] ) : '';
 $link_target      = isset( $attributes['linkTarget'] ) ? (string) $attributes['linkTarget'] : '_self';
 $aria_label       = isset( $attributes['ariaLabel'] ) ? trim( (string) $attributes['ariaLabel'] ) : '';

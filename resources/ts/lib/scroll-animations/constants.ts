@@ -34,6 +34,7 @@ export const ANIMATION_CLASS_NAMES = [
 	"animation-text-reveal-chars",
 	"animation-text-reveal-chars-rise",
 	"animation-text-reveal-chars-scrub",
+	"animation-text-typewriter",
 ] as const;
 
 /** Preset classes handled outside the from/to registry in presets.ts. */
@@ -43,6 +44,7 @@ export const SPECIAL_ANIMATION_CLASS_NAMES = [
 	"animation-text-reveal-chars",
 	"animation-text-reveal-chars-rise",
 	"animation-text-reveal-chars-scrub",
+	"animation-text-typewriter",
 ] as const;
 
 export type SpecialAnimationClassName = (typeof SPECIAL_ANIMATION_CLASS_NAMES)[number];

@@ -29,8 +29,12 @@ export interface IconAttributes extends Record< string, unknown > {
 	iconAlign: IconAlign;
 	iconStyle: IconStyle;
 	borderRadius: number;
-	backgroundColor: string;
-	borderColor: string;
+	surfaceBackgroundColor: string;
+	surfaceBorderColor: string;
+	/** @deprecated Legacy alias — migrated to surfaceBackgroundColor. */
+	backgroundColor?: string;
+	/** @deprecated Legacy alias — migrated to surfaceBorderColor. */
+	borderColor?: string;
 	linkUrl: string;
 	linkTarget: IconLinkTarget;
 	ariaLabel: string;
@@ -43,6 +47,11 @@ declare global {
 	interface Window {
 		nextoraIconBlock?: {
 			iconsUrl: string;
+			paletteEntries?: Array<{
+				slug: string;
+				color: string;
+				name?: string;
+			}>;
 		};
 	}
 }

@@ -86,7 +86,7 @@ nextora/advanced-button
 ├── attributes.strokeWidth
 ├── attributes.iconStyle         ← default | stacked | framed (icon glyph)
 ├── attributes.iconBorderRadius  ← icon surface radius when stacked/framed
-├── attributes.backgroundColor   ← stacked icon / button overrides
+├── attributes.buttonBackgroundColor   ← stacked icon / button overrides
 ├── attributes.borderColor       ← framed icon / outline button
 ├── attributes.enableScrollAnimation
 ├── lucide.php                   ← require ../../icon/lucide.php (shared helpers)
@@ -153,13 +153,18 @@ nextora/advanced-button
 
 ### Colors (overrides)
 
+Use scoped attribute names — **not** `backgroundColor` / `textColor` / `borderColor` (WordPress reserved names that leak `has-*-background-color` onto the block wrapper). Store **preset slugs** (e.g. `secondary`), not resolved hex, so Browse styles → Color variations apply on the front end. See [`docs/blocks.md`](../blocks.md) § Custom colour options and [`blocks/advanced-icon/color-utils.ts`](../../blocks/advanced-icon/color-utils.ts).
+
 | Attribute | Type | Default | Control | Description |
 |-----------|------|---------|---------|-------------|
-| `backgroundColor` | `string` | `""` | PanelColorSettings | Button fill or stacked icon background; preset slug or empty = theme default |
-| `textColor` | `string` | `""` | PanelColorSettings | Button label + default icon stroke |
-| `borderColor` | `string` | `""` | PanelColorSettings | Outline button border or framed icon border |
+| `buttonBackgroundColor` | `string` | `""` | PanelColorSettings | Button fill or stacked icon background; preset slug or empty = theme default |
+| `buttonTextColor` | `string` | `""` | PanelColorSettings | Button label + default icon stroke |
+| `buttonBorderColor` | `string` | `""` | PanelColorSettings | Outline button border or framed icon border |
+| `hoverBackgroundColor` | `string` | `""` | PanelColorSettings | Hover fill (color-swap effect) |
+| `hoverTextColor` | `string` | `""` | PanelColorSettings | Hover label colour |
+| `hoverBorderColor` | `string` | `""` | PanelColorSettings | Hover border colour |
 
-Prefer **`supports.color`** first; custom attributes only when inspector needs explicit overrides beyond Global Styles.
+Legacy `backgroundColor`, `textColor`, and `borderColor` are migrated in the editor and read with fallback in `button-markup.php`.
 
 ### Accessibility & animation
 

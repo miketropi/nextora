@@ -53,6 +53,14 @@
       "type": "number",
       "default": 3
     },
+    "columnsTablet": {
+      "type": "number",
+      "default": 2
+    },
+    "columnsMobile": {
+      "type": "number",
+      "default": 1
+    },
     "columnGap": {
       "type": "string",
       "default": ""
@@ -94,6 +102,14 @@
       "default": ""
     },
     "labelFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "numberFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "labelFontFamily": {
       "type": "string",
       "default": ""
     }
