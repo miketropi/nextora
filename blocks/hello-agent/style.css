@@ -1,0 +1,14 @@
+/**
+ * nextora/hello-agent — front-end + editor canvas.
+ * Use theme presets: var(--wp--preset--color--*). See docs/blocks.md.
+ */
+.wp-block-nextora-hello-agent {
+	color: var(--wp--preset--color--contrast, inherit);
+}
+
+.hello-agent__message {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--large, 1.25rem);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+}
