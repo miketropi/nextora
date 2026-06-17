@@ -228,6 +228,9 @@
   .start {
     inset-inline-start: var(--spacing);
   }
+  .start\! {
+    inset-inline-start: var(--spacing) !important;
+  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -332,6 +335,9 @@
   }
   .inline {
     display: inline;
+  }
+  .inline\! {
+    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -785,6 +791,9 @@
   .italic {
     font-style: italic;
   }
+  .italic\! {
+    font-style: italic !important;
+  }
   .\!no-underline {
     text-decoration-line: none !important;
   }
@@ -796,6 +805,9 @@
   }
   .underline {
     text-decoration-line: underline;
+  }
+  .underline\! {
+    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -3182,24 +3194,52 @@ footer.wp-block-template-part {
     }
   }
 }
-.nextora-scroll-animation--pending, [class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), [class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), .animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, .animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
+.nextora-scroll-animation--pending, [class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), [class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), .animation-text-typewriter:not([data-nextora-scroll-animation-init]), .animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, .animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
   opacity: 0;
 }
 .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
   clip-path: inset(0 100% 0 0);
 }
-:where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.nextora-scroll-animation--pending, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
+:where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.nextora-scroll-animation--pending, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-text-typewriter:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
   opacity: 1;
 }
 :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
   clip-path: none;
 }
 @media (prefers-reduced-motion: reduce) {
-  .nextora-scroll-animation--pending,	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]),	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li,	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *,	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
+  .nextora-scroll-animation--pending,	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]),	.animation-text-typewriter:not([data-nextora-scroll-animation-init]),	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li,	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *,	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
     opacity: 1;
   }
   .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
     clip-path: none;
+  }
+}
+.animation-text-typewriter {
+  white-space: normal;
+  max-width: 100%;
+}
+.animation-text-typewriter .nextora-typewriter-char {
+  display: none;
+}
+.animation-text-typewriter .nextora-typewriter-char.is-typed {
+  display: inline;
+}
+.animation-text-typewriter .nextora-typewriter-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-left: 2px;
+  background: currentColor;
+  vertical-align: -0.18em;
+  animation: nextora-typewriter-caret 0.75s step-end infinite;
+}
+.animation-text-typewriter.is-done .nextora-typewriter-caret {
+  animation: none;
+  opacity: 0;
+}
+@keyframes nextora-typewriter-caret {
+  50% {
+    opacity: 0;
   }
 }
 @layer components {

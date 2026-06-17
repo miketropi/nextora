@@ -8,6 +8,7 @@ import {
 } from "./constants";
 import { parseScrollAnimationOptions } from "./parse-options";
 import { revertElementTextSplit, splitElementText } from "./split-text";
+import { initTextTypewriter, skipTypewriterText } from "./typewriter-text";
 import type { ScrollAnimationOptions } from "./types";
 
 type MarkInitialized = (el: HTMLElement) => void;
@@ -277,6 +278,9 @@ export function initSpecialScrollAnimation(
 		case "animation-text-reveal-chars-scrub":
 			initTextCharScrubReveal(el, options, markInitialized);
 			return true;
+		case "animation-text-typewriter":
+			initTextTypewriter(el, markInitialized);
+			return true;
 		default:
 			return false;
 	}
@@ -286,6 +290,10 @@ export function initSpecialScrollAnimation(
 export function skipSpecialScrollAnimation(el: HTMLElement, animationClass: string): void {
 	if (animationClass.startsWith("animation-text-reveal-")) {
 		revertElementTextSplit(el);
+	}
+
+	if (animationClass === "animation-text-typewriter") {
+		skipTypewriterText(el);
 	}
 
 	if (animationClass === "animation-image-clip-reveal") {

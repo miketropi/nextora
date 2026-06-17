@@ -23,6 +23,7 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-text-reveal-chars` | Split heading into characters; stagger fade + slide in on scroll |
 | `animation-text-reveal-chars-rise` | Characters rise in with perspective + `back.out` easing |
 | `animation-text-reveal-chars-scrub` | Characters brighten and slide in while scrolling (scrubbed) |
+| `animation-text-typewriter` | Character-by-character typewriter with blinking caret on scroll (inspired by [MiMo Code](https://mimo.xiaomi.com/coder) hero subtitle) |
 
 ## Image & text reveal presets
 
@@ -35,8 +36,11 @@ These map from legacy Elementor utility classes (`at-animation-*`) to theme-nati
 | `animation-text-reveal-chars` | Character stagger, slide from right | `duration: 1`, `delay: 0.1`, `stagger: 0.03`, `distance: 20`, `ease: power2.out` |
 | `animation-text-reveal-chars-rise` | 3D-style character rise | `duration: 1`, `stagger: 0.02`, `distance: 50`, `ease: back.out(1.7)` |
 | `animation-text-reveal-chars-scrub` | Scroll-scrubbed character reveal | `duration: 0.7`, `stagger: 0.2`, scrub between `top 92%` → `top 60%` |
+| `animation-text-typewriter` | Typewriter print + caret | `delay: 0.35`, `stagger: 0.055` (seconds per character), trigger `top 85%` |
 
 All presets honor `data-delay`, `data-duration`, `data-ease`, `data-stagger`, and `data-distance` when set on the same element.
+
+`animation-text-typewriter` uses `data-delay` as the pre-type pause (default `0.35`s) and `data-stagger` as per-character cadence in seconds (default `0.055` ≈ 55ms, matching MiMo). Text wraps naturally to the container width. On viewports ≤700px or when reduced motion is preferred, the full line is shown immediately.
 
 ### Image clip reveal
 
@@ -62,6 +66,18 @@ Put the class on the **Heading** block (not a parent Group). Text is split into 
 
 For scrubbed text, use `animation-text-reveal-chars-scrub` on longer headlines where scroll-linked motion reads well.
 
+### Typewriter (paragraphs / subtitles)
+
+Put the class on a **Paragraph** or **Heading** block. Text prints left-to-right with a blinking caret when the block enters the viewport — same motion language as the [MiMo Code](https://mimo.xiaomi.com/coder) `.hero__subtitle`.
+
+```html
+<!-- wp:paragraph {"className":"animation-text-typewriter"} -->
+<p class="animation-text-typewriter" data-delay="0.35" data-stagger="0.055">
+  A next-generation AI coding assistant for developers.
+</p>
+<!-- /wp:paragraph -->
+```
+
 **Legacy class mapping**
 
 | Old (Elementor) | New (Nextora) |
@@ -71,6 +87,7 @@ For scrubbed text, use `animation-text-reveal-chars-scrub` on longer headlines w
 | `at-animation-heading-style-2` | `animation-text-reveal-chars` |
 | `at-animation-heading-style-3` | `animation-text-reveal-chars-rise` |
 | `at-animation-heading-style-4` | `animation-text-reveal-chars-scrub` |
+| `at-animation-typewriter` | `animation-text-typewriter` |
 
 
 ## Data attributes (optional)
@@ -172,6 +189,7 @@ resources/ts/lib/scroll-animations/
   parse-options.ts       # data-* parsing
   split-text.ts          # DOM word/char splitter (no SplitText plugin)
   special-animations.ts  # Image clip + text reveal handlers
+  typewriter-text.ts     # MiMo-style typewriter preset
   helpers.ts             # GSAP wiring per element
   scroll-animations.ts   # scan, MutationObserver, boot
   index.ts               # Public exports

@@ -21,7 +21,7 @@
     ],
     "anchor": true,
     "color": {
-      "background": true,
+      "background": false,
       "text": true,
       "link": true
     },
@@ -42,6 +42,18 @@
       "type": "string",
       "default": "color"
     },
+    "sectionBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "sectionBackgroundFill": {
+      "type": "string",
+      "default": "solid"
+    },
+    "sectionBackgroundGradient": {
+      "type": "string",
+      "default": ""
+    },
     "backgroundColor": {
       "type": "string",
       "default": ""
@@ -58,6 +70,25 @@
       "type": "string",
       "default": ""
     },
+    "backgroundImageFocalPoint": {
+      "type": "object",
+      "default": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "backgroundImageSize": {
+      "type": "string",
+      "default": "cover"
+    },
+    "backgroundImageCustomSize": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundImageRepeat": {
+      "type": "boolean",
+      "default": false
+    },
     "overlayColor": {
       "type": "string",
       "default": ""
@@ -65,6 +96,10 @@
     "overlayOpacity": {
       "type": "number",
       "default": 0.3
+    },
+    "overlayStyle": {
+      "type": "string",
+      "default": "solid"
     },
     "minHeight": {
       "type": "string",
@@ -74,6 +109,18 @@
       "type": "boolean",
       "default": false
     },
+    "enableBackgroundAnimation": {
+      "type": "boolean",
+      "default": false
+    },
+    "backgroundAnimation": {
+      "type": "string",
+      "default": "ken-burns"
+    },
+    "backgroundAnimationSpeed": {
+      "type": "number",
+      "default": 1.75
+    },
     "parallaxSpeed": {
       "type": "number",
       "default": 0.5
@@ -81,6 +128,33 @@
     "enableScrollAnimation": {
       "type": "boolean",
       "default": true
+    },
+    "enableHoverReveal": {
+      "type": "boolean",
+      "default": false
+    },
+    "hoverRevealImageId": {
+      "type": "number",
+      "default": 0
+    },
+    "hoverRevealImageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverRevealImageFocalPoint": {
+      "type": "object",
+      "default": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "hoverRevealImageSize": {
+      "type": "string",
+      "default": "cover"
+    },
+    "hoverRevealMaskColor": {
+      "type": "string",
+      "default": ""
     }
   },
   "editorScript": "file:./index.js",

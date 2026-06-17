@@ -60,3 +60,8 @@ $advanced_button_button_editor = __DIR__ . '/advanced-button-button/register-edi
 if ( is_readable( $advanced_button_button_editor ) ) {
 	require_once $advanced_button_button_editor;
 }
+
+$advanced_container_editor = __DIR__ . '/advanced-container/register-editor.php';
+if ( is_readable( $advanced_container_editor ) ) {
+	require_once $advanced_container_editor;
+}
