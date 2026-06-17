@@ -65,3 +65,8 @@ $advanced_container_editor = __DIR__ . '/advanced-container/register-editor.php'
 if ( is_readable( $advanced_container_editor ) ) {
 	require_once $advanced_container_editor;
 }
+
+$box_content_editor = __DIR__ . '/box-content/register-editor.php';
+if ( is_readable( $box_content_editor ) ) {
+	require_once $box_content_editor;
+}
