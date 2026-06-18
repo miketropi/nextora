@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/hello-agent",
+  "title": "Hello Agent",
+  "category": "theme",
+  "description": "Greets the Nextora agent runtime.",
+  "keywords": [
+    "hello",
+    "agent",
+    "nextora"
+  ],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "color": {
+      "background": true,
+      "text": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    }
+  },
+  "attributes": {},
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php",
+  "style": "file:./style.css"
+}
