@@ -1,12 +1,14 @@
-import type { AnimationClassName } from "./constants";
+import { ANIMATION_CLASS_NAMES, type AnimationClassName, type SpecialAnimationClassName } from "./constants";
 import type { AnimationPresetFactory } from "./types";
+
+type PresetAnimationClassName = Exclude<AnimationClassName, SpecialAnimationClassName>;
 
 /**
  * GSAP preset registry keyed by utility class name.
  *
  * Extend at runtime with {@link registerScrollAnimationPreset} — no GSAP boilerplate duplication.
  */
-export const animationPresets: Record<AnimationClassName, AnimationPresetFactory> = {
+export const animationPresets: Record<PresetAnimationClassName, AnimationPresetFactory> = {
 	"animation-fade-in": () => ({
 		from: { opacity: 0 },
 		to: { opacity: 1 },
@@ -68,12 +70,10 @@ export function registerScrollAnimationPreset(
 	className: string,
 	factory: AnimationPresetFactory,
 ): void {
-	animationPresets[className as AnimationClassName] = factory;
+	animationPresets[className as PresetAnimationClassName] = factory;
 }
 
-/** CSS selector for all registered animation utility classes. */
+/** CSS selector for all animation utility classes (presets + special handlers). */
 export function getAnimationSelector(): string {
-	return Object.keys(animationPresets)
-		.map((className) => `.${className}`)
-		.join(", ");
+	return ANIMATION_CLASS_NAMES.map((className) => `.${className}`).join(", ");
 }

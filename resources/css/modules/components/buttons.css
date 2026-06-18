@@ -44,27 +44,6 @@
 		text-decoration: none;
 		text-decoration-line: none;
 	}
-
-	:where(
-		a.wp-block-button__link:not(:disabled):hover,
-		a.wp-element-button:not(:disabled):hover,
-		button.wp-block-button__link:not(:disabled):hover,
-		a.wp-block-file__button:not(:disabled):hover,
-		button.wp-block-search__button:not(:disabled):hover,
-		a.elementor-button:not(:disabled):hover,
-		button.elementor-button:not(:disabled):hover,
-		.nextora-main button:not(:disabled):hover,
-		.nextora-main input[type="submit"]:not(:disabled):hover,
-		.nextora-main input[type="button"]:not(:disabled):hover,
-		.nextora-main input[type="reset"]:not(:disabled):hover,
-		.elementor-widget-container button:not(:disabled):hover,
-		.elementor-widget-container input[type="submit"]:not(:disabled):hover,
-		.elementor-widget-container input[type="button"]:not(:disabled):hover,
-		.elementor-widget-container input[type="reset"]:not(:disabled):hover
-	) {
-		opacity: 0.8;
-	}
-
 	/**
 	 * Plain native controls in theme/Elementor content (no block/widget skin):
 	 * matches theme.json `elements.button` so they align with Gutenberg buttons.

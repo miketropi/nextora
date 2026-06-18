@@ -28,13 +28,14 @@
     --radius-md: 0.375rem;
     --radius-lg: 0.5rem;
     --radius-xl: 0.75rem;
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --aspect-video: 16 / 9;
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --color-base: var(--wp--preset--color--base, #fafafa);
     --color-contrast: var(--wp--preset--color--contrast, #0f172a);
     --color-primary: var(--wp--preset--color--primary, #4f46e5);
-    --color-secondary: var(--wp--preset--color--secondary, #64748b);
+    --color-secondary: var(--wp--preset--color--paragraph, #64748b);
     --color-surface: var(--wp--preset--color--surface, #f1f5f9);
     --nextora-gutter: clamp(
 		var(--wp--preset--spacing--10, 1rem),
@@ -57,7 +58,7 @@
       --nextora-nav-header-link-hover-underline: color-mix(
 		in srgb,
 		var(--wp--preset--color--base, #fafafa) 72%,
-		var(--wp--preset--color--secondary, #64748b)
+		var(--wp--preset--color--paragraph, #64748b)
 	);
     }
     --nextora-nav-header-link-active-underline: var(--wp--preset--color--base, #fafafa);
@@ -113,7 +114,7 @@
 		var(--wp--preset--color--base, #fafafa)
 	);
     }
-    --nextora-nav-panel-active-fg: var(--wp--preset--color--contrast, #0f172a);
+    --nextora-nav-panel-active-fg: var(--wp--preset--color--primary, #0f172a);
     --nextora-nav-focus-ring: var(--wp--preset--color--contrast, #0f172a);
     --nextora-nav-focus-ring-on-dark: var(--wp--preset--color--base, #fafafa);
     --nextora-nav-portal-backdrop: var(--wp--preset--color--contrast, #0f172a);
@@ -147,11 +148,11 @@
 		var(--wp--preset--color--base, #fafafa)
 	);
     }
-    --nextora-pagination-dots: var(--wp--preset--color--secondary, #64748b);
+    --nextora-pagination-dots: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
       --nextora-pagination-dots: color-mix(
 		in srgb,
-		var(--wp--preset--color--secondary, #64748b) 52%,
+		var(--wp--preset--color--paragraph, #64748b) 52%,
 		var(--wp--preset--color--base, #fafafa)
 	);
     }
@@ -569,40 +570,16 @@
     --tw-border-style: none;
     border-style: none;
   }
-  .border-secondary\/10 {
-    border-color: var(--color-secondary);
+  .border-contrast\/40 {
+    border-color: var(--color-contrast);
     @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-secondary) 10%, transparent);
+      border-color: color-mix(in oklab, var(--color-contrast) 40%, transparent);
     }
   }
   .border-secondary\/12 {
     border-color: var(--color-secondary);
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-secondary) 12%, transparent);
-    }
-  }
-  .border-secondary\/20 {
-    border-color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-secondary) 20%, transparent);
-    }
-  }
-  .border-secondary\/25 {
-    border-color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-secondary) 25%, transparent);
-    }
-  }
-  .border-secondary\/30 {
-    border-color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-secondary) 30%, transparent);
-    }
-  }
-  .border-secondary\/40 {
-    border-color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-secondary) 40%, transparent);
     }
   }
   .bg-base {
@@ -616,18 +593,6 @@
   }
   .bg-secondary {
     background-color: var(--color-secondary);
-  }
-  .bg-secondary\/5 {
-    background-color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-secondary) 5%, transparent);
-    }
-  }
-  .bg-secondary\/10 {
-    background-color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-secondary) 10%, transparent);
-    }
   }
   .bg-surface {
     background-color: var(--color-surface);
@@ -803,33 +768,6 @@
   .text-primary {
     color: var(--color-primary);
   }
-  .text-secondary {
-    color: var(--color-secondary);
-  }
-  .text-secondary\/35 {
-    color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in oklab, var(--color-secondary) 35%, transparent);
-    }
-  }
-  .text-secondary\/40 {
-    color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in oklab, var(--color-secondary) 40%, transparent);
-    }
-  }
-  .text-secondary\/70 {
-    color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in oklab, var(--color-secondary) 70%, transparent);
-    }
-  }
-  .text-secondary\/80 {
-    color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in oklab, var(--color-secondary) 80%, transparent);
-    }
-  }
   .text-surface {
     color: var(--color-surface);
   }
@@ -859,12 +797,6 @@
   }
   .underline {
     text-decoration-line: underline;
-  }
-  .decoration-secondary\/30 {
-    text-decoration-color: var(--color-secondary);
-    @supports (color: color-mix(in lab, red, red)) {
-      text-decoration-color: color-mix(in oklab, var(--color-secondary) 30%, transparent);
-    }
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -937,6 +869,10 @@
     --tw-duration: 300ms;
     transition-duration: 300ms;
   }
+  .ease-in-out {
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
+  }
   .outline-none {
     --tw-outline-style: none;
     outline-style: none;
@@ -945,6 +881,9 @@
     -webkit-user-select: none;
     user-select: none;
   }
+  .\[file\:line\] {
+    file: line;
+  }
   .backface-hidden {
     backface-visibility: hidden;
   }
@@ -952,14 +891,6 @@
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
         scale: 1.02;
-      }
-    }
-  }
-  .placeholder\:text-secondary\/50 {
-    &::placeholder {
-      color: var(--color-secondary);
-      @supports (color: color-mix(in lab, red, red)) {
-        color: color-mix(in oklab, var(--color-secondary) 50%, transparent);
       }
     }
   }
@@ -1301,24 +1232,11 @@ footer.wp-block-template-part {
 .nextora-font-weight-bold {
   font-weight: 700;
 }
-.nextora-links-style-decoration	:where(a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button))) {
-  text-decoration: none;
-  text-decoration-line: none;
-}
-.nextora-links-style-decoration	:where(	a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)):not(	h1 a,	h2 a,	h3 a,	h4 a,	h5 a,	h6 a	):hover	) {
-  text-decoration: underline;
-  text-decoration-line: underline;
-  text-underline-offset: 3px;
-}
-.nextora-links-style-decoration	:where(	a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button)):is(:focus, :focus-visible)	) {
-  text-decoration: none;
-  text-decoration-line: none;
-}
 .nextora-post-grid .nextora-post-grid__item .nextora-post-grid__categories a {
   text-transform: none;
   text-decoration: auto;
   font-weight: 400;
-  color: var(--wp--preset--color--secondary, #9ca3af);
+  color: var(--wp--preset--color--paragraph, #9ca3af);
 }
 .is-placeholder-images {
   aspect-ratio: 4 / 3;
@@ -1340,10 +1258,10 @@ footer.wp-block-template-part {
   position: relative;
   z-index: 2;
   font-size: var(--wp--preset--font-size--small, 12px);
-  color: var(--nextora-blc-meta-color, var(--wp--preset--color--secondary, #9ca3af));
-  background: var(--wp--preset--color--secondary, #6b7280);
+  color: var(--nextora-blc-meta-color, var(--wp--preset--color--paragraph, #9ca3af));
+  background: var(--wp--preset--color--paragraph, #6b7280);
   @supports (color: color-mix(in lab, red, red)) {
-    background: color-mix(in srgb, var(--wp--preset--color--secondary, #6b7280) 8%, transparent);
+    background: color-mix(in srgb, var(--wp--preset--color--paragraph, #6b7280) 8%, transparent);
   }
   padding: 2px 8px;
   border-radius: 4px;
@@ -1786,14 +1704,14 @@ footer.wp-block-template-part {
     color: inherit;
   }
   .nextora-primary-nav-portal--open	.nextora-primary-nav-portal__panel	.nextora-header-menu	> li	> a:hover,	.nextora-primary-nav-portal--open	.nextora-primary-nav-portal__panel	.nextora-header-menu	> li	> a:focus-visible {
-    background-color: var(--nextora-nav-panel-hover-bg);
+    color: var(--wp--preset--color--primary);
+    background-color: transparent;
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu > li.menu-item-has-children {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0 var(--wp--preset--spacing--05, 0.5rem);
-    border-bottom: 1px solid var(--nextora-nav-mobile-drawer-border);
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu > li.menu-item-has-children > a {
     flex: 1 1 auto;
@@ -1820,9 +1738,9 @@ footer.wp-block-template-part {
     transition: background-color var(--nextora-nav-t), transform var(--nextora-nav-t);
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle:hover,	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle:focus-visible {
-    background: var(--nextora-nav-panel-hover-bg);
-    outline: 2px solid var(--wp--preset--color--primary, currentColor);
-    outline-offset: 2px;
+    background: transparent;
+    outline: none;
+    outline-offset: 0;
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle__icon {
     display: flex;
@@ -1835,6 +1753,8 @@ footer.wp-block-template-part {
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .menu-item-has-children > .sub-menu {
     flex: 1 0 100%;
     width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .menu-item-has-children {
     display: flex;
@@ -1884,15 +1804,17 @@ footer.wp-block-template-part {
     color: var(--nextora-nav-footer-link);
     padding: var(--wp--preset--spacing--05, 0.5rem) 0;
     font-size: var(--wp--preset--font-size--small, 0.9375rem);
+    width: auto;
+    color: inherit;
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:hover,	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:focus-visible {
-    color: var(--nextora-nav-footer-link-hover);
-    background-color: var(--nextora-nav-panel-hover-bg);
+    color: var(--wp--preset--color--primary);
+    background-color: transparent;
   }
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-item > a,	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-ancestor > a {
     color: var(--nextora-nav-panel-active-fg);
     font-weight: 600;
-    background-color: var(--nextora-nav-panel-active-bg);
+    background-color: transparent;
   }
 }
 @media (min-width: 768px) {
@@ -1923,9 +1845,9 @@ footer.wp-block-template-part {
     min-width: 0;
     box-sizing: border-box;
     border-radius: 0.375rem;
-    border: 1px solid var(--wp--preset--color--secondary, #64748b);
+    border: 1px solid var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 40%, transparent);
+      border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 40%, transparent);
     }
     background-color: var(--wp--preset--color--base, #fafafa);
     padding: 0.5rem 0.75rem;
@@ -1975,9 +1897,9 @@ footer.wp-block-template-part {
   position: relative;
 }
 .wp-block-search__icon-button.wp-block-search__button-inside .wp-block-search__inside-wrapper .wp-block-search__input {
-  border: 1px solid var(--wp--preset--color--secondary, #64748b);
+  border: 1px solid var(--wp--preset--color--paragraph, #64748b);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 40%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 40%, transparent);
   }
   padding: 0.5rem 0.6rem 0.5rem 2.5rem;
 }
@@ -1985,7 +1907,7 @@ footer.wp-block-template-part {
   margin: 0;
   padding: 0;
   background: transparent;
-  color: var(--wp--preset--color--secondary, #64748b);
+  color: var(--wp--preset--color--paragraph, #64748b);
   position: absolute;
   left: 13px;
   top: 50%;
@@ -2007,9 +1929,9 @@ footer.wp-block-template-part {
   .nextora-container--title {
     padding-block: clamp(0.5rem, 2vw, 1rem);
     margin-bottom: clamp(0.75rem, 2.25vw, 1.25rem);
-    border-bottom: 1px solid var(--wp--preset--color--secondary, #64748b);
+    border-bottom: 1px solid var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 25%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 25%, transparent);
     }
   }
 }
@@ -2049,7 +1971,7 @@ footer.wp-block-template-part {
 .nextora-comments .comment-meta-header {
   margin-bottom: 0.4rem;
   font-size: 0.875rem;
-  color: var(--wp--preset--color--secondary, #64748b);
+  color: var(--wp--preset--color--paragraph, #64748b);
 }
 .nextora-comments .comment-meta-header .fn, .nextora-comments .comment-meta-header .fn a {
   color: var(--wp--preset--color--contrast, #0f172a);
@@ -2072,7 +1994,7 @@ footer.wp-block-template-part {
   text-underline-offset: 2px;
 }
 .nextora-comments .comment-edit-link a {
-  color: var(--wp--preset--color--secondary, #64748b);
+  color: var(--wp--preset--color--paragraph, #64748b);
   text-decoration: none;
 }
 .nextora-comments .comment-edit-link a:hover, .nextora-comments .comment-edit-link a:focus-visible {
@@ -2118,9 +2040,9 @@ footer.wp-block-template-part {
 .nextora-comments .nextora-tiptap-prose blockquote {
   margin: 0.5em 0;
   padding-left: 0.85em;
-  border-left: 3px solid var(--wp--preset--color--secondary, #64748b);
+  border-left: 3px solid var(--wp--preset--color--paragraph, #64748b);
   @supports (color: color-mix(in lab, red, red)) {
-    border-left: 3px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 45%, transparent);
+    border-left: 3px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 45%, transparent);
   }
   color: var(--wp--preset--color--contrast, #0f172a);
 }
@@ -2144,9 +2066,9 @@ footer.wp-block-template-part {
   align-items: center;
   gap: 0.35rem 0.5rem;
   padding: 0.45rem 0.6rem;
-  border-bottom: 1px solid var(--wp--preset--color--secondary, #64748b);
+  border-bottom: 1px solid var(--wp--preset--color--contrast, #64748b);
   @supports (color: color-mix(in lab, red, red)) {
-    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 22%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #64748b) 22%, transparent);
   }
 }
 .nextora-tiptap-shell .nextora-tiptap-toolbar__group {
@@ -2157,9 +2079,9 @@ footer.wp-block-template-part {
 .nextora-tiptap-shell .nextora-tiptap-toolbar__group--end {
   padding-left: 0.45rem;
   margin-left: 0.15rem;
-  border-left: 1px solid var(--wp--preset--color--secondary, #64748b);
+  border-left: 1px solid var(--wp--preset--color--contrast, #64748b);
   @supports (color: color-mix(in lab, red, red)) {
-    border-left: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 28%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #64748b) 28%, transparent);
   }
 }
 .nextora-tiptap-shell .nextora-tiptap-toolbar__btn {
@@ -2171,9 +2093,9 @@ footer.wp-block-template-part {
   height: 2rem;
   padding: 0 0.4rem;
   margin: 0;
-  border: 1px solid var(--wp--preset--color--secondary, #64748b);
+  border: 1px solid var(--wp--preset--color--contrast, #64748b);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 28%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #64748b) 28%, transparent);
   }
   border-radius: 0.375rem;
   background-color: var(--wp--preset--color--base, #fafafa);
@@ -2194,9 +2116,9 @@ footer.wp-block-template-part {
   @supports (color: color-mix(in lab, red, red)) {
     background-color: color-mix(in srgb, var(--wp--preset--color--base, #fafafa) 70%, var(--wp--preset--color--surface, #f1f5f9));
   }
-  border-color: var(--wp--preset--color--secondary, #64748b);
+  border-color: var(--wp--preset--color--contrast, #64748b);
   @supports (color: color-mix(in lab, red, red)) {
-    border-color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 45%, transparent);
+    border-color: color-mix(in srgb, var(--wp--preset--color--contrast, #64748b) 45%, transparent);
   }
 }
 .nextora-tiptap-shell .nextora-tiptap-toolbar__btn:focus-visible {
@@ -2349,9 +2271,6 @@ footer.wp-block-template-part {
     text-decoration: none;
     text-decoration-line: none;
   }
-  :where(	a.wp-block-button__link:not(:disabled):hover,	a.wp-element-button:not(:disabled):hover,	button.wp-block-button__link:not(:disabled):hover,	a.wp-block-file__button:not(:disabled):hover,	button.wp-block-search__button:not(:disabled):hover,	a.elementor-button:not(:disabled):hover,	button.elementor-button:not(:disabled):hover,	.nextora-main button:not(:disabled):hover,	.nextora-main input[type="submit"]:not(:disabled):hover,	.nextora-main input[type="button"]:not(:disabled):hover,	.nextora-main input[type="reset"]:not(:disabled):hover,	.elementor-widget-container button:not(:disabled):hover,	.elementor-widget-container input[type="submit"]:not(:disabled):hover,	.elementor-widget-container input[type="button"]:not(:disabled):hover,	.elementor-widget-container input[type="reset"]:not(:disabled):hover	) {
-    opacity: 0.8;
-  }
   :where(	.nextora-main button:not([class]),	.nextora-main input[type="submit"]:not([class]),	.nextora-main input[type="button"]:not([class]),	.nextora-main input[type="reset"]:not([class]),	.elementor-widget-html button:not([class]),	.elementor-widget-html input[type="submit"]:not([class]),	.elementor-widget-html input[type="button"]:not([class]),	.elementor-widget-html input[type="reset"]:not([class])	) {
     display: inline-flex;
     align-items: center;
@@ -2391,9 +2310,9 @@ footer.wp-block-template-part {
     line-height: 1.5;
     color: var(--wp--preset--color--contrast, #0f172a);
     background-color: var(--wp--preset--color--base, #fafafa);
-    border: 1px solid var(--wp--preset--color--secondary, #64748b);
+    border: 1px solid var(--wp--preset--color--contrast, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 40%, transparent);
+      border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #64748b) 40%, transparent);
     }
     border-radius: 0.375rem;
     padding: 0.5rem 0.75rem;
@@ -2415,9 +2334,9 @@ footer.wp-block-template-part {
     box-shadow: none;
   }
   :where(	.nextora-form input[type="text"],	.nextora-form input[type="email"],	.nextora-form input[type="url"],	.nextora-form input[type="tel"],	.nextora-form input[type="number"],	.nextora-form input[type="password"],	.nextora-form input[type="search"],	.nextora-form input[type="date"],	.nextora-form input[type="datetime-local"],	.nextora-form input[type="time"],	.nextora-form input[type="month"],	.nextora-form input[type="week"],	.nextora-form textarea,	.nextora-form select,	.nextora-main .nextora-field:not(.elementor-field),	.nextora-main .elementor-widget-html input[type="text"]:not([class]),	.nextora-main .elementor-widget-html input[type="email"]:not([class]),	.nextora-main .elementor-widget-html input[type="url"]:not([class]),	.nextora-main .elementor-widget-html input[type="tel"]:not([class]),	.nextora-main .elementor-widget-html input[type="number"]:not([class]),	.nextora-main .elementor-widget-html input[type="password"]:not([class]),	.nextora-main .elementor-widget-html input[type="search"]:not([class]),	.nextora-main .elementor-widget-html textarea:not([class]),	.nextora-main .elementor-widget-html select:not([class]),	.wp-block-search__input,	.editor-styles-wrapper .wp-block-search__input,	.wp-block-post-comments-form input[type="text"],	.wp-block-post-comments-form input[type="email"],	.wp-block-post-comments-form input[type="url"],	.wp-block-post-comments-form textarea,	.wp-block-post-comments-form select	)::placeholder {
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 72%, transparent);
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 72%, transparent);
     }
     opacity: 1;
   }
@@ -2454,11 +2373,11 @@ footer.wp-block-template-part {
   :where(.mc4wp-form) {
     --nextora-form-subscribe-accent: var(--wp--preset--color--primary, #0a0a0a);
     --nextora-form-subscribe-accent-hover: var(--wp--preset--color--primary, #0a0a0a);
-    --nextora-form-subscribe-border: var(--wp--preset--color--secondary, #525252);
+    --nextora-form-subscribe-border: var(--wp--preset--color--paragraph, #525252);
     @supports (color: color-mix(in lab, red, red)) {
       --nextora-form-subscribe-border: color-mix(
 			in srgb,
-			var(--wp--preset--color--secondary, #525252) 28%,
+			var(--wp--preset--color--paragraph, #525252) 28%,
 			transparent
 		);
     }
@@ -2514,9 +2433,9 @@ footer.wp-block-template-part {
     transition: border-color 0.15s ease,	box-shadow 0.15s ease;
   }
   .mc4wp-form .mc4wp-form-fields input[type="email"]::placeholder {
-    color: var(--wp--preset--color--secondary, #525252);
+    color: var(--wp--preset--color--paragraph, #525252);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(	in srgb,	var(--wp--preset--color--secondary, #525252) 55%,	transparent	);
+      color: color-mix(	in srgb,	var(--wp--preset--color--paragraph, #525252) 55%,	transparent	);
     }
     opacity: 1;
     font-weight: 300;
@@ -2953,9 +2872,9 @@ footer.wp-block-template-part {
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 78%, transparent);
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 78%, transparent);
     }
   }
   .nextora-spotlight__field-icon-slot {
@@ -2994,9 +2913,9 @@ footer.wp-block-template-part {
   }
   .nextora-spotlight--loading .nextora-spotlight__field-icon-slot--loading {
     display: flex;
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 70%, transparent);
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 70%, transparent);
     }
   }
   .nextora-spotlight:focus-within .nextora-spotlight__field-icon {
@@ -3006,9 +2925,9 @@ footer.wp-block-template-part {
     }
   }
   .nextora-spotlight--loading:focus-within .nextora-spotlight__field-icon {
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 75%, transparent);
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 75%, transparent);
     }
   }
   .nextora-spotlight__input {
@@ -3023,9 +2942,9 @@ footer.wp-block-template-part {
     outline: none;
   }
   .nextora-spotlight__input::placeholder {
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 65%, transparent);
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 65%, transparent);
     }
   }
   @keyframes nextora-spotlight-spin {
@@ -3124,9 +3043,9 @@ footer.wp-block-template-part {
     padding: 0;
     border-radius: 0;
     background: transparent;
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 88%, transparent);
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 88%, transparent);
     }
   }
   .nextora-spotlight__link--active .nextora-spotlight__thumb {
@@ -3166,9 +3085,9 @@ footer.wp-block-template-part {
     gap: 0.3rem;
     font-size: 0.71875rem;
     line-height: 1.35;
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 88%, transparent);
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 88%, transparent);
     }
   }
   .nextora-spotlight__type {
@@ -3205,9 +3124,9 @@ footer.wp-block-template-part {
     font-weight: 400;
     line-height: 1.55;
     letter-spacing: 0.01em;
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 22%, var(--wp--preset--color--contrast, #0f172a));
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 22%, var(--wp--preset--color--contrast, #0f172a));
     }
   }
   .nextora-spotlight__hint::before {
@@ -3217,9 +3136,9 @@ footer.wp-block-template-part {
     width: 0.875rem;
     height: 0.875rem;
     margin-inline-end: 0.4rem;
-    background-color: var(--wp--preset--color--secondary, #64748b);
+    background-color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 48%, transparent);
+      background-color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 48%, transparent);
     }
     opacity: 0.55;
     -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
@@ -3238,9 +3157,9 @@ footer.wp-block-template-part {
     font-size: 0.78125rem;
     line-height: 1.5;
     font-weight: 400;
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 82%, transparent);
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 82%, transparent);
     }
   }
   .nextora-spotlight__kbd-hint {
@@ -3252,9 +3171,9 @@ footer.wp-block-template-part {
     font-weight: 400;
     line-height: inherit;
     letter-spacing: 0.012em;
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 88%, transparent);
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 88%, transparent);
     }
     white-space: normal;
   }
@@ -3272,15 +3191,52 @@ footer.wp-block-template-part {
     }
   }
 }
-.nextora-scroll-animation--pending, [class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), .animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, .animation-inner-fade:not([data-nextora-scroll-animation-init]) > * {
+.nextora-scroll-animation--pending, [class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), [class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), .animation-text-typewriter:not([data-nextora-scroll-animation-init]), .animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, .animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
   opacity: 0;
 }
-:where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.nextora-scroll-animation--pending, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > * {
+.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
+  clip-path: inset(0 100% 0 0);
+}
+:where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.nextora-scroll-animation--pending, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-text-typewriter:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
   opacity: 1;
 }
+:where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
+  clip-path: none;
+}
 @media (prefers-reduced-motion: reduce) {
-  .nextora-scroll-animation--pending,	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li,	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > * {
+  .nextora-scroll-animation--pending,	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]),	.animation-text-typewriter:not([data-nextora-scroll-animation-init]),	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li,	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *,	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
     opacity: 1;
+  }
+  .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
+    clip-path: none;
+  }
+}
+.animation-text-typewriter {
+  white-space: normal;
+  max-width: 100%;
+}
+.animation-text-typewriter .nextora-typewriter-char {
+  display: none;
+}
+.animation-text-typewriter .nextora-typewriter-char.is-typed {
+  display: inline;
+}
+.animation-text-typewriter .nextora-typewriter-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-left: 2px;
+  background: currentColor;
+  vertical-align: -0.18em;
+  animation: nextora-typewriter-caret 0.75s step-end infinite;
+}
+.animation-text-typewriter.is-done .nextora-typewriter-caret {
+  animation: none;
+  opacity: 0;
+}
+@keyframes nextora-typewriter-caret {
+  50% {
+    opacity: 0;
   }
 }
 @layer components {
@@ -3380,6 +3336,12 @@ footer.wp-block-template-part {
     }
   }
 }
+:where(.nextora-heading-inline-font[data-font]) {
+  font-weight: inherit;
+  font-style: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+}
 .theme-global-prose, .entry-content.nextora-entry, .editor-styles-wrapper .block-editor-block-list__layout, .entry-content, .wp-block-post-content {
   & :where(a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button))) {
     text-underline-offset: 0.2em;
@@ -3434,13 +3396,13 @@ footer.wp-block-template-part {
     display: block;
     font-size: 0.875em;
     font-style: normal;
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
   }
   & :where(hr) {
     border: 0;
-    border-block-start: 1px solid var(--wp--preset--color--secondary, #64748b);
+    border-block-start: 1px solid var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      border-block-start: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 45%, transparent);
+      border-block-start: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 45%, transparent);
     }
     margin-block: clamp(1.75rem, 4vw, 2.5rem);
   }
@@ -3469,7 +3431,7 @@ footer.wp-block-template-part {
     font-family: var(	--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace	);
     font-size: 0.85em;
     padding: 0.1em 0.35em;
-    border: 1px solid var(--wp--preset--color--secondary, #64748b);
+    border: 1px solid var(--wp--preset--color--paragraph, #64748b);
     border-radius: 0.25rem;
     background: var(--wp--preset--color--surface, #f1f5f9);
   }
@@ -3506,7 +3468,7 @@ footer.wp-block-template-part {
   & :where(address) {
     margin-block: 1em;
     font-style: normal;
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
   }
   & :where(figure) {
     margin-block: 1.35em;
@@ -3516,7 +3478,7 @@ footer.wp-block-template-part {
     margin-block-start: 0.55em;
     font-size: 0.875em;
     line-height: 1.5;
-    color: var(--wp--preset--color--secondary, #64748b);
+    color: var(--wp--preset--color--paragraph, #64748b);
   }
   & :where(table) {
     width: 100%;
@@ -3525,9 +3487,9 @@ footer.wp-block-template-part {
     font-size: 0.9375em;
   }
   & :where(th, td) {
-    border-color: var(--wp--preset--color--secondary, #64748b);
+    border-color: var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 55%, transparent);
+      border-color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 55%, transparent);
     }
     padding: 0.55em 0.7em;
     text-align: start;
@@ -3548,9 +3510,9 @@ footer.wp-block-template-part {
     border-radius: 0.25rem;
     font-family: var(	--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace	);
     font-size: 0.9em;
-    border: 1px solid var(--wp--preset--color--secondary, #64748b);
+    border: 1px solid var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {
-      border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 22%, transparent);
+      border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 22%, transparent);
     }
   }
   & :where(img) {
@@ -3740,7 +3702,7 @@ body.woocommerce-cart .wc-block-cart__main .wc-block-cart-items .wc-block-cart-i
   font-weight: 400;
 }
 body.woocommerce-cart .wc-block-cart__main .wc-block-cart-items .wc-block-cart-item__prices del {
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
   opacity: 0.85;
 }
 body.woocommerce-cart .wc-block-cart__main .wc-block-cart-items .wc-block-components-product-price {
@@ -3763,9 +3725,9 @@ body.woocommerce-cart .wc-block-cart__main .wc-block-cart-items .wc-block-compon
 }
 body.woocommerce-cart .wc-block-cart__sidebar .wp-block-woocommerce-cart-order-summary-block {
   padding: clamp(1rem, 2vw, 1.25rem);
-  border: 1px solid var(--wp--preset--color--secondary, #525252);
+  border: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 20%, transparent);
   }
   border-radius: 0.5rem;
   background: var(--wp--preset--color--surface, #f4f4f4);
@@ -3935,7 +3897,7 @@ body.woocommerce-cart .wp-block-woocommerce-product-new .wc-block-grid__product-
   font-weight: 400;
 }
 body.woocommerce-cart .wp-block-woocommerce-product-new .wc-block-grid__product-price del {
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
   opacity: 0.85;
   font-weight: 400;
 }
@@ -4009,9 +3971,9 @@ body.woocommerce-cart .wp-block-woocommerce-product-collection .wc-block-compone
   }
 }
 body.woocommerce-checkout header.wp-block-group {
-  border-bottom: 1px solid var(--wp--preset--color--secondary, #525252);
+  border-bottom: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 20%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 20%, transparent);
   }
   padding: 1rem 1.5rem;
 }
@@ -4028,9 +3990,9 @@ body.woocommerce-checkout .nextora-header-block__cart--woo {
 body.woocommerce-checkout .wc-block-components-checkout-step {
   margin: 0;
   padding: clamp(1.25rem, 2vw, 1.75rem);
-  border: 1px solid var(--wp--preset--color--secondary, #525252);
+  border: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 20%, transparent);
   }
   border-radius: 0.5rem;
   background: var(--wp--preset--color--base, #ffffff);
@@ -4052,7 +4014,7 @@ body.woocommerce-checkout .wc-block-components-checkout-step__content {
 body.woocommerce-checkout .wc-block-checkout__guest-checkout-notice {
   margin-block: 0.75rem 0;
   font-size: 0.8125rem;
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
   line-height: 1.45;
 }
 body.woocommerce-checkout .wc-block-components-address-form {
@@ -4079,9 +4041,9 @@ body.woocommerce-checkout .wc-block-components-address-form__postcode {
 }
 body.woocommerce-checkout .wc-block-components-address-card {
   padding: 0.85rem 1rem;
-  border: 1px solid var(--wp--preset--color--secondary, #525252);
+  border: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 18%, transparent);
   }
   border-radius: 0.375rem;
   background: var(--wp--preset--color--surface, #f4f4f4);
@@ -4120,9 +4082,9 @@ body.woocommerce-checkout .wc-block-components-radio-control::after {
 }
 body.woocommerce-checkout .wc-block-components-radio-control-accordion-option {
   padding: 0;
-  border: 1px solid var(--wp--preset--color--secondary, #525252);
+  border: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 25%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 25%, transparent);
   }
   border-radius: 0.375rem;
   background: var(--wp--preset--color--base, #ffffff);
@@ -4146,7 +4108,7 @@ body.woocommerce-checkout .wc-block-components-radio-control-accordion-content {
   margin-block-start: 0.65rem;
   font-size: 0.875rem;
   line-height: 1.55;
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
 }
 body.woocommerce-checkout .wc-block-checkout__add-note {
   margin-block: 0.5rem 0;
@@ -4157,16 +4119,16 @@ body.woocommerce-checkout .wc-block-components-checkbox {
 body.woocommerce-checkout .wc-block-components-checkbox__label, body.woocommerce-checkout .wc-block-checkout__terms .wc-block-components-checkbox__label {
   font-size: 0.875rem;
   line-height: 1.5;
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
 }
 body.woocommerce-checkout .wc-block-checkout__terms {
   margin-block: 0.75rem 0;
   padding-block-start: 1.5rem;
 }
 body.woocommerce-checkout .wc-block-checkout__terms--with-separator {
-  border-top: 1px solid var(--wp--preset--color--secondary, #525252);
+  border-top: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border-top: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 18%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 18%, transparent);
   }
 }
 body.woocommerce-checkout .wc-block-checkout__terms a {
@@ -4344,7 +4306,7 @@ body.woocommerce .wp-block-woocommerce-product-image-gallery .onsale {
   body.woocommerce :where(.woocommerce-breadcrumb, .wc-block-breadcrumbs) {
     margin-block-end: var(--wp--preset--spacing--15, 1.25rem);
     font-size: var(--wp--preset--font-size--small, 0.875rem);
-    color: var(--wp--preset--color--secondary, #525252);
+    color: var(--wp--preset--color--paragraph, #525252);
   }
   body.woocommerce .woocommerce-breadcrumb a {
     color: inherit;
@@ -4358,7 +4320,7 @@ body.woocommerce .wp-block-woocommerce-product-image-gallery .onsale {
   }
   body.woocommerce .woocommerce-result-count {
     margin: 0;
-    color: var(--wp--preset--color--secondary, #525252);
+    color: var(--wp--preset--color--paragraph, #525252);
     font-size: var(--wp--preset--font-size--small, 0.875rem);
   }
   body.woocommerce :where(.price, .wc-block-components-product-price) {
@@ -4366,7 +4328,7 @@ body.woocommerce .wp-block-woocommerce-product-image-gallery .onsale {
     font-weight: 400;
   }
   body.woocommerce :where(.price del, .wc-block-components-product-price del) {
-    color: var(--wp--preset--color--secondary, #525252);
+    color: var(--wp--preset--color--paragraph, #525252);
     opacity: 0.85;
     font-weight: 400;
   }
@@ -4376,7 +4338,7 @@ body.woocommerce .wp-block-woocommerce-product-image-gallery .onsale {
   }
   body.woocommerce .wp-block-woocommerce-product-meta {
     font-size: var(--wp--preset--font-size--small, 0.875rem);
-    color: var(--wp--preset--color--secondary, #525252);
+    color: var(--wp--preset--color--paragraph, #525252);
   }
   body.woocommerce .wp-block-woocommerce-product-meta a {
     color: var(--wp--preset--color--contrast, #0a0a0a);
@@ -4387,7 +4349,7 @@ body.woocommerce .wp-block-woocommerce-product-image-gallery .onsale {
     transition: color 0.18s ease;
   }
   body.woocommerce .wc-block-product .wp-block-post-title a:hover, body.woocommerce .wc-block-product .wp-block-post-title a:focus-visible {
-    color: var(--wp--preset--color--secondary, #525252);
+    color: var(--wp--preset--color--paragraph, #525252);
   }
   body.woocommerce .wp-block-button.wc-block-components-product-button {
     gap: 0 !important;
@@ -4406,9 +4368,9 @@ body.woocommerce .wp-block-woocommerce-product-image-gallery .onsale {
     line-height: 1.5;
     color: var(--wp--preset--color--contrast, #0a0a0a);
     background-color: var(--wp--preset--color--base, #ffffff);
-    border: 1px solid var(--wp--preset--color--secondary, #525252);
+    border: 1px solid var(--wp--preset--color--paragraph, #525252);
     @supports (color: color-mix(in lab, red, red)) {
-      border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 40%, transparent);
+      border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 40%, transparent);
     }
     border-radius: 0.375rem;
     padding: 0.5rem 0.75rem;
@@ -4448,9 +4410,9 @@ body.woocommerce .wp-block-woocommerce-product-image-gallery .onsale {
     margin-block: var(--wp--preset--spacing--15, 1.25rem);
     padding: var(--wp--preset--spacing--10, 1rem) var(--wp--preset--spacing--15, 1.25rem);
     border-radius: 0.375rem;
-    border: 1px solid var(--wp--preset--color--secondary, #525252);
+    border: 1px solid var(--wp--preset--color--paragraph, #525252);
     @supports (color: color-mix(in lab, red, red)) {
-      border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 25%, transparent);
+      border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 25%, transparent);
     }
     background: var(--wp--preset--color--surface, #f4f4f4);
     @supports (color: color-mix(in lab, red, red)) {
@@ -4476,9 +4438,9 @@ body.woocommerce .wp-block-woocommerce-product-image-gallery .onsale {
   }
   body.woocommerce table.shop_table :where(th, td) {
     padding: 0.75rem 0.5rem;
-    border-bottom: 1px solid var(--wp--preset--color--secondary, #525252);
+    border-bottom: 1px solid var(--wp--preset--color--paragraph, #525252);
     @supports (color: color-mix(in lab, red, red)) {
-      border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 20%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 20%, transparent);
     }
     text-align: start;
     vertical-align: middle;
@@ -4504,7 +4466,7 @@ body.woocommerce .wp-block-woocommerce-product-image-gallery .onsale {
   }
   body.single-product table.variations .reset_variations {
     font-size: var(--wp--preset--font-size--small, 0.875rem);
-    color: var(--wp--preset--color--secondary, #525252);
+    color: var(--wp--preset--color--paragraph, #525252);
     text-decoration: none;
   }
   body.single-product table.variations .reset_variations:hover, body.single-product table.variations .reset_variations:focus-visible {
@@ -4526,9 +4488,9 @@ body.single-product.product-type-grouped form.cart.grouped_form table.woocommerc
 body.single-product.product-type-grouped form.cart.grouped_form table.woocommerce-grouped-product-list :is(td, th) {
   padding-block: 0.5rem;
   vertical-align: middle;
-  border-bottom: 1px solid var(--wp--preset--color--secondary, #525252);
+  border-bottom: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 18%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 18%, transparent);
   }
 }
 body.single-product.product-type-grouped form.cart.grouped_form table.woocommerce-grouped-product-list td.woocommerce-grouped-product-list-item__quantity {
@@ -4560,7 +4522,7 @@ body.single-product.product-type-grouped form.cart.grouped_form table.woocommerc
   color: var(--wp--preset--color--contrast, #0a0a0a);
 }
 body.single-product.product-type-grouped form.cart.grouped_form table.woocommerce-grouped-product-list td.woocommerce-grouped-product-list-item__price del {
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
   margin-inline-end: 0.35rem;
 }
 body.single-product.product-type-grouped form.cart.grouped_form table.woocommerce-grouped-product-list td.woocommerce-grouped-product-list-item__price ins {
@@ -4616,9 +4578,9 @@ body.woocommerce-account .woocommerce-MyAccount-navigation ul {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  border: 1px solid var(--wp--preset--color--secondary, #525252);
+  border: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 20%, transparent);
   }
   border-radius: 0.5rem;
   background: var(--wp--preset--color--surface, #f4f4f4);
@@ -4683,7 +4645,7 @@ body.woocommerce-account .woocommerce-MyAccount-content h2, body.woocommerce-acc
 }
 body.woocommerce-account .woocommerce-MyAccount-content p {
   margin-block: 0 1rem;
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
   line-height: 1.6;
 }
 body.woocommerce-account .woocommerce-MyAccount-content p:last-child {
@@ -4696,7 +4658,7 @@ body.woocommerce-account .woocommerce-MyAccount-content a:not(.button):not(.wooc
   margin: 0;
 }
 body.woocommerce-account .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):hover, body.woocommerce-account .woocommerce-MyAccount-content a:not(.button):not(.woocommerce-button):focus-visible {
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
 }
 body.woocommerce-account .woocommerce-MyAccount-content form :where(.form-row, .woocommerce-form-row) {
   margin-block: 0 1rem;
@@ -4753,7 +4715,7 @@ body.woocommerce-account .woocommerce-MyAccount-content form .show-password-inpu
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
   cursor: pointer;
   top: auto;
 }
@@ -4764,9 +4726,9 @@ body.woocommerce-account .woocommerce-MyAccount-content form .show-password-inpu
 body.woocommerce-account .woocommerce-MyAccount-content form fieldset {
   margin: 0 0 1rem;
   padding: 1rem;
-  border: 1px solid var(--wp--preset--color--secondary, #525252);
+  border: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 18%, transparent);
   }
   border-radius: 0.375rem;
   background: var(--wp--preset--color--surface, #f4f4f4);
@@ -4785,7 +4747,7 @@ body.woocommerce-account .woocommerce-MyAccount-content form em, body.woocommerc
   margin-block-start: 0.35rem;
   font-size: 0.8125rem;
   font-style: normal;
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
   line-height: 1.45;
 }
 body.woocommerce-account .woocommerce-MyAccount-content form .woocommerce-address-fields__field-wrapper {
@@ -4804,7 +4766,7 @@ body.woocommerce-account .woocommerce-form__label-for-checkbox {
   cursor: pointer;
 }
 body.woocommerce-account .woocommerce-LostPassword a {
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
   text-decoration: none;
 }
 body.woocommerce-account .woocommerce-LostPassword a:hover, body.woocommerce-account .woocommerce-LostPassword a:focus-visible {
@@ -4828,9 +4790,9 @@ body.woocommerce-account .woocommerce-Address {
   float: none;
   width: auto;
   padding: 1rem;
-  border: 1px solid var(--wp--preset--color--secondary, #525252);
+  border: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 18%, transparent);
   }
   border-radius: 0.375rem;
   background: var(--wp--preset--color--surface, #f4f4f4);
@@ -4863,9 +4825,9 @@ body.woocommerce-account .woocommerce-Address address {
 }
 body.woocommerce-account .woocommerce-MyAccount-content table.shop_table {
   margin-block: 0 1rem;
-  border: 1px solid var(--wp--preset--color--secondary, #525252);
+  border: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 18%, transparent);
   }
   border-radius: 0.375rem;
   overflow: hidden;
@@ -4878,14 +4840,14 @@ body.woocommerce-account .woocommerce-MyAccount-content table.shop_table thead t
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--wp--preset--color--secondary, #525252);
+  color: var(--wp--preset--color--paragraph, #525252);
   background: var(--wp--preset--color--surface, #f4f4f4);
   @supports (color: color-mix(in lab, red, red)) {
     background: color-mix(in srgb, var(--wp--preset--color--surface, #f4f4f4) 55%, transparent);
   }
-  border-bottom: 1px solid var(--wp--preset--color--secondary, #525252);
+  border-bottom: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 18%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 18%, transparent);
   }
 }
 body.woocommerce-account .woocommerce-MyAccount-content table.shop_table tbody tr:last-child :where(th, td) {
@@ -4941,9 +4903,9 @@ body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-order-detai
 }
 body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-customer-details address {
   padding: 1rem;
-  border: 1px solid var(--wp--preset--color--secondary, #525252);
+  border: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 18%, transparent);
   }
   border-radius: 0.375rem;
   font-style: normal;
@@ -5003,15 +4965,15 @@ body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-customer-de
   padding-bottom: 1rem;
 }
 .wc-block-mini-cart__drawer .wc-block-mini-cart__items {
-  border-top: 1px solid var(--wp--preset--color--secondary, #525252);
+  border-top: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border-top: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 18%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 18%, transparent);
   }
 }
 .wc-block-mini-cart__drawer .wc-block-cart-items__row:not(:last-child) {
-  border-bottom: 1px solid var(--wp--preset--color--secondary, #525252);
+  border-bottom: 1px solid var(--wp--preset--color--paragraph, #525252);
   @supports (color: color-mix(in lab, red, red)) {
-    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #525252) 18%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 18%, transparent);
   }
 }
 .wc-block-mini-cart__drawer table.wc-block-cart-items .wc-block-cart-items__row .wc-block-components-product-name {
@@ -5267,6 +5229,10 @@ body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-customer-de
   syntax: "*";
   inherits: false;
 }
+@property --tw-ease {
+  syntax: "*";
+  inherits: false;
+}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
@@ -5321,6 +5287,7 @@ body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-customer-de
       --tw-drop-shadow-alpha: 100%;
       --tw-drop-shadow-size: initial;
       --tw-duration: initial;
+      --tw-ease: initial;
     }
   }
 }

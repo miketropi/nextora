@@ -22,8 +22,7 @@ Full standards: [`docs/blocks.md`](../../docs/blocks.md). Skills: `nextora-add-t
 
 ## Style overrides (agent discretion)
 
-- Add sidebar **Colors** / **Appearance** controls only when presets are insufficient; name attributes consistently (`backgroundColor`, `textColor`, scoped variants).
-- Map preset slugs to CSS variables in `render.php`; document empty = theme default.
+- Add sidebar **Colors** / **Appearance** controls only when presets are insufficient; use **scoped** attribute names (`surfaceBackgroundColor`, `iconColor`) — never `backgroundColor` / `textColor` for inner elements unless the block uses native WP wrapper colour only. Store preset slugs; map in `render.php`. See [`docs/blocks/Theme Icon Block.md`](../../docs/blocks/Theme%20Icon%20Block.md) § Custom color settings.
 
 ## Scroll animation (content blocks)
 

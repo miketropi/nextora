@@ -526,7 +526,8 @@
 		.nextora-header-menu
 		> li
 		> a:focus-visible {
-		background-color: var(--nextora-nav-panel-hover-bg);
+		color: var(--wp--preset--color--primary);
+		background-color: transparent;
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu > li.menu-item-has-children {
@@ -534,7 +535,6 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 0 var(--wp--preset--spacing--05, 0.5rem);
-		border-bottom: 1px solid var(--nextora-nav-mobile-drawer-border);
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu > li.menu-item-has-children > a {
@@ -567,9 +567,9 @@
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle:hover,
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle:focus-visible {
-		background: var(--nextora-nav-panel-hover-bg);
-		outline: 2px solid var(--wp--preset--color--primary, currentColor);
-		outline-offset: 2px;
+		background: transparent;
+        outline: none;
+        outline-offset: 0; 
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle__icon {
@@ -585,6 +585,8 @@
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .menu-item-has-children > .sub-menu {
 		flex: 1 0 100%;
 		width: 100%;
+		box-sizing: border-box;
+		margin: 0;
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .menu-item-has-children {
@@ -644,19 +646,21 @@
 		color: var(--nextora-nav-footer-link);
 		padding: var(--wp--preset--spacing--05, 0.5rem) 0;
 		font-size: var(--wp--preset--font-size--small, 0.9375rem);
+		width: auto;
+		color: inherit;
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:hover,
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:focus-visible {
-		color: var(--nextora-nav-footer-link-hover);
-		background-color: var(--nextora-nav-panel-hover-bg);
+		color: var(--wp--preset--color--primary);
+		background-color: transparent;
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-item > a,
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-ancestor > a {
 		color: var(--nextora-nav-panel-active-fg);
 		font-weight: 600;
-		background-color: var(--nextora-nav-panel-active-bg);
+		background-color: transparent;
 	}
 }
 

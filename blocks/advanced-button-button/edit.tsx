@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, useMemo, useRef } from '@wordpress/element';
 import type { CSSProperties } from 'react';
 import {
 	useBlockProps,
@@ -47,6 +47,12 @@ import {
 	MODAL_WIDTH_MIN,
 } from './types';
 import { PopupContentBuilder } from './popup-content-builder';
+import {
+	colorValueForPicker,
+	getMergedPaletteEntries,
+	normalizeColorForStorage,
+	useThemeColorPalette,
+} from '../advanced-icon/color-utils';
 
 const MODAL_CONTENT_TEMPLATE: [ string, Record< string, unknown > ][] = [
 	[
@@ -65,7 +71,7 @@ function buildClickEventId( clientId: string ): string {
 	return `nextora-advanced-button-event-${ clientId.replace( /[^a-z0-9]/gi, '' ) }`;
 }
 
-function resolveEditorColor( value: string ): string {
+function storedColorToCss( value: string ): string {
 	if ( '' === value ) {
 		return '';
 	}
@@ -81,6 +87,15 @@ function resolveEditorColor( value: string ): string {
 
 	return `var(--wp--preset--color--${ value })`;
 }
+
+type ButtonColorKey =
+	| 'buttonBackgroundColor'
+	| 'buttonTextColor'
+	| 'buttonBorderColor'
+	| 'iconColor'
+	| 'hoverBackgroundColor'
+	| 'hoverTextColor'
+	| 'hoverBorderColor';
 
 function normalizeLinkUrl( url: string ): string {
 	const trimmed = url.trim();
@@ -129,9 +144,12 @@ export default function AdvancedButtonButtonEdit( {
 		strokeWidth = 2,
 		iconStyle = 'default',
 		iconBorderRadius = 8,
-		backgroundColor = '',
-		textColor = '',
-		borderColor = '',
+		buttonBackgroundColor = '',
+		buttonTextColor = '',
+		buttonBorderColor = '',
+		backgroundColor: legacyBackgroundColor = '',
+		textColor: legacyTextColor = '',
+		borderColor: legacyBorderColor = '',
 		hoverEffect = 'opacity',
 		hoverBackgroundColor = '',
 		hoverTextColor = '',
@@ -139,6 +157,111 @@ export default function AdvancedButtonButtonEdit( {
 		ariaLabel = '',
 		showIcon = true,
 	} = attributes;
+
+	const colorPalette = useThemeColorPalette();
+	const lookupPalette = useMemo(
+		() => getMergedPaletteEntries( colorPalette ),
+		[ colorPalette ],
+	);
+	const migratedColors = useRef( false );
+
+	const resolvedButtonBackgroundColor =
+		buttonBackgroundColor || legacyBackgroundColor;
+	const resolvedButtonTextColor = buttonTextColor || legacyTextColor;
+	const resolvedButtonBorderColor = buttonBorderColor || legacyBorderColor;
+
+	const setThemeColor = ( key: ButtonColorKey, value: string | undefined ) => {
+		setAttributes( {
+			[ key ]: normalizeColorForStorage( value, lookupPalette ),
+		} );
+	};
+
+	useEffect( () => {
+		if ( migratedColors.current ) {
+			return;
+		}
+
+		migratedColors.current = true;
+
+		const updates: Partial< AdvancedButtonButtonAttributes > = {};
+		const colorKeys: ButtonColorKey[] = [
+			'buttonBackgroundColor',
+			'buttonTextColor',
+			'buttonBorderColor',
+			'iconColor',
+			'hoverBackgroundColor',
+			'hoverTextColor',
+			'hoverBorderColor',
+		];
+
+		for ( const key of colorKeys ) {
+			let val = attributes[ key ];
+			if ( 'buttonBackgroundColor' === key ) {
+				val = resolvedButtonBackgroundColor;
+			} else if ( 'buttonTextColor' === key ) {
+				val = resolvedButtonTextColor;
+			} else if ( 'buttonBorderColor' === key ) {
+				val = resolvedButtonBorderColor;
+			}
+
+			if ( ! val || typeof val !== 'string' ) {
+				continue;
+			}
+
+			if (
+				/^[a-z0-9-]+$/i.test( val ) &&
+				lookupPalette.some( ( entry ) => entry.slug === val.toLowerCase() )
+			) {
+				continue;
+			}
+
+			const slug = normalizeColorForStorage( val, lookupPalette );
+			if ( slug !== val && /^[a-z0-9-]+$/.test( slug ) ) {
+				updates[ key ] = slug;
+			}
+		}
+
+		if ( legacyBackgroundColor && ! buttonBackgroundColor ) {
+			updates.buttonBackgroundColor = normalizeColorForStorage(
+				legacyBackgroundColor,
+				lookupPalette,
+			);
+			updates.backgroundColor = '';
+		}
+
+		if ( legacyTextColor && ! buttonTextColor ) {
+			updates.buttonTextColor = normalizeColorForStorage(
+				legacyTextColor,
+				lookupPalette,
+			);
+			updates.textColor = '';
+		}
+
+		if ( legacyBorderColor && ! buttonBorderColor ) {
+			updates.buttonBorderColor = normalizeColorForStorage(
+				legacyBorderColor,
+				lookupPalette,
+			);
+			updates.borderColor = '';
+		}
+
+		if ( Object.keys( updates ).length > 0 ) {
+			setAttributes( updates );
+		}
+	}, [
+		attributes,
+		buttonBackgroundColor,
+		buttonBorderColor,
+		buttonTextColor,
+		legacyBackgroundColor,
+		legacyBorderColor,
+		legacyTextColor,
+		lookupPalette,
+		resolvedButtonBackgroundColor,
+		resolvedButtonBorderColor,
+		resolvedButtonTextColor,
+		setAttributes,
+	] );
 
 	const [ pickerOpen, setPickerOpen ] = useState( false );
 	const [ contentPanelOpen, setContentPanelOpen ] = useState( false );
@@ -177,26 +300,68 @@ export default function AdvancedButtonButtonEdit( {
 		...( hasSurfaceStyle
 			? { '--nextora-advanced-button-icon-radius': `${ iconBorderRadius }px` }
 			: {} ),
-		...( backgroundColor
-			? { '--nextora-advanced-button-bg': resolveEditorColor( backgroundColor ) }
+		...( resolvedButtonBackgroundColor
+			? {
+					'--nextora-advanced-button-bg': storedColorToCss(
+						resolvedButtonBackgroundColor,
+					),
+				}
 			: {} ),
-		...( textColor
-			? { '--nextora-advanced-button-text': resolveEditorColor( textColor ) }
+		...( resolvedButtonTextColor
+			? {
+					'--nextora-advanced-button-text': storedColorToCss(
+						resolvedButtonTextColor,
+					),
+				}
 			: {} ),
-		...( borderColor
-			? { '--nextora-advanced-button-border': resolveEditorColor( borderColor ) }
+		...( resolvedButtonBorderColor
+			? {
+					'--nextora-advanced-button-border': storedColorToCss(
+						resolvedButtonBorderColor,
+					),
+				}
+			: {} ),
+		...( showIcon && iconStyle === 'stacked' && resolvedButtonBackgroundColor
+			? {
+					'--nextora-advanced-button-icon-bg': storedColorToCss(
+						resolvedButtonBackgroundColor,
+					),
+				}
+			: {} ),
+		...( showIcon && iconStyle === 'framed' && resolvedButtonBorderColor
+			? {
+					'--nextora-advanced-button-icon-border': storedColorToCss(
+						resolvedButtonBorderColor,
+					),
+				}
 			: {} ),
 		...( showIcon && iconColor
-			? { '--nextora-advanced-button-icon-color': resolveEditorColor( iconColor ) }
+			? {
+					'--nextora-advanced-button-icon-color': storedColorToCss(
+						iconColor,
+					),
+				}
 			: {} ),
 		...( hoverBackgroundColor
-			? { '--nextora-advanced-button-hover-bg': resolveEditorColor( hoverBackgroundColor ) }
+			? {
+					'--nextora-advanced-button-hover-bg': storedColorToCss(
+						hoverBackgroundColor,
+					),
+				}
 			: {} ),
 		...( hoverTextColor
-			? { '--nextora-advanced-button-hover-text': resolveEditorColor( hoverTextColor ) }
+			? {
+					'--nextora-advanced-button-hover-text': storedColorToCss(
+						hoverTextColor,
+					),
+				}
 			: {} ),
 		...( hoverBorderColor
-			? { '--nextora-advanced-button-hover-border': resolveEditorColor( hoverBorderColor ) }
+			? {
+					'--nextora-advanced-button-hover-border': storedColorToCss(
+						hoverBorderColor,
+					),
+				}
 			: {} ),
 	} as CSSProperties;
 
@@ -279,7 +444,11 @@ export default function AdvancedButtonButtonEdit( {
 				<LucideSvgPreview
 					nodes={ iconNodes }
 					size={ iconSize }
-					color={ iconColor || textColor ? resolveEditorColor( iconColor || textColor ) : 'currentColor' }
+					color={
+						iconColor || resolvedButtonTextColor
+							? storedColorToCss( iconColor || resolvedButtonTextColor )
+							: 'currentColor'
+					}
 					strokeWidth={ strokeWidth }
 				/>
 			);
@@ -626,31 +795,47 @@ export default function AdvancedButtonButtonEdit( {
 					title={ __( 'Colors', 'nextora' ) }
 					colorSettings={ [
 						{
-							value: textColor,
+							value: colorValueForPicker(
+								resolvedButtonTextColor,
+								colorPalette,
+								lookupPalette,
+							),
 							onChange: ( value: string | undefined ) =>
-								setAttributes( { textColor: value ?? '' } ),
+								setThemeColor( 'buttonTextColor', value ),
 							label: __( 'Text color', 'nextora' ),
 						},
 						{
-							value: backgroundColor,
+							value: colorValueForPicker(
+								resolvedButtonBackgroundColor,
+								colorPalette,
+								lookupPalette,
+							),
 							onChange: ( value: string | undefined ) =>
-								setAttributes( { backgroundColor: value ?? '' } ),
+								setThemeColor( 'buttonBackgroundColor', value ),
 							label: __( 'Background color', 'nextora' ),
 						},
 						...( showIcon && iconSource === 'theme'
 							? [
 									{
-										value: iconColor,
+										value: colorValueForPicker(
+											iconColor,
+											colorPalette,
+											lookupPalette,
+										),
 										onChange: ( value: string | undefined ) =>
-											setAttributes( { iconColor: value ?? '' } ),
+											setThemeColor( 'iconColor', value ),
 										label: __( 'Icon color', 'nextora' ),
 									},
 								]
 							: [] ),
 						{
-							value: borderColor,
+							value: colorValueForPicker(
+								resolvedButtonBorderColor,
+								colorPalette,
+								lookupPalette,
+							),
 							onChange: ( value: string | undefined ) =>
-								setAttributes( { borderColor: value ?? '' } ),
+								setThemeColor( 'buttonBorderColor', value ),
 							label: __( 'Border color', 'nextora' ),
 						},
 					] }
@@ -680,21 +865,33 @@ export default function AdvancedButtonButtonEdit( {
 							title={ __( 'Hover colors', 'nextora' ) }
 							colorSettings={ [
 								{
-									value: hoverBackgroundColor,
+									value: colorValueForPicker(
+										hoverBackgroundColor,
+										colorPalette,
+										lookupPalette,
+									),
 									onChange: ( value: string | undefined ) =>
-										setAttributes( { hoverBackgroundColor: value ?? '' } ),
+										setThemeColor( 'hoverBackgroundColor', value ),
 									label: __( 'Hover background', 'nextora' ),
 								},
 								{
-									value: hoverTextColor,
+									value: colorValueForPicker(
+										hoverTextColor,
+										colorPalette,
+										lookupPalette,
+									),
 									onChange: ( value: string | undefined ) =>
-										setAttributes( { hoverTextColor: value ?? '' } ),
+										setThemeColor( 'hoverTextColor', value ),
 									label: __( 'Hover text', 'nextora' ),
 								},
 								{
-									value: hoverBorderColor,
+									value: colorValueForPicker(
+										hoverBorderColor,
+										colorPalette,
+										lookupPalette,
+									),
 									onChange: ( value: string | undefined ) =>
-										setAttributes( { hoverBorderColor: value ?? '' } ),
+										setThemeColor( 'hoverBorderColor', value ),
 									label: __( 'Hover border', 'nextora' ),
 								},
 							] }

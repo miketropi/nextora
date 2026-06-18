@@ -13,8 +13,8 @@
 		"align": ["wide", "full"],
 		"color": {
 			"background": false,
-			"text": true,
-			"link": true
+			"text": false,
+			"link": false
 		},
 		"spacing": {
 			"padding": true,
@@ -64,11 +64,11 @@
 			"type": "number",
 			"default": 8
 		},
-		"backgroundColor": {
+		"surfaceBackgroundColor": {
 			"type": "string",
 			"default": ""
 		},
-		"borderColor": {
+		"surfaceBorderColor": {
 			"type": "string",
 			"default": ""
 		},

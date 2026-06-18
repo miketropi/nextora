@@ -62,7 +62,7 @@ function nextora_get_comment_tiptap_js_config(): array {
  * @return array<string, mixed>
  */
 function nextora_get_comment_form_args(): array {
-	$tiptap_shell = 'nextora-tiptap-shell mb-4 max-w-2xl rounded-md border border-secondary/40 bg-base shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20';
+	$tiptap_shell = 'nextora-tiptap-shell mb-4 max-w-2xl rounded-md border border-paragraph/40 bg-base shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20';
 	$ta_sync      = 'nextora-comment-textarea-sync sr-only';
 
 	$permalink = get_permalink();
@@ -72,7 +72,7 @@ function nextora_get_comment_form_args(): array {
 
 	$has_existing = (int) get_comments_number() > 0;
 	$reply_title_classes = $has_existing
-		? 'mt-[clamp(1.75rem,4.5vw,2.5rem)] border-t border-secondary/25 pt-[clamp(1.25rem,3.5vw,2rem)] text-lg font-semibold tracking-tight text-contrast'
+		? 'mt-[clamp(1.75rem,4.5vw,2.5rem)] border-t border-paragraph/25 pt-[clamp(1.25rem,3.5vw,2rem)] text-lg font-semibold tracking-tight text-contrast'
 		: 'mt-0 text-lg font-semibold tracking-tight text-contrast';
 
 	$args = array(
@@ -80,7 +80,7 @@ function nextora_get_comment_form_args(): array {
 		'title_reply_to'       => __( 'Leave a reply to %s', 'nextora' ),
 		'title_reply_before'   => '<h3 id="reply-title" class="!mt-2 !mb-1 ' . esc_attr( $reply_title_classes ) . '">',
 		'title_reply_after'    => '</h3>',
-		'cancel_reply_before'  => ' <span class="ms-2 text-sm font-normal text-secondary">',
+		'cancel_reply_before'  => ' <span class="ms-2 text-sm font-normal text-paragraph">',
 		'cancel_reply_after'   => '</span>',
 		'cancel_reply_link'    => __( 'Cancel reply', 'nextora' ),
 		'label_submit'         => __( 'Post comment', 'nextora' ),
@@ -93,16 +93,16 @@ function nextora_get_comment_form_args(): array {
 			esc_attr( $tiptap_shell ),
 			esc_attr( $ta_sync ),
 		),
-		'comment_notes_before' => '<p class="comment-notes !mb-4 text-sm text-secondary">' . esc_html__( 'Your email address will not be published. Required fields are marked with *', 'nextora' ) . '</p>',
+		'comment_notes_before' => '<p class="comment-notes !mb-4 text-sm text-paragraph">' . esc_html__( 'Your email address will not be published. Required fields are marked with *', 'nextora' ) . '</p>',
 		'comment_notes_after'  => '',
 		'class_form'           => 'nextora-comment-form comment-form space-y-1',
 		'class_container'      => 'comment-respond mt-0',
-		'must_log_in'          => '<p class="must-log-in !mb-4 rounded-md border border-secondary/30 bg-surface px-4 py-3 text-sm text-contrast">' . sprintf(
+		'must_log_in'          => '<p class="must-log-in !mb-4 rounded-md border border-paragraph/30 bg-surface px-4 py-3 text-sm text-contrast">' . sprintf(
 			/* translators: %s: login URL */
 			wp_kses_post( __( 'You must be <a class="font-medium text-primary underline hover:no-underline" href="%s">logged in</a> to post a comment.', 'nextora' ) ),
 			esc_url( wp_login_url( $permalink ) ),
 		) . '</p>',
-		'logged_in_as'         => '<p class="logged-in-as !mb-4 text-sm text-secondary">' . sprintf(
+		'logged_in_as'         => '<p class="logged-in-as !mb-4 text-sm text-paragraph">' . sprintf(
 			/* translators: 1: edit user link, 2: user name, 3: logout URL */
 			wp_kses_post( __( 'Logged in as <a class="font-medium text-primary underline hover:no-underline" href="%1$s">%2$s</a>. <a class="font-medium text-primary underline hover:no-underline" href="%3$s">Log out?</a>', 'nextora' ) ),
 			esc_url( get_edit_user_link() ),
@@ -139,7 +139,7 @@ add_filter(
 		$req_mark  = $req ? ' <span class="text-primary" aria-hidden="true">*</span>' : '';
 		$aria_req  = $req ? ' aria-required="true"' : '';
 
-		$input_class = 'mt-1 block w-full max-w-2xl rounded-md box-border border border-secondary/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-secondary/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
+		$input_class = 'mt-1 block w-full max-w-2xl rounded-md box-border border border-paragraph/40 bg-base px-3 py-2 text-sm text-contrast shadow-sm placeholder:text-paragraph/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20';
 
 		$fields['author'] = sprintf(
 			'<p class="comment-form-author !mb-4"><label class="block text-sm font-medium text-contrast" for="author">%1$s%2$s</label><input id="author" name="author" type="text" value="%3$s" size="30" maxlength="245" autocomplete="name"%4$s class="%5$s" /></p>',
@@ -169,7 +169,7 @@ add_filter(
 		if ( isset( $fields['cookies'] ) && is_string( $fields['cookies'] ) ) {
 			$fields['cookies'] = str_replace(
 				'<p class="comment-form-cookies-consent">',
-				'<p class="comment-form-cookies-consent !mb-4 text-sm text-secondary">',
+				'<p class="comment-form-cookies-consent !mb-4 text-sm text-paragraph">',
 				$fields['cookies'],
 			);
 		}
@@ -239,7 +239,7 @@ function nextora_render_comment( $comment, array $args, int $depth ): void {
 					?>
 				</footer>
 				<?php if ( '0' === (string) $comment->comment_approved ) : ?>
-					<p class="comment-awaiting-moderation mb-2 rounded-md bg-surface px-3 py-2 text-sm text-secondary"><?php esc_html_e( 'Your comment is awaiting moderation.', 'nextora' ); ?></p>
+					<p class="comment-awaiting-moderation mb-2 rounded-md bg-surface px-3 py-2 text-sm text-paragraph"><?php esc_html_e( 'Your comment is awaiting moderation.', 'nextora' ); ?></p>
 				<?php endif; ?>
 				<div class="comment-content text-md leading-relaxed text-contrast [&_a]:text-primary [&_a]:underline">
 					<?php comment_text(); ?>

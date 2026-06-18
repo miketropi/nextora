@@ -20,6 +20,27 @@ export function resolveColor(raw: string): string | undefined {
 }
 
 /**
+ * Theme preset slug → `var(--wp--preset--font-family--{slug})`.
+ */
+export function presetFontFamilyVar(slug: string): string {
+	return `var(--wp--preset--font-family--${slug})`;
+}
+
+/**
+ * Preset slug or custom font-family stack → CSS font-family value.
+ */
+export function resolveFontFamily(raw: string): string | undefined {
+	const value = raw.trim();
+	if (!value) {
+		return undefined;
+	}
+	if (/^[a-z0-9-]+$/.test(value)) {
+		return presetFontFamilyVar(value);
+	}
+	return value;
+}
+
+/**
  * Preset slug or custom CSS size → font-size value.
  */
 export function resolveFontSize(raw: string): string | undefined {
@@ -44,9 +65,18 @@ export function buildTypographyStyleVars(attrs: {
 	labelColor?: string;
 	numberFontSize?: string;
 	labelFontSize?: string;
+	numberFontFamily?: string;
+	labelFontFamily?: string;
 }): Record<string, string> {
 	const vars: Record<string, string> = {};
-	const { numberColor, labelColor, numberFontSize, labelFontSize } = attrs;
+	const {
+		numberColor,
+		labelColor,
+		numberFontSize,
+		labelFontSize,
+		numberFontFamily,
+		labelFontFamily,
+	} = attrs;
 
 	if (numberColor) {
 		const resolved = resolveColor(numberColor);
@@ -70,6 +100,16 @@ export function buildTypographyStyleVars(attrs: {
 	const resolvedLabelSize = resolveFontSize(labelFontSize ?? '');
 	if (resolvedLabelSize) {
 		vars['--nextora-counters-label-size'] = resolvedLabelSize;
+	}
+
+	const resolvedNumberFamily = resolveFontFamily(numberFontFamily ?? '');
+	if (resolvedNumberFamily) {
+		vars['--nextora-counters-number-font-family'] = resolvedNumberFamily;
+	}
+
+	const resolvedLabelFamily = resolveFontFamily(labelFontFamily ?? '');
+	if (resolvedLabelFamily) {
+		vars['--nextora-counters-label-font-family'] = resolvedLabelFamily;
 	}
 
 	return vars;

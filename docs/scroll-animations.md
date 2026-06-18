@@ -18,6 +18,77 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-fade-list-grid` | Each `ul > li` fades in up (`animation-fade-in-up`) when **that item** enters the viewport |
 | `animation-inner-fade` | Each **direct child** (`> p`, `> div`, `> h4`, …) fades in up when it enters the viewport |
 | `animation-parallax` | Vertical parallax while scrolling (use with `data-parallax-speed`) |
+| `animation-image-clip-reveal` | Image wipe reveal via `clip-path` (targets nested `img`, or the `img` itself) |
+| `animation-text-reveal-words` | Split heading into words; stagger fade + slide in on scroll |
+| `animation-text-reveal-chars` | Split heading into characters; stagger fade + slide in on scroll |
+| `animation-text-reveal-chars-rise` | Characters rise in with perspective + `back.out` easing |
+| `animation-text-reveal-chars-scrub` | Characters brighten and slide in while scrolling (scrubbed) |
+| `animation-text-typewriter` | Character-by-character typewriter with blinking caret on scroll (inspired by [MiMo Code](https://mimo.xiaomi.com/coder) hero subtitle) |
+
+## Image & text reveal presets
+
+These map from legacy Elementor utility classes (`at-animation-*`) to theme-native names. Add the class on a **Heading**, **Image**, or **Group** block wrapper via **Advanced → Additional CSS class(es)**.
+
+| Class | Effect | Default timing |
+|-------|--------|----------------|
+| `animation-image-clip-reveal` | Horizontal clip-path wipe on `img` | `duration: 1.5`, `ease: power2.out`, trigger `top 90%` |
+| `animation-text-reveal-words` | Word stagger, slide from right | `duration: 1`, `delay: 0.5`, `stagger: 0.05`, `distance: 20` |
+| `animation-text-reveal-chars` | Character stagger, slide from right | `duration: 1`, `delay: 0.1`, `stagger: 0.03`, `distance: 20`, `ease: power2.out` |
+| `animation-text-reveal-chars-rise` | 3D-style character rise | `duration: 1`, `stagger: 0.02`, `distance: 50`, `ease: back.out(1.7)` |
+| `animation-text-reveal-chars-scrub` | Scroll-scrubbed character reveal | `duration: 0.7`, `stagger: 0.2`, scrub between `top 92%` → `top 60%` |
+| `animation-text-typewriter` | Typewriter print + caret | `delay: 0.35`, `stagger: 0.055` (seconds per character), trigger `top 85%` |
+
+All presets honor `data-delay`, `data-duration`, `data-ease`, `data-stagger`, and `data-distance` when set on the same element.
+
+`animation-text-typewriter` uses `data-delay` as the pre-type pause (default `0.35`s) and `data-stagger` as per-character cadence in seconds (default `0.055` ≈ 55ms, matching MiMo). Text wraps naturally to the container width. On viewports ≤700px or when reduced motion is preferred, the full line is shown immediately.
+
+### Image clip reveal
+
+Put the class on an **Image** block or a **Group/Cover** wrapper that contains an `img`:
+
+```html
+<!-- wp:image {"className":"animation-image-clip-reveal"} -->
+<figure class="wp-block-image animation-image-clip-reveal">
+  <img src="…" alt="…" />
+</figure>
+<!-- /wp:image -->
+```
+
+### Text reveal (headings)
+
+Put the class on the **Heading** block (not a parent Group). Text is split into spans at runtime — no GSAP SplitText plugin required.
+
+```html
+<!-- wp:heading {"className":"animation-text-reveal-chars"} -->
+<h2 class="wp-block-heading animation-text-reveal-chars">Animated headline</h2>
+<!-- /wp:heading -->
+```
+
+For scrubbed text, use `animation-text-reveal-chars-scrub` on longer headlines where scroll-linked motion reads well.
+
+### Typewriter (paragraphs / subtitles)
+
+Put the class on a **Paragraph** or **Heading** block. Text prints left-to-right with a blinking caret when the block enters the viewport — same motion language as the [MiMo Code](https://mimo.xiaomi.com/coder) `.hero__subtitle`.
+
+```html
+<!-- wp:paragraph {"className":"animation-text-typewriter"} -->
+<p class="animation-text-typewriter" data-delay="0.35" data-stagger="0.055">
+  A next-generation AI coding assistant for developers.
+</p>
+<!-- /wp:paragraph -->
+```
+
+**Legacy class mapping**
+
+| Old (Elementor) | New (Nextora) |
+|-----------------|---------------|
+| `at-animation-image-style-1` | `animation-image-clip-reveal` |
+| `at-animation-heading-style-1` | `animation-text-reveal-words` |
+| `at-animation-heading-style-2` | `animation-text-reveal-chars` |
+| `at-animation-heading-style-3` | `animation-text-reveal-chars-rise` |
+| `at-animation-heading-style-4` | `animation-text-reveal-chars-scrub` |
+| `at-animation-typewriter` | `animation-text-typewriter` |
+
 
 ## Data attributes (optional)
 
@@ -97,6 +168,8 @@ Put the animation class on the **parent** and `data-stagger` — each direct chi
 
 Combine reveal + parallax on one wrapper when needed.
 
+**Theme blocks with built-in GSAP parallax:** `nextora/advanced-container` and `nextora/page-title` each have an **Enable parallax** toggle and a **Parallax speed** slider (0–1). When enabled, the block's background element moves with a smooth GSAP scrub-driven y-translate — no CSS `background-attachment: fixed` required. Both honour `prefers-reduced-motion: reduce`.
+
 ## HTML example (non-Gutenberg)
 
 ```html
@@ -110,13 +183,16 @@ Combine reveal + parallax on one wrapper when needed.
 
 ```text
 resources/ts/lib/scroll-animations/
-  constants.ts       # Defaults, class list, selectors
-  types.ts           # Shared TypeScript types
-  presets.ts         # Animation preset registry + registerScrollAnimationPreset()
-  parse-options.ts   # data-* parsing
-  helpers.ts         # GSAP wiring per element
-  scroll-animations.ts # scan, MutationObserver, boot
-  index.ts           # Public exports
+  constants.ts           # Defaults, class list, selectors
+  types.ts               # Shared TypeScript types
+  presets.ts             # Animation preset registry + registerScrollAnimationPreset()
+  parse-options.ts       # data-* parsing
+  split-text.ts          # DOM word/char splitter (no SplitText plugin)
+  special-animations.ts  # Image clip + text reveal handlers
+  typewriter-text.ts     # MiMo-style typewriter preset
+  helpers.ts             # GSAP wiring per element
+  scroll-animations.ts   # scan, MutationObserver, boot
+  index.ts               # Public exports
 
 resources/css/modules/components/scroll-animations.css  # FOUC guard
 resources/ts/main.ts                                    # initScrollAnimations()

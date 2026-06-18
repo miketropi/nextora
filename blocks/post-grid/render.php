@@ -225,7 +225,7 @@ ob_start();
 					if ( '' !== $author_name ) {
 						$author_url = get_author_posts_url( $author_id );
 						$meta_items[] = sprintf(
-							'<span class="nextora-post-grid__author whitespace-nowrap"><span class="text-secondary/70">%s</span> <a class="font-medium text-contrast no-underline hover:underline" href="%s">%s</a></span>',
+							'<span class="nextora-post-grid__author whitespace-nowrap"><span class="text-paragraph/70">%s</span> <a class="font-medium text-contrast no-underline hover:underline" href="%s">%s</a></span>',
 							esc_html__( 'By', 'nextora' ),
 							esc_url( $author_url ),
 							esc_html( $author_name ),
@@ -236,9 +236,9 @@ ob_start();
 				$meta_sep_outer = $meta_stacked ? ' flex flex-col items-start gap-1 ' : ' flex flex-row flex-wrap items-center gap-x-2 gap-y-1 ';
 				?>
 				<li class="nextora-post-grid__item min-w-0">
-					<article <?php post_class( 'nextora-post-grid__card group flex h-full flex-col overflow-hidden rounded-xl border border-secondary/10 bg-base hover:border-primary/25 transition-all duration-200' ); ?>>
+					<article <?php post_class( 'nextora-post-grid__card group flex h-full flex-col overflow-hidden rounded-xl border border-paragraph/10 bg-base hover:border-primary/25 transition-all duration-200' ); ?>>
 						<?php if ( $show_image ) : ?>
-							<a href="<?php the_permalink(); ?>" class="nextora-post-grid__media-link relative block shrink-0 overflow-hidden bg-secondary/5 outline-none ring-contrast/20 focus-visible:ring-2" tabindex="-1" aria-hidden="true">
+							<a href="<?php the_permalink(); ?>" class="nextora-post-grid__media-link relative block shrink-0 overflow-hidden bg-paragraph/5 outline-none ring-contrast/20 focus-visible:ring-2" tabindex="-1" aria-hidden="true">
 								<?php
 								$media_box = 'relative w-full overflow-hidden ' . ( '' !== $ratio_class ? $ratio_class : 'max-h-64' );
 								?>
@@ -257,7 +257,7 @@ ob_start();
 										);
 									} else {
 										?>
-										<div class="flex h-full min-h-[8rem] w-full items-center justify-center bg-gradient-to-br from-secondary/10 to-secondary/5 text-secondary/40" aria-hidden="true">
+										<div class="flex h-full min-h-[8rem] w-full items-center justify-center bg-gradient-to-br from-secondary/10 to-secondary/5 text-paragraph/40" aria-hidden="true">
 											<span class="text-sm font-medium tracking-wide"><?php esc_html_e( 'No image', 'nextora' ); ?></span>
 										</div>
 										<?php
@@ -286,7 +286,7 @@ ob_start();
 											}
 											?>
 											<li>
-												<a href="<?php echo esc_url( $cat_link ); ?>" class="inline-block rounded-full bg-secondary/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-secondary no-underline transition-colors hover:bg-primary/15 hover:text-primary">
+												<a href="<?php echo esc_url( $cat_link ); ?>" class="inline-block rounded-full bg-paragraph/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-paragraph no-underline transition-colors hover:bg-primary/15 hover:text-primary">
 													<?php echo esc_html( $cat->name ); ?>
 												</a>
 											</li>
@@ -296,13 +296,13 @@ ob_start();
 							<?php endif; ?>
 
 							<h3 class="nextora-post-grid__title order-0 !m-0 text-lg font-semibold leading-snug tracking-tight  md:text-xl">
-								<a href="<?php the_permalink(); ?>" class="text-inherit !no-underline decoration-secondary/30 decoration-2 underline-offset-4 transition-colors !text-contrast hover:!text-primary">
+								<a href="<?php the_permalink(); ?>" class="text-inherit !no-underline decoration-paragraph/30 decoration-2 underline-offset-4 transition-colors !text-contrast hover:!text-primary">
 									<?php the_title(); ?>
 								</a>
 							</h3>
 
 							<?php if ( array() !== $meta_items ) : ?>
-								<div class="nextora-post-grid__meta text-sm text-secondary<?php echo esc_attr( $meta_sep_outer ); ?>">
+								<div class="nextora-post-grid__meta text-sm text-paragraph<?php echo esc_attr( $meta_sep_outer ); ?>">
 									<?php
 									$count = count( $meta_items );
 									foreach ( $meta_items as $i => $item ) {
@@ -312,7 +312,7 @@ ob_start();
 											if ( $meta_stacked ) {
 												echo '';
 											} else {
-												echo '<span class="text-secondary/35 select-none" aria-hidden="true">·</span>';
+												echo '<span class="text-paragraph/35 select-none" aria-hidden="true">·</span>';
 											}
 										}
 									}
@@ -347,7 +347,7 @@ ob_start();
 							?>
 
 							<?php if ( $show_excerpt ) : ?>
-								<p class="nextora-post-grid__excerpt m-0 text-sm leading-relaxed text-secondary">
+								<p class="nextora-post-grid__excerpt m-0 text-sm leading-relaxed text-paragraph">
 									<?php echo esc_html( wp_trim_words( get_the_excerpt(), $excerpt_words, '…' ) ); ?>
 								</p>
 							<?php endif; ?>
@@ -357,13 +357,13 @@ ob_start();
 
 								<?php if ( $has_tag_row ) : ?>
 									<?php if ( $meta_stacked ) : ?>
-								<div class="nextora-post-grid__tags flex flex-col items-start gap-1 text-sm text-secondary">
-									<span class="text-secondary/70"><?php esc_html_e( 'Tags', 'nextora' ); ?></span>
+								<div class="nextora-post-grid__tags flex flex-col items-start gap-1 text-sm text-paragraph">
+									<span class="text-paragraph/70"><?php esc_html_e( 'Tags', 'nextora' ); ?></span>
 									<div class="flex flex-row flex-wrap items-center gap-x-2 gap-y-1">
 										<?php
 										foreach ( $tag_items as $ti => $tag_html ) {
 											if ( $ti > 0 ) {
-												echo '<span class="text-secondary/35 select-none" aria-hidden="true">·</span>';
+												echo '<span class="text-paragraph/35 select-none" aria-hidden="true">·</span>';
 											}
 											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_* in sprintf above.
 											echo $tag_html;
@@ -372,13 +372,13 @@ ob_start();
 									</div>
 								</div>
 									<?php else : ?>
-								<div class="nextora-post-grid__tags pt-5 border-t border-secondary/20 flex flex-row flex-wrap items-center gap-x-2 gap-y-1 text-sm text-secondary">
-									<span class="whitespace-nowrap text-secondary/70"><?php esc_html_e( 'Tags', 'nextora' ); ?></span>
-									<span class="text-secondary/35 select-none" aria-hidden="true">·</span>
+								<div class="nextora-post-grid__tags pt-5 border-t border-paragraph/20 flex flex-row flex-wrap items-center gap-x-2 gap-y-1 text-sm text-paragraph">
+									<span class="whitespace-nowrap text-paragraph/70"><?php esc_html_e( 'Tags', 'nextora' ); ?></span>
+									<span class="text-paragraph/35 select-none" aria-hidden="true">·</span>
 										<?php
 										foreach ( $tag_items as $ti => $tag_html ) {
 											if ( $ti > 0 ) {
-												echo '<span class="text-secondary/35 select-none" aria-hidden="true">·</span>';
+												echo '<span class="text-paragraph/35 select-none" aria-hidden="true">·</span>';
 											}
 											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built with esc_* in sprintf above.
 											echo $tag_html;
@@ -398,7 +398,7 @@ ob_start();
 			?>
 		</ul>
 	<?php else : ?>
-		<p class="nextora-post-grid__empty m-0 rounded-xl border border-dashed border-secondary/25 bg-secondary/5 px-6 py-10 text-center text-sm text-secondary">
+		<p class="nextora-post-grid__empty m-0 rounded-xl border border-dashed border-paragraph/25 bg-paragraph/5 px-6 py-10 text-center text-sm text-paragraph">
 			<?php esc_html_e( 'No posts found.', 'nextora' ); ?>
 		</p>
 	<?php endif; ?>
