@@ -29,6 +29,22 @@ if ( ! function_exists( 'nextora_counters_resolve_color' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_counters_resolve_font_family' ) ) {
+	/**
+	 * Preset slug or custom font-family stack → font-family value.
+	 */
+	function nextora_counters_resolve_font_family( string $raw ): string {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return '';
+		}
+		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
+			return 'var(--wp--preset--font-family--' . sanitize_html_class( $raw ) . ')';
+		}
+		return $raw;
+	}
+}
+
 if ( ! function_exists( 'nextora_counters_resolve_font_size' ) ) {
 	/**
 	 * Preset slug or custom CSS size → font-size value.
@@ -109,8 +125,12 @@ if ( array() === $items ) {
 /** @var list<array{id: string, number: float, prefix: string, suffix: string, label: string}> $items */
 $items = array_values( (array) apply_filters( 'nextora_counters_items', $items, $attributes ) );
 
-$columns = isset( $attributes['columns'] ) ? (int) $attributes['columns'] : 3;
-$columns = max( 1, min( 6, $columns ) );
+$columns        = isset( $attributes['columns'] ) ? (int) $attributes['columns'] : 3;
+$columns        = max( 1, min( 6, $columns ) );
+$columns_tablet = isset( $attributes['columnsTablet'] ) ? (int) $attributes['columnsTablet'] : 2;
+$columns_tablet = max( 1, min( 6, $columns_tablet ) );
+$columns_mobile = isset( $attributes['columnsMobile'] ) ? (int) $attributes['columnsMobile'] : 1;
+$columns_mobile = max( 1, min( 4, $columns_mobile ) );
 
 $column_gap = isset( $attributes['columnGap'] ) ? trim( (string) $attributes['columnGap'] ) : '';
 
@@ -142,7 +162,6 @@ if ( ! in_array( $easing, $allowed_easing, true ) ) {
 
 $wrapper_classes = array(
 	'nextora-counters',
-	'nextora-counters--cols-' . $columns,
 	'nextora-counters--align-' . $text_align,
 );
 if ( $divider ) {
@@ -155,7 +174,11 @@ $wrapper_classes = (array) apply_filters(
 	$attributes,
 );
 
-$style_parts = array();
+$style_parts = array(
+	'--nextora-counters-cols-m:' . (string) $columns_mobile,
+	'--nextora-counters-cols-t:' . (string) $columns_tablet,
+	'--nextora-counters-cols-d:' . (string) $columns,
+);
 if ( '' !== $column_gap ) {
 	$style_parts[] = '--nextora-counters-gap:' . esc_attr( $column_gap );
 }
@@ -189,6 +212,20 @@ $label_font_size = nextora_counters_resolve_font_size(
 );
 if ( '' !== $label_font_size ) {
 	$style_parts[] = '--nextora-counters-label-size:' . esc_attr( $label_font_size );
+}
+
+$number_font_family = nextora_counters_resolve_font_family(
+	isset( $attributes['numberFontFamily'] ) ? (string) $attributes['numberFontFamily'] : '',
+);
+if ( '' !== $number_font_family ) {
+	$style_parts[] = '--nextora-counters-number-font-family:' . esc_attr( $number_font_family );
+}
+
+$label_font_family = nextora_counters_resolve_font_family(
+	isset( $attributes['labelFontFamily'] ) ? (string) $attributes['labelFontFamily'] : '',
+);
+if ( '' !== $label_font_family ) {
+	$style_parts[] = '--nextora-counters-label-font-family:' . esc_attr( $label_font_family );
 }
 
 $inline_style = implode( ';', $style_parts );

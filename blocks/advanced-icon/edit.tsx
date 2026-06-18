@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import {
 	useBlockProps,
 	InspectorControls,
@@ -20,6 +20,12 @@ import {
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { IconPicker } from './icon-picker';
+import {
+	colorValueForPicker,
+	getMergedPaletteEntries,
+	normalizeColorForStorage,
+	useThemeColorPalette,
+} from './color-utils';
 import type { IconAttributes, IconAlign, IconLinkTarget, IconSource, IconStyle } from './types';
 
 export default function IconEdit( {
@@ -37,8 +43,10 @@ export default function IconEdit( {
 		iconAlign = 'left',
 		iconStyle = 'default',
 		borderRadius = 8,
-		backgroundColor = '',
-		borderColor = '',
+		surfaceBackgroundColor = '',
+		surfaceBorderColor = '',
+		backgroundColor: legacyBackgroundColor = '',
+		borderColor: legacyBorderColor = '',
 		linkUrl = '',
 		linkTarget = '_self',
 		ariaLabel = '',
@@ -47,8 +55,96 @@ export default function IconEdit( {
 	} = attributes;
 
 	const [ pickerOpen, setPickerOpen ] = useState( false );
+	const colorPalette = useThemeColorPalette();
+	const lookupPalette = useMemo(
+		() => getMergedPaletteEntries( colorPalette ),
+		[ colorPalette ],
+	);
+	const migratedColors = useRef( false );
 
 	const scrollEnabled = enableScrollAnimation !== false;
+
+	const resolvedSurfaceBackgroundColor =
+		surfaceBackgroundColor || legacyBackgroundColor;
+	const resolvedSurfaceBorderColor = surfaceBorderColor || legacyBorderColor;
+
+	const setThemeColor = (
+		key: 'iconColor' | 'surfaceBackgroundColor' | 'surfaceBorderColor',
+		value: string | undefined,
+	) => {
+		setAttributes( {
+			[ key ]: normalizeColorForStorage( value, lookupPalette ),
+		} );
+	};
+
+	useEffect( () => {
+		if ( migratedColors.current ) {
+			return;
+		}
+
+		migratedColors.current = true;
+
+		const updates: Partial< IconAttributes > = {};
+		const keys = [
+			'iconColor',
+			'surfaceBackgroundColor',
+			'surfaceBorderColor',
+		] as const;
+
+		for ( const key of keys ) {
+			const val =
+				key === 'surfaceBackgroundColor'
+					? resolvedSurfaceBackgroundColor
+					: key === 'surfaceBorderColor'
+						? resolvedSurfaceBorderColor
+						: attributes[ key ];
+			if ( ! val || typeof val !== 'string' ) {
+				continue;
+			}
+
+			if (
+				/^[a-z0-9-]+$/i.test( val ) &&
+				lookupPalette.some( ( entry ) => entry.slug === val.toLowerCase() )
+			) {
+				continue;
+			}
+
+			const slug = normalizeColorForStorage( val, lookupPalette );
+			if ( slug !== val && /^[a-z0-9-]+$/.test( slug ) ) {
+				updates[ key ] = slug;
+			}
+		}
+
+		if ( legacyBackgroundColor && ! surfaceBackgroundColor ) {
+			updates.surfaceBackgroundColor = normalizeColorForStorage(
+				legacyBackgroundColor,
+				lookupPalette,
+			);
+			updates.backgroundColor = '';
+		}
+
+		if ( legacyBorderColor && ! surfaceBorderColor ) {
+			updates.surfaceBorderColor = normalizeColorForStorage(
+				legacyBorderColor,
+				lookupPalette,
+			);
+			updates.borderColor = '';
+		}
+
+		if ( Object.keys( updates ).length > 0 ) {
+			setAttributes( updates );
+		}
+	}, [
+		attributes,
+		legacyBackgroundColor,
+		legacyBorderColor,
+		lookupPalette,
+		resolvedSurfaceBackgroundColor,
+		resolvedSurfaceBorderColor,
+		setAttributes,
+		surfaceBackgroundColor,
+		surfaceBorderColor,
+	] );
 
 	const blockProps = useBlockProps( {
 		className: `nextora-advanced-icon nextora-advanced-icon--align-${ iconAlign } nextora-advanced-icon--style-${ iconStyle }${
@@ -196,9 +292,13 @@ export default function IconEdit( {
 							...( iconSource === 'theme'
 								? [
 										{
-											value: iconColor,
+											value: colorValueForPicker(
+												iconColor,
+												colorPalette,
+												lookupPalette,
+											),
 											onChange: ( value: string | undefined ) =>
-												setAttributes( { iconColor: value ?? '' } ),
+												setThemeColor( 'iconColor', value ),
 											label: __( 'Icon color', 'nextora' ),
 										},
 									]
@@ -206,11 +306,13 @@ export default function IconEdit( {
 							...( iconStyle === 'stacked'
 								? [
 										{
-											value: backgroundColor,
+											value: colorValueForPicker(
+												resolvedSurfaceBackgroundColor,
+												colorPalette,
+												lookupPalette,
+											),
 											onChange: ( value: string | undefined ) =>
-												setAttributes( {
-													backgroundColor: value ?? '',
-												} ),
+												setThemeColor( 'surfaceBackgroundColor', value ),
 											label: __( 'Background color', 'nextora' ),
 										},
 									]
@@ -218,9 +320,13 @@ export default function IconEdit( {
 							...( iconStyle === 'framed'
 								? [
 										{
-											value: borderColor,
+											value: colorValueForPicker(
+												resolvedSurfaceBorderColor,
+												colorPalette,
+												lookupPalette,
+											),
 											onChange: ( value: string | undefined ) =>
-												setAttributes( { borderColor: value ?? '' } ),
+												setThemeColor( 'surfaceBorderColor', value ),
 											label: __( 'Border color', 'nextora' ),
 										},
 									]

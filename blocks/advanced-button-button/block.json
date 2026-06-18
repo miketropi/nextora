@@ -124,15 +124,15 @@
 			"type": "number",
 			"default": 8
 		},
-		"backgroundColor": {
+		"buttonBackgroundColor": {
 			"type": "string",
 			"default": ""
 		},
-		"textColor": {
+		"buttonTextColor": {
 			"type": "string",
 			"default": ""
 		},
-		"borderColor": {
+		"buttonBorderColor": {
 			"type": "string",
 			"default": ""
 		},

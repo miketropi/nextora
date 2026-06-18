@@ -108,13 +108,45 @@
 				},
 				{
 					"slug": "secondary",
-					"color": "#1a1a1a",
+					"color": "#f9f9f9",
 					"name": "Secondary"
 				},
 				{
 					"slug": "surface",
 					"color": "#f4f4f4",
 					"name": "Surface"
+				}
+			],
+			"gradients": [
+				{
+					"slug": "azure-to-purple",
+					"gradient": "linear-gradient(135deg, #12c2e9 0%, #c471ed 100%)",
+					"name": "Azure to Purple"
+				},
+				{
+					"slug": "soft-surface",
+					"gradient": "linear-gradient(180deg, #ffffff 0%, #f4f4f4 100%)",
+					"name": "Soft Surface"
+				},
+				{
+					"slug": "dark-depth",
+					"gradient": "linear-gradient(135deg, #0a0a0a 0%, #525252 100%)",
+					"name": "Dark Depth"
+				},
+				{
+					"slug": "primary-fade",
+					"gradient": "linear-gradient(90deg, #000000 0%, #525252 100%)",
+					"name": "Primary Fade"
+				},
+				{
+					"slug": "warm-glow",
+					"gradient": "linear-gradient(135deg, #f9f9f9 0%, #f4f4f4 50%, #ffffff 100%)",
+					"name": "Warm Glow"
+				},
+				{
+					"slug": "contrast-veil",
+					"gradient": "linear-gradient(160deg, rgba(10, 10, 10, 0.92) 0%, rgba(82, 82, 82, 0.55) 100%)",
+					"name": "Contrast Veil"
 				}
 			]
 		},

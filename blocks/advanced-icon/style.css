@@ -1,5 +1,9 @@
 .wp-block-nextora-advanced-icon.nextora-advanced-icon {
 	display: flex;
+	align-items: flex-start;
+	align-self: flex-start;
+	width: fit-content;
+	max-width: 100%;
 	line-height: 0;
 	border: none;
 }
@@ -47,8 +51,12 @@
 /* Stacked — filled background behind icon */
 .wp-block-nextora-advanced-icon.nextora-advanced-icon--style-stacked .nextora-advanced-icon__surface {
 	display: inline-flex;
+	flex: 0 0 auto;
 	align-items: center;
+	align-self: flex-start;
 	justify-content: center;
+	width: fit-content;
+	height: fit-content;
 	padding: 0.65em;
 	background: var(--nextora-advanced-icon-bg, var(--wp--preset--color--surface, #f0f0f0));
 	border-radius: var(--nextora-advanced-icon-radius, 8px);
@@ -58,8 +66,12 @@
 /* Framed — bordered container */
 .wp-block-nextora-advanced-icon.nextora-advanced-icon--style-framed .nextora-advanced-icon__surface {
 	display: inline-flex;
+	flex: 0 0 auto;
 	align-items: center;
+	align-self: flex-start;
 	justify-content: center;
+	width: fit-content;
+	height: fit-content;
 	padding: 0.55em;
 	border: 1.5px solid var(--nextora-advanced-icon-border-color, currentColor);
 	border-radius: var(--nextora-advanced-icon-radius, 8px);

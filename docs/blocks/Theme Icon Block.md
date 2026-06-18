@@ -1,8 +1,8 @@
-# Block: Theme Icon
+# Block: Advanced Icon (Theme Icon)
 
 ## Overview
 
-The **Theme Icon** block (`nextora/icon`) renders a single icon in two source modes:
+The **Advanced Icon** block (`nextora/advanced-icon`) renders a single icon in two source modes:
 
 | Mode | Description |
 |------|-------------|
@@ -26,7 +26,7 @@ This block belongs to the **Nextora** block theme. Follow theme conventions — 
 
 | Item | Value |
 |------|--------|
-| **Block name** | `nextora/icon` |
+| **Block name** | `nextora/advanced-icon` |
 | **Category** | `design` (pairs with `nextora/counters`, `nextora/call-to-action`) |
 | **Text domain** | `nextora` |
 | **PHP prefix** | `nextora_` |
@@ -45,7 +45,7 @@ Read first: [`AGENTS.md`](../../AGENTS.md), [`docs/blocks.md`](../blocks.md), sk
 
 ## Scope and intent
 
-Use `nextora/icon` for standalone decorative or informative icons: social links, feature bullets, CTA adornments, contact rows, and pattern placeholders.
+Use `nextora/advanced-icon` for standalone decorative or informative icons: social links, feature bullets, CTA adornments, contact rows, and pattern placeholders.
 
 The block should stay focused on **one icon per instance**. For icon grids or repeater lists, compose multiple block instances or build a dedicated list block.
 
@@ -54,24 +54,27 @@ The block should stay focused on **one icon per instance**. For icon grids or re
 ## Architecture
 
 ```
-nextora/icon                    ← single dynamic block, no InnerBlocks
-├── attributes.iconSource        ← "theme" | "upload"
-├── attributes.iconName          ← Lucide kebab-case name (theme mode)
-├── attributes.uploadedIcon*     ← Media Library URL + attachment ID (upload mode)
-├── attributes.iconSize          ← px width/height
-├── attributes.strokeWidth       ← Lucide only
-├── attributes.iconAlign         ← flex justify
-├── attributes.iconStyle         ← default | stacked | framed
-├── attributes.borderRadius      ← surface radius (stacked/framed)
-├── attributes.backgroundColor   ← stacked surface fill
-├── attributes.borderColor       ← framed border color
-├── attributes.linkUrl/Target    ← optional <a> wrapper
-├── attributes.ariaLabel         ← a11y name when icon is meaningful or linked
+nextora/advanced-icon              ← single dynamic block, no InnerBlocks
+├── attributes.iconSource            ← "theme" | "upload"
+├── attributes.iconName              ← Lucide kebab-case name (theme mode)
+├── attributes.uploadedIcon*         ← Media Library URL + attachment ID (upload mode)
+├── attributes.iconSize              ← px width/height
+├── attributes.strokeWidth           ← Lucide only
+├── attributes.iconAlign             ← flex justify
+├── attributes.iconStyle             ← default | stacked | framed
+├── attributes.borderRadius          ← surface radius (stacked/framed)
+├── attributes.iconColor             ← Lucide stroke (theme mode)
+├── attributes.surfaceBackgroundColor ← stacked surface fill (NOT backgroundColor)
+├── attributes.surfaceBorderColor  ← framed border (NOT borderColor)
+├── attributes.linkUrl/Target      ← optional <a> wrapper
+├── attributes.ariaLabel             ← a11y name when icon is meaningful or linked
 ├── attributes.enableScrollAnimation ← scroll reveal toggle
-├── lucide.php                   ← nextora_get_lucide_svg() + node builder
-├── view.ts                      ← GSAP scroll reveal + opt-out
-├── assets/data/lucide-icons.json← editor-only catalog (build output)
-└── render.php                   ← escaped markup via get_block_wrapper_attributes()
+├── color-utils.ts                   ← slug storage + picker value helpers
+├── lucide.php                       ← nextora_icon_resolve_color(), palette scan, SVG
+├── register-editor.php              ← nextoraIconBlock.paletteEntries for editor
+├── view.ts                          ← GSAP scroll reveal + opt-out
+├── assets/data/lucide-icons.json    ← editor-only catalog (build output)
+└── render.php                       ← escaped markup via get_block_wrapper_attributes()
 ```
 
 ### Scroll reveal (`view.ts`)
@@ -171,7 +174,7 @@ npm run build:icons
 
 | Property | Value |
 |----------|--------|
-| `name` | `nextora/icon` |
+| `name` | `nextora/advanced-icon` |
 | `title` | Theme Icon |
 | `category` | `design` |
 | `textdomain` | `nextora` |
@@ -180,7 +183,7 @@ npm run build:icons
 | `style` / `editorStyle` | `file:./style.css`, `file:./editor.css` |
 | `viewScript` | `file:./view.js` (built from `view.ts`) |
 | `supports.align` | `wide`, `full` |
-| `supports.color` | `text: true` (stroke inherits via `currentColor`) |
+| `supports.color` | **All `false`** — custom colors only (see § Custom color settings below) |
 | `supports.spacing` | `padding`, `margin` |
 | `supports.html` | `false` |
 | Inner blocks | none — `save: () => null` in `index.tsx` |
@@ -203,15 +206,17 @@ npm run build:icons
 | Attribute | Type | Default | Control | Description |
 |-----------|------|---------|---------|-------------|
 | `iconSize` | `number` | `24` | RangeControl (12–256) | Width and height in px |
-| `iconColor` | `string` | `""` | PanelColorSettings or inherit | Empty = `currentColor` / Global Styles text color |
+| `iconColor` | `string` | `""` | PanelColorSettings | Lucide stroke; empty = `currentColor` |
 | `strokeWidth` | `number` | `2` | RangeControl (0.5–4, step 0.5) | Lucide theme icons only |
 | `iconAlign` | `string` | `"left"` | SelectControl | `left`, `center`, `right` — maps to flex `justify-content` |
 | `iconStyle` | `string` | `"default"` | SelectControl | `default`, `stacked`, `framed` |
 | `borderRadius` | `number` | `8` | RangeControl | Surface radius when stacked/framed |
-| `backgroundColor` | `string` | `""` | PanelColorSettings | Stacked surface fill |
-| `borderColor` | `string` | `""` | PanelColorSettings | Framed border color |
+| `surfaceBackgroundColor` | `string` | `""` | PanelColorSettings | Stacked surface fill — **preset slug** (e.g. `secondary`) |
+| `surfaceBorderColor` | `string` | `""` | PanelColorSettings | Framed border color — preset slug or custom hex |
 
-Prefer **`supports.color`** for text/stroke when Global Styles suffice. Use `iconColor` only when the block needs an explicit override beyond wrapper text color.
+**Legacy:** saved content may still use `backgroundColor` / `borderColor`. `render.php` and `edit.tsx` migrate/read both; new saves must use `surface*` names only.
+
+Do **not** use WordPress reserved attribute names for scoped overrides — see § Custom color settings.
 
 ### Animation
 
@@ -237,10 +242,118 @@ Prefer **`supports.color`** for text/stroke when Global Styles suffice. Use `ico
 
 ## Design system
 
-1. **Presets first** — Default stroke/fill via `currentColor` so `supports.color` text on the wrapper tints the SVG. Map preset slugs to `var(--wp--preset--color--{slug})` when `iconColor` stores a slug ([`docs/blocks.md`](../blocks.md) § Style overrides).
-2. **CSS variables** — Block-scoped custom properties use the **`--nextora-icon-*`** prefix if needed (e.g. `--nextora-icon-size`).
-3. **Alignment** — Use flex on the wrapper; avoid inline `justify-content` without also setting `display: flex` in `style.css`.
-4. **Tokens** — Prefer `var(--wp--preset--spacing--*)` for padding/margin via `supports.spacing`; no ad-hoc hex in `style.css`.
+1. **Presets first** — Store **preset slugs** (`secondary`, `primary`, …), not resolved hex, so colors follow Global Styles **color variations** when the site palette changes.
+2. **CSS variables** — Map slugs in PHP to `var(--wp--preset--color--{slug})` via `nextora_icon_resolve_color()`. Apply stacked/framed fills on `.nextora-advanced-icon__surface` through `--nextora-advanced-icon-bg` / `--nextora-advanced-icon-border-color`, not on the block wrapper.
+3. **Alignment** — Wrapper uses flex + `align-self: flex-start; width: fit-content` so stacked surfaces stay square inside vertical flex groups (columns/stack).
+4. **Tokens** — Prefer `var(--wp--preset--spacing--*)` for padding/margin via `supports.spacing`.
+
+---
+
+## Custom color settings (required for agents)
+
+This block (and **any Nextora block with scoped color overrides**) must follow this pattern. It prevents editor bugs and keeps colors tied to style variations.
+
+### Why not `backgroundColor` / `textColor`?
+
+WordPress treats these as **reserved block-support attribute names**. Even when `supports.color.background` is `false`, the editor may still apply `has-{slug}-background-color has-background` to the block list wrapper if a custom attribute is named `backgroundColor`. That produces a **tall coloured bar** behind the icon instead of a compact stacked surface.
+
+| Do not use (reserved / risky) | Use instead (scoped) |
+|-------------------------------|----------------------|
+| `backgroundColor` | `surfaceBackgroundColor`, `imageAreaBackground`, `bandBackgroundColor`, … |
+| `textColor` | `iconColor`, `labelColor`, `overlayTextColor`, … |
+| `borderColor` (when WP border support exists) | `surfaceBorderColor`, `frameBorderColor`, … |
+
+Rule: **prefix or scope the name** (`surface*`, `icon*`, `overlay*`) so it is clearly not the block wrapper’s Global Styles color.
+
+### Block supports
+
+When colours are fully custom (PanelColorSettings on inner elements):
+
+```json
+"supports": {
+  "color": {
+    "background": false,
+    "text": false,
+    "link": false
+  }
+}
+```
+
+Do not enable `supports.color.background` / `text` on the same block that stores surface/icon colours in custom attributes.
+
+### Storage format
+
+| User picks | Store in attribute | PHP output |
+|------------|-------------------|------------|
+| Theme preset “Secondary” | slug: `"secondary"` | `var(--wp--preset--color--secondary)` |
+| Custom hex | `"#e50a46"` | `#e50a46` |
+| Legacy hex from old palette | migrate to slug when possible | via `nextora_icon_hex_to_preset_slug()` |
+
+**Never store resolved hex for a theme preset** — if the user selects Secondary, save `"secondary"`, not `#FFC247`. Otherwise changing **Browse styles → Color variations** will not update the block.
+
+### Editor (`edit.tsx` + `color-utils.ts`)
+
+Reference implementation: [`blocks/advanced-icon/color-utils.ts`](../../blocks/advanced-icon/color-utils.ts), [`blocks/advanced-icon/edit.tsx`](../../blocks/advanced-icon/edit.tsx).
+
+| Piece | Responsibility |
+|-------|----------------|
+| `PanelColorSettings` | Sidebar panel title **Colors**; labels e.g. `__('Background color', 'nextora')` |
+| `normalizeColorForStorage()` | On change: map theme hex → slug using merged palette; keep custom hex as-is |
+| `colorValueForPicker()` | For picker `value`: show **current palette hex** for a stored slug so the swatch matches |
+| `getMergedPaletteEntries()` | Active editor palette + all style-variation entries from PHP |
+| `useEffect` migration | On load: legacy `backgroundColor` → `surfaceBackgroundColor`; hex → slug when identifiable |
+| `register-editor.php` | Inject `window.nextoraIconBlock.paletteEntries` from `nextora_icon_collect_palette_entries()` |
+
+`onChange` from `PanelColorSettings` often returns **hex** even for theme swatches — always run through `normalizeColorForStorage()` before `setAttributes`.
+
+### PHP (`lucide.php` + `render.php`)
+
+| Function | Role |
+|----------|------|
+| `nextora_icon_resolve_color( $raw )` | Slug, `var:preset\|color\|*`, hex, or legacy hex → CSS value |
+| `nextora_icon_hex_to_preset_slug( $hex )` | Scan theme + child + style-variation JSON palettes; map old saved hex back to slug |
+| `nextora_icon_collect_palette_entries()` | All palette `{ slug, color }` pairs for migration |
+
+Render stacked/framed colours on **`.nextora-advanced-icon__surface`** only:
+
+```php
+'--nextora-advanced-icon-bg:' . esc_attr( nextora_icon_resolve_color( $background_color ) ) . ';'
+```
+
+Read attributes with legacy fallback:
+
+```php
+$background_color = (string) ( $attributes['surfaceBackgroundColor'] ?? $attributes['backgroundColor'] ?? '' );
+```
+
+### CSS layout (stacked / framed)
+
+Prevent flex parents from stretching the icon into a vertical bar:
+
+```css
+.wp-block-nextora-advanced-icon.nextora-advanced-icon {
+  align-items: flex-start;
+  align-self: flex-start;
+  width: fit-content;
+}
+.nextora-advanced-icon__surface {
+  flex: 0 0 auto;
+  width: fit-content;
+  height: fit-content;
+}
+```
+
+Editor-only: reset accidental `has-*-background-color` on the block list wrapper — see [`blocks/advanced-icon/editor.css`](../../blocks/advanced-icon/editor.css).
+
+### Checklist (new block with custom colours)
+
+- [ ] Attribute names are **scoped** — not `backgroundColor` / `textColor` unless block uses native WP color support on the wrapper only
+- [ ] `supports.color.*` all `false` when using custom PanelColorSettings
+- [ ] Store preset **slugs**; `normalizeColorForStorage` in editor; `nextora_*_resolve_color` in PHP
+- [ ] Optional: localize full palette list for editor hex→slug matching
+- [ ] Legacy attribute fallback + one-time editor migration
+- [ ] Colour applied to the **correct inner element**, not `get_block_wrapper_attributes()` background
+- [ ] `width: fit-content` / `align-self: flex-start` when block sits in flex/stack/column layouts
 
 ---
 
@@ -360,9 +473,13 @@ Align panel titles with [`docs/blocks.md`](../blocks.md): **Settings**, **Layout
 - Stroke width (theme mode only)
 - Alignment
 
-**Colors** (when override needed)
+**Colors** (`PanelColorSettings` — separate panel, not inside Layout)
 
-- `PanelColorSettings` for icon/text color — match [`blocks/call-to-action/edit.tsx`](../../blocks/call-to-action/edit.tsx); label `__('Icon color', 'nextora')`
+- Icon color (`iconColor`) — theme mode only
+- Background color (`surfaceBackgroundColor`) — stacked style only
+- Border color (`surfaceBorderColor`) — framed style only
+
+Use helpers from [`color-utils.ts`](../../blocks/advanced-icon/color-utils.ts): `colorValueForPicker`, `normalizeColorForStorage`, `useThemeColorPalette`, `getMergedPaletteEntries`.
 
 **Link** (`initialOpen: false`)
 
@@ -405,7 +522,7 @@ function nextora_icon_block_editor_assets(): void {
 }
 ```
 
-Handle `nextora-icon-editor-script` matches WordPress auto-registration for `nextora/icon`.
+Handle `nextora-advanced-icon-editor-script` matches WordPress auto-registration for `nextora/advanced-icon`.
 
 ---
 
@@ -512,7 +629,9 @@ npm run ci                   # full gate before merge
 
 | Rule | Detail |
 |------|--------|
-| **Namespace** | `nextora/icon` only — not `mytheme/icon` or `core/icon` |
+| **Namespace** | `nextora/advanced-icon` only — folder `blocks/advanced-icon/` |
+| **Custom colours** | Follow § Custom color settings — scoped attribute names, slug storage, `PanelColorSettings` + `color-utils` pattern |
+| **No `backgroundColor` attr** | Use `surfaceBackgroundColor` (WordPress reserves `backgroundColor` for block wrapper) |
 | **Text domain** | `nextora` for block strings |
 | **PHP prefix** | `nextora_` for helpers; use `NEXTORA_DIR` / `NEXTORA_URI` |
 | **No external runtime requests** | Bundle `lucide-icons.json`; never fetch lucide.dev or CDNs |
@@ -554,4 +673,4 @@ npm run ci                   # full gate before merge
 
 ---
 
-*Nextora — Theme Icon Block (`nextora/icon`) agent specification*
+*Nextora — Advanced Icon Block (`nextora/advanced-icon`) agent specification*

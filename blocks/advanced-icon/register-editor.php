@@ -31,8 +31,21 @@ function nextora_advanced_icon_block_editor_assets(): void {
 		return;
 	}
 
+	require_once __DIR__ . '/lucide.php';
+
+	/** @var list<array{slug: string, color: string, name: string}> $palette_entries */
+	$palette_entries = array();
+	foreach ( nextora_icon_collect_palette_entries() as $entry ) {
+		$palette_entries[] = array(
+			'slug'  => $entry['slug'],
+			'color' => $entry['color'],
+			'name'  => ucwords( str_replace( '-', ' ', $entry['slug'] ) ),
+		);
+	}
+
 	$data = array(
-		'iconsUrl' => NEXTORA_URI . '/assets/data/lucide-icons.json',
+		'iconsUrl'        => NEXTORA_URI . '/assets/data/lucide-icons.json',
+		'paletteEntries'  => $palette_entries,
 	);
 
 	wp_add_inline_script(
