@@ -65,9 +65,34 @@
 .nextora-addon-header__description {
 	font-size: 13.5px;
 	color: var(--nx-text-tertiary);
-	margin: 0;
+	margin: 0 0 10px;
 	line-height: 1.6;
 	max-width: 580px;
+}
+
+.nextora-addon-header__contact {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	color: var(--nx-text-secondary);
+	margin: 0;
+}
+
+.nextora-addon-header__contact a {
+	color: var(--nx-accent-dark);
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.nextora-addon-header__contact a:hover {
+	color: var(--nx-accent-darker);
+	text-decoration: underline;
+}
+
+.nextora-addon-header__contact-icon {
+	flex-shrink: 0;
+	opacity: 0.6;
 }
 
 /* ===== Tab Navigation ===== */
