@@ -34,6 +34,30 @@
     }
   },
   "attributes": {
+    "cardTemplate": {
+      "type": "string",
+      "default": "default"
+    },
+    "layoutMode": {
+      "type": "string",
+      "default": "carousel"
+    },
+    "gridColumns": {
+      "type": "number",
+      "default": 3
+    },
+    "gridColumnGap": {
+      "type": "number",
+      "default": 24
+    },
+    "gridRowGap": {
+      "type": "number",
+      "default": 24
+    },
+    "gridMinWidth": {
+      "type": "number",
+      "default": 981
+    },
     "postType": {
       "type": "string",
       "default": "post"
@@ -81,46 +105,6 @@
     "ignoreSticky": {
       "type": "boolean",
       "default": true
-    },
-    "headingText": {
-      "type": "string",
-      "default": "Latest Posts"
-    },
-    "headingLevel": {
-      "type": "number",
-      "default": 4
-    },
-    "showHeading": {
-      "type": "boolean",
-      "default": true
-    },
-    "descriptionText": {
-      "type": "string",
-      "default": "Explore our latest articles, tips, and stories from the blog."
-    },
-    "showViewAll": {
-      "type": "boolean",
-      "default": true
-    },
-    "viewAllText": {
-      "type": "string",
-      "default": "view all"
-    },
-    "viewAllUrl": {
-      "type": "string",
-      "default": ""
-    },
-    "viewAllStyle": {
-      "type": "string",
-      "default": "pill-outline"
-    },
-    "viewAllTarget": {
-      "type": "boolean",
-      "default": false
-    },
-    "headerLayout": {
-      "type": "string",
-      "default": "split"
     },
     "showImage": {
       "type": "boolean",
@@ -246,31 +230,35 @@
       "type": "boolean",
       "default": true
     },
-    "backgroundColor": {
+    "cardTitleColor": {
       "type": "string",
       "default": ""
     },
-    "headingColor": {
+    "cardExcerptColor": {
       "type": "string",
       "default": ""
     },
-    "descriptionColor": {
+    "cardMetaColor": {
       "type": "string",
       "default": ""
     },
-    "titleColor": {
+    "cardBackgroundColor": {
       "type": "string",
       "default": ""
     },
-    "excerptColor": {
+    "cardBorderColor": {
       "type": "string",
       "default": ""
     },
-    "metaColor": {
-      "type": "string",
-      "default": ""
+    "cardBorderRadius": {
+      "type": "number",
+      "default": 0
     },
-    "viewAllColor": {
+    "cardPadding": {
+      "type": "number",
+      "default": 0
+    },
+    "readMoreLinkColor": {
       "type": "string",
       "default": ""
     },
@@ -282,21 +270,9 @@
       "type": "string",
       "default": ""
     },
-    "contentMaxWidth": {
-      "type": "string",
-      "default": "1200px"
-    },
-    "cardBorderRadius": {
-      "type": "number",
-      "default": 0
-    },
-    "cardBackground": {
+    "arrowColor": {
       "type": "string",
       "default": ""
-    },
-    "cardPadding": {
-      "type": "number",
-      "default": 0
     },
     "enableScrollAnimation": {
       "type": "boolean",

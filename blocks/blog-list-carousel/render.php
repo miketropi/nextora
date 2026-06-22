@@ -147,6 +147,28 @@ if ( ! function_exists( 'nextora_blc_render_card_image_html' ) ) {
     }
 }
 
+if ( ! function_exists( 'nextora_blc_render_readmore_arrow_icon' ) ) {
+	/**
+	 * Decorative arrow for template-1 read-more links.
+	 */
+	function nextora_blc_render_readmore_arrow_icon(): string {
+		return '<span class="nextora-blc__card-readmore-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
+	}
+}
+
+if ( ! function_exists( 'nextora_blc_render_meta_icon' ) ) {
+	/**
+	 * Lucide-style meta icons for template-1 cards.
+	 */
+	function nextora_blc_render_meta_icon( string $type ): string {
+		if ( 'calendar' === $type ) {
+			return '<span class="nextora-blc__card-meta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>';
+		}
+
+		return '<span class="nextora-blc__card-meta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2H2v10l9.29 9.29a1 1 0 0 0 1.41 0l6.59-6.59a1 1 0 0 0 0-1.41L12 2z"/><circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none"/></svg></span>';
+	}
+}
+
 // ── Build WP_Query args ──
 $post_type = isset( $attributes['postType'] ) && is_string( $attributes['postType'] )
     ? sanitize_text_field( $attributes['postType'] ) : 'post';
@@ -262,38 +284,6 @@ if ( ! $query->have_posts() ) {
 }
 
 // ── Extract display attrs ──
-$show_heading  = ! isset( $attributes['showHeading'] ) || (bool) $attributes['showHeading'];
-$heading_text  = isset( $attributes['headingText'] ) && is_string( $attributes['headingText'] )
-    ? esc_html( trim( $attributes['headingText'] ) ) : '';
-$heading_level = isset( $attributes['headingLevel'] ) ? max( 1, min( 6, (int) $attributes['headingLevel'] ) ) : 4;
-$heading_tag   = 'h' . (string) $heading_level;
-$description_text = isset( $attributes['descriptionText'] ) && is_string( $attributes['descriptionText'] )
-    ? esc_html( trim( $attributes['descriptionText'] ) ) : '';
-
-$show_view_all    = ! isset( $attributes['showViewAll'] ) || (bool) $attributes['showViewAll'];
-$view_all_text    = isset( $attributes['viewAllText'] ) && is_string( $attributes['viewAllText'] )
-    ? esc_html( trim( $attributes['viewAllText'] ) ) : esc_html__( 'view all', 'nextora' );
-$view_all_url     = isset( $attributes['viewAllUrl'] ) && is_string( $attributes['viewAllUrl'] )
-    ? esc_url( trim( $attributes['viewAllUrl'] ) ) : '';
-$view_all_target  = isset( $attributes['viewAllTarget'] ) && (bool) $attributes['viewAllTarget'];
-$view_all_style   = isset( $attributes['viewAllStyle'] ) && is_string( $attributes['viewAllStyle'] )
-    ? sanitize_html_class( $attributes['viewAllStyle'] ) : 'pill-outline';
-$header_layout    = isset( $attributes['headerLayout'] ) && is_string( $attributes['headerLayout'] )
-    ? sanitize_html_class( $attributes['headerLayout'] ) : 'split';
-
-$valid_va_styles = array( 'pill-outline', 'pill-solid', 'text-link', 'arrow-link' );
-if ( ! in_array( $view_all_style, $valid_va_styles, true ) ) {
-    $view_all_style = 'pill-outline';
-}
-$valid_hl = array( 'split', 'stacked', 'left' );
-if ( ! in_array( $header_layout, $valid_hl, true ) ) {
-    $header_layout = 'split';
-}
-
-if ( '' === $view_all_url ) {
-    $view_all_url = esc_url( (string) get_post_type_archive_link( $post_type ) );
-}
-
 // Card display
 $show_image    = ! isset( $attributes['showImage'] ) || (bool) $attributes['showImage'];
 $image_ratio   = isset( $attributes['imageAspectRatio'] ) && is_string( $attributes['imageAspectRatio'] )
@@ -346,26 +336,38 @@ $arrow_style_val = isset( $attributes['arrowStyle'] ) && is_string( $attributes[
 $free_mode   = isset( $attributes['freeMode'] ) && (bool) $attributes['freeMode'];
 $grab_cursor = ! isset( $attributes['grabCursor'] ) || (bool) $attributes['grabCursor'];
 
+$card_template_raw = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
+$card_template     = in_array( $card_template_raw, array( 'template-1', 'news-grid' ), true )
+    ? 'template-1'
+    : 'default';
+
+// Layout
+$layout_mode = isset( $attributes['layoutMode'] ) && 'grid' === (string) $attributes['layoutMode'] ? 'grid' : 'carousel';
+$grid_cols   = isset( $attributes['gridColumns'] ) ? max( 1, min( 6, (int) $attributes['gridColumns'] ) ) : 3;
+$grid_min    = isset( $attributes['gridMinWidth'] ) ? max( 480, min( 1200, (int) $attributes['gridMinWidth'] ) ) : 981;
+$grid_col_gap = isset( $attributes['gridColumnGap'] )
+    ? max( 0, min( 60, (int) $attributes['gridColumnGap'] ) )
+    : $gap;
+$grid_row_gap = isset( $attributes['gridRowGap'] )
+    ? max( 0, min( 60, (int) $attributes['gridRowGap'] ) )
+    : $gap;
+
 // Scroll animation
 $enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
 
 // Style overrides
-$bg_color           = nextora_blc_resolve_color( isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '' );
-$heading_color      = nextora_blc_resolve_color( isset( $attributes['headingColor'] ) ? (string) $attributes['headingColor'] : '' );
-$description_color = nextora_blc_resolve_color( isset( $attributes['descriptionColor'] ) ? (string) $attributes['descriptionColor'] : '' );
-$title_color        = nextora_blc_resolve_color( isset( $attributes['titleColor'] ) ? (string) $attributes['titleColor'] : '' );
-$excerpt_color      = nextora_blc_resolve_color( isset( $attributes['excerptColor'] ) ? (string) $attributes['excerptColor'] : '' );
-$meta_color         = nextora_blc_resolve_color( isset( $attributes['metaColor'] ) ? (string) $attributes['metaColor'] : '' );
-$read_more_color    = nextora_blc_resolve_color( isset( $attributes['readMoreColor'] ) ? (string) $attributes['readMoreColor'] : '' );
-$view_all_color     = nextora_blc_resolve_color( isset( $attributes['viewAllColor'] ) ? (string) $attributes['viewAllColor'] : '' );
-$dot_color          = nextora_blc_resolve_color( isset( $attributes['paginationColor'] ) ? (string) $attributes['paginationColor'] : '' );
+$title_color   = nextora_blc_resolve_color( isset( $attributes['cardTitleColor'] ) ? (string) $attributes['cardTitleColor'] : '' );
+$excerpt_color      = nextora_blc_resolve_color( isset( $attributes['cardExcerptColor'] ) ? (string) $attributes['cardExcerptColor'] : '' );
+$meta_color      = nextora_blc_resolve_color( isset( $attributes['cardMetaColor'] ) ? (string) $attributes['cardMetaColor'] : '' );
+$read_more_color = nextora_blc_resolve_color( isset( $attributes['readMoreLinkColor'] ) ? (string) $attributes['readMoreLinkColor'] : '' );
+$dot_color       = nextora_blc_resolve_color( isset( $attributes['paginationColor'] ) ? (string) $attributes['paginationColor'] : '' );
 $dot_active         = nextora_blc_resolve_color( isset( $attributes['paginationActiveColor'] ) ? (string) $attributes['paginationActiveColor'] : '' );
-$content_max        = isset( $attributes['contentMaxWidth'] ) && is_string( $attributes['contentMaxWidth'] )
-    ? esc_attr( trim( $attributes['contentMaxWidth'] ) ) : '1200px';
+$arrow_color    = nextora_blc_resolve_color( isset( $attributes['arrowColor'] ) ? (string) $attributes['arrowColor'] : '' );
 $img_radius         = isset( $attributes['imageBorderRadius'] ) ? max( 0, min( 24, (int) $attributes['imageBorderRadius'] ) ) : 8;
-$card_radius        = isset( $attributes['cardBorderRadius'] ) ? max( 0, min( 24, (int) $attributes['cardBorderRadius'] ) ) : 0;
-$card_bg            = nextora_blc_resolve_color( isset( $attributes['cardBackground'] ) ? (string) $attributes['cardBackground'] : '' );
-$card_padding       = isset( $attributes['cardPadding'] ) ? max( 0, min( 24, (int) $attributes['cardPadding'] ) ) : 0;
+$card_radius        = isset( $attributes['cardBorderRadius'] ) ? max( 0, min( 32, (int) $attributes['cardBorderRadius'] ) ) : 0;
+$card_bg            = nextora_blc_resolve_color( isset( $attributes['cardBackgroundColor'] ) ? (string) $attributes['cardBackgroundColor'] : '' );
+$card_border_color  = nextora_blc_resolve_color( isset( $attributes['cardBorderColor'] ) ? (string) $attributes['cardBorderColor'] : '' );
+$card_padding       = isset( $attributes['cardPadding'] ) ? max( 0, min( 32, (int) $attributes['cardPadding'] ) ) : 0;
 
 // ── Swiper opts JSON ──
 $post_count = (int) $query->post_count;
@@ -395,8 +397,11 @@ $opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 $css_ratio = str_replace( '-', '/', $image_ratio );
 
 $css_vars = array(
-    '--nextora-blc-max-width'     => $content_max,
-    '--nextora-blc-img-radius'    => $img_radius . 'px',
+    '--nextora-blc-grid-cols'         => (string) $grid_cols,
+    '--nextora-blc-gap'               => $gap . 'px',
+    '--nextora-blc-grid-column-gap'   => $grid_col_gap . 'px',
+    '--nextora-blc-grid-row-gap'      => $grid_row_gap . 'px',
+    '--nextora-blc-img-radius'        => $img_radius . 'px',
     '--nextora-blc-card-radius'   => $card_radius . 'px',
     '--nextora-blc-card-padding'  => $card_padding . 'px',
     '--nextora-blc-img-ratio'     => $css_ratio,
@@ -405,15 +410,6 @@ $css_vars = array(
 );
 
 // Only emit color tokens when customized — avoids overriding block preset colors.
-if ( '' !== $bg_color ) {
-    $css_vars['--nextora-blc-bg'] = $bg_color;
-}
-if ( '' !== $heading_color ) {
-    $css_vars['--nextora-blc-heading-color'] = $heading_color;
-}
-if ( '' !== $description_color ) {
-    $css_vars['--nextora-blc-desc-color'] = $description_color;
-}
 if ( '' !== $title_color ) {
     $css_vars['--nextora-blc-title-color'] = $title_color;
 }
@@ -426,18 +422,20 @@ if ( '' !== $meta_color ) {
 if ( '' !== $read_more_color ) {
     $css_vars['--nextora-blc-readmore-color'] = $read_more_color;
 }
-if ( '' !== $view_all_color ) {
-    $css_vars['--nextora-blc-viewall-border'] = $view_all_color;
-    $css_vars['--nextora-blc-viewall-text']   = $view_all_color;
-}
 if ( '' !== $dot_color ) {
     $css_vars['--nextora-blc-dot-color'] = $dot_color;
 }
 if ( '' !== $dot_active ) {
     $css_vars['--nextora-blc-dot-active'] = $dot_active;
 }
+if ( '' !== $arrow_color ) {
+    $css_vars['--nextora-blc-arrow-color'] = $arrow_color;
+}
 if ( '' !== $card_bg ) {
     $css_vars['--nextora-blc-card-bg'] = $card_bg;
+}
+if ( '' !== $card_border_color ) {
+    $css_vars['--nextora-blc-card-border-color'] = $card_border_color;
 }
 
 $style_parts = array();
@@ -450,6 +448,8 @@ $inline_style = implode( ';', $style_parts );
 $wrapper_classes = array(
     'nextora-blog-list-carousel',
     'nextora-blog-list-carousel--loading',
+    'nextora-blog-list-carousel--layout-' . sanitize_html_class( $layout_mode ),
+    'nextora-blog-list-carousel--template-' . sanitize_html_class( $card_template ),
 );
 
 if ( $enable_scroll ) {
@@ -470,60 +470,6 @@ if ( $enable_scroll ) {
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
-
-// ── Heading ──
-$heading_html = '';
-if ( $show_heading && '' !== $heading_text ) {
-    $heading_html = sprintf(
-    	'<%1$s class="nextora-blc__heading">%2$s</%1$s>',
-    	$heading_tag,
-    	$heading_text,
-    );
-}
-
-$description_html = '';
-if ( '' !== $description_text ) {
-    $description_html = sprintf(
-    	'<p class="nextora-blc__description">%s</p>',
-    	$description_text,
-    );
-}
-
-$header_main_html = '';
-if ( '' !== $heading_html || '' !== $description_html ) {
-    $header_main_html = sprintf(
-    	'<div class="nextora-blc__header-main">%s%s</div>',
-    	$heading_html,
-    	$description_html,
-    );
-}
-
-// ── View all ──
-$arrow_svg  = '<svg class="nextora-blc__viewall-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-$view_all_html = '';
-if ( $show_view_all && '' !== $view_all_url ) {
-    $target_attr = $view_all_target ? ' target="_blank" rel="noopener noreferrer"' : '';
-    $show_arrow  = in_array( $view_all_style, array( 'pill-outline', 'pill-solid', 'arrow-link' ), true );
-    $view_all_html = sprintf(
-    	'<a href="%s" class="nextora-blc__viewall nextora-blc__viewall--%s"%s>%s%s</a>',
-    	$view_all_url,
-    	$view_all_style,
-    	$target_attr,
-    	$view_all_text,
-    	$show_arrow ? ' ' . $arrow_svg : '',
-    );
-}
-
-// ── Header ──
-$header_html = '';
-if ( '' !== $header_main_html || '' !== $view_all_html ) {
-    $header_html = sprintf(
-    	'<div class="nextora-blc__header nextora-blc__header--%s">%s%s</div>',
-    	$header_layout,
-    	$header_main_html,
-    	$view_all_html,
-    );
-}
 
 // ── Build cards ──
 $cards_html = '';
@@ -551,15 +497,21 @@ while ( $query->have_posts() ) :
 
     // Title
     $title_html = '';
+    $title_tag  = 'template-1' === $card_template ? 'h3' : ( 'title-only' === $card_link_behavior || 'full-card' === $card_link_behavior ? 'h4' : 'h3' );
     if ( $show_title && '' !== $title ) {
         if ( 'title-only' === $card_link_behavior || 'full-card' === $card_link_behavior ) {
             $title_html = sprintf(
-            	'<h4 class="nextora-blc__card-title"><a href="%s">%s</a></h4>',
+            	'<%1$s class="nextora-blc__card-title"><a href="%2$s">%3$s</a></%1$s>',
+            	$title_tag,
             	$permalink,
             	esc_html( $title ),
             );
         } else {
-            $title_html = '<h3 class="nextora-blc__card-title">' . esc_html( $title ) . '</h3>';
+            $title_html = sprintf(
+            	'<%1$s class="nextora-blc__card-title">%2$s</%1$s>',
+            	$title_tag,
+            	esc_html( $title ),
+            );
         }
     }
 
@@ -580,73 +532,120 @@ while ( $query->have_posts() ) :
     }
 
     // Meta
-    $meta_parts = array();
-    if ( $show_date ) {
-        $meta_parts[] = sprintf(
-        	'<time class="nextora-blc__card-date" datetime="%s">%s</time>',
-        	esc_attr( (string) get_the_date( 'c' ) ),
-        	esc_html( (string) get_the_date( $date_format ) ),
-        );
-    }
-    if ( $show_category ) {
-        $cats = get_the_category();
-        if ( is_array( $cats ) && array() !== $cats ) {
-            $cat = $cats[0];
-            if ( $cat instanceof WP_Term ) {
-                $cat_link = get_term_link( $cat );
-                if ( ! is_wp_error( $cat_link ) && is_string( $cat_link ) ) {
-                    $meta_parts[] = '<a href="' . esc_url( $cat_link ) . '" class="nextora-blc__card-cat">' . esc_html( $cat->name ) . '</a>';
-                } else {
-                    $meta_parts[] = '<span class="nextora-blc__card-cat">' . esc_html( $cat->name ) . '</span>';
+    $meta_html = '';
+    if ( 'template-1' === $card_template ) {
+        $meta_items = array();
+        if ( $show_date ) {
+            $meta_items[] = sprintf(
+            	'<span class="nextora-blc__card-meta-item">%1$s<time class="nextora-blc__card-date" datetime="%2$s">%3$s</time></span>',
+            	nextora_blc_render_meta_icon( 'calendar' ),
+            	esc_attr( (string) get_the_date( 'c' ) ),
+            	esc_html( (string) get_the_date( $date_format ) ),
+            );
+        }
+        if ( $show_category ) {
+            $cats = get_the_category();
+            if ( is_array( $cats ) && array() !== $cats ) {
+                $cat = $cats[0];
+                if ( $cat instanceof WP_Term ) {
+                    $cat_link = get_term_link( $cat );
+                    $cat_label = esc_html( $cat->name );
+                    $cat_inner = nextora_blc_render_meta_icon( 'tag' );
+                    if ( ! is_wp_error( $cat_link ) && is_string( $cat_link ) ) {
+                        $cat_inner .= '<a href="' . esc_url( $cat_link ) . '" class="nextora-blc__card-cat">' . $cat_label . '</a>';
+                    } else {
+                        $cat_inner .= '<span class="nextora-blc__card-cat">' . $cat_label . '</span>';
+                    }
+                    $meta_items[] = '<span class="nextora-blc__card-meta-item">' . $cat_inner . '</span>';
                 }
             }
         }
-    }
-    if ( $show_author ) {
-        $meta_parts[] = '<span class="nextora-blc__card-author">' . esc_html( (string) get_the_author() ) . '</span>';
-    }
-
-    $meta_html = '';
-    if ( array() !== $meta_parts ) {
-        $divider = '<span class="nextora-blc__card-divider" aria-hidden="true"></span>';
-        $parts   = array();
-        $count   = count( $meta_parts );
-        foreach ( $meta_parts as $i => $part ) {
-            $parts[] = $part;
-            if ( $i < $count - 1 ) {
-                $parts[] = $divider;
+        if ( $show_author ) {
+            $meta_items[] = sprintf(
+            	'<span class="nextora-blc__card-meta-item">%1$s<span class="nextora-blc__card-author">%2$s</span></span>',
+            	nextora_blc_render_meta_icon( 'tag' ),
+            	esc_html( (string) get_the_author() ),
+            );
+        }
+        if ( array() !== $meta_items ) {
+            $meta_html = '<div class="nextora-blc__card-meta nextora-blc__card-meta--template-1">' . implode( '', $meta_items ) . '</div>';
+        }
+    } else {
+        $meta_parts = array();
+        if ( $show_date ) {
+            $meta_parts[] = sprintf(
+            	'<time class="nextora-blc__card-date" datetime="%s">%s</time>',
+            	esc_attr( (string) get_the_date( 'c' ) ),
+            	esc_html( (string) get_the_date( $date_format ) ),
+            );
+        }
+        if ( $show_category ) {
+            $cats = get_the_category();
+            if ( is_array( $cats ) && array() !== $cats ) {
+                $cat = $cats[0];
+                if ( $cat instanceof WP_Term ) {
+                    $cat_link = get_term_link( $cat );
+                    if ( ! is_wp_error( $cat_link ) && is_string( $cat_link ) ) {
+                        $meta_parts[] = '<a href="' . esc_url( $cat_link ) . '" class="nextora-blc__card-cat">' . esc_html( $cat->name ) . '</a>';
+                    } else {
+                        $meta_parts[] = '<span class="nextora-blc__card-cat">' . esc_html( $cat->name ) . '</span>';
+                    }
+                }
             }
         }
-        $meta_html = '<div class="nextora-blc__card-meta">' . implode( '', $parts ) . '</div>';
+        if ( $show_author ) {
+            $meta_parts[] = '<span class="nextora-blc__card-author">' . esc_html( (string) get_the_author() ) . '</span>';
+        }
+
+        if ( array() !== $meta_parts ) {
+            $divider = '<span class="nextora-blc__card-divider" aria-hidden="true"></span>';
+            $parts   = array();
+            $count   = count( $meta_parts );
+            foreach ( $meta_parts as $i => $part ) {
+                $parts[] = $part;
+                if ( $i < $count - 1 ) {
+                    $parts[] = $divider;
+                }
+            }
+            $meta_html = '<div class="nextora-blc__card-meta">' . implode( '', $parts ) . '</div>';
+        }
     }
 
     // Read more
     $read_more_html = '';
     if ( $show_read_more ) {
-        $read_more_html = sprintf(
-        	'<a href="%s" class="nextora-blc__card-readmore">%s</a>',
+        $read_more_arrow = 'template-1' === $card_template ? nextora_blc_render_readmore_arrow_icon() : '';
+        $read_more_html  = sprintf(
+        	'<a href="%1$s" class="nextora-blc__card-readmore%3$s">%2$s%4$s</a>',
         	$permalink,
         	$read_more_text,
+        	'template-1' === $card_template ? ' nextora-blc__card-readmore--template-1' : '',
+        	$read_more_arrow,
         );
     }
 
     // Card body
-    $card_body = $title_html . $excerpt_html . $meta_html . $read_more_html;
+    if ( 'template-1' === $card_template ) {
+        $card_body = $meta_html . $title_html . $read_more_html;
+    } else {
+        $card_body = $title_html . $excerpt_html . $meta_html . $read_more_html;
+    }
+
+    $card_class = 'nextora-blc__card';
+    if ( 'full-card' === $card_link_behavior ) {
+        $card_class .= ' nextora-blc__card--linked';
+    }
+    if ( 'template-1' === $card_template ) {
+        $card_class .= ' nextora-blc__card--template-1';
+    }
 
     // Card wrapper
-    if ( 'full-card' === $card_link_behavior ) {
-        $cards_html .= sprintf(
-        	'<div class="swiper-slide"><div class="nextora-blc__card nextora-blc__card--linked">%s<div class="nextora-blc__card-body">%s</div></div></div>',
-        	$image_html,
-        	$card_body,
-        );
-    } else {
-        $cards_html .= sprintf(
-        	'<div class="swiper-slide"><div class="nextora-blc__card">%s<div class="nextora-blc__card-body">%s</div></div></div>',
-        	$image_html,
-        	$card_body,
-        );
-    }
+    $cards_html .= sprintf(
+    	'<div class="swiper-slide"><article class="%1$s">%2$s<div class="nextora-blc__card-body">%3$s</div></article></div>',
+    	esc_attr( $card_class ),
+    	$image_html,
+    	$card_body,
+    );
 endwhile;
 wp_reset_postdata();
 
@@ -674,9 +673,11 @@ if ( $show_pag && $post_count > 1 ) {
 
 // ── Assemble output ──
 $output = sprintf(
-	'<div %s><div class="nextora-blc__inner">%s<div class="nextora-blc__carousel-root" data-swiper-opts="%s"><div class="swiper nextora-blc__swiper"><div class="swiper-wrapper">%s</div></div>%s</div>%s</div></div>',
+	'<div %s><div class="nextora-blc__inner"><div class="nextora-blc__carousel-root" data-layout-mode="%s" data-grid-min-width="%s" data-grid-columns="%s" data-swiper-opts="%s"><div class="swiper nextora-blc__swiper"><div class="swiper-wrapper">%s</div></div>%s</div>%s</div></div>',
 	$wrapper_attributes,
-	$header_html,
+	esc_attr( $layout_mode ),
+	esc_attr( (string) $grid_min ),
+	esc_attr( (string) $grid_cols ),
 	esc_attr( $opts_string ),
 	$cards_html,
 	$arrows_html,

@@ -1,6 +1,7 @@
 import type { BoxContentItem } from './types';
 import { cardPaddingToStyleVars } from './spacing-utils';
 import { storedColorToCss } from './icon-catalog';
+import { buildHeadingFontFamilyVar } from './typography-utils';
 
 export const DEFAULT_ITEMS: BoxContentItem[] = [
 	{
@@ -123,6 +124,7 @@ export function buildStyleVars(attrs: {
 	iconSurfaceBorderColor?: string;
 	iconHoverColor?: string;
 	iconHoverSurfaceBackgroundColor?: string;
+	headingFontFamily?: string;
 }, lookupPalette: { slug: string; color: string }[] = []): Record<string, string> {
 	const vars: Record<string, string> = {};
 
@@ -178,6 +180,8 @@ export function buildStyleVars(attrs: {
 	setColor('--nextora-box-content-icon-surface-border', attrs.iconSurfaceBorderColor);
 	setColor('--nextora-box-content-icon-hover-color', attrs.iconHoverColor);
 	setColor('--nextora-box-content-icon-hover-surface-bg', attrs.iconHoverSurfaceBackgroundColor);
+
+	Object.assign(vars, buildHeadingFontFamilyVar(attrs.headingFontFamily));
 
 	return vars;
 }

@@ -31,11 +31,21 @@ import {
 } from './testimonial-utils';
 import { buildTypographyStyleVars } from './testimonials-styles';
 import TestimonialEditForm from './testimonial-edit-form';
+import {
+	normalizeColorForStorage,
+	colorValueForPicker,
+	useThemeColorPalette,
+} from './color-utils';
 
 interface EditProps {
 	attributes: TestimonialsAttributes;
 	setAttributes: (attrs: Partial<TestimonialsAttributes>) => void;
 }
+
+const templateOptions = [
+	{ label: __('Default', 'nextora'), value: 'default' },
+	{ label: __('Story (Quote style)', 'nextora'), value: 'story' },
+];
 
 const effectOptions = [
 	{ label: __('Fade', 'nextora'), value: 'fade' },
@@ -175,6 +185,7 @@ function TestimonialEditorItem({
 
 export default function TestimonialsEdit({ attributes, setAttributes }: EditProps) {
 	const [editingId, setEditingId] = useState<string | null>(null);
+	const palette = useThemeColorPalette();
 
 	const testimonials = normalizeTestimonials(attributes.testimonials);
 	const editingItem = editingId ? testimonials.find((t) => t.id === editingId) : undefined;
@@ -200,6 +211,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 	});
 
 	const {
+		template = 'default',
 		headingText = '',
 		headingLevel = 2,
 		headingFontSize = '',
@@ -233,6 +245,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 		className: [
 			'nextora-testimonials',
 			'nextora-testimonials--editor',
+			`nextora-testimonials--template-${template}`,
 			`nextora-testimonials--image-${imagePosition}`,
 		].join(' '),
 		style: {
@@ -311,6 +324,18 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 				</PanelBody>
 
 				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
+					<SelectControl
+						label={__('Template', 'nextora')}
+						value={template}
+						options={templateOptions}
+						onChange={(v) =>
+							setAttributes({ template: (v as 'default' | 'story') ?? 'default' })
+						}
+						help={__(
+							'Story template shows a large quote mark and elegant typography.',
+							'nextora',
+						)}
+					/>
 					<SelectControl
 						label={__('Portrait position', 'nextora')}
 						value={imagePosition}
@@ -396,75 +421,99 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 					/>
 				</PanelBody>
 
-				<PanelColorSettings
-					title={__('Colors', 'nextora')}
-					colorSettings={[
-						{
-							value: contentBackgroundColor,
-							onChange: (v) => setAttributes({ contentBackgroundColor: v ?? '' }),
-							label: __('Content panel background', 'nextora'),
-						},
-						{
-							value: headingColor,
-							onChange: (v) => setAttributes({ headingColor: v ?? '' }),
-							label: __('Heading color', 'nextora'),
-						},
-						{
-							value: quoteColor,
-							onChange: (v) => setAttributes({ quoteColor: v ?? '' }),
-							label: __('Quote color', 'nextora'),
-						},
-						{
-							value: authorNameColor,
-							onChange: (v) => setAttributes({ authorNameColor: v ?? '' }),
-							label: __('Author name color', 'nextora'),
-						},
-						{
-							value: authorMetaColor,
-							onChange: (v) => setAttributes({ authorMetaColor: v ?? '' }),
-							label: __('Author meta color', 'nextora'),
-						},
-						{
-							value: paginationColor,
-							onChange: (v) => setAttributes({ paginationColor: v ?? '' }),
-							label: __('Pagination ring color', 'nextora'),
-						},
-						{
-							value: paginationActiveColor,
-							onChange: (v) => setAttributes({ paginationActiveColor: v ?? '' }),
-							label: __('Active pagination color', 'nextora'),
-						},
-					]}
-				/>
+			<PanelColorSettings
+				title={__('Colors', 'nextora')}
+				colorSettings={[
+					...(template === 'default'
+						? [
+								{
+									value: colorValueForPicker(contentBackgroundColor, palette),
+									onChange: (v: string | undefined) =>
+										setAttributes({
+											contentBackgroundColor: normalizeColorForStorage(v, palette),
+										}),
+									label: __('Content panel background', 'nextora'),
+								},
+								{
+									value: colorValueForPicker(headingColor, palette),
+									onChange: (v: string | undefined) =>
+										setAttributes({ headingColor: normalizeColorForStorage(v, palette) }),
+									label: __('Heading color', 'nextora'),
+								},
+							]
+						: []),
+					{
+						value: colorValueForPicker(quoteColor, palette),
+						onChange: (v) =>
+							setAttributes({ quoteColor: normalizeColorForStorage(v, palette) }),
+						label: __('Quote color', 'nextora'),
+					},
+					{
+						value: colorValueForPicker(authorNameColor, palette),
+						onChange: (v) =>
+							setAttributes({ authorNameColor: normalizeColorForStorage(v, palette) }),
+						label: __('Author name color', 'nextora'),
+					},
+					{
+						value: colorValueForPicker(authorMetaColor, palette),
+						onChange: (v) =>
+							setAttributes({ authorMetaColor: normalizeColorForStorage(v, palette) }),
+						label: __('Author meta color', 'nextora'),
+					},
+					{
+						value: colorValueForPicker(paginationColor, palette),
+						onChange: (v) =>
+							setAttributes({ paginationColor: normalizeColorForStorage(v, palette) }),
+						label: __('Pagination ring color', 'nextora'),
+					},
+					{
+						value: colorValueForPicker(paginationActiveColor, palette),
+						onChange: (v) =>
+							setAttributes({
+								paginationActiveColor: normalizeColorForStorage(v, palette),
+							}),
+						label: __('Active pagination color', 'nextora'),
+					},
+				]}
+			/>
 
 				<PanelBody title={__('Typography', 'nextora')} initialOpen={false}>
-					<BaseControl
-						className="nextora-testimonials__font-size-control"
-						label={__('Heading font size', 'nextora')}
-						id="nextora-testimonials-heading-font-size"
-						help={__(
-							'Default uses the theme Extra Large preset.',
-							'nextora',
-						)}
-					>
-						<FontSizePicker
-							value={headingFontSize || undefined}
-							valueMode="slug"
-							onChange={(value, selectedItem) =>
-								setAttributes({
-									headingFontSize: normalizeFontSizeAttribute(value, selectedItem),
-								})
-							}
-						/>
-					</BaseControl>
+					{template !== 'story' && (
+						<BaseControl
+							className="nextora-testimonials__font-size-control"
+							label={__('Heading font size', 'nextora')}
+							id="nextora-testimonials-heading-font-size"
+							help={__(
+								'Default uses the theme Extra Large preset.',
+								'nextora',
+							)}
+						>
+							<FontSizePicker
+								value={headingFontSize || undefined}
+								valueMode="slug"
+								onChange={(value, selectedItem) =>
+									setAttributes({
+										headingFontSize: normalizeFontSizeAttribute(value, selectedItem),
+									})
+								}
+							/>
+						</BaseControl>
+					)}
 					<BaseControl
 						className="nextora-testimonials__font-size-control"
 						label={__('Quote font size', 'nextora')}
 						id="nextora-testimonials-quote-font-size"
-						help={__(
-							'Default uses the theme Medium preset.',
-							'nextora',
-						)}
+						help={
+							template === 'story'
+								? __(
+										'Default uses Playfair Display with large size for story template.',
+										'nextora',
+									)
+								: __(
+										'Default uses the theme Medium preset.',
+										'nextora',
+									)
+						}
 					>
 						<FontSizePicker
 							value={quoteFontSize || undefined}

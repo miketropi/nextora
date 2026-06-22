@@ -1,5 +1,10 @@
 @import '../advanced-icon/editor.css';
 
+/* Icon color support */
+.editor-styles-wrapper .wp-block-nextora-advanced-button-button .nextora-advanced-button__icon {
+	color: var(--nextora-advanced-button-icon-color, currentColor);
+}
+
 /*
  * Block list wrapper used to pick up has-*-background-color from legacy
  * backgroundColor attribute name. Keep colours on the button element only.

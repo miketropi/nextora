@@ -18,7 +18,53 @@ Full standards: [`docs/blocks.md`](../../docs/blocks.md). Skills: `nextora-add-t
 ## Theme scheme (required)
 
 - Default styling from **`theme.json`** presets via `supports.color` / `spacing` / `typography` and `get_block_wrapper_attributes()`.
-- CSS uses **`var(--wp--preset--color--*)`** / `@theme` tokens — not ad-hoc hex unless mapping a custom override attribute.
+- CSS uses **`var(--wp--preset--color--*)`** / `@theme` tokens — **NEVER** ad-hoc hex/rgb hard-coded colors.
+- All colors **MUST** come from the active style variation's color palette (e.g., `styles/children-orphanage.json`).
+
+### Color usage rules
+
+1. **Primary colors:** Use CSS variables with fallback matching the active style scheme:
+   ```css
+   color: var(--wp--preset--color--contrast, #2E1A47);
+   background: var(--wp--preset--color--secondary, #FFC247);
+   ```
+
+2. **Color variations (opacity/transparency):** Use `rgb(from var(...))` or `color-mix()`:
+   ```css
+   /* Opacity variant */
+   border: 1px solid rgb(from var(--wp--preset--color--contrast, #2E1A47) r g b / 0.2);
+   
+   /* Lightness variant */
+   background: color-mix(in srgb, var(--wp--preset--color--secondary) 85%, white);
+   ```
+
+3. **Gradients:** Build from palette colors using `color-mix()` for tints/shades:
+   ```css
+   background: linear-gradient(140deg,
+     color-mix(in srgb, var(--wp--preset--color--secondary) 85%, white),
+     var(--wp--preset--color--secondary) 55%,
+     color-mix(in srgb, var(--wp--preset--color--secondary) 90%, black)
+   );
+   ```
+
+4. **Shadows:** Extract from palette colors with `rgb(from var(...))`:
+   ```css
+   box-shadow: 0 8px 16px rgb(from var(--wp--preset--color--contrast) r g b / 0.15);
+   ```
+
+### Forbidden patterns
+
+```text
+❌ background: #FFC247; (hard-coded hex)
+❌ background: linear-gradient(#ffd876, #FFC247, #f0ab2e); (mixed hard-coded)
+❌ box-shadow: 0 8px 16px rgba(224, 160, 48, 0.75); (hard-coded rgba)
+❌ border: 1px solid rgba(46, 26, 71, 0.2); (hard-coded rgba)
+
+✅ background: var(--wp--preset--color--secondary, #FFC247);
+✅ background: linear-gradient(140deg, color-mix(...), var(--wp--preset--color--secondary), ...);
+✅ box-shadow: 0 8px 16px rgb(from var(--wp--preset--color--secondary) r g b / 0.75);
+✅ border: 1px solid rgb(from var(--wp--preset--color--contrast) r g b / 0.2);
+```
 
 ## Style overrides (agent discretion)
 

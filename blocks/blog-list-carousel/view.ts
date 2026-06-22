@@ -186,6 +186,28 @@ function initScrollReveal(section: HTMLElement): void {
 	}
 }
 
+// ── Grid/Carousel logic ──
+function shouldUseGrid(root: HTMLElement): boolean {
+	const layoutMode = root.getAttribute('data-layout-mode') || 'carousel';
+	if (layoutMode !== 'grid') {
+		return false;
+	}
+	const gridMinWidth = parseInt(root.getAttribute('data-grid-min-width') || '981', 10);
+	return window.innerWidth >= gridMinWidth;
+}
+
+function updateGridActiveClass(root: HTMLElement): void {
+	const section = root.closest<HTMLElement>('.nextora-blog-list-carousel');
+	if (!section) {
+		return;
+	}
+	if (shouldUseGrid(root)) {
+		section.classList.add('nextora-blog-list-carousel--grid-active');
+	} else {
+		section.classList.remove('nextora-blog-list-carousel--grid-active');
+	}
+}
+
 // ── Swiper init ──
 function initSwiperIn(container: Element | Document): void {
 	const roots = container.querySelectorAll<HTMLElement>(
@@ -203,6 +225,19 @@ function initSwiperIn(container: Element | Document): void {
 		const section = root.closest<HTMLElement>('.nextora-blog-list-carousel');
 		const el = root.querySelector<HTMLElement>('.nextora-blc__swiper');
 		if (!el) {
+			return;
+		}
+
+		// Update grid-active class based on viewport
+		updateGridActiveClass(root);
+
+		// Skip Swiper init when grid mode is active on desktop
+		if (shouldUseGrid(root)) {
+			section?.classList.remove('nextora-blog-list-carousel--loading');
+			section?.classList.add('nextora-blog-list-carousel--ready');
+			if (section) {
+				initScrollReveal(section);
+			}
 			return;
 		}
 
@@ -323,6 +358,39 @@ function initSwiperIn(container: Element | Document): void {
 	});
 }
 
+// ── Destroy Swiper instances (for grid → carousel switch) ──
+function destroySwiperInstances(): void {
+	document.querySelectorAll<HTMLElement>('.nextora-blc__swiper').forEach((el) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const swiperInstance = (el as any).swiper;
+		if (swiperInstance && typeof swiperInstance.destroy === 'function') {
+			swiperInstance.destroy(true, true);
+		}
+	});
+	document.querySelectorAll<HTMLElement>('.nextora-blc__carousel-root').forEach((root) => {
+		delete root.dataset.nextoraBlcSwiperInited;
+		delete root.dataset.nextoraBlcSwiperPending;
+	});
+}
+
+// ── Resize handler for grid ↔ carousel ──
+let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
+function handleResize(): void {
+	if (resizeTimeout) {
+		clearTimeout(resizeTimeout);
+	}
+	resizeTimeout = setTimeout(() => {
+		// Update grid-active classes first
+		document.querySelectorAll<HTMLElement>('.nextora-blc__carousel-root').forEach((root) => {
+			updateGridActiveClass(root);
+		});
+		// Then reinit Swiper if needed
+		destroySwiperInstances();
+		initSwiperIn(document);
+		ScrollTrigger.refresh();
+	}, 200);
+}
+
 function initIn(container: Element | Document): void {
 	bindBrokenImageFallback(container);
 	initSwiperIn(container);
@@ -332,6 +400,9 @@ function run(): void {
 	initIn(document);
 	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load' });
 	ScrollTrigger.refresh();
+
+	// Listen for resize to toggle grid/carousel
+	window.addEventListener('resize', handleResize);
 }
 
 if (document.readyState === 'loading') {

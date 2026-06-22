@@ -23,6 +23,13 @@
     }
   },
   "attributes": {
+    "layoutMode": { "type": "string", "default": "carousel" },
+    "gridColumns": { "type": "number", "default": 4 },
+    "gridMinWidth": { "type": "number", "default": 981 },
+    "gridColumnGap": { "type": "number", "default": 24 },
+    "gridRowGap": { "type": "number", "default": 24 },
+    "cardTemplate": { "type": "string", "default": "default" },
+    "photoAspectRatio": { "type": "string", "default": "3/4" },
     "members": {
       "type": "array",
       "default": [
@@ -84,20 +91,6 @@
         }
       ]
     },
-    "eyebrowText": { "type": "string", "default": "Our People" },
-    "headingText": { "type": "string", "default": "Meet Our Amazing Team" },
-    "headingLevel": { "type": "number", "default": 2 },
-    "descriptionText": { "type": "string", "default": "The talented people behind our success and innovation." },
-    "headerLayout": { "type": "string", "default": "split" },
-    "contentMaxWidth": { "type": "string", "default": "1200px" },
-    "showButton": { "type": "boolean", "default": true },
-    "buttonText": { "type": "string", "default": "View All Members" },
-    "buttonUrl": { "type": "string", "default": "" },
-    "buttonTarget": { "type": "boolean", "default": false },
-    "buttonStyle": { "type": "string", "default": "outline" },
-    "buttonBorderColor": { "type": "string", "default": "" },
-    "buttonTextColor": { "type": "string", "default": "" },
-    "buttonBorderRadius": { "type": "number", "default": 50 },
     "slidesPerView": { "type": "number", "default": 4 },
     "slidesPerViewTablet": { "type": "number", "default": 2.5 },
     "slidesPerViewMobile": { "type": "number", "default": 1.2 },
@@ -113,9 +106,6 @@
     "freeMode": { "type": "boolean", "default": false },
     "grabCursor": { "type": "boolean", "default": true },
     "backgroundColor": { "type": "string", "default": "" },
-    "headingColor": { "type": "string", "default": "" },
-    "descriptionColor": { "type": "string", "default": "" },
-    "eyebrowColor": { "type": "string", "default": "" },
     "paginationColor": { "type": "string", "default": "" },
     "paginationActiveColor": { "type": "string", "default": "" },
     "cardBackgroundColor": { "type": "string", "default": "" },

@@ -14,8 +14,19 @@ import {
 	TextareaControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { useEffect } from '@wordpress/element';
+import { useEffect, useMemo } from '@wordpress/element';
 import ServerSideRender from '@wordpress/server-side-render';
+import {
+	colorValueForPicker,
+	getMergedPaletteEntries,
+	normalizeColorForStorage,
+	useThemeColorPalette,
+} from '../advanced-icon/color-utils';
+import {
+	BLOG_LIST_TEMPLATE_OPTIONS,
+	getTemplateDefaultAttributes,
+	normalizeCardTemplate,
+} from './template-utils';
 import type { BlogListCarouselAttributes } from './types';
 
 function normalizeTemplateSlug(slugOrId: string): string {
@@ -163,28 +174,6 @@ const imageSizeOptions = [
 	{ label: __('Full', 'nextora'), value: 'full' },
 ];
 
-const headingLevelOptions = [
-	{ label: __('H1', 'nextora'), value: '1' },
-	{ label: __('H2', 'nextora'), value: '2' },
-	{ label: __('H3', 'nextora'), value: '3' },
-	{ label: __('H4', 'nextora'), value: '4' },
-	{ label: __('H5', 'nextora'), value: '5' },
-	{ label: __('H6', 'nextora'), value: '6' },
-];
-
-const headerLayoutOptions = [
-	{ label: __('Split (heading left, button right)', 'nextora'), value: 'split' },
-	{ label: __('Stacked (centred)', 'nextora'), value: 'stacked' },
-	{ label: __('Left aligned', 'nextora'), value: 'left' },
-];
-
-const viewAllStyleOptions = [
-	{ label: __('Pill outline', 'nextora'), value: 'pill-outline' },
-	{ label: __('Pill solid', 'nextora'), value: 'pill-solid' },
-	{ label: __('Text link', 'nextora'), value: 'text-link' },
-	{ label: __('Arrow link', 'nextora'), value: 'arrow-link' },
-];
-
 const cardLinkOptions = [
 	{ label: __('Full card is a link', 'nextora'), value: 'full-card' },
 	{ label: __('Title only links', 'nextora'), value: 'title-only' },
@@ -197,8 +186,21 @@ const arrowStyleOptions = [
 	{ label: __('Square', 'nextora'), value: 'square' },
 ];
 
+const layoutModeOptions = [
+	{ label: __('Carousel', 'nextora'), value: 'carousel' },
+	{ label: __('Grid', 'nextora'), value: 'grid' },
+];
+
 export default function BlogListCarouselEdit({ attributes, setAttributes }: EditProps) {
+	const colorPalette = useThemeColorPalette();
+	const lookupPalette = useMemo(() => getMergedPaletteEntries(colorPalette), [colorPalette]);
+
 	const {
+		cardTemplate: cardTemplateRaw = 'default',
+		layoutMode = 'carousel',
+		gridColumns = 3,
+		gridColumnGap = 24,
+		gridRowGap = 24,
 		postType = 'post',
 		postsPerPage = 6,
 		orderBy = 'date',
@@ -211,19 +213,6 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		excludeIds = '',
 		offset = 0,
 		ignoreSticky = true,
-		headingText = __('Latest Posts', 'nextora'),
-		headingLevel = 4,
-		showHeading = true,
-		descriptionText = __(
-			'Explore our latest articles, tips, and stories from the blog.',
-			'nextora',
-		),
-		showViewAll = true,
-		viewAllText = 'view all',
-		viewAllUrl = '',
-		viewAllStyle = 'pill-outline',
-		viewAllTarget = false,
-		headerLayout = 'split',
 		showImage = true,
 		imageAspectRatio = '4-3',
 		imageSize = 'medium_large',
@@ -239,7 +228,6 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		showAuthor = false,
 		showReadMore = false,
 		readMoreText = 'Read More →',
-		readMoreColor = '',
 		cardLinkBehavior = 'full-card',
 		slidesPerView = 3,
 		slidesPerViewTablet = 2,
@@ -255,21 +243,25 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		arrowStyle = 'minimal',
 		freeMode = false,
 		grabCursor = true,
-		backgroundColor = '',
-		headingColor = '',
-		descriptionColor = '',
-		titleColor = '',
-		excerptColor = '',
-		metaColor = '',
-		viewAllColor = '',
+		cardTitleColor = '',
+		cardExcerptColor = '',
+		cardMetaColor = '',
+		cardBackgroundColor = '',
+		cardBorderColor = '',
+		cardBorderRadius = 0,
+		cardPadding = 0,
+		readMoreLinkColor = '',
 		paginationColor = '',
 		paginationActiveColor = '',
-		contentMaxWidth = '1200px',
-		cardBorderRadius = 0,
-		cardBackground = '',
-		cardPadding = 0,
+		arrowColor = '',
 		enableScrollAnimation = true,
 	} = attributes;
+
+	const cardTemplate = normalizeCardTemplate(cardTemplateRaw);
+	const templateOptions = BLOG_LIST_TEMPLATE_OPTIONS.map((option) => ({
+		label: __(option.labelKey, 'nextora'),
+		value: option.value,
+	}));
 
 	const isSingleContext = useIsSinglePostContext(postType);
 
@@ -279,8 +271,20 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		}
 	}, [queryRelated, isSingleContext, setAttributes]);
 
+	const setThemeColor = (key: keyof BlogListCarouselAttributes, value: string | undefined): void => {
+		setAttributes({ [key]: normalizeColorForStorage(value, lookupPalette) } as Partial<BlogListCarouselAttributes>);
+	};
+
 	const blockProps = useBlockProps({
 		className: 'nextora-blog-list-carousel-block--editor',
+		style: {
+			'--nextora-blc-grid-cols': gridColumns,
+			'--nextora-blc-gap': `${spaceBetween}px`,
+			'--nextora-blc-grid-column-gap': `${gridColumnGap}px`,
+			'--nextora-blc-grid-row-gap': `${gridRowGap}px`,
+			'--nextora-blc-card-radius': `${cardBorderRadius}px`,
+			'--nextora-blc-card-padding': `${cardPadding}px`,
+		} as React.CSSProperties,
 	});
 
 	return (
@@ -412,113 +416,50 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 					/>
 				</PanelBody>
 
-				{/* ── Header ── */}
-				<PanelBody title={__('Header', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Show heading', 'nextora')}
-						checked={showHeading}
-						onChange={(v) => setAttributes({ showHeading: v })}
+			{/* ── Card Content ── */}
+			<PanelBody title={__('Card Content', 'nextora')} initialOpen={false}>
+					<RangeControl
+						label={__('Card border radius', 'nextora')}
+						value={cardBorderRadius}
+						onChange={(v) => setAttributes({ cardBorderRadius: v ?? 0 })}
+						min={0}
+						max={cardTemplate === 'template-1' ? 32 : 24}
 					/>
-					{showHeading && (
-						<>
-							<TextControl
-								label={__('Heading text', 'nextora')}
-								value={headingText}
-								onChange={(v) => setAttributes({ headingText: v })}
-								placeholder={__('Latest Posts', 'nextora')}
-							/>
-							<SelectControl
-								label={__('Heading level', 'nextora')}
-								value={String(headingLevel)}
-								options={headingLevelOptions}
-								onChange={(v) =>
-									setAttributes({ headingLevel: parseInt(String(v), 10) })
-								}
-							/>
-						</>
-					)}
-					<TextareaControl
-						label={__('Description', 'nextora')}
-						value={descriptionText}
-						onChange={(v) => setAttributes({ descriptionText: v })}
-						placeholder={__(
-							'Explore our latest articles, tips, and stories from the blog.',
-							'nextora',
-						)}
-						rows={3}
-						help={__('Shown below the heading.', 'nextora')}
+					<RangeControl
+						label={__('Card inner padding', 'nextora')}
+						value={cardPadding}
+						onChange={(v) => setAttributes({ cardPadding: v ?? 0 })}
+						min={0}
+						max={cardTemplate === 'template-1' ? 32 : 24}
 					/>
-					<SelectControl
-						label={__('Header layout', 'nextora')}
-						value={headerLayout}
-						options={headerLayoutOptions}
-						onChange={(v) => setAttributes({ headerLayout: v })}
-					/>
-					<ToggleControl
-						label={__('Show "View All" button', 'nextora')}
-						checked={showViewAll}
-						onChange={(v) => setAttributes({ showViewAll: v })}
-					/>
-					{showViewAll && (
-						<>
-							<TextControl
-								label={__('Button text', 'nextora')}
-								value={viewAllText}
-								onChange={(v) => setAttributes({ viewAllText: v })}
-								placeholder={__('view all', 'nextora')}
-							/>
-							<TextControl
-								label={__('Button URL', 'nextora')}
-								value={viewAllUrl}
-								onChange={(v) => setAttributes({ viewAllUrl: v })}
-								help={__('Leave empty to auto-link to the post type archive.', 'nextora')}
-								placeholder={__('Auto (archive link)', 'nextora')}
-							/>
-							<SelectControl
-								label={__('Button style', 'nextora')}
-								value={viewAllStyle}
-								options={viewAllStyleOptions}
-								onChange={(v) => setAttributes({ viewAllStyle: v })}
-							/>
-							<ToggleControl
-								label={__('Open in new tab', 'nextora')}
-								checked={viewAllTarget}
-								onChange={(v) => setAttributes({ viewAllTarget: v })}
-							/>
-						</>
-					)}
-				</PanelBody>
-
-				{/* ── Card Content ── */}
-				<PanelBody title={__('Card Content', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Show featured image', 'nextora')}
-						checked={showImage}
-						onChange={(v) => setAttributes({ showImage: v })}
-					/>
-					{showImage && (
-						<>
-							<SelectControl
-								label={__('Image aspect ratio', 'nextora')}
-								value={imageAspectRatio}
-								options={imageRatioOptions}
-								onChange={(v) => setAttributes({ imageAspectRatio: v })}
-							/>
-							<SelectControl
-								label={__('Image size', 'nextora')}
-								value={imageSize}
-								options={imageSizeOptions}
-								onChange={(v) => setAttributes({ imageSize: v })}
-							/>
-							<RangeControl
-								label={__('Image border radius', 'nextora')}
-								value={imageBorderRadius}
-								onChange={(v) => setAttributes({ imageBorderRadius: v ?? 8 })}
-								min={0}
-								max={24}
-							/>
-						</>
-					)}
+				<ToggleControl
+					label={__('Show featured image', 'nextora')}
+					checked={showImage}
+					onChange={(v) => setAttributes({ showImage: v })}
+				/>
+				{showImage && (
+					<>
+						<SelectControl
+							label={__('Image aspect ratio', 'nextora')}
+							value={imageAspectRatio}
+							options={imageRatioOptions}
+							onChange={(v) => setAttributes({ imageAspectRatio: v })}
+						/>
+						<SelectControl
+							label={__('Image size', 'nextora')}
+							value={imageSize}
+							options={imageSizeOptions}
+							onChange={(v) => setAttributes({ imageSize: v })}
+						/>
+						<RangeControl
+							label={__('Image border radius', 'nextora')}
+							value={imageBorderRadius}
+							onChange={(v) => setAttributes({ imageBorderRadius: v ?? 8 })}
+							min={0}
+							max={24}
+						/>
+					</>
+				)}
 					<ToggleControl
 						label={__('Show title', 'nextora')}
 						checked={showTitle}
@@ -601,15 +542,80 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 					/>
 				</PanelBody>
 
+			{/* ── Layout ── */}
+			<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
+				<SelectControl
+					label={__('Template', 'nextora')}
+					value={cardTemplate}
+					options={templateOptions}
+					onChange={(value) => {
+						const next = normalizeCardTemplate(value);
+						if (next === cardTemplate) {
+							return;
+						}
+						setAttributes({
+							cardTemplate: next,
+							...getTemplateDefaultAttributes(next),
+						});
+					}}
+				/>
+				<SelectControl
+					label={__('Desktop layout', 'nextora')}
+					help={
+						layoutMode === 'grid'
+							? __(
+									'Desktop shows a grid; tablet and mobile use a carousel.',
+									'nextora',
+								)
+							: __(
+									'All screen sizes use a carousel.',
+									'nextora',
+								)
+					}
+					value={layoutMode}
+					options={layoutModeOptions}
+					onChange={(v) =>
+						setAttributes({ layoutMode: v === 'grid' ? 'grid' : 'carousel' })
+					}
+				/>
+				{layoutMode === 'grid' ? (
+					<>
+						<RangeControl
+							label={__('Grid columns', 'nextora')}
+							value={gridColumns}
+							onChange={(v) => setAttributes({ gridColumns: v ?? 3 })}
+							min={1}
+							max={6}
+						/>
+						<RangeControl
+							label={__('Column gap (px)', 'nextora')}
+							value={gridColumnGap}
+							onChange={(v) => setAttributes({ gridColumnGap: v ?? 24 })}
+							min={0}
+							max={60}
+						/>
+						<RangeControl
+							label={__('Row gap (px)', 'nextora')}
+							value={gridRowGap}
+							onChange={(v) => setAttributes({ gridRowGap: v ?? 24 })}
+							min={0}
+							max={60}
+						/>
+					</>
+				) : null}
+			</PanelBody>
+
 				{/* ── Carousel Settings ── */}
-				<PanelBody title={__('Carousel Settings', 'nextora')} initialOpen={false}>
-					<RangeControl
-						label={__('Desktop slides', 'nextora')}
-						value={slidesPerView}
-						onChange={(v) => setAttributes({ slidesPerView: v ?? 3 })}
-						min={1}
-						max={5}
-					/>
+				<PanelBody title={layoutMode === 'grid' ? __('Carousel (tablet & mobile)', 'nextora') : __('Carousel Settings', 'nextora')} initialOpen={false}>
+					{layoutMode === 'carousel' ? (
+						<RangeControl
+							label={__('Desktop slides', 'nextora')}
+							value={slidesPerView}
+							onChange={(v) => setAttributes({ slidesPerView: v ?? 3 })}
+							min={1}
+							max={5}
+						/>
+					) : null}
 					<RangeControl
 						label={__('Tablet slides', 'nextora')}
 						value={slidesPerViewTablet}
@@ -710,53 +716,44 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				{/* ── Colors ── */}
 				<PanelColorSettings
 					title={__('Colors', 'nextora')}
+					colors={colorPalette}
 					colorSettings={[
 						{
-							value: backgroundColor,
-							onChange: (v) => setAttributes({ backgroundColor: v ?? '' }),
-							label: __('Section background', 'nextora'),
-						},
-						{
-							value: headingColor,
-							onChange: (v) => setAttributes({ headingColor: v ?? '' }),
-							label: __('Heading', 'nextora'),
-						},
-						{
-							value: descriptionColor,
-							onChange: (v) => setAttributes({ descriptionColor: v ?? '' }),
-							label: __('Description', 'nextora'),
-						},
-						{
-							value: titleColor,
-							onChange: (v) => setAttributes({ titleColor: v ?? '' }),
+							value: colorValueForPicker(cardTitleColor, colorPalette, lookupPalette),
+							onChange: (v) => setThemeColor('cardTitleColor', v),
 							label: __('Card title', 'nextora'),
 						},
 						{
-							value: excerptColor,
-							onChange: (v) => setAttributes({ excerptColor: v ?? '' }),
+							value: colorValueForPicker(cardExcerptColor, colorPalette, lookupPalette),
+							onChange: (v) => setThemeColor('cardExcerptColor', v),
 							label: __('Excerpt text', 'nextora'),
 						},
 						{
-							value: metaColor,
-							onChange: (v) => setAttributes({ metaColor: v ?? '' }),
+							value: colorValueForPicker(cardMetaColor, colorPalette, lookupPalette),
+							onChange: (v) => setThemeColor('cardMetaColor', v),
 							label: __('Date / category', 'nextora'),
 						},
 						{
-							value: viewAllColor,
-							onChange: (v) => setAttributes({ viewAllColor: v ?? '' }),
-							label: __('"View All" button', 'nextora'),
-						},
-						{
-							value: cardBackground,
-							onChange: (v) => setAttributes({ cardBackground: v ?? '' }),
+							value: colorValueForPicker(cardBackgroundColor, colorPalette, lookupPalette),
+							onChange: (v) => setThemeColor('cardBackgroundColor', v),
 							label: __('Card background', 'nextora'),
 						},
+						...(cardTemplate === 'template-1'
+							? [
+									{
+										value: colorValueForPicker(cardBorderColor, colorPalette, lookupPalette),
+										onChange: (v: string | undefined) =>
+											setThemeColor('cardBorderColor', v),
+										label: __('Card border color', 'nextora'),
+									},
+								]
+							: []),
 						...(showReadMore
 							? [
 									{
-										value: readMoreColor,
+										value: colorValueForPicker(readMoreLinkColor, colorPalette, lookupPalette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ readMoreColor: v ?? '' }),
+											setThemeColor('readMoreLinkColor', v),
 										label: __('"Read More" link', 'nextora'),
 									},
 								]
@@ -764,45 +761,31 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						...(showPagination
 							? [
 									{
-										value: paginationColor,
+										value: colorValueForPicker(paginationColor, colorPalette, lookupPalette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ paginationColor: v ?? '' }),
+											setThemeColor('paginationColor', v),
 										label: __('Pagination dot', 'nextora'),
 									},
 									{
-										value: paginationActiveColor,
+										value: colorValueForPicker(paginationActiveColor, colorPalette, lookupPalette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ paginationActiveColor: v ?? '' }),
+											setThemeColor('paginationActiveColor', v),
 										label: __('Active dot', 'nextora'),
+									},
+								]
+							: []),
+						...(showArrows
+							? [
+									{
+										value: colorValueForPicker(arrowColor, colorPalette, lookupPalette),
+										onChange: (v: string | undefined) =>
+											setThemeColor('arrowColor', v),
+										label: __('Arrow color', 'nextora'),
 									},
 								]
 							: []),
 					]}
 				/>
-
-				{/* ── Layout ── */}
-				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
-					<TextControl
-						label={__('Content max width', 'nextora')}
-						value={contentMaxWidth}
-						onChange={(v) => setAttributes({ contentMaxWidth: v ?? '1200px' })}
-						help={__('e.g. 1200px, 72rem', 'nextora')}
-					/>
-					<RangeControl
-						label={__('Card border radius', 'nextora')}
-						value={cardBorderRadius}
-						onChange={(v) => setAttributes({ cardBorderRadius: v ?? 0 })}
-						min={0}
-						max={24}
-					/>
-					<RangeControl
-						label={__('Card inner padding', 'nextora')}
-						value={cardPadding}
-						onChange={(v) => setAttributes({ cardPadding: v ?? 0 })}
-						min={0}
-						max={24}
-					/>
-				</PanelBody>
 
 				{/* ── Animation ── */}
 				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>

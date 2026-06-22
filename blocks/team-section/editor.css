@@ -14,9 +14,22 @@
 	-webkit-overflow-scrolling: touch;
 }
 
+/* Grid preview in editor */
+.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__members-row {
+	display: grid;
+	grid-template-columns: repeat(var(--nextora-team-grid-columns, 4), 1fr);
+	gap: 1.5rem;
+	overflow-x: visible;
+}
+
+.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__card {
+	flex: initial;
+	max-width: none;
+}
+
 .nextora-team-section--editor .nextora-team-section__card {
-	flex: 0 0 min(280px, 85vw);
-	max-width: min(280px, 85vw);
+	flex: 0 0 min(260px, 85vw);
+	max-width: min(260px, 85vw);
 }
 
 .nextora-team-section--editor .nextora-team-section__card-photo--empty {
@@ -88,6 +101,42 @@
 	background: var(--wp--preset--color--base, #fff);
 	outline: 2px solid var(--wp-admin-theme-color, #3858e9);
 	outline-offset: 1px;
+}
+
+/* Image fill full in editor */
+.nextora-team-section--editor .nextora-team-section__card-photo img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+/* Default grid layout for members row */
+.nextora-team-section--editor .nextora-team-section__members-row {
+	display: grid;
+	grid-template-columns: repeat(var(--nextora-team-grid-columns, 4), 1fr);
+	column-gap: var(--nextora-team-grid-column-gap, 1.5rem);
+	row-gap: var(--nextora-team-grid-row-gap, 1.5rem);
+}
+
+/* Carousel mode - show slidesPerView columns */
+.nextora-team-section--editor.nextora-team-section--layout-carousel .nextora-team-section__members-row {
+	gap: var(--nextora-team-space-between, 1.5rem);
+	scroll-snap-type: x proximity;
+	display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Grid layout editor */
+.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__members-row {
+	display: grid;
+	grid-template-columns: repeat(var(--nextora-team-grid-columns, 4), 1fr);
+	column-gap: var(--nextora-team-grid-column-gap, 1.5rem);
+	row-gap: var(--nextora-team-grid-row-gap, 1.5rem);
 }
 
 .nextora-team-section__member-modal .components-modal__frame {
@@ -177,4 +226,70 @@
 .nextora-team-section__inspector-member:last-child {
 	border-bottom: none;
 	margin-bottom: 0;
+}
+
+.nextora-team-section__inspector-subheading {
+	margin: 1rem 0 0.5rem;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--wp--preset--color--contrast, inherit);
+}
+
+/* Overlay social template editor preview */
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card {
+	text-align: center;
+	border: none;
+	background: transparent;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card:hover {
+	transform: none;
+	box-shadow: none;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-photo {
+	aspect-ratio: var(--nextora-team-photo-aspect, 3/4);
+	margin-bottom: 1.125rem;
+	border-radius: 20px;
+}
+
+.nextora-team-section--editor .nextora-team-section__card-photo {
+	aspect-ratio: var(--nextora-team-photo-aspect, 4/3);
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-body {
+	padding: 0;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-name {
+	font-size: var(--wp--preset--font-size--medium, 1.25rem);
+    font-weight: 700;
+    margin: 0 0 .5rem;
+    line-height: 1.2;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-role {
+    color: var(--wp--preset--color--secondary, #FF6B5B);
+    font-size: var(--wp--preset--font-size--small, 1rem);
+    margin: 0 !important;
+    line-height: 1.4;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-tags,
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-bio,
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-social {
+	display: none;
+}
+
+/* Responsive grid breakpoint for editor */
+@media (max-width: 980px) {
+	.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__members-row {
+		display: flex;
+		overflow-x: auto;
+	}
+
+	.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__card {
+		flex: 0 0 min(280px, 85vw);
+		max-width: min(280px, 85vw);
+	}
 }

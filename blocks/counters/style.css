@@ -9,7 +9,7 @@
 	display: grid;
 	grid-template-columns: repeat(var(--nextora-counters-cols-m), minmax(0, 1fr));
 	gap: var(--nextora-counters-gap, var(--wp--preset--spacing--30, 2rem));
-	padding-block: var(--wp--preset--spacing--80, 4rem);
+	padding-block: var(--wp--preset--spacing--60, 4rem);
 	padding-inline: var(--wp--preset--spacing--40, 1.5rem);
 	box-sizing: border-box;
 }
