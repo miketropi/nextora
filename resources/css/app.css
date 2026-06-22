@@ -113,7 +113,7 @@
 		var(--wp--preset--color--contrast, #0f172a) 8%,
 		var(--wp--preset--color--base, #fafafa)
 	);
-	--nextora-nav-panel-active-fg: var(--wp--preset--color--contrast, #0f172a);
+	--nextora-nav-panel-active-fg: var(--wp--preset--color--primary, #0f172a);
 
 	--nextora-nav-focus-ring: var(--wp--preset--color--contrast, #0f172a);
 	--nextora-nav-focus-ring-on-dark: var(--wp--preset--color--base, #fafafa);
