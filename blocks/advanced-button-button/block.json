@@ -153,6 +153,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"hoverIconColor": {
+			"type": "string",
+			"default": ""
+		},
 		"ariaLabel": {
 			"type": "string",
 			"default": ""

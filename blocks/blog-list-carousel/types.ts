@@ -1,4 +1,10 @@
 export interface BlogListCarouselAttributes {
+	cardTemplate: 'default' | 'template-1';
+	layoutMode: 'carousel' | 'grid';
+	gridColumns: number;
+	gridColumnGap: number;
+	gridRowGap: number;
+	gridMinWidth: number;
 	postType: string;
 	postsPerPage: number;
 	orderBy: string;
@@ -11,16 +17,6 @@ export interface BlogListCarouselAttributes {
 	excludeIds: string;
 	offset: number;
 	ignoreSticky: boolean;
-	headingText: string;
-	headingLevel: number;
-	showHeading: boolean;
-	descriptionText: string;
-	showViewAll: boolean;
-	viewAllText: string;
-	viewAllUrl: string;
-	viewAllStyle: string;
-	viewAllTarget: boolean;
-	headerLayout: string;
 	showImage: boolean;
 	imageAspectRatio: string;
 	imageSize: string;
@@ -36,7 +32,6 @@ export interface BlogListCarouselAttributes {
 	showAuthor: boolean;
 	showReadMore: boolean;
 	readMoreText: string;
-	readMoreColor: string;
 	cardLinkBehavior: string;
 	slidesPerView: number;
 	slidesPerViewTablet: number;
@@ -52,18 +47,16 @@ export interface BlogListCarouselAttributes {
 	arrowStyle: string;
 	freeMode: boolean;
 	grabCursor: boolean;
-	backgroundColor: string;
-	headingColor: string;
-	descriptionColor: string;
-	titleColor: string;
-	excerptColor: string;
-	metaColor: string;
-	viewAllColor: string;
+	cardTitleColor: string;
+	cardExcerptColor: string;
+	cardMetaColor: string;
+	cardBackgroundColor: string;
+	cardBorderColor: string;
+	cardBorderRadius: number;
+	cardPadding: number;
+	readMoreLinkColor: string;
 	paginationColor: string;
 	paginationActiveColor: string;
-	contentMaxWidth: string;
-	cardBorderRadius: number;
-	cardBackground: string;
-	cardPadding: number;
+	arrowColor: string;
 	enableScrollAnimation: boolean;
 }

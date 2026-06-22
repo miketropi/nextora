@@ -139,7 +139,7 @@ export default function ItemModalForm({
 						/>
 					</MediaUploadCheck>
 				)}
-				{cardTemplate === 'default' ? (
+				{cardTemplate === 'default' || cardTemplate === 'minimal' ? (
 					<PanelColorSettings
 						title={__('Icon colors', 'nextora')}
 						colors={colorPalette}
@@ -181,29 +181,33 @@ export default function ItemModalForm({
 				</div>
 
 				<div className="nextora-box-content__item-modal-form-group">
-					<p className="nextora-box-content__item-modal-form-heading">{__('Link', 'nextora')}</p>
-					<ToggleControl
-						label={__('Show link', 'nextora')}
-						checked={item.showLink}
-						onChange={(showLink) => onPatch({ showLink })}
-					/>
-					{item.showLink ? (
+					{cardTemplate !== 'minimal' ? (
 						<>
-							<TextControl
-								label={__('Link label', 'nextora')}
-								value={item.linkLabel}
-								onChange={(linkLabel) => onPatch({ linkLabel: linkLabel ?? '' })}
-							/>
-							<p className="components-base-control__label">{__('Link URL', 'nextora')}</p>
-							<URLInput
-								value={item.linkUrl}
-								onChange={(linkUrl) => onPatch({ linkUrl: linkUrl ?? '' })}
-							/>
+							<p className="nextora-box-content__item-modal-form-heading">{__('Link', 'nextora')}</p>
 							<ToggleControl
-								label={__('Open in new tab', 'nextora')}
-								checked={item.linkTarget === '_blank'}
-								onChange={(open) => onPatch({ linkTarget: open ? '_blank' : '_self' })}
+								label={__('Show link', 'nextora')}
+								checked={item.showLink}
+								onChange={(showLink) => onPatch({ showLink })}
 							/>
+							{item.showLink ? (
+								<>
+									<TextControl
+										label={__('Link label', 'nextora')}
+										value={item.linkLabel}
+										onChange={(linkLabel) => onPatch({ linkLabel: linkLabel ?? '' })}
+									/>
+									<p className="components-base-control__label">{__('Link URL', 'nextora')}</p>
+									<URLInput
+										value={item.linkUrl}
+										onChange={(linkUrl) => onPatch({ linkUrl: linkUrl ?? '' })}
+									/>
+									<ToggleControl
+										label={__('Open in new tab', 'nextora')}
+										checked={item.linkTarget === '_blank'}
+										onChange={(open) => onPatch({ linkTarget: open ? '_blank' : '_self' })}
+									/>
+								</>
+							) : null}
 						</>
 					) : null}
 				</div>

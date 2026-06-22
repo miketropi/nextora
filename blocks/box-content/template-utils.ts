@@ -1,6 +1,6 @@
 import type { BoxContentAttributes } from './types';
 
-export type BoxContentCardTemplate = 'default' | 'ways';
+export type BoxContentCardTemplate = 'default' | 'ways' | 'minimal';
 
 export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	value: BoxContentCardTemplate;
@@ -8,10 +8,17 @@ export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 }[] = [
 	{ value: 'default', labelKey: 'Default' },
 	{ value: 'ways', labelKey: 'Ways' },
+	{ value: 'minimal', labelKey: 'Minimal' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BoxContentCardTemplate {
-	return value === 'ways' ? 'ways' : 'default';
+	if (value === 'ways') {
+		return 'ways';
+	}
+	if (value === 'minimal') {
+		return 'minimal';
+	}
+	return 'default';
 }
 
 /**
@@ -38,6 +45,32 @@ export function getTemplateDefaultAttributes(
 			iconStyle: 'stacked',
 			showPagination: false,
 			showArrows: false,
+		};
+	}
+
+	if (template === 'minimal') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 3,
+			spaceBetween: 18,
+			slidesPerView: 3,
+			slidesPerViewTablet: 2,
+			slidesPerViewMobile: 1.15,
+			cardBorderWidth: 1,
+			cardBorderRadius: 16,
+			cardMinHeight: 160,
+			iconCircleSize: 42,
+			iconSize: 22,
+			iconCircleRadius: 29,
+			iconStyle: 'stacked',
+			showPagination: true,
+			showArrows: false,
+			cardPadding: {
+				top: '16px',
+				right: '22px',
+				bottom: '16px',
+				left: '22px',
+			},
 		};
 	}
 

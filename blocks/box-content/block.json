@@ -138,6 +138,7 @@
 		"freeMode": { "type": "boolean", "default": false },
 		"eyebrowColor": { "type": "string", "default": "" },
 		"headingColor": { "type": "string", "default": "" },
+		"headingFontFamily": { "type": "string", "default": "" },
 		"descriptionColor": { "type": "string", "default": "" },
 		"cardBorderColor": { "type": "string", "default": "" },
 		"cardBackgroundColor": { "type": "string", "default": "" },

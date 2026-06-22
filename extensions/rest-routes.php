@@ -8,8 +8,6 @@
 
 declare( strict_types=1 );
 
-use WP_REST_Request;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

@@ -10,19 +10,35 @@ export type GradientPreset = {
 
 const FALLBACK_GRADIENTS: GradientPreset[] = [
   {
-    name: __('Azure to Purple', 'nextora'),
-    slug: 'azure-to-purple',
-    gradient: 'linear-gradient(135deg, #12c2e9 0%, #c471ed 100%)',
+    name: __('Primary', 'nextora'),
+    slug: 'gradient-primary',
+    gradient: 'linear-gradient(135deg, #000000 0%, #0a0a0a 40%, #525252 100%)',
   },
   {
-    name: __('Soft Surface', 'nextora'),
-    slug: 'soft-surface',
+    name: __('Secondary', 'nextora'),
+    slug: 'gradient-secondary',
+    gradient: 'linear-gradient(135deg, #0a0a0a 0%, #525252 100%)',
+  },
+  {
+    name: __('Tertiary', 'nextora'),
+    slug: 'gradient-tertiary',
+    gradient: 'linear-gradient(90deg, #000000 0%, #525252 100%)',
+  },
+  {
+    name: __('Subtle', 'nextora'),
+    slug: 'gradient-subtle',
     gradient: 'linear-gradient(180deg, #ffffff 0%, #f4f4f4 100%)',
   },
   {
-    name: __('Dark Depth', 'nextora'),
-    slug: 'dark-depth',
-    gradient: 'linear-gradient(135deg, #0a0a0a 0%, #525252 100%)',
+    name: __('Soft', 'nextora'),
+    slug: 'gradient-soft',
+    gradient: 'linear-gradient(135deg, #f9f9f9 0%, #f4f4f4 45%, #ffffff 100%)',
+  },
+  {
+    name: __('Overlay', 'nextora'),
+    slug: 'gradient-overlay',
+    gradient:
+      'linear-gradient(160deg, rgba(10, 10, 10, 0.92) 0%, rgba(82, 82, 82, 0.55) 100%)',
   },
 ];
 

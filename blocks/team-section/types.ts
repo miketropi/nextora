@@ -1,6 +1,8 @@
-export type TeamHeaderLayout = 'split' | 'stacked' | 'left-aligned';
+export type TeamLayoutMode = 'carousel' | 'grid';
 
-export type TeamButtonStyle = 'outline' | 'solid' | 'link';
+export type TeamCardTemplate = 'default' | 'overlay-social';
+
+export type TeamPhotoAspectRatio = '3/4' | '4/3' | '1/1' | '16/9';
 
 export type TeamPaginationType = 'bullets' | 'fraction' | 'progressbar';
 
@@ -35,20 +37,13 @@ export interface TeamMember {
 
 export interface TeamSectionAttributes {
 	members: TeamMember[];
-	eyebrowText: string;
-	headingText: string;
-	headingLevel: number;
-	descriptionText: string;
-	headerLayout: TeamHeaderLayout;
-	contentMaxWidth: string;
-	showButton: boolean;
-	buttonText: string;
-	buttonUrl: string;
-	buttonTarget: boolean;
-	buttonStyle: TeamButtonStyle;
-	buttonBorderColor: string;
-	buttonTextColor: string;
-	buttonBorderRadius: number;
+	layoutMode: TeamLayoutMode;
+	gridColumns: number;
+	gridMinWidth: number;
+	gridColumnGap: number;
+	gridRowGap: number;
+	cardTemplate: TeamCardTemplate;
+	photoAspectRatio: TeamPhotoAspectRatio;
 	slidesPerView: number;
 	slidesPerViewTablet: number;
 	slidesPerViewMobile: number;
@@ -64,9 +59,6 @@ export interface TeamSectionAttributes {
 	freeMode: boolean;
 	grabCursor: boolean;
 	backgroundColor: string;
-	headingColor: string;
-	descriptionColor: string;
-	eyebrowColor: string;
 	paginationColor: string;
 	paginationActiveColor: string;
 	cardBackgroundColor: string;

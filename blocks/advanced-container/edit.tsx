@@ -287,7 +287,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
 
   const hasImage = backgroundType === 'image' && resolvedBackgroundImageUrl !== '' && !hasHoverReveal;
   const hasVideo = backgroundType === 'video' && backgroundVideoUrl.trim() !== '';
-  const showOverlay = (hasImage || hasVideo) && overlayOpacity > 0;
+  const showOverlay = (hasImage || hasVideo || hasHoverReveal) && overlayOpacity > 0;
   const normalizedBackgroundSize = normalizeBackgroundImageSize(backgroundImageSize);
   const overlayModifier =
     overlayStyle === 'fade-right' || overlayStyle === 'cinematic' ? overlayStyle : 'solid';
@@ -629,7 +629,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
           </PanelBody>
         ) : null}
 
-        {hasImage || hasVideo ? (
+        {hasImage || hasVideo || hasHoverReveal ? (
           <PanelBody title={__('Overlay', 'nextora')} initialOpen>
             <div className="nextora-advanced-container__overlay-settings">
               <SelectControl

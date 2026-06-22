@@ -64,7 +64,7 @@ if ( 'upload' === $source && '' !== $upload_url ) {
 	);
 } elseif ( 'theme' === $source ) {
 	$svg_aria = '' !== $link_url ? '' : $aria_label;
-	$icon_markup = nextora_get_lucide_svg( $icon_name, $size, $color, $stroke_w, $svg_aria );
+	$icon_markup = nextora_get_lucide_svg( $icon_name, $size, 'currentColor', $stroke_w, $svg_aria );
 }
 
 if ( '' === $icon_markup ) {

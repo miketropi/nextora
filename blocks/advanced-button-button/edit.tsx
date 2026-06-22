@@ -95,7 +95,8 @@ type ButtonColorKey =
 	| 'iconColor'
 	| 'hoverBackgroundColor'
 	| 'hoverTextColor'
-	| 'hoverBorderColor';
+	| 'hoverBorderColor'
+	| 'hoverIconColor';
 
 function normalizeLinkUrl( url: string ): string {
 	const trimmed = url.trim();
@@ -154,6 +155,7 @@ export default function AdvancedButtonButtonEdit( {
 		hoverBackgroundColor = '',
 		hoverTextColor = '',
 		hoverBorderColor = '',
+		hoverIconColor = '',
 		ariaLabel = '',
 		showIcon = true,
 	} = attributes;
@@ -192,6 +194,7 @@ export default function AdvancedButtonButtonEdit( {
 			'hoverBackgroundColor',
 			'hoverTextColor',
 			'hoverBorderColor',
+			'hoverIconColor',
 		];
 
 		for ( const key of colorKeys ) {
@@ -363,6 +366,13 @@ export default function AdvancedButtonButtonEdit( {
 					),
 				}
 			: {} ),
+		...( showIcon && hoverIconColor
+			? {
+					'--nextora-advanced-button-hover-icon-color': storedColorToCss(
+						hoverIconColor,
+					),
+				}
+			: {} ),
 	} as CSSProperties;
 
 	const linkUrl = normalizeLinkUrl( url );
@@ -444,11 +454,7 @@ export default function AdvancedButtonButtonEdit( {
 				<LucideSvgPreview
 					nodes={ iconNodes }
 					size={ iconSize }
-					color={
-						iconColor || resolvedButtonTextColor
-							? storedColorToCss( iconColor || resolvedButtonTextColor )
-							: 'currentColor'
-					}
+					color="currentColor"
 					strokeWidth={ strokeWidth }
 				/>
 			);
@@ -894,6 +900,20 @@ export default function AdvancedButtonButtonEdit( {
 										setThemeColor( 'hoverBorderColor', value ),
 									label: __( 'Hover border', 'nextora' ),
 								},
+								...( showIcon && iconSource === 'theme'
+									? [
+											{
+												value: colorValueForPicker(
+													hoverIconColor,
+													colorPalette,
+													lookupPalette,
+												),
+												onChange: ( value: string | undefined ) =>
+													setThemeColor( 'hoverIconColor', value ),
+												label: __( 'Hover icon', 'nextora' ),
+											},
+										]
+									: [] ),
 							] }
 						/>
 					) }
