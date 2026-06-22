@@ -5,7 +5,7 @@
 .wp-block-nextora-instagram-feed.nextora-instagram-feed,
 .nextora-instagram-feed {
 	background-color: var(--nextora-instagram-bg, var(--wp--preset--color--surface, transparent));
-	padding-block: var(--wp--preset--spacing--70, 5rem);
+	padding-block: var(--wp--preset--spacing--60, 4rem);
 	box-sizing: border-box;
 }
 

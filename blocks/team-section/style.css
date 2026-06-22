@@ -5,7 +5,7 @@
 .wp-block-nextora-team-section.nextora-team-section,
 .nextora-team-section {
 	background-color: var(--nextora-team-bg, transparent);
-	padding-block: var(--wp--preset--spacing--70, 5rem);
+	padding-block: var(--wp--preset--spacing--60, 4rem);
 	box-sizing: border-box;
 }
 
@@ -16,7 +16,7 @@
 .nextora-team-section--ready .nextora-team-section__swiper {
 	opacity: 1;
 	transition: opacity 0.25s ease;
-	padding-bottom: 0.5rem;
+	padding: 0.5rem 0;
 }
 
 /* Scroll reveal — hidden until GSAP runs; show content if JS fails. */
@@ -156,6 +156,24 @@
 	overflow: hidden;
 }
 
+/* Grid mode */
+.nextora-team-section--layout-grid .nextora-team-section__carousel-root--grid-active .swiper-wrapper {
+	display: grid;
+	grid-template-columns: repeat(var(--nextora-team-grid-columns, 4), 1fr);
+	column-gap: var(--nextora-team-grid-column-gap, 1.5rem);
+	row-gap: var(--nextora-team-grid-row-gap, 1.5rem);
+}
+
+.nextora-team-section--layout-grid .nextora-team-section__carousel-root--grid-active .swiper-slide {
+	width: auto !important;
+	margin: 0 !important;
+}
+
+.nextora-team-section--grid-active .nextora-team-section__pagination,
+.nextora-team-section--grid-active .nextora-team-section__arrow {
+	display: none;
+}
+
 .nextora-team-section__swiper {
 	width: 100%;
 	overflow: hidden;
@@ -187,7 +205,7 @@
 .nextora-team-section__card-photo {
 	position: relative;
 	width: 100%;
-	aspect-ratio: 4 / 3;
+	aspect-ratio: var(--nextora-team-photo-aspect, 4/3);
 	overflow: hidden;
 	background-color: color-mix(in srgb, currentColor 6%, transparent);
 	background-image: var(--nextora-team-photo-placeholder, none);
@@ -196,12 +214,24 @@
 	background-repeat: no-repeat;
 }
 
+/* Placeholder icon when no image */
+.nextora-team-section__card-photo:not(:has(img))::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: color-mix(in srgb, var(--wp--preset--color--contrast, #2E1A47) 6%, var(--wp--preset--color--base, #fff));
+	background-image: var(--nextora-team-photo-placeholder, none);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
 .nextora-team-section__card-photo .nextora-team-section__card-img,
 .nextora-team-section__card-photo img {
 	position: absolute;
 	inset: 0;
 	width: 100%;
-	/* height: 100%; */
+	height: 100%;
 	display: block;
 	object-fit: cover;
 }
@@ -424,6 +454,129 @@
 		transparent
 	);
 	--nextora-team-dot-active: var(--wp--preset--color--base, #fff);
+}
+
+/* ============================================
+   Overlay Social Template Styles
+   ============================================ */
+
+/* Card overlay template specific styles */
+.nextora-team-section--template-overlay-social .nextora-team-section__card--overlay {
+	text-align: center;
+	border: none;
+	background: transparent;
+}
+
+.nextora-team-section--template-overlay-social .nextora-team-section__card--overlay:hover {
+	transform: none;
+	box-shadow: none;
+	border-color: transparent;
+}
+
+.nextora-team-section--template-overlay-social .nextora-team-section__card-photo {
+	aspect-ratio: var(--nextora-team-photo-aspect, 3/4);
+	margin-bottom: 1.125rem;
+	border-radius: 20px;
+	background: color-mix(in srgb, var(--wp--preset--color--contrast, #2E1A47) 8%, var(--wp--preset--color--base, #fff));
+}
+
+.nextora-team-section__card-photo {
+	aspect-ratio: var(--nextora-team-photo-aspect, 4/3);
+}
+
+.nextora-team-section--template-overlay-social .nextora-team-section__card-photo .nextora-team-section__card-img,
+.nextora-team-section--template-overlay-social .nextora-team-section__card-photo img {
+	transition: transform 0.4s ease;
+}
+
+.nextora-team-section--template-overlay-social .nextora-team-section__card:hover .nextora-team-section__card-img {
+	transform: scale(1.05);
+}
+
+/* Social overlay */
+.nextora-team-section__card-social-overlay {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	padding: 1rem;
+	background: linear-gradient(
+		to top,
+		rgb(from var(--wp--preset--color--contrast, #2E1A47) r g b / 0.85),
+		transparent
+	);
+	opacity: 0;
+	transform: translateY(10px);
+	transition: all 0.3s ease;
+}
+
+.nextora-team-section--template-overlay-social .nextora-team-section__card:hover .nextora-team-section__card-social-overlay {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.nextora-team-section__card-social-link-overlay {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: rgb(from var(--wp--preset--color--base, #fff) r g b / 0.18);
+	color: var(--wp--preset--color--base, #fff);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+	flex-shrink: 0;
+}
+
+.nextora-team-section__card-social-link-overlay:hover {
+	background: var(--wp--preset--color--secondary, #FFC247);
+	color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+
+.nextora-team-section__card-social-link-overlay svg {
+	width: 16px;
+	height: 16px;
+	display: block;
+}
+
+/* Body styling for overlay template */
+.nextora-team-section--template-overlay-social .nextora-team-section__card-body {
+	padding: 0;
+	background: transparent;
+}
+
+/* Name and role styling for overlay template */
+.nextora-team-section--template-overlay-social .nextora-team-section__card-name {
+	font-size: var(--wp--preset--font-size--medium, 1.25rem);
+	font-weight: 700;
+	margin: 0 0 0.5rem;
+	line-height: 1.2;
+}
+
+.nextora-team-section--template-overlay-social .nextora-team-section__card-role {
+	color: var(--wp--preset--color--secondary, #FF6B5B);
+	font-size: var(--wp--preset--font-size--small, 1rem);
+	margin: 0 !important;
+	line-height: 1.4;
+}
+
+/* Hide tags and bio in overlay template */
+.nextora-team-section--template-overlay-social .nextora-team-section__card-tags,
+.nextora-team-section--template-overlay-social .nextora-team-section__card-bio,
+.nextora-team-section--template-overlay-social .nextora-team-section__card-social {
+	display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+	.nextora-team-section--template-overlay-social .nextora-team-section__card-photo {
+		max-width: 300px;
+		margin-left: auto;
+		margin-right: auto;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {

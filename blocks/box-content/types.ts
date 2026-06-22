@@ -1,7 +1,7 @@
 export type BoxContentLayoutMode = 'slider' | 'grid';
 export type BoxContentIconSource = 'theme' | 'upload';
 export type BoxContentIconStyle = 'default' | 'stacked' | 'framed';
-export type BoxContentCardTemplate = 'default' | 'ways';
+export type BoxContentCardTemplate = 'default' | 'ways' | 'minimal';
 
 export interface BoxContentItem {
 	id: string;
@@ -68,5 +68,6 @@ export interface BoxContentAttributes {
 	paginationColor: string;
 	paginationActiveColor: string;
 	arrowColor: string;
+	headingFontFamily: string;
 	enableScrollAnimation: boolean;
 }

@@ -1,0 +1,593 @@
+/* ===== Design tokens ===== */
+.nextora-addon-wrap {
+	/* Accent */
+	--nx-accent: #00ffb6;
+	--nx-accent-dark: #008055;
+	--nx-accent-darker: #006644;
+	--nx-accent-bg: #e6fff6;
+
+	/* Text */
+	--nx-text: #1d2327;
+	--nx-text-secondary: #646970;
+	--nx-text-tertiary: #787c82;
+	--nx-text-muted: #9499a0;
+
+	/* Borders */
+	--nx-border: #e8eaed;
+	--nx-border-light: #f0f0f1;
+	--nx-border-hover: #c3c4c7;
+
+	/* Backgrounds */
+	--nx-bg-page: #ffffff;
+	--nx-bg-subtle: #f6f7f8;
+	--nx-bg-footer: #f0f0f0;
+
+	/* Error */
+	--nx-error-bg: #fef2f2;
+	--nx-error-border: #fecaca;
+	--nx-error-text: #991b1b;
+
+	/* Skeleton */
+	--nx-shimmer-1: #ececec;
+	--nx-shimmer-2: #f5f5f5;
+}
+
+/* ===== Page shell ===== */
+.nextora-addon-wrap {
+	margin: 0;
+	padding: 32px 40px 0;
+	background: var(--nx-bg-page);
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+@media (max-width: 782px) {
+	.nextora-addon-wrap {
+		padding: 24px 20px 0;
+	}
+}
+
+/* ===== Header ===== */
+.nextora-addon-header {
+	margin-bottom: 36px;
+	padding-bottom: 28px;
+	border-bottom: 1px solid var(--nx-border-light);
+}
+
+.nextora-addon-header__title {
+	font-size: 24px;
+	font-weight: 700;
+	color: var(--nx-text);
+	margin: 0 0 8px;
+	line-height: 1.25;
+	letter-spacing: -0.01em;
+}
+
+.nextora-addon-header__description {
+	font-size: 13.5px;
+	color: var(--nx-text-tertiary);
+	margin: 0 0 10px;
+	line-height: 1.6;
+	max-width: 580px;
+}
+
+.nextora-addon-header__contact {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	color: var(--nx-text-secondary);
+	margin: 0;
+}
+
+.nextora-addon-header__contact a {
+	color: var(--nx-accent-dark);
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.nextora-addon-header__contact a:hover {
+	color: var(--nx-accent-darker);
+	text-decoration: underline;
+}
+
+.nextora-addon-header__contact-icon {
+	flex-shrink: 0;
+	opacity: 0.6;
+}
+
+/* ===== Tab Navigation ===== */
+.nextora-addon-nav {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 36px;
+	padding: 4px;
+	background: var(--nx-bg-subtle);
+	border-radius: 10px;
+	width: fit-content;
+}
+
+.nextora-addon-nav__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--nx-text-secondary);
+	background: none;
+	border: none;
+	border-radius: 7px;
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nextora-addon-nav__item:hover {
+	background: rgba(255, 255, 255, 0.7);
+	color: var(--nx-text);
+}
+
+.nextora-addon-nav__item.is-active {
+	background: var(--nx-bg-page);
+	color: var(--nx-accent-dark);
+	font-weight: 600;
+}
+
+.nextora-addon-nav__icon {
+	flex-shrink: 0;
+	opacity: 0.65;
+}
+
+.nextora-addon-nav__item.is-active .nextora-addon-nav__icon {
+	opacity: 1;
+}
+
+/* ===== Content ===== */
+.nextora-addon-content {
+	animation: nextoraFade 0.2s ease;
+}
+
+@keyframes nextoraFade {
+	from { opacity: 0; transform: translateY(4px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Section intro ===== */
+.nextora-addon-section-intro {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 20px;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.nextora-addon-section-intro__title {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--nx-text);
+	margin: 0;
+	white-space: nowrap;
+}
+
+.nextora-addon-section-intro__count {
+	font-size: 12.5px;
+	color: var(--nx-text-muted);
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+/* ===== Search ===== */
+.nextora-addon-search {
+	position: relative;
+	margin-left: auto;
+}
+
+.nextora-addon-search__input {
+	width: 240px;
+	height: 36px;
+	padding: 0 14px 0 36px !important;
+	font-size: 13px;
+	color: var(--nx-text);
+	line-height: 36px;
+	background: var(--nx-bg-subtle);
+	border: 1px solid transparent;
+	border-radius: 8px;
+	outline: none;
+	transition: background 0.15s ease, border-color 0.15s ease;
+	appearance: none;
+}
+
+.nextora-addon-search__input::placeholder {
+	color: var(--nx-text-muted);
+}
+
+.nextora-addon-search__input:focus {
+	background: var(--nx-bg-page);
+	border-color: var(--nx-accent);
+}
+
+.nextora-addon-search__icon {
+	position: absolute;
+	left: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--nx-text-muted);
+	pointer-events: none;
+	display: flex;
+}
+
+.nextora-addon-no-results {
+	padding: 40px 0;
+	text-align: center;
+	font-size: 13px;
+	color: var(--nx-text-muted);
+}
+
+/* ===== Card Grid ===== */
+.nextora-addon-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 18px;
+}
+
+@media (max-width: 1200px) {
+	.nextora-addon-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 782px) {
+	.nextora-addon-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ===== Card ===== */
+.nextora-addon-card {
+	background: var(--nx-bg-page);
+	border: 1px solid var(--nx-border);
+	border-radius: 10px;
+	padding: 22px 24px 20px;
+	transition: border-color 0.2s ease;
+}
+
+.nextora-addon-card:hover {
+	border-color: var(--nx-accent);
+}
+
+.nextora-addon-card__image {
+	width: 100%;
+	height: 142px;
+	border-radius: 6px;
+	object-fit: cover;
+	object-position: top;
+	margin-bottom: 16px;
+}
+
+.nextora-addon-card__placeholder {
+	width: 100%;
+	height: 142px;
+	border-radius: 7px;
+	background: var(--nx-bg-subtle);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 16px;
+}
+
+.nextora-addon-card__placeholder-icon {
+	color: var(--nx-text-muted);
+	opacity: 0.45;
+}
+
+.nextora-addon-card__title {
+	font-size: 14.5px;
+	font-weight: 600;
+	color: var(--nx-text);
+	margin: 0 0 6px;
+	line-height: 1.35;
+}
+
+.nextora-addon-card__desc {
+	font-size: 13px;
+	color: var(--nx-text-secondary);
+	margin: 0 0 14px;
+	line-height: 1.55;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.nextora-addon-card__meta {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 16px;
+	min-height: 22px;
+}
+
+.nextora-addon-card__author {
+	font-size: 12px;
+	color: var(--nx-text-muted);
+}
+
+.nextora-addon-card__status {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 11px;
+	font-weight: 600;
+	padding: 3px 10px;
+	border-radius: 10px;
+	line-height: 1.45;
+}
+
+.nextora-addon-card__status::before {
+	content: '';
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+.nextora-addon-card__status--active {
+	background: var(--nx-accent-bg);
+	color: var(--nx-accent-dark);
+}
+
+.nextora-addon-card__status--active::before {
+	background: var(--nx-accent);
+}
+
+.nextora-addon-card__status--inactive {
+	background: var(--nx-bg-subtle);
+	color: var(--nx-text-tertiary);
+}
+
+.nextora-addon-card__status--inactive::before {
+	background: var(--nx-text-muted);
+}
+
+/* ===== Card tags (Coming soon / Premium) ===== */
+.nextora-addon-card__tag {
+	display: inline-flex;
+	align-items: center;
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	padding: 2px 8px;
+	border-radius: 4px;
+	line-height: 1.6;
+}
+
+.nextora-addon-card__tag--soon {
+	background: #fef3c7;
+	color: #92400e;
+}
+
+.nextora-addon-card__tag--premium {
+	background: #ede9fe;
+	color: #6b21a8;
+}
+
+.nextora-addon-card__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(--nx-accent-dark);
+	text-decoration: none;
+}
+
+.nextora-addon-card__link:hover {
+	gap: 7px;
+	color: var(--nx-accent-darker);
+}
+
+.nextora-addon-card__link-icon {
+	flex-shrink: 0;
+	transition: transform 0.15s ease;
+}
+
+.nextora-addon-card__link:hover .nextora-addon-card__link-icon {
+	transform: translateX(2px);
+}
+
+/* ===== Skeleton ===== */
+.nextora-addon-skeleton-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 18px;
+}
+
+@media (max-width: 1200px) {
+	.nextora-addon-skeleton-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 782px) {
+	.nextora-addon-skeleton-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.nextora-addon-skeleton {
+	background: var(--nx-bg-page);
+	border: 1px solid var(--nx-border);
+	border-radius: 10px;
+	padding: 22px 24px 20px;
+}
+
+.nextora-addon-skeleton__thumb {
+	width: 100%;
+	height: 72px;
+	border-radius: 7px;
+	margin-bottom: 16px;
+}
+
+.nextora-addon-skeleton__line {
+	height: 12px;
+	border-radius: 4px;
+	margin-bottom: 8px;
+}
+
+.nextora-addon-skeleton__line--short {
+	width: 50%;
+	height: 10px;
+}
+
+.nextora-addon-skeleton__shimmer {
+	background: linear-gradient(
+		110deg,
+		var(--nx-shimmer-1) 30%,
+		var(--nx-shimmer-2) 50%,
+		var(--nx-shimmer-1) 70%
+	);
+	background-size: 200% 100%;
+	animation: nextoraShimmer 1.5s ease infinite;
+}
+
+@keyframes nextoraShimmer {
+	0%   { background-position: 200% 0; }
+	100% { background-position: -200% 0; }
+}
+
+/* ===== Empty ===== */
+.nextora-addon-empty {
+	padding: 72px 24px;
+	text-align: center;
+}
+
+.nextora-addon-empty__icon {
+	margin: 0 auto 16px;
+	width: 48px;
+	height: 48px;
+	border-radius: 12px;
+	background: var(--nx-bg-subtle);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--nx-text-muted);
+}
+
+.nextora-addon-empty__icon svg {
+	display: block;
+}
+
+.nextora-addon-empty__title {
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--nx-text-secondary);
+	margin: 0 0 6px;
+}
+
+.nextora-addon-empty__text {
+	font-size: 13px;
+	color: var(--nx-text-muted);
+	margin: 0;
+}
+
+/* ===== Error ===== */
+.nextora-addon-error {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 14px 18px;
+	background: var(--nx-error-bg);
+	border: 1px solid var(--nx-error-border);
+	border-radius: 8px;
+	color: var(--nx-error-text);
+	font-size: 13px;
+}
+
+.nextora-addon-error__icon {
+	flex-shrink: 0;
+	opacity: 0.85;
+}
+
+/* ===== Footer ===== */
+.nextora-addon-footer {
+	margin: 60px -40px 0;
+	padding: 48px 40px 44px;
+	background: var(--nx-bg-footer);
+}
+
+@media (max-width: 782px) {
+	.nextora-addon-footer {
+		margin: 48px -20px 0;
+		padding: 36px 20px 32px;
+	}
+}
+
+.nextora-addon-footer__head {
+	max-width: 520px;
+	margin-bottom: 32px;
+}
+
+.nextora-addon-footer__head-title {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--nx-text);
+	margin: 0 0 4px;
+}
+
+.nextora-addon-footer__head-desc {
+	font-size: 12.5px;
+	color: var(--nx-text-tertiary);
+	margin: 0;
+	line-height: 1.5;
+}
+
+.nextora-addon-footer__grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 24px;
+}
+
+@media (max-width: 1000px) {
+	.nextora-addon-footer__grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 782px) {
+	.nextora-addon-footer__grid {
+		grid-template-columns: 1fr;
+		gap: 18px;
+	}
+}
+
+.nextora-addon-footer__item {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+}
+
+.nextora-addon-footer__icon {
+	flex-shrink: 0;
+	color: var(--nx-accent-dark);
+	margin-top: 2px;
+}
+
+.nextora-addon-footer__title {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--nx-text);
+	margin: 0 0 3px;
+}
+
+.nextora-addon-footer__desc {
+	font-size: 12px;
+	color: var(--nx-text-tertiary);
+	margin: 0;
+	line-height: 1.5;
+}
+
+.nextora-addon-footer__thanks {
+	margin: 32px 0 0;
+	font-size: 12px;
+	color: var(--nx-text-muted);
+}
