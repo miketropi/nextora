@@ -8,6 +8,8 @@
 
 declare( strict_types=1 );
 
+use WP_REST_Request;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -26,7 +28,11 @@ function nextora_addon_rest_child_themes(): void {
 			'callback'            => static function (): array {
 				return nextora_get_child_themes();
 			},
-			'permission_callback' => static function (): bool {
+			'permission_callback' => static function ( WP_REST_Request $request ): bool {
+				$nonce = $request->get_header( 'X-WP-Nonce' );
+				if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+					return false;
+				}
 				return current_user_can( 'manage_options' );
 			},
 		),
@@ -47,13 +53,21 @@ function nextora_addon_rest_plugins(): void {
 			'callback'            => static function (): array {
 				$plugins = nextora_get_supported_plugins();
 
+				if ( ! function_exists( 'is_plugin_active' ) ) {
+					require_once ABSPATH . 'wp-admin/includes/plugin.php';
+				}
+
 				foreach ( (array) $plugins as $key => $plugin ) {
 					$plugins[ $key ]['isActive'] = is_plugin_active( $plugin['slug'] . '/' . $plugin['slug'] . '.php' );
 				}
 
 				return $plugins;
 			},
-			'permission_callback' => static function (): bool {
+			'permission_callback' => static function ( WP_REST_Request $request ): bool {
+				$nonce = $request->get_header( 'X-WP-Nonce' );
+				if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+					return false;
+				}
 				return current_user_can( 'manage_options' );
 			},
 		),
@@ -74,7 +88,11 @@ function nextora_addon_rest_business_services(): void {
 			'callback'            => static function (): array {
 				return nextora_get_business_services();
 			},
-			'permission_callback' => static function (): bool {
+			'permission_callback' => static function ( WP_REST_Request $request ): bool {
+				$nonce = $request->get_header( 'X-WP-Nonce' );
+				if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+					return false;
+				}
 				return current_user_can( 'manage_options' );
 			},
 		),

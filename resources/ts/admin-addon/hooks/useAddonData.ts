@@ -10,7 +10,6 @@ interface UseAddonDataResult<T> {
 declare global {
 	interface Window {
 		nextoraAddon: {
-			restUrl: string;
 			nonce: string;
 		};
 	}

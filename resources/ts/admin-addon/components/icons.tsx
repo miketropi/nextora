@@ -12,20 +12,6 @@ import {
 	ShieldCheck,
 	HeartHandshake,
 	Search,
-	ShoppingCart,
-	LayoutPanelTop,
-	Heart,
-	Settings,
-	BriefcaseBusiness,
-	TrendingUp,
-	Database,
-	Mail,
-	Zap,
-	Shield,
-	Upload,
-	ArrowLeftRight,
-	Accessibility,
-	User,
 } from 'lucide';
 
 /* ------------------------------------------------------------------ */
@@ -106,31 +92,5 @@ export function SearchIcon({ size = 14, className }: IconProps) {
 	return <LucideIcon icon={Search} size={size} className={className} />;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Card icon resolver (maps dashicon slugs → Lucide icons)           */
-/* ------------------------------------------------------------------ */
 
-const cardIconMap: Record<string, IconNode> = {
-	'dashicons-cart': ShoppingCart,
-	'dashicons-layout': LayoutPanelTop,
-	'dashicons-heart': Heart,
-	'dashicons-admin-customizer': Settings,
-	'dashicons-admin-appearance': Palette,
-	'dashicons-admin-plugins': Puzzle,
-	'dashicons-admin-tools': BriefcaseBusiness,
-	'dashicons-chart-area': TrendingUp,
-	'dashicons-database': Database,
-	'dashicons-email': Mail,
-	'dashicons-performance': Zap,
-	'dashicons-shield': Shield,
-	'dashicons-chart-line': TrendingUp,
-	'dashicons-backup': Upload,
-	'dashicons-migrate': ArrowLeftRight,
-	'dashicons-universal-access': Accessibility,
-	'dashicons-businessman': User,
-};
 
-export function resolveCardIcon(slug: string, size = 20): JSX.Element {
-	const icon = cardIconMap[slug] || Settings;
-	return <LucideIcon icon={icon} size={size} />;
-}

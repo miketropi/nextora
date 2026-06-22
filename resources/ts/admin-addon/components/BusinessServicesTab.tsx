@@ -1,6 +1,7 @@
 import { useState, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { useAddonData } from '../hooks/useAddonData';
+import { sprintf } from '../lib/format';
 import type { BusinessService } from '../types';
 import CardGrid from './CardGrid';
 import ExtensionCard from './ExtensionCard';
@@ -75,9 +76,3 @@ export default function BusinessServicesTab(): JSX.Element {
 	);
 }
 
-function sprintf(format: string, ...args: (string | number)[]): string {
-	return format.replace(/%[sd]/g, (match) => {
-		const val = args.shift();
-		return val !== undefined ? String(val) : match;
-	});
-}

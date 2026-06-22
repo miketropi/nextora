@@ -49,8 +49,7 @@ function nextora_addon_enqueue_admin_assets( string $hook_suffix ): void {
 		'nextora-admin-addon',
 		'nextoraAddon',
 		array(
-			'restUrl' => esc_url_raw( rest_url( 'nextora/v1/addon' ) ),
-			'nonce'   => wp_create_nonce( 'wp_rest' ),
+			'nonce' => wp_create_nonce( 'wp_rest' ),
 		),
 	);
 
