@@ -258,9 +258,10 @@
 .nextora-addon-card__image {
 	width: 100%;
 	height: auto;
-	max-height: 100px;
+	height: 142px;
 	border-radius: 6px;
 	object-fit: cover;
+	object-position: top;
 	margin-bottom: 16px;
 }
 

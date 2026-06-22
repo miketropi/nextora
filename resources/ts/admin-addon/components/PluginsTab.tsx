@@ -46,7 +46,7 @@ export default function PluginsTab(): JSX.Element {
 		<>
 			<div className="nextora-addon-section-intro">
 				<h2 className="nextora-addon-section-intro__title">
-					{__('Extensions', 'nextora')}
+					{__('Extensions & Compatible', 'nextora')}
 				</h2>
 				<span className="nextora-addon-section-intro__count">
 					{query

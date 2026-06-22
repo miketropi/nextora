@@ -18,13 +18,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return void
  */
 function nextora_addon_add_menu_page(): void {
+	$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2"/><rect x="14" y="2" width="8" height="8" rx="1"/></svg>';
 	add_menu_page(
 		__( 'Nextora Addon', 'nextora' ),
 		__( 'Nextora Addon', 'nextora' ),
 		'manage_options',
 		'nextora-addon',
 		'nextora_addon_render_page',
-		'dashicons-superhero-alt',
+		'data:image/svg+xml;base64,' . base64_encode( $icon ),
 		60,
 	);
 }
