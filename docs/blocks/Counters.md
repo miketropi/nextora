@@ -285,7 +285,7 @@ Use theme presets and Nextora tokens:
 --wp--preset--spacing--20            /* Item inline padding */
 --wp--preset--spacing--40            /* Mobile gap / inline padding */
 --wp--preset--spacing--60            /* Default column gap */
---wp--preset--spacing--80            /* Section block padding */
+--wp--preset--spacing--60            /* Section block padding */
 --nextora-counters-cols              /* Active column count (set by modifier) */
 --nextora-counters-gap               /* Overridable column gap */
 --nextora-counters-divider-color     /* Divider line color */

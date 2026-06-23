@@ -87,6 +87,7 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 		$hover_background_color = isset( $attributes['hoverBackgroundColor'] ) ? (string) $attributes['hoverBackgroundColor'] : '';
 		$hover_text_color       = isset( $attributes['hoverTextColor'] ) ? (string) $attributes['hoverTextColor'] : '';
 		$hover_border_color     = isset( $attributes['hoverBorderColor'] ) ? (string) $attributes['hoverBorderColor'] : '';
+		$hover_icon_color       = isset( $attributes['hoverIconColor'] ) ? (string) $attributes['hoverIconColor'] : '';
 		$aria_label             = isset( $attributes['ariaLabel'] ) ? trim( (string) $attributes['ariaLabel'] ) : '';
 		$show_icon              = ! isset( $attributes['showIcon'] ) || false !== $attributes['showIcon'];
 
@@ -146,7 +147,7 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 					$icon_size,
 				);
 			} elseif ( 'theme' === $icon_source ) {
-				$icon_markup = nextora_get_lucide_svg( $icon_name, $icon_size, $resolved_icon_color, $stroke_w, '' );
+				$icon_markup = nextora_get_lucide_svg( $icon_name, $icon_size, 'currentColor', $stroke_w, '' );
 			}
 		}
 
@@ -231,14 +232,21 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 			);
 		}
 
-		if ( $show_icon && 'framed' === $icon_style && '' !== $border_color ) {
-			$style_vars[] = sprintf(
-				'--nextora-advanced-button-icon-border:%s;',
-				esc_attr( nextora_icon_resolve_color( $border_color ) ),
-			);
-		}
+	if ( $show_icon && 'framed' === $icon_style && '' !== $border_color ) {
+		$style_vars[] = sprintf(
+			'--nextora-advanced-button-icon-border:%s;',
+			esc_attr( nextora_icon_resolve_color( $border_color ) ),
+		);
+	}
 
-		if ( '' !== $hover_background_color ) {
+	if ( $show_icon && '' !== $icon_color ) {
+		$style_vars[] = sprintf(
+			'--nextora-advanced-button-icon-color:%s;',
+			esc_attr( nextora_icon_resolve_color( $icon_color ) ),
+		);
+	}
+
+	if ( '' !== $hover_background_color ) {
 			$style_vars[] = sprintf(
 				'--nextora-advanced-button-hover-bg:%s;',
 				esc_attr( nextora_icon_resolve_color( $hover_background_color ) ),
@@ -256,6 +264,13 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 			$style_vars[] = sprintf(
 				'--nextora-advanced-button-hover-border:%s;',
 				esc_attr( nextora_icon_resolve_color( $hover_border_color ) ),
+			);
+		}
+
+		if ( $show_icon && '' !== $hover_icon_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-advanced-button-hover-icon-color:%s;',
+				esc_attr( nextora_icon_resolve_color( $hover_icon_color ) ),
 			);
 		}
 

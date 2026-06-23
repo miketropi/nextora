@@ -184,9 +184,10 @@ if ( ! function_exists( 'nextora_testimonials_render_media_item' ) ) {
 
 if ( ! function_exists( 'nextora_testimonials_render_content_slide' ) ) {
 	/**
-	 * @param array<string, mixed> $item Normalized testimonial.
+	 * @param array<string, mixed> $item     Normalized testimonial.
+	 * @param string               $template Template type.
 	 */
-	function nextora_testimonials_render_content_slide( array $item ): string {
+	function nextora_testimonials_render_content_slide( array $item, string $template = 'default' ): string {
 		$quote = (string) $item['quoteText'];
 		if ( '' === $quote ) {
 			return '';
@@ -199,6 +200,11 @@ if ( ! function_exists( 'nextora_testimonials_render_content_slide' ) ) {
 		);
 
 		$out  = '<div class="swiper-slide nextora-testimonials__slide">';
+		
+		if ( 'story' === $template ) {
+			$out .= '<svg class="nextora-testimonials__quote-mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.5 4C6 4 4 6.5 4 10v10h8v-9H7.5C7.5 8 8.3 7 10 7zm9 0C15 4 13 6.5 13 10v10h8v-9h-4.5C16.5 8 17.3 7 19 7z"/></svg>';
+		}
+		
 		$out .= '<div class="nextora-testimonials__quote"><p>' . esc_html( $quote ) . '</p></div>';
 
 		if ( '' !== $name || '' !== $meta ) {
@@ -237,6 +243,11 @@ if ( array() === $items ) {
 
 /** @var list<array<string, mixed>> $items */
 $items = array_values( (array) apply_filters( 'nextora_testimonials_items', $items, $attributes ) );
+
+$template = isset( $attributes['template'] ) ? sanitize_key( (string) $attributes['template'] ) : 'default';
+if ( ! in_array( $template, array( 'default', 'story' ), true ) ) {
+	$template = 'default';
+}
 
 $heading_text   = isset( $attributes['headingText'] ) ? trim( wp_strip_all_tags( (string) $attributes['headingText'] ) ) : '';
 $heading_level  = isset( $attributes['headingLevel'] ) ? max( 2, min( 4, (int) $attributes['headingLevel'] ) ) : 4;
@@ -328,6 +339,7 @@ $effect_class = match ( $effect ) {
 $wrapper_classes = array(
 	'nextora-testimonials',
 	'nextora-testimonials--loading',
+	'nextora-testimonials--template-' . $template,
 	'nextora-testimonials--image-' . $image_position,
 	'nextora-testimonials--effect-' . $effect_class,
 );
@@ -375,11 +387,11 @@ $heading_tag = 'h' . (string) $heading_level;
 
 			<div class="nextora-testimonials__content">
 				<div class="nextora-testimonials__content-inner">
-					<?php if ( '' !== $heading_text ) : ?>
+					<?php if ( '' !== $heading_text && 'default' === $template ) : ?>
 						<div class="nextora-testimonials__header">
-							<h4 class="nextora-testimonials__heading">
+							<<?php echo $heading_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?> class="nextora-testimonials__heading">
 								<?php echo esc_html( $heading_text ); ?>
-							</h4>
+							</<?php echo $heading_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 						</div>
 					<?php endif; ?>
 
@@ -389,7 +401,7 @@ $heading_tag = 'h' . (string) $heading_level;
 								<?php
 								foreach ( $items as $item ) {
 									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
-									echo nextora_testimonials_render_content_slide( $item );
+									echo nextora_testimonials_render_content_slide( $item, $template );
 								}
 								?>
 							</div>

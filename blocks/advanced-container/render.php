@@ -339,7 +339,7 @@ if ( '' === $hover_reveal_mask_color ) {
 
 $use_image = 'image' === $background_type && '' !== $background_image_url && ! $use_hover_reveal;
 $use_video = 'video' === $background_type && '' !== $background_video_url;
-$use_overlay = ( $use_image || $use_video ) && $overlay_opacity > 0;
+$use_overlay = ( $use_image || $use_video || $use_hover_reveal ) && $overlay_opacity > 0;
 
 $classes    = array( 'wp-block-nextora-advanced-container', 'nextora-advanced-container' );
 $style_bits = array();

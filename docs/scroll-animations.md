@@ -23,7 +23,7 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-text-reveal-chars` | Split heading into characters; stagger fade + slide in on scroll |
 | `animation-text-reveal-chars-rise` | Characters rise in with perspective + `back.out` easing |
 | `animation-text-reveal-chars-scrub` | Characters brighten and slide in while scrolling (scrubbed) |
-| `animation-text-typewriter` | Character-by-character typewriter with blinking caret on scroll (inspired by [MiMo Code](https://mimo.xiaomi.com/coder) hero subtitle) |
+| `animation-text-typewriter` | Character-by-character typewriter with blinking caret on scroll (inspired by [MiMo Code] hero subtitle) |
 
 ## Image & text reveal presets
 

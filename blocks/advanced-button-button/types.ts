@@ -52,6 +52,7 @@ export interface AdvancedButtonButtonAttributes extends Record< string, unknown 
 	hoverBackgroundColor: string;
 	hoverTextColor: string;
 	hoverBorderColor: string;
+	hoverIconColor: string;
 	ariaLabel: string;
 	showIcon: boolean;
 }

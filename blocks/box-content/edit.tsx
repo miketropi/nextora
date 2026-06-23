@@ -32,6 +32,7 @@ import {
 	getTemplateDefaultAttributes,
 	normalizeCardTemplate,
 } from './template-utils';
+import { useFontFamilyOptions } from './font-family-utils';
 import type { BoxContentAttributes, BoxContentIconStyle } from './types';
 
 interface EditProps {
@@ -61,6 +62,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 
 	const colorPalette = useThemeColorPalette();
 	const lookupPalette = useMemo(() => getMergedPaletteEntries(colorPalette), [colorPalette]);
+	const fontFamilyOptions = useFontFamilyOptions();
 
 	const {
 		cardTemplate: cardTemplateRaw = 'default',
@@ -107,6 +109,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 		iconSurfaceBorderColor = '',
 		iconHoverColor = '',
 		iconHoverSurfaceBackgroundColor = '',
+		headingFontFamily = '',
 		enableScrollAnimation = true,
 	} = attributes;
 
@@ -159,6 +162,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 			iconHoverSurfaceBackgroundColor: isEmptyColor(iconHoverSurfaceBackgroundColor)
 				? ''
 				: iconHoverSurfaceBackgroundColor,
+			headingFontFamily,
 		},
 		lookupPalette,
 	);
@@ -170,6 +174,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 			layoutMode === 'slider' ? 'nextora-box-content--editor-slider' : '',
 			`nextora-box-content--layout-${layoutMode}`,
 			`nextora-box-content--template-${cardTemplate}`,
+			headingFontFamily.trim() !== '' ? 'nextora-box-content--has-heading-font' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
@@ -249,6 +254,23 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 					value: colorValueForPicker(iconColor, colorPalette, lookupPalette),
 					onChange: (v: string | undefined) => setThemeColor('iconColor', v),
 					label: __('Icon color', 'nextora'),
+				},
+				...navColors,
+			];
+		}
+
+		if (cardTemplate === 'minimal') {
+			return [
+				...cardColors,
+				{
+					value: colorValueForPicker(iconColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('iconColor', v),
+					label: __('Icon color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(iconSurfaceBackgroundColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('iconSurfaceBackgroundColor', v),
+					label: __('Icon circle background', 'nextora'),
 				},
 				...navColors,
 			];
@@ -518,13 +540,15 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 						min={0}
 						max={60}
 					/>
-					<RangeControl
-						label={__('Card min height (px)', 'nextora')}
-						value={cardMinHeight}
-						onChange={(v) => setAttributes({ cardMinHeight: v ?? 240 })}
-						min={160}
-						max={400}
-					/>
+					{cardTemplate !== 'minimal' ? (
+						<RangeControl
+							label={__('Card min height (px)', 'nextora')}
+							value={cardMinHeight}
+							onChange={(v) => setAttributes({ cardMinHeight: v ?? 240 })}
+							min={160}
+							max={400}
+						/>
+					) : null}
 					<SpacingSizesControl
 						label={__('Card padding', 'nextora')}
 						values={cardPaddingValues}
@@ -649,6 +673,13 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 								'nextora',
 							)}
 						</p>
+					) : cardTemplate === 'minimal' ? (
+						<p className="nextora-box-content__inspector-items-help">
+							{__(
+								'Minimal template uses compact icon squares beside each badge label.',
+								'nextora',
+							)}
+						</p>
 					) : (
 						<>
 							<SelectControl
@@ -703,6 +734,19 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 					colors={colorPalette}
 					colorSettings={colorSettings}
 				/>
+
+				<PanelBody title={__('Typography', 'nextora')} initialOpen={false}>
+					<SelectControl
+						label={__('Heading font', 'nextora')}
+						value={headingFontFamily}
+						options={fontFamilyOptions}
+						onChange={(value) => setAttributes({ headingFontFamily: value ?? '' })}
+						help={__(
+							'Applies to the section heading and card titles. Default uses the theme heading font from the H tag.',
+							'nextora',
+						)}
+					/>
+				</PanelBody>
 
 				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
 					<ToggleControl
@@ -794,13 +838,26 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 								iconSurfaceBorderColor={iconSurfaceBorderColor}
 								lookupPalette={lookupPalette}
 							/>
-							<h3 className="nextora-box-content__title">
-								{item.title || __('Title', 'nextora')}
-							</h3>
-							<p className="nextora-box-content__description">
-								{item.description || __('Description…', 'nextora')}
-							</p>
-							{item.showLink && item.linkLabel ? (
+							{cardTemplate === 'minimal' ? (
+								<div className="nextora-box-content__card-body">
+									<h3 className="nextora-box-content__title">
+										{item.title || __('Title', 'nextora')}
+									</h3>
+									<p className="nextora-box-content__description">
+										{item.description || __('Description…', 'nextora')}
+									</p>
+								</div>
+							) : (
+								<>
+									<h3 className="nextora-box-content__title">
+										{item.title || __('Title', 'nextora')}
+									</h3>
+									<p className="nextora-box-content__description">
+										{item.description || __('Description…', 'nextora')}
+									</p>
+								</>
+							)}
+							{item.showLink && item.linkLabel && cardTemplate !== 'minimal' ? (
 								<span className="nextora-box-content__link nextora-box-content__link--static">
 									{item.linkLabel}
 									<span className="nextora-box-content__link-icon" aria-hidden="true">
