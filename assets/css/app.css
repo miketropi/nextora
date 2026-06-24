@@ -896,9 +896,6 @@
   .\[file\:line\] {
     file: line;
   }
-  .backface-hidden {
-    backface-visibility: hidden;
-  }
   .group-hover\:scale-\[1\.02\] {
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
