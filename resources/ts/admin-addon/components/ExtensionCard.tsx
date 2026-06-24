@@ -80,7 +80,7 @@ export default function ExtensionCard({
 					rel="noopener noreferrer"
 					className="nextora-addon-card__link"
 				>
-					{__('Learn more', 'nextora')}
+					{__('View more', 'nextora')}
 					<ArrowRightIcon className="nextora-addon-card__link-icon" />
 				</a>
 			)}

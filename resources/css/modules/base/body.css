@@ -221,3 +221,8 @@ footer.wp-block-template-part {
 	padding-top: 0;
 	padding-bottom: 0;
 }
+@media (max-width: 768px) {
+	.wp-site-blocks {
+		overflow: hidden;
+	}
+}

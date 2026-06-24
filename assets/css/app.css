@@ -229,9 +229,6 @@
   .start {
     inset-inline-start: var(--spacing);
   }
-  .start\! {
-    inset-inline-start: var(--spacing) !important;
-  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -336,9 +333,6 @@
   }
   .inline {
     display: inline;
-  }
-  .inline\! {
-    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -792,9 +786,6 @@
   .italic {
     font-style: italic;
   }
-  .italic\! {
-    font-style: italic !important;
-  }
   .\!no-underline {
     text-decoration-line: none !important;
   }
@@ -806,9 +797,6 @@
   }
   .underline {
     text-decoration-line: underline;
-  }
-  .underline\! {
-    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -895,6 +883,9 @@
   }
   .\[file\:line\] {
     file: line;
+  }
+  .backface-hidden {
+    backface-visibility: hidden;
   }
   .group-hover\:scale-\[1\.02\] {
     &:is(:where(.group):hover *) {
@@ -1341,6 +1332,11 @@ footer.wp-block-template-part {
 .wp-block-group .wp-block-group {
   padding-top: 0;
   padding-bottom: 0;
+}
+@media (max-width: 768px) {
+  .wp-site-blocks {
+    overflow: hidden;
+  }
 }
 .nextora-navigation-from-location {
   --nextora-nav-submenu-bg: var(--nextora-nav-panel-bg);
@@ -2480,6 +2476,7 @@ footer.wp-block-template-part {
     background-image: none;
     color: var(--wp--preset--color--base, #ffffff);
     background-color: var(--nextora-form-subscribe-accent);
+    border-color: var(--nextora-form-subscribe-accent);
     font-family: inherit;
     font-size: 0.9375rem;
     font-weight: 600;
@@ -5010,6 +5007,719 @@ body.woocommerce-account .woocommerce-MyAccount-content .woocommerce-customer-de
 }
 @media (prefers-reduced-motion: reduce) {
   body.woocommerce .wp-block-query-pagination :where(.page-numbers, .wp-block-query-pagination-next), body.woocommerce .woocommerce-tabs .tabs a, body.woocommerce .woocommerce-breadcrumb a, body.woocommerce-account .woocommerce-MyAccount-navigation a, body.woocommerce-checkout .wc-block-components-radio-control-accordion-option, body.woocommerce .wc-block-product .wp-block-post-title a, body.woocommerce :where( select.orderby, input.qty, .quantity input, table.variations select, .woocommerce-grouped-product-list input.qty, .woocommerce-form input, .woocommerce-form textarea, .woocommerce-form select, .wc-block-components-text-input input, .wc-block-components-combobox input, .wc-block-components-quantity-selector input ) {
+    transition: none;
+  }
+}
+html.ep-embed-responsive, .emagic #ep-events-container {
+  --nextora-events-border: var(--wp--preset--color--contrast, #0a0a0a);
+  @supports (color: color-mix(in lab, red, red)) {
+    --nextora-events-border: color-mix(
+		in srgb,
+		var(--wp--preset--color--contrast, #0a0a0a) 12%,
+		transparent
+	);
+  }
+  --nextora-events-radius: 0.5rem;
+  --nextora-events-transition: 0.18s ease;
+  --nextora-events-text-sm: var(--wp--preset--font-size--small, 0.875rem);
+  --nextora-events-text-base: var(--wp--preset--font-size--base, 1rem);
+  --nextora-events-text-md: var(--wp--preset--font-size--medium, 1.125rem);
+  --nextora-events-text-lg: var(--wp--preset--font-size--large, 1.3125rem);
+}
+.emagic {
+  max-width: 100% !important;
+}
+.emagic #ep-events-container {
+  padding-inline: 0;
+  max-width: 100% !important;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  font-family: inherit;
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.6;
+}
+.emagic #ep_event_search_form .ep-box-search-form-wrap {
+  --ep-bg-opacity: 1 !important;
+  background-color: var(--wp--preset--color--surface, #f4f4f4) !important;
+  border: 1px solid var(--nextora-events-border) !important;
+  border-radius: var(--nextora-events-radius);
+  padding-inline: 0;
+}
+.emagic #ep_event_search_form .ep-box-search-form-wrap .ep-box-row {
+  align-items: stretch;
+  margin: 0;
+}
+.emagic #ep_event_search_form .ep-search-filter-bar, .emagic #ep_event_search_form .ep-event-views-col {
+  padding: 0.75rem 1rem;
+}
+.emagic #ep_event_search_form .ep-input-group {
+  align-items: stretch;
+  border: 1px solid var(--nextora-events-border);
+  border-radius: calc(var(--nextora-events-radius) - 0.125rem);
+  overflow: hidden;
+  background-color: var(--wp--preset--color--base, #ffffff);
+}
+.emagic #ep_event_search_form .ep-input-group-text {
+  background-color: transparent;
+  border: none;
+  color: var(--wp--preset--color--paragraph, #525252);
+  padding-inline: 0.85rem 0.35rem;
+}
+.emagic #ep_event_search_form .ep-input-group-text .material-icons-outlined {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+.emagic #ep_event_search_form #ep_event_keyword_search {
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+  background-image: none;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  font-size: var(--nextora-events-text-base);
+  padding-block: 0.65rem;
+  min-height: 2.75rem;
+}
+.emagic #ep_event_search_form #ep_event_keyword_search::placeholder {
+  color: var(--wp--preset--color--paragraph, #525252);
+  @supports (color: color-mix(in lab, red, red)) {
+    color: color-mix(	in srgb,	var(--wp--preset--color--paragraph, #525252) 72%,	transparent	);
+  }
+}
+.emagic #ep_event_search_form #ep_event_keyword_search:focus {
+  outline: none;
+  box-shadow: none;
+}
+.emagic #ep_event_search_form .ep-input-group:focus-within {
+  outline: 2px solid var(--wp--preset--color--contrast, #0a0a0a);
+  outline-offset: 2px;
+}
+.emagic #ep_event_search_form #ep_event_find_events_btn {
+  border: none !important;
+  border-radius: 0;
+  border-left: 1px solid var(--nextora-events-border) !important;
+  background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+  font-size: var(--nextora-events-text-sm);
+  font-weight: 600;
+  padding: 0.65rem 1.15rem;
+  min-height: 2.75rem;
+  white-space: nowrap;
+  transition: background-color var(--nextora-events-transition),	color var(--nextora-events-transition);
+}
+.emagic #ep_event_search_form #ep_event_find_events_btn:hover, .emagic #ep_event_search_form #ep_event_find_events_btn:focus-visible {
+  background-color: var(--wp--preset--color--primary, #000000) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+}
+.emagic #ep-search-filters .ep-filters-days {
+  font-size: var(--nextora-events-text-sm) !important;
+}
+.emagic #ep_event_search_form .ep-event-views-filter-group {
+  display: inline-flex;
+  border: 1px solid var(--nextora-events-border);
+  border-radius: var(--nextora-events-radius);
+  overflow: hidden;
+  background-color: var(--wp--preset--color--base, #ffffff);
+}
+.emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter {
+  min-width: 2.625rem;
+  min-height: 2.625rem;
+  padding: 0.375rem 0.625rem;
+  margin: 0;
+  border: none !important;
+  border-radius: 0 !important;
+  border-right: 1px solid var(--nextora-events-border) !important;
+  background-color: transparent !important;
+  color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  line-height: 1;
+  transition: background-color var(--nextora-events-transition),	color var(--nextora-events-transition);
+}
+.emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter:last-child {
+  border-right: none !important;
+}
+.emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter svg, .emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter .ep-btn-text-fill-color {
+  fill: currentcolor !important;
+  transition: fill var(--nextora-events-transition);
+}
+.emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter:hover, .emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter:focus-visible {
+  background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(	in srgb,	var(--wp--preset--color--contrast, #0a0a0a) 6%,	var(--wp--preset--color--base, #ffffff)	) !important;
+  }
+  color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+}
+.emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter:hover svg, .emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter:focus-visible svg {
+  fill: currentcolor !important;
+}
+.emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter.ep-active-view {
+  background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  border-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+}
+.emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter.ep-active-view svg {
+  fill: var(--wp--preset--color--base, #ffffff) !important;
+}
+.emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter:focus-visible {
+  outline: 2px solid var(--wp--preset--color--contrast, #0a0a0a);
+  outline-offset: -2px;
+  z-index: 1;
+}
+.emagic .ep-event-list-rows-container .ep-event-list-item {
+  border: 1px solid var(--nextora-events-border);
+  border-radius: var(--nextora-events-radius);
+  font-size: var(--nextora-events-text-base) !important;
+}
+.emagic .ep-event-list-rows-container .ep-box-list-title > div {
+  font-size: var(--nextora-events-text-sm) !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wp--preset--color--secondary, #646464) !important;
+  font-weight: 400 !important;
+}
+.emagic .ep-event-list-rows-container .ep-box-list-title {
+  overflow: inherit;
+  text-overflow: unset;
+  white-space: unset;
+}
+.emagic .ep-event-list-rows-container .ep-box-list-title a {
+  font-size: var(--nextora-events-text-md) !important;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  text-decoration: none;
+  display: block;
+  margin: 0.5rem 0;
+}
+.emagic .ep-event-list-rows-container .ep-box-list-title + div {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.5;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-rows-container .ep-box-list-desc {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.55;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-rows-container .ep-event-list-view-action, .emagic .ep-event-list-rows-container .ep-list-view-pricing-area {
+  font-size: var(--nextora-events-text-base) !important;
+  line-height: 1.45;
+}
+.emagic .ep-event-list-rows-container .ep-event-list-price {
+  font-size: var(--nextora-events-text-base) !important;
+  line-height: 1.45;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic .ep-event-list-rows-container .ep-list-view-btn-area .ep-btn, .emagic .ep-event-list-rows-container .ep-list-view-btn-area a.ep-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.5rem;
+  border: none;
+  border-radius: 0;
+  background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+  font-size: var(--nextora-events-text-sm) !important;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color var(--nextora-events-transition),	color var(--nextora-events-transition);
+}
+.emagic .ep-event-list-rows-container .ep-list-view-btn-area .ep-btn:hover, .emagic .ep-event-list-rows-container .ep-list-view-btn-area a.ep-btn:hover, .emagic .ep-event-list-rows-container .ep-list-view-btn-area .ep-btn:focus-visible, .emagic .ep-event-list-rows-container .ep-list-view-btn-area a.ep-btn:focus-visible {
+  background-color: var(--wp--preset--color--primary, #000000) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+}
+.emagic .ep-event-list-square_grid-container .ep-event-card {
+  font-size: var(--nextora-events-text-base) !important;
+}
+.emagic .ep-event-list-square_grid-container .ep-box-card-item {
+  border: 1px solid var(--nextora-events-border);
+  border-radius: var(--nextora-events-radius);
+  background-color: var(--wp--preset--color--base, #ffffff);
+  box-shadow: none;
+  overflow: hidden;
+  transition: box-shadow var(--nextora-events-transition);
+}
+.emagic .ep-event-list-square_grid-container .ep-box-card-item:hover {
+  box-shadow: 0 8px 24px -8px	var(--wp--preset--color--contrast, #0a0a0a);
+  @supports (color: color-mix(in lab, red, red)) {
+    box-shadow: 0 8px 24px -8px	color-mix(in srgb, var(--wp--preset--color--contrast, #0a0a0a) 14%, transparent);
+  }
+}
+.emagic .ep-event-list-square_grid-container .ep-box-card-item .ep-box-card-content {
+  background-color: transparent !important;
+}
+.emagic .ep-event-list-square_grid-container .ep-box-card-item:hover .ep-box-card-content {
+  background-color: transparent !important;
+}
+.emagic .ep-event-list-square_grid-container .ep-box-card-title {
+  overflow: inherit;
+  text-overflow: unset;
+  white-space: unset;
+}
+.emagic .ep-event-list-square_grid-container .ep-box-card-title a {
+  font-size: var(--nextora-events-text-base) !important;
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  text-decoration: none;
+  display: block;
+  margin: 0 !important;
+}
+.emagic .ep-event-list-square_grid-container .ep-box-card-venue {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.5;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-square_grid-container .ep-box-card-desc {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.55;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-square_grid-container .ep-card-event-date, .emagic .ep-event-list-square_grid-container .ep-card-event-date-start, .emagic .ep-event-list-square_grid-container .ep-card-event-date-wrap {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.45;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-square_grid-container .ep-event-list-price {
+  font-size: var(--nextora-events-text-base) !important;
+  line-height: 1.45;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic .ep-event-list-square_grid-container .ep-card-footer .ep-btn, .emagic .ep-event-list-square_grid-container .ep-card-footer a.ep-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.5rem;
+  border: none;
+  border-radius: 0;
+  background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+  font-size: var(--nextora-events-text-sm) !important;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color var(--nextora-events-transition),	color var(--nextora-events-transition);
+}
+.emagic .ep-event-list-square_grid-container .ep-card-footer .ep-btn:hover, .emagic .ep-event-list-square_grid-container .ep-card-footer a.ep-btn:hover, .emagic .ep-event-list-square_grid-container .ep-card-footer .ep-btn:focus-visible, .emagic .ep-event-list-square_grid-container .ep-card-footer a.ep-btn:focus-visible {
+  background-color: var(--wp--preset--color--primary, #000000) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+}
+.emagic .ep-event-list-square_grid-container .ep-box-card-icon-group {
+  overflow: hidden;
+  box-shadow: none !important;
+}
+.emagic .ep-event-list-staggered_grid-container .ep-event-card {
+  font-size: var(--nextora-events-text-base) !important;
+}
+.emagic .ep-event-list-staggered_grid-container .ep-box-card-item {
+  border: 1px solid var(--nextora-events-border);
+  border-radius: var(--nextora-events-radius);
+  background-color: var(--wp--preset--color--base, #ffffff);
+  box-shadow: none;
+  overflow: hidden;
+  transition: box-shadow var(--nextora-events-transition);
+}
+.emagic .ep-event-list-staggered_grid-container .ep-box-card-item:hover {
+  box-shadow: 0 8px 24px -8px	var(--wp--preset--color--contrast, #0a0a0a);
+  @supports (color: color-mix(in lab, red, red)) {
+    box-shadow: 0 8px 24px -8px	color-mix(in srgb, var(--wp--preset--color--contrast, #0a0a0a) 14%, transparent);
+  }
+}
+.emagic .ep-event-list-staggered_grid-container .ep-box-card-item .ep-box-card-content {
+  background-color: transparent !important;
+}
+.emagic .ep-event-list-staggered_grid-container .ep-box-card-item:hover .ep-box-card-content {
+  background-color: transparent !important;
+}
+.emagic .ep-event-list-staggered_grid-container .ep-box-card-title a {
+  font-size: var(--nextora-events-text-base) !important;
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  text-decoration: none;
+  display: block;
+  margin: 0 !important;
+}
+.emagic .ep-event-list-staggered_grid-container .ep-box-card-venue {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.5;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-staggered_grid-container .ep-box-card-desc, .emagic .ep-event-list-staggered_grid-container .ep-box-card-desc-masonry {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.55;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-staggered_grid-container .ep-card-event-date, .emagic .ep-event-list-staggered_grid-container .ep-card-event-date-start, .emagic .ep-event-list-staggered_grid-container .ep-card-event-date-wrap {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.45;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-staggered_grid-container .ep-event-list-price {
+  font-size: var(--nextora-events-text-base) !important;
+  line-height: 1.45;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic .ep-event-list-staggered_grid-container .ep-card-footer .ep-btn, .emagic .ep-event-list-staggered_grid-container .ep-card-footer a.ep-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.5rem;
+  border: none;
+  border-radius: 0;
+  background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+  font-size: var(--nextora-events-text-sm) !important;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color var(--nextora-events-transition),	color var(--nextora-events-transition);
+}
+.emagic .ep-event-list-staggered_grid-container .ep-card-footer .ep-btn:hover, .emagic .ep-event-list-staggered_grid-container .ep-card-footer a.ep-btn:hover, .emagic .ep-event-list-staggered_grid-container .ep-card-footer .ep-btn:focus-visible, .emagic .ep-event-list-staggered_grid-container .ep-card-footer a.ep-btn:focus-visible {
+  background-color: var(--wp--preset--color--primary, #000000) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+}
+.emagic .ep-event-list-staggered_grid-container .ep-box-card-icon-group {
+  overflow: hidden;
+  box-shadow: none !important;
+}
+.emagic .ep-event-list-slider-container .ep-slide-item-left {
+  border: 1px solid var(--nextora-events-border);
+  border-radius: var(--nextora-events-radius);
+  font-size: var(--nextora-events-text-base) !important;
+}
+.emagic .ep-event-list-slider-container .ep-slide-item-left .ep-box-card-title a {
+  font-size: var(--nextora-events-text-md) !important;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  text-decoration: none;
+  display: block;
+  margin: 0.5rem 0;
+}
+.emagic .ep-event-list-slider-container .ep-slide-item-left .ep-box-card-venue {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.5;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-slider-container .ep-slide-item-left .ep-box-card-desc {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.55;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-slider-container .ep-card-event-date, .emagic .ep-event-list-slider-container .ep-card-event-date-start, .emagic .ep-event-list-slider-container .ep-card-event-date-wrap {
+  font-size: var(--nextora-events-text-base) !important;
+  line-height: 1.45;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-slider-container .ep-event-list-price {
+  font-size: var(--nextora-events-text-base) !important;
+  line-height: 1.45;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic .ep-event-list-slider-container .ep-slide-button-area .ep-btn, .emagic .ep-event-list-slider-container .ep-slide-button-area a.ep-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.65rem 1.15rem;
+  border: none;
+  border-radius: var(--nextora-events-radius);
+  background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+  font-size: var(--nextora-events-text-sm) !important;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color var(--nextora-events-transition),	color var(--nextora-events-transition);
+}
+.emagic .ep-event-list-slider-container .ep-slide-button-area .ep-btn:hover, .emagic .ep-event-list-slider-container .ep-slide-button-area a.ep-btn:hover, .emagic .ep-event-list-slider-container .ep-slide-button-area .ep-btn:focus-visible, .emagic .ep-event-list-slider-container .ep-slide-button-area a.ep-btn:focus-visible {
+  background-color: var(--wp--preset--color--primary, #000000) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+}
+.emagic .ep-event-list-slider-container .ep-event-slider-nav .ep-event-rslides_nav {
+  background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  border-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+}
+.emagic .ep-event-list-month-container #ep_event_calendar.fc {
+  font-size: var(--nextora-events-text-base) !important;
+}
+.emagic .ep-event-list-month-container #ep_event_calendar.fc .fc-toolbar.fc-header-toolbar {
+  border: 1px solid var(--nextora-events-border);
+  border-radius: var(--nextora-events-radius);
+}
+.emagic .ep-event-list-month-container #ep_event_calendar.fc .fc-toolbar-title {
+  font-size: var(--nextora-events-text-md) !important;
+  font-weight: 700;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic .ep-event-list-month-container #ep_event_calendar.fc .fc-toolbar.fc-header-toolbar .fc-button-primary {
+  font-size: var(--nextora-events-text-sm) !important;
+  border-color: var(--nextora-events-border);
+  color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+}
+.emagic .ep-event-list-month-container #ep_event_calendar.fc .fc-toolbar.fc-header-toolbar .fc-button-primary.fc-button-active {
+  background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  border-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+}
+.emagic .ep-event-list-month-container #ep_event_calendar.fc table.fc-scrollgrid {
+  border: 1px solid var(--nextora-events-border);
+  border-radius: var(--nextora-events-radius);
+  overflow: hidden;
+}
+.emagic .ep-event-list-month-container #ep_event_calendar.fc .fc-col-header-cell-cushion, .emagic .ep-event-list-month-container #ep_event_calendar.fc .fc-daygrid-day-number {
+  font-size: var(--nextora-events-text-sm) !important;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic .ep-event-list-month-container #ep_event_calendar.fc .fc-daygrid-day-number {
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  font-weight: 600;
+}
+.emagic .ep-event-list-month-container #ep_event_calendar.fc .fc-daygrid-event .fc-event-title, .emagic .ep-event-list-month-container #ep_event_calendar.fc .fc-list-event-title a {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.45;
+}
+.emagic .ep-event-list-month-container .ep-event-types a {
+  color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+}
+.emagic#ep_single_event_detail_page_content {
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  font-size: var(--nextora-events-text-base) !important;
+  line-height: 1.6;
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_image .ep-single-event-slide-container {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  width: 100%;
+  height: auto !important;
+  border-radius: var(--nextora-events-radius);
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_image .ep-rslides, .emagic#ep_single_event_detail_page_content #ep_single_event_image #ep_single_event_image_gallery {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_image .ep-rslides li {
+  height: 100% !important;
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_image .ep-rslides li img {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  aspect-ratio: 16 / 9;
+  object-fit: cover !important;
+  object-position: center;
+  display: block;
+}
+.emagic#ep_single_event_detail_page_content .ep-event-type-cal-section {
+  font-size: var(--nextora-events-text-base) !important;
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_event_type {
+  font-size: var(--nextora-events-text-sm) !important;
+  background-color: var(--wp--preset--color--secondary, #f9f9f9) !important;
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(	in srgb,	var(--wp--preset--color--secondary, #f9f9f9) 18%,	var(--wp--preset--color--base, #ffffff)	) !important;
+  }
+  color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+}
+.emagic#ep_single_event_detail_page_content .ep-sl-event-date, .emagic#ep_single_event_detail_page_content #ep_single_event_start_time, .emagic#ep_single_event_detail_page_content #ep_single_event_start_end_diff {
+  font-size: var(--nextora-events-text-base) !important;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_start_date {
+  font-size: var(--nextora-events-text-md) !important;
+  font-weight: 700;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_title {
+  font-size: var(--wp--preset--font-size--large, var(--nextora-events-text-lg)) !important;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  border-left-color: var(--wp--preset--color--secondary, #f9f9f9) !important;
+}
+.emagic#ep_single_event_detail_page_content .ep-sl-event-venue-box, .emagic#ep_single_event_detail_page_content .ep-venue-details-section {
+  font-size: var(--nextora-events-text-base) !important;
+}
+.emagic#ep_single_event_detail_page_content .ep-venue-details-section p {
+  font-size: var(--nextora-events-text-sm) !important;
+  line-height: 1.55;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic#ep_single_event_detail_page_content .ep-venue-details-tabs .ep-tab-link {
+  font-size: var(--nextora-events-text-sm) !important;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  transition: background-color var(--nextora-events-transition),	color var(--nextora-events-transition);
+}
+.emagic#ep_single_event_detail_page_content .ep-venue-details-tabs .ep-tab-link.ep-tab-active {
+  background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  color: var(--wp--preset--color--base, #ffffff) !important;
+}
+.emagic#ep_single_event_detail_page_content .ep-venue-details-tabs .ep-tab-link:hover, .emagic#ep_single_event_detail_page_content .ep-venue-details-tabs .ep-tab-link:focus-visible {
+  color: var(--wp--preset--color--primary, #000000);
+}
+.emagic#ep_single_event_detail_page_content #ep-sl-event-meta, .emagic#ep_single_event_detail_page_content #ep_single_event_organizers {
+  font-size: var(--nextora-events-text-sm) !important;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_organizers a {
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+  text-decoration: none;
+}
+.emagic#ep_single_event_detail_page_content .ep-event-performers {
+  font-size: var(--nextora-events-text-base) !important;
+}
+.emagic#ep_single_event_detail_page_content .ep-performer-name {
+  font-size: var(--nextora-events-text-sm) !important;
+  font-weight: 700;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic#ep_single_event_detail_page_content .ep-performer-role {
+  font-size: var(--nextora-events-text-sm) !important;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic#ep_single_event_detail_page_content #ep-sl-left-area p {
+  font-size: var(--nextora-events-text-base) !important;
+  line-height: 1.6;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+.emagic#ep_single_event_detail_page_content #ep-sl-left-area p strong {
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic#ep_single_event_detail_page_content #ep-sl-right-area {
+  padding-inline: 0;
+}
+.emagic#ep_single_event_detail_page_content .ep-buy-ticket-section {
+  display: flex;
+  flex-direction: column;
+  margin: 0 !important;
+  overflow: hidden;
+  border-radius: var(--nextora-events-radius);
+  border-color: var(--nextora-events-border) !important;
+  background-color: var(--wp--preset--color--base, #ffffff);
+  font-size: var(--nextora-events-text-base) !important;
+}
+.emagic#ep_single_event_detail_page_content .ep-ticket-now-section {
+  padding: 1rem 1.25rem !important;
+}
+.emagic#ep_single_event_detail_page_content .ep-ticket-now-section .ep-ticket-btn-radio {
+  padding: 0;
+  margin: 0 0 0.75rem;
+  overflow: inherit;
+}
+.emagic#ep_single_event_detail_page_content .ep-ticket-btn.ep-ticket-active {
+  background-color: var(--wp--preset--color--secondary, #f9f9f9) !important;
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(	in srgb,	var(--wp--preset--color--secondary, #f9f9f9) 16%,	var(--wp--preset--color--base, #ffffff)	) !important;
+  }
+  color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+  font-size: var(--nextora-events-text-sm) !important;
+  font-weight: 600;
+  border-radius: calc(var(--nextora-events-radius) - 0.125rem);
+}
+.emagic .ep-btn-group.ep-ticket-btn-radio .ep-btn.ep-ticket-btn.ep-ticket-active:before {
+  font-size: 1rem !important;
+  border: 1px solid;
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_ticket_price {
+  margin: 0;
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_ticket_price h6 {
+  margin: 0;
+  font-size: var(--nextora-events-text-md) !important;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_ticket_now_wrapper {
+  margin-top: 0.75rem !important;
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_ticket_now_wrapper > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--nextora-events-radius);
+  background-color: var(--wp--preset--color--surface, #f4f4f4);
+  color: var(--wp--preset--color--paragraph, #525252);
+  font-size: var(--nextora-events-text-sm) !important;
+  font-weight: 600;
+  text-align: center;
+}
+.emagic#ep_single_event_detail_page_content .ep-qr-code-section {
+  padding: 0.875rem 1.25rem 1.125rem !important;
+  margin: 0 !important;
+  text-align: left !important;
+  border-top: 1px solid var(--nextora-events-border);
+  font-size: var(--nextora-events-text-base) !important;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic#ep_single_event_detail_page_content .ep-qr-code-section > div:first-child {
+  font-size: var(--nextora-events-text-sm) !important;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wp--preset--color--paragraph, #525252);
+  margin-bottom: 0.5rem;
+}
+.emagic#ep_single_event_detail_page_content #ep_single_event_qr_code {
+  display: block;
+  width: 100%;
+  max-width: 7.5rem !important;
+  height: auto;
+  margin: 0 !important;
+}
+.emagic#ep_single_event_detail_page_content .ep-age-group-section {
+  margin: 1rem 0 0 !important;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--nextora-events-border);
+  font-size: var(--nextora-events-text-base) !important;
+}
+.emagic#ep_single_event_detail_page_content .ep-age-group-section .ep-box-col-12:first-child {
+  margin-top: 0 !important;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--wp--preset--color--secondary, #f9f9f9) !important;
+}
+.emagic#ep_single_event_detail_page_content .ep-age-group-section .ep-box-col-12:first-child > div {
+  font-size: var(--nextora-events-text-sm) !important;
+  font-weight: 700;
+  color: var(--wp--preset--color--contrast, #0a0a0a);
+}
+.emagic#ep_single_event_detail_page_content .ep-age-group-section .ep-box-col-12:last-child {
+  padding-left: 0.75rem;
+  border-left: 3px solid transparent;
+}
+.emagic#ep_single_event_detail_page_content .ep-event-age-group {
+  margin-top: 0.25rem !important;
+  font-size: var(--nextora-events-text-sm) !important;
+  color: var(--wp--preset--color--paragraph, #525252);
+}
+@media (max-width: 767px) {
+  .emagic #ep_event_search_form .ep-box-search-form-wrap {
+    padding: 0.75rem 1rem;
+  }
+  .emagic #ep_event_search_form .ep-search-filter-bar,	.emagic #ep_event_search_form .ep-event-views-col {
+    flex: 0 0 100%;
+    max-width: 100%;
+    justify-content: flex-start;
+    padding: 0.25rem 0 !important;
+  }
+  .emagic #ep_event_search_form .ep-event-views-col {
+    padding-top: 0;
+  }
+  .emagic #ep_event_search_form .ep-event-views-filter-group {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter {
+    flex: 1 1 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .emagic .ep-event-list-square_grid-container .ep-box-card-item,	.emagic .ep-event-list-staggered_grid-container .ep-box-card-item,	.emagic #ep_event_search_form .ep-event-views-filter-group button.ep_event_view_filter,	.emagic #ep_event_search_form #ep_event_find_events_btn,	.emagic .ep-event-list-square_grid-container .ep-card-footer .ep-btn,	.emagic .ep-event-list-staggered_grid-container .ep-card-footer .ep-btn,	.emagic .ep-event-list-rows-container .ep-list-view-btn-area .ep-btn,	.emagic .ep-event-list-slider-container .ep-slide-button-area .ep-btn {
     transition: none;
   }
 }
