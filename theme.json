@@ -309,7 +309,7 @@
 			"fontSizes": [
 				{
 					"slug": "small",
-					"size": "clamp(0.8rem, 0.78rem + 0.35vw, 0.95rem)",
+					"size": "clamp(0.88rem, 0.84rem + 0.35vw, 0.95rem)",
 					"name": "Small"
 				},
 				{
@@ -318,23 +318,28 @@
 					"name": "Base"
 				},
 				{
-					"slug": "medium",
+					"slug": "base-plus",
 					"size": "clamp(1rem, 0.94rem + 0.55vw, 1.2rem)",
+					"name": "Base Plus"
+				},
+				{
+					"slug": "medium",
+					"size": "clamp(1.3125rem, 1.1rem + 0.9vw, 1.6875rem)",
 					"name": "Medium"
 				},
 				{
 					"slug": "large",
-					"size": "clamp(1.3125rem, 1.1rem + 0.9vw, 1.6875rem)",
+					"size": "clamp(1.8rem, 1.5rem + 1.2vw, 2.8rem)",
 					"name": "Large"
 				},
 				{
 					"slug": "x-large",
-					"size": "clamp(1.5rem, 1.2rem + 1.35vw, 2.125rem)",
+					"size": "clamp(1.95rem, 1.65rem + 2vw, 3.5rem)",
 					"name": "Extra Large"
 				},
 				{
 					"slug": "xx-large",
-					"size": "clamp(1.75rem, 1.35rem + 1.75vw, 2.625rem)",
+					"size": "clamp(2.2rem, 1.7rem + 3vw, 5rem)",
 					"name": "Extra Extra Large"
 				}
 			]
@@ -350,27 +355,27 @@
 				{
 					"size": "clamp(1rem, 4vw, 1.5rem)",
 					"slug": "20",
-					"name": "X-Tiny"
+					"name": "Small"
 				},
 				{
 					"size": "clamp(1.5rem, 5vw, 2rem)",
 					"slug": "30",
-					"name": "Small"
+					"name": "Medium"
 				},
 				{
 					"size": "clamp(1.8rem, 1.8rem + ((1vw - 0.48rem) * 2.885), 3rem)",
 					"slug": "40",
-					"name": "Medium"
+					"name": "Large"
 				},
 				{
 					"size": "clamp(2.5rem, 8vw, 4.5rem)",
 					"slug": "50",
-					"name": "Large"
+					"name": "X-Large"
 				},
 				{
 					"size": "clamp(3.75rem, 10vw, 7rem)",
 					"slug": "60",
-					"name": "X-Large"
+					"name": "XX-Large"
 				}
 			],
 			"units": [
@@ -408,7 +413,7 @@
 			},
 			"h1": {
 				"typography": {
-					"fontSize": "var(--wp--preset--font-size--xx-large)",
+					"fontSize": "var(--wp--preset--font-size--x-large)",
 					"fontWeight": "700",
 					"lineHeight": "1.15"
 				},
@@ -421,7 +426,7 @@
 			},
 			"h2": {
 				"typography": {
-					"fontSize": "var(--wp--preset--font-size--x-large)",
+					"fontSize": "var(--wp--preset--font-size--large)",
 					"fontWeight": "600",
 					"lineHeight": "1.3"
 				},
@@ -434,7 +439,7 @@
 			},
 			"h3": {
 				"typography": {
-					"fontSize": "var(--wp--preset--font-size--large)",
+					"fontSize": "var(--wp--preset--font-size--medium)",
 					"lineHeight": "1.25"
 				},
 				"spacing": {
@@ -446,7 +451,7 @@
 			},
 			"h4": {
 				"typography": {
-					"fontSize": "var(--wp--preset--font-size--medium)",
+					"fontSize": "var(--wp--preset--font-size--base-plus)",
 					"lineHeight": "1.3"
 				},
 				"spacing": {

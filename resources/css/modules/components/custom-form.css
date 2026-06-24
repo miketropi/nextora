@@ -98,6 +98,7 @@
 		background-image: none;
 		color: var(--wp--preset--color--base, #ffffff);
 		background-color: var(--nextora-form-subscribe-accent);
+		border-color: var(--nextora-form-subscribe-accent);
 		font-family: inherit;
 		font-size: 0.9375rem;
 		font-weight: 600;
