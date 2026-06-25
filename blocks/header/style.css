@@ -278,7 +278,7 @@
 
 .nextora-header-block__logo-text {
 	font-weight: 600;
-	font-size: var(--wp--preset--font-size--medium);
+	font-size: var(--wp--preset--font-size--base-plus);
 	letter-spacing: -0.02em;
 	color: inherit;
 	line-height: 1.2;

@@ -448,10 +448,10 @@ body.woocommerce-cart .wp-block-woocommerce-product-collection .wc-block-compone
    ========================= */
 body.woocommerce-checkout header.wp-block-group{
    border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 20%, transparent);
-   padding: 1rem 1.5rem;
+   padding: 0 1.5rem;
 }
 body.woocommerce-checkout header.wp-block-group .wp-block-site-title{
-    font-size: var(--wp--preset--font-size--medium, 1.125rem);
+    font-size: var(--wp--preset--font-size--base-plus, 1.125rem);
     font-weight: 600;
 }
 body.woocommerce-checkout main.wp-block-group{
