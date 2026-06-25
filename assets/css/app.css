@@ -1237,6 +1237,10 @@ footer.wp-block-template-part {
   text-decoration: auto;
   font-weight: 400;
   color: var(--wp--preset--color--paragraph, #9ca3af);
+  background-color: var(--color-primary);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, var(--color-primary) 15%, transparent);
+  }
 }
 .is-placeholder-images {
   aspect-ratio: 4 / 3;
@@ -1245,16 +1249,16 @@ footer.wp-block-template-part {
   background-position: center;
   background-repeat: no-repeat;
 }
-.single-post .taxonomy-post_tag.wp-block-post-terms .wp-block-post-terms__separator,.single-post .taxonomy-category.wp-block-post-terms .wp-block-post-terms__separator {
+.single-post .taxonomy-post_tag.wp-block-post-terms .wp-block-post-terms__separator, .single-post .taxonomy-category.wp-block-post-terms .wp-block-post-terms__separator {
   display: none;
 }
-.single-post .taxonomy-post_tag.wp-block-post-terms,.single-post .taxonomy-category.wp-block-post-terms {
+.single-post .taxonomy-post_tag.wp-block-post-terms, .single-post .taxonomy-category.wp-block-post-terms {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
   align-items: center;
 }
-.single-post .taxonomy-post_tag.wp-block-post-terms a,.single-post .taxonomy-category.wp-block-post-terms a {
+.single-post .taxonomy-post_tag.wp-block-post-terms a, .single-post .taxonomy-category.wp-block-post-terms a {
   position: relative;
   z-index: 2;
   font-size: var(--wp--preset--font-size--small, 12px);
@@ -1269,7 +1273,7 @@ footer.wp-block-template-part {
   text-decoration: none;
   transition: background 0.2s,	color 0.2s;
 }
-.frequently-asked-questions .wp-block-accordion-panel[inert], .frequently-asked-questions .wp-block-accordion-panel[aria-hidden='true'] {
+.frequently-asked-questions .wp-block-accordion-panel[inert], .frequently-asked-questions .wp-block-accordion-panel[aria-hidden="true"] {
   display: block !important;
   margin-block-start: 0;
   border: none;
@@ -1310,7 +1314,7 @@ footer.wp-block-template-part {
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .frequently-asked-questions .wp-block-accordion-heading__toggle-icon::after {
-  content: '';
+  content: "";
   display: block;
   width: 0.5rem;
   height: 0.5rem;
@@ -3993,10 +3997,10 @@ body.woocommerce-checkout header.wp-block-group {
   @supports (color: color-mix(in lab, red, red)) {
     border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 20%, transparent);
   }
-  padding: 1rem 1.5rem;
+  padding: 0 1.5rem;
 }
 body.woocommerce-checkout header.wp-block-group .wp-block-site-title {
-  font-size: var(--wp--preset--font-size--medium, 1.125rem);
+  font-size: var(--wp--preset--font-size--base-plus, 1.125rem);
   font-weight: 600;
 }
 body.woocommerce-checkout main.wp-block-group {

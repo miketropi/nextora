@@ -8,3 +8,5 @@ vendor/
 .opencode/qdrant-status.json
 nextora-v*.zip
 .env
+.roo
+.opencode/opencode.json
