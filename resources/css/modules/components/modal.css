@@ -151,7 +151,7 @@
 			Helvetica,
 			sans-serif
 		);
-		font-size: var(--wp--preset--font-size--medium, 1.125rem);
+		font-size: var(--wp--preset--font-size--medium-plus, 1.125rem);
 		font-weight: 600;
 		line-height: 1.3;
 		letter-spacing: -0.02em;

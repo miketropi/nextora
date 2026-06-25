@@ -77,32 +77,28 @@ export function resolvePhotoUrl(
 
 export function buildSectionStyleVars(attrs: {
 	backgroundColor?: string;
-	headingColor?: string;
-	descriptionColor?: string;
-	eyebrowColor?: string;
-	buttonBorderColor?: string;
-	buttonTextColor?: string;
-	buttonBorderRadius?: number;
-	contentMaxWidth?: string;
 	paginationColor?: string;
 	paginationActiveColor?: string;
 	cardBackgroundColor?: string;
 	tagBackgroundColor?: string;
 	tagTextColor?: string;
 	cardBorderRadius?: number;
+	gridColumns?: number;
+	gridColumnGap?: number;
+	gridRowGap?: number;
+	photoAspectRatio?: string;
+	spaceBetween?: number;
 }): Record<string, string> {
 	const vars: Record<string, string> = {
 		'--nextora-team-photo-placeholder': teamPhotoPlaceholderVar(),
-		'--nextora-team-max-width': attrs.contentMaxWidth || '1200px',
-		'--nextora-team-btn-radius': `${attrs.buttonBorderRadius ?? 50}px`,
 		'--nextora-team-card-radius': `${attrs.cardBorderRadius ?? 16}px`,
+		'--nextora-team-photo-aspect': attrs.photoAspectRatio ?? '3/4',
+		'--nextora-team-space-between': `${attrs.spaceBetween ?? 24}px`,
+		'--nextora-team-grid-column-gap': `${attrs.gridColumnGap ?? 24}px`,
+		'--nextora-team-grid-row-gap': `${attrs.gridRowGap ?? 24}px`,
 	};
+	if (attrs.gridColumns) vars['--nextora-team-grid-columns'] = String(attrs.gridColumns);
 	if (attrs.backgroundColor) vars['--nextora-team-bg'] = attrs.backgroundColor;
-	if (attrs.headingColor) vars['--nextora-team-heading-color'] = attrs.headingColor;
-	if (attrs.descriptionColor) vars['--nextora-team-desc-color'] = attrs.descriptionColor;
-	if (attrs.eyebrowColor) vars['--nextora-team-eyebrow-color'] = attrs.eyebrowColor;
-	if (attrs.buttonBorderColor) vars['--nextora-team-btn-border'] = attrs.buttonBorderColor;
-	if (attrs.buttonTextColor) vars['--nextora-team-btn-text'] = attrs.buttonTextColor;
 	if (attrs.paginationColor) vars['--nextora-team-dot-color'] = attrs.paginationColor;
 	if (attrs.paginationActiveColor) vars['--nextora-team-dot-active'] = attrs.paginationActiveColor;
 	if (attrs.cardBackgroundColor) vars['--nextora-team-card-bg'] = attrs.cardBackgroundColor;

@@ -253,3 +253,22 @@
 		max-width: calc(100% - 0.75rem);
 	}
 }
+
+/* Story template editor styles */
+.nextora-testimonials--template-story.nextora-testimonials--editor .nextora-testimonials__editor-section {
+	display: none;
+}
+
+.nextora-testimonials--template-story.nextora-testimonials--editor .nextora-testimonials__layout--item-preview {
+	min-height: auto;
+}
+
+.nextora-testimonials--template-story.nextora-testimonials--editor .nextora-testimonials__layout--item-preview .nextora-testimonials__media {
+	aspect-ratio: 1;
+	min-height: 0;
+}
+
+.nextora-testimonials--template-story.nextora-testimonials--editor .nextora-testimonials__content {
+	background-color: transparent;
+}
+

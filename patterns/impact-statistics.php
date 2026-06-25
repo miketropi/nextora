@@ -16,7 +16,7 @@
 <div class="wp-block-group" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--30)"><!-- wp:columns {"verticalAlignment":"center","align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|40","left":"var:preset|spacing|50"}}}} -->
 <div class="wp-block-columns alignwide are-vertically-aligned-center"><!-- wp:column {"verticalAlignment":"center"} -->
 <div class="wp-block-column is-vertically-aligned-center"><!-- wp:image {"id":716,"sizeSlug":"full","linkDestination":"none","className":"animation-zoom-in","style":{"border":{"radius":{"topLeft":"16px","topRight":"16px","bottomLeft":"16px","bottomRight":"16px"}}}} -->
-<figure class="wp-block-image size-full has-custom-border animation-zoom-in"><img src="https://pub-0645c3b9d3674132af6b362484df0f3c.r2.dev/alonepro/img-protect-nature.jpg" alt="" class="wp-image-716" style="border-top-left-radius:16px;border-top-right-radius:16px;border-bottom-left-radius:16px;border-bottom-right-radius:16px"/></figure>
+<figure class="wp-block-image size-full has-custom-border animation-zoom-in"><img src="https://pub-0645c3b9d3674132af6b362484df0f3c.r2.dev/alonepro/img-protect-nature.jpg" alt="People working together to protect and restore nature" class="wp-image-716" style="border-top-left-radius:16px;border-top-right-radius:16px;border-bottom-left-radius:16px;border-bottom-right-radius:16px"/></figure>
 <!-- /wp:image --></div>
 <!-- /wp:column -->
 

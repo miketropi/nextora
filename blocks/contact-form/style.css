@@ -16,7 +16,7 @@
 }
 
 .nextora-contact-form__heading {
-	font-size: var(--wp--preset--font-size--x-large, clamp(1.5rem, 3vw, 2rem));
+	font-size: var(--wp--preset--font-size--medium-plus);
 	font-weight: 800;
 	line-height: 1.15;
 	margin: 0 0 0.35rem;

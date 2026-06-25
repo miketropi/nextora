@@ -70,3 +70,8 @@ $box_content_editor = __DIR__ . '/box-content/register-editor.php';
 if ( is_readable( $box_content_editor ) ) {
 	require_once $box_content_editor;
 }
+
+$event_editor = __DIR__ . '/event/register-editor.php';
+if ( is_readable( $event_editor ) ) {
+	require_once $event_editor;
+}

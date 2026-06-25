@@ -4,17 +4,15 @@ import { __, sprintf } from '@wordpress/i18n';
 import {
 	InspectorControls,
 	PanelColorSettings,
-	RichText,
-	URLInput,
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
 	Button,
 	Modal,
 	PanelBody,
+	RadioControl,
 	RangeControl,
 	SelectControl,
-	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -27,16 +25,21 @@ interface EditProps {
 	setAttributes: (attrs: Partial<TeamSectionAttributes>) => void;
 }
 
-const headerLayoutOptions = [
-	{ label: __('Split (heading left, button right)', 'nextora'), value: 'split' },
-	{ label: __('Stacked (centered)', 'nextora'), value: 'stacked' },
-	{ label: __('Left aligned', 'nextora'), value: 'left-aligned' },
+const layoutModeOptions = [
+	{ label: __('Carousel', 'nextora'), value: 'carousel' },
+	{ label: __('Grid', 'nextora'), value: 'grid' },
 ];
 
-const buttonStyleOptions = [
-	{ label: __('Outline', 'nextora'), value: 'outline' },
-	{ label: __('Solid', 'nextora'), value: 'solid' },
-	{ label: __('Link', 'nextora'), value: 'link' },
+const cardTemplateOptions = [
+	{ label: __('Default', 'nextora'), value: 'default' },
+	{ label: __('Overlay Social', 'nextora'), value: 'overlay-social' },
+];
+
+const photoAspectRatioOptions = [
+	{ label: __('Portrait 3:4', 'nextora'), value: '3/4' },
+	{ label: __('Landscape 4:3', 'nextora'), value: '4/3' },
+	{ label: __('Square 1:1', 'nextora'), value: '1/1' },
+	{ label: __('Widescreen 16:9', 'nextora'), value: '16/9' },
 ];
 
 const paginationTypeOptions = [
@@ -44,19 +47,6 @@ const paginationTypeOptions = [
 	{ label: __('Fraction', 'nextora'), value: 'fraction' },
 	{ label: __('Progress bar', 'nextora'), value: 'progressbar' },
 ];
-
-const HEADING_LEVELS = [
-	{ label: 'H1', value: '1' },
-	{ label: 'H2', value: '2' },
-	{ label: 'H3', value: '3' },
-	{ label: 'H4', value: '4' },
-	{ label: 'H5', value: '5' },
-	{ label: 'H6', value: '6' },
-];
-
-function clampHeading(level: number): number {
-	return Math.max(1, Math.min(6, level));
-}
 
 export default function TeamSectionEdit({ attributes, setAttributes }: EditProps) {
 	const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
@@ -86,20 +76,12 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 	});
 
 	const {
-		eyebrowText = '',
-		headingText = '',
-		headingLevel = 2,
-		descriptionText = '',
-		headerLayout = 'split',
-		contentMaxWidth = '1200px',
-		showButton = true,
-		buttonText = '',
-		buttonUrl = '',
-		buttonTarget = false,
-		buttonStyle = 'outline',
-		buttonBorderColor = '',
-		buttonTextColor = '',
-		buttonBorderRadius = 50,
+		layoutMode = 'carousel',
+		gridColumns = 4,
+		gridColumnGap = 24,
+		gridRowGap = 24,
+		cardTemplate = 'default',
+		photoAspectRatio = '3/4',
 		slidesPerView = 4,
 		slidesPerViewTablet = 2.5,
 		slidesPerViewMobile = 1.2,
@@ -115,9 +97,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		freeMode = false,
 		grabCursor = true,
 		backgroundColor = '',
-		headingColor = '',
-		descriptionColor = '',
-		eyebrowColor = '',
 		paginationColor = '',
 		paginationActiveColor = '',
 		cardBackgroundColor = '',
@@ -127,23 +106,20 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		enableScrollAnimation = true,
 	} = attributes;
 
-	const headingTag = `h${clampHeading(headingLevel)}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-
 	const blockProps = useBlockProps({
 		className: [
 			'nextora-team-section',
 			'nextora-team-section--editor',
-			`nextora-team-section--header-${headerLayout}`,
+			`nextora-team-section--layout-${layoutMode}`,
+			`nextora-team-section--template-${cardTemplate}`,
 		].join(' '),
 		style: buildSectionStyleVars({
+			gridColumns,
+			gridColumnGap,
+			gridRowGap,
+			photoAspectRatio,
+			spaceBetween,
 			backgroundColor,
-			headingColor,
-			descriptionColor,
-			eyebrowColor,
-			buttonBorderColor,
-			buttonTextColor,
-			buttonBorderRadius,
-			contentMaxWidth,
 			paginationColor,
 			paginationActiveColor,
 			cardBackgroundColor,
@@ -266,84 +242,88 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 					</Button>
 				</PanelBody>
 
-				<PanelBody title={__('Header layout', 'nextora')} initialOpen={false}>
+				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
 					<SelectControl
-						label={__('Layout', 'nextora')}
-						value={headerLayout}
-						options={headerLayoutOptions}
+						label={__('Card template', 'nextora')}
+						help={__('Choose the visual style for team member cards.', 'nextora')}
+						value={cardTemplate}
+						options={cardTemplateOptions}
 						onChange={(v) =>
-							setAttributes({
-								headerLayout: (v as TeamSectionAttributes['headerLayout']) ?? 'split',
-							})
+							setAttributes({ cardTemplate: (v as TeamSectionAttributes['cardTemplate']) ?? 'default' })
 						}
 					/>
-					<SelectControl
-						label={__('Heading level', 'nextora')}
-						value={String(headingLevel)}
-						options={HEADING_LEVELS}
-						onChange={(v) => setAttributes({ headingLevel: parseInt(v, 10) || 2 })}
-					/>
-					<TextControl
-						label={__('Content max width', 'nextora')}
-						value={contentMaxWidth}
-						onChange={(v) => setAttributes({ contentMaxWidth: v ?? '1200px' })}
-						help={__('e.g. 1200px, 75rem', 'nextora')}
-					/>
-				</PanelBody>
 
-				<PanelBody title={__('CTA button', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Show button', 'nextora')}
-						checked={showButton}
-						onChange={(v) => setAttributes({ showButton: v })}
+					<RadioControl
+						label={__('Photo aspect ratio', 'nextora')}
+						selected={photoAspectRatio}
+						options={photoAspectRatioOptions}
+						onChange={(v) =>
+							setAttributes({ photoAspectRatio: (v as TeamSectionAttributes['photoAspectRatio']) ?? '3/4' })
+						}
 					/>
-					{showButton && (
+
+					<SelectControl
+						label={__('Desktop layout', 'nextora')}
+						help={
+							layoutMode === 'grid'
+								? __(
+										'Desktop shows a grid; tablet and mobile use a carousel.',
+										'nextora',
+									)
+								: __(
+										'All screen sizes use a carousel.',
+										'nextora',
+									)
+						}
+						value={layoutMode}
+						options={layoutModeOptions}
+						onChange={(v) =>
+							setAttributes({ layoutMode: (v as TeamSectionAttributes['layoutMode']) ?? 'carousel' })
+						}
+					/>
+
+					{layoutMode === 'grid' && (
 						<>
-							<TextControl
-								label={__('Button text', 'nextora')}
-								value={buttonText}
-								onChange={(v) => setAttributes({ buttonText: v ?? '' })}
-							/>
-							<p className="components-base-control__label">{__('Button URL', 'nextora')}</p>
-							<URLInput
-								value={buttonUrl}
-								onChange={(v) => setAttributes({ buttonUrl: v ?? '' })}
-							/>
-							<ToggleControl
-								label={__('Open in new tab', 'nextora')}
-								checked={buttonTarget}
-								onChange={(v) => setAttributes({ buttonTarget: v })}
-							/>
-							<SelectControl
-								label={__('Button style', 'nextora')}
-								value={buttonStyle}
-								options={buttonStyleOptions}
-								onChange={(v) =>
-									setAttributes({
-										buttonStyle: (v as TeamSectionAttributes['buttonStyle']) ?? 'outline',
-									})
-								}
+							<RangeControl
+								label={__('Grid columns', 'nextora')}
+								value={gridColumns}
+								onChange={(v) => setAttributes({ gridColumns: v ?? 4 })}
+								min={1}
+								max={6}
 							/>
 							<RangeControl
-								label={__('Border radius (px)', 'nextora')}
-								value={buttonBorderRadius}
-								onChange={(v) => setAttributes({ buttonBorderRadius: v ?? 50 })}
+								label={__('Column gap (px)', 'nextora')}
+								value={gridColumnGap}
+								onChange={(v) => setAttributes({ gridColumnGap: v ?? 24 })}
 								min={0}
-								max={50}
+								max={60}
+							/>
+							<RangeControl
+								label={__('Row gap (px)', 'nextora')}
+								value={gridRowGap}
+								onChange={(v) => setAttributes({ gridRowGap: v ?? 24 })}
+								min={0}
+								max={60}
 							/>
 						</>
 					)}
-				</PanelBody>
 
-				<PanelBody title={__('Carousel', 'nextora')} initialOpen={false}>
-					<RangeControl
-						label={__('Slides per view (desktop)', 'nextora')}
-						value={slidesPerView}
-						onChange={(v) => setAttributes({ slidesPerView: v ?? 4 })}
-						min={1}
-						max={6}
-						step={0.5}
-					/>
+					<p className="nextora-team-section__inspector-subheading">
+						{layoutMode === 'grid'
+							? __('Carousel (tablet & mobile)', 'nextora')
+							: __('Carousel', 'nextora')}
+					</p>
+
+					{layoutMode === 'carousel' && (
+						<RangeControl
+							label={__('Slides per view (desktop)', 'nextora')}
+							value={slidesPerView}
+							onChange={(v) => setAttributes({ slidesPerView: v ?? 4 })}
+							min={1}
+							max={6}
+							step={0.5}
+						/>
+					)}
 					<RangeControl
 						label={__('Slides per view (tablet)', 'nextora')}
 						value={slidesPerViewTablet}
@@ -366,6 +346,11 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 					/>
 					<RangeControl
 						label={__('Space between (px)', 'nextora')}
+						help={
+							layoutMode === 'grid'
+								? __('Spacing for tablet & mobile carousel only (desktop uses Column/Row gap).', 'nextora')
+								: undefined
+						}
 						value={spaceBetween}
 						onChange={(v) => setAttributes({ spaceBetween: v ?? 24 })}
 						min={0}
@@ -459,37 +444,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 							label: __('Background', 'nextora'),
 						},
 						{
-							value: headingColor,
-							onChange: (v) => setAttributes({ headingColor: v ?? '' }),
-							label: __('Heading', 'nextora'),
-						},
-						{
-							value: descriptionColor,
-							onChange: (v) => setAttributes({ descriptionColor: v ?? '' }),
-							label: __('Description', 'nextora'),
-						},
-						{
-							value: eyebrowColor,
-							onChange: (v) => setAttributes({ eyebrowColor: v ?? '' }),
-							label: __('Eyebrow', 'nextora'),
-						},
-						...(showButton
-							? [
-									{
-										value: buttonBorderColor,
-										onChange: (v: string | undefined) =>
-											setAttributes({ buttonBorderColor: v ?? '' }),
-										label: __('Button border / fill', 'nextora'),
-									},
-									{
-										value: buttonTextColor,
-										onChange: (v: string | undefined) =>
-											setAttributes({ buttonTextColor: v ?? '' }),
-										label: __('Button text', 'nextora'),
-									},
-								]
-							: []),
-						{
 							value: cardBackgroundColor,
 							onChange: (v) => setAttributes({ cardBackgroundColor: v ?? '' }),
 							label: __('Card background', 'nextora'),
@@ -561,59 +515,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 
 			<div {...blockProps}>
 				<div className="nextora-team-section__inner">
-					<header
-						className={`nextora-team-section__header nextora-team-section__header--${headerLayout}`}
-					>
-						<div className="nextora-team-section__header-main">
-							<RichText
-								tagName="p"
-								className="nextora-team-section__eyebrow"
-								value={eyebrowText}
-								onChange={(v) => setAttributes({ eyebrowText: v })}
-								placeholder={__('Our People', 'nextora')}
-								allowedFormats={[]}
-							/>
-							<RichText
-								tagName={headingTag}
-								className="nextora-team-section__heading"
-								value={headingText}
-								onChange={(v) => setAttributes({ headingText: v })}
-								placeholder={__('Meet Our Amazing Team', 'nextora')}
-								allowedFormats={[]}
-							/>
-							<RichText
-								tagName="div"
-								className="nextora-team-section__description"
-								value={descriptionText}
-								onChange={(v) => setAttributes({ descriptionText: v })}
-								placeholder={__(
-									'The talented people behind our success…',
-									'nextora',
-								)}
-								allowedFormats={['core/bold', 'core/italic', 'core/link']}
-							/>
-						</div>
-						{showButton && (
-							<div className="nextora-team-section__header-cta">
-								<span
-									className={`nextora-team-section__btn nextora-team-section__btn--${buttonStyle}`}
-								>
-									{buttonText || __('View All Members', 'nextora')}
-									<svg
-										className="nextora-team-section__btn-icon"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="2"
-										aria-hidden
-									>
-										<path d="M5 12h14M13 6l6 6-6 6" />
-									</svg>
-								</span>
-							</div>
-						)}
-					</header>
-
 					<div className="nextora-team-section__members-row" aria-label={__('Team members', 'nextora')}>
 						{members.map((member) => {
 							const photoUrl = resolvePhotoUrl(member, mediaUrlById);
@@ -652,9 +553,9 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 										) : null}
 									</div>
 									<div className="nextora-team-section__card-body">
-										<h3 className="nextora-team-section__card-name">
+										<h4 className="nextora-team-section__card-name">
 											{member.name || __('Member name', 'nextora')}
-										</h3>
+										</h4>
 										{member.role ? (
 											<p className="nextora-team-section__card-role">{member.role}</p>
 										) : null}

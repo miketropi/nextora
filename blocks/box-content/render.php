@@ -80,6 +80,24 @@ if ( ! function_exists( 'nextora_box_content_resolve_color' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_box_content_resolve_font_family' ) ) {
+	/**
+	 * Preset slug or custom font-family stack → CSS font-family value.
+	 */
+	function nextora_box_content_resolve_font_family( string $raw ): string {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return '';
+		}
+
+		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
+			return 'var(--wp--preset--font-family--' . sanitize_html_class( $raw ) . ')';
+		}
+
+		return $raw;
+	}
+}
+
 if ( ! function_exists( 'nextora_box_content_sanitize_css_length' ) ) {
 	/**
 	 * Sanitize a CSS length for inline styles.
@@ -331,13 +349,21 @@ if ( ! function_exists( 'nextora_box_content_render_card' ) ) {
 			$out .= $icon_html;
 		}
 
+		if ( 'minimal' === $card_template ) {
+			$out .= '<div class="nextora-box-content__card-body">';
+		}
+
 		$out .= '<h3 class="nextora-box-content__title">' . esc_html( $title ) . '</h3>';
 
 		if ( '' !== trim( wp_strip_all_tags( $description ) ) ) {
 			$out .= '<p class="nextora-box-content__description">' . esc_html( $description ) . '</p>';
 		}
 
-		if ( $show_link && '' !== $link_label ) {
+		if ( 'minimal' === $card_template ) {
+			$out .= '</div>';
+		}
+
+		if ( 'minimal' !== $card_template && $show_link && '' !== $link_label ) {
 			$arrow = '<span class="nextora-box-content__link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
 			if ( '' !== $link_url ) {
 				$out .= sprintf(
@@ -388,9 +414,11 @@ if ( ! in_array( $layout_mode, array( 'slider', 'grid' ), true ) ) {
 	$layout_mode = 'slider';
 }
 
-$card_template = isset( $attributes['cardTemplate'] ) && 'ways' === (string) $attributes['cardTemplate']
-	? 'ways'
-	: 'default';
+$card_template = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
+$allowed_card_templates = array( 'default', 'ways', 'minimal' );
+if ( ! in_array( $card_template, $allowed_card_templates, true ) ) {
+	$card_template = 'default';
+}
 
 $content_max = isset( $attributes['contentMaxWidth'] ) ? trim( (string) $attributes['contentMaxWidth'] ) : '';
 $grid_cols   = isset( $attributes['gridColumns'] ) ? max( 1, min( 6, (int) $attributes['gridColumns'] ) ) : 4;
@@ -500,6 +528,13 @@ $css_vars['--nextora-box-content-gap'] = '' !== $legacy_gap ? $legacy_gap : $spa
 
 $css_vars = array_merge( $css_vars, nextora_box_content_card_padding_css_vars( $attributes ) );
 
+$heading_font_family = isset( $attributes['headingFontFamily'] )
+	? nextora_box_content_resolve_font_family( (string) $attributes['headingFontFamily'] )
+	: '';
+if ( '' !== $heading_font_family ) {
+	$css_vars['--nextora-box-content-heading-font-family'] = $heading_font_family;
+}
+
 foreach ( $color_keys as $attr_key => $var_name ) {
 	$raw = isset( $attributes[ $attr_key ] ) ? (string) $attributes[ $attr_key ] : '';
 	if ( 'currentColor' === $raw ) {
@@ -525,6 +560,9 @@ $wrapper_classes = array(
 );
 if ( $enable_scroll ) {
 	$wrapper_classes[] = 'nextora-box-content--reveal-pending';
+}
+if ( '' !== $heading_font_family ) {
+	$wrapper_classes[] = 'nextora-box-content--has-heading-font';
 }
 
 $wrapper_classes = (array) apply_filters(

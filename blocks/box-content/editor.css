@@ -54,6 +54,12 @@
 	color: var(--nextora-box-content-card-title-color, currentColor);
 }
 
+.nextora-box-content--editor.nextora-box-content--has-heading-font
+	.nextora-box-content__card--editable
+	.nextora-box-content__title {
+	font-family: var(--nextora-box-content-heading-font-family);
+}
+
 .nextora-box-content--editor .nextora-box-content__card--editable .nextora-box-content__description {
 	flex: 1 1 auto;
 	min-height: 0;
@@ -206,6 +212,82 @@
 		--nextora-box-content-link-color,
 		var(--nextora-box-content-way-accent-solid, var(--wp--preset--color--primary, currentColor))
 	);
+}
+
+/* Minimal template — shared badge card styling (layout uses standard grid/slider rules). */
+.nextora-box-content--editor.nextora-box-content--template-minimal .nextora-box-content__card--editable {
+	flex-direction: row;
+	align-items: center;
+	gap: 0.8125rem;
+	min-height: 0;
+	text-align: start;
+	background: var(--nextora-box-content-card-bg, var(--wp--preset--color--base, #fff));
+	border-color: var(
+		--nextora-box-content-card-border-color,
+		color-mix(in srgb, var(--wp--preset--color--contrast, currentColor) 12%, transparent)
+	);
+}
+
+.nextora-box-content--editor.nextora-box-content--template-minimal.nextora-box-content--layout-grid
+	.nextora-box-content__card--editable:hover,
+.nextora-box-content--editor.nextora-box-content--template-minimal.nextora-box-content--layout-grid
+	.nextora-box-content__card--editable:focus-within {
+	transform: translateY(-5px);
+	box-shadow: 0 24px 46px -26px
+		rgb(from var(--wp--preset--color--contrast, currentColor) r g b / 0.45);
+	background: var(--nextora-box-content-card-bg, var(--wp--preset--color--base, #fff));
+	color: var(--wp--preset--color--contrast, currentColor);
+	border-color: var(
+		--nextora-box-content-card-hover-border-color,
+		var(--wp--preset--color--secondary, currentColor)
+	);
+}
+
+.nextora-box-content--editor.nextora-box-content--template-minimal.nextora-box-content--layout-slider
+	.nextora-box-content__card--editable:hover,
+.nextora-box-content--editor.nextora-box-content--template-minimal.nextora-box-content--layout-slider
+	.nextora-box-content__card--editable:focus-within {
+	transform: none;
+	box-shadow: none;
+	background: var(--nextora-box-content-card-bg, var(--wp--preset--color--base, #fff));
+	color: var(--wp--preset--color--contrast, currentColor);
+	border-color: var(
+		--nextora-box-content-card-border-color,
+		color-mix(in srgb, var(--wp--preset--color--contrast, currentColor) 12%, transparent)
+	);
+}
+
+.nextora-box-content--editor.nextora-box-content--template-minimal .nextora-box-content__icon {
+	flex-shrink: 0;
+	border-radius: 12px;
+	background: var(
+		--nextora-box-content-icon-surface-bg,
+		rgb(from var(--wp--preset--color--secondary, currentColor) r g b / 0.16)
+	);
+	color: var(
+		--nextora-box-content-icon-color,
+		color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 72%, black)
+	);
+}
+
+.nextora-box-content--editor.nextora-box-content--template-minimal
+	.nextora-box-content__card--editable:hover
+	.nextora-box-content__icon,
+.nextora-box-content--editor.nextora-box-content--template-minimal
+	.nextora-box-content__card--editable:focus-within
+	.nextora-box-content__icon {
+	background: var(
+		--nextora-box-content-icon-surface-bg,
+		rgb(from var(--wp--preset--color--secondary, currentColor) r g b / 0.16)
+	);
+	color: var(
+		--nextora-box-content-icon-color,
+		color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 72%, black)
+	);
+}
+
+.nextora-box-content--editor.nextora-box-content--template-minimal .nextora-box-content__link {
+	display: none;
 }
 
 .nextora-box-content--editor .nextora-box-content__card-edit {
