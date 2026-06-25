@@ -9,7 +9,7 @@ import {
   __experimentalSpacingSizesControl as SpacingSizesControl,
   __experimentalBorderRadiusControl as BorderRadiusControl,
 } from '@wordpress/block-editor';
-import { useMemo } from '@wordpress/element';
+import { useMemo, useState, useEffect } from '@wordpress/element';
 import {
   Disabled,
   PanelBody,
@@ -24,6 +24,8 @@ import {
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import ServerSideRender from '@wordpress/server-side-render';
+import { IconPicker } from '../advanced-icon/icon-picker';
+import { LucideSvgPreview } from '../advanced-icon/lucide-preview';
 import metadata from './block.json';
 
 const DEFAULT_FOLLOW_US_SOCIALS = [
@@ -81,6 +83,11 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     showCtaButtonMobile,
     ctaButtonPadding,
     ctaButtonBorderRadius,
+    ctaButtonShowIcon = false,
+    ctaButtonIconName = 'arrow-right',
+    ctaButtonIconPosition = 'right',
+    ctaButtonIconSize = 20,
+    ctaButtonIconStrokeWidth = 2,
     stickyHeader,
     stickyStyle,
     showBottomBorder,
@@ -176,6 +183,39 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     }
     return ctaButtonBorderRadius;
   }, [ctaButtonBorderRadius]);
+
+  const [ iconPickerOpen, setIconPickerOpen ] = useState( false );
+  const [ iconNodes, setIconNodes ] = useState( null );
+
+  useEffect( () => {
+    if ( ! ctaButtonShowIcon ) {
+      setIconNodes( null );
+      return;
+    }
+
+    const iconsUrl = window.nextoraIconBlock?.iconsUrl ?? '';
+    if ( ! iconsUrl ) {
+      return;
+    }
+
+    let active = true;
+    fetch( iconsUrl )
+      .then( ( res ) => res.json() )
+      .then( ( icons ) => {
+        if ( ! active ) {
+          return;
+        }
+        const found = Array.isArray( icons )
+          ? icons.find( ( icon ) => icon.name === ctaButtonIconName )
+          : undefined;
+        setIconNodes( found?.nodes ?? null );
+      } )
+      .catch( () => {} );
+
+    return () => {
+      active = false;
+    };
+  }, [ ctaButtonShowIcon, ctaButtonIconName ] );
 
   const updateFollowUsSocial = (network, patch) => {
     const next = followUsSocialRows.map((row) =>
@@ -556,6 +596,61 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                   })
                 }
               />
+              <ToggleControl
+                label={__('Show icon', 'nextora')}
+                checked={ctaButtonShowIcon}
+                onChange={(v) => setAttributes({ ctaButtonShowIcon: v })}
+                help={__(
+                  'Add a Lucide icon inside the CTA button.',
+                  'nextora',
+                )}
+              />
+              {ctaButtonShowIcon && (
+                <>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setIconPickerOpen(true)}
+                  >
+                    {__('Choose icon', 'nextora')}
+                    {`: ${ctaButtonIconName}`}
+                  </Button>
+                  <SelectControl
+                    label={__('Icon position', 'nextora')}
+                    value={ctaButtonIconPosition}
+                    options={[
+                      { label: __('Left of text', 'nextora'), value: 'left' },
+                      { label: __('Right of text', 'nextora'), value: 'right' },
+                    ]}
+                    onChange={(v) => setAttributes({ ctaButtonIconPosition: v || 'right' })}
+                  />
+                  <RangeControl
+                    label={__('Icon size (px)', 'nextora')}
+                    value={ctaButtonIconSize}
+                    onChange={(v) => setAttributes({ ctaButtonIconSize: v ?? 20 })}
+                    min={12}
+                    max={48}
+                    step={1}
+                  />
+                  <RangeControl
+                    label={__('Icon stroke width', 'nextora')}
+                    value={ctaButtonIconStrokeWidth}
+                    onChange={(v) => setAttributes({ ctaButtonIconStrokeWidth: v ?? 2 })}
+                    min={0.5}
+                    max={4}
+                    step={0.5}
+                  />
+                  {iconNodes && (
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <LucideSvgPreview
+                        nodes={iconNodes}
+                        size={ctaButtonIconSize}
+                        color="currentColor"
+                        strokeWidth={ctaButtonIconStrokeWidth}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
             </>
           )}
         </PanelBody>
@@ -679,6 +774,11 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               ctaButtonStyle,
               JSON.stringify(ctaPaddingValues),
               JSON.stringify(ctaRadiusValues),
+              ctaButtonShowIcon,
+              ctaButtonIconName,
+              ctaButtonIconPosition,
+              ctaButtonIconSize,
+              ctaButtonIconStrokeWidth,
             ].join('|')}
             block={metadata.name}
             attributes={attributes}
@@ -686,6 +786,17 @@ export default function HeaderEdit({ attributes, setAttributes }) {
           />
         </Disabled>
       </div>
+
+      {iconPickerOpen && (
+        <IconPicker
+          currentIcon={ctaButtonIconName}
+          onSelect={(name) => {
+            setAttributes({ ctaButtonIconName: name });
+            setIconPickerOpen(false);
+          }}
+          onClose={() => setIconPickerOpen(false)}
+        />
+      )}
     </>
   );
 }
