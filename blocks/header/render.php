@@ -16,6 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once get_theme_file_path( 'blocks/advanced-icon/lucide.php' );
+
 $attributes = is_array( $attributes ?? null ) ? $attributes : array();
 
 if ( ! function_exists( 'nextora_header_block_sanitize_border_color' ) ) {
@@ -1020,12 +1022,29 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 		if ( $show_cta ) :
 			$cta_text = isset( $atts['ctaButtonText'] ) ? trim( (string) $atts['ctaButtonText'] ) : '';
 			if ( '' !== $cta_text ) :
-				$cta_url   = isset( $atts['ctaButtonUrl'] ) ? trim( (string) $atts['ctaButtonUrl'] ) : '';
-				$cta_url   = '' !== $cta_url ? esc_url( $cta_url ) : '#';
-				$cta_new   = ! empty( $atts['ctaButtonTarget'] );
-				$cta_style = isset( $atts['ctaButtonStyle'] ) && 'outline' === $atts['ctaButtonStyle'] ? 'outline' : 'solid';
-				$cta_class = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style ) . ' wp-element-button';
+				$cta_url       = isset( $atts['ctaButtonUrl'] ) ? trim( (string) $atts['ctaButtonUrl'] ) : '';
+				$cta_url       = '' !== $cta_url ? esc_url( $cta_url ) : '#';
+				$cta_new       = ! empty( $atts['ctaButtonTarget'] );
+				$cta_style     = isset( $atts['ctaButtonStyle'] ) && 'outline' === $atts['ctaButtonStyle'] ? 'outline' : 'solid';
+				$cta_class     = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style ) . ' wp-element-button';
 				$cta_style_attr = nextora_header_block_build_cta_inline_style( $atts );
+
+				$show_cta_icon  = ! empty( $atts['ctaButtonShowIcon'] );
+				$cta_icon_name  = isset( $atts['ctaButtonIconName'] ) ? sanitize_key( (string) $atts['ctaButtonIconName'] ) : 'arrow-right';
+				$cta_icon_pos   = isset( $atts['ctaButtonIconPosition'] ) && 'left' === $atts['ctaButtonIconPosition'] ? 'left' : 'right';
+				$cta_icon_size  = isset( $atts['ctaButtonIconSize'] ) ? max( 12, (int) $atts['ctaButtonIconSize'] ) : 20;
+				$cta_icon_sw    = isset( $atts['ctaButtonIconStrokeWidth'] ) ? (float) $atts['ctaButtonIconStrokeWidth'] : 2.0;
+
+				$cta_icon_markup = '';
+				if ( $show_cta_icon && '' !== $cta_icon_name ) {
+					$cta_icon_markup = nextora_get_lucide_svg(
+						$cta_icon_name,
+						$cta_icon_size,
+						'currentColor',
+						$cta_icon_sw,
+						'',
+					);
+				}
 		?>
 				<div class="nextora-header-block__cta-wrap">
 					<a
@@ -1033,7 +1052,23 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 						href="<?php echo esc_url( $cta_url ); ?>"
 						<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
 						<?php echo '' !== $cta_style_attr ? 'style="' . esc_attr( $cta_style_attr ) . '"' : ''; ?>>
-						<?php echo esc_html( $cta_text ); ?>
+						<?php if ( $show_cta_icon && 'left' === $cta_icon_pos && '' !== $cta_icon_markup ) : ?>
+							<span class="nextora-header-block__cta-icon nextora-header-block__cta-icon--left" aria-hidden="true">
+								<?php
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in nextora_get_lucide_svg().
+								echo $cta_icon_markup;
+								?>
+							</span>
+						<?php endif; ?>
+						<span class="nextora-header-block__cta-text"><?php echo esc_html( $cta_text ); ?></span>
+						<?php if ( $show_cta_icon && 'right' === $cta_icon_pos && '' !== $cta_icon_markup ) : ?>
+							<span class="nextora-header-block__cta-icon nextora-header-block__cta-icon--right" aria-hidden="true">
+								<?php
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in nextora_get_lucide_svg().
+								echo $cta_icon_markup;
+								?>
+							</span>
+						<?php endif; ?>
 					</a>
 				</div>
 		<?php

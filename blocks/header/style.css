@@ -1152,6 +1152,26 @@ body > .wc-block-components-drawer__screen-overlay {
 		opacity 0.2s ease;
 }
 
+.nextora-header-block__cta-icon {
+	display: inline-flex;
+	line-height: 0;
+	flex-shrink: 0;
+}
+
+.nextora-header-block__cta-icon--left {
+	margin-inline-end: 0.5rem;
+}
+
+.nextora-header-block__cta-icon--right {
+	margin-inline-start: 0.5rem;
+}
+
+.nextora-header-block__cta-icon svg {
+	display: block;
+	width: auto;
+	height: auto;
+}
+
 .wp-block-nextora-header .nextora-header-block__cta.nextora-header-block__cta--outline.wp-element-button,
 .wp-block-nextora-header .nextora-header-block__cta.nextora-header-block__cta--outline.wp-element-button:visited {
 	background-color: transparent;

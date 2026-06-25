@@ -75,3 +75,8 @@ $event_editor = __DIR__ . '/event/register-editor.php';
 if ( is_readable( $event_editor ) ) {
 	require_once $event_editor;
 }
+
+$header_editor = __DIR__ . '/header/register-editor.php';
+if ( is_readable( $header_editor ) ) {
+	require_once $header_editor;
+}
