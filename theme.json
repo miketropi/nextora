@@ -318,14 +318,14 @@
 					"name": "Base"
 				},
 				{
-					"slug": "base-plus",
+					"slug": "medium",
 					"size": "clamp(1.25rem, 0.94rem + 0.55vw, 1.5rem)",
-					"name": "Base Plus"
+					"name": "Medium"
 				}, 
 				{
-					"slug": "medium",
+					"slug": "medium-plus",
 					"size": "clamp(1.375rem, 1.375rem + 0.85vw, 2rem)",
-					"name": "Medium"
+					"name": "Medium Plus"
 				},
 				{
 					"slug": "large",
@@ -439,7 +439,7 @@
 			},
 			"h3": {
 				"typography": {
-					"fontSize": "var(--wp--preset--font-size--medium)",
+					"fontSize": "var(--wp--preset--font-size--medium-plus)",
 					"lineHeight": "1.25"
 				},
 				"spacing": {
@@ -451,7 +451,7 @@
 			},
 			"h4": {
 				"typography": {
-					"fontSize": "var(--wp--preset--font-size--base-plus)",
+					"fontSize": "var(--wp--preset--font-size--medium)",
 					"lineHeight": "1.3"
 				},
 				"spacing": {
@@ -642,7 +642,7 @@
 					}
 				},
 				"typography": {
-					"fontSize": "var(--wp--preset--font-size--medium)",
+					"fontSize": "var(--wp--preset--font-size--medium-plus)",
 					"fontStyle": "normal",
 					"lineHeight": "1.6"
 				},

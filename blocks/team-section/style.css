@@ -244,7 +244,7 @@
 }
 
 .nextora-team-section__card-name {
-	font-size: var(--wp--preset--font-size--base-plus, 1.0625rem);
+	font-size: var(--wp--preset--font-size--medium, 1.0625rem);
 	font-weight: 600;
 	margin: 0 0 0.125rem;
 	color: var(--nextora-team-card-name-color, var(--wp--preset--color--contrast, #0a0a0a));

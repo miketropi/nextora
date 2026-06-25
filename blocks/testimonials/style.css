@@ -178,7 +178,7 @@
 	border: none;
 	font-size: var(
 		--nextora-testimonials-quote-size,
-		var(--wp--preset--font-size--base-plus)
+		var(--wp--preset--font-size--medium)
 	);
 	font-weight: 400;
 	line-height: 1.6;
