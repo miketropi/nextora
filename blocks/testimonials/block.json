@@ -65,6 +65,7 @@
     "headingLevel": { "type": "number", "default": 2 },
     "headingFontSize": { "type": "string", "default": "" },
     "quoteFontSize": { "type": "string", "default": "" },
+    "quoteFontFamily": { "type": "string", "default": "" },
     "imagePosition": { "type": "string", "default": "left" },
     "imageColumnRatio": { "type": "number", "default": 50 },
     "showPagination": { "type": "boolean", "default": true },

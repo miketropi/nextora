@@ -36,6 +36,7 @@ import {
 	colorValueForPicker,
 	useThemeColorPalette,
 } from './color-utils';
+import { useFontFamilyOptions } from '../box-content/font-family-utils';
 
 interface EditProps {
 	attributes: TestimonialsAttributes;
@@ -186,6 +187,7 @@ function TestimonialEditorItem({
 export default function TestimonialsEdit({ attributes, setAttributes }: EditProps) {
 	const [editingId, setEditingId] = useState<string | null>(null);
 	const palette = useThemeColorPalette();
+	const fontFamilyOptions = useFontFamilyOptions();
 
 	const testimonials = normalizeTestimonials(attributes.testimonials);
 	const editingItem = editingId ? testimonials.find((t) => t.id === editingId) : undefined;
@@ -216,6 +218,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 		headingLevel = 2,
 		headingFontSize = '',
 		quoteFontSize = '',
+		quoteFontFamily = '',
 		imagePosition = 'left',
 		imageColumnRatio = 50,
 		showPagination = true,
@@ -239,6 +242,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 	const typographyVars = buildTypographyStyleVars({
 		headingFontSize,
 		quoteFontSize,
+		quoteFontFamily,
 	});
 
 	const blockProps = useBlockProps({
@@ -506,7 +510,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 						help={
 							template === 'story'
 								? __(
-										'Default uses Playfair Display with large size for story template.',
+										'Default uses the theme heading font with large size for story template.',
 										'nextora',
 									)
 								: __(
@@ -525,6 +529,22 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 							}
 						/>
 					</BaseControl>
+					{template === 'story' && (
+						<SelectControl
+							label={__('Quote font family', 'nextora')}
+							value={quoteFontFamily}
+							options={fontFamilyOptions}
+							onChange={(value) =>
+								setAttributes({
+									quoteFontFamily: value ?? '',
+								})
+							}
+							help={__(
+								'Default uses the theme heading font.',
+								'nextora',
+							)}
+						/>
+					)}
 				</PanelBody>
 
 				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>

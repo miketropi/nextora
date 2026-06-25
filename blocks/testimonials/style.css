@@ -372,7 +372,7 @@
 }
 
 .nextora-testimonials--template-story .nextora-testimonials__quote {
-	font-family: var(--wp--preset--font-family--heading, 'Playfair Display', serif);
+	font-family: var(--nextora-testimonials-quote-font-family, var(--wp--preset--font-family--heading));
 	font-size: var(
 		--nextora-testimonials-quote-size,
 		clamp(1.5rem, 3vw, 2.375rem)

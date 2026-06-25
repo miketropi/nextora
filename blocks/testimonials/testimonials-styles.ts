@@ -34,9 +34,10 @@ export function resolveFontSize(raw: string): string | undefined {
 export function buildTypographyStyleVars(attrs: {
 	headingFontSize?: string;
 	quoteFontSize?: string;
+	quoteFontFamily?: string;
 }): Record<string, string> {
 	const vars: Record<string, string> = {};
-	const { headingFontSize, quoteFontSize } = attrs;
+	const { headingFontSize, quoteFontSize, quoteFontFamily } = attrs;
 
 	const resolvedHeadingSize = resolveFontSize(headingFontSize ?? '');
 	if (resolvedHeadingSize) {
@@ -46,6 +47,10 @@ export function buildTypographyStyleVars(attrs: {
 	const resolvedQuoteSize = resolveFontSize(quoteFontSize ?? '');
 	if (resolvedQuoteSize) {
 		vars['--nextora-testimonials-quote-size'] = resolvedQuoteSize;
+	}
+
+	if (quoteFontFamily && quoteFontFamily.trim() !== '') {
+		vars['--nextora-testimonials-quote-font-family'] = quoteFontFamily.trim();
 	}
 
 	return vars;

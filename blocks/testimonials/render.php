@@ -9,6 +9,22 @@
 
 declare( strict_types=1 );
 
+if ( ! function_exists( 'nextora_testimonials_resolve_font_family' ) ) {
+	/**
+	 * Preset slug or custom font-family stack → CSS font-family value.
+	 */
+	function nextora_testimonials_resolve_font_family( string $raw ): string {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return '';
+		}
+		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
+			return 'var(--wp--preset--font-family--' . sanitize_html_class( $raw ) . ')';
+		}
+		return $raw;
+	}
+}
+
 if ( ! function_exists( 'nextora_testimonials_resolve_color' ) ) {
 	/**
 	 * Preset slug or hex → CSS color value.
@@ -281,6 +297,7 @@ $dot_color         = nextora_testimonials_resolve_color( isset( $attributes['pag
 $dot_active        = nextora_testimonials_resolve_color( isset( $attributes['paginationActiveColor'] ) ? (string) $attributes['paginationActiveColor'] : '' );
 $heading_font_size = nextora_testimonials_resolve_font_size( isset( $attributes['headingFontSize'] ) ? (string) $attributes['headingFontSize'] : '' );
 $quote_font_size   = nextora_testimonials_resolve_font_size( isset( $attributes['quoteFontSize'] ) ? (string) $attributes['quoteFontSize'] : '' );
+$quote_font_family = nextora_testimonials_resolve_font_family( isset( $attributes['quoteFontFamily'] ) ? (string) $attributes['quoteFontFamily'] : '' );
 
 $enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
 
@@ -322,6 +339,9 @@ if ( '' !== $heading_font_size ) {
 }
 if ( '' !== $quote_font_size ) {
 	$css_vars['--nextora-testimonials-quote-size'] = $quote_font_size;
+}
+if ( '' !== $quote_font_family ) {
+	$css_vars['--nextora-testimonials-quote-font-family'] = $quote_font_family;
 }
 
 $style_parts = array();
