@@ -244,9 +244,8 @@ function initScrollReveal(section: HTMLElement): void {
 		return;
 	}
 
-	const header = section.querySelector<HTMLElement>('.nextora-instagram-feed__header');
 	const carousel = section.querySelector<HTMLElement>('.nextora-instagram-feed__carousel-root');
-	const targets = [header, carousel].filter((el): el is HTMLElement => el !== null);
+	const targets = [carousel].filter((el): el is HTMLElement => el !== null);
 
 	if (targets.length === 0) {
 		setRevealReady(section);
@@ -264,12 +263,7 @@ function initScrollReveal(section: HTMLElement): void {
 		},
 	});
 
-	if (header) {
-		timeline.to(header, { opacity: 1, y: 0, duration: 1 }, 0);
-	}
-	if (carousel) {
-		timeline.to(carousel, { opacity: 1, y: 0, duration: 1.05 }, header ? 0.18 : 0);
-	}
+	timeline.to(carousel, { opacity: 1, y: 0, duration: 1.05 }, 0);
 
 	let played = false;
 	const playReveal = (): void => {

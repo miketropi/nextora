@@ -108,7 +108,7 @@
 				},
 				{
 					"slug": "secondary",
-					"color": "#f9f9f9",
+					"color": "#B0B0B0",
 					"name": "Secondary"
 				},
 				{
@@ -307,7 +307,7 @@
 				}
 			],
 			"fontSizes": [
-				{
+						{
 					"slug": "small",
 					"size": "clamp(0.88rem, 0.84rem + 0.35vw, 0.95rem)",
 					"name": "Small"

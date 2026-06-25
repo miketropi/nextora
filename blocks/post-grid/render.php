@@ -295,11 +295,11 @@ ob_start();
 								<?php } ?>
 							<?php endif; ?>
 
-							<h3 class="nextora-post-grid__title order-0 !m-0 text-lg font-semibold leading-snug tracking-tight  md:text-xl">
+							<h4 class="nextora-post-grid__title order-0 !m-0 text-lg font-semibold leading-snug tracking-tight  md:text-xl">
 								<a href="<?php the_permalink(); ?>" class="text-inherit !no-underline decoration-paragraph/30 decoration-2 underline-offset-4 transition-colors !text-contrast hover:!text-primary">
 									<?php the_title(); ?>
 								</a>
-							</h3>
+							</h4>
 
 							<?php if ( array() !== $meta_items ) : ?>
 								<div class="nextora-post-grid__meta text-sm text-paragraph<?php echo esc_attr( $meta_sep_outer ); ?>">
