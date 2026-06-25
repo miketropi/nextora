@@ -9,3 +9,4 @@ vendor/
 nextora-v*.zip
 .env
 .roo
+.opencode/opencode.json

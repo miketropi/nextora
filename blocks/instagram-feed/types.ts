@@ -1,7 +1,3 @@
-export type InstagramHeaderLayout = 'split' | 'stacked' | 'left-aligned';
-
-export type InstagramButtonStyle = 'outline' | 'solid' | 'link';
-
 export type InstagramPaginationType = 'bullets' | 'fraction' | 'progressbar';
 
 export type InstagramMediaType = 'image' | 'video';
@@ -21,19 +17,7 @@ export interface InstagramPost {
 
 export interface InstagramFeedAttributes {
 	posts: InstagramPost[];
-	eyebrowText: string;
-	handleText: string;
-	handleLevel: number;
-	headerLayout: InstagramHeaderLayout;
 	contentMaxWidth: string;
-	showButton: boolean;
-	buttonText: string;
-	buttonUrl: string;
-	buttonTarget: boolean;
-	buttonStyle: InstagramButtonStyle;
-	buttonBorderColor: string;
-	buttonTextColor: string;
-	buttonBorderRadius: number;
 	tileBorderRadius: number;
 	tileBackground: string;
 	showTileOverlay: boolean;
@@ -59,8 +43,6 @@ export interface InstagramFeedAttributes {
 	lightboxLinkText: string;
 	lightboxHandleOverride: string;
 	backgroundColor: string;
-	eyebrowColor: string;
-	handleColor: string;
 	tileOverlayColor: string;
 	paginationColor: string;
 	paginationActiveColor: string;

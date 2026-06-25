@@ -445,15 +445,6 @@ if ( array() === $posts ) {
 /** @var list<array<string, mixed>> $posts */
 $posts = array_values( (array) apply_filters( 'nextora_instagram_feed_posts', $posts, $attributes ) );
 
-$header_layout = isset( $attributes['headerLayout'] ) ? (string) $attributes['headerLayout'] : 'split';
-if ( ! in_array( $header_layout, array( 'split', 'stacked', 'left-aligned' ), true ) ) {
-	$header_layout = 'split';
-}
-
-$handle_level = isset( $attributes['handleLevel'] ) ? (int) $attributes['handleLevel'] : 4;
-$handle_level = max( 1, min( 6, $handle_level ) );
-$handle_tag   = 'h' . $handle_level;
-
 $content_max = isset( $attributes['contentMaxWidth'] ) ? trim( (string) $attributes['contentMaxWidth'] ) : '1200px';
 if ( '' === $content_max ) {
 	$content_max = '1200px';
@@ -470,25 +461,10 @@ if ( '' === $image_size ) {
 $placeholder_url = nextora_instagram_feed_placeholder_image_url();
 
 $bg_color       = nextora_instagram_feed_resolve_color( isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '' );
-$eyebrow_c      = nextora_instagram_feed_resolve_color( isset( $attributes['eyebrowColor'] ) ? (string) $attributes['eyebrowColor'] : '' );
-$handle_c       = nextora_instagram_feed_resolve_color( isset( $attributes['handleColor'] ) ? (string) $attributes['handleColor'] : '' );
-$btn_border_c   = nextora_instagram_feed_resolve_color( isset( $attributes['buttonBorderColor'] ) ? (string) $attributes['buttonBorderColor'] : '' );
-$btn_text_c     = nextora_instagram_feed_resolve_color( isset( $attributes['buttonTextColor'] ) ? (string) $attributes['buttonTextColor'] : '' );
 $overlay_c      = nextora_instagram_feed_resolve_color( isset( $attributes['tileOverlayColor'] ) ? (string) $attributes['tileOverlayColor'] : '' );
 $dot_c          = nextora_instagram_feed_resolve_color( isset( $attributes['paginationColor'] ) ? (string) $attributes['paginationColor'] : '' );
 $dot_active_c   = nextora_instagram_feed_resolve_color( isset( $attributes['paginationActiveColor'] ) ? (string) $attributes['paginationActiveColor'] : '' );
 $sidebar_bg_c   = nextora_instagram_feed_resolve_color( isset( $attributes['lightboxSidebarBackground'] ) ? (string) $attributes['lightboxSidebarBackground'] : '' );
-
-$btn_radius = isset( $attributes['buttonBorderRadius'] ) ? max( 0, min( 50, (int) $attributes['buttonBorderRadius'] ) ) : 50;
-$btn_style  = isset( $attributes['buttonStyle'] ) ? (string) $attributes['buttonStyle'] : 'outline';
-if ( ! in_array( $btn_style, array( 'outline', 'solid', 'link' ), true ) ) {
-	$btn_style = 'outline';
-}
-
-$show_button = ! isset( $attributes['showButton'] ) || (bool) $attributes['showButton'];
-$button_url  = isset( $attributes['buttonUrl'] ) ? trim( (string) $attributes['buttonUrl'] ) : '';
-$button_text = isset( $attributes['buttonText'] ) ? trim( (string) $attributes['buttonText'] ) : __( 'Follow on Instagram', 'nextora' );
-$button_tgt  = ! empty( $attributes['buttonTarget'] );
 
 $spv_mobile  = round( isset( $attributes['slidesPerViewMobile'] ) ? (float) $attributes['slidesPerViewMobile'] : 2.15, 3 );
 $spv_tablet  = round( isset( $attributes['slidesPerViewTablet'] ) ? (float) $attributes['slidesPerViewTablet'] : 3.0, 3 );
@@ -513,13 +489,9 @@ $lightbox_arrows     = ! isset( $attributes['lightboxShowArrows'] ) || (bool) $a
 $lightbox_caption    = ! isset( $attributes['lightboxShowCaption'] ) || (bool) $attributes['lightboxShowCaption'];
 $lightbox_link_text  = isset( $attributes['lightboxLinkText'] ) ? trim( (string) $attributes['lightboxLinkText'] ) : __( 'View on Instagram', 'nextora' );
 $lightbox_handle_raw = isset( $attributes['lightboxHandleOverride'] ) ? trim( (string) $attributes['lightboxHandleOverride'] ) : '';
-$handle_text_raw     = isset( $attributes['handleText'] ) ? trim( (string) $attributes['handleText'] ) : '@yourbrand';
-$lightbox_handle     = nextora_instagram_feed_format_handle( '' !== $lightbox_handle_raw ? $lightbox_handle_raw : $handle_text_raw );
+$lightbox_handle     = nextora_instagram_feed_format_handle( '' !== $lightbox_handle_raw ? $lightbox_handle_raw : '@yourbrand' );
 
 $enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
-
-$eyebrow_html = isset( $attributes['eyebrowText'] ) ? (string) $attributes['eyebrowText'] : '';
-$handle_html  = nextora_instagram_feed_format_handle( $handle_text_raw );
 
 $slide_count = count( $posts );
 $use_loop    = $loop && $slide_count > 1;
@@ -568,23 +540,10 @@ $css_vars = array(
 	'--nextora-instagram-max-width'   => $content_max,
 	'--nextora-instagram-tile-radius' => $tile_radius . 'px',
 	'--nextora-instagram-tile-gap'    => $space . 'px',
-	'--nextora-instagram-btn-radius'  => $btn_radius . 'px',
 );
 
 if ( '' !== $bg_color ) {
 	$css_vars['--nextora-instagram-bg'] = $bg_color;
-}
-if ( '' !== $eyebrow_c ) {
-	$css_vars['--nextora-instagram-eyebrow-color'] = $eyebrow_c;
-}
-if ( '' !== $handle_c ) {
-	$css_vars['--nextora-instagram-handle-color'] = $handle_c;
-}
-if ( '' !== $btn_border_c ) {
-	$css_vars['--nextora-instagram-btn-border'] = $btn_border_c;
-}
-if ( '' !== $btn_text_c ) {
-	$css_vars['--nextora-instagram-btn-text'] = $btn_text_c;
 }
 if ( '' !== $tile_bg ) {
 	$css_vars['--nextora-instagram-tile-bg'] = $tile_bg;
@@ -614,7 +573,6 @@ $inline_style = implode( ';', $style_parts );
 $wrapper_classes = array(
 	'nextora-instagram-feed',
 	'nextora-instagram-feed--loading',
-	'nextora-instagram-feed--header-' . sanitize_html_class( $header_layout ),
 );
 if ( $enable_scroll ) {
 	$wrapper_classes[] = 'nextora-instagram-feed--reveal-pending';
@@ -656,38 +614,6 @@ nextora_instagram_feed_enqueue_view_script();
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<div class="nextora-instagram-feed__inner">
-		<header class="nextora-instagram-feed__header nextora-instagram-feed__header--<?php echo esc_attr( $header_layout ); ?>">
-			<div class="nextora-instagram-feed__header-copy">
-				<?php if ( '' !== trim( wp_strip_all_tags( $eyebrow_html ) ) ) : ?>
-					<p class="nextora-instagram-feed__eyebrow"><?php echo wp_kses_post( $eyebrow_html ); ?></p>
-				<?php endif; ?>
-				<?php
-				printf(
-					'<%1$s class="nextora-instagram-feed__handle">%2$s</%1$s>',
-					$handle_tag, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- h1-h6.
-					esc_html( $handle_html ),
-				);
-				?>
-			</div>
-			<?php if ( $show_button && '' !== $button_text ) : ?>
-				<div class="nextora-instagram-feed__header-cta">
-					<?php if ( '' !== $button_url ) : ?>
-						<a
-							class="nextora-instagram-feed__btn nextora-instagram-feed__btn--<?php echo esc_attr( $btn_style ); ?>"
-							href="<?php echo esc_url( $button_url ); ?>"
-							<?php echo $button_tgt ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
-						>
-							<?php echo esc_html( $button_text ); ?>
-						</a>
-					<?php else : ?>
-						<span class="nextora-instagram-feed__btn nextora-instagram-feed__btn--<?php echo esc_attr( $btn_style ); ?>">
-							<?php echo esc_html( $button_text ); ?>
-						</span>
-					<?php endif; ?>
-				</div>
-			<?php endif; ?>
-		</header>
-
 		<div
 			class="nextora-instagram-feed__carousel-root"
 			data-swiper-opts="<?php echo esc_attr( $opts_string ); ?>"
