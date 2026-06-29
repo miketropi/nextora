@@ -130,7 +130,11 @@ export function resolvePosterUrl(
 		return mediaUrlById.get(post.mediaId);
 	}
 
-	return resolveMediaUrl(post, mediaUrlById);
+	if (post.mediaType === 'image') {
+		return resolveMediaUrl(post, mediaUrlById);
+	}
+
+	return undefined;
 }
 
 export function buildSectionStyleVars(attrs: Partial<InstagramFeedAttributes>): Record<string, string> {

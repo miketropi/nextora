@@ -4,6 +4,7 @@ import {
 	Button,
 	RangeControl,
 	SelectControl,
+	TextareaControl,
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
@@ -36,7 +37,9 @@ export default function MemberEditForm({ member, photoUrl, onPatch }: MemberEdit
 	return (
 		<div className="nextora-team-section__member-form">
 			<div className="nextora-team-section__member-form-photo">
-				<p className="components-base-control__label">{__('Photo', 'nextora')}</p>
+				<h4 className="nextora-team-section__member-form-section-heading">
+					{__('Photo', 'nextora')}
+				</h4>
 				<MediaUploadCheck>
 					<MediaUpload
 						onSelect={(media: WPMedia) =>
@@ -50,14 +53,20 @@ export default function MemberEditForm({ member, photoUrl, onPatch }: MemberEdit
 						render={({ open }) => (
 							<div className="nextora-team-section__member-form-media">
 								{photoUrl ? (
-									<img
-										src={photoUrl}
-										alt=""
-										className="nextora-team-section__member-form-media-preview"
-									/>
+									<div className="nextora-team-section__member-form-media-preview-wrap">
+										<img
+											src={photoUrl}
+											alt=""
+											className="nextora-team-section__member-form-media-preview"
+										/>
+									</div>
 								) : (
 									<div className="nextora-team-section__member-form-media-empty">
-										{__('No photo selected', 'nextora')}
+										<span
+											className="nextora-team-section__member-form-media-empty-icon"
+											aria-hidden="true"
+										/>
+										<span>{__('No photo selected', 'nextora')}</span>
 									</div>
 								)}
 								<div className="nextora-team-section__member-form-media-actions">
@@ -90,61 +99,79 @@ export default function MemberEditForm({ member, photoUrl, onPatch }: MemberEdit
 			</div>
 
 			<div className="nextora-team-section__member-form-fields">
-				<TextControl
-					label={__('Name', 'nextora')}
-					value={member.name}
-					onChange={(name) => onPatch({ name: name ?? '' })}
-				/>
-				<TextControl
-					label={__('Role', 'nextora')}
-					value={member.role}
-					onChange={(role) => onPatch({ role: role ?? '' })}
-				/>
-				<TextControl
-					label={__('Bio', 'nextora')}
-					value={member.bio}
-					onChange={(bio) => onPatch({ bio: bio ?? '' })}
-					help={__('Short description shown on the member card.', 'nextora')}
-				/>
-				<RangeControl
-					label={__('Bio line clamp', 'nextora')}
-					value={member.bioLineClamp}
-					onChange={(bioLineClamp) => onPatch({ bioLineClamp: bioLineClamp ?? 3 })}
-					min={1}
-					max={5}
-				/>
+				<div className="nextora-team-section__member-form-section">
+					<h4 className="nextora-team-section__member-form-section-heading">
+						{__('Profile', 'nextora')}
+					</h4>
+					<TextControl
+						label={__('Name', 'nextora')}
+						value={member.name}
+						onChange={(name) => onPatch({ name: name ?? '' })}
+					/>
+					<TextControl
+						label={__('Role', 'nextora')}
+						value={member.role}
+						onChange={(role) => onPatch({ role: role ?? '' })}
+					/>
+					<TextareaControl
+						label={__('Bio', 'nextora')}
+						value={member.bio}
+						onChange={(bio) => onPatch({ bio: bio ?? '' })}
+						help={__('Short description shown on the member card.', 'nextora')}
+					/>
+					<RangeControl
+						label={__('Bio line clamp', 'nextora')}
+						value={member.bioLineClamp}
+						onChange={(bioLineClamp) => onPatch({ bioLineClamp: bioLineClamp ?? 3 })}
+						min={1}
+						max={5}
+					/>
+				</div>
 
 				<div className="nextora-team-section__member-form-section">
-					<p className="components-base-control__label">{__('Tags', 'nextora')}</p>
-					{member.tags.map((tag, tagIndex) => (
-						<div
-							key={`${member.id}-tag-${tagIndex}`}
-							className="nextora-team-section__member-form-row"
+					<div className="nextora-team-section__member-form-section-header">
+						<h4 className="nextora-team-section__member-form-section-heading">
+							{__('Tags', 'nextora')}
+						</h4>
+						<Button
+							variant="secondary"
+							size="compact"
+							onClick={() => onPatch({ tags: [...member.tags, ''] })}
 						>
-							<TextControl
-								label={__('Tag', 'nextora')}
-								value={tag}
-								onChange={(v) => {
-									const tags = [...member.tags];
-									tags[tagIndex] = v ?? '';
-									onPatch({ tags });
-								}}
-							/>
-							<Button
-								variant="secondary"
-								isDestructive
-								onClick={() => {
-									const tags = member.tags.filter((_, i) => i !== tagIndex);
-									onPatch({ tags });
-								}}
-							>
-								{__('Remove', 'nextora')}
-							</Button>
+							{__('Add tag', 'nextora')}
+						</Button>
+					</div>
+					{member.tags.length > 0 && (
+						<div className="nextora-team-section__member-form-items">
+							{member.tags.map((tag, tagIndex) => (
+								<div
+									key={`${member.id}-tag-${tagIndex}`}
+									className="nextora-team-section__member-form-row"
+								>
+									<TextControl
+										label={__('Tag', 'nextora')}
+										value={tag}
+										onChange={(v) => {
+											const tags = [...member.tags];
+											tags[tagIndex] = v ?? '';
+											onPatch({ tags });
+										}}
+									/>
+									<Button
+										variant="secondary"
+										size="compact"
+										isDestructive
+										onClick={() => {
+											const tags = member.tags.filter((_, i) => i !== tagIndex);
+											onPatch({ tags });
+										}}
+									>
+										{__('Remove', 'nextora')}
+									</Button>
+								</div>
+							))}
 						</div>
-					))}
-					<Button variant="secondary" onClick={() => onPatch({ tags: [...member.tags, ''] })}>
-						{__('Add tag', 'nextora')}
-					</Button>
+					)}
 				</div>
 
 				<div className="nextora-team-section__member-form-section">
@@ -155,63 +182,73 @@ export default function MemberEditForm({ member, photoUrl, onPatch }: MemberEdit
 					/>
 					{member.showSocialLinks && (
 						<>
-							{member.socialLinks.map((link, linkIndex) => (
-								<div
-									key={`${member.id}-social-${linkIndex}`}
-									className="nextora-team-section__member-form-social"
+							<div className="nextora-team-section__member-form-section-header">
+								<h4 className="nextora-team-section__member-form-section-heading">
+									{__('Social links', 'nextora')}
+								</h4>
+								<Button
+									variant="secondary"
+									size="compact"
+									onClick={() =>
+										onPatch({
+											socialLinks: [
+												...member.socialLinks,
+												{ platform: 'linkedin', url: '' },
+											],
+										})
+									}
 								>
-									<SelectControl
-										label={__('Platform', 'nextora')}
-										value={link.platform}
-										options={socialPlatformOptions}
-										onChange={(platform) => {
-											const socialLinks = [...member.socialLinks];
-											socialLinks[linkIndex] = {
-												...socialLinks[linkIndex],
-												platform: platform ?? 'website',
-											};
-											onPatch({ socialLinks });
-										}}
-									/>
-									<p className="components-base-control__label">{__('URL', 'nextora')}</p>
-									<URLInput
-										value={link.url}
-										onChange={(url) => {
-											const socialLinks = [...member.socialLinks];
-											socialLinks[linkIndex] = {
-												...socialLinks[linkIndex],
-												url: url ?? '',
-											};
-											onPatch({ socialLinks });
-										}}
-									/>
-									<Button
-										variant="secondary"
-										isDestructive
-										onClick={() => {
-											const socialLinks = member.socialLinks.filter(
-												(_, i) => i !== linkIndex,
-											);
-											onPatch({ socialLinks });
-										}}
-									>
-										{__('Remove link', 'nextora')}
-									</Button>
+									{__('Add link', 'nextora')}
+								</Button>
+							</div>
+							{member.socialLinks.length > 0 && (
+								<div className="nextora-team-section__member-form-items">
+									{member.socialLinks.map((link, linkIndex) => (
+										<div
+											key={`${member.id}-social-${linkIndex}`}
+											className="nextora-team-section__member-form-social"
+										>
+											<SelectControl
+												label={__('Platform', 'nextora')}
+												value={link.platform}
+												options={socialPlatformOptions}
+												onChange={(platform) => {
+													const socialLinks = [...member.socialLinks];
+													socialLinks[linkIndex] = {
+														...socialLinks[linkIndex],
+														platform: platform ?? 'website',
+													};
+													onPatch({ socialLinks });
+												}}
+											/>
+											<URLInput
+												value={link.url}
+												onChange={(url) => {
+													const socialLinks = [...member.socialLinks];
+													socialLinks[linkIndex] = {
+														...socialLinks[linkIndex],
+														url: url ?? '',
+													};
+													onPatch({ socialLinks });
+												}}
+											/>
+											<Button
+												variant="secondary"
+												size="compact"
+												isDestructive
+												onClick={() => {
+													const socialLinks = member.socialLinks.filter(
+														(_, i) => i !== linkIndex,
+													);
+													onPatch({ socialLinks });
+												}}
+											>
+												{__('Remove link', 'nextora')}
+											</Button>
+										</div>
+									))}
 								</div>
-							))}
-							<Button
-								variant="secondary"
-								onClick={() =>
-									onPatch({
-										socialLinks: [
-											...member.socialLinks,
-											{ platform: 'linkedin', url: '' },
-										],
-									})
-								}
-							>
-								{__('Add social link', 'nextora')}
-							</Button>
+							)}
 						</>
 					)}
 				</div>

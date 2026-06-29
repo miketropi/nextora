@@ -161,7 +161,63 @@
 .nextora-team-section__member-form-section {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 14px;
+}
+
+.nextora-team-section__member-form-section-heading {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: var(--wp-components-color-foreground, #1e1e1e);
+}
+
+.nextora-team-section__member-form-section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.nextora-team-section__member-form-section-header .nextora-team-section__member-form-section-heading {
+	margin: 0;
+}
+
+.nextora-team-section__member-form-items {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.nextora-team-section__member-form-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: flex-end;
+	padding: 10px;
+	background: color-mix(in srgb, currentColor 4%, transparent);
+	border: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+	border-radius: 6px;
+}
+
+.nextora-team-section__member-form-social {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 12px;
+	background: color-mix(in srgb, currentColor 4%, transparent);
+	border: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+	border-radius: 6px;
+}
+
+.nextora-team-section__member-form-row .components-base-control,
+.nextora-team-section__member-form-social .components-base-control {
+	flex: 1;
+	min-width: 160px;
+}
+
+.nextora-team-section__member-form-social .components-base-control:last-of-type {
+	margin-bottom: 0;
 }
 
 .nextora-team-section__member-form-media {
@@ -170,26 +226,43 @@
 	gap: 8px;
 }
 
+.nextora-team-section__member-form-media-preview-wrap {
+	aspect-ratio: 3 / 4;
+	overflow: hidden;
+	border-radius: 10px;
+	border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
 .nextora-team-section__member-form-media-preview {
 	display: block;
-	width: auto;
-	max-width: 100%;
-	max-height: 220px;
-	object-fit: contain;
-	border-radius: 8px;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .nextora-team-section__member-form-media-empty {
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	min-height: 140px;
+	gap: 8px;
+	aspect-ratio: 3 / 4;
 	padding: 1rem;
 	font-size: 0.8125rem;
 	text-align: center;
-	color: color-mix(in srgb, currentColor 55%, transparent);
-	background: color-mix(in srgb, currentColor 6%, transparent);
-	border-radius: 8px;
+	color: color-mix(in srgb, currentColor 50%, transparent);
+	background: color-mix(in srgb, currentColor 5%, transparent);
+	border: 2px dashed color-mix(in srgb, currentColor 15%, transparent);
+	border-radius: 10px;
+}
+
+.nextora-team-section__member-form-media-empty-icon::before {
+	content: "+";
+	display: block;
+	font-size: 28px;
+	font-weight: 300;
+	line-height: 1;
+	color: color-mix(in srgb, currentColor 35%, transparent);
 }
 
 .nextora-team-section__member-form-media-actions {
@@ -199,28 +272,21 @@
 	align-items: center;
 }
 
-.nextora-team-section__member-form-row,
-.nextora-team-section__member-form-social {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	align-items: flex-end;
-	padding-bottom: 8px;
-	border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+/* Modal header — Done button sits between title and close (X) */
+.nextora-team-section__member-modal .components-modal__header {
+	flex-wrap: nowrap;
+	gap: 12px;
 }
 
-.nextora-team-section__member-form-row .components-base-control,
-.nextora-team-section__member-form-social .components-base-control {
-	flex: 1;
-	min-width: 160px;
+.nextora-team-section__member-modal .components-modal__header-heading-container {
+	flex: 1 1 auto;
+	min-width: 0;
 }
 
-.nextora-team-section__member-modal-footer {
-	display: flex;
-	justify-content: flex-end;
-	margin-top: 1.25rem;
-	padding-top: 1rem;
-	border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+.nextora-team-section__member-modal .components-modal__header-heading {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .nextora-team-section__inspector-member:last-child {
