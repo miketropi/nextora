@@ -78,3 +78,14 @@ export function buildSectionStyleVars(attrs: Partial<TestimonialsAttributes>): R
 
 	return vars;
 }
+
+export function resolveFontFamily(raw: string): string {
+	const value = raw.trim();
+	if (!value) {
+		return '';
+	}
+	if (/^[a-z0-9-]+$/.test(value)) {
+		return `var(--wp--preset--font-family--${value})`;
+	}
+	return value;
+}

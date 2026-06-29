@@ -5,6 +5,7 @@
  * render.php enqueues this file when needed.
  */
 import { initHoverReveal } from './hover-reveal';
+import { initLightRays } from './light-rays';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -17,6 +18,7 @@ const REVEAL_START_RATIO = 0.88;
 const REVEAL_FALLBACK_MS = 1500;
 const PARALLAX_INIT_ATTR = 'data-nextora-ac-parallax-init';
 const MAX_PARALLAX_PX = 80;
+const AMBIENT_INIT_ATTR = 'data-nextora-ac-ambient-init';
 
 function prefersReducedMotion(): boolean {
   return (
@@ -182,6 +184,114 @@ function bindBgImageRefresh(root: HTMLElement): void {
   );
 }
 
+function initAmbientIcons(root: HTMLElement): void {
+  if (!root.classList.contains('nextora-advanced-container--ambient-icons')) {
+    return;
+  }
+  if (root.getAttribute(AMBIENT_INIT_ATTR) === '1') {
+    return;
+  }
+  root.setAttribute(AMBIENT_INIT_ATTR, '1');
+
+  if (prefersReducedMotion()) {
+    return;
+  }
+
+  const container = root.querySelector<HTMLElement>('.nextora-advanced-container__ambient-icons');
+  if (!container) {
+    return;
+  }
+
+  const icons = container.querySelectorAll<HTMLElement>('.nextora-advanced-container__ambient-icon');
+  const count = icons.length;
+  if (count === 0) {
+    return;
+  }
+
+  const ambientContainer = container;
+  const padding = 8;
+  const iconSize = (icons[0] as HTMLElement).offsetWidth || 48;
+
+  const rect = ambientContainer.getBoundingClientRect();
+  const availW = Math.max(1, rect.width - padding * 2);
+  const availH = Math.max(1, rect.height - padding * 2);
+  const cellArea = (availW * availH) / count;
+  const cellSide = Math.sqrt(cellArea);
+  const minCellSide = iconSize + 30;
+  const side = Math.max(minCellSide, cellSide);
+  const gridCols = Math.max(1, Math.floor(availW / side));
+  const gridRows = Math.ceil(count / gridCols);
+  const totalCells = gridCols * gridRows;
+
+  function cellToPosition(cellIdx: number): { left: number; top: number } {
+    const idx = cellIdx % totalCells;
+    const col = idx % gridCols;
+    const row = Math.floor(idx / gridCols);
+    const cellW = (rect.width - padding * 2) / gridCols;
+    const cellH = (rect.height - padding * 2) / gridRows;
+    const margin = 12;
+    const left = padding + col * cellW + margin + Math.random() * Math.max(0, cellW - iconSize - margin * 2);
+    const top = padding + row * cellH + margin + Math.random() * Math.max(0, cellH - iconSize - margin * 2);
+    return { left, top };
+  }
+
+  const usedCells = new Set<number>();
+
+  function pickUniqueCell(): number {
+    const free = [];
+    for (let i = 0; i < totalCells; i++) {
+      if (!usedCells.has(i)) free.push(i);
+    }
+    if (free.length === 0) {
+      usedCells.clear();
+      for (let i = 0; i < totalCells; i++) free.push(i);
+    }
+    const idx = free[Math.floor(Math.random() * free.length)];
+    usedCells.add(idx);
+    return idx;
+  }
+
+  function cycleIcon(icon: HTMLElement, currentCell: number): void {
+    const pos = cellToPosition(currentCell);
+    const stayDuration = 2.5 + Math.random() * 4.5;
+    const fadeDuration = 0.8 + Math.random() * 0.6;
+
+    gsap.set(icon, {
+      left: `${pos.left}px`,
+      top: `${pos.top}px`,
+      opacity: 0,
+    });
+
+    const tl = gsap.timeline({ onComplete: () => {
+      usedCells.delete(currentCell);
+      const nextCell = pickUniqueCell();
+      cycleIcon(icon, nextCell);
+    }});
+
+    tl.to(icon, {
+      opacity: 1,
+      duration: fadeDuration,
+      ease: 'power2.out',
+    })
+    .to(icon, {
+      opacity: 1,
+      duration: stayDuration,
+      ease: 'none',
+    })
+    .to(icon, {
+      opacity: 0,
+      duration: fadeDuration,
+      ease: 'power2.in',
+    });
+  }
+
+  icons.forEach((icon, i) => {
+    const cell = pickUniqueCell();
+    const initialDelay = i * 0.3 + Math.random() * 1.5;
+    gsap.delayedCall(initialDelay, () => cycleIcon(icon as HTMLElement, cell));
+  });
+}
+
 function initRoot(root: HTMLElement): void {
   if (root.getAttribute(INIT_ATTR) === '1') {
     return;
@@ -191,6 +301,8 @@ function initRoot(root: HTMLElement): void {
   initScrollReveal(root);
   initParallax(root);
   initHoverReveal(root);
+  initAmbientIcons(root);
+  initLightRays(root);
   bindBgImageRefresh(root);
 }
 

@@ -311,6 +311,35 @@ $hover_reveal_image_id = isset( $attributes['hoverRevealImageId'] ) ? (int) $att
 $hover_reveal_image_url = isset( $attributes['hoverRevealImageUrl'] )
 	? esc_url_raw( trim( (string) $attributes['hoverRevealImageUrl'] ) )
 	: '';
+$enable_ambient_animation = ! empty( $attributes['enableAmbientAnimation'] );
+$ambient_animation_type   = isset( $attributes['ambientAnimationType'] ) ? (string) $attributes['ambientAnimationType'] : 'ambient-icons';
+$ambient_icons_raw = isset( $attributes['ambientIcons'] ) && is_array( $attributes['ambientIcons'] ) ? $attributes['ambientIcons'] : array();
+
+// Backward compatibility: migrate old ambientIconNames → ambientIcons
+if ( array() === $ambient_icons_raw && isset( $attributes['ambientIconNames'] ) && is_array( $attributes['ambientIconNames'] ) ) {
+	$old_names = $attributes['ambientIconNames'];
+	$old_names = array_values( array_filter( $old_names, 'is_string' ) );
+	foreach ( $old_names as $old_name ) {
+		$ambient_icons_raw[] = array(
+			'name'  => $old_name,
+			'color' => '',
+		);
+	}
+}
+$ambient_icon_size        = isset( $attributes['ambientIconSize'] ) ? max( 8, min( 300, (int) $attributes['ambientIconSize'] ) ) : 48;
+$ambient_icon_stroke_width = isset( $attributes['ambientIconStrokeWidth'] ) ? max( 0.25, min( 8, (float) $attributes['ambientIconStrokeWidth'] ) ) : 1.5;
+$light_rays_origin         = isset( $attributes['lightRaysOrigin'] ) ? (string) $attributes['lightRaysOrigin'] : 'top-center';
+$light_rays_color          = nextora_ac_resolve_color( isset( $attributes['lightRaysColor'] ) ? (string) $attributes['lightRaysColor'] : '' );
+$light_rays_speed          = isset( $attributes['lightRaysSpeed'] ) ? max( 0.1, min( 10, (float) $attributes['lightRaysSpeed'] ) ) : 1;
+$light_rays_spread         = isset( $attributes['lightRaysSpread'] ) ? max( 0.05, min( 5, (float) $attributes['lightRaysSpread'] ) ) : 0.5;
+$light_rays_length         = isset( $attributes['lightRaysLength'] ) ? max( 0.1, min( 10, (float) $attributes['lightRaysLength'] ) ) : 1;
+$light_rays_pulsating      = ! empty( $attributes['lightRaysPulsating'] );
+$light_rays_fade_distance  = isset( $attributes['lightRaysFadeDistance'] ) ? max( 0.1, min( 5, (float) $attributes['lightRaysFadeDistance'] ) ) : 1;
+$light_rays_saturation     = isset( $attributes['lightRaysSaturation'] ) ? max( 0, min( 1, (float) $attributes['lightRaysSaturation'] ) ) : 1;
+$light_rays_follow_mouse   = ! array_key_exists( 'lightRaysFollowMouse', $attributes ) || ! empty( $attributes['lightRaysFollowMouse'] );
+$light_rays_mouse_influence = isset( $attributes['lightRaysMouseInfluence'] ) ? max( 0, min( 1, (float) $attributes['lightRaysMouseInfluence'] ) ) : 0.3;
+$light_rays_noise_amount   = isset( $attributes['lightRaysNoiseAmount'] ) ? max( 0, min( 1, (float) $attributes['lightRaysNoiseAmount'] ) ) : 0.05;
+$light_rays_distortion     = isset( $attributes['lightRaysDistortion'] ) ? max( 0, min( 1, (float) $attributes['lightRaysDistortion'] ) ) : 0.05;
 
 if ( $background_image_id > 0 && '' === $background_image_url ) {
 	$resolved_image = wp_get_attachment_image_url( $background_image_id, 'full' );
@@ -398,8 +427,17 @@ if ( $enable_scroll ) {
 	$classes[] = 'nextora-advanced-container--scroll-reveal';
 }
 
-if ( $enable_scroll || ( $enable_parallax && ( $use_image || $use_video ) ) || $use_hover_reveal ) {
+if ( $enable_scroll || ( $enable_parallax && ( $use_image || $use_video ) ) || $use_hover_reveal || $enable_ambient_animation ) {
 	nextora_ac_enqueue_view_script();
+}
+
+if ( $enable_ambient_animation && 'ambient-icons' === $ambient_animation_type ) {
+	$classes[]    = 'nextora-advanced-container--ambient-icons';
+	$style_bits[] = '--nextora-ac-ambient-icon-size:' . (string) $ambient_icon_size . 'px';
+	$style_bits[] = '--nextora-ac-ambient-icon-stroke-width:' . (string) $ambient_icon_stroke_width;
+}
+if ( $enable_ambient_animation && 'light-rays' === $ambient_animation_type ) {
+	$classes[] = 'nextora-advanced-container--light-rays';
 }
 
 $wrapper_args = array(
@@ -415,6 +453,34 @@ if ( $enable_parallax && ( $use_image || $use_video ) && ! $enable_background_an
 }
 if ( $use_hover_reveal ) {
 	$wrapper_args['data-nextora-ac-hover-reveal'] = '1';
+}
+if ( $enable_ambient_animation && 'ambient-icons' === $ambient_animation_type && count( $ambient_icons_raw ) > 0 ) {
+	$names_only = array_map(
+		static function ( mixed $item ): string {
+			return is_array( $item ) && isset( $item['name'] ) && is_string( $item['name'] ) ? $item['name'] : '';
+		},
+		$ambient_icons_raw,
+	);
+	$names_only = array_values( array_filter( $names_only, static fn( string $n ): bool => '' !== $n ) );
+	$wrapper_args['data-nextora-ac-ambient-icons'] = (string) wp_json_encode( $names_only );
+}
+if ( $enable_ambient_animation && 'light-rays' === $ambient_animation_type ) {
+	$wrapper_args['data-nextora-ac-light-rays'] = (string) wp_json_encode(
+		array(
+			'origin'         => $light_rays_origin,
+			'color'          => '' !== $light_rays_color ? $light_rays_color : '#ffffff',
+			'speed'          => $light_rays_speed,
+			'spread'         => $light_rays_spread,
+			'length'         => $light_rays_length,
+			'pulsating'      => $light_rays_pulsating,
+			'fadeDistance'   => $light_rays_fade_distance,
+			'saturation'     => $light_rays_saturation,
+			'followMouse'    => $light_rays_follow_mouse,
+			'mouseInfluence' => $light_rays_mouse_influence,
+			'noiseAmount'    => $light_rays_noise_amount,
+			'distortion'     => $light_rays_distortion,
+		),
+	);
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
@@ -476,11 +542,60 @@ if ( $use_hover_reveal ) {
 		</div>
 	<?php endif; ?>
 
+	<?php if ( $enable_ambient_animation && 'light-rays' === $ambient_animation_type ) : ?>
+		<div class="nextora-advanced-container__light-rays" aria-hidden="true"></div>
+	<?php endif; ?>
+
 	<?php if ( $use_overlay ) : ?>
 		<div
 			class="<?php echo esc_attr( 'nextora-advanced-container__overlay nextora-advanced-container__overlay--' . $overlay_style ); ?>"
 			aria-hidden="true"
 		></div>
+	<?php endif; ?>
+
+	<?php if ( $enable_ambient_animation && 'ambient-icons' === $ambient_animation_type && count( $ambient_icons_raw ) > 0 ) : ?>
+		<?php
+		if ( ! function_exists( 'nextora_get_lucide_svg' ) ) {
+			$lucide_file = dirname( __DIR__ ) . '/advanced-icon/lucide.php';
+			if ( is_readable( $lucide_file ) ) {
+				require_once $lucide_file;
+			}
+		}
+		?>
+		<div class="nextora-advanced-container__ambient-icons" aria-hidden="true">
+			<?php foreach ( $ambient_icons_raw as $icon_item ) : ?>
+				<?php
+				if ( ! is_array( $icon_item ) || ! isset( $icon_item['name'] ) || ! is_string( $icon_item['name'] ) || '' === $icon_item['name'] ) {
+					continue;
+				}
+				$icon_name      = $icon_item['name'];
+				$icon_color_raw = isset( $icon_item['color'] ) && is_string( $icon_item['color'] ) ? (string) $icon_item['color'] : '';
+				$icon_color     = '' !== $icon_color_raw
+					? nextora_ac_resolve_color( $icon_color_raw )
+					: '';
+				$svg            = function_exists( 'nextora_get_lucide_svg' )
+					? nextora_get_lucide_svg(
+						$icon_name,
+						$ambient_icon_size,
+						'' !== $icon_color ? $icon_color : 'currentColor',
+						$ambient_icon_stroke_width,
+						'',
+					)
+					: '';
+				if ( '' !== $svg ) :
+					?>
+					<span
+						class="nextora-advanced-container__ambient-icon"
+						data-nextora-ac-ambient-icon="<?php echo esc_attr( $icon_name ); ?>"
+						<?php if ( '' !== $icon_color ) : ?>
+						style="--nextora-ac-ambient-icon-color:<?php echo esc_attr( $icon_color ); ?>"
+						<?php endif; ?>
+					>
+						<?php echo $svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — SVG built by nextora_get_lucide_svg?>
+					</span>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</div>
 	<?php endif; ?>
 
 	<div class="nextora-advanced-container__inner">
