@@ -321,19 +321,28 @@ export function initLightRays(root: HTMLElement): LightRays | null {
     return null;
   }
 
+  const n = (v: unknown, fallback: number): number => {
+    if (typeof v === 'number' && !isNaN(v)) return v;
+    if (typeof v === 'string' && v !== '') {
+      const parsed = parseFloat(v);
+      if (!isNaN(parsed)) return parsed;
+    }
+    return fallback;
+  };
+
   const parsed: LightRaysConfig = {
     origin: (String(config.origin) as RaysOrigin) || 'top-center',
     color: String(config.color || ''),
-    speed: Number(config.speed) || 1,
-    spread: Number(config.spread) ?? 0.5,
-    length: Number(config.length) ?? 1,
+    speed: n(config.speed, 1),
+    spread: n(config.spread, 0.5),
+    length: n(config.length, 1),
     pulsating: Boolean(config.pulsating),
-    fadeDistance: Number(config.fadeDistance) ?? 1,
-    saturation: Number(config.saturation) ?? 1,
+    fadeDistance: n(config.fadeDistance, 1),
+    saturation: n(config.saturation, 1),
     followMouse: Boolean(config.followMouse),
-    mouseInfluence: Number(config.mouseInfluence) ?? 0.3,
-    noiseAmount: Number(config.noiseAmount) ?? 0.05,
-    distortion: Number(config.distortion) ?? 0.05,
+    mouseInfluence: n(config.mouseInfluence, 0.3),
+    noiseAmount: n(config.noiseAmount, 0.05),
+    distortion: n(config.distortion, 0.05),
   };
 
   return new LightRays(container, parsed);

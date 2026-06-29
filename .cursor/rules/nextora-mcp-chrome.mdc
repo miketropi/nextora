@@ -34,10 +34,16 @@ After opening a tab, always reload with `ignoreCache: true` to ensure stale cach
 
 ## 3. Never save screenshot files to the theme directory
 
-When using `chrome-devtools_take_screenshot` or `chrome-devtools_take_snapshot` with `filePath`, always save to a temporary directory outside the theme, e.g. `/tmp/` or the system temp folder. Never save screenshots, snapshots, or any output files into the theme directory.
+When using `chrome-devtools_take_screenshot` or `chrome-devtools_take_snapshot` with `filePath`, **always** save to `/tmp/`. Never save screenshots, snapshots, or any output files into the theme directory.
 
 ```
 ✅ filePath="/tmp/screenshot.png"
 ❌ filePath="./screenshot.png" (saves to theme root)
 ❌ filePath="/path/to/theme/screenshot.png"
+```
+
+**Safety net**: Immediately after taking any screenshot, verify the `filePath` is outside the theme. If a screenshot was accidentally saved inside the theme directory (e.g. `blocks/.../screenshot.png` or theme root), delete it immediately with:
+
+```bash
+rm -f "/path/to/theme/screenshot.png"
 ```

@@ -19,9 +19,11 @@ import {
   __experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { useEffect, useMemo, useRef } from '@wordpress/element';
+import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import type { BlockEditProps } from '@wordpress/blocks';
 import type { CSSProperties } from 'react';
+import { LucideSvgPreview } from '../advanced-icon/lucide-preview';
+import type { LucideIconEntry } from '../advanced-icon/types';
 import {
   BACKGROUND_ANIMATION_CATALOG,
   BACKGROUND_ANIMATION_SPEED_OPTIONS,
@@ -208,6 +210,25 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
   const themeGradients = useThemeGradients();
   const lookupGradients = useMemo(() => getMergedGradientEntries(themeGradients), [themeGradients]);
   const migratedColors = useRef(false);
+
+  const [lucideIcons, setLucideIcons] = useState<Map<string, LucideIconEntry>>(new Map());
+
+  useEffect(() => {
+    const iconsUrl = window.nextoraIconBlock?.iconsUrl;
+    if (!iconsUrl || lucideIcons.size > 0) return;
+
+    let cancelled = false;
+    fetch(iconsUrl)
+      .then((r) => r.json())
+      .then((data: LucideIconEntry[]) => {
+        if (cancelled) return;
+        const map = new Map<string, LucideIconEntry>();
+        (Array.isArray(data) ? data : []).forEach((entry) => map.set(entry.name, entry));
+        setLucideIcons(map);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
   const resolvedSectionBackgroundColor = sectionBackgroundColor || legacyBackgroundColor;
   const normalizedSectionFill: 'solid' | 'gradient' =
@@ -1041,32 +1062,60 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
         ) : null}
         {enableAmbientAnimation && ambientAnimationType === 'ambient-icons' && ambientIcons.length > 0 ? (
           <div className="nextora-advanced-container__ambient-icons" aria-hidden="true">
-            {ambientIcons.map((icon, idx) => (
-              <span
-                key={`${icon.name}-${idx}`}
-                className="nextora-advanced-container__ambient-icon"
-                data-nextora-ac-ambient-icon={icon.name}
-                style={{
-                  opacity: 1,
-                  width: ambientIconSize,
-                  height: ambientIconSize,
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={ambientIconSize}
-                  height={ambientIconSize}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke={icon.color ? storedColorToCss(icon.color) || 'currentColor' : 'currentColor'}
-                  strokeWidth={ambientIconStrokeWidth}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+            {ambientIcons.map((icon, idx) => {
+              const iconStrokeColor = icon.color ? storedColorToCss(icon.color) || 'currentColor' : 'currentColor';
+              const cols = Math.ceil(Math.sqrt(ambientIcons.length));
+              const col = idx % cols;
+              const row = Math.floor(idx / cols);
+              const spreadX = 15 + (col / Math.max(cols - 1, 1)) * 70;
+              const spreadY = 15 + (row / Math.max(Math.ceil(ambientIcons.length / cols) - 1, 1)) * 70;
+              const entry = lucideIcons.get(icon.name);
+              return (
+                <span
+                  key={`${icon.name}-${idx}`}
+                  className="nextora-advanced-container__ambient-icon nextora-advanced-container__ambient-icon--preview"
+                  data-nextora-ac-ambient-icon={icon.name}
+                  style={{
+                    opacity: 0.5,
+                    width: ambientIconSize,
+                    height: 'auto',
+                    display: 'inline-flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 3,
+                    position: 'absolute',
+                    left: `${spreadX}%`,
+                    top: `${spreadY}%`,
+                  }}
                 >
-                  <circle cx="12" cy="12" r="9" />
-                </svg>
-              </span>
-            ))}
+                  {entry ? (
+                    <LucideSvgPreview
+                      nodes={entry.nodes}
+                      size={ambientIconSize}
+                      color={iconStrokeColor}
+                      strokeWidth={ambientIconStrokeWidth}
+                    />
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width={ambientIconSize}
+                      height={ambientIconSize}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke={iconStrokeColor}
+                      strokeWidth={ambientIconStrokeWidth}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="9" />
+                    </svg>
+                  )}
+                  <span style={{ fontSize: 9, color: iconStrokeColor, maxWidth: ambientIconSize + 16, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'center', lineHeight: 1.2 }}>
+                    {icon.name}
+                  </span>
+                </span>
+              );
+            })}
           </div>
         ) : null}
         {enableAmbientAnimation && ambientAnimationType === 'light-rays' ? (

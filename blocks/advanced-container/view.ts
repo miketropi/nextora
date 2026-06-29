@@ -212,28 +212,23 @@ function initAmbientIcons(root: HTMLElement): void {
   const padding = 8;
   const iconSize = (icons[0] as HTMLElement).offsetWidth || 48;
 
-  function getGridLayout(): { cols: number; rows: number } {
-    const rect = ambientContainer.getBoundingClientRect();
-    const availW = Math.max(1, rect.width - padding * 2);
-    const availH = Math.max(1, rect.height - padding * 2);
-    const cellArea = (availW * availH) / count;
-    const cellSide = Math.sqrt(cellArea);
-    const minCellSide = iconSize + 30;
-    const side = Math.max(minCellSide, cellSide);
-    const cols = Math.max(1, Math.floor(availW / side));
-    const rows = Math.ceil(count / cols);
-    return { cols, rows };
-  }
+  const rect = ambientContainer.getBoundingClientRect();
+  const availW = Math.max(1, rect.width - padding * 2);
+  const availH = Math.max(1, rect.height - padding * 2);
+  const cellArea = (availW * availH) / count;
+  const cellSide = Math.sqrt(cellArea);
+  const minCellSide = iconSize + 30;
+  const side = Math.max(minCellSide, cellSide);
+  const gridCols = Math.max(1, Math.floor(availW / side));
+  const gridRows = Math.ceil(count / gridCols);
+  const totalCells = gridCols * gridRows;
 
   function cellToPosition(cellIdx: number): { left: number; top: number } {
-    const rect = ambientContainer.getBoundingClientRect();
-    const { cols, rows } = getGridLayout();
-    const totalCells = cols * Math.max(rows, Math.ceil(count / cols));
     const idx = cellIdx % totalCells;
-    const col = idx % cols;
-    const row = Math.floor(idx / cols);
-    const cellW = (rect.width - padding * 2) / cols;
-    const cellH = (rect.height - padding * 2) / rows;
+    const col = idx % gridCols;
+    const row = Math.floor(idx / gridCols);
+    const cellW = (rect.width - padding * 2) / gridCols;
+    const cellH = (rect.height - padding * 2) / gridRows;
     const margin = 12;
     const left = padding + col * cellW + margin + Math.random() * Math.max(0, cellW - iconSize - margin * 2);
     const top = padding + row * cellH + margin + Math.random() * Math.max(0, cellH - iconSize - margin * 2);
@@ -241,8 +236,6 @@ function initAmbientIcons(root: HTMLElement): void {
   }
 
   const usedCells = new Set<number>();
-  const { cols, rows } = getGridLayout();
-  const totalCells = cols * rows;
 
   function pickUniqueCell(): number {
     const free = [];
