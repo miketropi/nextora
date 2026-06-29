@@ -51,6 +51,7 @@
   display: block;
 }
 
+<<<<<<< HEAD
 @media (any-hover: none) {
   .nextora-advanced-container--hover-reveal .nextora-advanced-container__hover-mask {
     visibility: hidden;
@@ -62,6 +63,8 @@
     display: none;
   }
 }
+=======
+>>>>>>> e2afc06bc5e074f33c7f4b31bfd71f14f8a65bb6
 
 @media (min-width: 600px) {
   .wp-block-nextora-advanced-container,

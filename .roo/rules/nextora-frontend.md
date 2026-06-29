@@ -1,0 +1,16 @@
+# Nextora — front-end (TS + CSS)
+
+> Applies to: `resources/**/*.ts`, `resources/**/*.css`. Tailwind v4, app.css import order, main.ts boot order.
+
+- **Tailwind v4:** [`resources/css/app.css`](../../resources/css/app.css) — Preflight **off**; `@theme` maps to `--wp--preset--*` with fallbacks. Keep editor/front parity with `theme.json`.
+- **CSS module order** in `app.css`: **base** → **components** → **prose** → **overrides** (see [`AGENTS.md`](../../AGENTS.md) § `resources/css/app.css` import order). New feature slices: `resources/css/modules/`.
+- **`main.ts` boot order** (dependents matter): `initHeaderSticky` → `initHeaderNavigation` → `mountHeaderMiniCartPortalToBody` → `mountSpotlightSearchPortalToBody` → `initModals` → `bindHeaderMiniCartAfterAjaxAdd` → `attachModalGlobals` → `initSpotlightSearch` → `initArticleShare` → `initCommentTiptap` → `attachScrollAnimationGlobals` → `initScrollAnimations`.
+- **Output:** Edits compile to `assets/css/app.css` and `assets/js/main.js` via **`npm run build`** / **`watch`**.
+
+```text
+❌ New nav colors only in a random module
+✅ Prefer @theme tokens (--nextora-nav-*, etc.) so palette changes flow from theme.json
+
+❌ Edit assets/css/app.css or assets/js/main.js directly
+✅ Edit resources/** then npm run build
+```
