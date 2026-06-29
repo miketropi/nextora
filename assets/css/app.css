@@ -267,6 +267,9 @@
   .start {
     inset-inline-start: var(--spacing);
   }
+  .start\! {
+    inset-inline-start: var(--spacing) !important;
+  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -410,6 +413,9 @@
   }
   .inline {
     display: inline;
+  }
+  .inline\! {
+    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -1125,6 +1131,9 @@
   .italic {
     font-style: italic;
   }
+  .italic\! {
+    font-style: italic !important;
+  }
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
@@ -1140,6 +1149,9 @@
   }
   .underline {
     text-decoration-line: underline;
+  }
+  .underline\! {
+    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -2849,6 +2861,17 @@ footer.wp-block-template-part {
   :where(	a.wp-block-button__link:focus-visible,	a.wp-element-button:focus-visible,	button.wp-block-button__link:focus-visible,	a.wp-block-file__button:focus-visible,	a.elementor-button:focus-visible,	button.elementor-button:focus-visible	) {
     border-radius: 0.25rem;
   }
+}
+.wp-block-button.is-style-outline .wp-element-button:hover, .wp-block-button.is-style-outline .wp-block-button__link:hover, .wp-block-button.is-style-outline .wp-block-button__link:focus-visible {
+  background-color: var(--wp--preset--color--primary);
+  color: var(--wp--preset--color--base);
+  border-color: transparent;
+}
+.wp-block-button.is-style-outline .wp-element-button:focus-visible {
+  background-color: var(--wp--preset--color--primary);
+  color: var(--wp--preset--color--base);
+  border-color: transparent;
+  outline-color: var(--wp--preset--color--primary);
 }
 @layer components {
   :where(	.nextora-form input[type="text"],	.nextora-form input[type="email"],	.nextora-form input[type="url"],	.nextora-form input[type="tel"],	.nextora-form input[type="number"],	.nextora-form input[type="password"],	.nextora-form input[type="search"],	.nextora-form input[type="date"],	.nextora-form input[type="datetime-local"],	.nextora-form input[type="time"],	.nextora-form input[type="month"],	.nextora-form input[type="week"],	.nextora-form textarea,	.nextora-form select,	.nextora-main .nextora-field:not(.elementor-field),	.nextora-main .elementor-widget-html input[type="text"]:not([class]),	.nextora-main .elementor-widget-html input[type="email"]:not([class]),	.nextora-main .elementor-widget-html input[type="url"]:not([class]),	.nextora-main .elementor-widget-html input[type="tel"]:not([class]),	.nextora-main .elementor-widget-html input[type="number"]:not([class]),	.nextora-main .elementor-widget-html input[type="password"]:not([class]),	.nextora-main .elementor-widget-html input[type="search"]:not([class]),	.nextora-main .elementor-widget-html textarea:not([class]),	.nextora-main .elementor-widget-html select:not([class]),	.wp-block-search__input,	.editor-styles-wrapper .wp-block-search__input,	.wp-block-post-comments-form input[type="text"],	.wp-block-post-comments-form input[type="email"],	.wp-block-post-comments-form input[type="url"],	.wp-block-post-comments-form textarea,	.wp-block-post-comments-form select	) {

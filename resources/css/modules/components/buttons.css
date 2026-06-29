@@ -121,3 +121,23 @@
 		border-radius: 0.25rem;
 	}
 }
+
+/**
+ * Outline button hover fill.
+ * Unlayered so it overrides WP inline variant rules (both use :where() → 0 specificity,
+ * but inline styles are unlayered and beat @layer components).
+ */
+.wp-block-button.is-style-outline .wp-element-button:hover,
+.wp-block-button.is-style-outline .wp-block-button__link:hover,
+.wp-block-button.is-style-outline .wp-block-button__link:focus-visible {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--base);
+	border-color: transparent;
+}
+
+.wp-block-button.is-style-outline .wp-element-button:focus-visible {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--base);
+	border-color: transparent;
+	outline-color: var(--wp--preset--color--primary);
+}

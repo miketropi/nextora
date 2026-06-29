@@ -307,7 +307,7 @@
 				}
 			],
 			"fontSizes": [
-						{
+				{
 					"slug": "small",
 					"size": "clamp(0.88rem, 0.84rem + 0.35vw, 0.95rem)",
 					"name": "Small"
@@ -321,7 +321,7 @@
 					"slug": "medium",
 					"size": "clamp(1.25rem, 0.94rem + 0.55vw, 1.5rem)",
 					"name": "Medium"
-				}, 
+				},
 				{
 					"slug": "medium-plus",
 					"size": "clamp(1.375rem, 1.375rem + 0.85vw, 2rem)",
@@ -542,7 +542,7 @@
 				},
 				":hover": {
 					"color": {
-						"background": "var(--wp--preset--color--secondary)",
+						"background": "color-mix(in srgb, var(--wp--preset--color--primary) 85%, white)",
 						"text": "var(--wp--preset--color--base)"
 					}
 				},
