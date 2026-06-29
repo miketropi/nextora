@@ -80,10 +80,14 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_stars' ) ) {
 		if ( $rating < 1 ) {
 			return '';
 		}
-		$rating = max( 1, min( 5, $rating ) );
+		$filled = max( 1, min( 5, $rating ) );
 		$out    = '<div class="nextora-testimonial-carousel__slide-rating" aria-label="' . esc_attr( sprintf( /* translators: %d: star count */ _n( '%d out of 5 stars', '%d out of 5 stars', $rating, 'nextora' ), $rating ) ) . '">';
-		for ( $i = 0; $i < $rating; $i++ ) {
-			$out .= '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5l3.1 6.3 6.9 1-5 4.9 1.2 6.9L12 18.8 5.8 21.6l1.2-6.9-5-4.9 6.9-1L12 2.5z"/></svg>';
+		for ( $i = 0; $i < 5; $i++ ) {
+			if ( $i < $filled ) {
+				$out .= '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5l3.1 6.3 6.9 1-5 4.9 1.2 6.9L12 18.8 5.8 21.6l1.2-6.9-5-4.9 6.9-1L12 2.5z"/></svg>';
+			} else {
+				$out .= '<svg viewBox="0 0 24 24" aria-hidden="true" class="nextora-testimonial-carousel__star--dim"><path fill="none" stroke="currentColor" stroke-width="1.5" d="M12 2.5l3.1 6.3 6.9 1-5 4.9 1.2 6.9L12 18.8 5.8 21.6l1.2-6.9-5-4.9 6.9-1L12 2.5z"/></svg>';
+			}
 		}
 		$out .= '</div>';
 		return $out;
@@ -372,7 +376,7 @@ $css_vars = array(
 	'--nextora-testimonial-author-color'      => '' !== $author_color ? $author_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
 	'--nextora-testimonial-author-name-color' => '' !== $author_name_color ? $author_name_color : 'inherit',
 	'--nextora-testimonial-trust-color'       => '' !== $trust_color ? $trust_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
-	'--nextora-testimonial-star-color'        => '' !== $star_color ? $star_color : 'var(--wp--preset--color--primary, currentColor)',
+	'--nextora-testimonial-star-color'        => '' !== $star_color ? $star_color : '#F59E0B',
 	'--nextora-testimonial-dot-color'         => '' !== $dot_color ? $dot_color : 'color-mix(in srgb, currentColor 35%, transparent)',
 	'--nextora-testimonial-dot-active'        => '' !== $dot_active ? $dot_active : 'var(--wp--preset--color--primary, currentColor)',
 	'--nextora-testimonial-arrow-color'       => '' !== $arrow_color ? $arrow_color : 'var(--wp--preset--color--paragraph, #525252)',
