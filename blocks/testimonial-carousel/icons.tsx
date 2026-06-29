@@ -66,14 +66,14 @@ export function StarRating({ rating, size = 18 }: { rating: number; size?: numbe
 		return null;
 	}
 
-	const count = Math.max(1, Math.min(5, Math.round(rating)));
+	const filled = Math.max(1, Math.min(5, Math.round(rating)));
 
 	return (
 		<div
 			className="nextora-testimonial-carousel__slide-rating"
-			aria-label={`${count} out of 5 stars`}
+			aria-label={`${filled} out of 5 stars`}
 		>
-			{Array.from({ length: count }).map((_, i) => (
+			{Array.from({ length: 5 }).map((_, i) => (
 				<svg
 					key={`star-${i}`}
 					width={size}
@@ -82,7 +82,10 @@ export function StarRating({ rating, size = 18 }: { rating: number; size?: numbe
 					aria-hidden
 				>
 					<path
-						fill="currentColor"
+						fill={i < filled ? 'currentColor' : 'none'}
+						stroke={i < filled ? 'none' : 'currentColor'}
+						strokeWidth={i < filled ? 0 : 1.5}
+						opacity={i < filled ? 1 : 0.3}
 						d="M12 2.5l3.1 6.3 6.9 1-5 4.9 1.2 6.9L12 18.8 5.8 21.6l1.2-6.9-5-4.9 6.9-1L12 2.5z"
 					/>
 				</svg>
