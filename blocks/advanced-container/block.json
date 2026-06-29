@@ -155,6 +155,74 @@
     "hoverRevealMaskColor": {
       "type": "string",
       "default": ""
+    },
+    "enableAmbientAnimation": {
+      "type": "boolean",
+      "default": false
+    },
+    "ambientAnimationType": {
+      "type": "string",
+      "default": "ambient-icons"
+    },
+    "ambientIcons": {
+      "type": "array",
+      "default": []
+    },
+    "ambientIconSize": {
+      "type": "number",
+      "default": 48
+    },
+    "ambientIconStrokeWidth": {
+      "type": "number",
+      "default": 1.5
+    },
+    "lightRaysOrigin": {
+      "type": "string",
+      "default": "top-center"
+    },
+    "lightRaysColor": {
+      "type": "string",
+      "default": ""
+    },
+    "lightRaysSpeed": {
+      "type": "number",
+      "default": 1
+    },
+    "lightRaysSpread": {
+      "type": "number",
+      "default": 0.5
+    },
+    "lightRaysLength": {
+      "type": "number",
+      "default": 3
+    },
+    "lightRaysPulsating": {
+      "type": "boolean",
+      "default": false
+    },
+    "lightRaysFadeDistance": {
+      "type": "number",
+      "default": 1
+    },
+    "lightRaysSaturation": {
+      "type": "number",
+      "default": 1
+    },
+    "lightRaysFollowMouse": {
+      "type": "boolean",
+      "default": true
+    },
+    "lightRaysMouseInfluence": {
+      "type": "number",
+      "default": 0.1
+    },
+    "lightRaysNoiseAmount": {
+      "type": "number",
+      "default": 0
+    },
+    "lightRaysDistortion": {
+      "type": "number",
+      "default": 0
     }
   },
   "editorScript": "file:./index.js",

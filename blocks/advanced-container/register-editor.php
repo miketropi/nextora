@@ -55,6 +55,7 @@ function nextora_advanced_container_block_editor_assets(): void {
 	}
 
 	$data = array(
+		'iconsUrl'        => NEXTORA_URI . '/assets/data/lucide-icons.json',
 		'paletteEntries'  => $palette_entries,
 		'gradientEntries' => $gradient_entries,
 	);

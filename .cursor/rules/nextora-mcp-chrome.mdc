@@ -1,0 +1,49 @@
+---
+description: Nextora MCP Chrome — always open incognito tab (isolated context) + skip cache + never save screenshots to theme dir
+alwaysApply: true
+---
+
+# Nextora — MCP Chrome (Chrome DevTools)
+
+When using Chrome DevTools MCP to open a webpage, **always** follow these 2 rules:
+
+## 1. Open tab in isolated context (incognito)
+
+Use `chrome-devtools_new_page` with `isolatedContext` to create a new tab that does not share cookie/storage with other tabs — similar to incognito mode.
+
+```
+✅ chrome-devtools_new_page(url="...", isolatedContext="session-name")
+❌ chrome-devtools_new_page(url="...") — missing isolatedContext
+```
+
+## 2. Reload skipping cache
+
+After opening a tab, always reload with `ignoreCache: true` to ensure stale cached resources are not used.
+
+```
+✅ chrome-devtools_navigate_page(type="reload", ignoreCache=true)
+❌ Just open tab without reload skipping cache
+```
+
+## Standard workflow when checking a URL
+
+1. `chrome-devtools_new_page` — open URL with `isolatedContext`
+2. `chrome-devtools_navigate_page` — reload with `ignoreCache: true`
+3. `chrome-devtools_take_snapshot` — check page content
+4. `chrome-devtools_list_console_messages` — check console errors
+
+## 3. Never save screenshot files to the theme directory
+
+When using `chrome-devtools_take_screenshot` or `chrome-devtools_take_snapshot` with `filePath`, **always** save to `/tmp/`. Never save screenshots, snapshots, or any output files into the theme directory.
+
+```
+✅ filePath="/tmp/screenshot.png"
+❌ filePath="./screenshot.png" (saves to theme root)
+❌ filePath="/path/to/theme/screenshot.png"
+```
+
+**Safety net**: Immediately after taking any screenshot, verify the `filePath` is outside the theme. If a screenshot was accidentally saved inside the theme directory (e.g. `blocks/.../screenshot.png` or theme root), delete it immediately with:
+
+```bash
+rm -f "/path/to/theme/screenshot.png"
+```

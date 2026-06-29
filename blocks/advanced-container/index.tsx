@@ -31,6 +31,23 @@ type Attributes = {
   hoverRevealImageUrl: string;
   hoverRevealImageFocalPoint: { x: number; y: number };
   hoverRevealImageSize: string;
+  enableAmbientAnimation: boolean;
+  ambientAnimationType: string;
+  ambientIcons: { name: string; color: string }[];
+  ambientIconSize: number;
+  ambientIconStrokeWidth: number;
+  lightRaysOrigin: string;
+  lightRaysColor: string;
+  lightRaysSpeed: number;
+  lightRaysSpread: number;
+  lightRaysLength: number;
+  lightRaysPulsating: boolean;
+  lightRaysFadeDistance: number;
+  lightRaysSaturation: number;
+  lightRaysFollowMouse: boolean;
+  lightRaysMouseInfluence: number;
+  lightRaysNoiseAmount: number;
+  lightRaysDistortion: number;
 };
 
 registerBlockType(metadata as BlockConfiguration<Attributes>, {
