@@ -22,6 +22,7 @@ export interface TestimonialsAttributes {
 	headingLevel: number;
 	headingFontSize: string;
 	quoteFontSize: string;
+	quoteFontFamily: string;
 	imagePosition: TestimonialsImagePosition;
 	imageColumnRatio: number;
 	showPagination: boolean;

@@ -51,17 +51,6 @@
   display: block;
 }
 
-@media (hover: none) {
-  .nextora-advanced-container--hover-reveal .nextora-advanced-container__hover-mask {
-    display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .nextora-advanced-container--hover-reveal .nextora-advanced-container__hover-mask {
-    display: none;
-  }
-}
 
 @media (min-width: 600px) {
   .wp-block-nextora-advanced-container,
