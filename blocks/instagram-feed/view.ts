@@ -311,6 +311,64 @@ function pauseLightboxVideo(container: HTMLElement | null): void {
 	}
 }
 
+/**
+ * Wait for the lightbox media (img or video) inside `container` to be "ready"
+ * (loaded / playable), then invoke `callback`.  Falls back after `timeoutMs`.
+ */
+function waitForMediaReady(container: HTMLElement, callback: () => void, timeoutMs = 4000): void {
+	const img = container.querySelector<HTMLImageElement>('.nextora-instagram-feed__lightbox-img');
+	const video = container.querySelector<HTMLVideoElement>('.nextora-instagram-feed__lightbox-video');
+
+	let settled = false;
+	const done = (): void => {
+		if (settled) return;
+		settled = true;
+		callback();
+	};
+
+	const fallback = window.setTimeout(done, timeoutMs);
+
+	if (video) {
+		if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+			window.clearTimeout(fallback);
+			done();
+			return;
+		}
+		const onReady = (): void => {
+			window.clearTimeout(fallback);
+			video.removeEventListener('loadedmetadata', onReady);
+			video.removeEventListener('canplay', onReady);
+			video.removeEventListener('error', onReady);
+			done();
+		};
+		video.addEventListener('loadedmetadata', onReady, { once: true });
+		video.addEventListener('canplay', onReady, { once: true });
+		video.addEventListener('error', onReady, { once: true });
+		return;
+	}
+
+	if (img) {
+		if (img.complete) {
+			window.clearTimeout(fallback);
+			done();
+			return;
+		}
+		const onReady = (): void => {
+			window.clearTimeout(fallback);
+			img.removeEventListener('load', onReady);
+			img.removeEventListener('error', onReady);
+			done();
+		};
+		img.addEventListener('load', onReady, { once: true });
+		img.addEventListener('error', onReady, { once: true });
+		return;
+	}
+
+	// No media element found in container — resolve immediately
+	window.clearTimeout(fallback);
+	done();
+}
+
 function renderLightboxMedia(inner: HTMLElement, post: PostPayload): void {
 	inner.replaceChildren();
 	pauseLightboxVideo(inner);
@@ -359,11 +417,99 @@ function updateLightboxContent(
 	modal.dataset.nextoraInstagramActiveIndex = String(index);
 
 	const inner = modal.querySelector<HTMLElement>('[data-nextora-instagram-lightbox-media-inner]');
+	const captionEl = modal.querySelector<HTMLElement>('[data-nextora-instagram-lightbox-caption]');
+	const linkEl = modal.querySelector<HTMLAnchorElement>('[data-nextora-instagram-lightbox-link]');
+
+	const isOpen = modal.classList.contains('nextora-modal--open');
+
+	if (isOpen && inner) {
+		cancelLightboxSwitch(modal);
+
+		const cleanup = (): void => {
+			modal.dataset.nextoraInstagramSwitching = '';
+			inner.classList.remove('nextora-instagram-feed__lightbox-media-inner--switching');
+			if (captionEl) {
+				captionEl.classList.remove('nextora-instagram-feed__lightbox-caption--switching');
+			}
+		};
+
+		const commit = (): void => {
+			// Lock the media container height before replacing content so the
+			// grid row does not collapse while the new image/video is loading.
+			const mediaEl = inner.closest<HTMLElement>('.nextora-instagram-feed__lightbox-media');
+			const lockHeight = mediaEl ? `${mediaEl.offsetHeight}px` : null;
+			if (mediaEl && lockHeight) {
+				mediaEl.style.minHeight = lockHeight;
+			}
+
+			renderLightboxMedia(inner, post);
+			if (captionEl) {
+				if (post.caption.trim()) {
+					captionEl.hidden = false;
+					captionEl.textContent = post.caption;
+				} else {
+					captionEl.hidden = true;
+					captionEl.textContent = '';
+				}
+			}
+			if (linkEl) {
+				if (post.permalink.trim()) {
+					linkEl.href = post.permalink;
+					linkEl.hidden = false;
+				} else {
+					linkEl.hidden = true;
+					linkEl.removeAttribute('href');
+				}
+			}
+
+			// Wait until the new media is loaded/ready before revealing it,
+			// then release the height lock and remove the switching class.
+			waitForMediaReady(inner, () => {
+				if (mediaEl) {
+					mediaEl.style.minHeight = '';
+				}
+				cleanup();
+			});
+		};
+
+		const onTransitionEnd = (): void => {
+			inner.removeEventListener('transitionend', onTransitionEnd);
+			(inner as any).__nextoraLightboxTransitionHandler = undefined;
+			commit();
+		};
+		inner.addEventListener('transitionend', onTransitionEnd);
+		(inner as any).__nextoraLightboxTransitionHandler = onTransitionEnd;
+
+		const fallbackId = window.setTimeout(() => {
+			inner.removeEventListener('transitionend', onTransitionEnd);
+			commit();
+		}, 220);
+
+		modal.dataset.nextoraInstagramSwitching = '1';
+		modal.dataset.nextoraInstagramSwitchFallback = String(fallbackId);
+
+		inner.classList.add('nextora-instagram-feed__lightbox-media-inner--switching');
+		if (captionEl) {
+			captionEl.classList.add('nextora-instagram-feed__lightbox-caption--switching');
+		}
+
+		if (linkEl) {
+			if (post.permalink.trim()) {
+				linkEl.href = post.permalink;
+				linkEl.hidden = false;
+			} else {
+				linkEl.hidden = true;
+				linkEl.removeAttribute('href');
+			}
+		}
+
+		return;
+	}
+
 	if (inner) {
 		renderLightboxMedia(inner, post);
 	}
 
-	const captionEl = modal.querySelector<HTMLElement>('[data-nextora-instagram-lightbox-caption]');
 	if (captionEl) {
 		if (post.caption.trim()) {
 			captionEl.hidden = false;
@@ -374,7 +520,6 @@ function updateLightboxContent(
 		}
 	}
 
-	const linkEl = modal.querySelector<HTMLAnchorElement>('[data-nextora-instagram-lightbox-link]');
 	if (linkEl) {
 		if (post.permalink.trim()) {
 			linkEl.href = post.permalink;
@@ -384,6 +529,36 @@ function updateLightboxContent(
 			linkEl.removeAttribute('href');
 		}
 	}
+}
+
+function cancelLightboxSwitch(modal: HTMLElement): void {
+	if (modal.dataset.nextoraInstagramSwitching !== '1') {
+		return;
+	}
+
+	const fallbackId = Number(modal.dataset.nextoraInstagramSwitchFallback);
+	if (Number.isFinite(fallbackId)) {
+		window.clearTimeout(fallbackId);
+	}
+
+	const inner = modal.querySelector<HTMLElement>('[data-nextora-instagram-lightbox-media-inner]');
+	if (inner) {
+		inner.classList.remove('nextora-instagram-feed__lightbox-media-inner--switching');
+		const prevHandler = (inner as any).__nextoraLightboxTransitionHandler as
+			| (() => void)
+			| undefined;
+		if (prevHandler) {
+			inner.removeEventListener('transitionend', prevHandler);
+			(inner as any).__nextoraLightboxTransitionHandler = undefined;
+		}
+	}
+
+	const captionEl = modal.querySelector<HTMLElement>('[data-nextora-instagram-lightbox-caption]');
+	if (captionEl) {
+		captionEl.classList.remove('nextora-instagram-feed__lightbox-caption--switching');
+	}
+
+	modal.dataset.nextoraInstagramSwitching = '';
 }
 
 function initLightbox(section: HTMLElement): void {
