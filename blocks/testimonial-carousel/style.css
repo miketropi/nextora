@@ -106,12 +106,16 @@
 	justify-content: center;
 	gap: 0.125rem;
 	margin-bottom: 1rem;
-	color: var(--nextora-testimonial-star-color, var(--wp--preset--color--primary, currentColor));
+	color: var(--nextora-testimonial-star-color, #F59E0B);
 }
 
 .nextora-testimonial-carousel__slide-rating svg {
 	width: 1.125rem;
 	height: 1.125rem;
+}
+
+.nextora-testimonial-carousel__star--dim {
+	opacity: 0.3;
 }
 
 .nextora-testimonial-carousel__slide-quote {

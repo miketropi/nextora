@@ -675,10 +675,16 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 			{editingItem && (
 				<Modal
 					className="nextora-testimonial-carousel__item-modal"
+					size="large"
 					title={
 						editingItem.authorName
 							? sprintf(__('Edit testimonial: %s', 'nextora'), editingItem.authorName)
 							: __('Edit testimonial', 'nextora')
+					}
+					headerActions={
+						<Button variant="primary" onClick={() => setEditingId(null)}>
+							{__('Done', 'nextora')}
+						</Button>
 					}
 					onRequestClose={() => setEditingId(null)}
 				>
@@ -687,11 +693,6 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						authorPhotoUrl={resolveAuthorPhotoUrl(editingItem, mediaUrlById)}
 						onPatch={(patch) => patchItem(editingItem.id, patch)}
 					/>
-					<div className="nextora-testimonial-carousel__item-modal-footer">
-						<Button variant="primary" onClick={() => setEditingId(null)}>
-							{__('Done', 'nextora')}
-						</Button>
-					</div>
 				</Modal>
 			)}
 
