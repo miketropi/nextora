@@ -45,6 +45,7 @@ import {
   useThemeGradients,
 } from './gradient-utils';
 import { buildHoverRevealImageStyles } from './hover-reveal-styles';
+import { MultiIconPicker } from './ambient-icons';
 import SectionBackgroundFill from './section-background-fill';
 
 type Attributes = {
@@ -75,9 +76,26 @@ type Attributes = {
   hoverRevealImageUrl: string;
   hoverRevealImageFocalPoint: { x: number; y: number };
   hoverRevealImageSize: string;
+  enableAmbientAnimation: boolean;
+  ambientAnimationType: string;
+  ambientIcons: { name: string; color: string }[];
+  ambientIconSize: number;
+  ambientIconStrokeWidth: number;
+  lightRaysOrigin: string;
+  lightRaysColor: string;
+  lightRaysSpeed: number;
+  lightRaysSpread: number;
+  lightRaysLength: number;
+  lightRaysPulsating: boolean;
+  lightRaysFadeDistance: number;
+  lightRaysSaturation: number;
+  lightRaysFollowMouse: boolean;
+  lightRaysMouseInfluence: number;
+  lightRaysNoiseAmount: number;
+  lightRaysDistortion: number;
 };
 
-type ColorAttributeKey = 'sectionBackgroundColor' | 'overlayColor';
+type ColorAttributeKey = 'sectionBackgroundColor' | 'overlayColor' | 'lightRaysColor';
 
 function MediaActionButtons({
   hasMedia,
@@ -166,6 +184,23 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
     hoverRevealImageUrl,
     hoverRevealImageFocalPoint,
     hoverRevealImageSize,
+    enableAmbientAnimation,
+    ambientAnimationType,
+    ambientIcons = [],
+    ambientIconSize,
+    ambientIconStrokeWidth,
+    lightRaysOrigin,
+    lightRaysColor,
+    lightRaysSpeed,
+    lightRaysSpread,
+    lightRaysLength,
+    lightRaysPulsating,
+    lightRaysFadeDistance,
+    lightRaysSaturation,
+    lightRaysFollowMouse,
+    lightRaysMouseInfluence,
+    lightRaysNoiseAmount,
+    lightRaysDistortion,
   } = attributes;
 
   const colorPalette = useThemeColorPalette();
@@ -332,6 +367,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
       'nextora-advanced-container',
       hasHoverReveal ? 'nextora-advanced-container--hover-reveal' : '',
       hasHoverReveal && normalizedSectionFill === 'gradient' ? 'nextora-advanced-container--hover-reveal-gradient' : '',
+      enableAmbientAnimation && ambientAnimationType === 'ambient-icons' ? 'nextora-advanced-container--ambient-icons' : '',
       bgAnimationClass,
     ]
       .filter(Boolean)
@@ -349,6 +385,12 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
         ? {
             '--nextora-ac-overlay-color': resolvedOverlayCss,
             '--nextora-ac-overlay-opacity': String(overlayOpacity),
+          }
+        : {}),
+      ...(enableAmbientAnimation && ambientAnimationType === 'ambient-icons' && ambientIcons.length > 0
+        ? {
+            '--nextora-ac-ambient-icon-size': `${ambientIconSize}px`,
+            '--nextora-ac-ambient-icon-stroke-width': String(ambientIconStrokeWidth),
           }
         : {}),
     } as CSSProperties,
@@ -556,8 +598,111 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
                         checked={backgroundImageRepeat}
                         onChange={(value) => setAttributes({ backgroundImageRepeat: value })}
                       />
-                    </>
+                </>
+              ) : null}
+              {ambientAnimationType === 'light-rays' ? (
+                <>
+                  <SelectControl
+                    label={__('Rays origin', 'nextora')}
+                    value={lightRaysOrigin as unknown as string}
+                    options={[
+                      { label: __('Top center', 'nextora'), value: 'top-center' as string },
+                      { label: __('Top left', 'nextora'), value: 'top-left' as string },
+                      { label: __('Top right', 'nextora'), value: 'top-right' as string },
+                      { label: __('Bottom center', 'nextora'), value: 'bottom-center' as string },
+                      { label: __('Bottom left', 'nextora'), value: 'bottom-left' as string },
+                      { label: __('Bottom right', 'nextora'), value: 'bottom-right' as string },
+                      { label: __('Left', 'nextora'), value: 'left' as string },
+                      { label: __('Right', 'nextora'), value: 'right' as string },
+                    ]}
+                    onChange={(v) => setAttributes({ lightRaysOrigin: v || 'top-center' })}
+                  />
+                  <OverlayColorField
+                    label={__('Rays color', 'nextora')}
+                    value={lightRaysColor}
+                    colors={colorPalette}
+                    lookupPalette={lookupPalette}
+                    onChange={(value) => setThemeColor('lightRaysColor' as ColorAttributeKey, value)}
+                    help={__('Empty = white rays.', 'nextora')}
+                  />
+                  <RangeControl
+                    label={__('Speed', 'nextora')}
+                    value={lightRaysSpeed}
+                    min={0.2}
+                    max={4}
+                    step={0.1}
+                    onChange={(value) => setAttributes({ lightRaysSpeed: value ?? 1 })}
+                  />
+                  <RangeControl
+                    label={__('Light spread', 'nextora')}
+                    value={lightRaysSpread}
+                    min={0.1}
+                    max={2}
+                    step={0.05}
+                    onChange={(value) => setAttributes({ lightRaysSpread: value ?? 0.5 })}
+                  />
+                  <RangeControl
+                    label={__('Ray length', 'nextora')}
+                    value={lightRaysLength}
+                    min={0.3}
+                    max={3}
+                    step={0.1}
+                    onChange={(value) => setAttributes({ lightRaysLength: value ?? 1 })}
+                  />
+                  <ToggleControl
+                    label={__('Pulsating', 'nextora')}
+                    checked={lightRaysPulsating}
+                    onChange={(value) => setAttributes({ lightRaysPulsating: value })}
+                  />
+                  <RangeControl
+                    label={__('Fade distance', 'nextora')}
+                    value={lightRaysFadeDistance}
+                    min={0.3}
+                    max={2}
+                    step={0.1}
+                    onChange={(value) => setAttributes({ lightRaysFadeDistance: value ?? 1 })}
+                  />
+                  <RangeControl
+                    label={__('Saturation', 'nextora')}
+                    value={lightRaysSaturation}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    onChange={(value) => setAttributes({ lightRaysSaturation: value ?? 1 })}
+                  />
+                  <ToggleControl
+                    label={__('Follow mouse', 'nextora')}
+                    checked={lightRaysFollowMouse}
+                    onChange={(value) => setAttributes({ lightRaysFollowMouse: value })}
+                  />
+                  {lightRaysFollowMouse ? (
+                    <RangeControl
+                      label={__('Mouse influence', 'nextora')}
+                      value={lightRaysMouseInfluence}
+                      min={0}
+                      max={1}
+                      step={0.05}
+                      onChange={(value) => setAttributes({ lightRaysMouseInfluence: value ?? 0.3 })}
+                    />
                   ) : null}
+                  <RangeControl
+                    label={__('Noise amount', 'nextora')}
+                    value={lightRaysNoiseAmount}
+                    min={0}
+                    max={0.5}
+                    step={0.01}
+                    onChange={(value) => setAttributes({ lightRaysNoiseAmount: value ?? 0.05 })}
+                  />
+                  <RangeControl
+                    label={__('Distortion', 'nextora')}
+                    value={lightRaysDistortion}
+                    min={0}
+                    max={0.3}
+                    step={0.01}
+                    onChange={(value) => setAttributes({ lightRaysDistortion: value ?? 0.05 })}
+                  />
+                </>
+              ) : null}
                 </>
               ) : null}
             </>
@@ -699,6 +844,176 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
             />
           ) : null}
         </PanelBody>
+
+        <PanelBody title={__('Ambient Animation', 'nextora')} initialOpen={false}>
+          <ToggleControl
+            label={__('Enable ambient animation', 'nextora')}
+            checked={enableAmbientAnimation}
+            help={__(
+              'Floating icons or decorative elements that appear and fade randomly across the section. Adds a lively, dynamic atmosphere.',
+              'nextora',
+            )}
+            onChange={(value) => setAttributes({ enableAmbientAnimation: value })}
+          />
+          {enableAmbientAnimation ? (
+            <>
+              <SelectControl
+                label={__('Animation type', 'nextora')}
+                value={ambientAnimationType as unknown as string}
+                options={[
+                  {
+                    label: __('Ambient Icons', 'nextora'),
+                    value: 'ambient-icons' as string,
+                  },
+                  {
+                    label: __('Light Rays', 'nextora'),
+                    value: 'light-rays' as string,
+                  },
+                ]}
+                onChange={(value) => setAttributes({ ambientAnimationType: value || 'ambient-icons' })}
+              />
+              {ambientAnimationType === 'ambient-icons' ? (
+                <>
+                  <div className="nextora-advanced-container__field-label">
+                    <p className="components-base-control__label">
+                      {__('Select icons', 'nextora')}
+                    </p>
+                  </div>
+                  <MultiIconPicker
+                    selectedIcons={ambientIcons}
+                    colors={colorPalette}
+                    lookupPalette={lookupPalette}
+                    onColorChange={(index, color) => {
+                      const next = [...ambientIcons];
+                      next[index] = { ...next[index], color };
+                      setAttributes({ ambientIcons: next });
+                    }}
+                    onChange={(icons) => setAttributes({ ambientIcons: icons as { name: string; color: string }[] })}
+                  />
+                  <RangeControl
+                    label={__('Icon size', 'nextora')}
+                    value={ambientIconSize}
+                    min={16}
+                    max={200}
+                    step={4}
+                    onChange={(value) => setAttributes({ ambientIconSize: value ?? 48 })}
+                  />
+                  <RangeControl
+                    label={__('Stroke width', 'nextora')}
+                    value={ambientIconStrokeWidth}
+                    min={0.5}
+                    max={4}
+                    step={0.25}
+                    onChange={(value) => setAttributes({ ambientIconStrokeWidth: value ?? 1.5 })}
+                  />
+                </>
+              ) : null}
+              {ambientAnimationType === 'light-rays' ? (
+                <>
+                  <SelectControl
+                    label={__('Rays origin', 'nextora')}
+                    value={lightRaysOrigin as unknown as string}
+                    options={[
+                      { label: __('Top center', 'nextora'), value: 'top-center' as string },
+                      { label: __('Top left', 'nextora'), value: 'top-left' as string },
+                      { label: __('Top right', 'nextora'), value: 'top-right' as string },
+                      { label: __('Bottom center', 'nextora'), value: 'bottom-center' as string },
+                      { label: __('Bottom left', 'nextora'), value: 'bottom-left' as string },
+                      { label: __('Bottom right', 'nextora'), value: 'bottom-right' as string },
+                      { label: __('Left', 'nextora'), value: 'left' as string },
+                      { label: __('Right', 'nextora'), value: 'right' as string },
+                    ]}
+                    onChange={(v) => setAttributes({ lightRaysOrigin: v || 'top-center' })}
+                  />
+                  <OverlayColorField
+                    label={__('Rays color', 'nextora')}
+                    value={lightRaysColor}
+                    colors={colorPalette}
+                    lookupPalette={lookupPalette}
+                    onChange={(value) => setThemeColor('lightRaysColor', value)}
+                    help={__('Empty = white rays.', 'nextora')}
+                  />
+                  <RangeControl
+                    label={__('Speed', 'nextora')}
+                    value={lightRaysSpeed}
+                    min={0.2}
+                    max={4}
+                    step={0.1}
+                    onChange={(value) => setAttributes({ lightRaysSpeed: value ?? 1 })}
+                  />
+                  <RangeControl
+                    label={__('Light spread', 'nextora')}
+                    value={lightRaysSpread}
+                    min={0.1}
+                    max={2}
+                    step={0.05}
+                    onChange={(value) => setAttributes({ lightRaysSpread: value ?? 0.5 })}
+                  />
+                  <RangeControl
+                    label={__('Ray length', 'nextora')}
+                    value={lightRaysLength}
+                    min={0.3}
+                    max={3}
+                    step={0.1}
+                    onChange={(value) => setAttributes({ lightRaysLength: value ?? 1 })}
+                  />
+                  <ToggleControl
+                    label={__('Pulsating', 'nextora')}
+                    checked={lightRaysPulsating}
+                    onChange={(value) => setAttributes({ lightRaysPulsating: value })}
+                  />
+                  <RangeControl
+                    label={__('Fade distance', 'nextora')}
+                    value={lightRaysFadeDistance}
+                    min={0.3}
+                    max={2}
+                    step={0.1}
+                    onChange={(value) => setAttributes({ lightRaysFadeDistance: value ?? 1 })}
+                  />
+                  <RangeControl
+                    label={__('Saturation', 'nextora')}
+                    value={lightRaysSaturation}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    onChange={(value) => setAttributes({ lightRaysSaturation: value ?? 1 })}
+                  />
+                  <ToggleControl
+                    label={__('Follow mouse', 'nextora')}
+                    checked={lightRaysFollowMouse}
+                    onChange={(value) => setAttributes({ lightRaysFollowMouse: value })}
+                  />
+                  {lightRaysFollowMouse ? (
+                    <RangeControl
+                      label={__('Mouse influence', 'nextora')}
+                      value={lightRaysMouseInfluence}
+                      min={0}
+                      max={1}
+                      step={0.05}
+                      onChange={(value) => setAttributes({ lightRaysMouseInfluence: value ?? 0.3 })}
+                    />
+                  ) : null}
+                  <RangeControl
+                    label={__('Noise amount', 'nextora')}
+                    value={lightRaysNoiseAmount}
+                    min={0}
+                    max={0.5}
+                    step={0.01}
+                    onChange={(value) => setAttributes({ lightRaysNoiseAmount: value ?? 0.05 })}
+                  />
+                  <RangeControl
+                    label={__('Distortion', 'nextora')}
+                    value={lightRaysDistortion}
+                    min={0}
+                    max={0.3}
+                    step={0.01}
+                    onChange={(value) => setAttributes({ lightRaysDistortion: value ?? 0.05 })}
+                  />
+                </>
+              ) : null}
+            </>
+          ) : null}
+        </PanelBody>
       </InspectorControls>
 
       <section {...blockProps}>
@@ -723,6 +1038,57 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
             className={`nextora-advanced-container__overlay nextora-advanced-container__overlay--${overlayModifier}`}
             aria-hidden="true"
           />
+        ) : null}
+        {enableAmbientAnimation && ambientAnimationType === 'ambient-icons' && ambientIcons.length > 0 ? (
+          <div className="nextora-advanced-container__ambient-icons" aria-hidden="true">
+            {ambientIcons.map((icon, idx) => (
+              <span
+                key={`${icon.name}-${idx}`}
+                className="nextora-advanced-container__ambient-icon"
+                data-nextora-ac-ambient-icon={icon.name}
+                style={{
+                  opacity: 1,
+                  width: ambientIconSize,
+                  height: ambientIconSize,
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width={ambientIconSize}
+                  height={ambientIconSize}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke={icon.color ? storedColorToCss(icon.color) || 'currentColor' : 'currentColor'}
+                  strokeWidth={ambientIconStrokeWidth}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+              </span>
+            ))}
+          </div>
+        ) : null}
+        {enableAmbientAnimation && ambientAnimationType === 'light-rays' ? (
+          (() => {
+            const resolvedColor = lightRaysColor ? (storedColorToCss(lightRaysColor) || 'rgba(255,255,255,0.6)') : 'rgba(255,255,255,0.6)';
+            const originY = lightRaysOrigin.includes('top') ? '0%' : lightRaysOrigin.includes('bottom') ? '100%' : '50%';
+            const originX = lightRaysOrigin.includes('left') ? '0%' : lightRaysOrigin.includes('right') ? '100%' : '50%';
+            return (
+              <div
+                className="nextora-advanced-container__light-rays"
+                aria-hidden="true"
+                style={{
+                  background: `
+                    repeating-conic-gradient(from 0deg at ${originX} ${originY}, transparent 0deg 20deg, ${resolvedColor} 20deg 23deg, transparent 23deg 45deg),
+                    radial-gradient(ellipse at ${originX} ${originY}, ${resolvedColor} 0%, transparent 55%)
+                  `,
+                  backgroundBlendMode: 'screen',
+                  opacity: 0.5,
+                } as React.CSSProperties}
+              />
+            );
+          })()
         ) : null}
         <div className="nextora-advanced-container__inner">
           <InnerBlocks template={[['core/group', {}, []]]} />

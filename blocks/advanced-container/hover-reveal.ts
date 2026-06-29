@@ -39,6 +39,7 @@ type HoverRevealState = {
   gradientCss: string;
   rafId: number;
   onResize: () => void;
+  onHoverChange: (event: MediaQueryListEvent) => void;
   onMouseEnter: (event: MouseEvent) => void;
   onMouseMove: (event: MouseEvent) => void;
   onMouseLeave: () => void;
@@ -52,10 +53,6 @@ function prefersReducedMotion(): boolean {
     window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
-}
-
-function canHover(): boolean {
-  return typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: hover)').matches;
 }
 
 function maskRgbFromRoot(root: HTMLElement): string {
@@ -223,6 +220,7 @@ function destroyHoverReveal(root: HTMLElement): void {
   root.removeEventListener('mousemove', state.onMouseMove);
   root.removeEventListener('mouseleave', state.onMouseLeave);
   window.removeEventListener('resize', state.onResize);
+  window.matchMedia('(any-hover: none)').removeEventListener('change', state.onHoverChange);
   stateByRoot.delete(root);
   root.removeAttribute(INIT_ATTR);
 }
@@ -234,7 +232,7 @@ export function initHoverReveal(root: HTMLElement): void {
   if (root.getAttribute(INIT_ATTR) === '1') {
     return;
   }
-  if (!canHover() || prefersReducedMotion()) {
+  if (prefersReducedMotion()) {
     return;
   }
 
@@ -249,6 +247,7 @@ export function initHoverReveal(root: HTMLElement): void {
   }
 
   const isGradient = root.classList.contains('nextora-advanced-container--hover-reveal-gradient');
+  const anyHoverNoneMql = window.matchMedia('(any-hover: none)');
 
   const state: HoverRevealState = {
     canvas,
@@ -265,6 +264,9 @@ export function initHoverReveal(root: HTMLElement): void {
     gradientCss: isGradient ? resolveSectionGradientCss(root) : '',
     rafId: 0,
     onResize: () => resize(state, root),
+    onHoverChange: () => {
+      resize(state, root);
+    },
     onMouseEnter: (event: MouseEvent) => {
       const rect = root.getBoundingClientRect();
       const x = event.clientX - rect.left;
@@ -291,6 +293,7 @@ export function initHoverReveal(root: HTMLElement): void {
   root.addEventListener('mousemove', state.onMouseMove);
   root.addEventListener('mouseleave', state.onMouseLeave);
   window.addEventListener('resize', state.onResize);
+  anyHoverNoneMql.addEventListener('change', state.onHoverChange);
 }
 
 export function destroyAllHoverReveal(): void {
