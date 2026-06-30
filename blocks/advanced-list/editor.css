@@ -109,6 +109,9 @@
   gap: 0.25rem;
   flex-shrink: 0;
 }
+.nextora-advanced-list__item-actions .components-button svg{
+  fill: transparent;
+}
 
 /* Modal styles */
 .nextora-advanced-list-modal .components-modal__content {
