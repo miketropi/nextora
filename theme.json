@@ -97,14 +97,14 @@
 					"name": "Contrast"
 				},
 				{
-					"slug": "paragraph",
-					"color": "#525252",
-					"name": "Paragraph"
-				},
-				{
 					"slug": "primary",
 					"color": "#000000",
 					"name": "Primary"
+				},
+				{
+					"slug": "paragraph",
+					"color": "#525252",
+					"name": "Paragraph"
 				},
 				{
 					"slug": "secondary",

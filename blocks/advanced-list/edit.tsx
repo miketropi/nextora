@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import { useState, useMemo, useEffect } from '@wordpress/element';
+import { createElement, useState, useMemo, useEffect } from '@wordpress/element';
+import type { ReactElement } from 'react';
 import {
   useBlockProps,
   InspectorControls,
@@ -21,8 +22,64 @@ import {
   useThemeColorPalette,
 } from '../advanced-icon/color-utils';
 import { IconPicker } from '../advanced-icon/icon-picker';
+import type { LucideIconNode } from '../advanced-icon/types';
+import { loadIconCatalog } from './icon-catalog';
 import AdvancedListEditorIcon from './editor-icon';
 import type { AdvancedListAttributes, AdvancedListItem } from './types';
+
+const LUCIDE_ACTION_ICON_SIZE = 18;
+const LUCIDE_ACTION_STROKE_WIDTH = 2;
+
+function LucideActionIcon({ name }: { name: string }): ReactElement | null {
+  const [nodes, setNodes] = useState<LucideIconNode[] | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    loadIconCatalog().then((icons) => {
+      if (!active) {
+        return;
+      }
+      const found = icons.find((icon) => icon.name === name);
+      setNodes(found?.nodes ?? null);
+    });
+    return () => {
+      active = false;
+    };
+  }, [name]);
+
+  if (!nodes) {
+    return null;
+  }
+
+  return createElement(
+    'svg',
+    {
+      xmlns: 'http://www.w3.org/2000/svg',
+      width: LUCIDE_ACTION_ICON_SIZE,
+      height: LUCIDE_ACTION_ICON_SIZE,
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      stroke: 'currentColor',
+      strokeWidth: LUCIDE_ACTION_STROKE_WIDTH,
+      strokeLinecap: 'round' as const,
+      strokeLinejoin: 'round' as const,
+    },
+    ...nodes.map((node, index) => {
+      const [tag, attrs, ...rest] = node;
+      const children = rest.length > 0 && Array.isArray(rest[0])
+        ? (rest[0] as LucideIconNode[])
+        : [];
+      return createElement(
+        tag,
+        { ...attrs, key: `${tag}-${index}` },
+        ...children.map((child, childIndex) => {
+          const [childTag, childAttrs] = child;
+          return createElement(childTag, { ...childAttrs, key: `${childTag}-${index}-${childIndex}` });
+        }),
+      );
+    }),
+  );
+}
 
 interface EditProps {
 	attributes: AdvancedListAttributes;
@@ -348,27 +405,27 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
               </div>
               <div className="nextora-advanced-list__item-actions">
                 <Button
-                  icon="edit"
+                  icon={<LucideActionIcon name="pencil" />}
                   label={__('Edit', 'nextora')}
                   onClick={() => setEditingItemId(item.id)}
                   isSmall
                 />
                 <Button
-                  icon="arrow-up-alt2"
+                  icon={<LucideActionIcon name="chevron-up" />}
                   label={__('Move up', 'nextora')}
                   onClick={() => moveItem(index, 'up')}
                   disabled={index === 0}
                   isSmall
                 />
                 <Button
-                  icon="arrow-down-alt2"
+                  icon={<LucideActionIcon name="chevron-down" />}
                   label={__('Move down', 'nextora')}
                   onClick={() => moveItem(index, 'down')}
                   disabled={index === items.length - 1}
                   isSmall
                 />
                 <Button
-                  icon="trash"
+                  icon={<LucideActionIcon name="trash-2" />}
                   label={__('Remove', 'nextora')}
                   onClick={() => removeItem(item.id)}
                   isSmall
@@ -379,7 +436,7 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
           ))}
         </div>
 
-        <Button variant="secondary" onClick={addItem} icon="plus">
+        <Button variant="secondary" onClick={addItem} icon={<LucideActionIcon name="plus" />}>
           {__('Add item', 'nextora')}
         </Button>
 
