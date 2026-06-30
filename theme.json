@@ -115,6 +115,11 @@
 					"slug": "surface",
 					"color": "#f4f4f4",
 					"name": "Surface"
+				},
+				{
+					"slug": "transparent",
+					"color": "transparent",
+					"name": "Transparent"
 				}
 			],
 			"gradients": [
@@ -135,7 +140,7 @@
 				},
 				{
 					"slug": "gradient-subtle",
-					"gradient": "linear-gradient(180deg, #ffffff 0%, #f4f4f4 100%)",
+					"gradient": "linear-gradient(180deg, #f4f4f4 0%, #ffffff 100%)",
 					"name": "Subtle"
 				},
 				{
