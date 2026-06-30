@@ -495,8 +495,13 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 					className="nextora-team-section__member-modal"
 					title={
 						editingMember.name
-							? sprintf(__('Edit member: %s', 'nextora'), editingMember.name)
+							? sprintf(__('Edit: %s', 'nextora'), editingMember.name)
 							: __('Edit team member', 'nextora')
+					}
+					headerActions={
+						<Button variant="primary" onClick={() => setEditingMemberId(null)}>
+							{__('Done', 'nextora')}
+						</Button>
 					}
 					onRequestClose={() => setEditingMemberId(null)}
 				>
@@ -505,11 +510,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						photoUrl={resolvePhotoUrl(editingMember, mediaUrlById)}
 						onPatch={(patch) => patchMember(editingMember.id, patch)}
 					/>
-					<div className="nextora-team-section__member-modal-footer">
-						<Button variant="primary" onClick={() => setEditingMemberId(null)}>
-							{__('Done', 'nextora')}
-						</Button>
-					</div>
 				</Modal>
 			)}
 
