@@ -24,6 +24,7 @@ import {
 } from '../advanced-icon/color-utils';
 import ItemModalForm from './item-modal-form';
 import BoxContentEditorIcon from './editor-icon';
+import { storedColorToCss } from './icon-catalog';
 import { buildStyleVars, createItemId, normalizeItems } from './item-utils';
 import { normalizeCardPadding } from './spacing-utils';
 import {
@@ -101,6 +102,10 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 		waysAccentColor1 = '',
 		waysAccentColor2 = '',
 		waysAccentColor3 = '',
+		highlightAccentColor1 = '',
+		highlightAccentColor2 = '',
+		highlightAccentColor3 = '',
+		highlightAccentColor4 = '',
 		paginationColor = '',
 		paginationActiveColor = '',
 		arrowColor = '',
@@ -150,6 +155,10 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 			waysAccentColor1: isEmptyColor(waysAccentColor1) ? '' : waysAccentColor1,
 			waysAccentColor2: isEmptyColor(waysAccentColor2) ? '' : waysAccentColor2,
 			waysAccentColor3: isEmptyColor(waysAccentColor3) ? '' : waysAccentColor3,
+			highlightAccentColor1: isEmptyColor(highlightAccentColor1) ? '' : highlightAccentColor1,
+			highlightAccentColor2: isEmptyColor(highlightAccentColor2) ? '' : highlightAccentColor2,
+			highlightAccentColor3: isEmptyColor(highlightAccentColor3) ? '' : highlightAccentColor3,
+			highlightAccentColor4: isEmptyColor(highlightAccentColor4) ? '' : highlightAccentColor4,
 			paginationColor: isEmptyColor(paginationColor) ? '' : paginationColor,
 			paginationActiveColor: isEmptyColor(paginationActiveColor) ? '' : paginationActiveColor,
 			arrowColor: isEmptyColor(arrowColor) ? '' : arrowColor,
@@ -255,6 +264,12 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 					onChange: (v: string | undefined) => setThemeColor('iconColor', v),
 					label: __('Icon color', 'nextora'),
 				},
+				...navColors,
+			];
+		}
+
+		if (cardTemplate === 'highlights') {
+			return [
 				...navColors,
 			];
 		}
@@ -367,6 +382,10 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 		waysAccentColor1,
 		waysAccentColor2,
 		waysAccentColor3,
+		highlightAccentColor1,
+		highlightAccentColor2,
+		highlightAccentColor3,
+		highlightAccentColor4,
 		iconColor,
 		iconSurfaceBackgroundColor,
 		iconSurfaceBorderColor,
@@ -392,6 +411,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 				...items,
 				{
 					id,
+					number: '',
 					title: '',
 					description: '',
 					showLink: true,
@@ -403,6 +423,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 					uploadedIconUrl: '',
 					iconColor: '',
 					iconSurfaceBackgroundColor: '',
+					highlightAccentColor: '',
 				},
 			],
 		});
@@ -502,25 +523,25 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 							});
 						}}
 					/>
-					<SelectControl
-						label={__('Desktop layout', 'nextora')}
-						help={
-							layoutMode === 'grid'
-								? __(
-										'Desktop shows a grid; tablet and mobile use a carousel.',
-										'nextora',
-									)
-								: __(
-										'All screen sizes use a carousel.',
-										'nextora',
-									)
-						}
-						value={layoutMode}
-						options={layoutModeOptions}
-						onChange={(v) =>
-							setAttributes({ layoutMode: v === 'grid' ? 'grid' : 'slider' })
-						}
-					/>
+				<SelectControl
+					label={__('Desktop layout', 'nextora')}
+					help={
+						layoutMode === 'grid'
+							? __(
+									'Desktop shows a grid; tablet and mobile use a carousel.',
+									'nextora',
+								)
+							: __(
+									'All screen sizes use a carousel.',
+									'nextora',
+								)
+					}
+					value={layoutMode}
+					options={layoutModeOptions}
+					onChange={(v) =>
+						setAttributes({ layoutMode: v === 'grid' ? 'grid' : 'slider' })
+					}
+				/>
 
 					{layoutMode === 'grid' ? (
 						<RangeControl
@@ -806,17 +827,66 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 					aria-label={__('Box content items', 'nextora')}
 				>
 					{items.map((item, index) => (
-						<article
-							key={item.id}
-							className="nextora-box-content__card nextora-box-content__card--editable"
-						>
-							<button
-								type="button"
-								className="nextora-box-content__card-edit"
-								onClick={() => setEditingItemId(item.id)}
-							>
-								{__('Edit item', 'nextora')}
-							</button>
+				<article
+					key={item.id}
+					className="nextora-box-content__card nextora-box-content__card--editable"
+					style={
+						cardTemplate === 'highlights' && item.highlightAccentColor
+							? ({
+									'--__hl-accent': storedColorToCss(
+										item.highlightAccentColor,
+										lookupPalette,
+									),
+								} as CSSProperties)
+							: undefined
+					}
+				>
+					<button
+						type="button"
+						className="nextora-box-content__card-edit"
+						onClick={() => setEditingItemId(item.id)}
+					>
+						{__('Edit item', 'nextora')}
+					</button>
+					{cardTemplate === 'highlights' ? (
+						(() => {
+							const statNumber = item.number || item.title;
+							const statLabel = item.number ? item.title : item.description;
+							const statSubtitle = item.number ? item.description : item.linkLabel;
+							return (
+								<>
+									<BoxContentEditorIcon
+										iconSource={item.iconSource}
+										iconName={item.iconName}
+										uploadedIconUrl={item.uploadedIconUrl}
+										iconSize={iconSize}
+										strokeWidth={strokeWidth}
+										iconStyle={iconStyle}
+										iconCircleSize={iconCircleSize}
+										iconCircleRadius={iconCircleRadius}
+										iconColor={item.iconColor || iconColor}
+										iconSurfaceBackgroundColor={
+											item.iconSurfaceBackgroundColor || iconSurfaceBackgroundColor
+										}
+										iconSurfaceBorderColor={iconSurfaceBorderColor}
+										lookupPalette={lookupPalette}
+									/>
+									<b className="nextora-box-content__stat-number">
+										{statNumber || __('1,200+', 'nextora')}
+									</b>
+									<span className="nextora-box-content__stat-label">
+										{statLabel || __('Stat label', 'nextora')}
+									</span>
+									{statSubtitle ? (
+										<small className="nextora-box-content__stat-subtitle">
+											{statSubtitle}
+										</small>
+									) : null}
+								</>
+							);
+						})()
+					) : (
+						<>
 							{cardTemplate === 'ways' ? (
 								<h5 className="nextora-box-content__card-ghost" aria-hidden="true">
 									{formatCardGhostIndex(index)}
@@ -867,6 +937,8 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 									</span>
 								</span>
 							) : null}
+						</>
+					)}
 						</article>
 					))}
 				</div>

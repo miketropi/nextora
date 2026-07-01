@@ -161,27 +161,54 @@ export default function ItemModalForm({
 						]}
 					/>
 				) : null}
+				{cardTemplate === 'highlights' ? (
+					<PanelColorSettings
+						title={__('Accent color', 'nextora')}
+						colors={colorPalette}
+						colorSettings={[
+							{
+								value: colorValueForPicker(item.highlightAccentColor, colorPalette, lookupPalette),
+								onChange: (v: string | undefined) =>
+									onPatch({
+										highlightAccentColor: normalizeColorForStorage(v, lookupPalette),
+									}),
+								label: __('Card accent', 'nextora'),
+							},
+						]}
+					/>
+				) : null}
 			</div>
 
 			<div className="nextora-box-content__item-modal-form-fields">
+				{cardTemplate === 'highlights' ? (
+					<div className="nextora-box-content__item-modal-form-group">
+						<p className="nextora-box-content__item-modal-form-heading">{__('Number', 'nextora')}</p>
+						<TextControl
+							label={__('Stat number', 'nextora')}
+							value={item.number}
+							onChange={(number) => onPatch({ number: number ?? '' })}
+							help={__('Large number shown above the label (e.g. 1200+).', 'nextora')}
+						/>
+					</div>
+				) : null}
 				<div className="nextora-box-content__item-modal-form-group">
 					<p className="nextora-box-content__item-modal-form-heading">{__('Content', 'nextora')}</p>
 					<TextControl
-						label={__('Title', 'nextora')}
+						label={cardTemplate === 'highlights' ? __('Stat label', 'nextora') : __('Title', 'nextora')}
 						value={item.title}
 						onChange={(title) => onPatch({ title: title ?? '' })}
 					/>
 					<TextareaControl
-						label={__('Description', 'nextora')}
+						label={cardTemplate === 'highlights' ? __('Stat subtitle', 'nextora') : __('Description', 'nextora')}
 						value={item.description}
 						onChange={(description) => onPatch({ description: description ?? '' })}
-						help={__('Short body copy shown on the card.', 'nextora')}
+						help={cardTemplate === 'highlights' ? __('Short supporting text shown below the label.', 'nextora') : __('Short body copy shown on the card.', 'nextora')}
 						rows={4}
 					/>
 				</div>
 
 				<div className="nextora-box-content__item-modal-form-group">
-					{cardTemplate !== 'minimal' ? (
+					{cardTemplate !== 'minimal' && cardTemplate !== 'highlights' ? (
 						<>
 							<p className="nextora-box-content__item-modal-form-heading">{__('Link', 'nextora')}</p>
 							<ToggleControl

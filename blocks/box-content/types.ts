@@ -1,10 +1,11 @@
 export type BoxContentLayoutMode = 'slider' | 'grid';
 export type BoxContentIconSource = 'theme' | 'upload';
 export type BoxContentIconStyle = 'default' | 'stacked' | 'framed';
-export type BoxContentCardTemplate = 'default' | 'ways' | 'minimal';
+export type BoxContentCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
 
 export interface BoxContentItem {
 	id: string;
+	number: string;
 	title: string;
 	description: string;
 	showLink: boolean;
@@ -17,6 +18,7 @@ export interface BoxContentItem {
 	uploadedIconUrl: string;
 	iconColor: string;
 	iconSurfaceBackgroundColor: string;
+	highlightAccentColor: string;
 }
 
 export interface BoxContentAttributes {
@@ -70,4 +72,8 @@ export interface BoxContentAttributes {
 	arrowColor: string;
 	headingFontFamily: string;
 	enableScrollAnimation: boolean;
+	highlightAccentColor1: string;
+	highlightAccentColor2: string;
+	highlightAccentColor3: string;
+	highlightAccentColor4: string;
 }

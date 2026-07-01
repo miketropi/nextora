@@ -6,6 +6,7 @@ import { buildHeadingFontFamilyVar } from './typography-utils';
 export const DEFAULT_ITEMS: BoxContentItem[] = [
 	{
 		id: '1',
+		number: '',
 		title: 'Donate',
 		description: 'Just $1 puts four meals on a table. Give once or monthly.',
 		showLink: true,
@@ -17,9 +18,11 @@ export const DEFAULT_ITEMS: BoxContentItem[] = [
 		uploadedIconUrl: '',
 		iconColor: '',
 		iconSurfaceBackgroundColor: '',
+		highlightAccentColor: '',
 	},
 	{
 		id: '2',
+		number: '',
 		title: 'Volunteer',
 		description: 'Sort, pack and deliver at a warehouse near you. No experience needed.',
 		showLink: true,
@@ -31,9 +34,11 @@ export const DEFAULT_ITEMS: BoxContentItem[] = [
 		uploadedIconUrl: '',
 		iconColor: '',
 		iconSurfaceBackgroundColor: '',
+		highlightAccentColor: '',
 	},
 	{
 		id: '3',
+		number: '',
 		title: 'Give food',
 		description: 'Run a food drive at work or school, or drop off at a collection point.',
 		showLink: true,
@@ -45,9 +50,11 @@ export const DEFAULT_ITEMS: BoxContentItem[] = [
 		uploadedIconUrl: '',
 		iconColor: '',
 		iconSurfaceBackgroundColor: '',
+		highlightAccentColor: '',
 	},
 	{
 		id: '4',
+		number: '',
 		title: 'Fundraise',
 		description: 'Take on a challenge — every dollar multiplies into meals.',
 		showLink: true,
@@ -59,6 +66,7 @@ export const DEFAULT_ITEMS: BoxContentItem[] = [
 		uploadedIconUrl: '',
 		iconColor: '',
 		iconSurfaceBackgroundColor: '',
+		highlightAccentColor: '',
 	},
 ];
 
@@ -76,6 +84,7 @@ export function normalizeItems(items: BoxContentItem[] | undefined): BoxContentI
 
 	return items.map((raw, index) => ({
 		id: typeof raw?.id === 'string' && raw.id !== '' ? raw.id : String(index + 1),
+		number: typeof raw?.number === 'string' ? raw.number : '',
 		title: typeof raw?.title === 'string' ? raw.title : '',
 		description: typeof raw?.description === 'string' ? raw.description : '',
 		showLink: raw?.showLink !== false,
@@ -89,6 +98,8 @@ export function normalizeItems(items: BoxContentItem[] | undefined): BoxContentI
 		iconColor: typeof raw?.iconColor === 'string' ? raw.iconColor : '',
 		iconSurfaceBackgroundColor:
 			typeof raw?.iconSurfaceBackgroundColor === 'string' ? raw.iconSurfaceBackgroundColor : '',
+		highlightAccentColor:
+			typeof raw?.highlightAccentColor === 'string' ? raw.highlightAccentColor : '',
 	}));
 }
 
@@ -116,6 +127,10 @@ export function buildStyleVars(attrs: {
 	waysAccentColor1?: string;
 	waysAccentColor2?: string;
 	waysAccentColor3?: string;
+	highlightAccentColor1?: string;
+	highlightAccentColor2?: string;
+	highlightAccentColor3?: string;
+	highlightAccentColor4?: string;
 	paginationColor?: string;
 	paginationActiveColor?: string;
 	arrowColor?: string;
@@ -172,6 +187,10 @@ export function buildStyleVars(attrs: {
 	setColor('--nextora-box-content-ways-accent-1', attrs.waysAccentColor1);
 	setColor('--nextora-box-content-ways-accent-2', attrs.waysAccentColor2);
 	setColor('--nextora-box-content-ways-accent-3', attrs.waysAccentColor3);
+	setColor('--nextora-box-content-highlight-accent-1', attrs.highlightAccentColor1);
+	setColor('--nextora-box-content-highlight-accent-2', attrs.highlightAccentColor2);
+	setColor('--nextora-box-content-highlight-accent-3', attrs.highlightAccentColor3);
+	setColor('--nextora-box-content-highlight-accent-4', attrs.highlightAccentColor4);
 	setColor('--nextora-box-content-dot-color', attrs.paginationColor);
 	setColor('--nextora-box-content-dot-active', attrs.paginationActiveColor);
 	setColor('--nextora-box-content-arrow-color', attrs.arrowColor);

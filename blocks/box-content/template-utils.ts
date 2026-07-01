@@ -1,6 +1,6 @@
 import type { BoxContentAttributes } from './types';
 
-export type BoxContentCardTemplate = 'default' | 'ways' | 'minimal';
+export type BoxContentCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
 
 export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	value: BoxContentCardTemplate;
@@ -9,6 +9,7 @@ export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	{ value: 'default', labelKey: 'Default' },
 	{ value: 'ways', labelKey: 'Ways' },
 	{ value: 'minimal', labelKey: 'Minimal' },
+	{ value: 'highlights', labelKey: 'Highlights Stats' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BoxContentCardTemplate {
@@ -17,6 +18,9 @@ export function normalizeCardTemplate(value: string | undefined): BoxContentCard
 	}
 	if (value === 'minimal') {
 		return 'minimal';
+	}
+	if (value === 'highlights') {
+		return 'highlights';
 	}
 	return 'default';
 }
@@ -70,6 +74,33 @@ export function getTemplateDefaultAttributes(
 				right: '22px',
 				bottom: '16px',
 				left: '22px',
+			},
+		};
+	}
+
+	if (template === 'highlights') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 4,
+			gridMinWidth: 981,
+			spaceBetween: 20,
+			slidesPerView: 4,
+			slidesPerViewTablet: 2,
+			slidesPerViewMobile: 1.15,
+			cardBorderWidth: 2,
+			cardBorderRadius: 26,
+			cardMinHeight: 160,
+			iconCircleSize: 60,
+			iconSize: 28,
+			iconCircleRadius: 50,
+			iconStyle: 'stacked',
+			showPagination: false,
+			showArrows: false,
+			cardPadding: {
+				top: '30px',
+				right: '24px',
+				bottom: '30px',
+				left: '24px',
 			},
 		};
 	}

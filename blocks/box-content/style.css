@@ -65,6 +65,10 @@
 	font-family: var(--nextora-box-content-heading-font-family);
 }
 
+.nextora-box-content--template-highlights.nextora-box-content--has-heading-font .nextora-box-content__stat-number {
+	font-family: var(--nextora-box-content-heading-font-family);
+}
+
 .nextora-box-content__description-intro {
 	margin: 0.75rem auto 0;
 	max-width: 42rem;
@@ -718,5 +722,87 @@
 	.nextora-box-content--template-minimal.nextora-box-content--grid-active .nextora-box-content__card:hover,
 	.nextora-box-content--template-minimal.nextora-box-content--grid-active .nextora-box-content__card:focus-within {
 		transform: none;
+	}
+}
+
+/* Highlights Stats template — colored stat cards with icon circle, large number, label, subtitle */
+/* Grid layout uses standard --grid-active class (set by view.ts). Slider uses Swiper carousel. */
+
+.nextora-box-content--template-highlights .nextora-box-content__card {
+	min-height: auto;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	padding: var(--nextora-box-content-card-padding, 30px 24px);
+	border: var(--nextora-box-content-card-border-width, 2px) solid transparent;
+	border-radius: var(--nextora-box-content-card-radius, 26px);
+	background: color-mix(in srgb, var(--__hl-accent, var(--wp--preset--color--secondary, #26C6C0)) 14%, var(--wp--preset--color--base, #fff));
+	border-color: color-mix(in srgb, var(--__hl-accent, var(--wp--preset--color--secondary, #26C6C0)) 35%, var(--wp--preset--color--base, #fff));
+	color: inherit;
+	transition: none;
+}
+
+.nextora-box-content--template-highlights .nextora-box-content__icon {
+	margin: 0 auto 14px;
+}
+
+.nextora-box-content--template-highlights .nextora-box-content__stat-number {
+	display: block;
+	margin: 0;
+	font-weight: 700;
+	font-size: clamp(30px, 3.4vw, 42px);
+	line-height: 1;
+	color: var(--__hl-accent, var(--wp--preset--color--secondary, #26C6C0));
+}
+
+.nextora-box-content--template-highlights .nextora-box-content__stat-label {
+	display: block;
+	margin-top: 6px;
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.nextora-box-content--template-highlights .nextora-box-content__stat-subtitle {
+	display: block;
+	margin-top: 3px;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(
+		--nextora-box-content-card-desc-color,
+		color-mix(in srgb, currentColor 55%, transparent)
+	);
+}
+
+/* Color cycling — 4 accent colors, one per card */
+.nextora-box-content--template-highlights .swiper-slide:nth-child(4n + 1) .nextora-box-content__card,
+.nextora-box-content--template-highlights .nextora-box-content__card:nth-child(4n + 1) {
+	--__hl-accent: var(--nextora-box-content-highlight-accent-1, var(--wp--preset--color--secondary, #26C6C0));
+}
+
+.nextora-box-content--template-highlights .swiper-slide:nth-child(4n + 2) .nextora-box-content__card,
+.nextora-box-content--template-highlights .nextora-box-content__card:nth-child(4n + 2) {
+	--__hl-accent: var(--nextora-box-content-highlight-accent-2, var(--wp--preset--color--primary, #FF5DA2));
+}
+
+.nextora-box-content--template-highlights .swiper-slide:nth-child(4n + 3) .nextora-box-content__card,
+.nextora-box-content--template-highlights .nextora-box-content__card:nth-child(4n + 3) {
+	--__hl-accent: var(--nextora-box-content-highlight-accent-3, #5AC86E);
+}
+
+.nextora-box-content--template-highlights .swiper-slide:nth-child(4n + 4) .nextora-box-content__card,
+.nextora-box-content--template-highlights .nextora-box-content__card:nth-child(4n + 4) {
+	--__hl-accent: var(--nextora-box-content-highlight-accent-4, #FF8A3D);
+}
+
+.nextora-box-content--template-highlights .nextora-box-content__icon--style-stacked,
+.nextora-box-content--template-highlights .nextora-box-content__icon--style-framed {
+	background: var(--__hl-accent, var(--wp--preset--color--secondary, #26C6C0));
+	color: var(--wp--preset--color--base, #fff);
+	border: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-box-content--template-highlights .nextora-box-content__card {
+		transition: none;
 	}
 }
