@@ -69,6 +69,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 		cardTemplate: cardTemplateRaw = 'default',
 		layoutMode = 'slider',
 		gridColumns = 4,
+		gridMinWidth = 981,
 		cardMinHeight = 240,
 		cardPadding = {},
 		cardBorderWidth = 2,
@@ -538,19 +539,37 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 					}
 					value={layoutMode}
 					options={layoutModeOptions}
-					onChange={(v) =>
-						setAttributes({ layoutMode: v === 'grid' ? 'grid' : 'slider' })
-					}
+					onChange={(v) => {
+						const next = v === 'grid' ? 'grid' : 'slider';
+						const patch: Partial<BoxContentAttributes> = { layoutMode: next };
+						if (next === 'grid' && gridMinWidth < 768) {
+							patch.gridMinWidth = 981;
+						}
+						setAttributes(patch);
+					}}
 				/>
 
 					{layoutMode === 'grid' ? (
-						<RangeControl
-							label={__('Grid columns', 'nextora')}
-							value={gridColumns}
-							onChange={(v) => setAttributes({ gridColumns: v ?? 4 })}
-							min={1}
-							max={6}
-						/>
+						<>
+							<RangeControl
+								label={__('Grid columns', 'nextora')}
+								value={gridColumns}
+								onChange={(v) => setAttributes({ gridColumns: v ?? 4 })}
+								min={1}
+								max={6}
+							/>
+							<RangeControl
+								label={__('Grid min width (px)', 'nextora')}
+								help={__(
+									'Below this viewport width the cards switch from grid to a carousel.',
+									'nextora',
+								)}
+								value={gridMinWidth}
+								onChange={(v) => setAttributes({ gridMinWidth: v ?? 981 })}
+								min={480}
+								max={1200}
+							/>
+						</>
 					) : null}
 
 					<p className="nextora-box-content__inspector-subheading">{__('Cards', 'nextora')}</p>
