@@ -59,8 +59,10 @@ function DetailIcon({ type }: { type: 'map-pin' | 'clock' | 'ticket' }): JSX.Ele
 	return (
 		<span className="nextora-event__detail-icon" aria-hidden="true">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-				<path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v2a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" />
-				<path d="M13 13h3a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h3" />
+				<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+				<path d="M13 5v2" />
+				<path d="M13 17v2" />
+				<path d="M13 11v2" />
 			</svg>
 		</span>
 	);
@@ -440,11 +442,10 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 												<img
 													src={imageUrl}
 													alt=""
-													className={`nextora-event__thumb-img${
-														event.imageId === 0 && !event.imageUrl
+													className={`nextora-event__thumb-img${event.imageId === 0 && !event.imageUrl
 															? ' nextora-event__thumb-img--placeholder'
 															: ''
-													}`}
+														}`}
 												/>
 											) : null}
 										</div>
