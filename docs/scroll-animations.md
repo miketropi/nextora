@@ -19,6 +19,7 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-inner-fade` | Each **direct child** (`> p`, `> div`, `> h4`, …) fades in up when it enters the viewport |
 | `animation-parallax` | Vertical parallax while scrolling (use with `data-parallax-speed`) |
 | `animation-image-clip-reveal` | Image wipe reveal via `clip-path` (targets nested `img`, or the `img` itself) |
+| `animation-image-border-reveal` | Gradient border wipe around `img` — animated gradient runs around a 2px border at image edge |
 | `animation-text-reveal-words` | Split heading into words; stagger fade + slide in on scroll |
 | `animation-text-reveal-chars` | Split heading into characters; stagger fade + slide in on scroll |
 | `animation-text-reveal-chars-rise` | Characters rise in with perspective + `back.out` easing |
@@ -32,6 +33,7 @@ These map from legacy Elementor utility classes (`at-animation-*`) to theme-nati
 | Class | Effect | Default timing |
 |-------|--------|----------------|
 | `animation-image-clip-reveal` | Horizontal clip-path wipe on `img` | `duration: 1.5`, `ease: power2.out`, trigger `top 90%` |
+| `animation-image-border-reveal` | Gradient border wipe + fade on `img` | `duration: 1.5`, `ease: power2.out`, trigger `top 90%` |
 | `animation-text-reveal-words` | Word stagger, slide from right | `duration: 1`, `delay: 0.5`, `stagger: 0.05`, `distance: 20` |
 | `animation-text-reveal-chars` | Character stagger, slide from right | `duration: 1`, `delay: 0.1`, `stagger: 0.03`, `distance: 20`, `ease: power2.out` |
 | `animation-text-reveal-chars-rise` | 3D-style character rise | `duration: 1`, `stagger: 0.02`, `distance: 50`, `ease: back.out(1.7)` |
@@ -53,6 +55,20 @@ Put the class on an **Image** block or a **Group/Cover** wrapper that contains a
 </figure>
 <!-- /wp:image -->
 ```
+
+### Image border reveal
+
+Put the class on an **Image** block or a **Group/Cover** wrapper that contains an `img`. A 3px dashed outline draws around the image at 14px distance as you scroll, with colors cycling between `--wp--preset--color--primary` → `--wp--preset--color--secondary` (falls back to coral/cyan). The outline uses CSS `outline-offset: 14px` and `@keyframes nextoraOutlineDash` (3s linear infinite) for the running-color effect.
+
+```html
+<!-- wp:image {"className":"animation-image-border-reveal"} -->
+<figure class="wp-block-image animation-image-border-reveal">
+  <img src="…" alt="…" />
+</figure>
+<!-- /wp:image -->
+```
+
+The outline naturally follows the image's `border-radius` in modern browsers (Chrome 94+, Safari 16+, Firefox 88+).
 
 ### Text reveal (headings)
 
