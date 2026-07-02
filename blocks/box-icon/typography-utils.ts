@@ -20,6 +20,6 @@ export function buildHeadingFontFamilyVar(
 		return {};
 	}
 	return {
-		'--nextora-box-content-heading-font-family': resolved,
+		'--nextora-box-icon-heading-font-family': resolved,
 	};
 }

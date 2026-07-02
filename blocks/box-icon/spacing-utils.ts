@@ -80,13 +80,13 @@ export function cardPaddingToStyleVars(raw: unknown): Record<string, string> {
 	for (const side of sides) {
 		const resolved = resolveSpacingCSSValue(padding[side]);
 		if (resolved) {
-			vars[`--nextora-box-content-card-padding-${side}`] = resolved;
+			vars[`--nextora-box-icon-card-padding-${side}`] = resolved;
 		}
 	}
 
 	const shorthand = cardPaddingToCss(raw);
 	if (shorthand) {
-		vars['--nextora-box-content-card-padding'] = shorthand;
+		vars['--nextora-box-icon-card-padding'] = shorthand;
 	}
 
 	return vars;

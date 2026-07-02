@@ -1,5 +1,5 @@
 /**
- * Box Content — Swiper carousel / responsive grid + scroll reveal.
+ * Box Icon — Swiper carousel / responsive grid + scroll reveal.
  */
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -13,7 +13,7 @@ import './style.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const SCROLL_INIT_ATTR = 'data-nextora-box-content-scroll-init';
+const SCROLL_INIT_ATTR = 'data-nextora-box-icon-scroll-init';
 const REVEAL_START_RATIO = 0.88;
 const REVEAL_FALLBACK_MS = 4000;
 
@@ -112,8 +112,8 @@ function shouldUseSwiper(root: HTMLElement): boolean {
 }
 
 function setRevealReady(section: HTMLElement): void {
-	section.classList.add('nextora-box-content--reveal-ready');
-	section.classList.remove('nextora-box-content--reveal-pending');
+	section.classList.add('nextora-box-icon--reveal-ready');
+	section.classList.remove('nextora-box-icon--reveal-pending');
 }
 
 function clearRevealStyles(targets: HTMLElement[]): void {
@@ -143,8 +143,8 @@ function initScrollReveal(section: HTMLElement): void {
 		return;
 	}
 
-	const header = section.querySelector<HTMLElement>('.nextora-box-content__header');
-	const carousel = section.querySelector<HTMLElement>('.nextora-box-content__carousel-root');
+	const header = section.querySelector<HTMLElement>('.nextora-box-icon__header');
+	const carousel = section.querySelector<HTMLElement>('.nextora-box-icon__carousel-root');
 	const targets = [header, carousel].filter((el): el is HTMLElement => el !== null);
 
 	if (targets.length === 0) {
@@ -172,7 +172,7 @@ function initScrollReveal(section: HTMLElement): void {
 
 	let played = false;
 	const playReveal = (): void => {
-		if (played || section.classList.contains('nextora-box-content--reveal-ready')) {
+		if (played || section.classList.contains('nextora-box-icon--reveal-ready')) {
 			return;
 		}
 		played = true;
@@ -180,7 +180,7 @@ function initScrollReveal(section: HTMLElement): void {
 	};
 
 	window.setTimeout(() => {
-		if (section.classList.contains('nextora-box-content--reveal-ready')) {
+		if (section.classList.contains('nextora-box-icon--reveal-ready')) {
 			return;
 		}
 		if (!isRevealStartPassed(section)) {
@@ -210,15 +210,15 @@ function markSectionReady(section: HTMLElement | null): void {
 	if (!section) {
 		return;
 	}
-	section.classList.remove('nextora-box-content--loading');
-	section.classList.add('nextora-box-content--ready');
+	section.classList.remove('nextora-box-icon--loading');
+	section.classList.add('nextora-box-icon--ready');
 	requestAnimationFrame(() => {
 		ScrollTrigger.refresh();
 	});
 }
 
 function removeSwiperClasses(root: HTMLElement): void {
-	const el = root.querySelector<HTMLElement>('.nextora-box-content__swiper');
+	const el = root.querySelector<HTMLElement>('.nextora-box-icon__swiper');
 	if (!el) return;
 	el.classList.remove(
 		'swiper-initialized',
@@ -245,8 +245,8 @@ function destroySwiper(root: HTMLElement): void {
 	}
 	clearSwiperInlineStyles(root);
 	removeSwiperClasses(root);
-	delete root.dataset.nextoraBoxContentSwiperInited;
-	delete root.dataset.nextoraBoxContentSwiperPending;
+	delete root.dataset.nextoraBoxIconSwiperInited;
+	delete root.dataset.nextoraBoxIconSwiperPending;
 }
 
 function clearSwiperInlineStyles(root: HTMLElement): void {
@@ -260,20 +260,20 @@ function setGridMode(root: HTMLElement, active: boolean): void {
 		clearSwiperInlineStyles(root);
 		removeSwiperClasses(root);
 	}
-	root.classList.toggle('nextora-box-content__carousel-root--grid-active', active);
-	const section = root.closest<HTMLElement>('.nextora-box-content');
+	root.classList.toggle('nextora-box-icon__carousel-root--grid-active', active);
+	const section = root.closest<HTMLElement>('.nextora-box-icon');
 	if (section) {
-		section.classList.toggle('nextora-box-content--grid-active', active);
+		section.classList.toggle('nextora-box-icon--grid-active', active);
 	}
 }
 
 function mountSwiper(root: HTMLElement): void {
-	if (root.dataset.nextoraBoxContentSwiperInited === '1' || root.dataset.nextoraBoxContentSwiperPending === '1') {
+	if (root.dataset.nextoraBoxIconSwiperInited === '1' || root.dataset.nextoraBoxIconSwiperPending === '1') {
 		return;
 	}
 
-	const section = root.closest<HTMLElement>('.nextora-box-content');
-	const el = root.querySelector<HTMLElement>('.nextora-box-content__swiper');
+	const section = root.closest<HTMLElement>('.nextora-box-icon');
+	const el = root.querySelector<HTMLElement>('.nextora-box-icon__swiper');
 	if (!el) {
 		markSectionReady(section);
 		return;
@@ -290,9 +290,9 @@ function mountSwiper(root: HTMLElement): void {
 
 	const showArrows = opts.showArrows === true;
 	const showPagination = opts.showPagination !== false;
-	const prevEl = root.querySelector<HTMLElement>('.nextora-box-content__arrow--prev');
-	const nextEl = root.querySelector<HTMLElement>('.nextora-box-content__arrow--next');
-	const paginationEl = root.querySelector<HTMLElement>('.nextora-box-content__pagination');
+	const prevEl = root.querySelector<HTMLElement>('.nextora-box-icon__arrow--prev');
+	const nextEl = root.querySelector<HTMLElement>('.nextora-box-icon__arrow--next');
+	const paginationEl = root.querySelector<HTMLElement>('.nextora-box-icon__pagination');
 
 	const baseSpv = roundSpv(
 		typeof opts.slidesPerView === 'number' && !Number.isNaN(opts.slidesPerView) ? opts.slidesPerView : 1.15,
@@ -340,11 +340,11 @@ function mountSwiper(root: HTMLElement): void {
 	const useRewind = wantLoop && !canLoop;
 	const reduced = prefersReducedMotion();
 
-	root.dataset.nextoraBoxContentSwiperPending = '1';
+	root.dataset.nextoraBoxIconSwiperPending = '1';
 
 	const finishSection = (): void => {
-		delete root.dataset.nextoraBoxContentSwiperPending;
-		root.dataset.nextoraBoxContentSwiperInited = '1';
+		delete root.dataset.nextoraBoxIconSwiperPending;
+		root.dataset.nextoraBoxIconSwiperInited = '1';
 		markSectionReady(section);
 	};
 
@@ -413,7 +413,7 @@ function mountSwiper(root: HTMLElement): void {
 
 function syncCarouselRoot(root: HTMLElement): void {
 	if (shouldUseSwiper(root)) {
-		if (root.dataset.nextoraBoxContentSwiperInited !== '1') {
+		if (root.dataset.nextoraBoxIconSwiperInited !== '1') {
 			mountSwiper(root);
 		}
 		return;
@@ -421,13 +421,13 @@ function syncCarouselRoot(root: HTMLElement): void {
 
 	destroySwiper(root);
 	setGridMode(root, true);
-	const section = root.closest<HTMLElement>('.nextora-box-content');
+	const section = root.closest<HTMLElement>('.nextora-box-icon');
 	markSectionReady(section);
 }
 
 function initCarouselRoots(container: Element | Document = document): void {
 	container
-		.querySelectorAll<HTMLElement>('.nextora-box-content__carousel-root')
+		.querySelectorAll<HTMLElement>('.nextora-box-icon__carousel-root')
 		.forEach((root) => {
 			syncCarouselRoot(root);
 		});
@@ -435,7 +435,7 @@ function initCarouselRoots(container: Element | Document = document): void {
 
 function initAllScrollReveals(container: Element | Document = document): void {
 	container
-		.querySelectorAll<HTMLElement>('.nextora-box-content[data-nextora-scroll-reveal="1"]')
+		.querySelectorAll<HTMLElement>('.nextora-box-icon[data-nextora-scroll-reveal="1"]')
 		.forEach((section) => {
 			initScrollReveal(section);
 		});
@@ -445,9 +445,9 @@ let resizeTimer = 0;
 function onResize(): void {
 	window.clearTimeout(resizeTimer);
 	resizeTimer = window.setTimeout(() => {
-		document.querySelectorAll<HTMLElement>('.nextora-box-content__carousel-root').forEach((root) => {
+		document.querySelectorAll<HTMLElement>('.nextora-box-icon__carousel-root').forEach((root) => {
 			if (shouldUseSwiper(root)) {
-				if (root.dataset.nextoraBoxContentSwiperInited === '1') {
+				if (root.dataset.nextoraBoxIconSwiperInited === '1') {
 					const swiper = swiperByRoot.get(root);
 					swiper?.update();
 					setGridMode(root, false);
@@ -477,7 +477,7 @@ if (document.readyState === 'loading') {
 
 window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
 window.addEventListener('resize', onResize);
-window.addEventListener('nextora-box-content-reinit', () => {
+window.addEventListener('nextora-box-icon-reinit', () => {
 	initAllScrollReveals(document);
 	initCarouselRoots(document);
 	ScrollTrigger.refresh();

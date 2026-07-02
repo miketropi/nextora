@@ -1,8 +1,8 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "nextora/box-content",
-	"title": "Box Content",
+	"name": "nextora/box-icon",
+	"title": "Box Icon",
 	"category": "design",
 	"description": "Icon cards in a slider or grid — smaller viewports always use a carousel.",
 	"keywords": ["box", "cards", "grid", "slider", "carousel", "icon", "features", "nextora"],

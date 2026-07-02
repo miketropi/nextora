@@ -1,9 +1,9 @@
-import type { BoxContentAttributes } from './types';
+import type { BoxIconAttributes } from './types';
 
-export type BoxContentCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
 
 export const BOX_CONTENT_TEMPLATE_OPTIONS: {
-	value: BoxContentCardTemplate;
+	value: BoxIconCardTemplate;
 	labelKey: string;
 }[] = [
 	{ value: 'default', labelKey: 'Default' },
@@ -12,7 +12,7 @@ export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	{ value: 'highlights', labelKey: 'Highlights Stats' },
 ];
 
-export function normalizeCardTemplate(value: string | undefined): BoxContentCardTemplate {
+export function normalizeCardTemplate(value: string | undefined): BoxIconCardTemplate {
 	if (value === 'ways') {
 		return 'ways';
 	}
@@ -30,8 +30,8 @@ export function normalizeCardTemplate(value: string | undefined): BoxContentCard
  * All keys remain editable via existing inspector controls.
  */
 export function getTemplateDefaultAttributes(
-	template: BoxContentCardTemplate,
-): Partial<BoxContentAttributes> {
+	template: BoxIconCardTemplate,
+): Partial<BoxIconAttributes> {
 	if (template === 'ways') {
 		return {
 			layoutMode: 'grid',
