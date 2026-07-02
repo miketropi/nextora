@@ -191,6 +191,7 @@ if ( ! function_exists( 'nextora_box_content_normalize_item' ) ) {
 	function nextora_box_content_normalize_item( array $raw ): array {
 		return array(
 			'id'                         => isset( $raw['id'] ) ? (string) $raw['id'] : '',
+			'number'                     => isset( $raw['number'] ) ? (string) $raw['number'] : '',
 			'title'                      => isset( $raw['title'] ) ? trim( (string) $raw['title'] ) : '',
 			'description'                => isset( $raw['description'] ) ? trim( (string) $raw['description'] ) : '',
 			'showLink'                   => ! isset( $raw['showLink'] ) || (bool) $raw['showLink'],
@@ -203,6 +204,7 @@ if ( ! function_exists( 'nextora_box_content_normalize_item' ) ) {
 			'uploadedIconUrl'            => isset( $raw['uploadedIconUrl'] ) ? trim( (string) $raw['uploadedIconUrl'] ) : '',
 			'iconColor'                  => isset( $raw['iconColor'] ) ? (string) $raw['iconColor'] : '',
 			'iconSurfaceBackgroundColor' => isset( $raw['iconSurfaceBackgroundColor'] ) ? (string) $raw['iconSurfaceBackgroundColor'] : '',
+			'highlightAccentColor'       => isset( $raw['highlightAccentColor'] ) ? (string) $raw['highlightAccentColor'] : '',
 		);
 	}
 }
@@ -321,8 +323,9 @@ if ( ! function_exists( 'nextora_box_content_render_card' ) ) {
 		int $card_index = 0,
 		string $card_template = 'default',
 	): string {
-		$title = (string) $item['title'];
-		if ( '' === trim( wp_strip_all_tags( $title ) ) ) {
+	$title = (string) $item['title'];
+	$number = isset( $item['number'] ) ? (string) $item['number'] : '';
+	if ( '' === trim( wp_strip_all_tags( $title ) ) && '' === trim( wp_strip_all_tags( $number ) ) ) {
 			return '';
 		}
 
@@ -334,10 +337,43 @@ if ( ! function_exists( 'nextora_box_content_render_card' ) ) {
 
 		$icon_html = nextora_box_content_render_icon( $item, $global_defaults );
 
-		$out  = $as_slide ? '<div class="swiper-slide">' : '';
-		$out .= '<article class="nextora-box-content__card">';
+	$highlight_accent = '';
+	$highlight_accent_style = '';
+	if ( 'highlights' === $card_template ) {
+		$highlight_accent = isset( $item['highlightAccentColor'] ) ? (string) $item['highlightAccentColor'] : '';
+		$resolved = nextora_box_content_resolve_color( $highlight_accent );
+		if ( '' !== $resolved && 'currentColor' !== $resolved ) {
+			$highlight_accent_style = '--__hl-accent:' . $resolved . ';';
+		}
+	}
 
-		if ( 'ways' === $card_template ) {
+	$out  = $as_slide ? '<div class="swiper-slide">' : '';
+	if ( '' !== $highlight_accent_style ) {
+		$out .= '<article class="nextora-box-content__card" style="' . esc_attr( $highlight_accent_style ) . '">';
+	} else {
+		$out .= '<article class="nextora-box-content__card">';
+	}
+
+	if ( 'highlights' === $card_template ) {
+		if ( '' !== $icon_html ) {
+			$out .= $icon_html;
+		}
+		$stat_number  = '' !== $number ? $number : $title;
+		$stat_label   = '' !== $number ? $title : $description;
+		$stat_subtitle = '' !== $number ? $description : $link_label;
+		$out .= '<b class="nextora-box-content__stat-number">' . esc_html( $stat_number ) . '</b>';
+		if ( '' !== trim( wp_strip_all_tags( $stat_label ) ) ) {
+			$out .= '<span class="nextora-box-content__stat-label">' . esc_html( $stat_label ) . '</span>';
+		}
+		if ( '' !== trim( wp_strip_all_tags( $stat_subtitle ) ) ) {
+			$out .= '<small class="nextora-box-content__stat-subtitle">' . esc_html( $stat_subtitle ) . '</small>';
+		}
+		$out .= '</article>';
+		$out .= $as_slide ? '</div>' : '';
+		return $out;
+	}
+
+	if ( 'ways' === $card_template ) {
 			$ghost = str_pad( (string) ( $card_index + 1 ), 2, '0', STR_PAD_LEFT );
 			$out  .= sprintf(
 				'<h5 class="nextora-box-content__card-ghost" aria-hidden="true">%s</h5>',
@@ -415,7 +451,7 @@ if ( ! in_array( $layout_mode, array( 'slider', 'grid' ), true ) ) {
 }
 
 $card_template = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-$allowed_card_templates = array( 'default', 'ways', 'minimal' );
+$allowed_card_templates = array( 'default', 'ways', 'minimal', 'highlights' );
 if ( ! in_array( $card_template, $allowed_card_templates, true ) ) {
 	$card_template = 'default';
 }
@@ -500,6 +536,10 @@ $color_keys = array(
 	'waysAccentColor1'             => '--nextora-box-content-ways-accent-1',
 	'waysAccentColor2'             => '--nextora-box-content-ways-accent-2',
 	'waysAccentColor3'             => '--nextora-box-content-ways-accent-3',
+	'highlightAccentColor1'        => '--nextora-box-content-highlight-accent-1',
+	'highlightAccentColor2'        => '--nextora-box-content-highlight-accent-2',
+	'highlightAccentColor3'        => '--nextora-box-content-highlight-accent-3',
+	'highlightAccentColor4'        => '--nextora-box-content-highlight-accent-4',
 	'paginationColor'              => '--nextora-box-content-dot-color',
 	'paginationActiveColor'        => '--nextora-box-content-dot-active',
 	'arrowColor'                   => '--nextora-box-content-arrow-color',

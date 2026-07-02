@@ -3,6 +3,7 @@
   position: relative;
   overflow: clip;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   box-sizing: border-box;
   padding: var(--wp--preset--spacing--xl, 4rem) var(--wp--preset--spacing--lg, 1.5rem);

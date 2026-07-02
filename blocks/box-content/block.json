@@ -39,6 +39,7 @@
 			"default": [
 				{
 					"id": "1",
+					"number": "",
 					"title": "Donate",
 					"description": "Just $1 puts four meals on a table. Give once or monthly.",
 					"showLink": true,
@@ -49,10 +50,12 @@
 					"uploadedIconId": 0,
 					"uploadedIconUrl": "",
 					"iconColor": "",
-					"iconSurfaceBackgroundColor": ""
+					"iconSurfaceBackgroundColor": "",
+					"highlightAccentColor": ""
 				},
 				{
 					"id": "2",
+					"number": "",
 					"title": "Volunteer",
 					"description": "Sort, pack and deliver at a warehouse near you. No experience needed.",
 					"showLink": true,
@@ -63,10 +66,12 @@
 					"uploadedIconId": 0,
 					"uploadedIconUrl": "",
 					"iconColor": "",
-					"iconSurfaceBackgroundColor": ""
+					"iconSurfaceBackgroundColor": "",
+					"highlightAccentColor": ""
 				},
 				{
 					"id": "3",
+					"number": "",
 					"title": "Give food",
 					"description": "Run a food drive at work or school, or drop off at a collection point.",
 					"showLink": true,
@@ -77,10 +82,12 @@
 					"uploadedIconId": 0,
 					"uploadedIconUrl": "",
 					"iconColor": "",
-					"iconSurfaceBackgroundColor": ""
+					"iconSurfaceBackgroundColor": "",
+					"highlightAccentColor": ""
 				},
 				{
 					"id": "4",
+					"number": "",
 					"title": "Fundraise",
 					"description": "Take on a challenge — every dollar multiplies into meals.",
 					"showLink": true,
@@ -151,6 +158,10 @@
 		"waysAccentColor1": { "type": "string", "default": "" },
 		"waysAccentColor2": { "type": "string", "default": "" },
 		"waysAccentColor3": { "type": "string", "default": "" },
+		"highlightAccentColor1": { "type": "string", "default": "" },
+		"highlightAccentColor2": { "type": "string", "default": "" },
+		"highlightAccentColor3": { "type": "string", "default": "" },
+		"highlightAccentColor4": { "type": "string", "default": "" },
 		"paginationColor": { "type": "string", "default": "" },
 		"paginationActiveColor": { "type": "string", "default": "" },
 		"arrowColor": { "type": "string", "default": "" },

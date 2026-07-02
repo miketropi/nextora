@@ -94,6 +94,11 @@ function getGridMinWidth(root: HTMLElement): number {
 	return Number.isFinite(raw) ? raw : 981;
 }
 
+function getGridColumns(root: HTMLElement): number {
+	const raw = parseInt(root.getAttribute('data-grid-columns') || '4', 10);
+	return Number.isFinite(raw) ? Math.max(1, Math.min(6, raw)) : 4;
+}
+
 function getLayoutMode(root: HTMLElement): 'slider' | 'grid' {
 	const mode = root.getAttribute('data-layout-mode');
 	return mode === 'grid' ? 'grid' : 'slider';
@@ -212,33 +217,48 @@ function markSectionReady(section: HTMLElement | null): void {
 	});
 }
 
+function removeSwiperClasses(root: HTMLElement): void {
+	const el = root.querySelector<HTMLElement>('.nextora-box-content__swiper');
+	if (!el) return;
+	el.classList.remove(
+		'swiper-initialized',
+		'swiper-horizontal',
+		'swiper-vertical',
+		'swiper-backface-hidden',
+		'swiper-free-mode',
+		'swiper-css-mode',
+		'swiper-android',
+		'swiper-ios',
+		'swiper-watch-progress',
+		'swiper-pointer-events',
+		'swiper-rtl',
+		'swiper-autoheight',
+		'swiper-grid',
+	);
+}
+
 function destroySwiper(root: HTMLElement): void {
 	const existing = swiperByRoot.get(root);
 	if (existing) {
 		existing.destroy(true, true);
 		swiperByRoot.delete(root);
 	}
+	clearSwiperInlineStyles(root);
+	removeSwiperClasses(root);
 	delete root.dataset.nextoraBoxContentSwiperInited;
 	delete root.dataset.nextoraBoxContentSwiperPending;
 }
 
 function clearSwiperInlineStyles(root: HTMLElement): void {
-	root.querySelectorAll<HTMLElement>('.swiper-slide').forEach((slide) => {
-		slide.style.removeProperty('width');
-		slide.style.removeProperty('height');
-		slide.style.removeProperty('margin-right');
+	root.querySelectorAll<HTMLElement>('.swiper-wrapper, .swiper-slide').forEach((el) => {
+		el.removeAttribute('style');
 	});
-	const wrapper = root.querySelector<HTMLElement>('.swiper-wrapper');
-	if (wrapper) {
-		wrapper.style.removeProperty('transform');
-		wrapper.style.removeProperty('width');
-		wrapper.style.removeProperty('transition-duration');
-	}
 }
 
 function setGridMode(root: HTMLElement, active: boolean): void {
 	if (active) {
 		clearSwiperInlineStyles(root);
+		removeSwiperClasses(root);
 	}
 	root.classList.toggle('nextora-box-content__carousel-root--grid-active', active);
 	const section = root.closest<HTMLElement>('.nextora-box-content');
@@ -291,17 +311,31 @@ function mountSwiper(root: HTMLElement): void {
 
 	const cap = (n: number) => Math.max(1, Math.min(roundSpv(n), Math.max(1, slideCount)));
 
+	const gridCols = getGridColumns(root);
 	const gridMin = getGridMinWidth(root);
-	const defaultBreakpoints: Record<number, { slidesPerView: number; spaceBetween: number }> = {
-		768: { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) },
-		[gridMin]: { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) },
-	};
+	const isGridMode = getLayoutMode(root) === 'grid';
+
+	const effectiveDesktopSpv =
+		isGridMode ? Math.max(cap(tabletSpv), Math.min(gridCols, slideCount)) : cap(desktopSpv);
+
+	const swiperBreakpoints: Record<number, { slidesPerView: number; spaceBetween: number }> = {};
+	swiperBreakpoints[768] = { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) };
+
+	if (isGridMode) {
+		if (gridMin > 768) {
+			const bp = gridMin - 1;
+			swiperBreakpoints[bp] = { slidesPerView: effectiveDesktopSpv, spaceBetween: Math.max(0, gap) };
+		}
+	} else {
+		const desktopBp = Math.max(gridMin, 1024);
+		swiperBreakpoints[desktopBp] = { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) };
+	}
 
 	const wantLoop = Boolean(opts.loop) && slideCount > 1;
 	const anyFractionalSpv =
 		!isEffectivelyInteger(cap(baseSpv)) ||
 		!isEffectivelyInteger(cap(tabletSpv)) ||
-		!isEffectivelyInteger(cap(desktopSpv));
+		!isEffectivelyInteger(effectiveDesktopSpv);
 	const canLoop = wantLoop && slideCount >= 4 && !anyFractionalSpv;
 	const useRewind = wantLoop && !canLoop;
 	const reduced = prefersReducedMotion();
@@ -332,7 +366,6 @@ function mountSwiper(root: HTMLElement): void {
 			observeParents: true,
 			resizeObserver: true,
 			updateOnWindowResize: true,
-			breakpointsBase: 'container',
 			freeMode: opts.freeMode === true,
 			grabCursor: opts.grabCursor !== false && !reduced,
 			autoplay:
@@ -350,7 +383,7 @@ function mountSwiper(root: HTMLElement): void {
 				nextSlideMessage: 'Next slide',
 				paginationBulletMessage: 'Go to slide {{index}}',
 			},
-			breakpoints: normalizeBreakpoints(opts.breakpoints, defaultBreakpoints),
+			breakpoints: normalizeBreakpoints(opts.breakpoints, swiperBreakpoints),
 			...(showArrows && prevEl && nextEl ? { navigation: { nextEl, prevEl } } : {}),
 			...(showPagination && paginationEl
 				? {
