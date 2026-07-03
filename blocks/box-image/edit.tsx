@@ -1,0 +1,844 @@
+// @ts-nocheck
+import type { CSSProperties } from 'react';
+import { useMemo, useState } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import {
+	InspectorControls,
+	PanelColorSettings,
+	useBlockProps,
+	MediaUpload,
+	MediaUploadCheck,
+} from '@wordpress/block-editor';
+import {
+	Button,
+	ColorPalette,
+	Modal,
+	PanelBody,
+	RangeControl,
+	SelectControl,
+	TextControl,
+	TextareaControl,
+	ToggleControl,
+} from '@wordpress/components';
+import {
+	colorValueForPicker,
+	getMergedPaletteEntries,
+	normalizeColorForStorage,
+	useThemeColorPalette,
+} from '../advanced-icon/color-utils';
+import { buildStyleVars, createItemId, normalizeItems } from './item-utils';
+import type { BoxImageAttributes, BoxImageTemplate } from './types';
+
+interface EditProps {
+	attributes: BoxImageAttributes;
+	setAttributes: (attrs: Partial<BoxImageAttributes>) => void;
+}
+
+const layoutModeOptions = [
+	{ label: __('Slider', 'nextora'), value: 'slider' },
+	{ label: __('Grid', 'nextora'), value: 'grid' },
+];
+
+const templateOptions: { label: string; value: BoxImageTemplate }[] = [
+	{ label: __('Default', 'nextora'), value: 'default' },
+	{ label: __('Programs', 'nextora'), value: 'programs' },
+];
+
+const aspectRatioOptions = [
+	{ label: '3:2', value: '3/2' },
+	{ label: '16:9', value: '16/9' },
+	{ label: '4:3', value: '4/3' },
+	{ label: '1:1', value: '1/1' },
+	{ label: '2:3', value: '2/3' },
+];
+
+const imageFitOptions = [
+	{ label: __('Cover', 'nextora'), value: 'cover' },
+	{ label: __('Contain', 'nextora'), value: 'contain' },
+	{ label: __('Fill', 'nextora'), value: 'fill' },
+	{ label: __('None', 'nextora'), value: 'none' },
+];
+
+function isEmptyColor(value: string | undefined): boolean {
+	return !value || value === 'currentColor';
+}
+
+function resolveEditorImage(item: { imageId: number; imageUrl: string }, placeholderUrl: string): string {
+	if (item.imageUrl) {
+		return item.imageUrl;
+	}
+	return placeholderUrl;
+}
+
+export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
+	const [editingItemId, setEditingItemId] = useState<string | null>(null);
+	const items = normalizeItems(attributes.items);
+	const editingItem = editingItemId ? items.find((item) => item.id === editingItemId) : undefined;
+
+	const colorPalette = useThemeColorPalette();
+	const lookupPalette = useMemo(() => getMergedPaletteEntries(colorPalette), [colorPalette]);
+
+	const placeholderUrl = useMemo(() => {
+		if (typeof window !== 'undefined' && (window as unknown as Record<string, unknown>).nextoraBoxImage) {
+			const bi = (window as unknown as Record<string, unknown>).nextoraBoxImage as {
+				placeholderUrl?: string;
+			};
+			return bi.placeholderUrl || '';
+		}
+		return '';
+	}, []);
+
+	const {
+		layoutMode = 'slider',
+		template = 'default',
+		gridColumns = 4,
+		gridMinWidth = 981,
+		imageAspectRatio = '3/2',
+		imageFit = 'cover',
+		cardMinHeight = 240,
+		cardBorderWidth = 0,
+		cardBorderRadius = 8,
+		slidesPerView = 4,
+		slidesPerViewTablet = 2,
+		slidesPerViewMobile = 1.15,
+		spaceBetween = 18,
+		speed = 500,
+		loop = false,
+		autoplay = false,
+		autoplayDelay = 4000,
+		pauseOnHover = true,
+		showPagination = true,
+		showArrows = false,
+		grabCursor = true,
+		freeMode = false,
+		cardBorderColor = '',
+		cardBackgroundColor = '',
+		cardHoverBackgroundColor = '',
+		cardTitleColor = '',
+		cardDescriptionColor = '',
+		descriptionHoverColor = '',
+		linkColor = '',
+		linkHoverColor = '',
+		paginationColor = '',
+		paginationActiveColor = '',
+		arrowColor = '',
+		enableScrollAnimation = true,
+	} = attributes;
+
+	const styleVars = buildStyleVars(
+		{
+			gapPx: spaceBetween,
+			cardMinHeight,
+			cardBorderWidth,
+			cardBorderRadius,
+			gridColumns,
+			imageAspectRatio,
+			imageFit,
+			cardBorderColor: isEmptyColor(cardBorderColor) ? '' : cardBorderColor,
+			cardBackgroundColor: isEmptyColor(cardBackgroundColor) ? '' : cardBackgroundColor,
+			cardHoverBackgroundColor: isEmptyColor(cardHoverBackgroundColor)
+				? ''
+				: cardHoverBackgroundColor,
+			cardTitleColor: isEmptyColor(cardTitleColor) ? '' : cardTitleColor,
+			cardDescriptionColor: isEmptyColor(cardDescriptionColor) ? '' : cardDescriptionColor,
+			descriptionHoverColor: isEmptyColor(descriptionHoverColor) ? '' : descriptionHoverColor,
+			linkColor: isEmptyColor(linkColor) ? '' : linkColor,
+			linkHoverColor: isEmptyColor(linkHoverColor) ? '' : linkHoverColor,
+			paginationColor: isEmptyColor(paginationColor) ? '' : paginationColor,
+			paginationActiveColor: isEmptyColor(paginationActiveColor) ? '' : paginationActiveColor,
+			arrowColor: isEmptyColor(arrowColor) ? '' : arrowColor,
+		},
+		lookupPalette,
+	);
+
+	const blockProps = useBlockProps({
+		className: [
+			'nextora-box-image',
+			'nextora-box-image--editor',
+			layoutMode === 'slider' ? 'nextora-box-image--editor-slider' : '',
+			`nextora-box-image--layout-${layoutMode}`,
+			template !== 'default' ? `nextora-box-image--template-${template}` : '',
+		]
+			.filter(Boolean)
+			.join(' '),
+		style: styleVars as CSSProperties,
+	});
+
+	const setThemeColor = (key: keyof BoxImageAttributes, value: string | undefined): void => {
+		setAttributes({ [key]: normalizeColorForStorage(value, lookupPalette) } as Partial<BoxImageAttributes>);
+	};
+
+	const colorSettings = useMemo(() => {
+		const navColors = [
+			{
+				value: colorValueForPicker(paginationColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('paginationColor', v),
+				label: __('Pagination color', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(paginationActiveColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('paginationActiveColor', v),
+				label: __('Pagination active color', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(arrowColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('arrowColor', v),
+				label: __('Arrow color', 'nextora'),
+			},
+		];
+
+		return [...navColors];
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [
+		paginationColor,
+		paginationActiveColor,
+		arrowColor,
+		colorPalette,
+		lookupPalette,
+	]);
+
+	const patchItem = (id: string, patch: Partial<(typeof items)[0]>): void => {
+		setAttributes({
+			items: items.map((item) => (item.id === id ? { ...item, ...patch } : item)),
+		});
+	};
+
+	const addItem = (): void => {
+		const id = createItemId();
+		setAttributes({
+			items: [
+				...items,
+				{
+					id,
+					title: '',
+					description: '',
+					showLink: true,
+					linkLabel: __('Read more', 'nextora'),
+					linkUrl: '#',
+					linkTarget: '_self',
+					imageId: 0,
+					imageUrl: '',
+					backgroundColor: '',
+					titleColor: '',
+					descriptionColor: '',
+					linkColor: '',
+					badge: '',
+				},
+			],
+		});
+		setEditingItemId(id);
+	};
+
+	const removeItem = (id: string): void => {
+		if (items.length <= 1) {
+			return;
+		}
+		setAttributes({ items: items.filter((item) => item.id !== id) });
+		if (editingItemId === id) {
+			setEditingItemId(null);
+		}
+	};
+
+	const moveItem = (id: string, delta: number): void => {
+		const index = items.findIndex((item) => item.id === id);
+		const target = index + delta;
+		if (index < 0 || target < 0 || target >= items.length) {
+			return;
+		}
+		const next = [...items];
+		const tmp = next[index];
+		next[index] = next[target];
+		next[target] = tmp;
+		setAttributes({ items: next });
+	};
+
+	return (
+		<>
+			<InspectorControls>
+				<PanelBody title={__('Items', 'nextora')} initialOpen>
+					<p className="nextora-box-image__inspector-items-help">
+						{__(
+							'Click Edit on a card in the canvas, or use the buttons below. Full settings open in a dialog.',
+							'nextora',
+						)}
+					</p>
+					{items.map((item, index) => (
+						<div key={item.id} className="nextora-box-image__inspector-item">
+							<div className="nextora-box-image__inspector-item-summary">
+								<p className="nextora-box-image__inspector-item-name">
+									{item.title || sprintf(__('Item %d', 'nextora'), index + 1)}
+								</p>
+								{item.description ? (
+									<p className="nextora-box-image__inspector-item-desc">{item.description}</p>
+								) : null}
+							</div>
+							<div className="nextora-box-image__inspector-item-actions">
+								<Button variant="primary" onClick={() => setEditingItemId(item.id)}>
+									{__('Edit', 'nextora')}
+								</Button>
+								<Button
+									variant="secondary"
+									disabled={index === 0}
+									onClick={() => moveItem(item.id, -1)}
+								>
+									{__('Up', 'nextora')}
+								</Button>
+								<Button
+									variant="secondary"
+									disabled={index >= items.length - 1}
+									onClick={() => moveItem(item.id, 1)}
+								>
+									{__('Down', 'nextora')}
+								</Button>
+								<Button
+									variant="secondary"
+									isDestructive
+									disabled={items.length <= 1}
+									onClick={() => removeItem(item.id)}
+								>
+									{__('Remove', 'nextora')}
+								</Button>
+							</div>
+						</div>
+					))}
+					<Button variant="primary" onClick={addItem}>
+						{__('Add item', 'nextora')}
+					</Button>
+				</PanelBody>
+
+				<PanelBody title={__('Layout', 'nextora')} initialOpen>
+					<SelectControl
+						label={__('Desktop layout', 'nextora')}
+						help={
+							layoutMode === 'grid'
+								? __(
+										'Desktop shows a grid; tablet and mobile use a carousel.',
+										'nextora',
+									)
+								: __(
+										'All screen sizes use a carousel.',
+										'nextora',
+									)
+						}
+						value={layoutMode}
+						options={layoutModeOptions}
+						onChange={(v) => {
+							const next = v === 'grid' ? 'grid' : 'slider';
+							const patch: Partial<BoxImageAttributes> = { layoutMode: next };
+							if (next === 'grid' && gridMinWidth < 768) {
+								patch.gridMinWidth = 981;
+							}
+							setAttributes(patch);
+						}}
+					/>
+
+					<SelectControl
+						label={__('Template', 'nextora')}
+						help={
+							template === 'programs'
+								? __(
+										'Program-style cards with image, badge, centered content and per-item background color.',
+										'nextora',
+									)
+								: __(
+										'Default card layout.',
+										'nextora',
+									)
+						}
+						value={template}
+						options={templateOptions}
+						onChange={(v: string) => {
+							const tpl = (v === 'programs' ? 'programs' : 'default') as BoxImageTemplate;
+							const patch: Partial<BoxImageAttributes> = { template: tpl };
+							if (tpl === 'programs') {
+								patch.layoutMode = 'grid';
+								patch.gridColumns = 3;
+								patch.imageAspectRatio = '4/3';
+								patch.cardBorderRadius = 28;
+								patch.cardBorderWidth = 2;
+							}
+							setAttributes(patch);
+						}}
+					/>
+
+					{layoutMode === 'grid' ? (
+						<>
+							<RangeControl
+								label={__('Grid columns', 'nextora')}
+								value={gridColumns}
+								onChange={(v) => setAttributes({ gridColumns: v ?? 4 })}
+								min={1}
+								max={6}
+							/>
+							<RangeControl
+								label={__('Grid min width (px)', 'nextora')}
+								help={__(
+									'Below this viewport width the cards switch from grid to a carousel.',
+									'nextora',
+								)}
+								value={gridMinWidth}
+								onChange={(v) => setAttributes({ gridMinWidth: v ?? 981 })}
+								min={480}
+								max={1200}
+							/>
+						</>
+					) : null}
+
+					<p className="nextora-box-image__inspector-subheading">{__('Cards', 'nextora')}</p>
+					<RangeControl
+						label={__('Gap between cards (px)', 'nextora')}
+						value={spaceBetween}
+						onChange={(v) => setAttributes({ spaceBetween: v ?? 18 })}
+						min={0}
+						max={60}
+					/>
+					<RangeControl
+						label={__('Card min height (px)', 'nextora')}
+						value={cardMinHeight}
+						onChange={(v) => setAttributes({ cardMinHeight: v ?? 240 })}
+						min={0}
+						max={600}
+					/>
+					<RangeControl
+						label={__('Card border width (px)', 'nextora')}
+						value={cardBorderWidth}
+						onChange={(v) => setAttributes({ cardBorderWidth: v ?? 0 })}
+						min={0}
+						max={8}
+					/>
+					<RangeControl
+						label={__('Card border radius (px)', 'nextora')}
+						value={cardBorderRadius}
+						onChange={(v) => setAttributes({ cardBorderRadius: v ?? 8 })}
+						min={0}
+						max={32}
+					/>
+
+					<p className="nextora-box-image__inspector-subheading">
+						{layoutMode === 'grid'
+							? __('Carousel (tablet & mobile)', 'nextora')
+							: __('Carousel', 'nextora')}
+					</p>
+					{layoutMode === 'slider' ? (
+						<RangeControl
+							label={__('Slides per view (desktop)', 'nextora')}
+							value={slidesPerView}
+							onChange={(v) => setAttributes({ slidesPerView: v ?? 4 })}
+							min={1}
+							max={6}
+							step={0.05}
+						/>
+					) : null}
+					<RangeControl
+						label={__('Slides per view (tablet)', 'nextora')}
+						value={slidesPerViewTablet}
+						onChange={(v) => setAttributes({ slidesPerViewTablet: v ?? 2 })}
+						min={1}
+						max={4}
+						step={0.05}
+					/>
+					<RangeControl
+						label={__('Slides per view (mobile)', 'nextora')}
+						value={slidesPerViewMobile}
+						onChange={(v) => setAttributes({ slidesPerViewMobile: v ?? 1.15 })}
+						min={1}
+						max={2}
+						step={0.05}
+					/>
+					<RangeControl
+						label={__('Transition speed (ms)', 'nextora')}
+						value={speed}
+						onChange={(v) => setAttributes({ speed: v ?? 500 })}
+						min={100}
+						max={2000}
+						step={100}
+					/>
+					<ToggleControl
+						label={__('Loop', 'nextora')}
+						checked={loop}
+						onChange={(v) => setAttributes({ loop: v })}
+					/>
+					<ToggleControl
+						label={__('Grab cursor', 'nextora')}
+						checked={grabCursor}
+						onChange={(v) => setAttributes({ grabCursor: v })}
+					/>
+					<ToggleControl
+						label={__('Free mode', 'nextora')}
+						checked={freeMode}
+						onChange={(v) => setAttributes({ freeMode: v })}
+					/>
+
+					<p className="nextora-box-image__inspector-subheading">{__('Autoplay', 'nextora')}</p>
+					<ToggleControl
+						label={__('Autoplay', 'nextora')}
+						checked={autoplay}
+						onChange={(v) => setAttributes({ autoplay: v })}
+					/>
+					<RangeControl
+						label={__('Autoplay delay (ms)', 'nextora')}
+						value={autoplayDelay}
+						onChange={(v) => setAttributes({ autoplayDelay: v ?? 4000 })}
+						min={1000}
+						max={10000}
+						step={500}
+						disabled={!autoplay}
+					/>
+					<ToggleControl
+						label={__('Pause on hover', 'nextora')}
+						checked={pauseOnHover}
+						onChange={(v) => setAttributes({ pauseOnHover: v })}
+						disabled={!autoplay}
+					/>
+
+					<p className="nextora-box-image__inspector-subheading">{__('Navigation', 'nextora')}</p>
+					<ToggleControl
+						label={__('Show pagination', 'nextora')}
+						checked={showPagination}
+						onChange={(v) => setAttributes({ showPagination: v })}
+					/>
+					<ToggleControl
+						label={__('Show arrows', 'nextora')}
+						checked={showArrows}
+						onChange={(v) => setAttributes({ showArrows: v })}
+					/>
+				</PanelBody>
+
+				<PanelBody title={__('Image', 'nextora')} initialOpen={false}>
+					<SelectControl
+						label={__('Aspect ratio', 'nextora')}
+						value={imageAspectRatio}
+						options={aspectRatioOptions}
+						onChange={(v) => setAttributes({ imageAspectRatio: v as string })}
+					/>
+					<SelectControl
+						label={__('Image fit', 'nextora')}
+						value={imageFit}
+						options={imageFitOptions}
+						onChange={(v) => setAttributes({ imageFit: v as string })}
+					/>
+				</PanelBody>
+
+				<PanelColorSettings
+					title={__('Navigation colors', 'nextora')}
+					colors={colorPalette}
+					colorSettings={colorSettings}
+				/>
+
+				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
+					<ToggleControl
+						label={__('Animate on scroll', 'nextora')}
+						help={__(
+							'Fade or move content in when it enters the viewport. Disabled automatically when the visitor prefers reduced motion.',
+							'nextora',
+						)}
+						checked={enableScrollAnimation !== false}
+						onChange={(v) => setAttributes({ enableScrollAnimation: v })}
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			{editingItem ? (
+				<Modal
+					className="nextora-box-image__item-modal"
+					size="large"
+					title={
+						editingItem.title
+							? sprintf(__('Edit item: %s', 'nextora'), editingItem.title)
+							: __('Edit box item', 'nextora')
+					}
+					onRequestClose={() => setEditingItemId(null)}
+					shouldCloseOnClickOutside={false}
+					headerActions={
+						<div className="nextora-box-image__item-modal-header-actions">
+							<Button
+								size="compact"
+								variant="primary"
+								onClick={() => setEditingItemId(null)}
+							>
+								{__('Done', 'nextora')}
+							</Button>
+						</div>
+					}
+				>
+					<div className="nextora-box-image__item-modal-form">
+						<div className="nextora-box-image__item-modal-form-image">
+							<MediaUploadCheck>
+								<MediaUpload
+									onSelect={(media: { id: number; url: string }) =>
+										patchItem(editingItem.id, {
+											imageId: media.id,
+											imageUrl: media.url,
+										})
+									}
+									allowedTypes={['image']}
+									value={editingItem.imageId}
+									render={({ open }) => (
+										<div className="nextora-box-image__item-modal-media">
+											<img
+												className="nextora-box-image__item-modal-media-preview"
+												src={resolveEditorImage(editingItem, placeholderUrl)}
+												alt=""
+											/>
+											<Button variant="secondary" onClick={open}>
+												{editingItem.imageUrl
+													? __('Replace image', 'nextora')
+													: __('Select image', 'nextora')}
+											</Button>
+											{editingItem.imageUrl && (
+												<Button
+													variant="tertiary"
+													isDestructive
+													onClick={() =>
+														patchItem(editingItem.id, {
+															imageId: 0,
+															imageUrl: '',
+														})
+													}
+												>
+													{__('Remove image', 'nextora')}
+												</Button>
+											)}
+										</div>
+									)}
+								/>
+							</MediaUploadCheck>
+							<div className="nextora-box-image__item-modal-colors">
+								<div className="nextora-box-image__item-modal-color">
+									<p className="nextora-box-image__item-modal-label">
+										{__('Background color', 'nextora')}
+									</p>
+									<ColorPalette
+										colors={colorPalette}
+										value={editingItem.backgroundColor || ''}
+										onChange={(color) =>
+											patchItem(editingItem.id, {
+												backgroundColor: color || '',
+											})
+										}
+										clearable={true}
+										enableAlpha={false}
+									/>
+								</div>
+								<div className="nextora-box-image__item-modal-color">
+									<p className="nextora-box-image__item-modal-label">
+										{__('Title color', 'nextora')}
+									</p>
+									<ColorPalette
+										colors={colorPalette}
+										value={editingItem.titleColor || ''}
+										onChange={(color) =>
+											patchItem(editingItem.id, {
+												titleColor: color || '',
+											})
+										}
+										clearable={true}
+										enableAlpha={false}
+									/>
+								</div>
+								<div className="nextora-box-image__item-modal-color">
+									<p className="nextora-box-image__item-modal-label">
+										{__('Description color', 'nextora')}
+									</p>
+									<ColorPalette
+										colors={colorPalette}
+										value={editingItem.descriptionColor || ''}
+										onChange={(color) =>
+											patchItem(editingItem.id, {
+												descriptionColor: color || '',
+											})
+										}
+										clearable={true}
+										enableAlpha={false}
+									/>
+								</div>
+								<div className="nextora-box-image__item-modal-color">
+									<p className="nextora-box-image__item-modal-label">
+										{__('Link color', 'nextora')}
+									</p>
+									<ColorPalette
+										colors={colorPalette}
+										value={editingItem.linkColor || ''}
+										onChange={(color) =>
+											patchItem(editingItem.id, {
+												linkColor: color || '',
+											})
+										}
+										clearable={true}
+										enableAlpha={false}
+									/>
+								</div>
+							</div>
+						</div>
+						<div className="nextora-box-image__item-modal-form-fields">
+							<TextControl
+								label={__('Title', 'nextora')}
+								value={editingItem.title}
+								onChange={(title) => patchItem(editingItem.id, { title })}
+							/>
+							<TextareaControl
+								label={__('Description', 'nextora')}
+								value={editingItem.description}
+								onChange={(description) => patchItem(editingItem.id, { description })}
+							/>
+							<ToggleControl
+								label={__('Show link', 'nextora')}
+								checked={editingItem.showLink}
+								onChange={() =>
+									patchItem(editingItem.id, { showLink: !editingItem.showLink })
+								}
+							/>
+							{editingItem.showLink && (
+								<>
+									<TextControl
+										label={__('Link label', 'nextora')}
+										value={editingItem.linkLabel}
+										onChange={(linkLabel) =>
+											patchItem(editingItem.id, { linkLabel })
+										}
+									/>
+									<TextControl
+										label={__('Link URL', 'nextora')}
+										value={editingItem.linkUrl}
+										onChange={(linkUrl) =>
+											patchItem(editingItem.id, { linkUrl })
+										}
+									/>
+									<ToggleControl
+										label={__('Open in new tab', 'nextora')}
+										checked={editingItem.linkTarget === '_blank'}
+										onChange={(v) =>
+											patchItem(editingItem.id, {
+												linkTarget: v ? '_blank' : '_self',
+											})
+										}
+									/>
+								</>
+							)}
+							<TextControl
+								label={__('Badge', 'nextora')}
+								help={__('Small label overlay on the image (e.g. "Ages 0–2").', 'nextora')}
+								value={editingItem.badge}
+								onChange={(badge) => patchItem(editingItem.id, { badge })}
+							/>
+						</div>
+					</div>
+					<div
+						style={{
+							marginTop: 16,
+							paddingTop: 16,
+							borderTop: '1px solid color-mix(in srgb, currentColor 10%, transparent)',
+						}}
+					>
+						<Button
+							variant="secondary"
+							isDestructive
+							disabled={items.length <= 1}
+							onClick={() => removeItem(editingItem.id)}
+						>
+							{__('Remove item', 'nextora')}
+						</Button>
+					</div>
+				</Modal>
+			) : null}
+
+			<div {...blockProps}>
+				<div className="nextora-box-image__inner">
+					<div
+						className="nextora-box-image__carousel-root"
+						aria-label={__('Box content items', 'nextora')}
+					>
+						<div
+							className={`nextora-box-image__cards${layoutMode === 'slider' ? ' nextora-box-image__cards--slider' : ''}`}
+						>
+							{items.map((item) => (
+								<article
+									key={item.id}
+									className={`nextora-box-image__card${template === 'programs' ? ' nextora-box-image__card--programs' : ''} nextora-box-image__card--editable`}
+									style={
+										(item.backgroundColor || item.titleColor || item.descriptionColor || item.linkColor)
+											? ({
+												'--nextora-box-image-item-bg': item.backgroundColor || '',
+												'--nextora-box-image-item-title-color': item.titleColor || '',
+												'--nextora-box-image-item-desc-color': item.descriptionColor || '',
+												'--nextora-box-image-item-link-color': item.linkColor || '',
+											} as CSSProperties)
+											: undefined
+									}
+								>
+									<button
+										type="button"
+										className="nextora-box-image__card-edit"
+										onClick={() => setEditingItemId(item.id)}
+									>
+										{__('Edit item', 'nextora')}
+									</button>
+									{template === 'programs' ? (
+										<div className="nextora-box-image__card-inner">
+											<div className="nextora-box-image__image-wrap">
+												<img
+													className="nextora-box-image__card-image"
+													src={resolveEditorImage(item, placeholderUrl)}
+													alt=""
+												/>
+												{item.badge ? (
+													<span className="nextora-box-image__badge">
+														{item.badge}
+													</span>
+												) : null}
+											</div>
+											<div className="nextora-box-image__card-body">
+												<h3 className="nextora-box-image__title">
+													{item.title || __('Title', 'nextora')}
+												</h3>
+												<p className="nextora-box-image__description">
+													{item.description || __('Description…', 'nextora')}
+												</p>
+												{item.showLink && item.linkLabel ? (
+													<span className="nextora-box-image__link wp-block-button__link nextora-box-image__link--static">
+														{item.linkLabel}
+														<span className="nextora-box-image__link-icon" aria-hidden="true">
+															<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+																<path d="M5 12h14M13 6l6 6-6 6" />
+															</svg>
+														</span>
+													</span>
+												) : null}
+											</div>
+										</div>
+									) : (
+										<>
+											<div className="nextora-box-image__image-wrap">
+												<img
+													className="nextora-box-image__card-image"
+													src={resolveEditorImage(item, placeholderUrl)}
+													alt=""
+												/>
+											</div>
+											<h3 className="nextora-box-image__title">
+												{item.title || __('Title', 'nextora')}
+											</h3>
+											<p className="nextora-box-image__description">
+												{item.description || __('Description…', 'nextora')}
+											</p>
+											{item.showLink && item.linkLabel ? (
+												<span className="nextora-box-image__link nextora-box-image__link--static">
+													{item.linkLabel}
+													<span className="nextora-box-image__link-icon" aria-hidden="true">
+														<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+															<path d="M5 12h14M13 6l6 6-6 6" />
+														</svg>
+													</span>
+												</span>
+											) : null}
+										</>
+									)}
+								</article>
+							))}
+						</div>
+					</div>
+				</div>
+			</div>
+		</>
+	);
+}

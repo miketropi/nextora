@@ -71,6 +71,11 @@ if ( is_readable( $box_icon_editor ) ) {
 	require_once $box_icon_editor;
 }
 
+$box_image_editor = __DIR__ . '/box-image/register-editor.php';
+if ( is_readable( $box_image_editor ) ) {
+	require_once $box_image_editor;
+}
+
 $event_editor = __DIR__ . '/event/register-editor.php';
 if ( is_readable( $event_editor ) ) {
 	require_once $event_editor;

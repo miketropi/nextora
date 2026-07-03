@@ -1,0 +1,295 @@
+/**
+ * Box Image — editor-only styles.
+ */
+
+@import './style.css';
+
+/* Layout: slider scroll row */
+.nextora-box-image--editor .nextora-box-image__cards {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: var(--nextora-box-image-gap, 18px);
+	overflow-x: auto;
+	padding-bottom: 0.5rem;
+	margin-top: 0;
+	-webkit-overflow-scrolling: touch;
+}
+
+.nextora-box-image--editor.nextora-box-image--editor-slider .nextora-box-image__cards {
+	scroll-snap-type: x proximity;
+}
+
+/* Layout: grid */
+.nextora-box-image--editor.nextora-box-image--layout-grid .nextora-box-image__cards {
+	display: grid;
+	grid-template-columns: repeat(var(--nextora-box-image-cols, 4), minmax(0, 1fr));
+	flex-wrap: unset;
+	overflow-x: visible;
+	scroll-snap-type: none;
+}
+
+/* Card editor overrides — inherit from __card, only add editor essentials */
+.nextora-box-image--editor .nextora-box-image__card--editable {
+	position: relative;
+}
+
+.nextora-box-image--editor .nextora-box-image__card--editable,
+.nextora-box-image--editor .nextora-box-image__card--editable:hover,
+.nextora-box-image--editor .nextora-box-image__card--editable:focus-within {
+	transition: none;
+}
+
+.nextora-box-image--editor.nextora-box-image--editor-slider .nextora-box-image__card--editable {
+	flex: 0 0 min(280px, 85vw);
+	max-width: min(280px, 85vw);
+	scroll-snap-align: start;
+}
+
+.nextora-box-image--editor.nextora-box-image--layout-grid .nextora-box-image__card--editable {
+	flex: unset;
+	max-width: none;
+	width: auto;
+	scroll-snap-align: unset;
+}
+
+/* Disable front-end hover effects in editor */
+.nextora-box-image--editor .nextora-box-image__card:hover,
+.nextora-box-image--editor .nextora-box-image__card:focus-within {
+	background: var(--wp--preset--color--surface, #f4ecdd);
+	color: var(--wp--preset--color--contrast, currentColor);
+}
+
+.nextora-box-image--editor .nextora-box-image__card:hover .nextora-box-image__description,
+.nextora-box-image--editor .nextora-box-image__card:focus-within .nextora-box-image__description {
+	color: var(
+		--nextora-box-image-card-desc-color,
+		color-mix(in srgb, currentColor 55%, transparent)
+	);
+}
+
+
+/* Edit button */
+.nextora-box-image--editor .nextora-box-image__card-edit {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 2;
+	padding: 0.25rem 0.625rem;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--wp--preset--color--contrast, currentColor);
+	background: color-mix(in srgb, var(--wp--preset--color--base, #fff) 92%, transparent);
+	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+	border-radius: 999px;
+	cursor: pointer;
+}
+
+.nextora-box-image--editor .nextora-box-image__card-edit:hover,
+.nextora-box-image--editor .nextora-box-image__card-edit:focus-visible {
+	background: var(--wp--preset--color--base, #fff);
+	outline: 2px solid var(--wp-admin-theme-color, #3858e9);
+	outline-offset: 1px;
+}
+
+/* Inspector panel */
+.nextora-box-image__inspector-items-help {
+	margin: 0 0 12px;
+	font-size: 12px;
+	line-height: 1.45;
+	color: color-mix(in srgb, currentColor 65%, transparent);
+}
+
+.nextora-box-image__inspector-subheading {
+	margin: 16px 0 4px;
+	padding-top: 12px;
+	border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.nextora-box-image__inspector-subheading:first-of-type {
+	margin-top: 8px;
+	padding-top: 0;
+	border-top: none;
+}
+
+.nextora-box-image__inspector-item {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding-bottom: 12px;
+	margin-bottom: 12px;
+	border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.nextora-box-image__inspector-item-summary {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.nextora-box-image__inspector-item-name {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.nextora-box-image__inspector-item-desc {
+	margin: 0;
+	font-size: 12px;
+	color: color-mix(in srgb, currentColor 60%, transparent);
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.nextora-box-image__inspector-item-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+/* Item modal */
+.components-modal__frame.nextora-box-image__item-modal,
+.nextora-box-image__item-modal.components-modal__frame {
+	max-width: 840px !important;
+	width: min(840px, calc(100vw - 2rem)) !important;
+}
+
+.nextora-box-image__item-modal .components-modal__content {
+	padding: 20px 28px 28px;
+}
+
+.nextora-box-image__item-modal .components-modal__header {
+	flex-wrap: nowrap;
+	gap: 12px;
+}
+
+.nextora-box-image__item-modal .components-modal__header-heading-container {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.nextora-box-image__item-modal .components-modal__header-heading {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.nextora-box-image__item-modal-header-actions {
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
+	gap: 8px;
+	margin-inline-end: 8px;
+}
+
+.nextora-box-image__item-modal-form {
+	display: grid;
+	gap: 1.5rem;
+}
+
+@media (min-width: 600px) {
+	.nextora-box-image__item-modal-form {
+		grid-template-columns: minmax(200px, 280px) minmax(0, 1fr);
+		align-items: start;
+	}
+}
+
+.nextora-box-image__item-modal-form-image,
+.nextora-box-image__item-modal-form-fields {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.nextora-box-image__item-modal-form-image {
+	padding: 16px;
+	border-radius: 8px;
+	background: color-mix(in srgb, currentColor 4%, transparent);
+}
+
+.nextora-box-image__item-modal-media {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	align-items: flex-start;
+}
+
+.nextora-box-image__item-modal-media-preview {
+	max-width: 100%;
+	max-height: 200px;
+	object-fit: cover;
+	border-radius: 4px;
+}
+
+/* Image wrap in editor cards */
+.nextora-box-image--editor .nextora-box-image__card--editable .nextora-box-image__image-wrap {
+	position: relative;
+	width: 100%;
+	aspect-ratio: var(--nextora-box-image-aspect-ratio, 3/2);
+	overflow: hidden;
+	flex-shrink: 0;
+}
+
+.nextora-box-image--editor .nextora-box-image__card--editable .nextora-box-image__card-image {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: var(--nextora-box-image-fit, cover);
+}
+
+/* Programs template — editor preview */
+.nextora-box-image--editor.nextora-box-image--template-programs .nextora-box-image__cards {
+	display: grid;
+	grid-template-columns: repeat(var(--nextora-box-image-cols, 3), minmax(0, 1fr));
+	flex-wrap: unset;
+	overflow-x: visible;
+	scroll-snap-type: none;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-programs .nextora-box-image__card--editable {
+	flex: unset;
+	max-width: none;
+	width: auto;
+	scroll-snap-align: unset;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-programs .nextora-box-image__card--programs:hover,
+.nextora-box-image--editor.nextora-box-image--template-programs .nextora-box-image__card--programs:focus-within {
+	background: var(--nextora-box-image-item-bg, var(--nextora-box-image-card-bg, var(--wp--preset--color--surface, #f4ecdd)));
+	color: var(--wp--preset--color--contrast, currentColor);
+}
+
+.nextora-box-image--editor.nextora-box-image--template-programs .nextora-box-image__card--programs:hover .nextora-box-image__description,
+.nextora-box-image--editor.nextora-box-image--template-programs .nextora-box-image__card--programs:focus-within .nextora-box-image__description {
+	color: var(--nextora-box-image-item-desc-color, var(--nextora-box-image-card-desc-color, color-mix(in srgb, currentColor 55%, transparent)));
+}
+
+
+
+
+/* Item modal color pickers */
+.nextora-box-image__item-modal-colors {
+	margin-top: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.nextora-box-image__item-modal-color {
+	margin-top: 0;
+}
+
+.nextora-box-image__item-modal-label {
+	margin: 0 0 4px;
+	font-size: 11px;
+	font-weight: 500;
+	text-transform: uppercase;
+	color: color-mix(in srgb, currentColor 68%, transparent);
+}
