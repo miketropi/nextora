@@ -41,7 +41,8 @@ const layoutModeOptions = [
 
 const templateOptions: { label: string; value: BoxImageTemplate }[] = [
 	{ label: __('Default', 'nextora'), value: 'default' },
-	{ label: __('Programs', 'nextora'), value: 'programs' },
+	{ label: __('Template 1', 'nextora'), value: 'template1' },
+	{ label: __('Template 2', 'nextora'), value: 'template2' },
 ];
 
 const aspectRatioOptions = [
@@ -169,6 +170,39 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 	};
 
 	const colorSettings = useMemo(() => {
+		const cardColors = [
+			{
+				value: colorValueForPicker(cardBorderColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('cardBorderColor', v),
+				label: __('Card border color', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(cardBackgroundColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('cardBackgroundColor', v),
+				label: __('Card background', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(cardTitleColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('cardTitleColor', v),
+				label: __('Card title color', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(cardDescriptionColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('cardDescriptionColor', v),
+				label: __('Card description color', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(linkColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('linkColor', v),
+				label: __('Link color', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(linkHoverColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('linkHoverColor', v),
+				label: __('Link hover color', 'nextora'),
+			},
+		];
+
 		const navColors = [
 			{
 				value: colorValueForPicker(paginationColor, colorPalette, lookupPalette),
@@ -187,9 +221,15 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 			},
 		];
 
-		return [...navColors];
+		return [...cardColors, ...navColors];
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
+		cardBorderColor,
+		cardBackgroundColor,
+		cardTitleColor,
+		cardDescriptionColor,
+		linkColor,
+		linkHoverColor,
 		paginationColor,
 		paginationActiveColor,
 		arrowColor,
@@ -308,6 +348,46 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 
 				<PanelBody title={__('Layout', 'nextora')} initialOpen>
 					<SelectControl
+						label={__('Template', 'nextora')}
+						help={
+							template === 'template1'
+								? __(
+										'Template 1-style cards with image, badge, centered content and per-item background color.',
+										'nextora',
+									)
+								: template === 'template2'
+								? __(
+										'Template 2-style cards with circular avatar, title, description and inline link.',
+										'nextora',
+									)
+								: __(
+										'Default card layout.',
+										'nextora',
+									)
+						}
+						value={template}
+						options={templateOptions}
+						onChange={(v: string) => {
+							const tpl = (v === 'template1' ? 'template1' : v === 'template2' ? 'template2' : 'default') as BoxImageTemplate;
+							const patch: Partial<BoxImageAttributes> = { template: tpl };
+							if (tpl === 'template1') {
+								patch.layoutMode = 'grid';
+								patch.gridColumns = 3;
+								patch.imageAspectRatio = '4/3';
+								patch.cardBorderRadius = 28;
+								patch.cardBorderWidth = 2;
+							} else if (tpl === 'template2') {
+								patch.layoutMode = 'grid';
+								patch.gridColumns = 4;
+								patch.imageAspectRatio = '1/1';
+								patch.cardBorderRadius = 24;
+								patch.cardBorderWidth = 0;
+							}
+							setAttributes(patch);
+						}}
+					/>
+
+					<SelectControl
 						label={__('Desktop layout', 'nextora')}
 						help={
 							layoutMode === 'grid'
@@ -327,35 +407,6 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 							const patch: Partial<BoxImageAttributes> = { layoutMode: next };
 							if (next === 'grid' && gridMinWidth < 768) {
 								patch.gridMinWidth = 981;
-							}
-							setAttributes(patch);
-						}}
-					/>
-
-					<SelectControl
-						label={__('Template', 'nextora')}
-						help={
-							template === 'programs'
-								? __(
-										'Program-style cards with image, badge, centered content and per-item background color.',
-										'nextora',
-									)
-								: __(
-										'Default card layout.',
-										'nextora',
-									)
-						}
-						value={template}
-						options={templateOptions}
-						onChange={(v: string) => {
-							const tpl = (v === 'programs' ? 'programs' : 'default') as BoxImageTemplate;
-							const patch: Partial<BoxImageAttributes> = { template: tpl };
-							if (tpl === 'programs') {
-								patch.layoutMode = 'grid';
-								patch.gridColumns = 3;
-								patch.imageAspectRatio = '4/3';
-								patch.cardBorderRadius = 28;
-								patch.cardBorderWidth = 2;
 							}
 							setAttributes(patch);
 						}}
@@ -505,12 +556,14 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 				</PanelBody>
 
 				<PanelBody title={__('Image', 'nextora')} initialOpen={false}>
-					<SelectControl
-						label={__('Aspect ratio', 'nextora')}
-						value={imageAspectRatio}
-						options={aspectRatioOptions}
-						onChange={(v) => setAttributes({ imageAspectRatio: v as string })}
-					/>
+					{template !== 'template2' ? (
+						<SelectControl
+							label={__('Aspect ratio', 'nextora')}
+							value={imageAspectRatio}
+							options={aspectRatioOptions}
+							onChange={(v) => setAttributes({ imageAspectRatio: v as string })}
+						/>
+					) : null}
 					<SelectControl
 						label={__('Image fit', 'nextora')}
 						value={imageFit}
@@ -520,7 +573,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 				</PanelBody>
 
 				<PanelColorSettings
-					title={__('Navigation colors', 'nextora')}
+					title={__('Colors', 'nextora')}
 					colors={colorPalette}
 					colorSettings={colorSettings}
 				/>
@@ -603,72 +656,6 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									)}
 								/>
 							</MediaUploadCheck>
-							<div className="nextora-box-image__item-modal-colors">
-								<div className="nextora-box-image__item-modal-color">
-									<p className="nextora-box-image__item-modal-label">
-										{__('Background color', 'nextora')}
-									</p>
-									<ColorPalette
-										colors={colorPalette}
-										value={editingItem.backgroundColor || ''}
-										onChange={(color) =>
-											patchItem(editingItem.id, {
-												backgroundColor: color || '',
-											})
-										}
-										clearable={true}
-										enableAlpha={false}
-									/>
-								</div>
-								<div className="nextora-box-image__item-modal-color">
-									<p className="nextora-box-image__item-modal-label">
-										{__('Title color', 'nextora')}
-									</p>
-									<ColorPalette
-										colors={colorPalette}
-										value={editingItem.titleColor || ''}
-										onChange={(color) =>
-											patchItem(editingItem.id, {
-												titleColor: color || '',
-											})
-										}
-										clearable={true}
-										enableAlpha={false}
-									/>
-								</div>
-								<div className="nextora-box-image__item-modal-color">
-									<p className="nextora-box-image__item-modal-label">
-										{__('Description color', 'nextora')}
-									</p>
-									<ColorPalette
-										colors={colorPalette}
-										value={editingItem.descriptionColor || ''}
-										onChange={(color) =>
-											patchItem(editingItem.id, {
-												descriptionColor: color || '',
-											})
-										}
-										clearable={true}
-										enableAlpha={false}
-									/>
-								</div>
-								<div className="nextora-box-image__item-modal-color">
-									<p className="nextora-box-image__item-modal-label">
-										{__('Link color', 'nextora')}
-									</p>
-									<ColorPalette
-										colors={colorPalette}
-										value={editingItem.linkColor || ''}
-										onChange={(color) =>
-											patchItem(editingItem.id, {
-												linkColor: color || '',
-											})
-										}
-										clearable={true}
-										enableAlpha={false}
-									/>
-								</div>
-							</div>
 						</div>
 						<div className="nextora-box-image__item-modal-form-fields">
 							<TextControl
@@ -715,12 +702,14 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									/>
 								</>
 							)}
+							{template === 'template1' ? (
 							<TextControl
 								label={__('Badge', 'nextora')}
 								help={__('Small label overlay on the image (e.g. "Ages 0–2").', 'nextora')}
 								value={editingItem.badge}
 								onChange={(badge) => patchItem(editingItem.id, { badge })}
 							/>
+							) : null}
 						</div>
 					</div>
 					<div
@@ -754,7 +743,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 							{items.map((item) => (
 								<article
 									key={item.id}
-									className={`nextora-box-image__card${template === 'programs' ? ' nextora-box-image__card--programs' : ''} nextora-box-image__card--editable`}
+									className={`nextora-box-image__card${template === 'template1' ? ' nextora-box-image__card--template1' : template === 'template2' ? ' nextora-box-image__card--template2' : ''} nextora-box-image__card--editable`}
 									style={
 										(item.backgroundColor || item.titleColor || item.descriptionColor || item.linkColor)
 											? ({
@@ -773,7 +762,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									>
 										{__('Edit item', 'nextora')}
 									</button>
-									{template === 'programs' ? (
+									{template === 'template1' ? (
 										<div className="nextora-box-image__card-inner">
 											<div className="nextora-box-image__image-wrap">
 												<img
@@ -806,6 +795,32 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 												) : null}
 											</div>
 										</div>
+									) : template === 'template2' ? (
+										<>
+											<div className="nextora-box-image__image-wrap">
+												<img
+													className="nextora-box-image__card-image"
+													src={resolveEditorImage(item, placeholderUrl)}
+													alt=""
+												/>
+											</div>
+											<h3 className="nextora-box-image__title">
+												{item.title || __('Title', 'nextora')}
+											</h3>
+											<p className="nextora-box-image__description">
+												{item.description || __('Description…', 'nextora')}
+											</p>
+											{item.showLink && item.linkLabel ? (
+												<span className="nextora-box-image__link nextora-box-image__link--static">
+													{item.linkLabel}
+													<span className="nextora-box-image__link-icon" aria-hidden="true">
+														<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+															<path d="M5 12h14M13 6l6 6-6 6" />
+														</svg>
+													</span>
+												</span>
+											) : null}
+										</>
 									) : (
 										<>
 											<div className="nextora-box-image__image-wrap">

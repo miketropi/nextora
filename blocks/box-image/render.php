@@ -149,7 +149,8 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 		$description_color = isset( $item['descriptionColor'] ) ? trim( (string) $item['descriptionColor'] ) : '';
 		$link_color       = isset( $item['linkColor'] ) ? trim( (string) $item['linkColor'] ) : '';
 
-		$is_programs = 'programs' === $template;
+		$is_template1 = 'template1' === $template;
+		$is_template2     = 'template2' === $template;
 
 		$card_vars = array();
 		if ( '' !== $bg_color ) {
@@ -183,13 +184,15 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 		}
 
 		$out  = $as_slide ? '<div class="swiper-slide">' : '';
-		if ( $is_programs ) {
-			$out .= '<article class="nextora-box-image__card nextora-box-image__card--programs"' . $card_style . '>';
+		if ( $is_template1 ) {
+			$out .= '<article class="nextora-box-image__card nextora-box-image__card--template1"' . $card_style . '>';
+		} elseif ( $is_template2 ) {
+			$out .= '<article class="nextora-box-image__card nextora-box-image__card--template2"' . $card_style . '>';
 		} else {
 			$out .= '<article class="nextora-box-image__card"' . $card_style . '>';
 		}
 
-		if ( $is_programs ) {
+		if ( $is_template1 ) {
 			$out .= '<div class="nextora-box-image__card-inner">';
 		}
 
@@ -221,13 +224,13 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 			);
 		}
 
-		if ( $is_programs && '' !== $badge ) {
+		if ( $is_template1 && '' !== $badge ) {
 			$out .= '<span class="nextora-box-image__badge">' . esc_html( $badge ) . '</span>';
 		}
 
 		$out .= '</div>';
 
-		if ( $is_programs ) {
+		if ( $is_template1 ) {
 			$out .= '<div class="nextora-box-image__card-body">';
 		}
 
@@ -239,7 +242,13 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 
 		if ( $show_link && '' !== $link_label ) {
 			$arrow = '<span class="nextora-box-image__link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
-			$link_class = $is_programs ? 'nextora-box-image__link wp-block-button__link' : 'nextora-box-image__link';
+			if ( $is_template1 ) {
+				$link_class = 'nextora-box-image__link wp-block-button__link';
+			} elseif ( $is_template2 ) {
+				$link_class = 'nextora-box-image__link nextora-box-image__link--template2';
+			} else {
+				$link_class = 'nextora-box-image__link';
+			}
 			if ( '' !== $link_url ) {
 				$out .= sprintf(
 					'<a class="%1$s" href="%2$s"%3$s>%4$s%5$s</a>',
@@ -259,7 +268,7 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 			}
 		}
 
-		if ( $is_programs ) {
+		if ( $is_template1 ) {
 			$out .= '</div>';
 			$out .= '</div>';
 		}
@@ -297,7 +306,7 @@ if ( ! in_array( $layout_mode, array( 'slider', 'grid' ), true ) ) {
 }
 
 $template = isset( $attributes['template'] ) ? (string) $attributes['template'] : 'default';
-if ( ! in_array( $template, array( 'default', 'programs' ), true ) ) {
+if ( ! in_array( $template, array( 'default', 'template1', 'template2' ), true ) ) {
 	$template = 'default';
 }
 
