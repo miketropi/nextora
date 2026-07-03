@@ -378,6 +378,35 @@ if ( '' !== $min_height ) {
 	$style_bits[] = '--nextora-ac-min-height:' . $min_height;
 }
 
+if ( isset( $attributes['style']['border'] ) && is_array( $attributes['style']['border'] ) ) {
+	$border = $attributes['style']['border'];
+	if ( isset( $border['radius'] ) && is_string( $border['radius'] ) && '' !== trim( $border['radius'] ) ) {
+		$safe = safecss_filter_attr( 'border-radius:' . trim( $border['radius'] ) );
+		if ( is_string( $safe ) && '' !== $safe ) {
+			$style_bits[] = $safe;
+		}
+	}
+	if ( isset( $border['width'] ) && is_string( $border['width'] ) && '' !== trim( $border['width'] ) ) {
+		$safe = safecss_filter_attr( 'border-width:' . trim( $border['width'] ) );
+		if ( is_string( $safe ) && '' !== $safe ) {
+			$style_bits[] = $safe;
+		}
+	}
+	if ( isset( $border['style'] ) && is_string( $border['style'] ) && '' !== trim( $border['style'] ) ) {
+		$allowed_styles = array( 'none', 'solid', 'dashed', 'dotted', 'double', 'groove', 'ridge', 'inset', 'outset' );
+		$style_val = trim( $border['style'] );
+		if ( in_array( $style_val, $allowed_styles, true ) ) {
+			$style_bits[] = 'border-style:' . $style_val;
+		}
+	}
+	if ( isset( $border['color'] ) && is_string( $border['color'] ) && '' !== trim( $border['color'] ) ) {
+		$resolved = nextora_ac_resolve_color( trim( $border['color'] ) );
+		if ( '' !== $resolved ) {
+			$style_bits[] = 'border-color:' . $resolved;
+		}
+	}
+}
+
 if ( $use_overlay ) {
 	$style_bits[] = '--nextora-ac-overlay-color:' . ( $overlay_color ? $overlay_color : 'var(--wp--preset--color--contrast, #0f172a)' );
 	$style_bits[] = '--nextora-ac-overlay-opacity:' . (string) $overlay_opacity;
