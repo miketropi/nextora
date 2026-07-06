@@ -36,7 +36,7 @@ import {
 	colorValueForPicker,
 	useThemeColorPalette,
 } from './color-utils';
-import { useFontFamilyOptions } from '../box-content/font-family-utils';
+import { useFontFamilyOptions } from '../box-icon/font-family-utils';
 
 interface EditProps {
 	attributes: TestimonialsAttributes;

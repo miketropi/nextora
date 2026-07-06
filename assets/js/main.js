@@ -23012,6 +23012,7 @@ ${nextLine.slice(indentLevel + 2)}`;
     "animation-fade-list-grid",
     "animation-inner-fade",
     "animation-image-clip-reveal",
+    "animation-image-border-reveal",
     "animation-text-reveal-words",
     "animation-text-reveal-chars",
     "animation-text-reveal-chars-rise",
@@ -23020,6 +23021,7 @@ ${nextLine.slice(indentLevel + 2)}`;
   ];
   var SPECIAL_ANIMATION_CLASS_NAMES = [
     "animation-image-clip-reveal",
+    "animation-image-border-reveal",
     "animation-text-reveal-words",
     "animation-text-reveal-chars",
     "animation-text-reveal-chars-rise",
@@ -30015,6 +30017,7 @@ ${nextLine.slice(indentLevel + 2)}`;
       gsapWithCSS.set(img, { clipPath: "inset(0 100% 0 0)" });
       gsapWithCSS.to(img, {
         clipPath: "inset(0 0% 0 0)",
+        autoAlpha: 1,
         duration: resolved.duration,
         delay: resolved.delay,
         ease: resolved.ease,
@@ -30022,7 +30025,54 @@ ${nextLine.slice(indentLevel + 2)}`;
         onComplete: () => {
           img.classList.remove("nextora-scroll-animation--pending");
           img.classList.add("nextora-scroll-animation--ready");
-          gsapWithCSS.set(img, { clearProps: "clipPath" });
+          gsapWithCSS.set(img, { clearProps: "clipPath,opacity,visibility" });
+        }
+      });
+    });
+    markInitialized2(el);
+  }
+  function initImageBorderReveal(el, options, markInitialized2) {
+    const resolved = withSpecialDefaults(el, options, {
+      duration: 1.5,
+      ease: "power2.out"
+    });
+    const images = getImageTargets(el);
+    if (!images.length) {
+      markInitialized2(el);
+      return;
+    }
+    el.classList.remove("nextora-scroll-animation--pending");
+    if (getComputedStyle(el).position === "static") {
+      el.style.position = "relative";
+    }
+    images.forEach((img) => {
+      const br = getComputedStyle(img).borderRadius;
+      if (br && br !== "0px" && br !== "0px 0px 0px 0px") {
+        el.style.borderRadius = br;
+      }
+      img.classList.add("nextora-scroll-animation--pending");
+      const st = buildRevealScrollTrigger(img, "top 90%");
+      gsapWithCSS.fromTo(
+        el,
+        { "--nextora-border-opacity": 0 },
+        {
+          "--nextora-border-opacity": 1,
+          duration: resolved.duration,
+          delay: resolved.delay,
+          ease: resolved.ease,
+          scrollTrigger: st
+        }
+      );
+      gsapWithCSS.fromTo(img, { autoAlpha: 0 }, {
+        autoAlpha: 1,
+        duration: resolved.duration,
+        delay: resolved.delay,
+        ease: resolved.ease,
+        scrollTrigger: st,
+        onComplete: () => {
+          img.classList.remove("nextora-scroll-animation--pending");
+          img.classList.add("nextora-scroll-animation--ready");
+          gsapWithCSS.set(img, { clearProps: "opacity,visibility" });
         }
       });
     });
@@ -30169,6 +30219,9 @@ ${nextLine.slice(indentLevel + 2)}`;
       case "animation-image-clip-reveal":
         initImageClipReveal(el, options, markInitialized2);
         return true;
+      case "animation-image-border-reveal":
+        initImageBorderReveal(el, options, markInitialized2);
+        return true;
       case "animation-text-reveal-words":
         initTextWordReveal(el, options, markInitialized2);
         return true;
@@ -30198,8 +30251,22 @@ ${nextLine.slice(indentLevel + 2)}`;
     if (animationClass === "animation-image-clip-reveal") {
       getImageTargets(el).forEach((img) => {
         img.classList.remove("nextora-scroll-animation--pending");
-        gsapWithCSS.set(img, { clearProps: "clipPath" });
+        gsapWithCSS.set(img, { clearProps: "clipPath,opacity,visibility" });
       });
+    }
+    if (animationClass === "animation-image-border-reveal") {
+      if (getComputedStyle(el).position === "static") {
+        el.style.position = "relative";
+      }
+      getImageTargets(el).forEach((img) => {
+        const br = getComputedStyle(img).borderRadius;
+        if (br && br !== "0px" && br !== "0px 0px 0px 0px") {
+          el.style.borderRadius = br;
+        }
+        img.classList.remove("nextora-scroll-animation--pending");
+        gsapWithCSS.set(img, { clearProps: "opacity,visibility" });
+      });
+      gsapWithCSS.set(el, { "--nextora-border-opacity": 1 });
     }
   }
 

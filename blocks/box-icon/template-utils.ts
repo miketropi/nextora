@@ -1,22 +1,26 @@
-import type { BoxContentAttributes } from './types';
+import type { BoxIconAttributes } from './types';
 
-export type BoxContentCardTemplate = 'default' | 'ways' | 'minimal';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
 
 export const BOX_CONTENT_TEMPLATE_OPTIONS: {
-	value: BoxContentCardTemplate;
+	value: BoxIconCardTemplate;
 	labelKey: string;
 }[] = [
 	{ value: 'default', labelKey: 'Default' },
 	{ value: 'ways', labelKey: 'Ways' },
 	{ value: 'minimal', labelKey: 'Minimal' },
+	{ value: 'highlights', labelKey: 'Highlights Stats' },
 ];
 
-export function normalizeCardTemplate(value: string | undefined): BoxContentCardTemplate {
+export function normalizeCardTemplate(value: string | undefined): BoxIconCardTemplate {
 	if (value === 'ways') {
 		return 'ways';
 	}
 	if (value === 'minimal') {
 		return 'minimal';
+	}
+	if (value === 'highlights') {
+		return 'highlights';
 	}
 	return 'default';
 }
@@ -26,8 +30,8 @@ export function normalizeCardTemplate(value: string | undefined): BoxContentCard
  * All keys remain editable via existing inspector controls.
  */
 export function getTemplateDefaultAttributes(
-	template: BoxContentCardTemplate,
-): Partial<BoxContentAttributes> {
+	template: BoxIconCardTemplate,
+): Partial<BoxIconAttributes> {
 	if (template === 'ways') {
 		return {
 			layoutMode: 'grid',
@@ -70,6 +74,33 @@ export function getTemplateDefaultAttributes(
 				right: '22px',
 				bottom: '16px',
 				left: '22px',
+			},
+		};
+	}
+
+	if (template === 'highlights') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 4,
+			gridMinWidth: 981,
+			spaceBetween: 20,
+			slidesPerView: 4,
+			slidesPerViewTablet: 2,
+			slidesPerViewMobile: 1.15,
+			cardBorderWidth: 2,
+			cardBorderRadius: 26,
+			cardMinHeight: 160,
+			iconCircleSize: 60,
+			iconSize: 28,
+			iconCircleRadius: 50,
+			iconStyle: 'stacked',
+			showPagination: false,
+			showArrows: false,
+			cardPadding: {
+				top: '30px',
+				right: '24px',
+				bottom: '30px',
+				left: '24px',
 			},
 		};
 	}

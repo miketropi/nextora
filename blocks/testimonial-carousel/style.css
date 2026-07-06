@@ -126,7 +126,8 @@
 	font-weight: 500;
 	line-height: 1.45;
 	color: var(
-		--nextora-testimonial-slide-quote-color,var(--wp--preset--color--contrast, currentColor)
+		--nextora-testimonial-slide-quote-color,
+		var(--nextora-testimonial-quote-color, var(--wp--preset--color--contrast, currentColor))
 	);
 }
 

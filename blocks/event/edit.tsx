@@ -10,6 +10,8 @@ import {
 	Button,
 	Modal,
 	PanelBody,
+	SelectControl,
+	RangeControl,
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
@@ -59,8 +61,29 @@ function DetailIcon({ type }: { type: 'map-pin' | 'clock' | 'ticket' }): JSX.Ele
 	return (
 		<span className="nextora-event__detail-icon" aria-hidden="true">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-				<path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v2a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" />
-				<path d="M13 13h3a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h3" />
+				<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+				<path d="M13 5v2" />
+				<path d="M13 17v2" />
+				<path d="M13 11v2" />
+			</svg>
+		</span>
+	);
+}
+
+function CalendarIcon(): JSX.Element {
+	return (
+		<span className="nextora-event__register-icon" aria-hidden="true">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+				<path d="M8 2v4" />
+				<path d="M16 2v4" />
+				<rect width="18" height="18" x="3" y="4" rx="2" />
+				<path d="M3 10h18" />
+				<path d="M8 14h.01" />
+				<path d="M12 14h.01" />
+				<path d="M16 14h.01" />
+				<path d="M8 18h.01" />
+				<path d="M12 18h.01" />
+				<path d="M16 18h.01" />
 			</svg>
 		</span>
 	);
@@ -113,6 +136,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	});
 
 	const {
+		template = 'default',
 		showRegisterButton = true,
 		registerButtonText = __('Register', 'nextora'),
 		cardBackgroundColor = '',
@@ -128,14 +152,27 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		registerHoverTextColor = '',
 		registerHoverBackgroundColor = '',
 		enableScrollAnimation = true,
+		autoplay = true,
+		autoplayDelay = 5000,
+		loop = true,
+		speed = 600,
+		showArrows = false,
+		showPagination = true,
+		slidesPerView = 3,
+		spaceBetween = 24,
+		tabletSlides = 2,
+		mobileSlides = 1,
 	} = attributes;
+
+	const isTemplate1 = template === 'template1';
 
 	const colorPalette = useThemeColorPalette();
 	const lookupPalette = getMergedPaletteEntries(colorPalette);
 
 	const blockProps = useBlockProps({
-		className: 'nextora-event nextora-event--editor',
-		style: buildSectionStyleVars({
+		className: `nextora-event nextora-event--editor${isTemplate1 ? ' nextora-event--template1 nextora-event--template1-editor' : ''}`,
+		style: {
+			...buildSectionStyleVars({
 			cardBackgroundColor,
 			cardBorderColor,
 			dateBackgroundColor,
@@ -149,6 +186,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			registerHoverTextColor,
 			registerHoverBackgroundColor,
 		}) as CSSProperties,
+			...(isTemplate1 ? { '--nextora-event-editor-slides': String(slidesPerView), '--nextora-event-editor-gap': `${spaceBetween}px` } as CSSProperties : {}),
+		},
 	});
 
 	const setThemeColor = (key: EventColorAttribute, value: string | undefined): void => {
@@ -287,6 +326,18 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody title={__('Template', 'nextora')} initialOpen>
+					<SelectControl
+						label={__('Layout template', 'nextora')}
+						value={template as 'default' | 'template1'}
+						options={[
+							{ label: __('Default — List', 'nextora'), value: 'default' as const },
+							{ label: __('Template 1 — Slider', 'nextora'), value: 'template1' as const },
+						]}
+						onChange={(value: string) => setAttributes({ template: value })}
+					/>
+				</PanelBody>
+
 				<PanelBody title={__('Events', 'nextora')} initialOpen>
 					<p className="nextora-event__inspector-events-help">
 						{__(
@@ -357,17 +408,107 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 
 				<PanelColorSettings title={__('Colors', 'nextora')} colorSettings={colorSettings} />
 
-				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Animate on scroll', 'nextora')}
-						help={__(
-							'Fade or move content in when it enters the viewport. Disabled automatically when the visitor prefers reduced motion.',
-							'nextora',
-						)}
-						checked={enableScrollAnimation !== false}
-						onChange={(value: boolean) => setAttributes({ enableScrollAnimation: value })}
-					/>
-				</PanelBody>
+				{!isTemplate1 ? (
+					<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
+						<ToggleControl
+							label={__('Animate on scroll', 'nextora')}
+							help={__(
+								'Fade or move content in when it enters the viewport. Disabled automatically when the visitor prefers reduced motion.',
+								'nextora',
+							)}
+							checked={enableScrollAnimation !== false}
+							onChange={(value: boolean) => setAttributes({ enableScrollAnimation: value })}
+						/>
+					</PanelBody>
+				) : null}
+
+				{isTemplate1 ? (
+					<PanelBody title={__('Slider', 'nextora')} initialOpen={false}>
+						<ToggleControl
+							label={__('Autoplay', 'nextora')}
+							checked={autoplay !== false}
+							onChange={(value: boolean) => setAttributes({ autoplay: value })}
+						/>
+						{autoplay !== false ? (
+							<RangeControl
+								label={__('Autoplay delay (ms)', 'nextora')}
+								value={autoplayDelay}
+								onChange={(value: number | undefined) =>
+									setAttributes({ autoplayDelay: value ?? 5000 })
+								}
+								min={2000}
+								max={15000}
+								step={500}
+							/>
+						) : null}
+						<ToggleControl
+							label={__('Loop', 'nextora')}
+							checked={loop !== false}
+							onChange={(value: boolean) => setAttributes({ loop: value })}
+						/>
+						<RangeControl
+							label={__('Speed (ms)', 'nextora')}
+							value={speed}
+							onChange={(value: number | undefined) =>
+								setAttributes({ speed: value ?? 600 })
+							}
+							min={200}
+							max={2000}
+							step={100}
+						/>
+						<RangeControl
+							label={__('Slides per view', 'nextora')}
+							value={slidesPerView}
+							onChange={(value: number | undefined) =>
+								setAttributes({ slidesPerView: value ?? 3 })
+							}
+							min={1}
+							max={6}
+							step={0.1}
+							help={__('Desktop columns.', 'nextora')}
+						/>
+						<RangeControl
+							label={__('Tablet slides', 'nextora')}
+							value={tabletSlides}
+							onChange={(value: number | undefined) =>
+								setAttributes({ tabletSlides: value ?? 2 })
+							}
+							min={1}
+							max={4}
+							step={0.1}
+						/>
+						<RangeControl
+							label={__('Mobile slides', 'nextora')}
+							value={mobileSlides}
+							onChange={(value: number | undefined) =>
+								setAttributes({ mobileSlides: value ?? 1 })
+							}
+							min={1}
+							max={2}
+							step={0.1}
+						/>
+						<RangeControl
+							label={__('Space between (px)', 'nextora')}
+							value={spaceBetween}
+							onChange={(value: number | undefined) =>
+								setAttributes({ spaceBetween: value ?? 24 })
+							}
+							min={0}
+							max={60}
+							step={4}
+						/>
+						<ToggleControl
+							label={__('Show pagination', 'nextora')}
+							checked={showPagination !== false}
+							onChange={(value: boolean) => setAttributes({ showPagination: value })}
+						/>
+						<ToggleControl
+							label={__('Show arrows', 'nextora')}
+							checked={showArrows === true}
+							onChange={(value: boolean) => setAttributes({ showArrows: value })}
+						/>
+					</PanelBody>
+				) : null}
 			</InspectorControls>
 
 			{editingEvent ? (
@@ -402,87 +543,158 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 
 			<div {...blockProps}>
 				<div className="nextora-event__inner">
-					<ul className="nextora-event__list" aria-label={__('Events', 'nextora')}>
-						{events.map((event) => {
-							const imageUrl = resolveImageUrl(event, mediaUrlById);
-							const registerLabel =
-								event.registerLabel.trim() !== ''
-									? event.registerLabel
-									: registerButtonText || __('Register', 'nextora');
-							const displayDay = event.day.trim() !== '' ? event.day : '01';
-							const displayMonth =
-								event.month.trim() !== '' ? event.month : __('Jan', 'nextora');
-							const displayLocation =
-								event.location.trim() !== '' ? event.location : __('Main venue', 'nextora');
-							const displayTime =
-								event.time.trim() !== '' ? event.time : __('10:00 AM', 'nextora');
-							const displayPrice =
-								event.price.trim() !== '' ? event.price : __('Free', 'nextora');
+					{isTemplate1 ? (
+						<div className="swiper nextora-event__swiper">
+							<div className="swiper-wrapper">
+								{events.map((event) => {
+									const imageUrl = resolveImageUrl(event, mediaUrlById);
+									const registerLabel =
+										event.registerLabel.trim() !== ''
+											? event.registerLabel
+											: registerButtonText || __('Register', 'nextora');
+									const displayDay = event.day.trim() !== '' ? event.day : '01';
+									const displayMonth =
+										event.month.trim() !== '' ? event.month : __('Jan', 'nextora');
+									const displayLocation =
+										event.location.trim() !== '' ? event.location : __('Main venue', 'nextora');
+									const displayTime =
+										event.time.trim() !== '' ? event.time : __('10:00 AM', 'nextora');
+									const displayPrice =
+										event.price.trim() !== '' ? event.price : __('Free', 'nextora');
 
-							return (
-								<li key={event.id} className="nextora-event__item-wrap">
-									<article className="nextora-event__item nextora-event__item--editable">
-										<button
-											type="button"
-											className="nextora-event__item-edit"
-											onClick={() => openEventEditor(event.id)}
-										>
-											{__('Edit event', 'nextora')}
-										</button>
-
-										<div className="nextora-event__date">
-											<b className="nextora-event__date-day">{displayDay}</b>
-											<span className="nextora-event__date-month">{displayMonth}</span>
-										</div>
-
-										<div className="nextora-event__thumb">
-											{imageUrl ? (
-												<img
-													src={imageUrl}
-													alt=""
-													className={`nextora-event__thumb-img${
-														event.imageId === 0 && !event.imageUrl
-															? ' nextora-event__thumb-img--placeholder'
-															: ''
-													}`}
-												/>
-											) : null}
-										</div>
-
-										<div className="nextora-event__info">
-											<h3 className="nextora-event__title">
-												{event.title || __('Community fundraiser', 'nextora')}
-											</h3>
-											<div className="nextora-event__details">
-												<DetailRow icon="map-pin">{displayLocation}</DetailRow>
-												<DetailRow icon="clock">{displayTime}</DetailRow>
-												<DetailRow icon="ticket">{displayPrice}</DetailRow>
-											</div>
-										</div>
-
-										{showRegisterButton ? (
-											<span className="nextora-event__register nextora-event__register--static">
-												{registerLabel}
-												<span
-													className="nextora-event__register-icon"
-													aria-hidden="true"
+									return (
+										<div key={event.id} className="swiper-slide">
+											<article className="nextora-event__card nextora-event__card--editable">
+												<button
+													type="button"
+													className="nextora-event__item-edit"
+													onClick={() => openEventEditor(event.id)}
 												>
-													<svg
-														viewBox="0 0 24 24"
-														fill="none"
-														stroke="currentColor"
-														strokeWidth="2"
+													{__('Edit event', 'nextora')}
+												</button>
+
+												<div className="nextora-event__card-thumb">
+													<div className="nextora-event__date">
+														<b className="nextora-event__date-day">{displayDay}</b>
+														<span className="nextora-event__date-month">{displayMonth}</span>
+													</div>
+													{imageUrl ? (
+														<img
+															src={imageUrl}
+															alt=""
+															className={`nextora-event__thumb-img${event.imageId === 0 && !event.imageUrl
+																	? ' nextora-event__thumb-img--placeholder'
+																	: ''
+																}`}
+														/>
+													) : null}
+												</div>
+
+												<div className="nextora-event__card-info">
+													<h3 className="nextora-event__title">
+														{event.title || __('Community fundraiser', 'nextora')}
+													</h3>
+													<div className="nextora-event__details">
+														<DetailRow icon="map-pin">{displayLocation}</DetailRow>
+														<DetailRow icon="clock">{displayTime}</DetailRow>
+														<DetailRow icon="ticket">{displayPrice}</DetailRow>
+													</div>
+
+													{showRegisterButton ? (
+														<span className="nextora-event__register-card nextora-event__register-card--static">
+															<CalendarIcon />
+															{registerLabel}
+														</span>
+													) : null}
+												</div>
+											</article>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+					) : (
+						<ul className="nextora-event__list" aria-label={__('Events', 'nextora')}>
+							{events.map((event) => {
+								const imageUrl = resolveImageUrl(event, mediaUrlById);
+								const registerLabel =
+									event.registerLabel.trim() !== ''
+										? event.registerLabel
+										: registerButtonText || __('Register', 'nextora');
+								const displayDay = event.day.trim() !== '' ? event.day : '01';
+								const displayMonth =
+									event.month.trim() !== '' ? event.month : __('Jan', 'nextora');
+								const displayLocation =
+									event.location.trim() !== '' ? event.location : __('Main venue', 'nextora');
+								const displayTime =
+									event.time.trim() !== '' ? event.time : __('10:00 AM', 'nextora');
+								const displayPrice =
+									event.price.trim() !== '' ? event.price : __('Free', 'nextora');
+
+								return (
+									<li key={event.id} className="nextora-event__item-wrap">
+										<article className="nextora-event__item nextora-event__item--editable">
+											<button
+												type="button"
+												className="nextora-event__item-edit"
+												onClick={() => openEventEditor(event.id)}
+											>
+												{__('Edit event', 'nextora')}
+											</button>
+
+											<div className="nextora-event__date">
+												<b className="nextora-event__date-day">{displayDay}</b>
+												<span className="nextora-event__date-month">{displayMonth}</span>
+											</div>
+
+											<div className="nextora-event__thumb">
+												{imageUrl ? (
+													<img
+														src={imageUrl}
+														alt=""
+														className={`nextora-event__thumb-img${event.imageId === 0 && !event.imageUrl
+																? ' nextora-event__thumb-img--placeholder'
+																: ''
+															}`}
+													/>
+												) : null}
+											</div>
+
+											<div className="nextora-event__info">
+												<h3 className="nextora-event__title">
+													{event.title || __('Community fundraiser', 'nextora')}
+												</h3>
+												<div className="nextora-event__details">
+													<DetailRow icon="map-pin">{displayLocation}</DetailRow>
+													<DetailRow icon="clock">{displayTime}</DetailRow>
+													<DetailRow icon="ticket">{displayPrice}</DetailRow>
+												</div>
+											</div>
+
+											{showRegisterButton ? (
+												<span className="nextora-event__register nextora-event__register--static">
+													{registerLabel}
+													<span
+														className="nextora-event__register-icon"
+														aria-hidden="true"
 													>
-														<path d="M5 12h14M13 6l6 6-6 6" />
-													</svg>
+														<svg
+															viewBox="0 0 24 24"
+															fill="none"
+															stroke="currentColor"
+															strokeWidth="2"
+														>
+															<path d="M5 12h14M13 6l6 6-6 6" />
+														</svg>
+													</span>
 												</span>
-											</span>
-										) : null}
-									</article>
-								</li>
-							);
-						})}
-					</ul>
+											) : null}
+										</article>
+									</li>
+								);
+							})}
+						</ul>
+					)}
 				</div>
 			</div>
 		</>

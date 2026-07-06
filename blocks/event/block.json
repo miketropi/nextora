@@ -28,6 +28,7 @@
     }
   },
   "attributes": {
+    "template": { "type": "string", "default": "default" },
     "events": {
       "type": "array",
       "default": [
@@ -92,7 +93,17 @@
     "registerBorderColor": { "type": "string", "default": "" },
     "registerHoverTextColor": { "type": "string", "default": "" },
     "registerHoverBackgroundColor": { "type": "string", "default": "" },
-    "enableScrollAnimation": { "type": "boolean", "default": true }
+    "enableScrollAnimation": { "type": "boolean", "default": true },
+    "autoplay": { "type": "boolean", "default": true },
+    "autoplayDelay": { "type": "number", "default": 5000 },
+    "loop": { "type": "boolean", "default": true },
+    "speed": { "type": "number", "default": 600 },
+    "showArrows": { "type": "boolean", "default": false },
+    "showPagination": { "type": "boolean", "default": true },
+    "slidesPerView": { "type": "number", "default": 3 },
+    "spaceBetween": { "type": "number", "default": 24 },
+    "tabletSlides": { "type": "number", "default": 2 },
+    "mobileSlides": { "type": "number", "default": 1 }
   },
   "editorScript": "file:./index.js",
   "editorStyle": "file:./editor.css",

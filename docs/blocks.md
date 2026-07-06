@@ -210,7 +210,7 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 | `nextora/google-maps` | Iframe or JS API map embed, markers, directions; see [`docs/blocks/Google Maps Block.md`](./blocks/Google%20Maps%20Block.md) |
 | `nextora/advanced-icon` | Lucide/upload icon, stacked/framed surfaces, **custom colour pattern** (slug storage, scoped attrs); see [`docs/blocks/Theme Icon Block.md`](./blocks/Theme%20Icon%20Block.md) |
 | `nextora/advanced-button` | Advanced CTA buttons or icon-only items with Lucide/upload icons; see [`docs/blocks/Advanced Button.md`](./blocks/Advanced%20Button.md) |
-| `nextora/box-content` | Icon cards in slider or desktop grid (responsive always carousel); see [`docs/blocks/Box Content.md`](./blocks/Box%20Content.md) |
+| `nextora/box-icon` | Icon cards in slider or desktop grid (responsive always carousel); see [`docs/blocks/Box Icon.md`](./blocks/Box%20Icon.md) |
 
 ## Related docs
 

@@ -2952,6 +2952,8 @@ footer.wp-block-template-part {
     display: flex;
     align-items: stretch;
     width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
   }
   :where(.mc4wp-form .mc4wp-form-fields p) {
     display: contents;
@@ -3026,6 +3028,7 @@ footer.wp-block-template-part {
     overflow: visible;
     white-space: nowrap;
     text-transform: capitalize;
+    border: none;
   }
   .mc4wp-form .mc4wp-form-fields input[type="submit"]:hover {
     background-color: var(--nextora-form-subscribe-accent-hover);
@@ -3751,24 +3754,66 @@ footer.wp-block-template-part {
     }
   }
 }
-.nextora-scroll-animation--pending, [class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), [class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), .animation-text-typewriter:not([data-nextora-scroll-animation-init]), .animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, .animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
+.nextora-scroll-animation--pending, [class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), [class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), .animation-text-typewriter:not([data-nextora-scroll-animation-init]), .animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, .animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img, .animation-image-border-reveal:not([data-nextora-scroll-animation-init]) img {
   opacity: 0;
 }
 .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
   clip-path: inset(0 100% 0 0);
 }
-:where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.nextora-scroll-animation--pending, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-text-typewriter:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
+.animation-image-border-reveal:not([data-nextora-scroll-animation-init]) img {
+  opacity: 0;
+}
+.animation-image-border-reveal {
+  position: relative;
+  --nextora-border-opacity: 0;
+}
+@property --dash-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.animation-image-border-reveal::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: inherit;
+  padding: 3px;
+  background: repeating-conic-gradient(	from var(--dash-angle) at 50% 50%,	var(--wp--preset--color--secondary, #81fbff) 0deg 2deg,	transparent 2deg 3deg	);
+  animation: nextoraDashChase 100s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  z-index: 3;
+  opacity: var(--nextora-border-opacity);
+  pointer-events: none;
+}
+@keyframes nextoraDashChase {
+  from {
+    --dash-angle: 0deg;
+  }
+  to {
+    --dash-angle: 360deg;
+  }
+}
+:where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.nextora-scroll-animation--pending, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-text-typewriter:not([data-nextora-scroll-animation-init]), :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img, :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-border-reveal:not([data-nextora-scroll-animation-init]) img {
   opacity: 1;
 }
 :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
   clip-path: none;
 }
+:where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-border-reveal:not([data-nextora-scroll-animation-init]) {
+  --nextora-border-opacity: 1;
+}
 @media (prefers-reduced-motion: reduce) {
-  .nextora-scroll-animation--pending,	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]),	.animation-text-typewriter:not([data-nextora-scroll-animation-init]),	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li,	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *,	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
+  .nextora-scroll-animation--pending,	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]),	.animation-text-typewriter:not([data-nextora-scroll-animation-init]),	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li,	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *,	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img,	.animation-image-border-reveal:not([data-nextora-scroll-animation-init]) img {
     opacity: 1;
   }
   .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
     clip-path: none;
+  }
+  .animation-image-border-reveal:not([data-nextora-scroll-animation-init]) {
+    --nextora-border-opacity: 1;
   }
 }
 .animation-text-typewriter {
@@ -6669,6 +6714,7 @@ html.ep-embed-responsive, .emagic #ep-events-container {
       --tw-backdrop-sepia: initial;
       --tw-duration: initial;
       --tw-ease: initial;
+      --dash-angle: 0deg;
     }
   }
 }

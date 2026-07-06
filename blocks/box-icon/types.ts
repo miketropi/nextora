@@ -1,41 +1,43 @@
-export type BoxContentLayoutMode = 'slider' | 'grid';
-export type BoxContentIconSource = 'theme' | 'upload';
-export type BoxContentIconStyle = 'default' | 'stacked' | 'framed';
-export type BoxContentCardTemplate = 'default' | 'ways' | 'minimal';
+export type BoxIconLayoutMode = 'slider' | 'grid';
+export type BoxIconIconSource = 'theme' | 'upload';
+export type BoxIconIconStyle = 'default' | 'stacked' | 'framed';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
 
-export interface BoxContentItem {
+export interface BoxIconItem {
 	id: string;
+	number: string;
 	title: string;
 	description: string;
 	showLink: boolean;
 	linkLabel: string;
 	linkUrl: string;
 	linkTarget: '_self' | '_blank';
-	iconSource?: BoxContentIconSource;
+	iconSource?: BoxIconIconSource;
 	iconName: string;
 	uploadedIconId: number;
 	uploadedIconUrl: string;
 	iconColor: string;
 	iconSurfaceBackgroundColor: string;
+	highlightAccentColor: string;
 }
 
-export interface BoxContentAttributes {
-	items: BoxContentItem[];
+export interface BoxIconAttributes {
+	items: BoxIconItem[];
 	contentMaxWidth: string;
-	cardTemplate: BoxContentCardTemplate;
-	layoutMode: BoxContentLayoutMode;
+	cardTemplate: BoxIconCardTemplate;
+	layoutMode: BoxIconLayoutMode;
 	gridColumns: number;
 	gridMinWidth: number;
 	cardMinHeight: number;
 	cardPadding: Record<string, string>;
 	cardBorderWidth: number;
 	cardBorderRadius: number;
-	iconSource: BoxContentIconSource;
+	iconSource: BoxIconIconSource;
 	iconSize: number;
 	strokeWidth: number;
 	iconCircleSize: number;
 	iconCircleRadius: number;
-	iconStyle: BoxContentIconStyle;
+	iconStyle: BoxIconIconStyle;
 	iconColor: string;
 	iconSurfaceBackgroundColor: string;
 	iconSurfaceBorderColor: string;
@@ -70,4 +72,8 @@ export interface BoxContentAttributes {
 	arrowColor: string;
 	headingFontFamily: string;
 	enableScrollAnimation: boolean;
+	highlightAccentColor1: string;
+	highlightAccentColor2: string;
+	highlightAccentColor3: string;
+	highlightAccentColor4: string;
 }

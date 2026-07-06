@@ -19,7 +19,7 @@ The **Team Section** block (`nextora/team-section`) renders **team member cards*
 - **Layout:** Editor chooses **Carousel** (default) or **Grid** for desktop; **responsive viewports always use Swiper carousel**
 - **Hover:** Card hover effects on background and text (optional via CSS)
 
-**Architecture:** Single dynamic block with a **`members[]` repeater** (same pattern as [`nextora/counters`](../../blocks/counters/), [`nextora/box-content`](../../blocks/box-content/)). No InnerBlocks. Markup from **`render.php`**; carousel from bundled **`view.ts`** (Swiper 11).
+**Architecture:** Single dynamic block with a **`members[]` repeater** (same pattern as [`nextora/counters`](../../blocks/counters/), [`nextora/box-icon`](../../blocks/box-icon/)). No InnerBlocks. Markup from **`render.php`**; carousel from bundled **`view.ts`** (Swiper 11).
 
 ---
 
@@ -282,9 +282,9 @@ Existing blocks with header data will continue to work (attributes remain in sch
 
 | Need | Block / doc |
 |------|----------------|
-| Layout grid/carousel switch | [`blocks/box-content/`](../../blocks/box-content/), [`docs/blocks/Box Content.md`](./Box%20Content.md) |
+| Layout grid/carousel switch | [`blocks/box-icon/`](../../blocks/box-icon/), [`docs/blocks/Box Icon.md`](./Box%20Content.md) |
 | Members repeater + PHP render | [`blocks/counters/`](../../blocks/counters/), [`blocks/scrolling-promotion/`](../../blocks/scrolling-promotion/) |
-| Swiper init, `data-swiper-opts`, loading | [`blocks/image-gallery-slide/`](../../blocks/image-gallery-slide/), [`blocks/box-content/view.ts`](../../blocks/box-content/view.ts) |
+| Swiper init, `data-swiper-opts`, loading | [`blocks/image-gallery-slide/`](../../blocks/image-gallery-slide/), [`blocks/box-icon/view.ts`](../../blocks/box-icon/view.ts) |
 | Scroll reveal toggle | [`blocks/image-gallery-grid/view.ts`](../../blocks/image-gallery-grid/view.ts) |
 | Pagination / arrows | [`blocks/testimonial-carousel/`](../../blocks/testimonial-carousel/) |
 

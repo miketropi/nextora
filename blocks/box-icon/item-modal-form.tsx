@@ -15,13 +15,13 @@ import {
 	normalizeColorForStorage,
 	useThemeColorPalette,
 } from '../advanced-icon/color-utils';
-import BoxContentEditorIcon from './editor-icon';
-import type { BoxContentIconStyle, BoxContentItem, BoxContentCardTemplate } from './types';
+import BoxIconEditorIcon from './editor-icon';
+import type { BoxIconIconStyle, BoxIconItem, BoxIconCardTemplate } from './types';
 
 export interface ItemModalFormProps {
-	item: BoxContentItem;
-	onPatch: (patch: Partial<BoxContentItem>) => void;
-	iconStyle: BoxContentIconStyle;
+	item: BoxIconItem;
+	onPatch: (patch: Partial<BoxIconItem>) => void;
+	iconStyle: BoxIconIconStyle;
 	iconSize: number;
 	strokeWidth: number;
 	iconCircleSize: number;
@@ -29,7 +29,7 @@ export interface ItemModalFormProps {
 	blockIconColor: string;
 	blockIconSurfaceBackgroundColor: string;
 	blockIconSurfaceBorderColor: string;
-	cardTemplate: BoxContentCardTemplate;
+	cardTemplate: BoxIconCardTemplate;
 }
 
 export default function ItemModalForm({
@@ -55,11 +55,11 @@ export default function ItemModalForm({
 	};
 
 	return (
-		<div className="nextora-box-content__item-modal-form">
-			<div className="nextora-box-content__item-modal-form-icon">
-				<p className="nextora-box-content__item-modal-form-heading">{__('Icon', 'nextora')}</p>
-				<div className="nextora-box-content__item-modal-icon-preview">
-					<BoxContentEditorIcon
+		<div className="nextora-box-icon__item-modal-form">
+			<div className="nextora-box-icon__item-modal-form-icon">
+				<p className="nextora-box-icon__item-modal-form-heading">{__('Icon', 'nextora')}</p>
+				<div className="nextora-box-icon__item-modal-icon-preview">
+					<BoxIconEditorIcon
 						iconSource={iconSource}
 						iconName={item.iconName}
 						uploadedIconUrl={item.uploadedIconUrl}
@@ -86,11 +86,11 @@ export default function ItemModalForm({
 					onChange={(v) => onPatch({ iconSource: v === 'upload' ? 'upload' : 'theme' })}
 				/>
 				{iconSource === 'theme' ? (
-					<div className="nextora-box-content__item-modal-icon-picker">
+					<div className="nextora-box-icon__item-modal-icon-picker">
 						<Button variant="secondary" onClick={() => setPickerOpen(true)}>
 							{__('Choose icon', 'nextora')}
 						</Button>
-						<p className="nextora-box-content__item-modal-icon-name">
+						<p className="nextora-box-icon__item-modal-icon-name">
 							<code>{item.iconName || 'star'}</code>
 						</p>
 						{pickerOpen ? (
@@ -117,15 +117,15 @@ export default function ItemModalForm({
 							allowedTypes={['image']}
 							value={item.uploadedIconId || undefined}
 							render={({ open }) => (
-								<div className="nextora-box-content__item-modal-media">
+								<div className="nextora-box-icon__item-modal-media">
 									{item.uploadedIconUrl ? (
 										<img
 											src={item.uploadedIconUrl}
 											alt=""
-											className="nextora-box-content__item-modal-media-preview"
+											className="nextora-box-icon__item-modal-media-preview"
 										/>
 									) : (
-										<div className="nextora-box-content__item-modal-media-empty">
+										<div className="nextora-box-icon__item-modal-media-empty">
 											{__('No icon image selected', 'nextora')}
 										</div>
 									)}
@@ -161,29 +161,56 @@ export default function ItemModalForm({
 						]}
 					/>
 				) : null}
+				{cardTemplate === 'highlights' ? (
+					<PanelColorSettings
+						title={__('Accent color', 'nextora')}
+						colors={colorPalette}
+						colorSettings={[
+							{
+								value: colorValueForPicker(item.highlightAccentColor, colorPalette, lookupPalette),
+								onChange: (v: string | undefined) =>
+									onPatch({
+										highlightAccentColor: normalizeColorForStorage(v, lookupPalette),
+									}),
+								label: __('Card accent', 'nextora'),
+							},
+						]}
+					/>
+				) : null}
 			</div>
 
-			<div className="nextora-box-content__item-modal-form-fields">
-				<div className="nextora-box-content__item-modal-form-group">
-					<p className="nextora-box-content__item-modal-form-heading">{__('Content', 'nextora')}</p>
+			<div className="nextora-box-icon__item-modal-form-fields">
+				{cardTemplate === 'highlights' ? (
+					<div className="nextora-box-icon__item-modal-form-group">
+						<p className="nextora-box-icon__item-modal-form-heading">{__('Number', 'nextora')}</p>
+						<TextControl
+							label={__('Stat number', 'nextora')}
+							value={item.number}
+							onChange={(number) => onPatch({ number: number ?? '' })}
+							help={__('Large number shown above the label (e.g. 1200+).', 'nextora')}
+						/>
+					</div>
+				) : null}
+				<div className="nextora-box-icon__item-modal-form-group">
+					<p className="nextora-box-icon__item-modal-form-heading">{__('Content', 'nextora')}</p>
 					<TextControl
-						label={__('Title', 'nextora')}
+						label={cardTemplate === 'highlights' ? __('Stat label', 'nextora') : __('Title', 'nextora')}
 						value={item.title}
 						onChange={(title) => onPatch({ title: title ?? '' })}
 					/>
 					<TextareaControl
-						label={__('Description', 'nextora')}
+						label={cardTemplate === 'highlights' ? __('Stat subtitle', 'nextora') : __('Description', 'nextora')}
 						value={item.description}
 						onChange={(description) => onPatch({ description: description ?? '' })}
-						help={__('Short body copy shown on the card.', 'nextora')}
+						help={cardTemplate === 'highlights' ? __('Short supporting text shown below the label.', 'nextora') : __('Short body copy shown on the card.', 'nextora')}
 						rows={4}
 					/>
 				</div>
 
-				<div className="nextora-box-content__item-modal-form-group">
-					{cardTemplate !== 'minimal' ? (
+				<div className="nextora-box-icon__item-modal-form-group">
+					{cardTemplate !== 'minimal' && cardTemplate !== 'highlights' ? (
 						<>
-							<p className="nextora-box-content__item-modal-form-heading">{__('Link', 'nextora')}</p>
+							<p className="nextora-box-icon__item-modal-form-heading">{__('Link', 'nextora')}</p>
 							<ToggleControl
 								label={__('Show link', 'nextora')}
 								checked={item.showLink}
