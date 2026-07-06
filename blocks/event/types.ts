@@ -15,6 +15,7 @@ export interface EventItem {
 }
 
 export interface EventAttributes {
+	template: string;
 	events: EventItem[];
 	showRegisterButton: boolean;
 	registerButtonText: string;
@@ -31,6 +32,16 @@ export interface EventAttributes {
 	registerHoverTextColor: string;
 	registerHoverBackgroundColor: string;
 	enableScrollAnimation: boolean;
+	autoplay: boolean;
+	autoplayDelay: number;
+	loop: boolean;
+	speed: number;
+	showArrows: boolean;
+	showPagination: boolean;
+	slidesPerView: number;
+	spaceBetween: number;
+	tabletSlides: number;
+	mobileSlides: number;
 }
 
 export type EventColorAttribute = keyof Pick<

@@ -1,14 +1,32 @@
 /**
- * Events block — scroll reveal stagger for list items.
+ * Events block — scroll reveal stagger for list items + Swiper slider for template1.
  */
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Swiper from 'swiper';
+import { A11y, Autoplay, Keyboard, Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const SCROLL_INIT_ATTR = 'data-nextora-event-scroll-init';
 const REVEAL_START_RATIO = 0.82;
 const REVEAL_FALLBACK_MS = 1800;
+
+type SwiperOpts = {
+	autoplay?: boolean;
+	autoplayDelay?: number;
+	loop?: boolean;
+	speed?: number;
+	showArrows?: boolean;
+	showPagination?: boolean;
+	slidesPerView?: number;
+	spaceBetween?: number;
+	tabletSlides?: number;
+	mobileSlides?: number;
+};
 
 function prefersReducedMotion(): boolean {
 	return (
@@ -109,8 +127,144 @@ function initScrollReveal(root: HTMLElement): void {
 	}
 }
 
+// --- Template 1: Swiper slider ---
+
+function parseOpts(root: HTMLElement): SwiperOpts {
+	try {
+		return JSON.parse(root.getAttribute('data-swiper-opts') || '{}') as SwiperOpts;
+	} catch {
+		return {};
+	}
+}
+
+function breakpointsForSlides(
+	desktop: number,
+	tablet: number,
+	mobile: number,
+	gap: number,
+): Record<number, { slidesPerView: number; spaceBetween: number }> {
+	return {
+		320: { slidesPerView: mobile, spaceBetween: gap },
+		640: { slidesPerView: tablet, spaceBetween: gap },
+		1024: { slidesPerView: desktop, spaceBetween: gap },
+	};
+}
+
+function initTemplate1Swiper(root: HTMLElement): void {
+	const carouselRoot = root.querySelector<HTMLElement>('.nextora-event__carousel-root');
+	if (!carouselRoot) {
+		return;
+	}
+
+	if (
+		carouselRoot.dataset.nextoraEventSwiperInited === '1' ||
+		carouselRoot.dataset.nextoraEventSwiperPending === '1'
+	) {
+		return;
+	}
+
+	const el = carouselRoot.querySelector<HTMLElement>('.nextora-event__swiper');
+	if (!el) {
+		return;
+	}
+
+	const opts = parseOpts(carouselRoot);
+	const slideCount = el.querySelectorAll('.swiper-slide').length;
+	if (slideCount < 1) {
+		root.classList.remove('nextora-event--loading');
+		root.classList.add('nextora-event--ready');
+		return;
+	}
+
+	const showArrows = opts.showArrows === true;
+	const showPagination = opts.showPagination !== false;
+	const slidesPerView = typeof opts.slidesPerView === 'number' ? opts.slidesPerView : 3;
+	const spaceBetween = typeof opts.spaceBetween === 'number' ? opts.spaceBetween : 24;
+	const tabletSlides = typeof opts.tabletSlides === 'number' ? opts.tabletSlides : 2;
+	const mobileSlides = typeof opts.mobileSlides === 'number' ? opts.mobileSlides : 1;
+
+	const prevEl = root.querySelector<HTMLElement>('.nextora-event__arrow--prev');
+	const nextEl = root.querySelector<HTMLElement>('.nextora-event__arrow--next');
+	const paginationEl = root.querySelector<HTMLElement>('.nextora-event__pagination');
+
+	const reduced = prefersReducedMotion();
+	const useLoop = Boolean(opts.loop) && slideCount > 1;
+
+	carouselRoot.dataset.nextoraEventSwiperPending = '1';
+
+	const finish = (): void => {
+		delete carouselRoot.dataset.nextoraEventSwiperPending;
+		carouselRoot.dataset.nextoraEventSwiperInited = '1';
+		root.classList.remove('nextora-event--loading');
+		root.classList.add('nextora-event--ready');
+		ScrollTrigger.refresh();
+	};
+
+	const tryMount = (tick = 0): void => {
+		if (el.clientWidth < 2 && tick < 60) {
+			requestAnimationFrame(() => tryMount(tick + 1));
+			return;
+		}
+
+		const modules = [Pagination, Autoplay, Keyboard, A11y];
+		if (showArrows && prevEl && nextEl) {
+			modules.push(Navigation);
+		}
+
+		// eslint-disable-next-line no-new
+		new Swiper(el, {
+			modules,
+			slidesPerView: 1,
+			spaceBetween,
+			loop: useLoop,
+			speed: typeof opts.speed === 'number' ? opts.speed : 600,
+			watchOverflow: true,
+			observer: true,
+			observeParents: true,
+			resizeObserver: true,
+			updateOnWindowResize: true,
+			autoplay:
+				!reduced && opts.autoplay === true
+					? {
+							delay:
+								typeof opts.autoplayDelay === 'number' ? opts.autoplayDelay : 5000,
+							disableOnInteraction: false,
+							pauseOnMouseEnter: true,
+						}
+					: false,
+			keyboard: { enabled: true, onlyInViewport: true },
+			a11y: {
+				enabled: true,
+				prevSlideMessage: 'Previous events',
+				nextSlideMessage: 'Next events',
+				paginationBulletMessage: 'Go to slide {{index}}',
+			},
+			breakpoints: breakpointsForSlides(slidesPerView, tabletSlides, mobileSlides, spaceBetween),
+			...(showArrows && prevEl && nextEl ? { navigation: { nextEl, prevEl } } : {}),
+			...(showPagination && paginationEl
+				? {
+						pagination: {
+							el: paginationEl,
+							clickable: true,
+							type: 'bullets',
+						},
+					}
+				: {}),
+		});
+
+		requestAnimationFrame(() => ScrollTrigger.refresh());
+		window.setTimeout(finish, 220);
+	};
+
+	tryMount();
+}
+
 function initRoot(root: HTMLElement): void {
-	initScrollReveal(root);
+	if (root.getAttribute('data-nextora-event-template') === 'template1') {
+		initTemplate1Swiper(root);
+	} else {
+		initScrollReveal(root);
+	}
 }
 
 function init(container: Element | Document = document): void {
