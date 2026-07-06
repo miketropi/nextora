@@ -267,9 +267,6 @@
   .start {
     inset-inline-start: var(--spacing);
   }
-  .start\! {
-    inset-inline-start: var(--spacing) !important;
-  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -413,9 +410,6 @@
   }
   .inline {
     display: inline;
-  }
-  .inline\! {
-    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -1131,9 +1125,6 @@
   .italic {
     font-style: italic;
   }
-  .italic\! {
-    font-style: italic !important;
-  }
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
@@ -1149,9 +1140,6 @@
   }
   .underline {
     text-decoration-line: underline;
-  }
-  .underline\! {
-    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -2964,6 +2952,8 @@ footer.wp-block-template-part {
     display: flex;
     align-items: stretch;
     width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
   }
   :where(.mc4wp-form .mc4wp-form-fields p) {
     display: contents;
@@ -3038,6 +3028,7 @@ footer.wp-block-template-part {
     overflow: visible;
     white-space: nowrap;
     text-transform: capitalize;
+    border: none;
   }
   .mc4wp-form .mc4wp-form-fields input[type="submit"]:hover {
     background-color: var(--nextora-form-subscribe-accent-hover);

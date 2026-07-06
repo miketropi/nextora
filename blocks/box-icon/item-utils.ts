@@ -1,9 +1,9 @@
-import type { BoxContentItem } from './types';
+import type { BoxIconItem } from './types';
 import { cardPaddingToStyleVars } from './spacing-utils';
 import { storedColorToCss } from './icon-catalog';
 import { buildHeadingFontFamilyVar } from './typography-utils';
 
-export const DEFAULT_ITEMS: BoxContentItem[] = [
+export const DEFAULT_ITEMS: BoxIconItem[] = [
 	{
 		id: '1',
 		number: '',
@@ -77,7 +77,7 @@ export function createItemId(): string {
 	return `item-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export function normalizeItems(items: BoxContentItem[] | undefined): BoxContentItem[] {
+export function normalizeItems(items: BoxIconItem[] | undefined): BoxIconItem[] {
 	if (!Array.isArray(items) || items.length === 0) {
 		return DEFAULT_ITEMS.map((item) => ({ ...item }));
 	}
@@ -160,45 +160,45 @@ export function buildStyleVars(attrs: {
 		}
 	};
 
-	set('--nextora-box-content-max-width', attrs.contentMaxWidth);
+	set('--nextora-box-icon-max-width', attrs.contentMaxWidth);
 	if (typeof attrs.gapPx === 'number' && attrs.gapPx >= 0) {
-		vars['--nextora-box-content-gap'] = `${attrs.gapPx}px`;
+		vars['--nextora-box-icon-gap'] = `${attrs.gapPx}px`;
 	}
-	set('--nextora-box-content-card-min-height', attrs.cardMinHeight ? `${attrs.cardMinHeight}px` : '');
+	set('--nextora-box-icon-card-min-height', attrs.cardMinHeight ? `${attrs.cardMinHeight}px` : '');
 	Object.assign(vars, cardPaddingToStyleVars(attrs.cardPadding));
-	set('--nextora-box-content-card-border-width', attrs.cardBorderWidth ? `${attrs.cardBorderWidth}px` : '');
+	set('--nextora-box-icon-card-border-width', attrs.cardBorderWidth ? `${attrs.cardBorderWidth}px` : '');
 	if (typeof attrs.cardBorderRadius === 'number' && attrs.cardBorderRadius >= 0) {
-		vars['--nextora-box-content-card-radius'] = `${attrs.cardBorderRadius}px`;
+		vars['--nextora-box-icon-card-radius'] = `${attrs.cardBorderRadius}px`;
 	}
-	set('--nextora-box-content-cols', attrs.gridColumns);
-	set('--nextora-box-content-icon-circle-size', attrs.iconCircleSize ? `${attrs.iconCircleSize}px` : '');
-	set('--nextora-box-content-icon-size', attrs.iconSize ? `${attrs.iconSize}px` : '');
-	set('--nextora-box-content-eyebrow-color', attrs.eyebrowColor);
-	set('--nextora-box-content-heading-color', attrs.headingColor);
-	set('--nextora-box-content-description-color', attrs.descriptionColor);
-	setColor('--nextora-box-content-card-border-color', attrs.cardBorderColor);
-	setColor('--nextora-box-content-card-bg', attrs.cardBackgroundColor);
-	setColor('--nextora-box-content-card-hover-bg', attrs.cardHoverBackgroundColor);
-	setColor('--nextora-box-content-card-title-color', attrs.cardTitleColor);
-	setColor('--nextora-box-content-card-desc-color', attrs.cardDescriptionColor);
-	setColor('--nextora-box-content-card-desc-hover-color', attrs.descriptionHoverColor);
-	setColor('--nextora-box-content-link-color', attrs.linkColor);
-	setColor('--nextora-box-content-link-hover-color', attrs.linkHoverColor);
-	setColor('--nextora-box-content-ways-accent-1', attrs.waysAccentColor1);
-	setColor('--nextora-box-content-ways-accent-2', attrs.waysAccentColor2);
-	setColor('--nextora-box-content-ways-accent-3', attrs.waysAccentColor3);
-	setColor('--nextora-box-content-highlight-accent-1', attrs.highlightAccentColor1);
-	setColor('--nextora-box-content-highlight-accent-2', attrs.highlightAccentColor2);
-	setColor('--nextora-box-content-highlight-accent-3', attrs.highlightAccentColor3);
-	setColor('--nextora-box-content-highlight-accent-4', attrs.highlightAccentColor4);
-	setColor('--nextora-box-content-dot-color', attrs.paginationColor);
-	setColor('--nextora-box-content-dot-active', attrs.paginationActiveColor);
-	setColor('--nextora-box-content-arrow-color', attrs.arrowColor);
-	setColor('--nextora-box-content-icon-color', attrs.iconColor);
-	setColor('--nextora-box-content-icon-surface-bg', attrs.iconSurfaceBackgroundColor);
-	setColor('--nextora-box-content-icon-surface-border', attrs.iconSurfaceBorderColor);
-	setColor('--nextora-box-content-icon-hover-color', attrs.iconHoverColor);
-	setColor('--nextora-box-content-icon-hover-surface-bg', attrs.iconHoverSurfaceBackgroundColor);
+	set('--nextora-box-icon-cols', attrs.gridColumns);
+	set('--nextora-box-icon-icon-circle-size', attrs.iconCircleSize ? `${attrs.iconCircleSize}px` : '');
+	set('--nextora-box-icon-icon-size', attrs.iconSize ? `${attrs.iconSize}px` : '');
+	set('--nextora-box-icon-eyebrow-color', attrs.eyebrowColor);
+	set('--nextora-box-icon-heading-color', attrs.headingColor);
+	set('--nextora-box-icon-description-color', attrs.descriptionColor);
+	setColor('--nextora-box-icon-card-border-color', attrs.cardBorderColor);
+	setColor('--nextora-box-icon-card-bg', attrs.cardBackgroundColor);
+	setColor('--nextora-box-icon-card-hover-bg', attrs.cardHoverBackgroundColor);
+	setColor('--nextora-box-icon-card-title-color', attrs.cardTitleColor);
+	setColor('--nextora-box-icon-card-desc-color', attrs.cardDescriptionColor);
+	setColor('--nextora-box-icon-card-desc-hover-color', attrs.descriptionHoverColor);
+	setColor('--nextora-box-icon-link-color', attrs.linkColor);
+	setColor('--nextora-box-icon-link-hover-color', attrs.linkHoverColor);
+	setColor('--nextora-box-icon-ways-accent-1', attrs.waysAccentColor1);
+	setColor('--nextora-box-icon-ways-accent-2', attrs.waysAccentColor2);
+	setColor('--nextora-box-icon-ways-accent-3', attrs.waysAccentColor3);
+	setColor('--nextora-box-icon-highlight-accent-1', attrs.highlightAccentColor1);
+	setColor('--nextora-box-icon-highlight-accent-2', attrs.highlightAccentColor2);
+	setColor('--nextora-box-icon-highlight-accent-3', attrs.highlightAccentColor3);
+	setColor('--nextora-box-icon-highlight-accent-4', attrs.highlightAccentColor4);
+	setColor('--nextora-box-icon-dot-color', attrs.paginationColor);
+	setColor('--nextora-box-icon-dot-active', attrs.paginationActiveColor);
+	setColor('--nextora-box-icon-arrow-color', attrs.arrowColor);
+	setColor('--nextora-box-icon-icon-color', attrs.iconColor);
+	setColor('--nextora-box-icon-icon-surface-bg', attrs.iconSurfaceBackgroundColor);
+	setColor('--nextora-box-icon-icon-surface-border', attrs.iconSurfaceBorderColor);
+	setColor('--nextora-box-icon-icon-hover-color', attrs.iconHoverColor);
+	setColor('--nextora-box-icon-icon-hover-surface-bg', attrs.iconHoverSurfaceBackgroundColor);
 
 	Object.assign(vars, buildHeadingFontFamilyVar(attrs.headingFontFamily));
 

@@ -23,7 +23,7 @@ import {
 	useThemeColorPalette,
 } from '../advanced-icon/color-utils';
 import ItemModalForm from './item-modal-form';
-import BoxContentEditorIcon from './editor-icon';
+import BoxIconEditorIcon from './editor-icon';
 import { storedColorToCss } from './icon-catalog';
 import { buildStyleVars, createItemId, normalizeItems } from './item-utils';
 import { normalizeCardPadding } from './spacing-utils';
@@ -34,11 +34,11 @@ import {
 	normalizeCardTemplate,
 } from './template-utils';
 import { useFontFamilyOptions } from './font-family-utils';
-import type { BoxContentAttributes, BoxContentIconStyle } from './types';
+import type { BoxIconAttributes, BoxIconIconStyle } from './types';
 
 interface EditProps {
-	attributes: BoxContentAttributes;
-	setAttributes: (attrs: Partial<BoxContentAttributes>) => void;
+	attributes: BoxIconAttributes;
+	setAttributes: (attrs: Partial<BoxIconAttributes>) => void;
 }
 
 const iconStyleOptions = [
@@ -56,7 +56,7 @@ function isEmptyColor(value: string | undefined): boolean {
 	return !value || value === 'currentColor';
 }
 
-export default function BoxContentEdit({ attributes, setAttributes }: EditProps) {
+export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 	const [editingItemId, setEditingItemId] = useState<string | null>(null);
 	const items = normalizeItems(attributes.items);
 	const editingItem = editingItemId ? items.find((item) => item.id === editingItemId) : undefined;
@@ -179,20 +179,20 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 
 	const blockProps = useBlockProps({
 		className: [
-			'nextora-box-content',
-			'nextora-box-content--editor',
-			layoutMode === 'slider' ? 'nextora-box-content--editor-slider' : '',
-			`nextora-box-content--layout-${layoutMode}`,
-			`nextora-box-content--template-${cardTemplate}`,
-			headingFontFamily.trim() !== '' ? 'nextora-box-content--has-heading-font' : '',
+			'nextora-box-icon',
+			'nextora-box-icon--editor',
+			layoutMode === 'slider' ? 'nextora-box-icon--editor-slider' : '',
+			`nextora-box-icon--layout-${layoutMode}`,
+			`nextora-box-icon--template-${cardTemplate}`,
+			headingFontFamily.trim() !== '' ? 'nextora-box-icon--has-heading-font' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
 		style: styleVars as CSSProperties,
 	});
 
-	const setThemeColor = (key: keyof BoxContentAttributes, value: string | undefined): void => {
-		setAttributes({ [key]: normalizeColorForStorage(value, lookupPalette) } as Partial<BoxContentAttributes>);
+	const setThemeColor = (key: keyof BoxIconAttributes, value: string | undefined): void => {
+		setAttributes({ [key]: normalizeColorForStorage(value, lookupPalette) } as Partial<BoxIconAttributes>);
 	};
 
 	const colorSettings = useMemo(() => {
@@ -458,23 +458,23 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 		<>
 			<InspectorControls>
 				<PanelBody title={__('Items', 'nextora')} initialOpen>
-					<p className="nextora-box-content__inspector-items-help">
+					<p className="nextora-box-icon__inspector-items-help">
 						{__(
 							'Click Edit on a card in the canvas, or use the buttons below. Full settings open in a dialog.',
 							'nextora',
 						)}
 					</p>
 					{items.map((item, index) => (
-						<div key={item.id} className="nextora-box-content__inspector-item">
-							<div className="nextora-box-content__inspector-item-summary">
-								<p className="nextora-box-content__inspector-item-name">
+						<div key={item.id} className="nextora-box-icon__inspector-item">
+							<div className="nextora-box-icon__inspector-item-summary">
+								<p className="nextora-box-icon__inspector-item-name">
 									{item.title || sprintf(__('Item %d', 'nextora'), index + 1)}
 								</p>
 								{item.description ? (
-									<p className="nextora-box-content__inspector-item-desc">{item.description}</p>
+									<p className="nextora-box-icon__inspector-item-desc">{item.description}</p>
 								) : null}
 							</div>
-							<div className="nextora-box-content__inspector-item-actions">
+							<div className="nextora-box-icon__inspector-item-actions">
 								<Button variant="primary" onClick={() => setEditingItemId(item.id)}>
 									{__('Edit', 'nextora')}
 								</Button>
@@ -541,7 +541,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 					options={layoutModeOptions}
 					onChange={(v) => {
 						const next = v === 'grid' ? 'grid' : 'slider';
-						const patch: Partial<BoxContentAttributes> = { layoutMode: next };
+						const patch: Partial<BoxIconAttributes> = { layoutMode: next };
 						if (next === 'grid' && gridMinWidth < 768) {
 							patch.gridMinWidth = 981;
 						}
@@ -572,7 +572,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 						</>
 					) : null}
 
-					<p className="nextora-box-content__inspector-subheading">{__('Cards', 'nextora')}</p>
+					<p className="nextora-box-icon__inspector-subheading">{__('Cards', 'nextora')}</p>
 					<RangeControl
 						label={__('Gap between cards (px)', 'nextora')}
 						value={spaceBetween}
@@ -615,7 +615,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 						max={24}
 					/>
 
-					<p className="nextora-box-content__inspector-subheading">
+					<p className="nextora-box-icon__inspector-subheading">
 						{layoutMode === 'grid'
 							? __('Carousel (tablet & mobile)', 'nextora')
 							: __('Carousel', 'nextora')}
@@ -670,7 +670,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 						onChange={(v) => setAttributes({ freeMode: v })}
 					/>
 
-					<p className="nextora-box-content__inspector-subheading">{__('Autoplay', 'nextora')}</p>
+					<p className="nextora-box-icon__inspector-subheading">{__('Autoplay', 'nextora')}</p>
 					<ToggleControl
 						label={__('Autoplay', 'nextora')}
 						checked={autoplay}
@@ -692,7 +692,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 						disabled={!autoplay}
 					/>
 
-					<p className="nextora-box-content__inspector-subheading">{__('Navigation', 'nextora')}</p>
+					<p className="nextora-box-icon__inspector-subheading">{__('Navigation', 'nextora')}</p>
 					<ToggleControl
 						label={__('Show pagination', 'nextora')}
 						checked={showPagination}
@@ -707,14 +707,14 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 
 				<PanelBody title={__('Icons', 'nextora')} initialOpen>
 					{cardTemplate === 'ways' ? (
-						<p className="nextora-box-content__inspector-items-help">
+						<p className="nextora-box-icon__inspector-items-help">
 							{__(
 								'Ways template uses accent gradients on icon circles. Adjust sizes below.',
 								'nextora',
 							)}
 						</p>
 					) : cardTemplate === 'minimal' ? (
-						<p className="nextora-box-content__inspector-items-help">
+						<p className="nextora-box-icon__inspector-items-help">
 							{__(
 								'Minimal template uses compact icon squares beside each badge label.',
 								'nextora',
@@ -727,7 +727,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 								value={iconStyle}
 								options={iconStyleOptions}
 								onChange={(v) =>
-									setAttributes({ iconStyle: v as BoxContentIconStyle })
+									setAttributes({ iconStyle: v as BoxIconIconStyle })
 								}
 								help={__(
 									'Stacked adds a filled background; Framed adds a border around the icon.',
@@ -803,7 +803,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 
 			{editingItem ? (
 				<Modal
-					className="nextora-box-content__item-modal"
+					className="nextora-box-icon__item-modal"
 					size="large"
 					title={
 						editingItem.title
@@ -813,7 +813,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 					onRequestClose={() => setEditingItemId(null)}
 					shouldCloseOnClickOutside={false}
 					headerActions={
-						<div className="nextora-box-content__item-modal-header-actions">
+						<div className="nextora-box-icon__item-modal-header-actions">
 							<Button
 								size="compact"
 								variant="primary"
@@ -842,13 +842,13 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 
 			<div {...blockProps}>
 				<div
-					className="nextora-box-content__cards"
+					className="nextora-box-icon__cards"
 					aria-label={__('Box content items', 'nextora')}
 				>
 					{items.map((item, index) => (
 				<article
 					key={item.id}
-					className="nextora-box-content__card nextora-box-content__card--editable"
+					className="nextora-box-icon__card nextora-box-icon__card--editable"
 					style={
 						cardTemplate === 'highlights' && item.highlightAccentColor
 							? ({
@@ -862,7 +862,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 				>
 					<button
 						type="button"
-						className="nextora-box-content__card-edit"
+						className="nextora-box-icon__card-edit"
 						onClick={() => setEditingItemId(item.id)}
 					>
 						{__('Edit item', 'nextora')}
@@ -874,7 +874,7 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 							const statSubtitle = item.number ? item.description : item.linkLabel;
 							return (
 								<>
-									<BoxContentEditorIcon
+									<BoxIconEditorIcon
 										iconSource={item.iconSource}
 										iconName={item.iconName}
 										uploadedIconUrl={item.uploadedIconUrl}
@@ -890,14 +890,14 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 										iconSurfaceBorderColor={iconSurfaceBorderColor}
 										lookupPalette={lookupPalette}
 									/>
-									<b className="nextora-box-content__stat-number">
+									<b className="nextora-box-icon__stat-number">
 										{statNumber || __('1,200+', 'nextora')}
 									</b>
-									<span className="nextora-box-content__stat-label">
+									<span className="nextora-box-icon__stat-label">
 										{statLabel || __('Stat label', 'nextora')}
 									</span>
 									{statSubtitle ? (
-										<small className="nextora-box-content__stat-subtitle">
+										<small className="nextora-box-icon__stat-subtitle">
 											{statSubtitle}
 										</small>
 									) : null}
@@ -907,11 +907,11 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 					) : (
 						<>
 							{cardTemplate === 'ways' ? (
-								<h5 className="nextora-box-content__card-ghost" aria-hidden="true">
+								<h5 className="nextora-box-icon__card-ghost" aria-hidden="true">
 									{formatCardGhostIndex(index)}
 								</h5>
 							) : null}
-							<BoxContentEditorIcon
+							<BoxIconEditorIcon
 								iconSource={item.iconSource}
 								iconName={item.iconName}
 								uploadedIconUrl={item.uploadedIconUrl}
@@ -928,28 +928,28 @@ export default function BoxContentEdit({ attributes, setAttributes }: EditProps)
 								lookupPalette={lookupPalette}
 							/>
 							{cardTemplate === 'minimal' ? (
-								<div className="nextora-box-content__card-body">
-									<h3 className="nextora-box-content__title">
+								<div className="nextora-box-icon__card-body">
+									<h3 className="nextora-box-icon__title">
 										{item.title || __('Title', 'nextora')}
 									</h3>
-									<p className="nextora-box-content__description">
+									<p className="nextora-box-icon__description">
 										{item.description || __('Description…', 'nextora')}
 									</p>
 								</div>
 							) : (
 								<>
-									<h3 className="nextora-box-content__title">
+									<h3 className="nextora-box-icon__title">
 										{item.title || __('Title', 'nextora')}
 									</h3>
-									<p className="nextora-box-content__description">
+									<p className="nextora-box-icon__description">
 										{item.description || __('Description…', 'nextora')}
 									</p>
 								</>
 							)}
 							{item.showLink && item.linkLabel && cardTemplate !== 'minimal' ? (
-								<span className="nextora-box-content__link nextora-box-content__link--static">
+								<span className="nextora-box-icon__link nextora-box-icon__link--static">
 									{item.linkLabel}
-									<span className="nextora-box-content__link-icon" aria-hidden="true">
+									<span className="nextora-box-icon__link-icon" aria-hidden="true">
 										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 											<path d="M5 12h14M13 6l6 6-6 6" />
 										</svg>

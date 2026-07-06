@@ -1,6 +1,3 @@
-/**
- * Theme preset slug or custom stack → CSS font-family value.
- */
 export function resolveFontFamily(raw: string | undefined): string | undefined {
 	const value = (raw ?? '').trim();
 	if (!value) {
@@ -20,6 +17,6 @@ export function buildHeadingFontFamilyVar(
 		return {};
 	}
 	return {
-		'--nextora-box-content-heading-font-family': resolved,
+		'--nextora-box-image-heading-font-family': resolved,
 	};
 }

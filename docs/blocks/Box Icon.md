@@ -1,7 +1,7 @@
-# Block: Box Content
+# Block: Box Icon
 
 **Version:** 1.1  
-**Status:** Implemented as **`nextora/box-content`** in [`blocks/box-content/`](../../blocks/box-content/).  
+**Status:** Implemented as **`nextora/box-icon`** in [`blocks/box-icon/`](../../blocks/box-icon/).  
 **For:** AI Agent Development  
 
 This specification targets the **Nextora theme** block system. Follow [`docs/blocks.md`](../blocks.md), skills **nextora-add-theme-block** and **nextora-theme-styling-and-tokens**, and rules in [`.cursor/rules/nextora-blocks.mdc`](../../.cursor/rules/nextora-blocks.mdc) / [`.cursor/rules/nextora-a11y-blocks.mdc`](../../.cursor/rules/nextora-a11y-blocks.mdc) when implementing. Do **not** treat this block as a standalone plugin.
@@ -12,7 +12,7 @@ This specification targets the **Nextora theme** block system. Follow [`docs/blo
 
 ## 1. Overview
 
-The **Box Content** block (`nextora/box-content`) renders **icon-led content cards** — each card has an icon (Lucide or upload), title, short description, and an optional text link with trailing arrow. **v1 ships cards only:** section eyebrow/heading attributes remain in `block.json` for backward compatibility but are **not** exposed in the inspector and **not** rendered in `render.php`.
+The **Box Icon** block (`nextora/box-icon`) renders **icon-led content cards** — each card has an icon (Lucide or upload), title, short description, and an optional text link with trailing arrow. **v1 ships cards only:** section eyebrow/heading attributes remain in `block.json` for backward compatibility but are **not** exposed in the inspector and **not** rendered in `render.php`.
 
 **Design direction (from approved mock):**
 
@@ -30,15 +30,15 @@ The **Box Content** block (`nextora/box-content`) renders **icon-led content car
 
 | Item | Value |
 |------|--------|
-| **Block name** | `nextora/box-content` |
-| **Title** | Box Content |
+| **Block name** | `nextora/box-icon` |
+| **Title** | Box Icon |
 | **Category** | `design` (content band; pairs with `nextora/counters`, `nextora/call-to-action`, `nextora/team-section`) |
 | **Text domain** | `nextora` |
 | **PHP prefix** | `nextora_` |
 | **Registration** | Auto via [`blocks/blocks.php`](../../blocks/blocks.php) |
 | **Source of truth** | `block.json`, `index.tsx`, `edit.tsx`, `types.ts`, `item-utils.ts`, `spacing-utils.ts`, `editor-icon.tsx`, `item-modal-form.tsx`, `render.php`, `style.css`, `editor.css`, `view.ts`, `register-editor.php`; reuses [`blocks/advanced-icon/color-utils.ts`](../../blocks/advanced-icon/color-utils.ts) + `lucide.php` |
 | **Build** | `npm run build:blocks` (or `npm run watch`) — do **not** hand-edit `index.js` / `index.asset.php` / `view.js` |
-| **Scaffold** | `npm run gen -- --name=box-content --ns=nextora --category=design` |
+| **Scaffold** | `npm run gen -- --name=box-icon --ns=nextora --category=design` |
 
 Read first: [`AGENTS.md`](../../AGENTS.md), [`docs/blocks.md`](../blocks.md), [`docs/blocks/Theme Icon Block.md`](./Theme%20Icon%20Block.md) (icon colour + Lucide patterns).
 
@@ -80,7 +80,7 @@ Source: `06_alonepro-foodbank-home.html` lines 119–131 (CSS) and 384–398 (HT
 | `--coral` (icon bg, link) | `var(--wp--preset--color--primary)` |
 | `--gold` (hover link) | `var(--wp--preset--color--secondary)` or custom `linkHoverColor` |
 | `--muted` (description) | `color-mix(in srgb, currentColor 55%, transparent)` or `paragraph` preset |
-| `gap: 18px` | `var(--wp--preset--spacing--30)` or `--nextora-box-content-gap` |
+| `gap: 18px` | `var(--wp--preset--spacing--30)` or `--nextora-box-icon-gap` |
 | Eyebrow + rule | Match [`nextora/team-section`](../../blocks/team-section/) eyebrow pattern |
 
 Do **not** hard-code mock hex in committed CSS — use presets + scoped override attributes (§8).
@@ -124,7 +124,7 @@ Implementation: `view.ts` uses `matchMedia(\`(min-width: ${gridMinWidth}px)\`)` 
 ## 5. Architecture
 
 ```
-nextora/box-content                    ← single dynamic block, no InnerBlocks
+nextora/box-icon                    ← single dynamic block, no InnerBlocks
 ├── attributes.items[]                 ← card repeater (icon, title, text, link)
 ├── attributes.layoutMode              ← "slider" | "grid" (default "slider")
 ├── attributes.gridColumns             ← desktop grid columns (1–6)
@@ -159,12 +159,12 @@ nextora/box-content                    ← single dynamic block, no InnerBlocks
 
 | Element | Class | Notes |
 |---------|-------|-------|
-| List / track | `nextora-box-content__track` | Grid container or `swiper-wrapper` |
-| Card | `nextora-box-content__card` | Border, padding, flex column; titles align across row; description `flex: 1` pushes link down |
-| Icon wrap | `nextora-box-content__icon` | Modifiers `--style-default`, `--style-stacked`, `--style-framed` |
-| Title | `nextora-box-content__title` | `<h3>` or configurable heading level per card (default `3`) |
-| Description | `nextora-box-content__description` | `<p>` |
-| Link | `nextora-box-content__link` | `<a href>` with optional `arrow-right` Lucide |
+| List / track | `nextora-box-icon__track` | Grid container or `swiper-wrapper` |
+| Card | `nextora-box-icon__card` | Border, padding, flex column; titles align across row; description `flex: 1` pushes link down |
+| Icon wrap | `nextora-box-icon__icon` | Modifiers `--style-default`, `--style-stacked`, `--style-framed` |
+| Title | `nextora-box-icon__title` | `<h3>` or configurable heading level per card (default `3`) |
+| Description | `nextora-box-icon__description` | `<p>` |
+| Link | `nextora-box-icon__link` | `<a href>` with optional `arrow-right` Lucide |
 
 ### 6.2 Hover (CSS — respect reduced motion)
 
@@ -182,7 +182,7 @@ nextora/box-content                    ← single dynamic block, no InnerBlocks
 - **Link on card hover:** uses `linkHoverColor` when set; empty fallback **`primary`** (not secondary) so link stays visible on dark card.
 - `@media (prefers-reduced-motion: reduce)` disables transitions.
 - **Keyboard:** `:focus-within` on card mirrors hover.
-- Only `.nextora-box-content__link` is navigational (not whole-card link in v1).
+- Only `.nextora-box-icon__link` is navigational (not whole-card link in v1).
 
 ### 6.3 Optional whole-card link
 
@@ -218,7 +218,7 @@ Pass options as **`data-swiper-opts`** JSON on the carousel root ([`blocks/image
 
 **Reduced motion:** disable autoplay; carousel may still init for keyboard/a11y ([`blocks/team-section/view.ts`](../../blocks/team-section/view.ts)).
 
-**Init guards:** `data-nextora-box-content-swiper-inited="1"`, `data-nextora-box-content-swiper-init-pending="1"`, root `nextora-box-content--loading` → `nextora-box-content--ready`.
+**Init guards:** `data-nextora-box-icon-swiper-inited="1"`, `data-nextora-box-icon-swiper-init-pending="1"`, root `nextora-box-icon--loading` → `nextora-box-icon--ready`.
 
 ---
 
@@ -274,8 +274,8 @@ Empty per-item fields inherit global defaults.
 
 | Property | Value |
 |----------|--------|
-| `name` | `nextora/box-content` |
-| `title` | Box Content |
+| `name` | `nextora/box-icon` |
+| `title` | Box Icon |
 | `category` | `design` |
 | `icon` | `grid-view` (or `columns`) |
 | `description` | Icon cards in a slider or grid — responsive viewports always use a carousel. |
@@ -469,36 +469,36 @@ PHP: `data-nextora-scroll-reveal="1"` on section header and/or card track when e
 
 ```html
 <section
-  class="wp-block-nextora-box-content nextora-box-content nextora-box-content--layout-slider nextora-box-content--loading alignwide"
-  style="--nextora-box-content-gap: 18px; --nextora-box-content-card-min-height: 240px; …"
+  class="wp-block-nextora-box-icon nextora-box-icon nextora-box-icon--layout-slider nextora-box-icon--loading alignwide"
+  style="--nextora-box-icon-gap: 18px; --nextora-box-icon-card-min-height: 240px; …"
   data-nextora-scroll-reveal="1"
 >
-  <div class="nextora-box-content__inner">
+  <div class="nextora-box-icon__inner">
     <!-- No section header in v1 -->
 
     <div
-      class="nextora-box-content__carousel-root"
+      class="nextora-box-icon__carousel-root"
       data-swiper-opts='{"slidesPerView":4,"spaceBetween":18,…}'
       data-layout-mode="slider"
       data-grid-min-width="981"
     >
-      <div class="nextora-box-content__swiper swiper">
+      <div class="nextora-box-icon__swiper swiper">
         <div class="swiper-wrapper">
           <div class="swiper-slide">
-            <article class="nextora-box-content__card">
-              <div class="nextora-box-content__icon nextora-box-content__icon--style-stacked" aria-hidden="true">
+            <article class="nextora-box-icon__card">
+              <div class="nextora-box-icon__icon nextora-box-icon__icon--style-stacked" aria-hidden="true">
                 <!-- inline Lucide SVG, stroke currentColor -->
               </div>
-              <h3 class="nextora-box-content__title">Donate</h3>
-              <p class="nextora-box-content__description">…</p>
-              <a class="nextora-box-content__link" href="…">…</a>
+              <h3 class="nextora-box-icon__title">Donate</h3>
+              <p class="nextora-box-icon__description">…</p>
+              <a class="nextora-box-icon__link" href="…">…</a>
             </article>
           </div>
         </div>
       </div>
-      <div class="swiper-pagination nextora-box-content__pagination"></div>
-      <button type="button" class="nextora-box-content__arrow nextora-box-content__arrow--prev" aria-label="…"></button>
-      <button type="button" class="nextora-box-content__arrow nextora-box-content__arrow--next" aria-label="…"></button>
+      <div class="swiper-pagination nextora-box-icon__pagination"></div>
+      <button type="button" class="nextora-box-icon__arrow nextora-box-icon__arrow--prev" aria-label="…"></button>
+      <button type="button" class="nextora-box-icon__arrow nextora-box-icon__arrow--next" aria-label="…"></button>
     </div>
   </div>
 </section>
@@ -518,19 +518,19 @@ PHP: `data-nextora-scroll-reveal="1"` on section header and/or card track when e
 
 | Mock / generic | Nextora |
 |----------------|---------|
-| `involve-grid` | `nextora-box-content__track` / `__carousel` |
-| `inv` | `nextora-box-content__card` |
-| `ic` | `nextora-box-content__icon` |
-| `go` | `nextora-box-content__link` |
-| `sec-head` | `nextora-box-content__header` |
-| `--nextora-box-content-*` | All custom properties prefixed consistently |
+| `involve-grid` | `nextora-box-icon__track` / `__carousel` |
+| `inv` | `nextora-box-icon__card` |
+| `ic` | `nextora-box-icon__icon` |
+| `go` | `nextora-box-icon__link` |
+| `sec-head` | `nextora-box-icon__header` |
+| `--nextora-box-icon-*` | All custom properties prefixed consistently |
 
 Modifiers:
 
-- `nextora-box-content--layout-slider`
-- `nextora-box-content--layout-grid`
-- `nextora-box-content--cols-{n}` (grid desktop)
-- `nextora-box-content--loading` / `--ready`
+- `nextora-box-icon--layout-slider`
+- `nextora-box-icon--layout-grid`
+- `nextora-box-icon--cols-{n}` (grid desktop)
+- `nextora-box-icon--loading` / `--ready`
 
 ---
 
@@ -579,7 +579,7 @@ No separate Content / Carousel / Pagination panels. Section header panel removed
 ## 16. File structure
 
 ```text
-blocks/box-content/
+blocks/box-icon/
 ├── block.json
 ├── index.tsx
 ├── edit.tsx
@@ -639,7 +639,7 @@ Reuses [`blocks/advanced-icon/color-utils.ts`](../../blocks/advanced-icon/color-
 
 ## 20. Acceptance criteria
 
-1. Block registered as **`nextora/box-content`** with **`textdomain` `nextora`**.
+1. Block registered as **`nextora/box-icon`** with **`textdomain` `nextora`**.
 2. Default layout is **slider**; switching to **grid** shows CSS grid on desktop only.
 3. Below **`gridMinWidth`**, layout is **always slider** whether `layoutMode` is `grid` or `slider`.
 4. Each card renders icon (Lucide or upload), title, description, and optional link with arrow.

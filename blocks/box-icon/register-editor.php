@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Editor-only assets for nextora/box-content block.
+ * Editor-only assets for nextora/box-icon block.
  *
  * @package Nextora
  */
@@ -15,8 +15,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Pass lucide-icons.json URL to the block editor script.
  */
-function nextora_box_content_block_editor_assets(): void {
-	$handle = 'nextora-box-content-editor-script';
+function nextora_box_icon_block_editor_assets(): void {
+	$handle = 'nextora-box-icon-editor-script';
 
 	if ( ! wp_script_is( $handle, 'registered' ) ) {
 		return;
@@ -41,4 +41,4 @@ function nextora_box_content_block_editor_assets(): void {
 		'before',
 	);
 }
-add_action( 'enqueue_block_editor_assets', 'nextora_box_content_block_editor_assets', 100 );
+add_action( 'enqueue_block_editor_assets', 'nextora_box_icon_block_editor_assets', 100 );
