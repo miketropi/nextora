@@ -14,7 +14,7 @@
 	box-sizing: border-box;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 400px) {
 	.wp-block-nextora-counters.nextora-counters {
 		grid-template-columns: repeat(var(--nextora-counters-cols-t), minmax(0, 1fr));
 	}
@@ -90,7 +90,7 @@
 	}
 }
 
-@media (max-width: 599px) {
+@media (max-width: 399px) {
 	.nextora-counters--divider .nextora-counters__item {
 		border-inline-end: none;
 		border-block-end: 1px solid
