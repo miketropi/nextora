@@ -443,7 +443,7 @@
 	gap: 0.5rem;
 	margin-top: auto;
 	align-self: flex-start;
-	padding: 0.6875rem 1.375rem;
+	padding: 0.6875rem 1.775rem;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	font-weight: 600;
 	text-decoration: none;
@@ -472,11 +472,11 @@
 	);
 	background: var(
 		--nextora-event-register-hover-bg,
-		var(--wp--preset--color--secondary, #FF5DA2)
+		var(--wp--preset--color--primary, #7C4DEF)
 	);
 	border-color: var(
 		--nextora-event-register-hover-bg,
-		var(--wp--preset--color--secondary, #FF5DA2)
+		var(--wp--preset--color--primary, #7C4DEF)
 	);
 	text-decoration: none;
 }

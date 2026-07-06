@@ -2952,6 +2952,8 @@ footer.wp-block-template-part {
     display: flex;
     align-items: stretch;
     width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
   }
   :where(.mc4wp-form .mc4wp-form-fields p) {
     display: contents;
@@ -3026,6 +3028,7 @@ footer.wp-block-template-part {
     overflow: visible;
     white-space: nowrap;
     text-transform: capitalize;
+    border: none;
   }
   .mc4wp-form .mc4wp-form-fields input[type="submit"]:hover {
     background-color: var(--nextora-form-subscribe-accent-hover);
