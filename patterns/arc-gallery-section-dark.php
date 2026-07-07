@@ -1,7 +1,7 @@
 <?php
 /**
- * Title: Arc Gallery Section Dark Strip
- * Slug: nextora/arc-gallery-section-dark-strip
+ * Title: Arc Gallery Nonprofit Section Dark Strip
+ * Slug: nextora/arc-gallery-nonprofit-section-dark-strip
  * Categories: gallery, featured
  * Keywords: arc, gallery, images, cta, section, nextora, dark-strip
  * Description: A creative section with images arranged along a curved arc, plus eyebrow text, heading, and CTA buttons in a dark strip.
