@@ -63,6 +63,10 @@
 	line-height: 0;
 }
 
+.wp-block-nextora-advanced-icon.nextora-advanced-icon--bg-auto.nextora-advanced-icon--style-stacked .nextora-advanced-icon__surface {
+	background: color-mix(in srgb, var(--nextora-advanced-icon-auto-bg) 20%, transparent);
+}
+
 /* Framed — bordered container */
 .wp-block-nextora-advanced-icon.nextora-advanced-icon--style-framed .nextora-advanced-icon__surface {
 	display: inline-flex;

@@ -115,11 +115,19 @@ if ( $has_surface ) {
 	$inline_styles[] = sprintf( '--nextora-advanced-icon-radius:%dpx;', $border_radius );
 }
 
-if ( 'stacked' === $icon_style && '' !== $background_color ) {
-	$inline_styles[] = sprintf(
-		'--nextora-advanced-icon-bg:%s;',
-		esc_attr( nextora_icon_resolve_color( $background_color ) ),
-	);
+if ( 'stacked' === $icon_style ) {
+	if ( '' !== $background_color ) {
+		$inline_styles[] = sprintf(
+			'--nextora-advanced-icon-bg:%s;',
+			esc_attr( nextora_icon_resolve_color( $background_color ) ),
+		);
+	} elseif ( '' !== $icon_color ) {
+		$wrapper_classes[] = 'nextora-advanced-icon--bg-auto';
+		$inline_styles[]  = sprintf(
+			'--nextora-advanced-icon-auto-bg:%s;',
+			esc_attr( nextora_icon_resolve_color( $icon_color ) ),
+		);
+	}
 }
 
 if ( 'framed' === $icon_style && '' !== $border_color ) {
