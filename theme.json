@@ -309,6 +309,61 @@
 							]
 						}
 					]
+				},
+				{
+					"slug": "noto-serif-display",
+					"name": "Noto Serif Display",
+					"fontFamily": "\"Noto Serif Display\", serif",
+					"fontFace": [
+						{
+							"fontFamily": "Noto Serif Display",
+							"fontWeight": "300",
+							"fontStyle": "normal",
+							"src": [
+								"file:./assets/fonts/noto-serif-display/noto-serif-display-v29-latin_vietnamese-300.woff2"
+							]
+						},
+						{
+							"fontFamily": "Noto Serif Display",
+							"fontWeight": "400",
+							"fontStyle": "normal",
+							"src": [
+								"file:./assets/fonts/noto-serif-display/noto-serif-display-v29-latin_vietnamese-regular.woff2"
+							]
+						},
+						{
+							"fontFamily": "Noto Serif Display",
+							"fontWeight": "400",
+							"fontStyle": "italic",
+							"src": [
+								"file:./assets/fonts/noto-serif-display/noto-serif-display-v29-latin_vietnamese-italic.woff2"
+							]
+						},
+						{
+							"fontFamily": "Noto Serif Display",
+							"fontWeight": "500",
+							"fontStyle": "normal",
+							"src": [
+								"file:./assets/fonts/noto-serif-display/noto-serif-display-v29-latin_vietnamese-500.woff2"
+							]
+						},
+						{
+							"fontFamily": "Noto Serif Display",
+							"fontWeight": "600",
+							"fontStyle": "normal",
+							"src": [
+								"file:./assets/fonts/noto-serif-display/noto-serif-display-v29-latin_vietnamese-600.woff2"
+							]
+						},
+						{
+							"fontFamily": "Noto Serif Display",
+							"fontWeight": "700",
+							"fontStyle": "normal",
+							"src": [
+								"file:./assets/fonts/noto-serif-display/noto-serif-display-v29-latin_vietnamese-700.woff2"
+							]
+						}
+					]
 				}
 			],
 			"fontSizes": [
