@@ -202,6 +202,7 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
     iconBackgroundColor = 'primary',
     iconBorderColor = 'primary',
     iconTextGap = 14,
+    itemGap = 16,
     enableScrollAnimation = true,
   } = attributes;
 
@@ -251,6 +252,7 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
       '--nextora-list-icon-size': `${iconSize}px`,
       '--nextora-list-icon-circle-size': `${iconCircleSize}px`,
       '--nextora-list-icon-text-gap': `${iconTextGap}px`,
+      '--nextora-list-item-gap': `${itemGap}px`,
       '--nextora-list-border-radius': `${borderRadius}%`,
       '--nextora-list-stroke-width': strokeWidth,
     } as React.CSSProperties,
@@ -351,6 +353,13 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
             onChange={(value) => setAttributes({ iconTextGap: value || 14 })}
             min={4}
             max={40}
+          />
+          <RangeControl
+            label={__('Gap between items', 'nextora')}
+            value={itemGap}
+            onChange={(value) => setAttributes({ itemGap: value || 16 })}
+            min={4}
+            max={60}
           />
         </PanelBody>
 
