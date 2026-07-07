@@ -341,7 +341,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 						step={1}
 					/>
 					<RangeControl
-						label={__('Columns — medium (600px+)', 'nextora')}
+						label={__('Columns — medium (400px+)', 'nextora')}
 						value={colsTablet}
 						onChange={(value) =>
 							setAttributes({

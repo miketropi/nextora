@@ -3,15 +3,15 @@ import { useEffect, useState } from '@wordpress/element';
 import { LucideSvgPreview } from '../advanced-icon/lucide-preview';
 import type { LucideIconNode } from '../advanced-icon/types';
 import { loadIconCatalog, storedColorToCss } from './icon-catalog';
-import type { BoxContentIconSource, BoxContentIconStyle } from './types';
+import type { BoxIconIconSource, BoxIconIconStyle } from './types';
 
 export interface EditorIconProps {
-	iconSource?: BoxContentIconSource;
+	iconSource?: BoxIconIconSource;
 	iconName: string;
 	uploadedIconUrl?: string;
 	iconSize: number;
 	strokeWidth: number;
-	iconStyle: BoxContentIconStyle;
+	iconStyle: BoxIconIconStyle;
 	iconCircleSize: number;
 	iconCircleRadius: number;
 	iconColor?: string;
@@ -32,7 +32,7 @@ function cssVarIfSet(
 	return resolved || undefined;
 }
 
-export default function BoxContentEditorIcon({
+export default function BoxIconEditorIcon({
 	iconSource = 'theme',
 	iconName,
 	uploadedIconUrl = '',
@@ -75,7 +75,7 @@ export default function BoxContentEditorIcon({
 
 	const iconColorVar = cssVarIfSet(iconColor, lookupPalette);
 	if (iconColorVar) {
-		iconStyleVars['--nextora-box-content-icon-color'] = iconColorVar;
+		iconStyleVars['--nextora-box-icon-icon-color'] = iconColorVar;
 	}
 
 	if (iconStyle === 'stacked' || iconStyle === 'framed') {
@@ -83,13 +83,13 @@ export default function BoxContentEditorIcon({
 
 		const surfaceBgVar = cssVarIfSet(iconSurfaceBackgroundColor, lookupPalette);
 		if (surfaceBgVar) {
-			iconStyleVars['--nextora-box-content-icon-surface-bg'] = surfaceBgVar;
+			iconStyleVars['--nextora-box-icon-icon-surface-bg'] = surfaceBgVar;
 		}
 
 		if (iconStyle === 'framed') {
 			const surfaceBorderVar = cssVarIfSet(iconSurfaceBorderColor, lookupPalette);
 			if (surfaceBorderVar) {
-				iconStyleVars['--nextora-box-content-icon-surface-border'] = surfaceBorderVar;
+				iconStyleVars['--nextora-box-icon-icon-surface-border'] = surfaceBorderVar;
 			}
 		}
 	}
@@ -99,7 +99,7 @@ export default function BoxContentEditorIcon({
 			<img
 				src={uploadedIconUrl}
 				alt=""
-				className="nextora-box-content__icon-img"
+				className="nextora-box-icon__icon-img"
 				width={iconSize}
 				height={iconSize}
 			/>
@@ -111,13 +111,13 @@ export default function BoxContentEditorIcon({
 				strokeWidth={strokeWidth}
 			/>
 		) : (
-			<span className="nextora-box-content__icon-fallback" aria-hidden="true" />
+			<span className="nextora-box-icon__icon-fallback" aria-hidden="true" />
 		);
 
 	if (iconStyle === 'default') {
 		return (
 			<div
-				className="nextora-box-content__icon nextora-box-content__icon--style-default"
+				className="nextora-box-icon__icon nextora-box-icon__icon--style-default"
 				aria-hidden="true"
 				style={iconStyleVars as CSSProperties}
 			>
@@ -128,7 +128,7 @@ export default function BoxContentEditorIcon({
 
 	return (
 		<div
-			className={`nextora-box-content__icon nextora-box-content__icon--style-${iconStyle}`}
+			className={`nextora-box-icon__icon nextora-box-icon__icon--style-${iconStyle}`}
 			aria-hidden="true"
 			style={iconStyleVars as CSSProperties}
 		>

@@ -1,5 +1,19 @@
 import type { TestimonialItem, TrustAvatar } from './types';
 
+function resolveColorValue(raw: string): string {
+	const trimmed = raw.trim();
+	if (trimmed === '') {
+		return '';
+	}
+	if (/^#[0-9a-fA-F]{3,8}$/.test(trimmed)) {
+		return trimmed;
+	}
+	if (/^[a-z0-9-]+$/.test(trimmed)) {
+		return `var(--wp--preset--color--${trimmed})`;
+	}
+	return '';
+}
+
 export function createTestimonialId(): string {
 	if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
 		return crypto.randomUUID();
@@ -96,22 +110,22 @@ export function buildSectionStyleVars(attrs: {
 		'--nextora-testimonial-avatar-border': `${attrs.trustAvatarBorderWidth ?? 2.5}px`,
 	};
 
-	if (attrs.backgroundColor) vars['--nextora-testimonial-bg'] = attrs.backgroundColor;
-	if (attrs.topIconColor) vars['--nextora-testimonial-icon-color'] = attrs.topIconColor;
-	if (attrs.paginationColor) vars['--nextora-testimonial-dot-color'] = attrs.paginationColor;
+	if (attrs.backgroundColor) vars['--nextora-testimonial-bg'] = resolveColorValue(attrs.backgroundColor);
+	if (attrs.topIconColor) vars['--nextora-testimonial-icon-color'] = resolveColorValue(attrs.topIconColor);
+	if (attrs.paginationColor) vars['--nextora-testimonial-dot-color'] = resolveColorValue(attrs.paginationColor);
 	if (attrs.paginationActiveColor) {
-		vars['--nextora-testimonial-dot-active'] = attrs.paginationActiveColor;
+		vars['--nextora-testimonial-dot-active'] = resolveColorValue(attrs.paginationActiveColor);
 	}
-	if (attrs.arrowColor) vars['--nextora-testimonial-arrow-color'] = attrs.arrowColor;
-	if (attrs.arrowBorderColor) vars['--nextora-testimonial-arrow-border'] = attrs.arrowBorderColor;
-	if (attrs.quoteColor) vars['--nextora-testimonial-quote-color'] = attrs.quoteColor;
-	if (attrs.labelColor) vars['--nextora-testimonial-label-color'] = attrs.labelColor;
-	if (attrs.authorColor) vars['--nextora-testimonial-author-color'] = attrs.authorColor;
-	if (attrs.authorNameColor) vars['--nextora-testimonial-author-name-color'] = attrs.authorNameColor;
-	if (attrs.trustColor) vars['--nextora-testimonial-trust-color'] = attrs.trustColor;
-	if (attrs.starColor) vars['--nextora-testimonial-star-color'] = attrs.starColor;
+	if (attrs.arrowColor) vars['--nextora-testimonial-arrow-color'] = resolveColorValue(attrs.arrowColor);
+	if (attrs.arrowBorderColor) vars['--nextora-testimonial-arrow-border'] = resolveColorValue(attrs.arrowBorderColor);
+	if (attrs.quoteColor) vars['--nextora-testimonial-quote-color'] = resolveColorValue(attrs.quoteColor);
+	if (attrs.labelColor) vars['--nextora-testimonial-label-color'] = resolveColorValue(attrs.labelColor);
+	if (attrs.authorColor) vars['--nextora-testimonial-author-color'] = resolveColorValue(attrs.authorColor);
+	if (attrs.authorNameColor) vars['--nextora-testimonial-author-name-color'] = resolveColorValue(attrs.authorNameColor);
+	if (attrs.trustColor) vars['--nextora-testimonial-trust-color'] = resolveColorValue(attrs.trustColor);
+	if (attrs.starColor) vars['--nextora-testimonial-star-color'] = resolveColorValue(attrs.starColor);
 	if (attrs.trustAvatarBorderColor) {
-		vars['--nextora-testimonial-avatar-border-color'] = attrs.trustAvatarBorderColor;
+		vars['--nextora-testimonial-avatar-border-color'] = resolveColorValue(attrs.trustAvatarBorderColor);
 	}
 
 	return vars;
