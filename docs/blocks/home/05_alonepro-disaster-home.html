@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frontline — Disaster Relief & Emergency Response · AlonePro Demo</title>
+<meta name="description" content="Frontline — a disaster relief & emergency response theme demo. Part of AlonePro by Beplus.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#121316;--surface:#1a1c20;--surface-2:#24272d;--coral:#FF3B30;--gold:#FF7A00;--green:#3AD17A;
+    --paper:#F4F5F7;--text:#E7E9ED;--muted:#9098A4;--line:rgba(255,255,255,.1);--maxw:1280px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--ink);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}a{text-decoration:none;color:inherit}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}ul{list-style:none}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:4px}
+  h1,h2,h3{font-family:'Archivo',sans-serif;font-weight:800;line-height:.98;letter-spacing:-.02em}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,40px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:500;color:var(--gold)}
+  .eyebrow::before{content:"";width:8px;height:8px;background:var(--gold)}
+  .lucide-wrap [data-lucide]{width:1em;height:1em;stroke-width:2}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14px;border-radius:4px;padding:14px 26px;transition:.18s;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em;font-family:'Archivo',sans-serif}
+  .btn svg{width:18px;height:18px}
+  .btn-coral{background:var(--coral);color:#fff}.btn-coral:hover{background:#e0271d;transform:translateY(-2px)}
+  .btn-gold{background:var(--gold);color:#1a1305}.btn-gold:hover{background:#ff8c1f;transform:translateY(-2px)}
+  .btn-ghost{border:1.5px solid var(--line);color:var(--text)}.btn-ghost:hover{border-color:var(--text)}
+  .section{padding:clamp(60px,7vw,100px) 0}
+  .sec-head{max-width:680px;margin:0 0 clamp(34px,4vw,50px)}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-head h2{font-size:clamp(34px,4.8vw,60px);margin:14px 0 12px;font-weight:900;text-transform:uppercase}
+  .sec-head p{color:var(--muted);font-size:16px}
+  .skip{position:absolute;left:-9999px;top:8px;background:var(--coral);color:#fff;padding:10px 16px;border-radius:6px;z-index:500}.skip:focus{left:12px}
+  .badge{display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:3px}
+  .badge i{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .b-crit{background:rgba(255,59,48,.16);color:#ff6a61}.b-crit i{background:var(--coral)}
+  .b-active{background:rgba(255,122,0,.16);color:var(--gold)}.b-active i{background:var(--gold)}
+  .b-stable{background:rgba(58,209,122,.16);color:var(--green)}.b-stable i{background:var(--green)}
+
+  /* status bar */
+  .statusbar{background:#000;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px}
+  .statusbar .wrap{display:flex;align-items:center;justify-content:space-between;height:40px;gap:16px;color:var(--muted)}
+  .statusbar .live{display:flex;align-items:center;gap:8px;color:var(--green)}.statusbar .live i{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block}
+  .statusbar .mid{display:flex;gap:22px}.statusbar .mid span b{color:var(--text)}
+  .statusbar .soc{display:flex;gap:14px}.statusbar .soc a:hover{color:var(--gold)}.statusbar .soc svg{width:14px;height:14px}
+  @media(max-width:820px){.statusbar .mid{display:none}}
+  @media(max-width:480px){.statusbar .soc{display:none}}
+
+  /* header */
+  .site-header{position:sticky;top:0;z-index:200;background:rgba(18,19,22,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .dnav{display:flex;align-items:center;justify-content:space-between;gap:24px;height:72px}
+  .logo{font-family:'Archivo',sans-serif;font-weight:900;font-size:25px;letter-spacing:-.01em;text-transform:uppercase;display:flex;align-items:center;gap:9px}
+  .logo .sig{width:11px;height:11px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 4px rgba(255,59,48,.25)}
+  .dmenu{display:flex;gap:28px;font-size:14px;font-weight:600}.dmenu a:hover{color:var(--gold)}
+  .dright{display:flex;align-items:center;gap:14px}
+  .nav-toggle{display:none;width:44px;height:44px;align-items:center;justify-content:center;color:var(--text)}.nav-toggle svg{width:26px;height:26px}
+  .nav-drawer{position:fixed;inset:0 0 0 auto;width:min(320px,82vw);background:var(--surface);padding:96px 32px;display:flex;flex-direction:column;gap:6px;transform:translateX(100%);transition:.3s;z-index:330}
+  .nav-drawer.open{transform:translateX(0)}.nav-drawer a{font-size:18px;padding:13px 0;border-bottom:1px solid var(--line);font-weight:600}
+  .nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:.3s;z-index:320}.nav-backdrop.show{opacity:1;pointer-events:auto}
+  @media(min-width:1041px){.nav-drawer,.nav-backdrop{display:none}}
+  @media(max-width:1040px){.dmenu{display:none}.nav-toggle{display:flex}}
+  @media(max-width:520px){.dright .btn span{display:none}.dright .btn{padding:13px 16px}}
+
+  /* hero split + situation board */
+  .dhero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .dhero-bg{position:absolute;inset:0;z-index:0}.dhero-bg img{width:100%;height:100%;object-fit:cover;opacity:.18}
+  .dhero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--ink) 30%,rgba(18,19,22,.6))}
+  .dhero .wrap{position:relative;z-index:2;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(36px,5vw,64px);align-items:center;padding:clamp(50px,7vw,90px) clamp(20px,5vw,40px)}
+  .dhero h1{font-size:clamp(46px,6.6vw,94px);font-weight:900;text-transform:uppercase}
+  .dhero h1 .or{color:var(--gold)}
+  .dhero p.lead{margin:24px 0 30px;font-size:clamp(16px,1.4vw,19px);color:var(--muted);max-width:46ch}
+  .dhero-cta{display:flex;gap:14px;flex-wrap:wrap}
+  .board{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .board-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .board-head .live{display:flex;align-items:center;gap:8px;color:var(--green)}.board-head .live i{width:8px;height:8px;border-radius:50%;background:var(--green)}
+  .op-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .op-row:last-child{border-bottom:none}
+  .op-row .loc{font-family:'Archivo',sans-serif;font-weight:700;font-size:16px}
+  .op-row .meta{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);margin-top:3px}
+  @media(max-width:900px){.dhero .wrap{grid-template-columns:1fr}}
+
+  /* response strip */
+  .rstrip{background:var(--coral);color:#fff}
+  .rstrip .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .rstat{padding:30px 24px;border-left:1px solid rgba(255,255,255,.22)}
+  .rstat:first-child{border-left:none;padding-left:0}
+  .rstat b{font-family:'Archivo',sans-serif;font-weight:900;font-size:clamp(34px,4vw,52px);display:block;line-height:1}
+  .rstat span{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.04em;text-transform:uppercase;opacity:.9;margin-top:8px;display:block}
+  @media(max-width:760px){.rstrip .wrap{grid-template-columns:1fr 1fr;gap:24px;padding:32px 0}.rstat{border-left:none;padding:0 clamp(20px,5vw,40px)}}
+
+  /* protocol timeline */
+  .proto{background:var(--ink)}
+  .ptl{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+  .ptl::before{content:"";position:absolute;top:21px;left:0;right:0;height:2px;background:var(--line)}
+  .pphase{padding-right:28px;position:relative}
+  .pphase .dot{width:44px;height:44px;border-radius:50%;background:var(--surface);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;position:relative;z-index:2;margin-bottom:20px}
+  .pphase .dot svg{width:20px;height:20px;color:var(--gold)}
+  .pphase .t{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold);font-weight:700}
+  .pphase h3{font-size:21px;font-weight:800;margin:6px 0 8px;text-transform:uppercase}
+  .pphase p{font-size:14px;color:var(--muted)}
+  @media(max-width:760px){.ptl{grid-template-columns:1fr;gap:26px}.ptl::before{top:0;bottom:0;left:21px;right:auto;width:2px;height:auto}.pphase{padding-left:60px;padding-right:0}.pphase .dot{position:absolute;left:0;top:0;margin:0}}
+
+  /* operations cards */
+  .ops{background:var(--surface)}
+  .ops-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .opc{background:var(--ink);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+  .opc:hover{border-color:var(--gold);transform:translateY(-5px)}
+  .opc .ph{aspect-ratio:16/10;position:relative;overflow:hidden}.opc .ph img{width:100%;height:100%;object-fit:cover}
+  .opc .ph .badge{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.7)}
+  .opc .body{padding:22px;display:flex;flex-direction:column;flex:1}
+  .opc .coord{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+  .opc h3{font-size:23px;font-weight:800;margin:4px 0 10px;text-transform:uppercase}
+  .opc p{font-size:14px;color:var(--muted);margin-bottom:18px}
+  .opc .prog{margin-top:auto}
+  .opc .prog .lbl{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);margin-bottom:7px}
+  .opc .prog .bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+  .opc .prog .bar i{display:block;height:100%;background:var(--gold)}
+  @media(max-width:900px){.ops-grid{grid-template-columns:1fr;max-width:460px;margin:0 auto}}
+
+  /* dispatch */
+  .disp{background:var(--ink)}
+  .disp .wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(36px,5vw,60px);align-items:center}
+  .disp-media{border-radius:8px;overflow:hidden;aspect-ratio:4/5;border:1px solid var(--line)}.disp-media img{width:100%;height:100%;object-fit:cover}
+  .disp .tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+  .disp blockquote{font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(24px,3vw,38px);line-height:1.18;margin:16px 0 26px}
+  .disp blockquote em{font-style:normal;color:var(--gold)}
+  .disp .who{display:flex;align-items:center;gap:14px}.disp .who .l{width:46px;height:2px;background:var(--coral)}
+  .disp .who b{font-weight:700}.disp .who span{color:var(--muted);font-size:13.5px;display:block;font-family:'JetBrains Mono',monospace}
+  @media(max-width:880px){.disp .wrap{grid-template-columns:1fr}.disp-media{max-width:340px}}
+
+  /* mobilize */
+  .mob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .mob{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:32px 28px;display:flex;flex-direction:column;min-height:280px;transition:.2s}
+  .mob:hover{border-color:var(--coral);transform:translateY(-5px)}
+  .mob .ic{width:54px;height:54px;border-radius:8px;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:auto}.mob .ic svg{width:26px;height:26px}
+  .mob h3{font-size:25px;font-weight:800;margin:20px 0 8px;text-transform:uppercase}
+  .mob p{font-size:14px;color:var(--muted);margin-bottom:20px}
+  .mob .btn{align-self:flex-start}
+  @media(max-width:880px){.mob-grid{grid-template-columns:1fr;max-width:440px;margin:0 auto}}
+
+  /* footer */
+  .ftcta{background:var(--coral);color:#fff}
+  .ftcta .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding:clamp(34px,4vw,52px) clamp(20px,5vw,40px)}
+  .ftcta h2{font-size:clamp(26px,3.4vw,42px);font-weight:900;text-transform:uppercase;max-width:18ch}
+  .footer{background:#0c0d0f;color:var(--muted);padding-top:clamp(56px,7vw,84px)}
+  .footer .top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:36px;padding-bottom:42px;border-bottom:1px solid var(--line)}
+  .footer .logo{color:var(--text);margin-bottom:16px}
+  .footer p.about{font-size:14px;max-width:34ch;margin-bottom:20px}
+  .footer-social{display:flex;gap:12px}
+  .footer-social a{width:40px;height:40px;border-radius:6px;background:rgba(255,255,255,.06);color:#fff;display:flex;align-items:center;justify-content:center;transition:.2s}.footer-social a:hover{background:var(--coral)}.footer-social svg{width:17px;height:17px}
+  .footer h5{color:var(--text);font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:16px}
+  .footer-links{display:grid;gap:11px;font-size:14px}.footer-links a:hover{color:var(--gold)}
+  .footer-bottom{padding:24px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;font-family:'JetBrains Mono',monospace}.footer-bottom a:hover{color:var(--gold)}
+  @media(max-width:880px){.footer .top{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.footer .top{grid-template-columns:1fr}}
+
+  /* appeals / campaigns (GiftPro) */
+  .camps{background:var(--ink)}
+  .camp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .camp{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+  .camp:hover{border-color:var(--coral);transform:translateY(-5px)}
+  .camp .ph{aspect-ratio:16/10;position:relative;overflow:hidden}.camp .ph img{width:100%;height:100%;object-fit:cover}
+  .camp .ph .pill{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.72);color:var(--coral);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:3px}
+  .camp .body{padding:22px;display:flex;flex-direction:column;flex:1}
+  .camp h3{font-size:22px;font-weight:800;text-transform:uppercase;margin-bottom:8px}
+  .camp p{font-size:14px;color:var(--muted);margin-bottom:18px}
+  .camp .meter{margin-top:auto}
+  .camp .lbl{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted);margin-bottom:7px}.camp .lbl b{color:var(--coral)}
+  .camp .bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}.camp .bar i{display:block;height:100%;background:var(--coral)}
+  .camp .donate{margin-top:16px}
+  @media(max-width:900px){.camp-grid{grid-template-columns:1fr;max-width:440px;margin:0 auto}}
+
+  /* events */
+  .events{background:var(--surface)}
+  .ev-list{display:flex;flex-direction:column;gap:12px}
+  .ev{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(16px,3vw,32px);align-items:center;background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:20px 24px;transition:.2s}
+  .ev:hover{border-color:var(--gold)}
+  .ev .date{text-align:center;min-width:64px;border-right:1px solid var(--line);padding-right:clamp(16px,3vw,28px)}
+  .ev .date .d{font-family:'Archivo',sans-serif;font-weight:900;font-size:34px;line-height:.9;color:var(--gold)}
+  .ev .date .m{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .ev .info h3{font-size:20px;font-weight:800;text-transform:uppercase;margin-bottom:6px}
+  .ev .info .meta{display:flex;gap:18px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}.ev .info .meta span{display:inline-flex;align-items:center;gap:7px}.ev .info .meta svg{width:14px;height:14px;color:var(--gold)}
+  .ev .cta .btn{white-space:nowrap}
+  @media(max-width:680px){.ev{grid-template-columns:auto 1fr}.ev .date{border-right:none}.ev .cta{grid-column:1/3}.ev .cta .btn{width:100%;justify-content:center}}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body class="lucide-wrap">
+<a href="#main" class="skip">Skip to content</a>
+<svg width="0" height="0" style="position:absolute;left:-9999px" aria-hidden="true" focusable="false">
+  <symbol id="si-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></symbol>
+  <symbol id="si-ig" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0Zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227a3.81 3.81 0 0 1-.899 1.382 3.744 3.744 0 0 1-1.38.896c-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421a3.716 3.716 0 0 1-1.379-.899 3.644 3.644 0 0 1-.9-1.38c-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03Zm0 3.678a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324ZM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7.846-10.405a1.44 1.44 0 0 1-2.88 0 1.44 1.44 0 0 1 2.88 0Z"/></symbol>
+  <symbol id="si-x" viewBox="0 0 24 24"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></symbol>
+  <symbol id="si-yt" viewBox="0 0 24 24"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/></symbol>
+  <symbol id="si-li" viewBox="0 0 24 24"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></symbol>
+  <symbol id="si-tt" viewBox="0 0 24 24"><path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></symbol>
+</svg>
+<!--
+  AlonePro · Template: Disaster Relief ("Frontline") · CREATIVE restructure · STATIC
+  dark operational · red/orange · Archivo + JetBrains Mono · social SVG sprite
+  Theme: situation-report / ops dashboard (static — ticker & rotating card now static panels).
+  Structure: status bar · header · hero split (headline + static situation board) ·
+  response strip (mono stats) · response protocol timeline (0/6/24/72h) ·
+  active operations cards (badges + static progress) · field dispatch · mobilize 3 tiles · footer CTA band + cols.
+  Dropped/merged: rotating card→static board, ticker→static, events, news, team.
+-->
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <div class="wrap">
+    <span class="live"><i></i> SYSTEM: ACTIVE</span>
+    <div class="mid"><span>DEPLOYMENTS: <b>3</b></span><span>TEAMS DEPLOYED: <b>48</b></span><span>RESPONSE TIME: <b>&lt;72H</b></span></div>
+    <div class="soc">
+      <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-x"/></svg></a>
+      <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-fb"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-ig"/></svg></a>
+      <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-yt"/></svg></a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-header" id="header">
+  <div class="wrap">
+    <nav class="dnav" aria-label="Primary">
+      <a href="#" class="logo"><span class="sig"></span>FRONTLINE</a>
+      <ul class="dmenu">
+        <li><a href="#protocol">Protocol</a></li>
+        <li><a href="#ops">Operations</a></li>
+        <li><a href="#campaigns">Appeals</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#mobilize">Mobilize</a></li>
+      </ul>
+      <div class="dright">
+        <a href="#mobilize" class="btn btn-coral"><i data-lucide="zap"></i><span>Donate now</span></a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu"><i data-lucide="menu"></i></button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="nav-backdrop" id="navBackdrop"></div>
+<ul class="nav-drawer" id="navDrawer">
+  <li><a href="#protocol">Protocol</a></li><li><a href="#ops">Operations</a></li><li><a href="#campaigns">Appeals</a></li><li><a href="#events">Events</a></li><li><a href="#mobilize">Mobilize</a></li>
+</ul>
+
+<main id="main">
+<!-- HERO -->
+<section class="dhero">
+  <div class="dhero-bg"><img src="https://drive.google.com/thumbnail?id=13vtbtexlxxAtb4evQnSjplMYwbPLxRJe&sz=w1920" alt=""></div>
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Emergency response · 24/7</span>
+      <h1>When disaster strikes, we're <span class="or">already moving.</span></h1>
+      <p class="lead">Frontline gets trained response teams, water, shelter and medical aid into the hardest-hit places within 72 hours — and stays until communities can stand on their own.</p>
+      <div class="dhero-cta">
+        <a href="#mobilize" class="btn btn-coral"><i data-lucide="zap"></i> Fund the response</a>
+        <a href="#protocol" class="btn btn-ghost"><i data-lucide="route"></i> How we respond</a>
+      </div>
+    </div>
+    <div class="board" aria-label="Active deployments">
+      <div class="board-head"><span>ACTIVE DEPLOYMENTS</span><span class="live"><i></i> LIVE</span></div>
+      <div class="op-row"><div><div class="loc">Coastal flooding — Region East</div><div class="meta">LAT 14.5°N · 72h in · 12 teams</div></div><span class="badge b-crit"><i></i> Critical</span></div>
+      <div class="op-row"><div><div class="loc">Earthquake — Northern District</div><div class="meta">LAT 38.2°N · 9d in · 21 teams</div></div><span class="badge b-active"><i></i> Active</span></div>
+      <div class="op-row"><div><div class="loc">Drought relief — Inland</div><div class="meta">LAT 2.1°S · 6w in · 15 teams</div></div><span class="badge b-stable"><i></i> Stabilizing</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- RESPONSE STRIP -->
+<section class="rstrip">
+  <div class="wrap">
+    <div class="rstat"><b>72h</b><span>Average time to ground</span></div>
+    <div class="rstat"><b>2.4M</b><span>People reached in 2025</span></div>
+    <div class="rstat"><b>48</b><span>Teams currently deployed</span></div>
+    <div class="rstat"><b>31</b><span>Countries responded in</span></div>
+  </div>
+</section>
+
+<!-- PROTOCOL TIMELINE -->
+<section class="section proto" id="protocol">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow">Response protocol</span><h2>The first 72 hours decide everything.</h2></div>
+    <div class="ptl">
+      <div class="pphase"><div class="dot"><i data-lucide="siren"></i></div><div class="t">T + 0H</div><h3>Alert</h3><p>Within minutes of an event, our ops centre verifies need and puts the nearest teams on standby.</p></div>
+      <div class="pphase"><div class="dot"><i data-lucide="plane"></i></div><div class="t">T + 6H</div><h3>Deploy</h3><p>Pre-positioned kits and first responders move toward the impact zone by air, road or boat.</p></div>
+      <div class="pphase"><div class="dot"><i data-lucide="tent"></i></div><div class="t">T + 24H</div><h3>Relieve</h3><p>Clean water, emergency shelter and medical care reach survivors on the ground.</p></div>
+      <div class="pphase"><div class="dot"><i data-lucide="hammer"></i></div><div class="t">T + 72H</div><h3>Recover</h3><p>We shift from rescue to rebuilding — and stay until the community can carry on.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ACTIVE OPERATIONS -->
+<section class="section ops" id="ops">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow">Active operations</span><h2>Where your support is working right now.</h2></div>
+    <div class="ops-grid">
+      <article class="opc">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1ekG2x1GwL8R4ZvJ0nd16QglXJg8hPwb_&sz=w600" alt=""><span class="badge b-crit"><i></i> Critical</span></div>
+        <div class="body"><div class="coord">OP-2026-014 · LAT 14.5°N</div><h3>Coastal Floods</h3><p>Evacuation, clean water and shelter for 40,000 displaced families across the eastern delta.</p>
+          <div class="prog"><div class="lbl"><span>Funded</span><span>62%</span></div><div class="bar"><i style="width:62%"></i></div></div></div>
+      </article>
+      <article class="opc">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1nhMkhTpxFxBHiA7d6pSO6RCwgZfrL8nE&sz=w600" alt=""><span class="badge b-active"><i></i> Active</span></div>
+        <div class="body"><div class="coord">OP-2026-009 · LAT 38.2°N</div><h3>Earthquake Relief</h3><p>Search-and-rescue, field clinics and 21 medical teams operating in the northern district.</p>
+          <div class="prog"><div class="lbl"><span>Funded</span><span>78%</span></div><div class="bar"><i style="width:78%"></i></div></div></div>
+      </article>
+      <article class="opc">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1tyBF1eKXAakU53n-PrToHWCCKZvMT2Yx&sz=w600" alt=""><span class="badge b-stable"><i></i> Stabilizing</span></div>
+        <div class="body"><div class="coord">OP-2025-221 · LAT 2.1°S</div><h3>Drought Response</h3><p>Water trucking, food security and long-term rebuilding for inland farming communities.</p>
+          <div class="prog"><div class="lbl"><span>Funded</span><span>91%</span></div><div class="bar"><i style="width:91%"></i></div></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- APPEALS / CAMPAIGNS (GiftPro) -->
+<section class="section camps" id="campaigns">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow">Emergency appeals</span><h2>Fund the response, by appeal.</h2></div>
+    <div class="camp-grid">
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1ekG2x1GwL8R4ZvJ0nd16QglXJg8hPwb_&sz=w600" alt=""><span class="pill">// APPEAL-014</span></div>
+        <div class="body"><h3>Coastal Floods Appeal</h3><p>Clean water, shelter and medical aid for 40,000 displaced families in the eastern delta.</p>
+          <div class="meter"><div class="lbl"><span>Raised</span><b>$620K / $1M</b></div><div class="bar"><i style="width:62%"></i></div><a href="#" class="btn btn-coral donate"><i data-lucide="zap"></i> Donate</a></div></div>
+      </article>
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1nhMkhTpxFxBHiA7d6pSO6RCwgZfrL8nE&sz=w600" alt=""><span class="pill">// APPEAL-009</span></div>
+        <div class="body"><h3>Earthquake Medical Fund</h3><p>Field clinics and 21 medical teams operating in the northern district right now.</p>
+          <div class="meter"><div class="lbl"><span>Raised</span><b>$390K / $500K</b></div><div class="bar"><i style="width:78%"></i></div><a href="#" class="btn btn-coral donate"><i data-lucide="zap"></i> Donate</a></div></div>
+      </article>
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1tyBF1eKXAakU53n-PrToHWCCKZvMT2Yx&sz=w600" alt=""><span class="pill">// FUND-RR</span></div>
+        <div class="body"><h3>Rapid Response Reserve</h3><p>Unrestricted funding so teams move within minutes — before any disaster-specific appeal exists.</p>
+          <div class="meter"><div class="lbl"><span>Raised</span><b>$910K / $1M</b></div><div class="bar"><i style="width:91%"></i></div><a href="#" class="btn btn-coral donate"><i data-lucide="zap"></i> Donate</a></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section class="section events" id="events">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow">Briefings &amp; training</span><h2>Get trained. Get ready.</h2></div>
+    <div class="ev-list">
+      <div class="ev">
+        <div class="date"><div class="d">16</div><div class="m">Jul</div></div>
+        <div class="info"><h3>First Responder Training</h3><div class="meta"><span><i data-lucide="map-pin"></i> Ops HQ</span><span><i data-lucide="clock"></i> 09:00–17:00</span><span><i data-lucide="users"></i> 30 places</span></div></div>
+        <div class="cta"><a href="#" class="btn btn-gold"><i data-lucide="calendar-plus"></i> Register</a></div>
+      </div>
+      <div class="ev">
+        <div class="date"><div class="d">28</div><div class="m">Jul</div></div>
+        <div class="info"><h3>Donor Situation Briefing</h3><div class="meta"><span><i data-lucide="video"></i> Online</span><span><i data-lucide="clock"></i> 18:00–19:00</span><span><i data-lucide="signal"></i> Live</span></div></div>
+        <div class="cta"><a href="#" class="btn btn-ghost"><i data-lucide="calendar-plus"></i> Register</a></div>
+      </div>
+      <div class="ev">
+        <div class="date"><div class="d">10</div><div class="m">Aug</div></div>
+        <div class="info"><h3>Deployment Readiness Drill</h3><div class="meta"><span><i data-lucide="map-pin"></i> Field Camp North</span><span><i data-lucide="clock"></i> Full day</span><span><i data-lucide="users"></i> Roster only</span></div></div>
+        <div class="cta"><a href="#" class="btn btn-ghost"><i data-lucide="calendar-plus"></i> Register</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISPATCH -->
+<section class="section disp" id="dispatch">
+  <div class="wrap">
+    <div class="disp-media"><img src="https://drive.google.com/thumbnail?id=1l_Wi47HqXurDdE2lauXi570hECwVAPLZ&sz=w800" alt="A survivor helped by Frontline"></div>
+    <div>
+      <div class="tag">// FIELD DISPATCH</div>
+      <blockquote>The water came up in the night. By the next afternoon Frontline had us in a dry shelter with food and a medic. <em>They reached us before anyone else did.</em></blockquote>
+      <div class="who"><span class="l"></span><div><b>Amara T.</b><span>SURVIVOR · COASTAL FLOODS, 2025</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MOBILIZE -->
+<section class="section" id="mobilize">
+  <div class="wrap">
+    <div class="sec-head center"><span class="eyebrow" style="justify-content:center">Mobilize</span><h2>Be ready before the next call.</h2></div>
+    <div class="mob-grid">
+      <div class="mob"><div class="ic"><i data-lucide="zap"></i></div><h3>Rapid fund</h3><p>Give to the emergency fund so teams move the moment disaster strikes — no delay for fundraising.</p><a href="#" class="btn btn-coral"><i data-lucide="heart"></i> Donate</a></div>
+      <div class="mob"><div class="ic"><i data-lucide="users"></i></div><h3>Join the roster</h3><p>Medics, logisticians and engineers — train with us and deploy when your skills are needed.</p><a href="#" class="btn btn-ghost"><i data-lucide="arrow-right"></i> Apply</a></div>
+      <div class="mob"><div class="ic"><i data-lucide="building-2"></i></div><h3>Partner with us</h3><p>Companies and agencies: pre-position supplies and funding so response is faster everywhere.</p><a href="#" class="btn btn-ghost"><i data-lucide="arrow-right"></i> Partner</a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER CTA BAND -->
+<section class="ftcta">
+  <div class="wrap">
+    <h2>A disaster is happening somewhere right now.</h2>
+    <a href="#mobilize" class="btn btn-gold"><i data-lucide="zap"></i> Fund the response</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <a href="#" class="logo"><span class="sig"></span>FRONTLINE</a>
+        <p class="about">An emergency response charity getting trained teams and aid to disaster zones within 72 hours — and staying for the recovery.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-x"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-fb"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-ig"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-yt"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-li"/></svg></a>
+        </div>
+      </div>
+      <div><h5>Respond</h5><div class="footer-links"><a href="#protocol">Protocol</a><a href="#ops">Operations</a><a href="#dispatch">Dispatch</a><a href="#mobilize">Donate</a></div></div>
+      <div><h5>Get involved</h5><div class="footer-links"><a href="#">Volunteer roster</a><a href="#">Corporate partners</a><a href="#">Fundraise</a><a href="#">Careers</a></div></div>
+      <div><h5>About</h5><div class="footer-links"><a href="#">Our mission</a><a href="#">Financials</a><a href="#">Reports</a><a href="#">Contact</a></div></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 FRONTLINE RELIEF · A DEMO BY BEPLUS · ALONEPRO</span><span style="display:flex;gap:18px;flex-wrap:wrap"><a href="#">PRIVACY</a><a href="#">TERMS</a></span></div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  if(window.lucide) lucide.createIcons();
+  const drawer=document.getElementById('navDrawer'),backdrop=document.getElementById('navBackdrop');
+  const close=()=>{drawer.classList.remove('open');backdrop.classList.remove('show');};
+  document.getElementById('navToggle').addEventListener('click',()=>{drawer.classList.add('open');backdrop.classList.add('show');});
+  backdrop.addEventListener('click',close);
+  drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+</script>
+</body>
+</html>

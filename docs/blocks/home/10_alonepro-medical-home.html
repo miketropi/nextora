@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medikale — Medical Aid & Community Health · AlonePro Demo</title>
+<meta name="description" content="Medikale — a medical & healthcare theme demo. Part of AlonePro by Beplus.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0C2244;--navy-2:#0a1c38;--navy-3:#14294c;--teal:#21B8C9;--teal-d:#1aa3b3;--blue:#2E6FB0;
+    --ink:#13294B;--bg:#F1F5F8;--paper:#fff;--muted:#67768C;--line:rgba(19,41,75,.11);--line-d:rgba(255,255,255,.13);--maxw:1200px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}a{text-decoration:none;color:inherit}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}ul{list-style:none}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--teal);outline-offset:3px;border-radius:6px}
+  h1,h2,h3,h4{font-family:'Poppins',sans-serif;font-weight:600;line-height:1.18;letter-spacing:-.01em}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(18px,5vw,36px)}
+  .lucide-wrap [data-lucide]{width:1em;height:1em;stroke-width:2}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+  .eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(33,184,201,.18)}
+  .eyebrow.c{justify-content:center}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;border-radius:50px;padding:14px 28px;transition:.18s;white-space:nowrap}
+  .btn svg{width:18px;height:18px}
+  .btn-teal{background:var(--teal);color:#fff}.btn-teal:hover{background:var(--teal-d);transform:translateY(-2px)}
+  .btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{background:var(--navy-2);transform:translateY(-2px)}
+  .btn-white{background:#fff;color:var(--navy)}.btn-white:hover{transform:translateY(-2px)}
+  .btn-ghost{border:1.5px solid var(--line);color:var(--ink)}.btn-ghost:hover{border-color:var(--navy)}
+  .btn-ghost-w{border:1.5px solid rgba(255,255,255,.4);color:#fff}.btn-ghost-w:hover{border-color:#fff;background:rgba(255,255,255,.08)}
+  .section{padding:clamp(56px,7vw,100px) 0}
+  .bg-soft{background:var(--bg)}
+  .sec-head{max-width:680px;margin:0 0 clamp(34px,4vw,50px)}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-head h2{font-size:clamp(30px,4vw,46px);margin:14px 0 12px}
+  .sec-head h2 em{font-style:normal;color:var(--teal)}
+  .sec-head p{color:var(--muted);font-size:16.5px}
+  .on-dark .sec-head h2{color:#fff}.on-dark .sec-head p{color:rgba(255,255,255,.72)}
+  .skip{position:absolute;left:-9999px;top:8px;background:var(--navy);color:#fff;padding:10px 16px;border-radius:8px;z-index:600}.skip:focus{left:12px}
+  .ecg{display:block;width:100%;height:auto;color:var(--teal)}
+
+  /* topbar */
+  .ptop{background:var(--navy-2);color:rgba(255,255,255,.8);font-size:13px}
+  .ptop .wrap{display:flex;justify-content:space-between;align-items:center;height:44px;gap:16px}
+  .ptop .l{display:flex;gap:22px}.ptop .l span{display:inline-flex;align-items:center;gap:8px}.ptop .l svg{width:15px;height:15px;color:var(--teal)}
+  .ptop .soc{display:flex;gap:14px}.ptop .soc a:hover{color:var(--teal)}.ptop .soc svg{width:15px;height:15px}
+  @media(max-width:720px){.ptop .l span:nth-child(2){display:none}}
+  @media(max-width:480px){.ptop .soc{display:none}}
+
+  /* header */
+  .site-header{position:sticky;top:0;z-index:300;background:var(--navy);border-bottom:1px solid var(--line-d)}
+  .pnav{display:flex;align-items:center;justify-content:space-between;gap:24px;height:74px}
+  .logo{font-family:'Poppins',sans-serif;font-weight:700;font-size:24px;display:flex;align-items:center;gap:10px;color:#fff}
+  .logo .mk{width:38px;height:38px;border-radius:11px;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center}.logo .mk svg{width:21px;height:21px}
+  .pmenu{display:flex;gap:26px;font-family:'Poppins',sans-serif;font-size:15px;font-weight:500}.pmenu a{color:rgba(255,255,255,.84)}.pmenu a:hover{color:var(--teal)}
+  .pright{display:flex;align-items:center;gap:14px}
+  .nav-toggle{display:none;width:44px;height:44px;align-items:center;justify-content:center;color:#fff}.nav-toggle svg{width:26px;height:26px}
+  .nav-drawer{position:fixed;inset:0 0 0 auto;width:min(320px,84vw);background:var(--navy-2);color:#fff;padding:92px 30px;display:flex;flex-direction:column;gap:4px;transform:translateX(100%);transition:.3s;z-index:330}
+  .nav-drawer.open{transform:translateX(0)}.nav-drawer a{font-family:'Poppins',sans-serif;font-size:18px;font-weight:500;padding:13px 0;border-bottom:1px solid var(--line-d);color:#fff}
+  .nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.3s;z-index:320}.nav-backdrop.show{opacity:1;pointer-events:auto}
+  @media(min-width:1041px){.nav-drawer,.nav-backdrop{display:none}}
+  @media(max-width:1040px){.pmenu{display:none}.nav-toggle{display:flex}}
+  @media(max-width:520px){.pright .btn span{display:none}.pright .btn{padding:13px 16px}}
+
+  /* hero */
+  .hero{position:relative;background:var(--navy);color:#fff;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;z-index:0}.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.28}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,var(--navy) 32%,rgba(12,34,68,.7) 60%,rgba(12,34,68,.4))}
+  .hero .wrap{position:relative;z-index:2;display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center;padding-top:clamp(50px,7vw,92px);padding-bottom:clamp(90px,11vw,150px)}
+  .hero h1{font-size:clamp(38px,5.4vw,68px);font-weight:700;letter-spacing:-.02em}
+  .hero h1 em{font-style:normal;color:var(--teal)}
+  .hero .lead{margin:22px 0 30px;font-size:clamp(16px,1.3vw,18px);color:rgba(255,255,255,.78);max-width:48ch}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-card{background:rgba(255,255,255,.08);border:1px solid var(--line-d);border-radius:20px;padding:14px;backdrop-filter:blur(6px);max-width:300px;justify-self:end}
+  .hero-card img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:14px}
+  .hero-card .t{display:flex;align-items:center;gap:12px;padding:14px 6px 4px}
+  .hero-card .ic{width:40px;height:40px;border-radius:11px;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}.hero-card .ic svg{width:20px;height:20px}
+  .hero-card b{font-family:'Poppins',sans-serif;font-size:16px;display:block}.hero-card span{font-size:12.5px;color:rgba(255,255,255,.65)}
+  @media(max-width:880px){.hero .wrap{grid-template-columns:1fr}.hero-card{justify-self:start}}
+
+  /* info strip (overlaps hero) */
+  .info-strip{position:relative;z-index:3;margin-top:clamp(-70px,-7vw,-90px)}
+  .info-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:0;border-radius:20px;overflow:hidden;box-shadow:0 40px 80px -40px rgba(12,34,68,.5)}
+  .icard{padding:30px 28px}
+  .icard h3{font-family:'Poppins',sans-serif;font-size:20px;display:flex;align-items:center;gap:11px;margin-bottom:14px}
+  .icard h3 .ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.icard h3 .ic svg{width:21px;height:21px}
+  .icard.teal{background:var(--teal);color:#fff}.icard.teal .ic{background:rgba(255,255,255,.2)}
+  .icard.teal p{color:rgba(255,255,255,.9);font-size:14px;margin-bottom:16px}
+  .icard.navy{background:var(--navy);color:#fff}.icard.navy .ic{background:rgba(255,255,255,.1);color:var(--teal)}
+  .icard.navy2{background:var(--navy-3);color:#fff}.icard.navy2 .ic{background:rgba(255,255,255,.1);color:var(--teal)}
+  .icard .rows{display:grid;gap:9px;font-size:13.5px;color:rgba(255,255,255,.8)}
+  .icard .rows div{display:flex;justify-content:space-between;gap:12px}.icard .rows b{color:#fff;font-weight:600}
+  .icard .loc{font-size:14px;color:rgba(255,255,255,.8);display:grid;gap:10px}.icard .loc span{display:flex;gap:10px;align-items:flex-start}.icard .loc svg{width:16px;height:16px;color:var(--teal);flex-shrink:0;margin-top:3px}
+  @media(max-width:880px){.info-grid{grid-template-columns:1fr}}
+
+  /* about */
+  .about .wrap{display:grid;grid-template-columns:.95fr 1.05fr;gap:clamp(34px,5vw,64px);align-items:center}
+  .about-media{position:relative}
+  .about-media .a{border-radius:24px;overflow:hidden;aspect-ratio:5/5}.about-media .a img{width:100%;height:100%;object-fit:cover}
+  .about-media .b{position:absolute;right:-14px;bottom:-14px;width:46%;border-radius:18px;overflow:hidden;border:6px solid #fff;aspect-ratio:1}.about-media .b img{width:100%;height:100%;object-fit:cover}
+  .about-media .pulse{position:absolute;left:-10px;top:24px;width:90px;color:var(--teal);opacity:.8}
+  .about h2{font-size:clamp(28px,3.6vw,44px);margin:14px 0 16px}
+  .about h2 em{font-style:normal;color:var(--teal)}
+  .about p{color:var(--muted);font-size:16px;margin-bottom:22px}
+  .about-mini{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:26px}
+  .mini{background:var(--bg);border-radius:16px;padding:20px}
+  .mini .ic{width:44px;height:44px;border-radius:12px;background:#fff;color:var(--teal);display:flex;align-items:center;justify-content:center;margin-bottom:12px}.mini .ic svg{width:22px;height:22px}
+  .mini h4{font-family:'Poppins',sans-serif;font-size:17px;margin-bottom:5px}.mini p{font-size:13.5px;margin:0}
+  @media(max-width:860px){.about .wrap{grid-template-columns:1fr}.about-media{max-width:460px}}
+
+  /* services */
+  .svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  .svc{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:.2s;position:relative}
+  .svc:hover{transform:translateY(-6px);box-shadow:0 34px 60px -40px rgba(12,34,68,.4);border-color:transparent}
+  .svc .ph{aspect-ratio:16/11;overflow:hidden;position:relative}.svc .ph img{width:100%;height:100%;object-fit:cover}
+  .svc .no{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px}
+  .svc .body{padding:22px;display:flex;flex-direction:column;flex:1}
+  .svc h3{font-size:18.5px;margin-bottom:12px}
+  .svc ul{display:grid;gap:9px;margin-bottom:16px}
+  .svc li{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--muted)}.svc li svg{width:16px;height:16px;color:var(--teal);flex-shrink:0;margin-top:3px}
+  .svc .more{margin-top:auto;font-family:'Poppins',sans-serif;font-weight:600;font-size:13.5px;color:var(--navy);display:inline-flex;align-items:center;gap:7px}.svc .more svg{width:15px;height:15px;color:var(--teal)}
+  @media(max-width:980px){.svc-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.svc-grid{grid-template-columns:1fr}}
+
+  /* why choose */
+  .why .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(36px,5vw,64px);align-items:center}
+  .why-media{position:relative;border-radius:50% 50% 24px 24px/40% 40% 24px 24px;overflow:hidden;aspect-ratio:4/5}
+  .why-media img{width:100%;height:100%;object-fit:cover}
+  .why-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .feat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px 22px;transition:.2s}
+  .feat:hover{border-color:var(--teal);transform:translateY(-4px)}
+  .feat .ic{width:50px;height:50px;border-radius:13px;background:var(--navy);color:var(--teal);display:flex;align-items:center;justify-content:center;margin-bottom:16px}.feat .ic svg{width:24px;height:24px}
+  .feat h3{font-size:18px;margin-bottom:8px}
+  .feat ul{display:grid;gap:7px;margin-top:10px}
+  .feat li{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}.feat li svg{width:14px;height:14px;color:var(--teal);flex-shrink:0}
+  @media(max-width:860px){.why .wrap{grid-template-columns:1fr}.why-media{max-width:420px;margin:0 auto}}
+  @media(max-width:430px){.why-grid{grid-template-columns:1fr}}
+
+  /* campaigns (GiftPro) */
+  .camp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .camp{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+  .camp:hover{transform:translateY(-6px);box-shadow:0 34px 60px -40px rgba(12,34,68,.4)}
+  .camp .ph{aspect-ratio:16/10;position:relative;overflow:hidden}.camp .ph img{width:100%;height:100%;object-fit:cover}
+  .camp .ph .pill{position:absolute;top:14px;left:14px;background:var(--teal);color:#fff;font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:600;padding:6px 13px;border-radius:30px}
+  .camp .body{padding:24px;display:flex;flex-direction:column;flex:1}
+  .camp h3{font-size:20px;margin-bottom:8px}
+  .camp p{font-size:14px;color:var(--muted);margin-bottom:18px}
+  .camp .meter{margin-top:auto}
+  .camp .bar{height:9px;border-radius:30px;background:var(--bg);overflow:hidden}.camp .bar i{display:block;height:100%;border-radius:30px;background:linear-gradient(90deg,var(--teal),var(--blue))}
+  .camp .nums{display:flex;justify-content:space-between;align-items:baseline;margin-top:11px;font-size:13.5px}.camp .nums .r{font-family:'Poppins',sans-serif;font-weight:600;font-size:17px;color:var(--teal)}.camp .nums .g{color:var(--muted)}
+  .camp .donate{margin-top:18px;align-self:flex-start}
+  @media(max-width:880px){.camp-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
+
+  /* video band */
+  .videoband{position:relative;color:#fff;text-align:center;overflow:hidden}
+  .videoband-bg{position:absolute;inset:0;z-index:0}.videoband-bg img{width:100%;height:100%;object-fit:cover}
+  .videoband-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,34,68,.86),rgba(12,34,68,.9))}
+  .videoband .wrap{position:relative;z-index:2}
+  .play-btn{width:78px;height:78px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:0 0 0 12px rgba(33,184,201,.18)}.play-btn svg{width:30px;height:30px;margin-left:3px}
+  .videoband h2{font-size:clamp(28px,3.8vw,46px);color:#fff;max-width:20ch;margin:0 auto 14px}
+  .videoband p{color:rgba(255,255,255,.78);max-width:46ch;margin:0 auto}
+
+  /* doctors */
+  .doc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  .doc{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;text-align:center;transition:.2s}
+  .doc:hover{transform:translateY(-6px);box-shadow:0 34px 60px -40px rgba(12,34,68,.4)}
+  .doc .ph{aspect-ratio:1;overflow:hidden;background:var(--bg)}.doc .ph img{width:100%;height:100%;object-fit:cover}
+  .doc .body{padding:20px}
+  .doc h3{font-size:18px}
+  .doc span{color:var(--teal);font-weight:600;font-size:13.5px}
+  .doc .soc{display:flex;justify-content:center;gap:10px;margin-top:12px}
+  .doc .soc a{width:32px;height:32px;border-radius:50%;background:var(--bg);color:var(--navy);display:flex;align-items:center;justify-content:center;transition:.2s}.doc .soc a:hover{background:var(--teal);color:#fff}.doc .soc svg{width:15px;height:15px}
+  @media(max-width:860px){.doc-grid{grid-template-columns:1fr 1fr}}
+
+  /* success stories (dark) */
+  .stories{background:var(--navy);color:#fff;position:relative;overflow:hidden}
+  .stories .pulse{position:absolute;left:0;right:0;bottom:30px;opacity:.18;z-index:0}
+  .stories .wrap{position:relative;z-index:2}
+  .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .story{background:var(--navy-3);border:1px solid var(--line-d);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+  .story:hover{transform:translateY(-5px);border-color:var(--teal)}
+  .story .ph{aspect-ratio:16/9;overflow:hidden}.story .ph img{width:100%;height:100%;object-fit:cover}
+  .story .body{padding:24px}
+  .story h3{font-size:21px;color:#fff;margin-bottom:12px}
+  .story .tags{display:flex;gap:9px;flex-wrap:wrap}
+  .story .tags span{font-size:12px;font-weight:600;color:var(--teal);background:rgba(33,184,201,.14);padding:6px 12px;border-radius:30px}
+  @media(max-width:760px){.story-grid{grid-template-columns:1fr}}
+
+  /* testimonials */
+  .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .tcard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px;display:flex;flex-direction:column}
+  .tcard .stars{color:#FFC24B;font-size:16px;letter-spacing:2px;margin-bottom:12px}
+  .tcard p{font-size:15px;margin-bottom:22px;flex:1}
+  .tcard .auth{display:flex;align-items:center;gap:13px}
+  .tcard .auth img{width:50px;height:50px;border-radius:50%;object-fit:cover}
+  .tcard .auth b{font-family:'Poppins',sans-serif;font-size:15.5px;display:block}.tcard .auth span{font-size:13px;color:var(--muted)}
+  @media(max-width:860px){.testi-grid{grid-template-columns:1fr;max-width:460px;margin:0 auto}}
+
+  /* faq (dark) */
+  .faq{background:var(--navy);color:#fff}
+  .faq .wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(36px,5vw,60px);align-items:center}
+  .faq-media{border-radius:50% 50% 24px 24px/40% 40% 24px 24px;overflow:hidden;aspect-ratio:4/5}.faq-media img{width:100%;height:100%;object-fit:cover}
+  .faq-list{display:grid;gap:14px}
+  details.qa{background:var(--navy-3);border:1px solid var(--line-d);border-radius:14px;overflow:hidden}
+  details.qa[open]{border-color:var(--teal)}
+  details.qa summary{list-style:none;cursor:pointer;padding:18px 22px;font-family:'Poppins',sans-serif;font-weight:500;font-size:16px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+  details.qa summary::-webkit-details-marker{display:none}
+  details.qa summary .pm{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.1);color:var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s}.details summary .pm svg{width:17px;height:17px}
+  details.qa[open] summary .pm{background:var(--teal);color:#fff;transform:rotate(45deg)}
+  details.qa summary .pm svg{width:17px;height:17px}
+  details.qa .a{padding:0 22px 20px;color:rgba(255,255,255,.74);font-size:14.5px}
+  @media(max-width:860px){.faq .wrap{grid-template-columns:1fr}.faq-media{max-width:380px;margin:0 auto}}
+
+  /* events */
+  .ev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .ev{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#fff;display:flex;flex-direction:column;transition:.2s}
+  .ev:hover{transform:translateY(-6px);box-shadow:0 34px 60px -40px rgba(12,34,68,.4)}
+  .ev .ph{position:relative;aspect-ratio:16/10;overflow:hidden}.ev .ph img{width:100%;height:100%;object-fit:cover}
+  .ev .badge{position:absolute;top:14px;left:14px;background:var(--navy);color:#fff;border-radius:14px;padding:9px 13px;text-align:center;line-height:1}
+  .ev .badge .d{font-family:'Poppins',sans-serif;font-weight:700;font-size:22px;display:block}.ev .badge .m{font-size:11px;text-transform:uppercase;color:var(--teal);font-weight:600}
+  .ev .body{padding:22px;display:flex;flex-direction:column;flex:1}
+  .ev h3{font-size:19px;margin-bottom:12px}
+  .ev .meta{display:grid;gap:8px;font-size:13.5px;color:var(--muted);margin-bottom:18px}.ev .meta span{display:inline-flex;align-items:center;gap:8px}.ev .meta svg{width:15px;height:15px;color:var(--teal)}
+  .ev .btn{margin-top:auto;align-self:flex-start}
+  @media(max-width:860px){.ev-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
+
+  /* blog */
+  .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .post{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+  .post:hover{transform:translateY(-6px);box-shadow:0 34px 60px -40px rgba(12,34,68,.4)}
+  .post .ph{aspect-ratio:16/10;overflow:hidden}.post .ph img{width:100%;height:100%;object-fit:cover}
+  .post .body{padding:24px;display:flex;flex-direction:column;flex:1}
+  .post .meta{display:flex;gap:14px;font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:10px}.post .meta span{display:inline-flex;align-items:center;gap:6px}.post .meta svg{width:14px;height:14px;color:var(--teal)}
+  .post h3{font-size:18.5px;line-height:1.3;margin-bottom:14px}
+  .post .more{margin-top:auto;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;color:var(--navy);display:inline-flex;align-items:center;gap:7px}.post .more svg{width:15px;height:15px;color:var(--teal)}
+  @media(max-width:860px){.blog-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
+
+  /* appointment */
+  .appt .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(34px,5vw,56px);align-items:center}
+  .appt-media{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/5}.appt-media img{width:100%;height:100%;object-fit:cover}
+  .appt-form{background:#fff;border:1px solid var(--line);border-radius:24px;padding:clamp(26px,3vw,40px);box-shadow:0 34px 70px -44px rgba(12,34,68,.4)}
+  .appt-form h2{font-size:clamp(24px,3vw,36px);margin:12px 0 8px}
+  .appt-form h2 em{font-style:normal;color:var(--teal)}
+  .appt-form p{color:var(--muted);font-size:15px;margin-bottom:22px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .form-grid .full{grid-column:1/3}
+  .form-grid label{font-size:13px;font-weight:600;display:block;margin-bottom:6px}
+  .form-grid input,.form-grid select,.form-grid textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-family:inherit;font-size:14.5px;color:var(--ink)}
+  .form-grid textarea{resize:vertical;min-height:90px}
+  .appt-form .btn{margin-top:18px;width:100%;justify-content:center}
+  @media(max-width:860px){.appt .wrap{grid-template-columns:1fr}.appt-media{max-width:420px;order:-1}}
+  @media(max-width:480px){.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:1}}
+
+  /* footer */
+  .footer{position:relative;background:var(--navy-2);color:rgba(255,255,255,.72);overflow:hidden;padding-top:clamp(54px,6vw,80px)}
+  .footer::before{content:"";position:absolute;top:-120px;right:-120px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(33,184,201,.18),transparent 70%);z-index:0}
+  .footer .pulse{position:absolute;left:0;right:0;bottom:64px;opacity:.16;z-index:0;color:var(--teal)}
+  .footer .wrap{position:relative;z-index:2}
+  .footer .top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:32px;padding-bottom:40px;border-bottom:1px solid var(--line-d)}
+  .footer .logo{margin-bottom:16px}
+  .footer p.about{font-size:14.5px;max-width:30ch;margin-bottom:18px}
+  .footer .contact{display:grid;gap:8px;font-size:14.5px;margin-bottom:18px}.footer .contact b{color:#fff;font-weight:600;font-family:'Poppins',sans-serif}
+  .footer-social{display:flex;gap:10px}
+  .footer-social a{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.07);color:#fff;display:flex;align-items:center;justify-content:center;transition:.2s}.footer-social a:hover{background:var(--teal)}.footer-social svg{width:16px;height:16px}
+  .footer h5{color:#fff;font-family:'Poppins',sans-serif;font-weight:600;font-size:16px;margin-bottom:16px}
+  .footer-links{display:grid;gap:11px;font-size:14.5px}.footer-links a:hover{color:var(--teal)}
+  .foot-news{grid-column:span 1}
+  .foot-news .nf{display:flex;background:rgba(255,255,255,.07);border:1px solid var(--line-d);border-radius:50px;padding:5px 5px 5px 18px;margin-top:8px}
+  .foot-news input{flex:1;background:none;border:none;color:#fff;font-family:inherit;font-size:14px}.foot-news input::placeholder{color:rgba(255,255,255,.55)}
+  .foot-news button{width:42px;height:42px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}.foot-news button svg{width:18px;height:18px}
+  .footer-bottom{padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13.5px}.footer-bottom a:hover{color:var(--teal)}
+  @media(max-width:880px){.footer .top{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.footer .top{grid-template-columns:1fr}}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body class="lucide-wrap">
+<a href="#main" class="skip">Skip to content</a>
+<svg width="0" height="0" style="position:absolute;left:-9999px" aria-hidden="true" focusable="false">
+  <symbol id="si-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></symbol>
+  <symbol id="si-ig" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0Zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227a3.81 3.81 0 0 1-.899 1.382 3.744 3.744 0 0 1-1.38.896c-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421a3.716 3.716 0 0 1-1.379-.899 3.644 3.644 0 0 1-.9-1.38c-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03Zm0 3.678a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324ZM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7.846-10.405a1.44 1.44 0 0 1-2.88 0 1.44 1.44 0 0 1 2.88 0Z"/></symbol>
+  <symbol id="si-x" viewBox="0 0 24 24"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></symbol>
+  <symbol id="si-yt" viewBox="0 0 24 24"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/></symbol>
+  <symbol id="si-li" viewBox="0 0 24 24"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></symbol>
+</svg>
+<!--
+  AlonePro · Template: Medical / Health ("Medikale" restyle) · STATIC
+  navy + teal · Poppins + Inter · heartbeat motif · social SVG sprite
+  Layout (per Medikale ref): topbar · header(navy) · hero(dark + inset card) · info-strip(3 overlap cards) ·
+  about · services(4) · why-choose(2x2) · CAMPAIGNS(GiftPro) · video band · doctors(4) ·
+  success stories(navy) · testimonials · FAQ accordion(navy) · EVENTS · blog · appointment form · navy footer.
+  Events + Campaigns kept. Fully static: 0 GSAP, 0 keyframes (FAQ uses native <details>).
+-->
+
+<!-- TOPBAR -->
+<div class="ptop">
+  <div class="wrap">
+    <div class="l">
+      <span><i data-lucide="phone-call"></i> +1 (555) 123-456</span>
+      <span><i data-lucide="clock"></i> Mon–Sat 8:00–20:00</span>
+      <span><i data-lucide="map-pin"></i> 123 Health Ave</span>
+    </div>
+    <div class="soc">
+      <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-fb"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-ig"/></svg></a>
+      <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-li"/></svg></a>
+      <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-yt"/></svg></a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-header" id="header">
+  <div class="wrap">
+    <nav class="pnav" aria-label="Primary">
+      <a href="#" class="logo"><span class="mk"><i data-lucide="plus"></i></span>Medikale</a>
+      <ul class="pmenu">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#doctors">Doctors</a></li>
+        <li><a href="#campaigns">Campaigns</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#blog">News</a></li>
+      </ul>
+      <div class="pright">
+        <a href="#campaigns" class="btn btn-teal"><i data-lucide="heart"></i><span>Donate</span></a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu"><i data-lucide="menu"></i></button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="nav-backdrop" id="navBackdrop"></div>
+<ul class="nav-drawer" id="navDrawer">
+  <li><a href="#services">Services</a></li><li><a href="#doctors">Doctors</a></li><li><a href="#campaigns">Campaigns</a></li><li><a href="#events">Events</a></li><li><a href="#blog">News</a></li><li><a href="#campaigns">Donate</a></li><li><a href="#appointment">Reserve a free visit</a></li>
+</ul>
+
+<main id="main">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"><img src="https://drive.google.com/thumbnail?id=1bBxWQXvMy82D5TD3eUqZCODSWfvnc2eI&sz=w1600" alt=""></div>
+  <div class="wrap">
+    <div>
+      <span class="eyebrow" style="color:var(--teal)">Trusted healthcare for everyone</span>
+      <h1>Advanced medical expertise <em>you can trust.</em></h1>
+      <p class="lead">Medikale brings compassionate doctors, modern equipment and 24/7 care to the people who need it most — free clinics, mobile units and patient support, close to home.</p>
+      <div class="hero-cta">
+        <a href="#campaigns" class="btn btn-teal"><i data-lucide="heart"></i> Donate now</a>
+        <a href="#appointment" class="btn btn-ghost-w"><i data-lucide="calendar-plus"></i> Reserve a free visit</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img src="https://drive.google.com/thumbnail?id=1wfYwzPsOdihOx0mkmcBOJZIh5k621OZu&sz=w600" alt="Neuroscience & stroke care">
+      <div class="t"><span class="ic"><i data-lucide="brain"></i></span><div><b>Neuroscience &amp; Stroke Care</b><span>Specialist 24/7 response</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- INFO STRIP -->
+<section class="info-strip">
+  <div class="wrap">
+    <div class="info-grid">
+      <div class="icard teal">
+        <h3><span class="ic"><i data-lucide="calendar-check"></i></span> Free consultation</h3>
+        <p>Reserve a visit at a free clinic near you — no insurance, no cost, no paperwork barrier.</p>
+        <a href="#appointment" class="btn btn-white"><i data-lucide="arrow-right"></i> Reserve a slot</a>
+      </div>
+      <div class="icard navy">
+        <h3><span class="ic"><i data-lucide="map-pin"></i></span> Our location</h3>
+        <div class="loc">
+          <span><i data-lucide="building-2"></i> 123 Health Avenue, Riverside</span>
+          <span><i data-lucide="phone"></i> +1 (555) 123-456</span>
+          <span><i data-lucide="mail"></i> care@medikale.org</span>
+        </div>
+      </div>
+      <div class="icard navy2">
+        <h3><span class="ic"><i data-lucide="clock"></i></span> Opening hours</h3>
+        <div class="rows">
+          <div><span>Mon – Fri</span><b>8:00 – 20:00</b></div>
+          <div><span>Saturday</span><b>9:00 – 17:00</b></div>
+          <div><span>Sunday</span><b>Emergency only</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section about" id="about">
+  <div class="wrap">
+    <div class="about-media">
+      <svg class="pulse" viewBox="0 0 200 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M0 20 H50 l8 -15 l10 30 l8 -34 l7 24 l6 -5 H200"/></svg>
+      <div class="a"><img src="https://drive.google.com/thumbnail?id=1xVHFK6ojGNw9YiaF-xMQ8TywjDL1WrA3&sz=w800" alt="Care team with a patient"></div>
+      <div class="b"><img src="https://drive.google.com/thumbnail?id=1c4uiPno0u_Rk8J8Izi7x77jxkKn91wE0&sz=w400" alt=""></div>
+    </div>
+    <div>
+      <span class="eyebrow">About Medikale</span>
+      <h2>Inspiring health, <em>delivering care.</em></h2>
+      <p>For over fifteen years we've brought quality healthcare to communities the system leaves behind — treating the whole person, with dignity, and never sending a bill.</p>
+      <div class="about-mini">
+        <div class="mini"><div class="ic"><i data-lucide="heart-handshake"></i></div><h4>Reliable support</h4><p>One care team, with you from first visit to full recovery.</p></div>
+        <div class="mini"><div class="ic"><i data-lucide="stethoscope"></i></div><h4>Experienced doctors</h4><p>1,200+ clinicians and volunteers who genuinely care.</p></div>
+      </div>
+      <a href="#appointment" class="btn btn-navy"><i data-lucide="arrow-right"></i> Reserve a free visit</a>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section bg-soft" id="services">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow c">Services we provide</span>
+      <h2>Delivering quality <em>healthcare.</em></h2>
+    </div>
+    <div class="svc-grid">
+      <article class="svc">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1qJij6Yy5dvF9sUG9mOVS3mNkFOnHw0qE&sz=w500" alt=""><span class="no">01</span></div>
+        <div class="body"><h3>Diagnostic &amp; Laboratory</h3><ul><li><i data-lucide="check"></i> Screenings &amp; blood tests</li><li><i data-lucide="check"></i> Imaging &amp; diagnostics</li><li><i data-lucide="check"></i> Same-day results</li></ul><a href="#" class="more">Read more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="svc">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1tkmVa08GhbnS9YvBNEAU9G0UXCKuDy6A&sz=w500" alt=""><span class="no">02</span></div>
+        <div class="body"><h3>Inpatient &amp; Acute Care</h3><ul><li><i data-lucide="check"></i> 24/7 monitoring</li><li><i data-lucide="check"></i> Specialist nursing</li><li><i data-lucide="check"></i> Recovery support</li></ul><a href="#" class="more">Read more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="svc">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1iePpAschitelcETNYWQjDIhcJugugxAO&sz=w500" alt=""><span class="no">03</span></div>
+        <div class="body"><h3>Compassionate Expert Care</h3><ul><li><i data-lucide="check"></i> Mental health support</li><li><i data-lucide="check"></i> Family &amp; child care</li><li><i data-lucide="check"></i> Follow-up at home</li></ul><a href="#" class="more">Read more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="svc">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1xVHFK6ojGNw9YiaF-xMQ8TywjDL1WrA3&sz=w500" alt=""><span class="no">04</span></div>
+        <div class="body"><h3>Advanced Surgical Care</h3><ul><li><i data-lucide="check"></i> Modern operating suites</li><li><i data-lucide="check"></i> Specialist surgeons</li><li><i data-lucide="check"></i> Aftercare &amp; rehab</li></ul><a href="#" class="more">Read more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+    </div>
+    <div style="text-align:center;margin-top:34px"><a href="#services" class="btn btn-navy"><i data-lucide="grid-3x3"></i> View all services</a></div>
+  </div>
+</section>
+
+<!-- WHY CHOOSE -->
+<section class="section why">
+  <div class="wrap">
+    <div class="why-media"><img src="https://drive.google.com/thumbnail?id=1bBxWQXvMy82D5TD3eUqZCODSWfvnc2eI&sz=w800" alt="A patient with their care team"></div>
+    <div>
+      <div class="sec-head"><span class="eyebrow">Why patients choose us</span><h2>Care you can <em>count on.</em></h2></div>
+      <div class="why-grid">
+        <div class="feat"><div class="ic"><i data-lucide="stethoscope"></i></div><h3>Experienced doctors</h3><ul><li><i data-lucide="check"></i> Board-certified specialists</li><li><i data-lucide="check"></i> Patient-first approach</li></ul></div>
+        <div class="feat"><div class="ic"><i data-lucide="heart-handshake"></i></div><h3>Personalized care</h3><ul><li><i data-lucide="check"></i> A plan built around you</li><li><i data-lucide="check"></i> Dedicated case manager</li></ul></div>
+        <div class="feat"><div class="ic"><i data-lucide="microscope"></i></div><h3>Modern equipment</h3><ul><li><i data-lucide="check"></i> Up-to-date diagnostics</li><li><i data-lucide="check"></i> Accurate, fast results</li></ul></div>
+        <div class="feat"><div class="ic"><i data-lucide="ambulance"></i></div><h3>24/7 emergency</h3><ul><li><i data-lucide="check"></i> Round-the-clock response</li><li><i data-lucide="check"></i> Rapid triage &amp; transfer</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAMPAIGNS (GiftPro) -->
+<section class="section bg-soft" id="campaigns">
+  <div class="wrap">
+    <div class="sec-head center"><span class="eyebrow c">Support our cause</span><h2>Fund the care that <em>keeps people well.</em></h2></div>
+    <div class="camp-grid">
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1c4uiPno0u_Rk8J8Izi7x77jxkKn91wE0&sz=w600" alt=""><span class="pill">Equipment</span></div>
+        <div class="body"><h3>Equip a New Free Clinic</h3><p>Exam rooms, diagnostics and a pharmacy for a 53rd neighbourhood clinic.</p>
+          <div class="meter"><div class="bar"><i style="width:64%"></i></div><div class="nums"><span class="r">$64,000</span><span class="g">of $100,000</span></div></div>
+          <a href="#appointment" class="btn btn-teal donate"><i data-lucide="heart"></i> Donate</a></div>
+      </article>
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1qJij6Yy5dvF9sUG9mOVS3mNkFOnHw0qE&sz=w600" alt=""><span class="pill">Mobile unit</span></div>
+        <div class="body"><h3>Second Mobile Health Unit</h3><p>Put another fully-equipped van on the road to reach remote communities.</p>
+          <div class="meter"><div class="bar"><i style="width:48%"></i></div><div class="nums"><span class="r">$72,000</span><span class="g">of $150,000</span></div></div>
+          <a href="#appointment" class="btn btn-teal donate"><i data-lucide="heart"></i> Donate</a></div>
+      </article>
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1tkmVa08GhbnS9YvBNEAU9G0UXCKuDy6A&sz=w600" alt=""><span class="pill">Medicine</span></div>
+        <div class="body"><h3>A Year of Free Prescriptions</h3><p>Keep essential medications free for 2,000 chronic-illness patients.</p>
+          <div class="meter"><div class="bar"><i style="width:86%"></i></div><div class="nums"><span class="r">$43,000</span><span class="g">of $50,000</span></div></div>
+          <a href="#appointment" class="btn btn-teal donate"><i data-lucide="heart"></i> Donate</a></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO BAND -->
+<section class="section videoband">
+  <div class="videoband-bg"><img src="https://drive.google.com/thumbnail?id=1tkmVa08GhbnS9YvBNEAU9G0UXCKuDy6A&sz=w1600" alt=""></div>
+  <div class="wrap">
+    <a href="#" class="play-btn" aria-label="Play video"><i data-lucide="play"></i></a>
+    <h2>Your path to better health starts here.</h2>
+    <p>See how Medikale brings free, modern care to the communities that need it most.</p>
+  </div>
+</section>
+
+<!-- DOCTORS -->
+<section class="section" id="doctors">
+  <div class="wrap">
+    <div class="sec-head center"><span class="eyebrow c">Our specialists</span><h2>Meet our <em>caring doctors.</em></h2></div>
+    <div class="doc-grid">
+      <article class="doc"><div class="ph"><img src="https://drive.google.com/thumbnail?id=1W7Rvj-xCGBHY4t1Oce21mrOn-o2Uz29e&sz=w500" alt="Jenny Wilson"></div><div class="body"><h3>Dr. Jenny Wilson</h3><span>Cardiologist</span><div class="soc"><a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-li"/></svg></a><a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-x"/></svg></a></div></div></article>
+      <article class="doc"><div class="ph"><img src="https://drive.google.com/thumbnail?id=1nPqv2kY-sBa__8auujG40YBI3PYA_PUm&sz=w500" alt="Paula Irving"></div><div class="body"><h3>Dr. Paula Irving</h3><span>Neurologist</span><div class="soc"><a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-li"/></svg></a><a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-x"/></svg></a></div></div></article>
+      <article class="doc"><div class="ph"><img src="https://drive.google.com/thumbnail?id=1pivpd8P8HglqFWJte11JoQgQXZivv69X&sz=w500" alt="Robert Fox"></div><div class="body"><h3>Dr. Robert Fox</h3><span>Surgeon</span><div class="soc"><a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-li"/></svg></a><a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-x"/></svg></a></div></div></article>
+      <article class="doc"><div class="ph"><img src="https://drive.google.com/thumbnail?id=1Md-HSHYPR_gtgwn9dGhvZF7qwTmi8iz_&sz=w500" alt="Karen Starr"></div><div class="body"><h3>Dr. Karen Starr</h3><span>Pediatrician</span><div class="soc"><a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-li"/></svg></a><a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-x"/></svg></a></div></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- SUCCESS STORIES -->
+<section class="section stories">
+  <svg class="pulse" viewBox="0 0 1200 60" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M0 30 H360 l20 -22 l26 44 l20 -52 l16 36 l14 -6 H760 l18 -16 l18 32 l14 -16 H1200" stroke="#21B8C9"/></svg>
+  <div class="wrap">
+    <div class="sec-head center on-dark" style="margin-left:auto;margin-right:auto;text-align:center"><span class="eyebrow c">Real patient outcomes</span><h2>Success stories that <em>inspire trust.</em></h2></div>
+    <div class="story-grid">
+      <article class="story"><div class="ph"><img src="https://drive.google.com/thumbnail?id=1xBAowIOT6gYGPF_lrtVrehRU2Zc_j1rs&sz=w700" alt=""></div><div class="body"><h3>Emergency cardiac care</h3><div class="tags"><span>Cardiology</span><span>24/7 response</span></div></div></article>
+      <article class="story"><div class="ph"><img src="https://drive.google.com/thumbnail?id=1iePpAschitelcETNYWQjDIhcJugugxAO&sz=w700" alt=""></div><div class="body"><h3>Critical care management</h3><div class="tags"><span>Acute care</span><span>Recovery</span></div></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section bg-soft">
+  <div class="wrap">
+    <div class="sec-head center"><span class="eyebrow c">Patient feedback</span><h2>Voices of healing, <em>stories of trust.</em></h2></div>
+    <div class="testi-grid">
+      <article class="tcard"><div class="stars">★★★★★</div><p>I hadn't seen a doctor in six years because I couldn't afford one. Medikale caught my diabetes early — and never sent me a bill.</p><div class="auth"><img src="https://drive.google.com/thumbnail?id=1xBAowIOT6gYGPF_lrtVrehRU2Zc_j1rs&sz=w120" alt=""><div><b>James O.</b><span>Patient</span></div></div></article>
+      <article class="tcard"><div class="stars">★★★★★</div><p>The maternity team supported me through a difficult birth with such calm and kindness. I'll never forget them.</p><div class="auth"><img src="https://drive.google.com/thumbnail?id=1c4uiPno0u_Rk8J8Izi7x77jxkKn91wE0&sz=w120" alt=""><div><b>Sofia M.</b><span>New parent</span></div></div></article>
+      <article class="tcard"><div class="stars">★★★★★</div><p>The mobile unit reached our village when nothing else could. They treated my father like family.</p><div class="auth"><img src="https://drive.google.com/thumbnail?id=1qJij6Yy5dvF9sUG9mOVS3mNkFOnHw0qE&sz=w120" alt=""><div><b>Arif R.</b><span>Family member</span></div></div></article>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section faq">
+  <div class="wrap">
+    <div class="faq-media"><img src="https://drive.google.com/thumbnail?id=1wfYwzPsOdihOx0mkmcBOJZIh5k621OZu&sz=w700" alt="Doctors at Medikale"></div>
+    <div>
+      <div class="sec-head on-dark"><span class="eyebrow">FAQ</span><h2>Frequently asked <em>questions.</em></h2></div>
+      <div class="faq-list">
+        <details class="qa" open><summary>What services does Medikale provide? <span class="pm"><i data-lucide="plus"></i></span></summary><div class="a">Free clinics, mobile health units, diagnostics, maternal and child care, mental health support and emergency response — all at no cost to the patient.</div></details>
+        <details class="qa"><summary>What safety and hygiene measures are followed? <span class="pm"><i data-lucide="plus"></i></span></summary><div class="a">We follow strict clinical hygiene protocols, sterilise all equipment, and our teams are trained and certified to national standards.</div></details>
+        <details class="qa"><summary>Can a family member stay with the patient? <span class="pm"><i data-lucide="plus"></i></span></summary><div class="a">Yes — we encourage a family member or carer to be present, and we have comfortable spaces for them throughout care.</div></details>
+        <details class="qa"><summary>How can I give feedback or make a complaint? <span class="pm"><i data-lucide="plus"></i></span></summary><div class="a">You can speak to any team member, call our patient line, or email care@medikale.org. Every piece of feedback is reviewed.</div></details>
+        <details class="qa"><summary>Do you accept health insurance? <span class="pm"><i data-lucide="plus"></i></span></summary><div class="a">No insurance is ever needed — Medikale is free at the point of care, funded entirely by donors and partners.</div></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section class="section" id="events">
+  <div class="wrap">
+    <div class="sec-head center"><span class="eyebrow c">What's on</span><h2>Upcoming <em>health events.</em></h2></div>
+    <div class="ev-grid">
+      <article class="ev">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1xVHFK6ojGNw9YiaF-xMQ8TywjDL1WrA3&sz=w600" alt=""><div class="badge"><span class="d">12</span><span class="m">Jul</span></div></div>
+        <div class="body"><h3>Free Health Screening Day</h3><div class="meta"><span><i data-lucide="map-pin"></i> Westside Community Centre</span><span><i data-lucide="clock"></i> 08:00 – 14:00</span></div><a href="#appointment" class="btn btn-ghost"><i data-lucide="calendar-plus"></i> Reserve a slot</a></div>
+      </article>
+      <article class="ev">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1qJij6Yy5dvF9sUG9mOVS3mNkFOnHw0qE&sz=w600" alt=""><div class="badge"><span class="d">26</span><span class="m">Jul</span></div></div>
+        <div class="body"><h3>Community Vaccination Drive</h3><div class="meta"><span><i data-lucide="map-pin"></i> Mobile Unit · Riverside</span><span><i data-lucide="clock"></i> 09:00 – 16:00</span></div><a href="#appointment" class="btn btn-ghost"><i data-lucide="calendar-plus"></i> Reserve a slot</a></div>
+      </article>
+      <article class="ev">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1iePpAschitelcETNYWQjDIhcJugugxAO&sz=w600" alt=""><div class="badge"><span class="d">15</span><span class="m">Aug</span></div></div>
+        <div class="body"><h3>Charity Run for Free Care</h3><div class="meta"><span><i data-lucide="map-pin"></i> Riverfront Park</span><span><i data-lucide="ticket"></i> Registration open</span></div><a href="#" class="btn btn-teal"><i data-lucide="ticket"></i> Sign up</a></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="section bg-soft" id="blog">
+  <div class="wrap">
+    <div class="sec-head center"><span class="eyebrow c">Latest news &amp; updates</span><h2>Check out our <em>latest articles.</em></h2></div>
+    <div class="blog-grid">
+      <article class="post">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1c4uiPno0u_Rk8J8Izi7x77jxkKn91wE0&sz=w600" alt=""></div>
+        <div class="body"><div class="meta"><span><i data-lucide="calendar"></i> Jun 28</span><span><i data-lucide="tag"></i> Wellness</span></div><h3>8 signs you should see a doctor about your symptoms</h3><a href="#" class="more">Read more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="post">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1tkmVa08GhbnS9YvBNEAU9G0UXCKuDy6A&sz=w600" alt=""></div>
+        <div class="body"><div class="meta"><span><i data-lucide="calendar"></i> Jun 14</span><span><i data-lucide="tag"></i> Research</span></div><h3>Clinical trial shows promise for chronic-condition patients</h3><a href="#" class="more">Read more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="post">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1iePpAschitelcETNYWQjDIhcJugugxAO&sz=w600" alt=""></div>
+        <div class="body"><div class="meta"><span><i data-lucide="calendar"></i> May 30</span><span><i data-lucide="tag"></i> Innovation</span></div><h3>5 advances in medical field you should know about</h3><a href="#" class="more">Read more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- APPOINTMENT -->
+<section class="section appt" id="appointment">
+  <div class="wrap">
+    <div class="appt-media"><img src="https://drive.google.com/thumbnail?id=1xBAowIOT6gYGPF_lrtVrehRU2Zc_j1rs&sz=w700" alt="A doctor with a patient"></div>
+    <div class="appt-form">
+      <span class="eyebrow">Reserve a free consultation</span>
+      <h2>Your health is our <em>priority.</em></h2>
+      <p>Care at Medikale is always free. Tell us a little about you and we'll get back the same day to arrange your visit — no insurance, no cost.</p>
+      <form onsubmit="return false">
+        <div class="form-grid">
+          <div><label for="fn">First name</label><input id="fn" type="text" placeholder="Jane"></div>
+          <div><label for="ln">Last name</label><input id="ln" type="text" placeholder="Doe"></div>
+          <div><label for="em">Email address</label><input id="em" type="email" placeholder="jane@email.com"></div>
+          <div><label for="ph">Phone number</label><input id="ph" type="tel" placeholder="+1 (555) 000-000"></div>
+          <div class="full"><label for="dep">Department</label><select id="dep"><option>General medicine</option><option>Cardiology</option><option>Pediatrics</option><option>Maternal &amp; child</option><option>Mental health</option></select></div>
+          <div class="full"><label for="msg">Message</label><textarea id="msg" placeholder="How can we help?"></textarea></div>
+        </div>
+        <button type="submit" class="btn btn-teal"><i data-lucide="calendar-plus"></i> Reserve a free consultation</button>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <svg class="pulse" viewBox="0 0 1200 60" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M0 30 H360 l20 -22 l26 44 l20 -52 l16 36 l14 -6 H760 l18 -16 l18 32 l14 -16 H1200"/></svg>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <a href="#" class="logo"><span class="mk"><i data-lucide="plus"></i></span>Medikale</a>
+        <p class="about">Quality healthcare for everyone — free clinics, mobile units and patient support, close to home.</p>
+        <div class="contact">
+          <span><b>care@medikale.org</b></span>
+          <span><b>+1 (555) 123-456</b></span>
+        </div>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-fb"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-yt"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-li"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-ig"/></svg></a>
+        </div>
+      </div>
+      <div><h5>Our Services</h5><div class="footer-links"><a href="#services">General medicine</a><a href="#services">Diagnostics</a><a href="#services">Maternal care</a><a href="#services">Mental health</a><a href="#services">Surgical care</a></div></div>
+      <div><h5>Quick Links</h5><div class="footer-links"><a href="#about">About us</a><a href="#doctors">Our doctors</a><a href="#blog">Articles</a><a href="#campaigns">Campaigns</a><a href="#events">Events</a></div></div>
+      <div class="foot-news">
+        <h5>Newsletter</h5>
+        <div class="footer-links" style="margin-bottom:12px"><a href="#campaigns">Donate</a><a href="#appointment">Reserve a free visit</a></div>
+        <form class="nf" onsubmit="return false"><input type="email" placeholder="Enter email address" aria-label="Email address"><button type="submit" aria-label="Subscribe"><i data-lucide="send"></i></button></form>
+      </div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Medikale. A demo by Beplus · AlonePro.</span><span style="display:flex;gap:20px;flex-wrap:wrap"><a href="#">Terms &amp; Conditions</a><a href="#">Return &amp; Refund Policy</a></span></div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  if(window.lucide) lucide.createIcons();
+  const drawer=document.getElementById('navDrawer'),backdrop=document.getElementById('navBackdrop');
+  const close=()=>{drawer.classList.remove('open');backdrop.classList.remove('show');};
+  document.getElementById('navToggle').addEventListener('click',()=>{drawer.classList.add('open');backdrop.classList.add('show');});
+  backdrop.addEventListener('click',close);
+  drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+</script>
+</body>
+</html>

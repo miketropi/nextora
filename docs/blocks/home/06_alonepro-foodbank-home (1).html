@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pantry — Hunger Relief & Food Bank · AlonePro Demo</title>
+<meta name="description" content="Pantry — a hunger relief & food bank theme demo. Part of AlonePro by Beplus.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241310;--ink-2:#190b09;--coral:#F0531C;--gold:#E5A02C;--plum:#9C3A16;
+    --cream:#F4ECDD;--paper:#fff;--muted:#7D6A5C;--line:rgba(42,20,16,.15);--maxw:1240px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}a{text-decoration:none;color:inherit}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}ul{list-style:none}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-offset:3px;border-radius:4px}
+  h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;line-height:.9;letter-spacing:.01em;text-transform:uppercase}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,40px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--coral)}
+  .eyebrow::before{content:"";width:34px;height:2px;background:var(--coral)}
+  .eyebrow.center{justify-content:center}
+  .lucide-wrap [data-lucide]{width:1em;height:1em;stroke-width:2}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14.5px;border-radius:40px;padding:14px 28px;transition:.18s;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+  .btn svg{width:18px;height:18px}
+  .btn-coral{background:var(--coral);color:#fff}.btn-coral:hover{background:#d8430f;transform:translateY(-2px)}
+  .btn-dark{background:var(--ink);color:var(--cream)}.btn-dark:hover{background:var(--ink-2);transform:translateY(-2px)}
+  .btn-ghost-light{border:2px solid rgba(255,255,255,.5);color:#fff}.btn-ghost-light:hover{border-color:#fff;background:rgba(255,255,255,.12)}
+  .section{padding:clamp(60px,7vw,100px) 0}
+  .sec-head{max-width:680px;margin:0 0 clamp(34px,4vw,50px)}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-head h2{font-size:clamp(38px,5.4vw,68px);margin:14px 0 12px}
+  .sec-head p{color:var(--muted);font-size:16.5px}
+  .skip{position:absolute;left:-9999px;top:8px;background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;z-index:500}.skip:focus{left:12px}
+
+  /* topbar + header */
+  .ptop{background:var(--ink);color:rgba(244,236,221,.85);font-size:13px}
+  .ptop .wrap{display:flex;justify-content:space-between;align-items:center;height:42px;gap:16px}
+  .ptop .fact{display:inline-flex;align-items:center;gap:8px}.ptop .fact svg{width:15px;height:15px;color:var(--coral)}.ptop .fact b{color:var(--cream);font-weight:700}
+  .ptop .soc{display:flex;gap:14px}.ptop .soc a:hover{color:var(--coral)}.ptop .soc svg{width:15px;height:15px}
+  @media(max-width:560px){.ptop .soc{display:none}}
+  .site-header{position:sticky;top:0;z-index:200;background:var(--cream);border-bottom:2px solid var(--ink)}
+  .pnav{display:flex;align-items:center;justify-content:space-between;gap:24px;height:74px}
+  .logo{font-family:'Anton',sans-serif;font-size:28px;letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center}
+  .logo .dot{width:11px;height:11px;background:var(--coral);border-radius:50%;margin-left:7px;margin-bottom:-2px}
+  .pmenu{display:flex;gap:30px;font-size:14px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .pmenu a:hover{color:var(--coral)}
+  .pright{display:flex;align-items:center;gap:14px}
+  .nav-toggle{display:none;width:44px;height:44px;align-items:center;justify-content:center}.nav-toggle svg{width:26px;height:26px}
+  .nav-drawer{position:fixed;inset:0 0 0 auto;width:min(320px,82vw);background:var(--ink);color:var(--cream);padding:96px 32px;display:flex;flex-direction:column;gap:6px;transform:translateX(100%);transition:.3s;z-index:330}
+  .nav-drawer.open{transform:translateX(0)}.nav-drawer a{font-size:18px;padding:13px 0;border-bottom:1px solid rgba(244,236,221,.12);text-transform:uppercase;font-weight:600}
+  .nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.3s;z-index:320}.nav-backdrop.show{opacity:1;pointer-events:auto}
+  @media(min-width:1041px){.nav-drawer,.nav-backdrop{display:none}}
+  @media(max-width:1040px){.pmenu{display:none}.nav-toggle{display:flex}}
+  @media(max-width:520px){.pright .btn span{display:none}.pright .btn{padding:13px 16px}}
+
+  /* hero : full-bleed image + huge type + stats strip */
+  .phero{position:relative;overflow:hidden;min-height:92vh;display:flex;flex-direction:column;justify-content:flex-end;color:#fff}
+  .phero-bg{position:absolute;inset:0;z-index:0}
+  .phero-bg img{width:100%;height:100%;object-fit:cover}
+  .phero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--ink) 6%,rgba(36,19,16,.55) 46%,rgba(36,19,16,.2)),linear-gradient(to right,rgba(36,19,16,.7),transparent 60%)}
+  .phero-inner{position:relative;z-index:2;padding-top:clamp(50px,8vw,110px);padding-bottom:clamp(28px,3vw,40px)}
+  .phero-tag{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;margin-bottom:24px}
+  .phero-tag .n{font-family:'Anton',sans-serif;font-size:14px;letter-spacing:.06em;opacity:.9}
+  .phero-tag p{max-width:40ch;font-size:clamp(15px,1.3vw,17px);opacity:.92}
+  .phero h1{font-size:clamp(54px,12vw,176px);line-height:.84;letter-spacing:-.005em}
+  .phero h1 .out{color:transparent;-webkit-text-stroke:2px #fff}.phero h1 .or{color:var(--coral)}
+  .phero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px}
+  .phero-stats{position:relative;z-index:2;background:var(--coral);color:#fff}
+  .phero-stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .pstat{padding:26px 24px;border-left:1px solid rgba(255,255,255,.25)}
+  .pstat:first-child{border-left:none;padding-left:0}
+  .pstat b{font-family:'Anton',sans-serif;font-size:clamp(34px,4vw,52px);display:block;line-height:1}
+  .pstat span{font-size:13.5px;opacity:.92;margin-top:6px;display:block}
+  @media(max-width:760px){.phero-stats .wrap{grid-template-columns:1fr 1fr;gap:20px;padding:30px 0}.pstat{border-left:none;padding:0 clamp(20px,5vw,40px)}.pstat:nth-child(odd){padding-left:clamp(20px,5vw,40px)}}
+
+  /* statement band : $1 = 4 meals */
+  .stmt{background:var(--ink);color:var(--cream)}
+  .stmt .wrap{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,5vw,64px);align-items:center}
+  .stmt .big{font-family:'Anton',sans-serif;font-size:clamp(80px,14vw,200px);line-height:.82;letter-spacing:-.01em;color:var(--coral)}
+  .stmt .big small{display:block;font-size:clamp(20px,3vw,38px);color:var(--cream);letter-spacing:.02em}
+  .stmt h2{font-size:clamp(30px,3.6vw,48px);margin-bottom:16px}
+  .stmt p{color:rgba(244,236,221,.78);font-size:16.5px;margin-bottom:24px;max-width:46ch}
+  @media(max-width:880px){.stmt .wrap{grid-template-columns:1fr;gap:30px}}
+
+  /* programs bento */
+  .progs{background:var(--paper)}
+  .pbento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:210px;gap:18px}
+  .ptile{border:2px solid var(--ink);border-radius:0;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:26px;transition:.2s}
+  .ptile:hover{box-shadow:8px 8px 0 var(--coral)}
+  .ptile .tag{position:absolute;top:0;left:0;background:var(--ink);color:var(--cream);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:6px 12px;z-index:3}
+  .ptile h3{font-size:24px;position:relative;z-index:2}
+  .ptile p{font-size:14px;margin-top:6px;position:relative;z-index:2}
+  .pt-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .pt-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(25,11,9,.9),transparent 60%);z-index:1}
+  .pt-photo h3,.pt-photo p{color:#fff}.pt-photo p{opacity:.85}
+  .pt-coral{background:var(--coral);color:#fff}.pt-coral p{opacity:.9}
+  .pt-cream{background:var(--cream)}
+  .span2{grid-column:span 2}.row2{grid-row:span 2}
+  @media(max-width:900px){.pbento{grid-template-columns:repeat(2,1fr)}.span2{grid-column:span 2}.row2{grid-row:span 1}}
+  @media(max-width:560px){.pbento{grid-template-columns:1fr}.span2{grid-column:span 1}}
+
+  /* story */
+  .pstory{background:var(--cream)}
+  .pstory .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(36px,5vw,64px);align-items:center}
+  .pstory-media{position:relative}
+  .pstory-media img{width:100%;aspect-ratio:1;object-fit:cover}
+  .pstory-media .q{position:absolute;top:-18px;left:-18px;width:64px;height:64px;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:52px}
+  .pstory blockquote{font-family:'Anton',sans-serif;font-size:clamp(28px,3.6vw,48px);line-height:1.04;text-transform:none}
+  .pstory blockquote em{font-style:normal;color:var(--coral)}
+  .pstory .who{display:flex;align-items:center;gap:14px;margin-top:24px}
+  .pstory .who .l{width:46px;height:2px;background:var(--ink)}.pstory .who b{font-weight:700}.pstory .who span{color:var(--muted);font-size:14px;display:block}
+  @media(max-width:880px){.pstory .wrap{grid-template-columns:1fr}.pstory-media{max-width:380px}}
+
+  /* get involved (4 tiles) */
+  .involve-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .inv{border:2px solid var(--ink);padding:30px 26px;display:flex;flex-direction:column;min-height:240px;transition:.2s}
+  .inv:hover{background:var(--ink);color:var(--cream)}
+  .inv .ic{width:54px;height:54px;border-radius:50%;background:var(--coral);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:auto;transition:.2s}
+  .inv:hover .ic{background:var(--cream);color:var(--ink)}
+  .inv .ic svg{width:25px;height:25px}
+  .inv h3{font-size:23px;margin:18px 0 8px}
+  .inv p{font-size:14px;color:var(--muted)}.inv:hover p{color:rgba(244,236,221,.78)}
+  .inv .go{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13px;color:var(--coral);text-transform:uppercase;letter-spacing:.03em;margin-top:16px}.inv:hover .go{color:var(--gold)}
+  .inv .go svg{width:15px;height:15px}
+  @media(max-width:980px){.involve-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:480px){.involve-grid{grid-template-columns:1fr}}
+
+  /* footer */
+  .footer{background:var(--ink);color:rgba(244,236,221,.72);padding-top:clamp(56px,7vw,84px)}
+  .footer .top{display:grid;grid-template-columns:1.6fr 1fr 1.4fr;gap:40px;padding-bottom:44px;border-bottom:1px solid rgba(244,236,221,.12)}
+  .footer .logo{color:var(--cream);margin-bottom:16px}
+  .footer p.about{font-size:14.5px;max-width:34ch;margin-bottom:20px}
+  .footer-social{display:flex;gap:12px}
+  .footer-social a{width:40px;height:40px;border-radius:50%;background:rgba(244,236,221,.08);color:#fff;display:flex;align-items:center;justify-content:center;transition:.2s}.footer-social a:hover{background:var(--coral)}.footer-social svg{width:17px;height:17px}
+  .footer h5{color:var(--cream);font-family:'Anton',sans-serif;font-size:16px;text-transform:uppercase;margin-bottom:16px}
+  .footer-links{display:grid;gap:11px;font-size:14.5px}.footer-links a:hover{color:var(--coral)}
+  .nlcard{background:var(--coral);color:#fff;border-radius:0;padding:26px}
+  .nlcard h4{font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;margin-bottom:10px}
+  .nlcard p{font-size:13.5px;opacity:.92;margin-bottom:14px}
+  .news-form{display:flex;gap:8px}
+  .news-form input{flex:1;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:40px;padding:13px 18px;color:#fff;font-family:inherit;font-size:14px}.news-form input::placeholder{color:rgba(255,255,255,.7)}
+  .news-form button{width:48px;height:48px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}.news-form button svg{width:19px;height:19px}
+  .footer-bottom{padding:24px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13.5px}.footer-bottom a:hover{color:var(--coral)}
+  @media(max-width:880px){.footer .top{grid-template-columns:1fr 1fr}.nlcard{grid-column:span 2}}
+  @media(max-width:520px){.footer .top{grid-template-columns:1fr}.nlcard{grid-column:span 1}}
+
+  /* campaigns (GiftPro) */
+  .camps{background:var(--cream)}
+  .camp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .camp{background:var(--paper);border:2px solid var(--ink);display:flex;flex-direction:column;transition:.2s}
+  .camp:hover{box-shadow:8px 8px 0 var(--coral)}
+  .camp .ph{aspect-ratio:16/10;position:relative;overflow:hidden}.camp .ph img{width:100%;height:100%;object-fit:cover}
+  .camp .ph .pill{position:absolute;top:0;left:0;background:var(--coral);color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:6px 12px}
+  .camp .body{padding:24px;display:flex;flex-direction:column;flex:1}
+  .camp h3{font-size:23px;margin-bottom:8px}
+  .camp p{font-size:14px;color:var(--muted);margin-bottom:18px}
+  .camp .meter{margin-top:auto}
+  .camp .bar{height:10px;background:var(--cream);border:2px solid var(--ink);overflow:hidden}.camp .bar i{display:block;height:100%;background:var(--coral)}
+  .camp .nums{display:flex;justify-content:space-between;margin-top:10px;font-size:13px;font-weight:700}
+  .camp .nums .raised{color:var(--coral)}.camp .nums .goal{color:var(--muted);font-weight:600}
+  .camp .donate{margin-top:16px}
+  @media(max-width:900px){.camp-grid{grid-template-columns:1fr;max-width:440px;margin:0 auto}}
+
+  /* events */
+  .events{background:var(--paper)}
+  .ev-list{display:flex;flex-direction:column;border-top:2px solid var(--ink)}
+  .ev{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(18px,3vw,40px);align-items:center;padding:26px 0;border-bottom:2px solid var(--ink)}
+  .ev .date{text-align:center;min-width:78px}
+  .ev .date .d{font-family:'Anton',sans-serif;font-size:46px;line-height:.9;color:var(--coral)}
+  .ev .date .m{font-family:'Anton',sans-serif;font-size:15px;letter-spacing:.08em}
+  .ev .info h3{font-size:24px;margin-bottom:6px}
+  .ev .info .meta{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+  .ev .info .meta span{display:inline-flex;align-items:center;gap:6px}.ev .info .meta svg{width:15px;height:15px;color:var(--coral)}
+  .ev .cta .btn{white-space:nowrap}
+  @media(max-width:680px){.ev{grid-template-columns:auto 1fr;gap:18px}.ev .cta{grid-column:1/3}.ev .cta .btn{width:100%;justify-content:center}}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body class="lucide-wrap">
+<a href="#main" class="skip">Skip to content</a>
+<svg width="0" height="0" style="position:absolute;left:-9999px" aria-hidden="true" focusable="false">
+  <symbol id="si-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></symbol>
+  <symbol id="si-ig" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0Zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227a3.81 3.81 0 0 1-.899 1.382 3.744 3.744 0 0 1-1.38.896c-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421a3.716 3.716 0 0 1-1.379-.899 3.644 3.644 0 0 1-.9-1.38c-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03Zm0 3.678a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324ZM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7.846-10.405a1.44 1.44 0 0 1-2.88 0 1.44 1.44 0 0 1 2.88 0Z"/></symbol>
+  <symbol id="si-x" viewBox="0 0 24 24"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></symbol>
+  <symbol id="si-yt" viewBox="0 0 24 24"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/></symbol>
+  <symbol id="si-li" viewBox="0 0 24 24"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></symbol>
+  <symbol id="si-tt" viewBox="0 0 24 24"><path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></symbol>
+</svg>
+<!--
+  AlonePro · Template: Hunger / Food Bank ("Pantry") · CREATIVE restructure · STATIC
+  palette cream+orange+brown · Anton + Inter · social SVG sprite
+  Structure (not the rote 14-section): header · hero(image + huge type + stat strip) ·
+  statement band ($1=4 meals, merges mission/impact) · programs bento (asymmetric) ·
+  single big story · get-involved (4 poster tiles, merges ways+give+cta) · footer(3-col + newsletter).
+  Dropped/merged: separate stats, events, news, give-tiers, team.
+-->
+
+<!-- TOPBAR -->
+<div class="ptop">
+  <div class="wrap">
+    <span class="fact"><i data-lucide="utensils-crossed"></i> <b>1 in 8</b> people don't know where their next meal is coming from</span>
+    <div class="soc">
+      <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-fb"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-ig"/></svg></a>
+      <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-x"/></svg></a>
+      <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-tt"/></svg></a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-header" id="header">
+  <div class="wrap">
+    <nav class="pnav" aria-label="Primary">
+      <a href="#" class="logo">PANTRY<span class="dot"></span></a>
+      <ul class="pmenu">
+        <li><a href="#programs">Programs</a></li>
+        <li><a href="#campaigns">Campaigns</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#involve">Get involved</a></li>
+      </ul>
+      <div class="pright">
+        <a href="#involve" class="btn btn-coral"><i data-lucide="heart"></i><span>Donate</span></a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu"><i data-lucide="menu"></i></button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="nav-backdrop" id="navBackdrop"></div>
+<ul class="nav-drawer" id="navDrawer">
+  <li><a href="#programs">Programs</a></li><li><a href="#campaigns">Campaigns</a></li><li><a href="#events">Events</a></li><li><a href="#involve">Get involved</a></li>
+</ul>
+
+<main id="main">
+<!-- HERO -->
+<section class="phero">
+  <div class="phero-bg"><img src="https://drive.google.com/thumbnail?id=1LgXRIlM-wY0GZ-QvBob_sNN7FiSDUrIh&sz=w1920" alt="Volunteers sorting rescued food"></div>
+  <div class="wrap phero-inner">
+    <div class="phero-tag">
+      <div class="n">(SERVING 42 CITIES — SINCE 2011)</div>
+      <p>A food bank network turning surplus into supper — rescuing good food before it's wasted and getting it to neighbours the same day.</p>
+    </div>
+    <h1>NO ONE<br><span class="out">GOES TO BED</span> <span class="or">HUNGRY.</span></h1>
+    <div class="phero-cta">
+      <a href="#involve" class="btn btn-coral"><i data-lucide="heart"></i> Donate now</a>
+      <a href="#involve" class="btn btn-ghost-light"><i data-lucide="hand-heart"></i> Get involved</a>
+    </div>
+  </div>
+  <div class="phero-stats">
+    <div class="wrap">
+      <div class="pstat"><b>1.2M</b><span>Meals served last year</span></div>
+      <div class="pstat"><b>8,400</b><span>People fed every week</span></div>
+      <div class="pstat"><b>640t</b><span>Good food rescued</span></div>
+      <div class="pstat"><b>1,100+</b><span>Active volunteers</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATEMENT BAND -->
+<section class="section stmt" id="stmt">
+  <div class="wrap">
+    <div class="big">$1<small>= 4 meals.</small></div>
+    <div>
+      <span class="eyebrow">Why it matters</span>
+      <h2>Good food, to the people who need it — today.</h2>
+      <p>Every year, tonnes of perfectly good food go to waste while millions go hungry. We bridge that gap: rescuing surplus from farms, shops and kitchens, and getting it to families, shelters and schools the same day. No judgement, just food.</p>
+      <a href="#programs" class="btn btn-coral"><i data-lucide="arrow-right"></i> See how it works</a>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS BENTO -->
+<section class="section progs" id="programs">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Our programs</span>
+      <h2>How we get food to the table.</h2>
+    </div>
+    <div class="pbento">
+      <article class="ptile pt-photo span2 row2">
+        <img src="https://drive.google.com/thumbnail?id=1tiPPlXiiqvMaVCoQ7v5XT6xQd_0tQzlf&sz=w800" alt="">
+        <span class="tag">Food bank</span>
+        <h3>The Food Bank</h3>
+        <p>Our warehouse sorts and stocks rescued food for 60+ partner pantries across the network.</p>
+      </article>
+      <article class="ptile pt-coral"><span class="tag" style="background:#fff;color:var(--coral)">Mobile</span><h3>Mobile Pantry</h3><p>A pantry on wheels reaching neighbourhoods with no food access.</p></article>
+      <article class="ptile pt-cream"><span class="tag">Community</span><h3>Community Fridges</h3><p>24/7 fridges — take what you need, no questions asked.</p></article>
+      <article class="ptile pt-photo span2">
+        <img src="https://drive.google.com/thumbnail?id=1d3cBo4T9KL8uHRL7Z4ab_J0KsdEJ1Y58&sz=w800" alt="">
+        <span class="tag">Kids</span>
+        <h3>School Meals</h3>
+        <p>Breakfast clubs and weekend packs so no child learns on an empty stomach.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- CAMPAIGNS (GiftPro) -->
+<section class="section camps" id="campaigns">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Fundraising campaigns</span>
+      <h2>Pick a cause, fund a meal.</h2>
+    </div>
+    <div class="camp-grid">
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1tiPPlXiiqvMaVCoQ7v5XT6xQd_0tQzlf&sz=w600" alt=""><span class="pill">Urgent</span></div>
+        <div class="body">
+          <h3>Fill the Winter Pantry</h3>
+          <p>Stock 60 partner pantries before the cold months hit demand hardest.</p>
+          <div class="meter"><div class="bar"><i style="width:72%"></i></div>
+            <div class="nums"><span class="raised">$36,000 raised</span><span class="goal">of $50,000</span></div>
+            <a href="#" class="btn btn-coral donate"><i data-lucide="heart"></i> Donate</a></div>
+        </div>
+      </article>
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1d3cBo4T9KL8uHRL7Z4ab_J0KsdEJ1Y58&sz=w600" alt=""><span class="pill">Kids</span></div>
+        <div class="body">
+          <h3>Weekend Backpacks</h3>
+          <p>Send food home with 1,000 children so no kid goes hungry over the weekend.</p>
+          <div class="meter"><div class="bar"><i style="width:54%"></i></div>
+            <div class="nums"><span class="raised">$13,500 raised</span><span class="goal">of $25,000</span></div>
+            <a href="#" class="btn btn-coral donate"><i data-lucide="heart"></i> Donate</a></div>
+        </div>
+      </article>
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1QgwwH8Ae755xZ2I7gy1r0XzaQBkKEtJ7&sz=w600" alt=""><span class="pill">Wheels</span></div>
+        <div class="body">
+          <h3>Fund a Mobile Pantry</h3>
+          <p>Put one more refrigerated van on the road to reach food-access deserts.</p>
+          <div class="meter"><div class="bar"><i style="width:88%"></i></div>
+            <div class="nums"><span class="raised">$70,400 raised</span><span class="goal">of $80,000</span></div>
+            <a href="#" class="btn btn-coral donate"><i data-lucide="heart"></i> Donate</a></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section class="section events" id="events">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Upcoming events</span>
+      <h2>Show up. Pack food. Change a week.</h2>
+    </div>
+    <div class="ev-list">
+      <div class="ev">
+        <div class="date"><div class="d">14</div><div class="m">JUL</div></div>
+        <div class="info"><h3>Community Food Drive</h3><div class="meta"><span><i data-lucide="map-pin"></i> Central Warehouse</span><span><i data-lucide="clock"></i> 9:00 – 13:00</span><span><i data-lucide="users"></i> 40 spots</span></div></div>
+        <div class="cta"><a href="#" class="btn btn-dark"><i data-lucide="calendar-plus"></i> Register</a></div>
+      </div>
+      <div class="ev">
+        <div class="date"><div class="d">22</div><div class="m">JUL</div></div>
+        <div class="info"><h3>Volunteer Sort &amp; Pack Night</h3><div class="meta"><span><i data-lucide="map-pin"></i> East Depot</span><span><i data-lucide="clock"></i> 18:00 – 21:00</span><span><i data-lucide="users"></i> 25 spots</span></div></div>
+        <div class="cta"><a href="#" class="btn btn-dark"><i data-lucide="calendar-plus"></i> Register</a></div>
+      </div>
+      <div class="ev">
+        <div class="date"><div class="d">09</div><div class="m">AUG</div></div>
+        <div class="info"><h3>Empty Bowls Fundraiser Dinner</h3><div class="meta"><span><i data-lucide="map-pin"></i> Town Hall</span><span><i data-lucide="clock"></i> 19:00 – 22:00</span><span><i data-lucide="ticket"></i> Ticketed</span></div></div>
+        <div class="cta"><a href="#" class="btn btn-coral"><i data-lucide="ticket"></i> Get tickets</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="section pstory" id="story">
+  <div class="wrap">
+    <div class="pstory-media"><img src="https://drive.google.com/thumbnail?id=1jnNdVpCP4AmqbWEnxsWS6osQ88hLWJZ3&sz=w800" alt="A family helped by Pantry"><span class="q">&ldquo;</span></div>
+    <div>
+      <blockquote>When I lost my job, the mobile pantry was the only reason my kids ate that month. <em>No judgement, just food</em> — and people who treated us like neighbours.</blockquote>
+      <div class="who"><span class="l"></span><div><b>Rosa M.</b><span>Mother of three · helped in 2025</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- GET INVOLVED -->
+<section class="section" id="involve">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow center">Get involved</span>
+      <h2>Four ways to fight hunger.</h2>
+    </div>
+    <div class="involve-grid">
+      <div class="inv"><div class="ic"><i data-lucide="heart"></i></div><h3>Donate</h3><p>Just $1 puts four meals on a table. Give once or monthly.</p><a href="#" class="go">Give now <i data-lucide="arrow-right"></i></a></div>
+      <div class="inv"><div class="ic"><i data-lucide="hand-heart"></i></div><h3>Volunteer</h3><p>Sort, pack and deliver at a warehouse near you. No experience needed.</p><a href="#" class="go">Join in <i data-lucide="arrow-right"></i></a></div>
+      <div class="inv"><div class="ic"><i data-lucide="apple"></i></div><h3>Give food</h3><p>Run a food drive at work or school, or drop off at a collection point.</p><a href="#" class="go">Start a drive <i data-lucide="arrow-right"></i></a></div>
+      <div class="inv"><div class="ic"><i data-lucide="megaphone"></i></div><h3>Fundraise</h3><p>Take on a challenge — every dollar multiplies into meals.</p><a href="#" class="go">Fundraise <i data-lucide="arrow-right"></i></a></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <a href="#" class="logo">PANTRY<span class="dot"></span></a>
+        <p class="about">A community food bank rescuing good food and getting it to neighbours the same day — because no one should go to bed hungry.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-fb"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-ig"/></svg></a>
+          <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-x"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-yt"/></svg></a>
+          <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-tt"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Links</h5>
+        <div class="footer-links"><a href="#stmt">Why it matters</a><a href="#programs">Programs</a><a href="#story">Stories</a><a href="#involve">Donate</a><a href="#">Need food?</a></div>
+      </div>
+      <div class="nlcard">
+        <h4>Get the monthly</h4>
+        <p>Rescue stories and ways to help, once a month.</p>
+        <form class="news-form" onsubmit="return false">
+          <input type="email" placeholder="Your email address" aria-label="Email address">
+          <button type="submit" aria-label="Subscribe"><i data-lucide="send"></i></button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Pantry Food Bank. A demo by Beplus · AlonePro.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Financials</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  if(window.lucide) lucide.createIcons();
+  const drawer=document.getElementById('navDrawer'),backdrop=document.getElementById('navBackdrop');
+  const close=()=>{drawer.classList.remove('open');backdrop.classList.remove('show');};
+  document.getElementById('navToggle').addEventListener('click',()=>{drawer.classList.add('open');backdrop.classList.add('show');});
+  backdrop.addEventListener('click',close);
+  drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+</script>
+</body>
+</html>
