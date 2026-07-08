@@ -234,7 +234,7 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 			$out .= '<div class="nextora-box-image__card-body">';
 		}
 
-		$out .= '<h3 class="nextora-box-image__title">' . esc_html( $title ) . '</h3>';
+		$out .= '<h4 class="nextora-box-image__title">' . esc_html( $title ) . '</h4>';
 
 		if ( '' !== trim( wp_strip_all_tags( $description ) ) ) {
 			$out .= '<p class="nextora-box-image__description">' . esc_html( $description ) . '</p>';

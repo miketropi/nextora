@@ -151,9 +151,7 @@
 /* Title & description */
 .nextora-box-image__title {
 	margin: 1.125rem 1.625rem 0.5rem;
-	font-size: 1.4375rem;
-	line-height: 1.15;
-	font-weight: inherit;
+	font-size: var(--wp--preset--font-size--base, 1.4375rem);
 	color: var(--nextora-box-image-card-title-color, currentColor);
 }
 
@@ -161,7 +159,7 @@
 	margin: 0 1.625rem;
 	flex: 1 1 auto;
 	min-height: 0;
-	font-size: 0.875rem;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	line-height: 1.5;
 	color: var(
 		--nextora-box-image-card-desc-color,

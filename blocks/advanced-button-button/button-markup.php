@@ -83,6 +83,7 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 		$text_color             = nextora_advanced_button_button_color_attr( $attributes, 'buttonTextColor', 'textColor' );
 		$border_color           = nextora_advanced_button_button_color_attr( $attributes, 'buttonBorderColor', 'borderColor' );
 		$icon_color             = isset( $attributes['iconColor'] ) ? (string) $attributes['iconColor'] : '';
+		$icon_background_color  = isset( $attributes['iconBackgroundColor'] ) ? (string) $attributes['iconBackgroundColor'] : '';
 		$hover_effect           = isset( $attributes['hoverEffect'] ) ? (string) $attributes['hoverEffect'] : 'opacity';
 		$hover_background_color = isset( $attributes['hoverBackgroundColor'] ) ? (string) $attributes['hoverBackgroundColor'] : '';
 		$hover_text_color       = isset( $attributes['hoverTextColor'] ) ? (string) $attributes['hoverTextColor'] : '';
@@ -225,10 +226,10 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 			);
 		}
 
-		if ( $show_icon && 'stacked' === $icon_style && '' !== $background_color ) {
+		if ( $show_icon && 'stacked' === $icon_style && '' !== $icon_background_color ) {
 			$style_vars[] = sprintf(
 				'--nextora-advanced-button-icon-bg:%s;',
-				esc_attr( nextora_icon_resolve_color( $background_color ) ),
+				esc_attr( nextora_icon_resolve_color( $icon_background_color ) ),
 			);
 		}
 

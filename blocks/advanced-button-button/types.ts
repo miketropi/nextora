@@ -39,6 +39,7 @@ export interface AdvancedButtonButtonAttributes extends Record< string, unknown 
 	strokeWidth: number;
 	iconStyle: IconStyle;
 	iconBorderRadius: number;
+	iconBackgroundColor: string;
 	buttonBackgroundColor: string;
 	buttonTextColor: string;
 	buttonBorderColor: string;

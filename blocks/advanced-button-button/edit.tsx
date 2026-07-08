@@ -92,6 +92,7 @@ type ButtonColorKey =
 	| 'buttonBackgroundColor'
 	| 'buttonTextColor'
 	| 'buttonBorderColor'
+	| 'iconBackgroundColor'
 	| 'iconColor'
 	| 'hoverBackgroundColor'
 	| 'hoverTextColor'
@@ -145,6 +146,7 @@ export default function AdvancedButtonButtonEdit( {
 		strokeWidth = 2,
 		iconStyle = 'default',
 		iconBorderRadius = 8,
+		iconBackgroundColor = '',
 		buttonBackgroundColor = '',
 		buttonTextColor = '',
 		buttonBorderColor = '',
@@ -190,6 +192,7 @@ export default function AdvancedButtonButtonEdit( {
 			'buttonBackgroundColor',
 			'buttonTextColor',
 			'buttonBorderColor',
+			'iconBackgroundColor',
 			'iconColor',
 			'hoverBackgroundColor',
 			'hoverTextColor',
@@ -324,10 +327,10 @@ export default function AdvancedButtonButtonEdit( {
 					),
 				}
 			: {} ),
-		...( showIcon && iconStyle === 'stacked' && resolvedButtonBackgroundColor
+		...( showIcon && iconStyle === 'stacked' && iconBackgroundColor
 			? {
 					'--nextora-advanced-button-icon-bg': storedColorToCss(
-						resolvedButtonBackgroundColor,
+						iconBackgroundColor,
 					),
 				}
 			: {} ),
@@ -831,6 +834,20 @@ export default function AdvancedButtonButtonEdit( {
 										onChange: ( value: string | undefined ) =>
 											setThemeColor( 'iconColor', value ),
 										label: __( 'Icon color', 'nextora' ),
+									},
+								]
+							: [] ),
+						...( hasSurfaceStyle && showIcon && iconSource === 'theme'
+							? [
+									{
+										value: colorValueForPicker(
+											iconBackgroundColor,
+											colorPalette,
+											lookupPalette,
+										),
+										onChange: ( value: string | undefined ) =>
+											setThemeColor( 'iconBackgroundColor', value ),
+										label: __( 'Icon background', 'nextora' ),
 									},
 								]
 							: [] ),

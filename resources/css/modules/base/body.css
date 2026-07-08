@@ -230,3 +230,17 @@ footer.wp-block-template-part {
 		overflow: hidden;
 	}
 }
+/* aspect ratio */
+.aspect-ratio-4-5 img,
+.aspect-ratio-4-5 iframe,
+.aspect-ratio-4-5 video {
+	aspect-ratio: 4 / 5;
+	object-fit: cover;
+}
+.aspect-ratio-cover-4-5{
+	aspect-ratio: 4 / 5 !important;
+}
+.aspect-ratio-cover-4-5 img{
+	border-radius: inherit;
+	height: 100% !important;
+}
