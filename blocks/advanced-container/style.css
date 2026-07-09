@@ -94,11 +94,18 @@
   top: -10%;
 }
 
+/* Parallax: fixed background (CSS background-attachment). */
+.nextora-advanced-container--parallax-fixed .nextora-advanced-container__bg {
+  background-attachment: fixed;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .nextora-advanced-container--parallax .nextora-advanced-container__bg {
+  .nextora-advanced-container--parallax .nextora-advanced-container__bg,
+  .nextora-advanced-container--parallax-fixed .nextora-advanced-container__bg {
     height: 100%;
     top: 0;
     transform: none;
+    background-attachment: scroll;
   }
 }
 

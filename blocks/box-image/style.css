@@ -663,8 +663,8 @@
 }
 
 .nextora-box-image--template-template3 .nextora-box-image__title {
-	margin: 0 0 12px;
-	font-size: 1.15625rem;
+	margin: 0 0 1rem;
+	font-size: var(--wp--preset--font-size--base, 1rem);
 	font-weight: 600;
 	line-height: 1.25;
 	color: var(--nextora-box-image-item-title-color, var(--nextora-box-image-card-title-color, currentColor));
@@ -683,7 +683,7 @@
 	display: flex;
 	gap: 9px;
 	align-items: flex-start;
-	font-size: 0.84375rem;
+	font-size: var(--wp--preset--font-size--small, 0.75rem);
 	line-height: 1.45;
 	color: var(--nextora-box-image-item-desc-color, var(--nextora-box-image-card-desc-color, color-mix(in srgb, currentColor 55%, transparent)));
 }

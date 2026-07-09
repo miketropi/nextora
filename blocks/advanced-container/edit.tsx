@@ -68,6 +68,7 @@ type Attributes = {
   overlayStyle: string;
   minHeight: string;
   enableParallax: boolean;
+  parallaxType: string;
   enableBackgroundAnimation: boolean;
   backgroundAnimation: string;
   backgroundAnimationSpeed: number;
@@ -176,6 +177,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
     overlayStyle,
     minHeight,
     enableParallax,
+    parallaxType,
     enableBackgroundAnimation,
     backgroundAnimation,
     backgroundAnimationSpeed,
@@ -420,6 +422,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
   const handleParallaxChange = (value: boolean) => {
     setAttributes({
       enableParallax: value,
+      parallaxType: value ? (parallaxType || 'gsap') : 'gsap',
       ...(value ? { enableBackgroundAnimation: false } : {}),
     });
   };
@@ -854,7 +857,35 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
             }
             onChange={handleParallaxChange}
           />
-          {enableParallax ? (
+          {enableParallax && hasImage ? (
+            <>
+              <SelectControl
+                label={__('Parallax type', 'nextora')}
+                value={(parallaxType || 'gsap') as 'gsap' | 'fixed'}
+                options={[
+                  { label: __('Smooth scroll (GSAP)', 'nextora'), value: 'gsap' },
+                  { label: __('Fixed background (CSS)', 'nextora'), value: 'fixed' },
+                ]}
+                help={
+                  parallaxType === 'gsap'
+                    ? __('GSAP-driven smooth parallax as the section scrolls. Speed is adjustable.', 'nextora')
+                    : __('Classic CSS fixed background effect. The background stays in place while the content scrolls.', 'nextora')
+                }
+                onChange={(value) => setAttributes({ parallaxType: value || 'gsap' })}
+              />
+              {parallaxType === 'gsap' ? (
+                <RangeControl
+                  label={__('Parallax speed', 'nextora')}
+                  value={parallaxSpeed}
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  onChange={(value) => setAttributes({ parallaxSpeed: value ?? 0.5 })}
+                />
+              ) : null}
+            </>
+          ) : null}
+          {enableParallax && hasVideo ? (
             <RangeControl
               label={__('Parallax speed', 'nextora')}
               value={parallaxSpeed}

@@ -442,7 +442,8 @@
 	display: flex;
 	gap: 7px;
 	align-items: flex-start;
-	font-size: var(--wp--preset--font-size--base, 0.75rem);
+	margin: 0;
+	font-size: var(--wp--preset--font-size--small, 0.75rem);
 	color: var(--nextora-box-image-item-desc-color, var(--nextora-box-image-card-desc-color, color-mix(in srgb, currentColor 55%, transparent)));
 }
 

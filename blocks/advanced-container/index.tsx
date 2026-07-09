@@ -21,6 +21,7 @@ type Attributes = {
   overlayStyle: string;
   minHeight: string;
   enableParallax: boolean;
+  parallaxType: string;
   enableBackgroundAnimation: boolean;
   backgroundAnimation: string;
   backgroundAnimationSpeed: number;
