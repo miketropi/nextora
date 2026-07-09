@@ -244,3 +244,7 @@ footer.wp-block-template-part {
 	border-radius: inherit;
 	height: 100% !important;
 }
+/* button */
+.edit-site-layout__canvas .components-button svg[stroke="currentColor"] {
+    fill: transparent
+}

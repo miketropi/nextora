@@ -1892,6 +1892,9 @@ footer.wp-block-template-part {
   border-radius: inherit;
   height: 100% !important;
 }
+.edit-site-layout__canvas .components-button svg[stroke="currentColor"] {
+  fill: transparent;
+}
 .nextora-navigation-from-location {
   --nextora-nav-submenu-bg: var(--nextora-nav-panel-bg);
   --nextora-nav-submenu-border: var(--nextora-nav-panel-border);

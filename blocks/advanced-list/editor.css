@@ -2,120 +2,7 @@
  * Advanced List — editor styles
  */
 
-.nextora-advanced-list {
-  padding: 1.5rem;
-  border: 1px dashed var(--wp--preset--color--contrast);
-  border-radius: 4px;
-  /* Colors are optional - set via inline styles from user's color picker */
-  /* --nextora-list-icon-color: currentColor; */
-  /* --nextora-list-icon-bg: transparent; */
-  /* --nextora-list-icon-border: currentColor; */
-  --nextora-list-icon-size: 14px;
-  --nextora-list-icon-circle-size: 32px;
-  --nextora-list-icon-text-gap: 14px;
-  --nextora-list-border-radius: 50%;
-  --nextora-list-stroke-width: 2.5;
-}
-
-/* Framed style - transparent background by default */
-.nextora-advanced-list--style-framed:not([style*="--nextora-list-icon-bg"]) {
-  --nextora-list-icon-bg: transparent;
-}
-
-.nextora-advanced-list__items {
-  list-style: none;
-  margin: 0 0 1rem 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--nextora-list-item-gap, 0.75rem);
-}
-
-.nextora-advanced-list__item-editor {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-}
-
-.nextora-advanced-list__item-preview {
-  display: flex;
-  align-items: center;
-  gap: var(--nextora-list-icon-text-gap);
-  flex: 1;
-}
-
-/* Icon base styles */
-.nextora-advanced-list__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: var(--nextora-list-icon-color, currentColor);
-}
-
-.nextora-advanced-list__icon svg {
-  width: var(--nextora-list-icon-size);
-  height: var(--nextora-list-icon-size);
-  stroke-width: var(--nextora-list-stroke-width);
-  stroke: currentColor;
-  fill: none;
-}
-
-/* Icon style: default (no background) */
-.nextora-advanced-list__icon--default {
-  width: auto;
-  height: auto;
-  background: none;
-  border: none;
-}
-
-/* Icon style: stacked (with background) */
-.nextora-advanced-list__icon--stacked {
-  width: var(--nextora-list-icon-circle-size);
-  height: var(--nextora-list-icon-circle-size);
-  border-radius: var(--nextora-list-border-radius);
-  background-color: var(--nextora-list-icon-bg);
-}
-
-/* Icon style: framed (with border and background) */
-.nextora-advanced-list__icon--framed {
-  width: var(--nextora-list-icon-circle-size);
-  height: var(--nextora-list-icon-circle-size);
-  border-radius: var(--nextora-list-border-radius);
-  background-color: var(--nextora-list-icon-bg);
-  border: 2px solid var(--nextora-list-icon-border);
-  box-sizing: border-box;
-}
-
-/* Ensure framed style shows border in all contexts */
-.nextora-advanced-list--style-framed .nextora-advanced-list__icon,
-.nextora-advanced-list--style-framed .nextora-advanced-list__item .nextora-advanced-list__icon {
-  border: 2px solid var(--nextora-list-icon-border) ;
-  box-sizing: border-box;
-}
-
-.nextora-advanced-list__text {
-  flex: 1;
-  line-height: 1.6;
-  padding-top: 0.375rem;
-}
-
-.nextora-advanced-list__item-actions {
-  display: flex;
-  gap: 0.25rem;
-  flex-shrink: 0;
-}
-.nextora-advanced-list__item-actions .components-button {
-  background: var(--wp--preset--color--base, #ffffff);
-}
-.nextora-advanced-list__item-actions .components-button svg{
-  fill: transparent;
-}
-
-/* Modal styles */
+/* Item Modal */
 .nextora-advanced-list-modal .components-modal__content {
   padding: 1.5rem;
 }
@@ -139,8 +26,8 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: #ef4444;
-  color: #ffffff;
+  background-color: var(--wp--preset--color--primary, #ef4444);
+  color: var(--wp--preset--color--base, #ffffff);
   margin-bottom: 0.5rem;
 }
 
