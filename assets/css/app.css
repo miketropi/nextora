@@ -1080,6 +1080,9 @@
     --tw-tracking: var(--tracking-wider);
     letter-spacing: var(--tracking-wider);
   }
+  .text-balance {
+    text-wrap: balance;
+  }
   .text-wrap {
     text-wrap: wrap;
   }
