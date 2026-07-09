@@ -116,19 +116,6 @@
 	border-radius: var(--nextora-box-image-card-radius, 8px);
 	background: var(--nextora-box-image-card-bg, var(--wp--preset--color--surface, #f4ecdd));
 	color: var(--wp--preset--color--contrast, currentColor);
-	transition:
-		background-color 0.2s ease,
-		color 0.2s ease,
-		border-color 0.2s ease;
-}
-
-.nextora-box-image__card:hover,
-.nextora-box-image__card:focus-within {
-	background: var(
-		--nextora-box-image-card-hover-bg,
-		var(--wp--preset--color--contrast, #241310)
-	);
-	color: var(--wp--preset--color--base, #f4ecdd);
 }
 
 /* Image wrapper */
@@ -150,13 +137,13 @@
 
 /* Title & description */
 .nextora-box-image__title {
-	margin: 1.125rem 1.625rem 0.5rem;
+	margin: 1.125rem 1.625rem 0.9rem;
 	font-size: var(--wp--preset--font-size--base, 1.4375rem);
 	color: var(--nextora-box-image-card-title-color, currentColor);
 }
 
-.nextora-box-image__description {
-	margin: 0 1.625rem;
+.nextora-box-image__card .nextora-box-image__description {
+	margin: 0 1.625rem 1.625rem;
 	flex: 1 1 auto;
 	min-height: 0;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
@@ -167,20 +154,12 @@
 	);
 }
 
-.nextora-box-image__card:hover .nextora-box-image__description,
-.nextora-box-image__card:focus-within .nextora-box-image__description {
-	color: var(
-		--nextora-box-image-card-desc-hover-color,
-		color-mix(in srgb, currentColor 78%, transparent)
-	);
-}
-
 /* Link */
 .nextora-box-image__link {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.4375rem;
-	margin: 1rem 1.625rem 1.625rem;
+	margin: 0 1.625rem 1.625rem 1.625rem;
 	flex-shrink: 0;
 	font-size: 0.8125rem;
 	font-weight: 700;
@@ -193,12 +172,7 @@
 
 .nextora-box-image__link:hover,
 .nextora-box-image__link:focus-visible {
-	color: var(--nextora-box-image-link-hover-color, var(--wp--preset--color--base, currentColor));
-}
-
-.nextora-box-image:not([class*="--template-"]) .nextora-box-image__card:hover .nextora-box-image__link,
-.nextora-box-image:not([class*="--template-"]) .nextora-box-image__card:focus-within .nextora-box-image__link {
-	color: var(--nextora-box-image-link-hover-color, var(--wp--preset--color--base, currentColor));
+	color: var(--nextora-box-image-link-hover-color, var(--wp--preset--color--contrast, currentColor));
 }
 
 .nextora-box-image__link--static {

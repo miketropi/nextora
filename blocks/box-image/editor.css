@@ -52,22 +52,6 @@
 	scroll-snap-align: unset;
 }
 
-/* Disable front-end hover effects in editor */
-.nextora-box-image--editor .nextora-box-image__card:hover,
-.nextora-box-image--editor .nextora-box-image__card:focus-within {
-	background: var(--wp--preset--color--surface, #f4ecdd);
-	color: var(--wp--preset--color--contrast, currentColor);
-}
-
-.nextora-box-image--editor .nextora-box-image__card:hover .nextora-box-image__description,
-.nextora-box-image--editor .nextora-box-image__card:focus-within .nextora-box-image__description {
-	color: var(
-		--nextora-box-image-card-desc-color,
-		color-mix(in srgb, currentColor 55%, transparent)
-	);
-}
-
-
 /* Edit button */
 .nextora-box-image--editor .nextora-box-image__card-edit {
 	position: absolute;
