@@ -382,13 +382,9 @@ export default function AdvancedButtonButtonEdit( {
 	const hasLink = '' !== linkUrl;
 
 	const blockProps = useBlockProps( {
-		className: isModalLink
-			? 'nextora-advanced-button-button-wrap nextora-advanced-button-button-wrap--modal nextora-advanced-button-button-wrap--modal-editor'
-			: `${ buttonClassName }`,
-		style: isModalLink ? undefined : buttonStyleVars,
+		className: buttonClassName,
+		style: buttonStyleVars,
 	} );
-
-	const modalButtonStyle = buttonStyleVars;
 
 	useEffect( () => {
 		if ( isModalLink && '' === modalId ) {
@@ -963,11 +959,10 @@ export default function AdvancedButtonButtonEdit( {
 			</InspectorControls>
 
 			{ isModalLink ? (
-				<div { ...blockProps }>
+				<div className="nextora-advanced-button-button-wrap nextora-advanced-button-button-wrap--modal nextora-advanced-button-button-wrap--modal-editor">
 					<button
 						type="button"
-						className={ buttonClassName }
-						style={ modalButtonStyle }
+						{ ...blockProps }
 						onClick={ ( event ) => event.preventDefault() }
 					>
 						{ buttonContent }

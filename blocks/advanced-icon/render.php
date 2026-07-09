@@ -25,6 +25,7 @@ $stroke_w         = isset( $attributes['strokeWidth'] ) ? (float) $attributes['s
 $align            = isset( $attributes['iconAlign'] ) ? (string) $attributes['iconAlign'] : 'left';
 $icon_style       = isset( $attributes['iconStyle'] ) ? (string) $attributes['iconStyle'] : 'default';
 $border_radius    = isset( $attributes['borderRadius'] ) ? max( 0, (int) $attributes['borderRadius'] ) : 8;
+$surface_padding  = isset( $attributes['surfacePadding'] ) ? max( 0, (int) $attributes['surfacePadding'] ) : 16;
 $background_color = isset( $attributes['surfaceBackgroundColor'] )
 	? (string) $attributes['surfaceBackgroundColor']
 	: ( isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '' );
@@ -34,7 +35,6 @@ $border_color     = isset( $attributes['surfaceBorderColor'] )
 $link_url         = isset( $attributes['linkUrl'] ) ? trim( (string) $attributes['linkUrl'] ) : '';
 $link_target      = isset( $attributes['linkTarget'] ) ? (string) $attributes['linkTarget'] : '_self';
 $aria_label       = isset( $attributes['ariaLabel'] ) ? trim( (string) $attributes['ariaLabel'] ) : '';
-$css_class        = isset( $attributes['cssClass'] ) ? (string) $attributes['cssClass'] : '';
 $icon_color       = isset( $attributes['iconColor'] ) ? (string) $attributes['iconColor'] : '';
 $enable_scroll = nextora_icon_scroll_animation_enabled( $attributes );
 
@@ -103,16 +103,13 @@ if ( ! $enable_scroll ) {
 	$wrapper_classes[] = 'nextora-scroll-animation--ready';
 }
 
-if ( '' !== trim( $css_class ) ) {
-	$wrapper_classes[] = sanitize_html_class( $css_class );
-}
-
 $inline_styles = array(
 	sprintf( '--nextora-advanced-icon-size:%dpx;', $size ),
 );
 
 if ( $has_surface ) {
 	$inline_styles[] = sprintf( '--nextora-advanced-icon-radius:%dpx;', $border_radius );
+	$inline_styles[] = sprintf( '--nextora-advanced-icon-padding:%dpx;', $surface_padding );
 }
 
 if ( 'stacked' === $icon_style ) {

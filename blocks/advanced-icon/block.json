@@ -64,6 +64,10 @@
 			"type": "number",
 			"default": 8
 		},
+		"surfacePadding": {
+			"type": "number",
+			"default": 16
+		},
 		"surfaceBackgroundColor": {
 			"type": "string",
 			"default": ""
@@ -81,10 +85,6 @@
 			"default": "_self"
 		},
 		"ariaLabel": {
-			"type": "string",
-			"default": ""
-		},
-		"cssClass": {
 			"type": "string",
 			"default": ""
 		},

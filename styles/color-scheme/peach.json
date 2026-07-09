@@ -34,6 +34,11 @@
 					"slug": "surface",
 					"color": "#fde8e4",
 					"name": "Surface"
+				},
+				{
+					"slug": "transparent",
+					"color": "transparent",
+					"name": "Transparent"
 				}
 			]
 		}
