@@ -43,10 +43,16 @@
 			"background": "var(--wp--preset--color--base)",
 			"text": "var(--wp--preset--color--paragraph)"
 		},
+		"typography": {
+			"fontFamily": "var(--wp--preset--font-family--josefin-sans)"
+		},
 		"elements": {
 			"heading": {
 				"color": {
 					"text": "var(--wp--preset--color--contrast)"
+				},
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--noto-serif-display)"
 				}
 			},
 			"link": {
@@ -64,6 +70,16 @@
 						"background": "var(--wp--preset--color--contrast)",
 						"text": "var(--wp--preset--color--base)"
 					}
+				},
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--josefin-sans)"
+				}
+			}
+		},
+		"blocks": {
+			"nextora/header": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--josefin-sans)"
 				}
 			}
 		}
