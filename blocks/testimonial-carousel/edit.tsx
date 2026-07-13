@@ -34,6 +34,11 @@ import {
 	resolveTrustAvatarUrl,
 } from './testimonial-utils';
 import TestimonialEditForm from './testimonial-edit-form';
+import {
+	normalizeColorForStorage,
+	colorValueForPicker,
+	useThemeColorPalette,
+} from './color-utils';
 import { ChevronLeftIcon, ChevronRightIcon, StarRating, TopIconSvg } from './icons';
 
 interface EditProps {
@@ -84,6 +89,7 @@ const avatarFallbackOptions = [
 
 export default function TestimonialCarouselEdit({ attributes, setAttributes }: EditProps) {
 	const [editingId, setEditingId] = useState<string | null>(null);
+	const palette = useThemeColorPalette();
 
 	const testimonials = normalizeTestimonials(attributes.testimonials);
 	const trustAvatars = normalizeTrustAvatars(attributes.trustAvatars);
@@ -637,15 +643,15 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
-							value: backgroundColor,
-							onChange: (v) => setAttributes({ backgroundColor: v ?? '' }),
+							value: colorValueForPicker(backgroundColor, palette),
+							onChange: (v) => setAttributes({ backgroundColor: normalizeColorForStorage(v, palette) }),
 							label: __('Background', 'nextora'),
 						},
 						...(templateStyle !== 'template-1'
 							? [
 									{
-										value: topIconColor,
-										onChange: (v: string | undefined) => setAttributes({ topIconColor: v ?? '' }),
+										value: colorValueForPicker(topIconColor, palette),
+										onChange: (v: string | undefined) => setAttributes({ topIconColor: normalizeColorForStorage(v, palette) }),
 										label: __('Top icon', 'nextora'),
 									},
 								]
@@ -653,38 +659,38 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						...(templateStyle !== 'template-1'
 							? [
 									{
-										value: labelColor,
-										onChange: (v: string | undefined) => setAttributes({ labelColor: v ?? '' }),
+										value: colorValueForPicker(labelColor, palette),
+										onChange: (v: string | undefined) => setAttributes({ labelColor: normalizeColorForStorage(v, palette) }),
 										label: __('Label', 'nextora'),
 									},
 								]
 							: []),
 						{
-							value: quoteColor,
-							onChange: (v) => setAttributes({ quoteColor: v ?? '' }),
+							value: colorValueForPicker(quoteColor, palette),
+							onChange: (v) => setAttributes({ quoteColor: normalizeColorForStorage(v, palette) }),
 							label: __('Quote', 'nextora'),
 						},
 						{
-							value: authorNameColor,
-							onChange: (v) => setAttributes({ authorNameColor: v ?? '' }),
+							value: colorValueForPicker(authorNameColor, palette),
+							onChange: (v) => setAttributes({ authorNameColor: normalizeColorForStorage(v, palette) }),
 							label: __('Author name', 'nextora'),
 						},
 						{
-							value: authorColor,
-							onChange: (v) => setAttributes({ authorColor: v ?? '' }),
+							value: colorValueForPicker(authorColor, palette),
+							onChange: (v) => setAttributes({ authorColor: normalizeColorForStorage(v, palette) }),
 							label: __('Author role', 'nextora'),
 						},
 						{
-							value: starColor,
-							onChange: (v) => setAttributes({ starColor: v ?? '' }),
+							value: colorValueForPicker(starColor, palette),
+							onChange: (v) => setAttributes({ starColor: normalizeColorForStorage(v, palette) }),
 							label: __('Star rating', 'nextora'),
 						},
 						...(templateStyle !== 'template-1'
 							? [
 									{
-										value: trustColor,
+										value: colorValueForPicker(trustColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ trustColor: v ?? '' }),
+											setAttributes({ trustColor: normalizeColorForStorage(v, palette) }),
 										label: __('Trust text', 'nextora'),
 									},
 								]
@@ -692,15 +698,15 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						...(showPagination
 							? [
 									{
-										value: paginationColor,
+										value: colorValueForPicker(paginationColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ paginationColor: v ?? '' }),
+											setAttributes({ paginationColor: normalizeColorForStorage(v, palette) }),
 										label: __('Pagination dot', 'nextora'),
 									},
 									{
-										value: paginationActiveColor,
+										value: colorValueForPicker(paginationActiveColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ paginationActiveColor: v ?? '' }),
+											setAttributes({ paginationActiveColor: normalizeColorForStorage(v, palette) }),
 										label: __('Active pagination', 'nextora'),
 									},
 								]
@@ -708,15 +714,15 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						...(showArrows
 							? [
 									{
-										value: arrowColor,
+										value: colorValueForPicker(arrowColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ arrowColor: v ?? '' }),
+											setAttributes({ arrowColor: normalizeColorForStorage(v, palette) }),
 										label: __('Arrow icon', 'nextora'),
 									},
 									{
-										value: arrowBorderColor,
+										value: colorValueForPicker(arrowBorderColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ arrowBorderColor: v ?? '' }),
+											setAttributes({ arrowBorderColor: normalizeColorForStorage(v, palette) }),
 										label: __('Arrow border', 'nextora'),
 									},
 								]
@@ -724,9 +730,9 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						...(showTrustIndicator && templateStyle !== 'template-1'
 							? [
 									{
-										value: trustAvatarBorderColor,
+										value: colorValueForPicker(trustAvatarBorderColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ trustAvatarBorderColor: v ?? '' }),
+											setAttributes({ trustAvatarBorderColor: normalizeColorForStorage(v, palette) }),
 										label: __('Avatar border', 'nextora'),
 									},
 								]
