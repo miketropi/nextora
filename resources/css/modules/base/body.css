@@ -217,9 +217,10 @@ footer.wp-block-template-part {
 		transition: none;
 	}
 }
-.frequently-asked-questions .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__toggle-title {
+body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__toggle-title {
 	text-decoration: none;
 }
+
 /* reset group padding */
 .wp-block-group .wp-block-group {
 	padding-top: 0;

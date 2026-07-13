@@ -176,8 +176,6 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 			.join(' '),
 		style: buildSectionStyleVars({
 			backgroundColor,
-			paddingTop,
-			paddingBottom,
 			contentMaxWidth,
 			topIconSize,
 			topIconColor,
@@ -614,7 +612,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 					</PanelBody>
 				)}
 
-				<PanelBody title={__('Dimensions', 'nextora')} initialOpen={false}>
+				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
 					<RangeControl
 						label={__('Content max width (px)', 'nextora')}
 						value={parseInt(contentMaxWidth, 10) || 680}
@@ -622,20 +620,6 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						min={200}
 						max={1400}
 						step={20}
-					/>
-					<RangeControl
-						label={__('Padding top (px)', 'nextora')}
-						value={paddingTop}
-						onChange={(v) => setAttributes({ paddingTop: v ?? 80 })}
-						min={0}
-						max={200}
-					/>
-					<RangeControl
-						label={__('Padding bottom (px)', 'nextora')}
-						value={paddingBottom}
-						onChange={(v) => setAttributes({ paddingBottom: v ?? 80 })}
-						min={0}
-						max={200}
 					/>
 				</PanelBody>
 

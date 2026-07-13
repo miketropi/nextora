@@ -80,8 +80,6 @@ export function resolveTrustAvatarUrl(
 
 export function buildSectionStyleVars(attrs: {
 	backgroundColor?: string;
-	paddingTop?: number;
-	paddingBottom?: number;
 	contentMaxWidth?: string;
 	topIconSize?: number;
 	topIconColor?: string;
@@ -102,8 +100,6 @@ export function buildSectionStyleVars(attrs: {
 	cardGap?: number;
 }): Record<string, string> {
 	const vars: Record<string, string> = {
-		'--nextora-testimonial-padding-top': `${attrs.paddingTop ?? 80}px`,
-		'--nextora-testimonial-padding-bottom': `${attrs.paddingBottom ?? 80}px`,
 		'--nextora-testimonial-max-width': attrs.contentMaxWidth || '680px',
 		'--nextora-testimonial-icon-size': `${attrs.topIconSize ?? 20}px`,
 		'--nextora-testimonial-avatar-size': `${attrs.trustAvatarSize ?? 36}px`,

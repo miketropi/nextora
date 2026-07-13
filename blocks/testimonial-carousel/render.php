@@ -425,8 +425,6 @@ $content_max    = isset( $attributes['contentMaxWidth'] ) ? trim( (string) $attr
 if ( '' === $content_max ) {
 	$content_max = '680px';
 }
-$padding_top    = isset( $attributes['paddingTop'] ) ? max( 0, min( 200, (int) $attributes['paddingTop'] ) ) : 80;
-$padding_bottom = isset( $attributes['paddingBottom'] ) ? max( 0, min( 200, (int) $attributes['paddingBottom'] ) ) : 80;
 $top_icon_size  = isset( $attributes['topIconSize'] ) ? max( 12, min( 40, (int) $attributes['topIconSize'] ) ) : 20;
 $avatar_size    = isset( $attributes['trustAvatarSize'] ) ? max( 24, min( 56, (int) $attributes['trustAvatarSize'] ) ) : 36;
 $avatar_overlap = isset( $attributes['trustAvatarOverlap'] ) ? max( 0, min( 20, (int) $attributes['trustAvatarOverlap'] ) ) : 10;
@@ -480,8 +478,6 @@ $opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 
 $css_vars = array(
 	'--nextora-testimonial-bg'                 => '' !== $bg_color ? $bg_color : 'transparent',
-	'--nextora-testimonial-padding-top'        => $padding_top . 'px',
-	'--nextora-testimonial-padding-bottom'     => $padding_bottom . 'px',
 	'--nextora-testimonial-max-width'         => $content_max,
 	'--nextora-testimonial-icon-size'         => $top_icon_size . 'px',
 	'--nextora-testimonial-icon-color'        => '' !== $icon_color ? $icon_color : 'color-mix(in srgb, currentColor 50%, transparent)',
