@@ -99,6 +99,7 @@ export function buildSectionStyleVars(attrs: {
 	trustAvatarOverlap?: number;
 	trustAvatarBorderWidth?: number;
 	trustAvatarBorderColor?: string;
+	cardGap?: number;
 }): Record<string, string> {
 	const vars: Record<string, string> = {
 		'--nextora-testimonial-padding-top': `${attrs.paddingTop ?? 80}px`,
@@ -108,6 +109,7 @@ export function buildSectionStyleVars(attrs: {
 		'--nextora-testimonial-avatar-size': `${attrs.trustAvatarSize ?? 36}px`,
 		'--nextora-testimonial-avatar-overlap': `${attrs.trustAvatarOverlap ?? 10}px`,
 		'--nextora-testimonial-avatar-border': `${attrs.trustAvatarBorderWidth ?? 2.5}px`,
+		'--nextora-testimonial-card-gap': `${attrs.cardGap ?? 22}px`,
 	};
 
 	if (attrs.backgroundColor) vars['--nextora-testimonial-bg'] = resolveColorValue(attrs.backgroundColor);

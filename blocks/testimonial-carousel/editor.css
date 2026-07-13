@@ -205,3 +205,73 @@
 	width: var(--nextora-testimonial-icon-size, 20px);
 	height: var(--nextora-testimonial-icon-size, 20px);
 }
+
+/* Template 1 editor preview — horizontal slider strip */
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slides-editor--template-1 {
+	display: flex;
+	flex-direction: row;
+	gap: var(--nextora-testimonial-card-gap, 22px);
+	overflow-x: auto;
+	padding-bottom: 4px;
+	scrollbar-width: thin;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 {
+	flex: 0 0 auto;
+	min-width: min(320px, 90vw);
+	max-width: min(380px, 90vw);
+	padding: 28px;
+	border-radius: 20px;
+	text-align: left;
+	display: flex;
+	flex-direction: column;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-badge {
+	display: none;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-author {
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	margin-top: auto;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-author-photo {
+	width: 50px;
+	height: 50px;
+	flex-shrink: 0;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-rating {
+	justify-content: flex-start;
+	margin-bottom: 12px;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-quote {
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	font-weight: 400;
+	line-height: 1.5;
+	margin-bottom: 22px;
+	flex: 1;
+}
+
+.nextora-testimonial-carousel--template-1 .nextora-testimonial-carousel__inner {
+	max-width: var(--nextora-testimonial-max-width, 1200px);
+}
+
+.nextora-testimonial-carousel__slide-author-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.nextora-testimonial-carousel__slide-author-text .nextora-testimonial-carousel__slide-author-name {
+	display: block;
+	font-size: 15.5px;
+	font-weight: 600;
+}
+
+.nextora-testimonial-carousel__slide-author-text .nextora-testimonial-carousel__slide-author-role {
+	font-size: 0.8125rem;
+	color: color-mix(in srgb, currentColor 65%, transparent);
+}

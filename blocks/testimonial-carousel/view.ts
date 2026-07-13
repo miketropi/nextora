@@ -27,6 +27,11 @@ type SwiperOpts = {
 	showArrows?: boolean;
 	speed?: number;
 	arrowPosition?: string;
+	templateStyle?: string;
+	itemsPerViewDesktop?: number;
+	itemsPerViewTablet?: number;
+	itemsPerViewMobile?: number;
+	cardGap?: number;
 };
 
 function prefersReducedMotion(): boolean {
@@ -226,20 +231,36 @@ function initSwiperIn(container: Element | Document): void {
 				return;
 			}
 
+			const isTemplate1 = opts.templateStyle === 'template-1';
 			const modules = [Pagination, Autoplay, Keyboard, A11y];
-			if (effect === 'fade') {
+			if (!isTemplate1 && effect === 'fade') {
 				modules.push(EffectFade);
 			}
 			if (showArrows && prevEl && nextEl) {
 				modules.push(Navigation);
 			}
 
+			const slidesPerViewCfg = isTemplate1
+				? {
+						slidesPerView: opts.itemsPerViewMobile ?? 1,
+						spaceBetween: opts.cardGap ?? 22,
+						breakpoints: {
+							768: {
+								slidesPerView: opts.itemsPerViewTablet ?? 2,
+							},
+							1024: {
+								slidesPerView: opts.itemsPerViewDesktop ?? 3,
+							},
+						},
+					}
+				: { slidesPerView: 1 };
+
 			// eslint-disable-next-line no-new
 			new Swiper(el, {
 				modules,
-				effect,
-				...(effect === 'fade' ? { fadeEffect: { crossFade: true } } : {}),
-				slidesPerView: 1,
+				effect: isTemplate1 ? 'slide' : effect,
+				...(effect === 'fade' && !isTemplate1 ? { fadeEffect: { crossFade: true } } : {}),
+				...slidesPerViewCfg,
 				loop: useLoop,
 				speed: typeof opts.speed === 'number' ? opts.speed : 600,
 				watchOverflow: true,
