@@ -308,6 +308,7 @@ export default function AdvancedButtonButtonEdit( {
 			: {} ),
 		...( resolvedButtonBackgroundColor
 			? {
+					background: storedColorToCss( resolvedButtonBackgroundColor ),
 					'--nextora-advanced-button-bg': storedColorToCss(
 						resolvedButtonBackgroundColor,
 					),
@@ -315,6 +316,7 @@ export default function AdvancedButtonButtonEdit( {
 			: {} ),
 		...( resolvedButtonTextColor
 			? {
+					color: storedColorToCss( resolvedButtonTextColor ),
 					'--nextora-advanced-button-text': storedColorToCss(
 						resolvedButtonTextColor,
 					),

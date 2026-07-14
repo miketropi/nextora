@@ -206,17 +206,15 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 		}
 
 		if ( '' !== $background_color ) {
-			$style_vars[] = sprintf(
-				'--nextora-advanced-button-bg:%s;',
-				esc_attr( nextora_icon_resolve_color( $background_color ) ),
-			);
+			$resolved_bg = nextora_icon_resolve_color( $background_color );
+			$style_vars[] = sprintf( 'background:%s;', esc_attr( $resolved_bg ) );
+			$style_vars[] = sprintf( '--nextora-advanced-button-bg:%s;', esc_attr( $resolved_bg ) );
 		}
 
 		if ( '' !== $text_color ) {
-			$style_vars[] = sprintf(
-				'--nextora-advanced-button-text:%s;',
-				esc_attr( nextora_icon_resolve_color( $text_color ) ),
-			);
+			$resolved_text = nextora_icon_resolve_color( $text_color );
+			$style_vars[] = sprintf( 'color:%s;', esc_attr( $resolved_text ) );
+			$style_vars[] = sprintf( '--nextora-advanced-button-text:%s;', esc_attr( $resolved_text ) );
 		}
 
 		if ( '' !== $border_color ) {
