@@ -348,7 +348,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
   const showOverlay = (hasImage || hasVideo || hasHoverReveal) && overlayOpacity > 0;
   const normalizedBackgroundSize = normalizeBackgroundImageSize(backgroundImageSize);
   const overlayModifier =
-    overlayStyle === 'fade-right' || overlayStyle === 'cinematic' ? overlayStyle : 'solid';
+    overlayStyle === 'fade-right' || overlayStyle === 'cinematic' || overlayStyle === 'diagonal' ? overlayStyle : 'solid';
   const bgAnimationClass = backgroundAnimationClassName(enableBackgroundAnimation && hasImage, normalizedBackgroundAnimation);
   const bgAnimationVars = backgroundAnimationStyleVars(
     enableBackgroundAnimation && hasImage,
@@ -379,10 +379,12 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
   const minHeightTrimmed = minHeight.trim();
   const resolvedOverlayCss = storedColorToCss(overlayColor) || 'var(--wp--preset--color--contrast, #0f172a)';
   const sectionBackgroundStyle: CSSProperties =
-    backgroundType === 'color' && !hasHoverReveal
-      ? normalizedSectionFill === 'gradient' && resolvedSectionGradientCss
+    (backgroundType === 'color' && !hasHoverReveal) || (showOverlay && overlayModifier === 'diagonal')
+      ? normalizedSectionFill === 'gradient' && resolvedSectionGradientCss && backgroundType === 'color' && !hasHoverReveal
         ? { background: resolvedSectionGradientCss }
-        : { backgroundColor: storedColorToCss(resolvedSectionBackgroundColor) || undefined }
+        : showOverlay && overlayModifier === 'diagonal'
+          ? { backgroundColor: resolvedOverlayCss }
+          : { backgroundColor: storedColorToCss(resolvedSectionBackgroundColor) || undefined }
       : {};
 
   const blockProps = useBlockProps({
@@ -391,6 +393,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
       hasHoverReveal ? 'nextora-advanced-container--hover-reveal' : '',
       hasHoverReveal && normalizedSectionFill === 'gradient' ? 'nextora-advanced-container--hover-reveal-gradient' : '',
       enableAmbientAnimation && ambientAnimationType === 'ambient-icons' ? 'nextora-advanced-container--ambient-icons' : '',
+      showOverlay && overlayModifier === 'diagonal' ? 'nextora-advanced-container--overlay-diagonal' : '',
       bgAnimationClass,
     ]
       .filter(Boolean)
@@ -808,6 +811,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
                   { label: __('Uniform', 'nextora'), value: 'solid' },
                   { label: __('Fade left to right', 'nextora'), value: 'fade-right' },
                   { label: __('Cinematic gradient', 'nextora'), value: 'cinematic' },
+                  { label: __('Diagonal fade', 'nextora'), value: 'diagonal' },
                 ]}
                 onChange={(value) => setAttributes({ overlayStyle: value || 'solid' })}
               />

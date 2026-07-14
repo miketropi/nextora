@@ -203,7 +203,7 @@ if ( ! function_exists( 'nextora_ac_normalize_overlay_style' ) ) {
 	 * Sanitize overlay style slug.
 	 */
 	function nextora_ac_normalize_overlay_style( string $raw ): string {
-		return in_array( $raw, array( 'solid', 'fade-right', 'cinematic' ), true ) ? $raw : 'solid';
+		return in_array( $raw, array( 'solid', 'fade-right', 'cinematic', 'diagonal' ), true ) ? $raw : 'solid';
 	}
 }
 
@@ -427,6 +427,12 @@ if ( 'color' === $background_type && ! $use_hover_reveal ) {
 		$style_bits[] = 'background-color:' . $section_background_color;
 	}
 }
+
+if ( $use_overlay && 'diagonal' === $overlay_style ) {
+	$classes[]  = 'nextora-advanced-container--overlay-diagonal';
+	$style_bits[] = 'background-color:' . ( '' !== $overlay_color ? $overlay_color : 'var(--wp--preset--color--contrast, #0f172a)' );
+}
+
 if ( $use_hover_reveal ) {
 	$classes[] = 'nextora-advanced-container--hover-reveal';
 	if ( $hover_reveal_mask_is_gradient ) {
