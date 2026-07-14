@@ -31,5 +31,6 @@ require_once NEXTORA_DIR . '/inc/features/contact-form/load.php';
 require_once NEXTORA_DIR . '/inc/features/google-maps/load.php';
 require_once NEXTORA_DIR . '/inc/assets/assets.php';
 require_once NEXTORA_DIR . '/inc/features/heading-inline-font/load.php';
+require_once NEXTORA_DIR . '/inc/features/color-scheme-switcher/load.php';
 require_once NEXTORA_DIR . '/blocks/blocks.php';
 require_once NEXTORA_DIR . '/extensions/load.php';
