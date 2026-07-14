@@ -3022,11 +3022,12 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     line-height: 1.4;
     color: var(--wp--preset--color--contrast, #0a0a0a);
     transition: border-color 0.15s ease,	box-shadow 0.15s ease;
+    border-radius: 20px 0 0 20px;
   }
   .mc4wp-form .mc4wp-form-fields input[type="email"]::placeholder {
     color: var(--wp--preset--color--paragraph, #525252);
     @supports (color: color-mix(in lab, red, red)) {
-      color: color-mix(	in srgb,	var(--wp--preset--color--paragraph, #525252) 55%,	transparent	);
+      color: color-mix(in srgb, var(--wp--preset--color--paragraph, #525252) 55%, transparent);
     }
     opacity: 1;
     font-weight: 300;
@@ -3872,6 +3873,36 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
 @keyframes nextora-typewriter-caret {
   50% {
     opacity: 0;
+  }
+}
+.animation-video-button-ripple {
+  position: relative;
+}
+.animation-video-button-ripple::before, .animation-video-button-ripple::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  animation: nextoraVideoButtonRipple 2s ease-out infinite;
+  pointer-events: none;
+}
+.animation-video-button-ripple::after {
+  animation-delay: 1s;
+}
+@keyframes nextoraVideoButtonRipple {
+  0% {
+    box-shadow: 0 0 0 4px var(--nextora-advanced-button-bg, var(--wp--preset--color--primary, currentColor));
+    opacity: 0.4;
+  }
+  100% {
+    box-shadow: 0 0 0 28px var(--nextora-advanced-button-bg, var(--wp--preset--color--primary, currentColor));
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animation-video-button-ripple::before,	.animation-video-button-ripple::after {
+    animation: none;
+    display: none;
   }
 }
 @layer components {
