@@ -17,6 +17,8 @@ export interface ContactFormAttributes {
 	messageLabel: string;
 	messagePlaceholder: string;
 	enableRichTextMessage: boolean;
+	showHeading: boolean;
+	showDescription: boolean;
 	enableScrollAnimation: boolean;
 	enableRecaptcha: boolean;
 	recaptchaSiteKey: string;

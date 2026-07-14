@@ -43,6 +43,7 @@ export default function IconEdit( {
 		iconAlign = 'left',
 		iconStyle = 'default',
 		borderRadius = 8,
+		surfacePadding = 16,
 		surfaceBackgroundColor = '',
 		surfaceBorderColor = '',
 		backgroundColor: legacyBackgroundColor = '',
@@ -50,7 +51,6 @@ export default function IconEdit( {
 		linkUrl = '',
 		linkTarget = '_self',
 		ariaLabel = '',
-		cssClass = '',
 		enableScrollAnimation = true,
 	} = attributes;
 
@@ -233,16 +233,28 @@ export default function IconEdit( {
 					/>
 
 					{ hasSurfaceStyle && (
-						<RangeControl
-							label={ __( 'Border radius (px)', 'nextora' ) }
-							value={ borderRadius }
-							onChange={ ( value: number | undefined ) =>
-								setAttributes( { borderRadius: value ?? 8 } )
-							}
-							min={ 0 }
-							max={ 999 }
-							step={ 1 }
-						/>
+						<>
+							<RangeControl
+								label={ __( 'Border radius (px)', 'nextora' ) }
+								value={ borderRadius }
+								onChange={ ( value: number | undefined ) =>
+									setAttributes( { borderRadius: value ?? 8 } )
+								}
+								min={ 0 }
+								max={ 999 }
+								step={ 1 }
+							/>
+							<RangeControl
+								label={ __( 'Padding (px)', 'nextora' ) }
+								value={ surfacePadding }
+								onChange={ ( value: number | undefined ) =>
+									setAttributes( { surfacePadding: value ?? 16 } )
+								}
+								min={ 0 }
+								max={ 200 }
+								step={ 1 }
+							/>
+						</>
 					) }
 
 					<RangeControl
@@ -374,13 +386,6 @@ export default function IconEdit( {
 						value={ ariaLabel }
 						onChange={ ( value: string ) =>
 							setAttributes( { ariaLabel: value } )
-						}
-					/>
-					<TextControl
-						label={ __( 'Extra CSS class', 'nextora' ) }
-						value={ cssClass }
-						onChange={ ( value: string ) =>
-							setAttributes( { cssClass: value } )
 						}
 					/>
 					{ showLinkAriaWarning && (

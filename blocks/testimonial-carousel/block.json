@@ -18,10 +18,16 @@
       "link": true
     },
     "spacing": {
-      "margin": true
+      "margin": true,
+      "padding": true
     }
   },
   "attributes": {
+    "templateStyle": { "type": "string", "default": "default" },
+    "itemsPerViewDesktop": { "type": "number", "default": 3 },
+    "itemsPerViewTablet": { "type": "number", "default": 2 },
+    "itemsPerViewMobile": { "type": "number", "default": 1 },
+    "cardGap": { "type": "number", "default": 22 },
     "testimonials": {
       "type": "array",
       "default": [

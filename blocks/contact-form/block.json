@@ -98,6 +98,14 @@
       "type": "boolean",
       "default": true
     },
+    "showHeading": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDescription": {
+      "type": "boolean",
+      "default": true
+    },
     "enableScrollAnimation": {
       "type": "boolean",
       "default": true

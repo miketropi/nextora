@@ -297,8 +297,8 @@
 /* === Swiper overrides === */
 .nextora-event__swiper {
 	overflow: hidden;
-	padding: 0.5rem !important;
-	margin: -0.5rem;
+    padding: 0.5rem 0 !important;
+    margin: -0.5rem 0;
 }
 
 .nextora-event__swiper .swiper-wrapper {

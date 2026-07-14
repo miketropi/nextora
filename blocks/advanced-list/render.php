@@ -25,6 +25,7 @@ $icon_color        = $attributes['iconColor'] ?? '';
 $icon_bg_color     = $attributes['iconBackgroundColor'] ?? '';
 $icon_border_color = $attributes['iconBorderColor'] ?? '';
 $icon_text_gap     = absint( $attributes['iconTextGap'] ?? 14 );
+$item_gap          = absint( $attributes['itemGap'] ?? 16 );
 
 // Validate icon style
 $allowed_styles = array( 'default', 'stacked', 'framed' );
@@ -90,10 +91,11 @@ if ( $resolved_icon_border_color ) {
 $css_vars[] = '--nextora-list-icon-size: ' . $icon_size . 'px';
 $css_vars[] = '--nextora-list-icon-circle-size: ' . $icon_circle_size . 'px';
 $css_vars[] = '--nextora-list-icon-text-gap: ' . $icon_text_gap . 'px';
+$css_vars[] = '--nextora-list-item-gap: ' . $item_gap . 'px';
 $css_vars[] = '--nextora-list-border-radius: ' . $border_radius . '%';
 $css_vars[] = '--nextora-list-stroke-width: ' . $stroke_width;
 
-$style_attr = count( $css_vars ) > 0 ? ' style="' . esc_attr( implode( '; ', $css_vars ) ) . '"' : '';
+$css_vars_string = count( $css_vars ) > 0 ? esc_attr( implode( '; ', $css_vars ) ) : '';
 
 // Wrapper attributes
 $wrapper_classes = array(
@@ -108,11 +110,12 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class' => implode( ' ', $wrapper_classes ),
 		'data-nextora-scroll-reveal' => $enable_scroll_animation ? '1' : '0',
+		'style' => $css_vars_string,
 	),
 );
 ?>
 
-<div <?php echo $wrapper_attributes; ?><?php echo $style_attr; ?>>
+<div <?php echo $wrapper_attributes; ?>>
 	<ul class="nextora-advanced-list__items">
 		<?php foreach ( $items as $item ) : ?>
 			<?php

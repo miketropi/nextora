@@ -94,11 +94,18 @@
   top: -10%;
 }
 
+/* Parallax: fixed background (CSS background-attachment). */
+.nextora-advanced-container--parallax-fixed .nextora-advanced-container__bg {
+  background-attachment: fixed;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .nextora-advanced-container--parallax .nextora-advanced-container__bg {
+  .nextora-advanced-container--parallax .nextora-advanced-container__bg,
+  .nextora-advanced-container--parallax-fixed .nextora-advanced-container__bg {
     height: 100%;
     top: 0;
     transform: none;
+    background-attachment: scroll;
   }
 }
 
@@ -137,6 +144,20 @@
       color-mix(in srgb, var(--nextora-ac-overlay-color) 80%, transparent),
       transparent 62%
     );
+}
+
+.nextora-advanced-container__overlay--diagonal {
+  opacity: var(--nextora-ac-overlay-opacity);
+  background: linear-gradient(
+    105deg,
+    var(--nextora-ac-overlay-color) 32%,
+    color-mix(in srgb, var(--nextora-ac-overlay-color) 70%, transparent) 60%,
+    transparent
+  );
+}
+
+.nextora-advanced-container--overlay-diagonal .nextora-advanced-container__bg {
+  opacity: 0.28;
 }
 
 .nextora-advanced-container--scroll-reveal.nextora-advanced-container--reveal-pending:not(.nextora-advanced-container--ready) .nextora-advanced-container__inner {

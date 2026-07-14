@@ -124,6 +124,9 @@ export function buildStyleVars(attrs: {
 	paginationColor?: string;
 	paginationActiveColor?: string;
 	arrowColor?: string;
+	badgeBackgroundColor?: string;
+	badgeTextColor?: string;
+	bulletIconColor?: string;
 }, lookupPalette: { slug: string; color: string }[] = []): Record<string, string> {
 	const vars: Record<string, string> = {};
 
@@ -171,6 +174,9 @@ export function buildStyleVars(attrs: {
 	setColor('--nextora-box-image-dot-color', attrs.paginationColor);
 	setColor('--nextora-box-image-dot-active', attrs.paginationActiveColor);
 	setColor('--nextora-box-image-arrow-color', attrs.arrowColor);
+	setColor('--nextora-box-image-badge-bg', attrs.badgeBackgroundColor);
+	setColor('--nextora-box-image-badge-text', attrs.badgeTextColor);
+	setColor('--nextora-box-image-bullet-icon-color', attrs.bulletIconColor);
 
 	return vars;
 }

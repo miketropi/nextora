@@ -203,7 +203,7 @@ if ( ! function_exists( 'nextora_ac_normalize_overlay_style' ) ) {
 	 * Sanitize overlay style slug.
 	 */
 	function nextora_ac_normalize_overlay_style( string $raw ): string {
-		return in_array( $raw, array( 'solid', 'fade-right', 'cinematic' ), true ) ? $raw : 'solid';
+		return in_array( $raw, array( 'solid', 'fade-right', 'cinematic', 'diagonal' ), true ) ? $raw : 'solid';
 	}
 }
 
@@ -294,6 +294,8 @@ $overlay_style   = nextora_ac_normalize_overlay_style(
 	isset( $attributes['overlayStyle'] ) ? (string) $attributes['overlayStyle'] : 'solid',
 );
 $enable_parallax           = ! empty( $attributes['enableParallax'] );
+$parallax_type             = isset( $attributes['parallaxType'] ) ? (string) $attributes['parallaxType'] : 'gsap';
+$parallax_type             = in_array( $parallax_type, array( 'gsap', 'fixed' ), true ) ? $parallax_type : 'gsap';
 $enable_background_animation = ! empty( $attributes['enableBackgroundAnimation'] );
 $background_animation        = nextora_ac_normalize_background_animation(
 	isset( $attributes['backgroundAnimation'] ) ? (string) $attributes['backgroundAnimation'] : 'ken-burns',
@@ -425,6 +427,12 @@ if ( 'color' === $background_type && ! $use_hover_reveal ) {
 		$style_bits[] = 'background-color:' . $section_background_color;
 	}
 }
+
+if ( $use_overlay && 'diagonal' === $overlay_style ) {
+	$classes[]  = 'nextora-advanced-container--overlay-diagonal';
+	$style_bits[] = 'background-color:' . ( '' !== $overlay_color ? $overlay_color : 'var(--wp--preset--color--contrast, #0f172a)' );
+}
+
 if ( $use_hover_reveal ) {
 	$classes[] = 'nextora-advanced-container--hover-reveal';
 	if ( $hover_reveal_mask_is_gradient ) {
@@ -434,7 +442,14 @@ if ( $use_hover_reveal ) {
 		$style_bits[] = '--nextora-ac-hover-mask-color:' . $hover_reveal_mask_color;
 	}
 }
-if ( $enable_parallax && ( $use_image || $use_video ) && ! $enable_background_animation ) {
+if ( $enable_parallax && $use_image && ! $enable_background_animation ) {
+	if ( 'fixed' === $parallax_type ) {
+		$classes[] = 'nextora-advanced-container--parallax-fixed';
+	} else {
+		$classes[] = 'nextora-advanced-container--parallax';
+	}
+}
+if ( $enable_parallax && $use_video && ! $enable_background_animation ) {
 	$classes[] = 'nextora-advanced-container--parallax';
 }
 $classes[] = 'nextora-advanced-container--bg-' . $background_type;
@@ -456,7 +471,7 @@ if ( $enable_scroll ) {
 	$classes[] = 'nextora-advanced-container--scroll-reveal';
 }
 
-if ( $enable_scroll || ( $enable_parallax && ( $use_image || $use_video ) ) || $use_hover_reveal || $enable_ambient_animation ) {
+if ( $enable_scroll || ( $enable_parallax && ( $use_image || $use_video ) && 'gsap' === $parallax_type ) || $use_hover_reveal || $enable_ambient_animation ) {
 	nextora_ac_enqueue_view_script();
 }
 
@@ -476,7 +491,11 @@ $wrapper_args = array(
 if ( $enable_scroll ) {
 	$wrapper_args['data-nextora-scroll-reveal'] = '1';
 }
-if ( $enable_parallax && ( $use_image || $use_video ) && ! $enable_background_animation ) {
+if ( $enable_parallax && $use_image && ! $enable_background_animation && 'gsap' === $parallax_type ) {
+	$wrapper_args['data-nextora-ac-parallax']       = '1';
+	$wrapper_args['data-nextora-ac-parallax-speed'] = (string) $parallax_speed;
+}
+if ( $enable_parallax && $use_video && ! $enable_background_animation ) {
 	$wrapper_args['data-nextora-ac-parallax']       = '1';
 	$wrapper_args['data-nextora-ac-parallax-speed'] = (string) $parallax_speed;
 }
@@ -561,7 +580,7 @@ if ( $use_hover_reveal ) {
 		<div
 			class="nextora-advanced-container__bg"
 			aria-hidden="true"
-			style="<?php echo esc_attr( nextora_ac_build_background_image_style( $attributes, $background_image_url ) ); ?>"
+			style="<?php echo esc_attr( nextora_ac_build_background_image_style( $attributes, $background_image_url ) . ( ( $enable_parallax && 'fixed' === $parallax_type ) ? ';background-attachment:fixed' : '' ) ); ?>"
 		></div>
 	<?php elseif ( $use_video ) : ?>
 		<div class="nextora-advanced-container__bg nextora-advanced-container__bg--video" aria-hidden="true">

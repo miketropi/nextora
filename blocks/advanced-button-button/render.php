@@ -29,6 +29,9 @@ if ( '' !== $parts['aria_label'] ) {
 	$aria_attr = ' aria-label="' . esc_attr( $parts['aria_label'] ) . '"';
 }
 
+$btn_class = $parts['classes'] . ' nextora-advanced-button__button wp-element-button wp-block-nextora-advanced-button-button';
+$btn_style = $parts['style'];
+
 if ( $parts['opens_modal'] ) {
 	$modal_id    = nextora_advanced_button_modal_sanitize_id( $parts['modal_id'] );
 	$modal_title = isset( $attributes['modalTitle'] ) ? trim( (string) $attributes['modalTitle'] ) : '';
@@ -45,20 +48,17 @@ if ( $parts['opens_modal'] ) {
 		$modal_body = nextora_advanced_button_modal_strip_save_wrapper( $content );
 	}
 
-	$wrap_attrs = get_block_wrapper_attributes(
+	$button_attrs = get_block_wrapper_attributes(
 		array(
-			'class' => 'nextora-advanced-button-button-wrap nextora-advanced-button-button-wrap--modal',
+			'class' => $btn_class,
+			'style' => $btn_style,
 		),
 	);
-
-	$btn_class = $parts['classes'] . ' nextora-advanced-button__button wp-element-button wp-block-nextora-advanced-button-button';
-	$btn_style = $parts['style'];
 	?>
-	<div <?php echo $wrap_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
+	<div class="nextora-advanced-button-button-wrap nextora-advanced-button-button-wrap--modal">
 		<button
 			type="button"
-			class="<?php echo esc_attr( $btn_class ); ?>"
-			style="<?php echo esc_attr( $btn_style ); ?>"
+			<?php echo $button_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 			data-nextora-modal-open="<?php echo esc_attr( $modal_id ); ?>"
 			aria-haspopup="dialog"
 			<?php echo $aria_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
@@ -77,20 +77,17 @@ if ( $parts['is_click_event'] ) {
 	$event_id = nextora_advanced_button_modal_sanitize_id( $parts['click_event_id'] );
 	$script   = $parts['click_event_script'];
 
-	$wrap_attrs = get_block_wrapper_attributes(
+	$button_attrs = get_block_wrapper_attributes(
 		array(
-			'class' => 'nextora-advanced-button-button-wrap nextora-advanced-button-button-wrap--click-event',
+			'class' => $btn_class,
+			'style' => $btn_style,
 		),
 	);
-
-	$btn_class = $parts['classes'] . ' nextora-advanced-button__button wp-element-button wp-block-nextora-advanced-button-button';
-	$btn_style = $parts['style'];
 	?>
-	<div <?php echo $wrap_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
+	<div class="nextora-advanced-button-button-wrap nextora-advanced-button-button-wrap--click-event">
 		<button
 			type="button"
-			class="<?php echo esc_attr( $btn_class ); ?>"
-			style="<?php echo esc_attr( $btn_style ); ?>"
+			<?php echo $button_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 			data-nextora-advanced-button-click-event="1"
 			data-nextora-advanced-button-event-id="<?php echo esc_attr( $event_id ); ?>"
 			<?php echo $aria_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>

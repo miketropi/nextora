@@ -15,7 +15,6 @@ import {
 	PanelBody,
 	RangeControl,
 	SelectControl,
-	TextControl,
 	TextareaControl,
 	ToggleControl,
 } from '@wordpress/components';
@@ -35,6 +34,11 @@ import {
 	resolveTrustAvatarUrl,
 } from './testimonial-utils';
 import TestimonialEditForm from './testimonial-edit-form';
+import {
+	normalizeColorForStorage,
+	colorValueForPicker,
+	useThemeColorPalette,
+} from './color-utils';
 import { ChevronLeftIcon, ChevronRightIcon, StarRating, TopIconSvg } from './icons';
 
 interface EditProps {
@@ -47,6 +51,11 @@ interface WPMedia {
 	url?: string;
 	alt?: string;
 }
+
+const templateStyleOptions = [
+	{ label: __('Default', 'nextora'), value: 'default' },
+	{ label: __('Template 1', 'nextora'), value: 'template-1' },
+];
 
 const iconTypeOptions = [
 	{ label: __('Sparkle', 'nextora'), value: 'sparkle' },
@@ -80,6 +89,7 @@ const avatarFallbackOptions = [
 
 export default function TestimonialCarouselEdit({ attributes, setAttributes }: EditProps) {
 	const [editingId, setEditingId] = useState<string | null>(null);
+	const palette = useThemeColorPalette();
 
 	const testimonials = normalizeTestimonials(attributes.testimonials);
 	const trustAvatars = normalizeTrustAvatars(attributes.trustAvatars);
@@ -109,6 +119,11 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 	});
 
 	const {
+		templateStyle = 'default',
+		itemsPerViewDesktop = 3,
+		itemsPerViewTablet = 2,
+		itemsPerViewMobile = 1,
+		cardGap = 22,
 		showTopIcon = true,
 		topIconType = 'sparkle',
 		customIconSvg = '',
@@ -154,14 +169,13 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 		className: [
 			'nextora-testimonial-carousel',
 			'nextora-testimonial-carousel--editor',
+			templateStyle === 'template-1' ? 'nextora-testimonial-carousel--template-1' : '',
 			showArrows && arrowPosition === 'sides' ? 'nextora-testimonial-carousel--arrows-sides' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
 		style: buildSectionStyleVars({
 			backgroundColor,
-			paddingTop,
-			paddingBottom,
 			contentMaxWidth,
 			topIconSize,
 			topIconColor,
@@ -179,6 +193,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 			trustAvatarOverlap,
 			trustAvatarBorderWidth,
 			trustAvatarBorderColor,
+			cardGap,
 		}) as CSSProperties,
 	});
 
@@ -298,6 +313,21 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 	return (
 		<>
 			<InspectorControls>
+				<PanelBody title={__('Template', 'nextora')} initialOpen>
+					<SelectControl
+						label={__('Template style', 'nextora')}
+						value={templateStyle}
+						options={templateStyleOptions}
+						onChange={(v) =>
+							setAttributes({
+								templateStyle:
+									(v as TestimonialCarouselAttributes['templateStyle']) ?? 'default',
+							})
+						}
+					/>
+				</PanelBody>
+
+				{templateStyle !== 'template-1' && (
 				<PanelBody title={__('Top decorator', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Show icon', 'nextora')}
@@ -340,6 +370,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						onChange={(v) => setAttributes({ showTopLabel: v })}
 					/>
 				</PanelBody>
+				)}
 
 				<PanelBody title={__('Testimonials', 'nextora')} initialOpen>
 					<p className="nextora-testimonial-carousel__inspector-help">
@@ -389,16 +420,18 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 				</PanelBody>
 
 				<PanelBody title={__('Carousel', 'nextora')} initialOpen={false}>
-					<SelectControl
-						label={__('Transition', 'nextora')}
-						value={effect}
-						options={effectOptions}
-						onChange={(v) =>
-							setAttributes({
-								effect: (v as TestimonialCarouselAttributes['effect']) ?? 'fade',
-							})
-						}
-					/>
+					{templateStyle !== 'template-1' && (
+						<SelectControl
+							label={__('Transition', 'nextora')}
+							value={effect}
+							options={effectOptions}
+							onChange={(v) =>
+								setAttributes({
+									effect: (v as TestimonialCarouselAttributes['effect']) ?? 'fade',
+								})
+							}
+						/>
+					)}
 					<RangeControl
 						label={__('Speed (ms)', 'nextora')}
 						value={speed}
@@ -412,9 +445,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						checked={loop}
 						onChange={(v) => setAttributes({ loop: v })}
 					/>
-				</PanelBody>
 
-				<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Enable autoplay', 'nextora')}
 						checked={autoplay}
@@ -423,7 +454,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 					{autoplay && (
 						<>
 							<RangeControl
-								label={__('Delay (ms)', 'nextora')}
+								label={__('Autoplay delay (ms)', 'nextora')}
 								value={autoplayDelay}
 								onChange={(v) => setAttributes({ autoplayDelay: v ?? 6000 })}
 								min={2000}
@@ -437,9 +468,40 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 							/>
 						</>
 					)}
-				</PanelBody>
 
-				<PanelBody title={__('Navigation', 'nextora')} initialOpen={false}>
+					{templateStyle === 'template-1' && (
+						<>
+							<RangeControl
+								label={__('Slides per view — Desktop', 'nextora')}
+								value={itemsPerViewDesktop}
+								onChange={(v) => setAttributes({ itemsPerViewDesktop: v ?? 3 })}
+								min={1}
+								max={5}
+							/>
+							<RangeControl
+								label={__('Slides per view — Tablet', 'nextora')}
+								value={itemsPerViewTablet}
+								onChange={(v) => setAttributes({ itemsPerViewTablet: v ?? 2 })}
+								min={1}
+								max={4}
+							/>
+							<RangeControl
+								label={__('Slides per view — Mobile', 'nextora')}
+								value={itemsPerViewMobile}
+								onChange={(v) => setAttributes({ itemsPerViewMobile: v ?? 1 })}
+								min={1}
+								max={2}
+							/>
+							<RangeControl
+								label={__('Gap (px)', 'nextora')}
+								value={cardGap}
+								onChange={(v) => setAttributes({ cardGap: v ?? 22 })}
+								min={0}
+								max={40}
+							/>
+						</>
+					)}
+
 					<ToggleControl
 						label={__('Show pagination', 'nextora')}
 						checked={showPagination}
@@ -450,7 +512,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						checked={showArrows}
 						onChange={(v) => setAttributes({ showArrows: v })}
 					/>
-					{showArrows && (
+					{showArrows && templateStyle !== 'template-1' && (
 						<SelectControl
 							label={__('Arrow position', 'nextora')}
 							value={arrowPosition}
@@ -466,108 +528,98 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 					)}
 				</PanelBody>
 
-				<PanelBody title={__('Trust indicator', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Show trust indicator', 'nextora')}
-						checked={showTrustIndicator}
-						onChange={(v) => setAttributes({ showTrustIndicator: v })}
-					/>
-					{showTrustIndicator && (
-						<>
-							<MediaUploadCheck>
-								<MediaUpload
-									onSelect={addTrustAvatar}
-									allowedTypes={[...TESTIMONIAL_CAROUSEL_MEDIA_TYPES]}
-									multiple
-									gallery
-									render={({ open }) => (
-										<Button variant="secondary" onClick={open}>
-											{__('Add trust avatars', 'nextora')}
-										</Button>
-									)}
+				{templateStyle !== 'template-1' && (
+					<PanelBody title={__('Trust indicator', 'nextora')} initialOpen={false}>
+						<ToggleControl
+							label={__('Show trust indicator', 'nextora')}
+							checked={showTrustIndicator}
+							onChange={(v) => setAttributes({ showTrustIndicator: v })}
+						/>
+						{showTrustIndicator && (
+							<>
+								<MediaUploadCheck>
+									<MediaUpload
+										onSelect={addTrustAvatar}
+										allowedTypes={[...TESTIMONIAL_CAROUSEL_MEDIA_TYPES]}
+										multiple
+										gallery
+										render={({ open }) => (
+											<Button variant="secondary" onClick={open}>
+												{__('Add trust avatars', 'nextora')}
+											</Button>
+										)}
+									/>
+								</MediaUploadCheck>
+								{trustAvatars.length > 0 && (
+									<Button
+										variant="secondary"
+										isDestructive
+										onClick={() => setTrustAvatars([])}
+									>
+										{__('Clear avatars', 'nextora')}
+									</Button>
+								)}
+								<RangeControl
+									label={__('Avatar size (px)', 'nextora')}
+									value={trustAvatarSize}
+									onChange={(v) => setAttributes({ trustAvatarSize: v ?? 36 })}
+									min={24}
+									max={56}
 								/>
-							</MediaUploadCheck>
-							{trustAvatars.length > 0 && (
-								<Button
-									variant="secondary"
-									isDestructive
-									onClick={() => setTrustAvatars([])}
-								>
-									{__('Clear avatars', 'nextora')}
-								</Button>
-							)}
-							<RangeControl
-								label={__('Avatar size (px)', 'nextora')}
-								value={trustAvatarSize}
-								onChange={(v) => setAttributes({ trustAvatarSize: v ?? 36 })}
-								min={24}
-								max={56}
-							/>
-							<RangeControl
-								label={__('Avatar overlap (px)', 'nextora')}
-								value={trustAvatarOverlap}
-								onChange={(v) => setAttributes({ trustAvatarOverlap: v ?? 10 })}
-								min={0}
-								max={20}
-							/>
-							<RangeControl
-								label={__('Avatar border (px)', 'nextora')}
-								value={trustAvatarBorderWidth}
-								onChange={(v) =>
-									setAttributes({ trustAvatarBorderWidth: v ?? 2.5 })
-								}
-								min={0}
-								max={5}
-								step={0.5}
-							/>
-							<SelectControl
-								label={__('No-photo fallback', 'nextora')}
-								value={trustAvatarFallback}
-								options={avatarFallbackOptions}
-								onChange={(v) =>
-									setAttributes({
-										trustAvatarFallback:
-											(v as TestimonialCarouselAttributes['trustAvatarFallback']) ??
-											'initials',
-									})
-								}
-							/>
-							<SelectControl
-								label={__('Trust position', 'nextora')}
-								value={trustPosition}
-								options={trustPositionOptions}
-								onChange={(v) =>
-									setAttributes({
-										trustPosition:
-											(v as TestimonialCarouselAttributes['trustPosition']) ??
-											'below-quote',
-									})
-								}
-							/>
-						</>
-					)}
-				</PanelBody>
+								<RangeControl
+									label={__('Avatar overlap (px)', 'nextora')}
+									value={trustAvatarOverlap}
+									onChange={(v) => setAttributes({ trustAvatarOverlap: v ?? 10 })}
+									min={0}
+									max={20}
+								/>
+								<RangeControl
+									label={__('Avatar border (px)', 'nextora')}
+									value={trustAvatarBorderWidth}
+									onChange={(v) =>
+										setAttributes({ trustAvatarBorderWidth: v ?? 2.5 })
+									}
+									min={0}
+									max={5}
+									step={0.5}
+								/>
+								<SelectControl
+									label={__('No-photo fallback', 'nextora')}
+									value={trustAvatarFallback}
+									options={avatarFallbackOptions}
+									onChange={(v) =>
+										setAttributes({
+											trustAvatarFallback:
+												(v as TestimonialCarouselAttributes['trustAvatarFallback']) ??
+												'initials',
+										})
+									}
+								/>
+								<SelectControl
+									label={__('Trust position', 'nextora')}
+									value={trustPosition}
+									options={trustPositionOptions}
+									onChange={(v) =>
+										setAttributes({
+											trustPosition:
+												(v as TestimonialCarouselAttributes['trustPosition']) ??
+												'below-quote',
+										})
+									}
+								/>
+							</>
+						)}
+					</PanelBody>
+				)}
 
 				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
-					<TextControl
-						label={__('Content max width', 'nextora')}
-						value={contentMaxWidth}
-						onChange={(v) => setAttributes({ contentMaxWidth: v ?? '680px' })}
-						help={__('e.g. 680px, 42rem', 'nextora')}
-					/>
 					<RangeControl
-						label={__('Padding top (px)', 'nextora')}
-						value={paddingTop}
-						onChange={(v) => setAttributes({ paddingTop: v ?? 80 })}
-						min={0}
-						max={200}
-					/>
-					<RangeControl
-						label={__('Padding bottom (px)', 'nextora')}
-						value={paddingBottom}
-						onChange={(v) => setAttributes({ paddingBottom: v ?? 80 })}
-						min={0}
-						max={200}
+						label={__('Content max width (px)', 'nextora')}
+						value={parseInt(contentMaxWidth, 10) || 680}
+						onChange={(v) => setAttributes({ contentMaxWidth: (v ?? 680) + 'px' })}
+						min={200}
+						max={1400}
+						step={20}
 					/>
 				</PanelBody>
 
@@ -575,57 +627,70 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
-							value: backgroundColor,
-							onChange: (v) => setAttributes({ backgroundColor: v ?? '' }),
+							value: colorValueForPicker(backgroundColor, palette),
+							onChange: (v) => setAttributes({ backgroundColor: normalizeColorForStorage(v, palette) }),
 							label: __('Background', 'nextora'),
 						},
+						...(templateStyle !== 'template-1'
+							? [
+									{
+										value: colorValueForPicker(topIconColor, palette),
+										onChange: (v: string | undefined) => setAttributes({ topIconColor: normalizeColorForStorage(v, palette) }),
+										label: __('Top icon', 'nextora'),
+									},
+								]
+							: []),
+						...(templateStyle !== 'template-1'
+							? [
+									{
+										value: colorValueForPicker(labelColor, palette),
+										onChange: (v: string | undefined) => setAttributes({ labelColor: normalizeColorForStorage(v, palette) }),
+										label: __('Label', 'nextora'),
+									},
+								]
+							: []),
 						{
-							value: topIconColor,
-							onChange: (v) => setAttributes({ topIconColor: v ?? '' }),
-							label: __('Top icon', 'nextora'),
-						},
-						{
-							value: labelColor,
-							onChange: (v) => setAttributes({ labelColor: v ?? '' }),
-							label: __('Label', 'nextora'),
-						},
-						{
-							value: quoteColor,
-							onChange: (v) => setAttributes({ quoteColor: v ?? '' }),
+							value: colorValueForPicker(quoteColor, palette),
+							onChange: (v) => setAttributes({ quoteColor: normalizeColorForStorage(v, palette) }),
 							label: __('Quote', 'nextora'),
 						},
 						{
-							value: authorNameColor,
-							onChange: (v) => setAttributes({ authorNameColor: v ?? '' }),
+							value: colorValueForPicker(authorNameColor, palette),
+							onChange: (v) => setAttributes({ authorNameColor: normalizeColorForStorage(v, palette) }),
 							label: __('Author name', 'nextora'),
 						},
 						{
-							value: authorColor,
-							onChange: (v) => setAttributes({ authorColor: v ?? '' }),
+							value: colorValueForPicker(authorColor, palette),
+							onChange: (v) => setAttributes({ authorColor: normalizeColorForStorage(v, palette) }),
 							label: __('Author role', 'nextora'),
 						},
 						{
-							value: starColor,
-							onChange: (v) => setAttributes({ starColor: v ?? '' }),
+							value: colorValueForPicker(starColor, palette),
+							onChange: (v) => setAttributes({ starColor: normalizeColorForStorage(v, palette) }),
 							label: __('Star rating', 'nextora'),
 						},
-						{
-							value: trustColor,
-							onChange: (v) => setAttributes({ trustColor: v ?? '' }),
-							label: __('Trust text', 'nextora'),
-						},
+						...(templateStyle !== 'template-1'
+							? [
+									{
+										value: colorValueForPicker(trustColor, palette),
+										onChange: (v: string | undefined) =>
+											setAttributes({ trustColor: normalizeColorForStorage(v, palette) }),
+										label: __('Trust text', 'nextora'),
+									},
+								]
+							: []),
 						...(showPagination
 							? [
 									{
-										value: paginationColor,
+										value: colorValueForPicker(paginationColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ paginationColor: v ?? '' }),
+											setAttributes({ paginationColor: normalizeColorForStorage(v, palette) }),
 										label: __('Pagination dot', 'nextora'),
 									},
 									{
-										value: paginationActiveColor,
+										value: colorValueForPicker(paginationActiveColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ paginationActiveColor: v ?? '' }),
+											setAttributes({ paginationActiveColor: normalizeColorForStorage(v, palette) }),
 										label: __('Active pagination', 'nextora'),
 									},
 								]
@@ -633,25 +698,25 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						...(showArrows
 							? [
 									{
-										value: arrowColor,
+										value: colorValueForPicker(arrowColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ arrowColor: v ?? '' }),
+											setAttributes({ arrowColor: normalizeColorForStorage(v, palette) }),
 										label: __('Arrow icon', 'nextora'),
 									},
 									{
-										value: arrowBorderColor,
+										value: colorValueForPicker(arrowBorderColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ arrowBorderColor: v ?? '' }),
+											setAttributes({ arrowBorderColor: normalizeColorForStorage(v, palette) }),
 										label: __('Arrow border', 'nextora'),
 									},
 								]
 							: []),
-						...(showTrustIndicator
+						...(showTrustIndicator && templateStyle !== 'template-1'
 							? [
 									{
-										value: trustAvatarBorderColor,
+										value: colorValueForPicker(trustAvatarBorderColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ trustAvatarBorderColor: v ?? '' }),
+											setAttributes({ trustAvatarBorderColor: normalizeColorForStorage(v, palette) }),
 										label: __('Avatar border', 'nextora'),
 									},
 								]
@@ -698,7 +763,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 
 			<div {...blockProps}>
 				<div className="nextora-testimonial-carousel__inner">
-					{(showTopIcon || showTopLabel) && (
+					{templateStyle !== 'template-1' && (showTopIcon || showTopLabel) && (
 						<div className="nextora-testimonial-carousel__top">
 							{showTopIcon && (
 								<div className="nextora-testimonial-carousel__icon" aria-hidden>
@@ -725,18 +790,20 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						</div>
 					)}
 
-					<div className="nextora-testimonial-carousel__slides-editor">
+					<div className={`nextora-testimonial-carousel__slides-editor${templateStyle === 'template-1' ? ' nextora-testimonial-carousel__slides-editor--template-1' : ''}`}>
 						{testimonials.map((item, index) => {
 							const authorPhotoUrl = resolveAuthorPhotoUrl(item, mediaUrlById);
 
 							return (
 							<article
 								key={item.id}
-								className="nextora-testimonial-carousel__slide nextora-testimonial-carousel__slide--editor"
+								className={`nextora-testimonial-carousel__slide nextora-testimonial-carousel__slide--editor${templateStyle === 'template-1' ? ' nextora-testimonial-carousel__slide--t1' : ''}`}
 							>
-								<p className="nextora-testimonial-carousel__slide-badge">
-									{__('Testimonial', 'nextora')} {index + 1}
-								</p>
+								{templateStyle !== 'template-1' && (
+									<p className="nextora-testimonial-carousel__slide-badge">
+										{__('Testimonial', 'nextora')} {index + 1}
+									</p>
+								)}
 								<button
 									type="button"
 									className="nextora-testimonial-carousel__slide-edit"
@@ -749,7 +816,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 									{item.quoteText ||
 										__('Write testimonial quote…', 'nextora')}
 								</blockquote>
-								<div className="nextora-testimonial-carousel__slide-author">
+								<div className={`nextora-testimonial-carousel__slide-author${templateStyle === 'template-1' ? ' nextora-testimonial-carousel__slide-author--t1' : ''}`}>
 									{item.showAuthorPhoto && authorPhotoUrl ? (
 										<img
 											src={authorPhotoUrl}
@@ -757,34 +824,40 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 											className="nextora-testimonial-carousel__slide-author-photo"
 										/>
 									) : null}
-									<p className="nextora-testimonial-carousel__slide-author-line">
+									<div className="nextora-testimonial-carousel__slide-author-text">
 										{item.authorName ? (
 											<>
-												—{' '}
+												{templateStyle !== 'template-1' && '— '}
 												<strong className="nextora-testimonial-carousel__slide-author-name">
 													{item.authorName}
 												</strong>
 												{item.authorRole ? (
-													<>
-														{', '}
+													templateStyle === 'template-1' ? (
 														<span className="nextora-testimonial-carousel__slide-author-role">
 															{item.authorRole}
 														</span>
-													</>
+													) : (
+														<>
+															{', '}
+															<span className="nextora-testimonial-carousel__slide-author-role">
+																{item.authorRole}
+															</span>
+														</>
+													)
 												) : null}
 											</>
 										) : (
 											__('Author name, role', 'nextora')
 										)}
-									</p>
+									</div>
 								</div>
 							</article>
 							);
 						})}
 					</div>
 
-					{trustPosition === 'below-quote' && renderTrustPreview()}
-					{trustPosition === 'above-dots' && renderTrustPreview()}
+					{templateStyle !== 'template-1' && trustPosition === 'below-quote' && renderTrustPreview()}
+					{templateStyle !== 'template-1' && trustPosition === 'above-dots' && renderTrustPreview()}
 					{showPagination && (
 						<div className="nextora-testimonial-carousel__pagination nextora-testimonial-carousel__pagination--preview">
 							{testimonials.map((t, i) => (
@@ -801,7 +874,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 					)}
 					{showArrows && (
 						<div
-							className={`nextora-testimonial-carousel__arrows nextora-testimonial-carousel__arrows--${arrowPosition}`}
+							className={`nextora-testimonial-carousel__arrows nextora-testimonial-carousel__arrows--${templateStyle === 'template-1' ? 'below-dots' : arrowPosition}`}
 						>
 							<span className="nextora-testimonial-carousel__arrow">
 								<ChevronLeftIcon />
@@ -811,7 +884,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 							</span>
 						</div>
 					)}
-					{trustPosition === 'bottom' && renderTrustPreview()}
+					{templateStyle !== 'template-1' && trustPosition === 'bottom' && renderTrustPreview()}
 				</div>
 			</div>
 		</>

@@ -137,6 +137,9 @@
 		"paginationColor": { "type": "string", "default": "" },
 		"paginationActiveColor": { "type": "string", "default": "" },
 		"arrowColor": { "type": "string", "default": "" },
+		"badgeBackgroundColor": { "type": "string", "default": "" },
+		"badgeTextColor": { "type": "string", "default": "" },
+		"bulletIconColor": { "type": "string", "default": "" },
 		"enableScrollAnimation": { "type": "boolean", "default": true }
 	},
 	"editorScript": "file:./index.js",
