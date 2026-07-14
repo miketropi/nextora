@@ -150,7 +150,8 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 		$link_color       = isset( $item['linkColor'] ) ? trim( (string) $item['linkColor'] ) : '';
 
 		$is_template1 = 'template1' === $template;
-		$is_template2     = 'template2' === $template;
+	$is_template2 = 'template2' === $template;
+	$is_template3 = 'template3' === $template;
 
 		$card_vars = array();
 		if ( '' !== $bg_color ) {
@@ -188,6 +189,8 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 			$out .= '<article class="nextora-box-image__card nextora-box-image__card--template1"' . $card_style . '>';
 		} elseif ( $is_template2 ) {
 			$out .= '<article class="nextora-box-image__card nextora-box-image__card--template2"' . $card_style . '>';
+		} elseif ( $is_template3 ) {
+			$out .= '<article class="nextora-box-image__card nextora-box-image__card--template3"' . $card_style . '>';
 		} else {
 			$out .= '<article class="nextora-box-image__card"' . $card_style . '>';
 		}
@@ -224,7 +227,7 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 			);
 		}
 
-		if ( $is_template1 && '' !== $badge ) {
+		if ( ( $is_template1 || $is_template3 ) && '' !== $badge ) {
 			$out .= '<span class="nextora-box-image__badge">' . esc_html( $badge ) . '</span>';
 		}
 
@@ -234,7 +237,57 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 			$out .= '<div class="nextora-box-image__card-body">';
 		}
 
-		$out .= '<h3 class="nextora-box-image__title">' . esc_html( $title ) . '</h3>';
+		if ( $is_template3 ) {
+			$out .= '<div class="nextora-box-image__card-body">';
+		}
+
+		if ( $is_template3 ) {
+			$out .= '<h4 class="nextora-box-image__title">' . esc_html( $title ) . '</h4>';
+
+			$desc_text = trim( wp_strip_all_tags( $description ) );
+			if ( '' !== $desc_text ) {
+				$bullets = preg_split( '/\r\n|\n|\r/', $desc_text );
+				if ( false === $bullets ) {
+					$bullets = array();
+				}
+				$bullets = array_filter( $bullets, static fn( string $line ): bool => '' !== trim( $line ) );
+				if ( array() !== $bullets ) {
+					$out .= '<ul class="nextora-box-image__bullets">';
+					foreach ( $bullets as $bullet ) {
+						$bullet = trim( $bullet );
+						$out .= '<li><svg class="nextora-box-image__bullet-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg><span>' . esc_html( $bullet ) . '</span></li>';
+					}
+					$out .= '</ul>';
+				}
+			}
+
+			if ( $show_link && '' !== $link_label ) {
+				$arrow = '<span class="nextora-box-image__link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
+				if ( '' !== $link_url ) {
+					$out .= sprintf(
+						'<a class="nextora-box-image__link nextora-box-image__link--template3" href="%1$s"%2$s>%3$s%4$s</a>',
+						esc_url( $link_url ),
+						'_blank' === $link_target ? ' target="_blank" rel="noopener noreferrer"' : '',
+						esc_html( $link_label ),
+						$arrow,
+					);
+				} else {
+					$out .= sprintf(
+						'<span class="nextora-box-image__link nextora-box-image__link--template3 nextora-box-image__link--static">%1$s%2$s</span>',
+						esc_html( $link_label ),
+						$arrow,
+					);
+				}
+			}
+
+			$out .= '</div>';
+			$out .= '</article>';
+			$out .= $as_slide ? '</div>' : '';
+
+			return $out;
+		}
+
+		$out .= '<h4 class="nextora-box-image__title">' . esc_html( $title ) . '</h4>';
 
 		if ( '' !== trim( wp_strip_all_tags( $description ) ) ) {
 			$out .= '<p class="nextora-box-image__description">' . esc_html( $description ) . '</p>';
@@ -306,7 +359,7 @@ if ( ! in_array( $layout_mode, array( 'slider', 'grid' ), true ) ) {
 }
 
 $template = isset( $attributes['template'] ) ? (string) $attributes['template'] : 'default';
-if ( ! in_array( $template, array( 'default', 'template1', 'template2' ), true ) ) {
+if ( ! in_array( $template, array( 'default', 'template1', 'template2', 'template3' ), true ) ) {
 	$template = 'default';
 }
 
@@ -371,6 +424,9 @@ $color_keys = array(
 	'paginationColor'       => '--nextora-box-image-dot-color',
 	'paginationActiveColor' => '--nextora-box-image-dot-active',
 	'arrowColor'            => '--nextora-box-image-arrow-color',
+	'badgeBackgroundColor'  => '--nextora-box-image-badge-bg',
+	'badgeTextColor'        => '--nextora-box-image-badge-text',
+	'bulletIconColor'       => '--nextora-box-image-bullet-icon-color',
 );
 
 $css_vars = array(

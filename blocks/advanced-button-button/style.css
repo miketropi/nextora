@@ -23,26 +23,18 @@
 
 .wp-block-nextora-advanced-button-button.nextora-advanced-button-button--style-fill {
 	border: none;
-	background: var(
-		--nextora-advanced-button-bg,
-		var(--wp--preset--color--primary, currentColor)
-	);
-	color: var(
-		--nextora-advanced-button-text,
-		var(--wp--preset--color--base, #fff)
-	);
 }
 
 .wp-block-nextora-advanced-button-button.nextora-advanced-button-button--style-outline {
 	border: 1.5px solid
 		var(
 			--nextora-advanced-button-border,
-			var(--wp--preset--color--primary, currentColor)
+			var(--nextora-advanced-button-bg, currentColor)
 		);
 	background: transparent;
 	color: var(
 		--nextora-advanced-button-text,
-		var(--wp--preset--color--primary, currentColor)
+		var(--nextora-advanced-button-bg, currentColor)
 	);
 }
 
@@ -74,16 +66,16 @@
 .wp-block-nextora-advanced-button-button.nextora-advanced-button-button--hover-color-swap:focus-visible {
 	background: var(
 		--nextora-advanced-button-hover-bg,
-		var(--nextora-advanced-button-bg, var(--wp--preset--color--primary, currentColor))
-	);
+		var(--nextora-advanced-button-bg, currentColor)
+	) !important;
 	border-color: var(
 		--nextora-advanced-button-hover-border,
 		var(--nextora-advanced-button-hover-bg, var(--nextora-advanced-button-border, currentColor))
 	);
 	color: var(
 		--nextora-advanced-button-hover-text,
-		var(--nextora-advanced-button-text, var(--wp--preset--color--base, #fff))
-	);
+		var(--nextora-advanced-button-text, currentColor)
+	) !important;
 }
 
 .wp-block-nextora-advanced-button-button.nextora-advanced-button-button--hover-color-swap:hover .nextora-advanced-button__icon svg,

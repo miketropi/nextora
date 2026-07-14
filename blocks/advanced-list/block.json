@@ -96,6 +96,10 @@
       "type": "number",
       "default": 14
     },
+    "itemGap": {
+      "type": "number",
+      "default": 16
+    },
     "enableScrollAnimation": {
       "type": "boolean",
       "default": true

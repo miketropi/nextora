@@ -29,6 +29,7 @@ export interface IconAttributes extends Record< string, unknown > {
 	iconAlign: IconAlign;
 	iconStyle: IconStyle;
 	borderRadius: number;
+	surfacePadding: number;
 	surfaceBackgroundColor: string;
 	surfaceBorderColor: string;
 	/** @deprecated Legacy alias — migrated to surfaceBackgroundColor. */
@@ -38,7 +39,6 @@ export interface IconAttributes extends Record< string, unknown > {
 	linkUrl: string;
 	linkTarget: IconLinkTarget;
 	ariaLabel: string;
-	cssClass: string;
 	enableScrollAnimation: boolean;
 	textColor?: string;
 }

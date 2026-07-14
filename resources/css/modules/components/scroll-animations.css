@@ -206,3 +206,40 @@
 		opacity: 0;
 	}
 }
+
+.animation-video-button-ripple {
+	position: relative;
+}
+
+.animation-video-button-ripple::before,
+.animation-video-button-ripple::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	animation: nextoraVideoButtonRipple 2s ease-out infinite;
+	pointer-events: none;
+}
+
+.animation-video-button-ripple::after {
+	animation-delay: 1s;
+}
+
+@keyframes nextoraVideoButtonRipple {
+	0% {
+		box-shadow: 0 0 0 4px var(--nextora-advanced-button-bg, var(--wp--preset--color--primary, currentColor));
+		opacity: 0.4;
+	}
+	100% {
+		box-shadow: 0 0 0 28px var(--nextora-advanced-button-bg, var(--wp--preset--color--primary, currentColor));
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.animation-video-button-ripple::before,
+	.animation-video-button-ripple::after {
+		animation: none;
+		display: none;
+	}
+}

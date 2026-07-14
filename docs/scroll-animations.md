@@ -25,6 +25,7 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-text-reveal-chars-rise` | Characters rise in with perspective + `back.out` easing |
 | `animation-text-reveal-chars-scrub` | Characters brighten and slide in while scrolling (scrubbed) |
 | `animation-text-typewriter` | Character-by-character typewriter with blinking caret on scroll (inspired by [MiMo Code] hero subtitle) |
+| `animation-video-button-ripple` | Expanding concentric ripple for video play buttons (CSS-only, no scroll trigger) |
 
 ## Image & text reveal presets
 
@@ -161,6 +162,18 @@ Put the class on a wrapper (e.g. `entry-content`, post content Group). **Every d
   <ul class="wp-block-list">…</ul>
 </div>
 ```
+
+### Video button ripple
+
+Put the class on any play-button element for an expanding concentric ripple:
+
+```html
+<div class="wp-block-group animation-video-button-ripple">
+  <!-- video play button markup -->
+</div>
+```
+
+Uses `::before` and `::after` pseudo-elements with staggered `animation-delay`. The animation runs as a pure CSS keyframe (no GSAP/ScrollTrigger). Ripple is disabled when `prefers-reduced-motion: reduce`.
 
 ### Staggered children (Group / Columns)
 

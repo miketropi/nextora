@@ -202,13 +202,13 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
     iconBackgroundColor = 'primary',
     iconBorderColor = 'primary',
     iconTextGap = 14,
+    itemGap = 16,
     enableScrollAnimation = true,
   } = attributes;
 
-  // Ensure defaults are set on first insert
   useEffect(() => {
     const needsDefaults: Partial<AdvancedListAttributes> = {};
-    
+
     if (!attributes.iconColor) {
       needsDefaults.iconColor = 'base';
     }
@@ -218,32 +218,29 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
     if (!attributes.iconBorderColor) {
       needsDefaults.iconBorderColor = 'primary';
     }
-    
+
     if (Object.keys(needsDefaults).length > 0) {
       setAttributes(needsDefaults);
     }
-  }, []);  // Run once on mount
+  }, []);
 
-  // Helper to resolve color for editor preview
   const resolveColorForEditor = (colorValue: string): string => {
     if (!colorValue || colorValue === 'transparent') return 'transparent';
     const entry = lookupPalette.find((p) => p.slug === colorValue);
     if (entry?.color) return entry.color;
     if (colorValue.startsWith('#')) return colorValue;
-    // Fallback to CSS variable
     return `var(--wp--preset--color--${colorValue})`;
   };
 
-  // Compute effective colors - respect user choices, apply defaults only when empty
   const effectiveIconColor = iconColor || (iconStyle === 'default' || iconStyle === 'framed' ? 'primary' : 'base');
   const effectiveIconBg = iconBackgroundColor || (iconStyle === 'stacked' ? 'primary' : 'transparent');
-  
+
   const editorIconColor = resolveColorForEditor(effectiveIconColor) || 'var(--wp--preset--color--base, #000)';
   const editorIconBg = resolveColorForEditor(effectiveIconBg) || 'transparent';
   const editorIconBorder = resolveColorForEditor(iconBorderColor) || 'var(--wp--preset--color--primary, #0066cc)';
 
   const blockProps = useBlockProps({
-    className: `nextora-advanced-list nextora-advanced-list--style-${iconStyle}`,
+    className: `wp-block-nextora-advanced-list--style-${iconStyle}`,
     style: {
       '--nextora-list-icon-color': editorIconColor,
       '--nextora-list-icon-bg': editorIconBg,
@@ -251,6 +248,7 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
       '--nextora-list-icon-size': `${iconSize}px`,
       '--nextora-list-icon-circle-size': `${iconCircleSize}px`,
       '--nextora-list-icon-text-gap': `${iconTextGap}px`,
+      '--nextora-list-item-gap': `${itemGap}px`,
       '--nextora-list-border-radius': `${borderRadius}%`,
       '--nextora-list-stroke-width': strokeWidth,
     } as React.CSSProperties,
@@ -296,7 +294,91 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
   return (
     <>
       <InspectorControls>
-        <PanelBody title={__('Settings', 'nextora')} initialOpen>
+        <PanelBody title={__('List Items', 'nextora')} initialOpen>
+          {items.length === 0 && (
+            <p className="components-base-control__help" style={{ marginBottom: '8px' }}>
+              {__('No items yet. Click "Add item" to create one.', 'nextora')}
+            </p>
+          )}
+          {items.map((item, index) => (
+            <div
+              key={item.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                marginBottom: '6px',
+                padding: '6px 8px',
+                background: 'var(--wp--preset--color--base, #fff)',
+                border: '1px solid var(--wp--preset--color--contrast, #ddd)',
+                borderRadius: '4px',
+              }}
+            >
+              <div
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  overflow: 'hidden',
+                  minWidth: 0,
+                }}
+              >
+                <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center', color: 'var(--wp--preset--color--primary, #1e1e1e)' }}>
+                  <AdvancedListEditorIcon iconName={item.iconName} iconSize={14} strokeWidth={2} />
+                </span>
+                <span
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    fontSize: '12px',
+                    lineHeight: '1.4',
+                  }}
+                >
+                  {item.text || __('(empty)', 'nextora')}
+                </span>
+              </div>
+              <Button
+                icon={<LucideActionIcon name="pencil" />}
+                label={__('Edit', 'nextora')}
+                onClick={() => setEditingItemId(item.id)}
+                isSmall
+              />
+              <Button
+                icon={<LucideActionIcon name="chevron-up" />}
+                label={__('Move up', 'nextora')}
+                onClick={() => moveItem(index, 'up')}
+                disabled={index === 0}
+                isSmall
+              />
+              <Button
+                icon={<LucideActionIcon name="chevron-down" />}
+                label={__('Move down', 'nextora')}
+                onClick={() => moveItem(index, 'down')}
+                disabled={index === items.length - 1}
+                isSmall
+              />
+              <Button
+                icon={<LucideActionIcon name="trash-2" />}
+                label={__('Remove', 'nextora')}
+                onClick={() => removeItem(item.id)}
+                isSmall
+                isDestructive
+              />
+            </div>
+          ))}
+          <Button
+            variant="secondary"
+            onClick={addItem}
+            icon={<LucideActionIcon name="plus" />}
+            style={{ width: '100%', justifyContent: 'center', marginTop: items.length > 0 ? '4px' : '0' }}
+          >
+            {__('Add item', 'nextora')}
+          </Button>
+        </PanelBody>
+
+        <PanelBody title={__('Settings', 'nextora')} initialOpen={false}>
           <SelectControl
             label={__('Icon style', 'nextora')}
             value={iconStyle as 'default' | 'stacked' | 'framed'}
@@ -352,6 +434,13 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
             min={4}
             max={40}
           />
+          <RangeControl
+            label={__('Gap between items', 'nextora')}
+            value={itemGap}
+            onChange={(value) => setAttributes({ itemGap: value || 16 })}
+            min={4}
+            max={60}
+          />
         </PanelBody>
 
         <PanelColorSettings
@@ -394,60 +483,25 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
       </InspectorControls>
 
       <div {...blockProps}>
-        <div className="nextora-advanced-list__items">
-          {items.map((item, index) => (
-            <div key={item.id} className="nextora-advanced-list__item-editor">
-              <div className="nextora-advanced-list__item-preview">
-                <div className={`nextora-advanced-list__icon nextora-advanced-list__icon--${iconStyle}`}>
-                  <AdvancedListEditorIcon iconName={item.iconName} iconSize={iconSize} strokeWidth={strokeWidth} />
-                </div>
-                <div className="nextora-advanced-list__text">{item.text || __('(empty)', 'nextora')}</div>
-              </div>
-              <div className="nextora-advanced-list__item-actions">
-                <Button
-                  icon={<LucideActionIcon name="pencil" />}
-                  label={__('Edit', 'nextora')}
-                  onClick={() => setEditingItemId(item.id)}
-                  isSmall
-                />
-                <Button
-                  icon={<LucideActionIcon name="chevron-up" />}
-                  label={__('Move up', 'nextora')}
-                  onClick={() => moveItem(index, 'up')}
-                  disabled={index === 0}
-                  isSmall
-                />
-                <Button
-                  icon={<LucideActionIcon name="chevron-down" />}
-                  label={__('Move down', 'nextora')}
-                  onClick={() => moveItem(index, 'down')}
-                  disabled={index === items.length - 1}
-                  isSmall
-                />
-                <Button
-                  icon={<LucideActionIcon name="trash-2" />}
-                  label={__('Remove', 'nextora')}
-                  onClick={() => removeItem(item.id)}
-                  isSmall
-                  isDestructive
-                />
-              </div>
-            </div>
+        <ul className="nextora-advanced-list__items">
+          {items.map((item) => (
+            <li key={item.id} className="nextora-advanced-list__item" data-item-id={item.id}>
+              <span className={`nextora-advanced-list__icon nextora-advanced-list__icon--${iconStyle}`} aria-hidden="true">
+                <AdvancedListEditorIcon iconName={item.iconName} iconSize={iconSize} strokeWidth={strokeWidth} />
+              </span>
+              <span className="nextora-advanced-list__text">{item.text || ''}</span>
+            </li>
           ))}
-        </div>
-
-        <Button variant="secondary" onClick={addItem} icon={<LucideActionIcon name="plus" />}>
-          {__('Add item', 'nextora')}
-        </Button>
-
-        {editingItem && (
-          <ItemModal
-            item={editingItem}
-            onSave={updateItem}
-            onClose={() => setEditingItemId(null)}
-          />
-        )}
+        </ul>
       </div>
+
+      {editingItem && (
+        <ItemModal
+          item={editingItem}
+          onSave={updateItem}
+          onClose={() => setEditingItemId(null)}
+        />
+      )}
     </>
   );
 }

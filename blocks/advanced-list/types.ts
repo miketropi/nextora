@@ -16,5 +16,6 @@ export interface AdvancedListAttributes extends Record<string, unknown> {
 	iconBackgroundColor: string;
 	iconBorderColor: string;
 	iconTextGap: number;
+	itemGap: number;
 	enableScrollAnimation: boolean;
 }

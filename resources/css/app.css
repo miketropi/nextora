@@ -212,6 +212,7 @@
 @import "./modules/components/scroll-animations.css";
 @import "./modules/components/hero-section.css";
 @import "./modules/components/heading-inline-font.css";
+@import "./modules/components/scheme-switcher.css";
 @import "./modules/prose/entry-content.css";
 @import "./modules/base/woocommerce.css";
 @import "./modules/base/events.css";

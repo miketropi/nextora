@@ -10,9 +10,9 @@
  * @subpackage Patterns
  */
 ?>
-<!-- wp:group {"style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"right":"var:preset|spacing|30","left":"var:preset|spacing|30","top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--30)"><!-- wp:heading {"align":"wide","className":"animation-fade-in-up","style":{"typography":{"textAlign":"center"}}} -->
-<h2 class="wp-block-heading has-text-align-center alignwide animation-fade-in-up">Frequently Asked Questions</h2>
+<!-- wp:group {"metadata":{"categories":["featured"],"patternName":"nextora/frequently-asked-questions","name":"Frequently Asked Questions"},"style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"right":"var:preset|spacing|30","left":"var:preset|spacing|30","top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--50);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--30)"><!-- wp:heading {"align":"wide","className":"animation-fade-in-up","style":{"typography":{"textAlign":"center"},"spacing":{"margin":{"top":"0px","bottom":"var:preset|spacing|10"}}}} -->
+<h2 class="wp-block-heading has-text-align-center alignwide animation-fade-in-up" style="margin-top:0px;margin-bottom:var(--wp--preset--spacing--10)">Frequently Asked Questions</h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"align":"wide","className":"animation-fade-in-up","style":{"typography":{"textAlign":"center"}}} -->
@@ -22,84 +22,60 @@
 <!-- wp:accordion {"autoclose":true,"className":"frequently-asked-questions animation-fade-in-up","style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"0"}}},"layout":{"type":"default"}} -->
 <div role="group" class="wp-block-accordion frequently-asked-questions animation-fade-in-up" style="padding-top:var(--wp--preset--spacing--30);padding-bottom:0"><!-- wp:accordion-item {"style":{"spacing":{"blockGap":"0"}}} -->
 <div class="wp-block-accordion-item"><!-- wp:accordion-heading {"style":{"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}},"fontSize":"medium"} -->
-<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">How can I contact customer support?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
+<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">What services does your agency offer?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
 <!-- /wp:accordion-heading -->
 
 <!-- wp:accordion-panel {"style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"}},"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}}} -->
 <div role="region" class="wp-block-accordion-panel" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px;padding-top:1rem;padding-bottom:1rem"><!-- wp:paragraph -->
-<p>You can reach our support team via email at <strong>support@yourdomain.com</strong>, through our <strong>Live Chat</strong> feature on the website, or by filling out the form on our <strong>Contact Us</strong> page. We are available 24/7 to assist you.</p>
+<p>We provide end-to-end business solutions including brand strategy, digital marketing, web design and development, and growth consulting. Whether you're a startup or an established company, we tailor every service to your specific goals.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:accordion-panel --></div>
 <!-- /wp:accordion-item -->
 
 <!-- wp:accordion-item {"style":{"spacing":{"blockGap":"0"}}} -->
 <div class="wp-block-accordion-item"><!-- wp:accordion-heading {"style":{"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}},"fontSize":"medium"} -->
-<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">How can I make a donation to your cause?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
+<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">How much does it cost to work with you?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
 <!-- /wp:accordion-heading -->
 
 <!-- wp:accordion-panel {"style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"}},"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}}} -->
 <div role="region" class="wp-block-accordion-panel" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px;padding-top:1rem;padding-bottom:1rem"><!-- wp:paragraph -->
-<p>You can easily make a donation online through our website by clicking the "Donate Now" button. We accept various payment methods, including major credit cards, PayPal, and bank transfers. Every contribution, big or small, makes a significant impact.</p>
+<p>Every project is different, so pricing depends on your scope and objectives. After a free discovery call, we'll send you a detailed proposal with transparent pricing — no hidden fees, no surprises.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:accordion-panel --></div>
 <!-- /wp:accordion-item -->
 
 <!-- wp:accordion-item {"style":{"spacing":{"blockGap":"0"}}} -->
 <div class="wp-block-accordion-item"><!-- wp:accordion-heading {"style":{"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}},"fontSize":"medium"} -->
-<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">Where does my donated money go?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
+<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">How long does a typical project take?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
 <!-- /wp:accordion-heading -->
 
 <!-- wp:accordion-panel {"style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"}},"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}}} -->
 <div role="region" class="wp-block-accordion-panel" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px;padding-top:1rem;padding-bottom:1rem"><!-- wp:paragraph -->
-<p>Transparency is our top priority. <strong>85%</strong> of all donations directly fund our community projects, emergency relief efforts, and field programs. The remaining <strong>15%</strong> goes toward essential administrative costs and fundraising activities to keep our organization running.</p>
+<p>Most branding and website projects take 4–8 weeks, while ongoing marketing campaigns run monthly. During onboarding, we'll give you a clear timeline with milestones so you always know what's happening and when.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:accordion-panel --></div>
 <!-- /wp:accordion-item -->
 
 <!-- wp:accordion-item {"style":{"spacing":{"blockGap":"0"}}} -->
 <div class="wp-block-accordion-item"><!-- wp:accordion-heading {"style":{"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}},"fontSize":"medium"} -->
-<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">Can I volunteer or contribute non-monetary items?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
+<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">Do you work with small businesses or only large companies?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
 <!-- /wp:accordion-heading -->
 
 <!-- wp:accordion-panel {"style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"}},"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}}} -->
 <div role="region" class="wp-block-accordion-panel" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px;padding-top:1rem;padding-bottom:1rem"><!-- wp:paragraph -->
-<p>Yes, absolutely! We love welcoming new volunteers to our team. You can sign up via our "Volunteer" page. We also accept non-monetary donations such as clothing, non-perishable food, and educational supplies depending on our current project needs.</p>
+<p>Both. We've partnered with early-stage startups, local businesses, and enterprise teams across 15+ industries. What matters most to us isn't your size — it's your ambition to grow.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:accordion-panel --></div>
 <!-- /wp:accordion-item -->
 
 <!-- wp:accordion-item {"style":{"spacing":{"blockGap":"0"}}} -->
 <div class="wp-block-accordion-item"><!-- wp:accordion-heading {"style":{"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}},"fontSize":"medium"} -->
-<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">Are my donations tax-deductible?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
+<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">What makes your agency different from others?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
 <!-- /wp:accordion-heading -->
 
 <!-- wp:accordion-panel {"style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"}},"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}}} -->
 <div role="region" class="wp-block-accordion-panel" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px;padding-top:1rem;padding-bottom:1rem"><!-- wp:paragraph -->
-<p>Yes, our organization is a registered non-profit. All monetary donations are tax-deductible to the extent allowed by law. Once your donation is processed, a formal tax receipt will be automatically sent to your registered email address.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:accordion-panel --></div>
-<!-- /wp:accordion-item -->
-
-<!-- wp:accordion-item {"style":{"spacing":{"blockGap":"0"}}} -->
-<div class="wp-block-accordion-item"><!-- wp:accordion-heading {"style":{"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}},"fontSize":"medium"} -->
-<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">How do you protect the privacy of your donors?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
-<!-- /wp:accordion-heading -->
-
-<!-- wp:accordion-panel {"style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"}},"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}}} -->
-<div role="region" class="wp-block-accordion-panel" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px;padding-top:1rem;padding-bottom:1rem"><!-- wp:paragraph -->
-<p>We take donor privacy very seriously. We use secure encryption protocols to process payments, and we strictly <strong>never sell, trade, or share</strong> your personal information or email address with any third-party organizations.</p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:accordion-panel --></div>
-<!-- /wp:accordion-item -->
-
-<!-- wp:accordion-item {"style":{"spacing":{"blockGap":"0"}}} -->
-<div class="wp-block-accordion-item"><!-- wp:accordion-heading {"style":{"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}},"fontSize":"medium"} -->
-<h3 class="wp-block-accordion-heading has-medium-font-size" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px"><button type="button" class="wp-block-accordion-heading__toggle"><span class="wp-block-accordion-heading__toggle-title">Is there a minimum amount required to donate?</span><span class="wp-block-accordion-heading__toggle-icon" aria-hidden="true">+</span></button></h3>
-<!-- /wp:accordion-heading -->
-
-<!-- wp:accordion-panel {"style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"}},"border":{"bottom":{"color":"var:preset|color|surface","width":"1px"}}}} -->
-<div role="region" class="wp-block-accordion-panel" style="border-bottom-color:var(--wp--preset--color--surface);border-bottom-width:1px;padding-top:1rem;padding-bottom:1rem"><!-- wp:paragraph -->
-<p>There is no minimum amount required. We believe that every single dollar counts and can change someone's life. Whether it is the cost of a cup of coffee or a larger contribution, your generosity is deeply appreciated and directly drives our mission forward.</p>
+<p>We focus on measurable results, not just deliverables. Every strategy is backed by data, every campaign is tracked, and 98% of our clients continue working with us long-term — because we treat your business like our own.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:accordion-panel --></div>
 <!-- /wp:accordion-item --></div>

@@ -43,6 +43,7 @@ const templateOptions: { label: string; value: BoxImageTemplate }[] = [
 	{ label: __('Default', 'nextora'), value: 'default' },
 	{ label: __('Template 1', 'nextora'), value: 'template1' },
 	{ label: __('Template 2', 'nextora'), value: 'template2' },
+	{ label: __('Template 3', 'nextora'), value: 'template3' },
 ];
 
 const aspectRatioOptions = [
@@ -123,6 +124,9 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 		paginationColor = '',
 		paginationActiveColor = '',
 		arrowColor = '',
+		badgeBackgroundColor = '',
+		badgeTextColor = '',
+		bulletIconColor = '',
 		enableScrollAnimation = true,
 	} = attributes;
 
@@ -148,6 +152,9 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 			paginationColor: isEmptyColor(paginationColor) ? '' : paginationColor,
 			paginationActiveColor: isEmptyColor(paginationActiveColor) ? '' : paginationActiveColor,
 			arrowColor: isEmptyColor(arrowColor) ? '' : arrowColor,
+			badgeBackgroundColor: isEmptyColor(badgeBackgroundColor) ? '' : badgeBackgroundColor,
+			badgeTextColor: isEmptyColor(badgeTextColor) ? '' : badgeTextColor,
+			bulletIconColor: isEmptyColor(bulletIconColor) ? '' : bulletIconColor,
 		},
 		lookupPalette,
 	);
@@ -221,7 +228,25 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 			},
 		];
 
-		return [...cardColors, ...navColors];
+		const template3Colors = [
+			{
+				value: colorValueForPicker(badgeBackgroundColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('badgeBackgroundColor', v),
+				label: __('Badge background (Template 3)', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(badgeTextColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('badgeTextColor', v),
+				label: __('Badge text (Template 3)', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(bulletIconColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('bulletIconColor', v),
+				label: __('Bullet icon (Template 3)', 'nextora'),
+			},
+		];
+
+		return [...cardColors, ...navColors, ...template3Colors];
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		cardBorderColor,
@@ -233,6 +258,9 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 		paginationColor,
 		paginationActiveColor,
 		arrowColor,
+		badgeBackgroundColor,
+		badgeTextColor,
+		bulletIconColor,
 		colorPalette,
 		lookupPalette,
 	]);
@@ -360,6 +388,11 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 										'Template 2-style cards with circular avatar, title, description and inline link.',
 										'nextora',
 									)
+								: template === 'template3'
+								? __(
+										'Template 3-style cards with image, number badge, bullet list and read more link — ideal for service or feature lists.',
+										'nextora',
+									)
 								: __(
 										'Default card layout.',
 										'nextora',
@@ -368,7 +401,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						value={template}
 						options={templateOptions}
 						onChange={(v: string) => {
-							const tpl = (v === 'template1' ? 'template1' : v === 'template2' ? 'template2' : 'default') as BoxImageTemplate;
+							const tpl = (v === 'template1' ? 'template1' : v === 'template2' ? 'template2' : v === 'template3' ? 'template3' : 'default') as BoxImageTemplate;
 							const patch: Partial<BoxImageAttributes> = { template: tpl };
 							if (tpl === 'template1') {
 								patch.layoutMode = 'grid';
@@ -382,6 +415,13 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 								patch.imageAspectRatio = '1/1';
 								patch.cardBorderRadius = 24;
 								patch.cardBorderWidth = 0;
+							} else if (tpl === 'template3') {
+								patch.layoutMode = 'grid';
+								patch.gridColumns = 4;
+								patch.imageAspectRatio = '16/11';
+								patch.cardBorderRadius = 20;
+								patch.cardBorderWidth = 1;
+								patch.cardMinHeight = 0;
 							}
 							setAttributes(patch);
 						}}
@@ -658,6 +698,14 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 							</MediaUploadCheck>
 						</div>
 						<div className="nextora-box-image__item-modal-form-fields">
+							{template === 'template1' || template === 'template3' ? (
+							<TextControl
+								label={__('Badge', 'nextora')}
+								help={template === 'template3' ? __('Number displayed on the image (e.g. "01").', 'nextora') : __('Small label overlay on the image (e.g. "Ages 0–2").', 'nextora')}
+								value={editingItem.badge}
+								onChange={(badge) => patchItem(editingItem.id, { badge })}
+							/>
+							) : null}
 							<TextControl
 								label={__('Title', 'nextora')}
 								value={editingItem.title}
@@ -702,14 +750,6 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									/>
 								</>
 							)}
-							{template === 'template1' ? (
-							<TextControl
-								label={__('Badge', 'nextora')}
-								help={__('Small label overlay on the image (e.g. "Ages 0–2").', 'nextora')}
-								value={editingItem.badge}
-								onChange={(badge) => patchItem(editingItem.id, { badge })}
-							/>
-							) : null}
 						</div>
 					</div>
 					<div
@@ -743,7 +783,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 							{items.map((item) => (
 								<article
 									key={item.id}
-									className={`nextora-box-image__card${template === 'template1' ? ' nextora-box-image__card--template1' : template === 'template2' ? ' nextora-box-image__card--template2' : ''} nextora-box-image__card--editable`}
+									className={`nextora-box-image__card${template === 'template1' ? ' nextora-box-image__card--template1' : template === 'template2' ? ' nextora-box-image__card--template2' : template === 'template3' ? ' nextora-box-image__card--template3' : ''} nextora-box-image__card--editable`}
 									style={
 										(item.backgroundColor || item.titleColor || item.descriptionColor || item.linkColor)
 											? ({
@@ -762,7 +802,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									>
 										{__('Edit item', 'nextora')}
 									</button>
-									{template === 'template1' ? (
+							{template === 'template1' ? (
 										<div className="nextora-box-image__card-inner">
 											<div className="nextora-box-image__image-wrap">
 												<img
@@ -820,6 +860,50 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													</span>
 												</span>
 											) : null}
+										</>
+									) : template === 'template3' ? (
+										<>
+											<div className="nextora-box-image__image-wrap">
+												<img
+													className="nextora-box-image__card-image"
+													src={resolveEditorImage(item, placeholderUrl)}
+													alt=""
+												/>
+												{item.badge ? (
+													<span className="nextora-box-image__badge">
+														{item.badge}
+													</span>
+												) : null}
+											</div>
+											<div className="nextora-box-image__card-body">
+												<h3 className="nextora-box-image__title">
+													{item.title || __('Title', 'nextora')}
+												</h3>
+												{item.description ? (
+													<ul className="nextora-box-image__bullets">
+														{item.description.split('\n').filter(Boolean).map((bullet, i) => (
+															<li key={i}>
+																<svg className="nextora-box-image__bullet-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+																<span>{bullet.trim()}</span>
+															</li>
+														))}
+													</ul>
+												) : (
+													<p className="nextora-box-image__description">
+														{__('Add bullet points — one per line in the description field.', 'nextora')}
+													</p>
+												)}
+												{item.showLink && item.linkLabel ? (
+													<span className="nextora-box-image__link nextora-box-image__link--template3 nextora-box-image__link--static">
+														{item.linkLabel}
+														<span className="nextora-box-image__link-icon" aria-hidden="true">
+															<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+																<path d="M5 12h14M13 6l6 6-6 6" />
+															</svg>
+														</span>
+													</span>
+												) : null}
+											</div>
 										</>
 									) : (
 										<>

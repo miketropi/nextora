@@ -190,6 +190,102 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_testimonial_carousel_render_slide_t1' ) ) {
+	/**
+	 * Template-1 card-style slide.
+	 *
+	 * @param array<string, mixed> $item Normalized testimonial.
+	 */
+	function nextora_testimonial_carousel_render_slide_t1( array $item ): string {
+		$quote = (string) $item['quoteText'];
+		if ( '' === $quote ) {
+			return '';
+		}
+
+		$name      = (string) $item['authorName'];
+		$role      = (string) $item['authorRole'];
+		$photo_id   = (int) $item['authorPhotoId'];
+		$photo_url  = isset( $item['authorPhotoUrl'] ) ? trim( (string) $item['authorPhotoUrl'] ) : '';
+		$show_photo = ! empty( $item['showAuthorPhoto'] ) && ( $photo_id > 0 || '' !== $photo_url );
+		$rating    = (int) $item['rating'];
+
+		$slide_style = '';
+		if ( '' !== (string) $item['quoteColor'] ) {
+			$slide_style .= '--nextora-testimonial-slide-quote-color:' . (string) $item['quoteColor'] . ';';
+		}
+		if ( '' !== (string) $item['authorColor'] ) {
+			$slide_style .= '--nextora-testimonial-slide-author-color:' . (string) $item['authorColor'] . ';';
+		}
+
+		$out  = '<div class="swiper-slide">';
+		$out .= '<article class="nextora-testimonial-carousel__slide nextora-testimonial-carousel__slide--t1"' . ( '' !== $slide_style ? ' style="' . esc_attr( $slide_style ) . '"' : '' ) . '>';
+		$out .= nextora_testimonial_carousel_render_stars( $rating );
+		$out .= '<blockquote class="nextora-testimonial-carousel__slide-quote">' . esc_html( $quote ) . '</blockquote>';
+		$out .= '<div class="nextora-testimonial-carousel__slide-author nextora-testimonial-carousel__slide-author--t1">';
+
+		if ( $show_photo ) {
+			$alt = (string) $item['authorPhotoAlt'];
+			if ( '' === $alt && $photo_id > 0 ) {
+				$alt = (string) get_post_meta( $photo_id, '_wp_attachment_image_alt', true );
+			}
+			if ( '' === $alt && '' !== $name ) {
+				$alt = $name;
+			}
+			if ( '' === $alt ) {
+				$alt = __( 'Author photo', 'nextora' );
+			}
+
+			$photo_markup = '';
+			if ( $photo_id > 0 ) {
+				$img = wp_get_attachment_image(
+					$photo_id,
+					'thumbnail',
+					false,
+					array(
+						'class'    => 'nextora-testimonial-carousel__slide-author-photo',
+						'alt'      => $alt,
+						'loading'  => 'lazy',
+						'decoding' => 'async',
+					),
+				);
+				if ( is_string( $img ) && '' !== $img ) {
+					$photo_markup = $img;
+				}
+			}
+
+			if ( '' === $photo_markup && '' !== $photo_url ) {
+				$safe_url = esc_url( $photo_url );
+				if ( '' !== $safe_url ) {
+					$photo_markup = sprintf(
+						'<img class="nextora-testimonial-carousel__slide-author-photo" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+						$safe_url,
+						esc_attr( $alt ),
+					);
+				}
+			}
+
+			if ( '' !== $photo_markup ) {
+				$out .= $photo_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+			}
+		}
+
+		if ( '' !== $name || '' !== $role ) {
+			$out .= '<div class="nextora-testimonial-carousel__slide-author-text">';
+			if ( '' !== $name ) {
+				$out .= '<strong class="nextora-testimonial-carousel__slide-author-name">' . esc_html( $name ) . '</strong>';
+			}
+			if ( '' !== $role ) {
+				$out .= '<span class="nextora-testimonial-carousel__slide-author-role">' . esc_html( $role ) . '</span>';
+			}
+			$out .= '</div>';
+		}
+
+		$out .= '</div></article></div>';
+
+		return $out;
+	}
+}
+
 if ( ! function_exists( 'nextora_testimonial_carousel_render_trust' ) ) {
 	/**
 	 * @param array<string, mixed> $attributes Block attributes.
@@ -288,6 +384,17 @@ if ( array() === $items ) {
 	return;
 }
 
+$template_style = isset( $attributes['templateStyle'] ) ? sanitize_key( (string) $attributes['templateStyle'] ) : 'default';
+if ( ! in_array( $template_style, array( 'default', 'template-1' ), true ) ) {
+	$template_style = 'default';
+}
+$is_template_1 = 'template-1' === $template_style;
+
+$items_per_view_desktop = isset( $attributes['itemsPerViewDesktop'] ) ? max( 1, min( 5, (int) $attributes['itemsPerViewDesktop'] ) ) : 3;
+$items_per_view_tablet  = isset( $attributes['itemsPerViewTablet'] ) ? max( 1, min( 4, (int) $attributes['itemsPerViewTablet'] ) ) : 2;
+$items_per_view_mobile  = isset( $attributes['itemsPerViewMobile'] ) ? max( 1, min( 2, (int) $attributes['itemsPerViewMobile'] ) ) : 1;
+$card_gap               = isset( $attributes['cardGap'] ) ? max( 0, min( 40, (int) $attributes['cardGap'] ) ) : 22;
+
 $show_top_icon  = ! isset( $attributes['showTopIcon'] ) || (bool) $attributes['showTopIcon'];
 $top_icon_type  = isset( $attributes['topIconType'] ) ? sanitize_key( (string) $attributes['topIconType'] ) : 'sparkle';
 $custom_icon    = isset( $attributes['customIconSvg'] ) ? (string) $attributes['customIconSvg'] : '';
@@ -318,8 +425,6 @@ $content_max    = isset( $attributes['contentMaxWidth'] ) ? trim( (string) $attr
 if ( '' === $content_max ) {
 	$content_max = '680px';
 }
-$padding_top    = isset( $attributes['paddingTop'] ) ? max( 0, min( 200, (int) $attributes['paddingTop'] ) ) : 80;
-$padding_bottom = isset( $attributes['paddingBottom'] ) ? max( 0, min( 200, (int) $attributes['paddingBottom'] ) ) : 80;
 $top_icon_size  = isset( $attributes['topIconSize'] ) ? max( 12, min( 40, (int) $attributes['topIconSize'] ) ) : 20;
 $avatar_size    = isset( $attributes['trustAvatarSize'] ) ? max( 24, min( 56, (int) $attributes['trustAvatarSize'] ) ) : 36;
 $avatar_overlap = isset( $attributes['trustAvatarOverlap'] ) ? max( 0, min( 20, (int) $attributes['trustAvatarOverlap'] ) ) : 10;
@@ -345,7 +450,7 @@ $slide_count = count( $items );
 $use_loop    = $loop && $slide_count > 1;
 
 $swiper_opts = array(
-	'effect'          => $effect,
+	'effect'          => $is_template_1 ? 'slide' : $effect,
 	'loop'            => $use_loop,
 	'autoplay'        => $autoplay,
 	'autoplayDelay'   => $autoplay_d,
@@ -353,8 +458,15 @@ $swiper_opts = array(
 	'showPagination'  => $show_pag && $slide_count > 1,
 	'showArrows'      => $show_arrows && $slide_count > 1,
 	'speed'           => $speed,
-	'arrowPosition'   => $arrow_pos,
+	'arrowPosition'   => $is_template_1 ? 'below-dots' : $arrow_pos,
 );
+if ( $is_template_1 ) {
+	$swiper_opts['templateStyle']        = 'template-1';
+	$swiper_opts['itemsPerViewDesktop']  = $items_per_view_desktop;
+	$swiper_opts['itemsPerViewTablet']   = $items_per_view_tablet;
+	$swiper_opts['itemsPerViewMobile']   = $items_per_view_mobile;
+	$swiper_opts['cardGap']              = $card_gap;
+}
 
 /** @var list<array<string, mixed>> $items */
 $items = array_values( (array) apply_filters( 'nextora_testimonial_carousel_testimonials', $items, $attributes ) );
@@ -366,8 +478,6 @@ $opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 
 $css_vars = array(
 	'--nextora-testimonial-bg'                 => '' !== $bg_color ? $bg_color : 'transparent',
-	'--nextora-testimonial-padding-top'        => $padding_top . 'px',
-	'--nextora-testimonial-padding-bottom'     => $padding_bottom . 'px',
 	'--nextora-testimonial-max-width'         => $content_max,
 	'--nextora-testimonial-icon-size'         => $top_icon_size . 'px',
 	'--nextora-testimonial-icon-color'        => '' !== $icon_color ? $icon_color : 'color-mix(in srgb, currentColor 50%, transparent)',
@@ -385,6 +495,7 @@ $css_vars = array(
 	'--nextora-testimonial-avatar-overlap'    => $avatar_overlap . 'px',
 	'--nextora-testimonial-avatar-border'     => $avatar_border . 'px',
 	'--nextora-testimonial-avatar-border-color' => '' !== $avatar_border_c ? $avatar_border_c : ( '' !== $bg_color ? $bg_color : 'var(--wp--preset--color--base, #fff)' ),
+	'--nextora-testimonial-card-gap'            => $card_gap . 'px',
 );
 
 $style_parts = array();
@@ -397,6 +508,9 @@ $wrapper_classes = array(
 	'nextora-testimonial-carousel',
 	'nextora-testimonial-carousel--loading',
 );
+if ( $is_template_1 ) {
+	$wrapper_classes[] = 'nextora-testimonial-carousel--template-1';
+}
 if ( $show_arrows && 'sides' === $arrow_pos ) {
 	$wrapper_classes[] = 'nextora-testimonial-carousel--arrows-sides';
 }
@@ -427,7 +541,7 @@ $trust_html = nextora_testimonial_carousel_render_trust( $attributes );
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<div class="nextora-testimonial-carousel__inner">
-		<?php if ( $show_top_icon || ( $show_top_label && '' !== $top_label ) ) : ?>
+		<?php if ( ! $is_template_1 && ( $show_top_icon || ( $show_top_label && '' !== $top_label ) ) ) : ?>
 			<div class="nextora-testimonial-carousel__top">
 				<?php if ( $show_top_icon ) : ?>
 					<div class="nextora-testimonial-carousel__icon" aria-hidden="true">
@@ -491,13 +605,18 @@ $trust_html = nextora_testimonial_carousel_render_trust( $attributes );
 				<div class="swiper-wrapper">
 					<?php
 					foreach ( $items as $item ) {
-						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
-						echo nextora_testimonial_carousel_render_slide( $item );
+						if ( $is_template_1 ) {
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+							echo nextora_testimonial_carousel_render_slide_t1( $item );
+						} else {
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+							echo nextora_testimonial_carousel_render_slide( $item );
+						}
 					}
 					?>
 				</div>
 			</div>
-			<?php if ( $show_arrows && 'sides' === $arrow_pos && $slide_count > 1 ) : ?>
+			<?php if ( $show_arrows && 'sides' === $arrow_pos && ! $is_template_1 && $slide_count > 1 ) : ?>
 				<div class="nextora-testimonial-carousel__arrows nextora-testimonial-carousel__arrows--sides">
 					<button type="button" class="nextora-testimonial-carousel__arrow nextora-testimonial-carousel__arrow--prev" aria-label="<?php echo esc_attr__( 'Previous testimonial', 'nextora' ); ?>">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
@@ -509,11 +628,11 @@ $trust_html = nextora_testimonial_carousel_render_trust( $attributes );
 			<?php endif; ?>
 		</div>
 
-		<?php if ( 'below-quote' === $trust_pos && '' !== $trust_html ) : ?>
+		<?php if ( ! $is_template_1 && 'below-quote' === $trust_pos && '' !== $trust_html ) : ?>
 			<?php echo $trust_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 		<?php endif; ?>
 
-		<?php if ( 'above-dots' === $trust_pos && '' !== $trust_html ) : ?>
+		<?php if ( ! $is_template_1 && 'above-dots' === $trust_pos && '' !== $trust_html ) : ?>
 			<?php echo $trust_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 		<?php endif; ?>
 
@@ -532,7 +651,7 @@ $trust_html = nextora_testimonial_carousel_render_trust( $attributes );
 			</div>
 		<?php endif; ?>
 
-		<?php if ( 'bottom' === $trust_pos && '' !== $trust_html ) : ?>
+		<?php if ( ! $is_template_1 && 'bottom' === $trust_pos && '' !== $trust_html ) : ?>
 			<?php echo $trust_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 		<?php endif; ?>
 	</div>

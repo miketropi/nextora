@@ -152,7 +152,7 @@ The `--grid-active` class is added by `view.ts` when in grid mode (desktop). In 
             <span class="nextora-box-image__badge">Ages 0–2</span>  <!-- only this template -->
         </div>
         <div class="nextora-box-image__card-body">
-            <h3 class="nextora-box-image__title">...</h3>
+            <h4 class="nextora-box-image__title">...</h4>
             <p class="nextora-box-image__description">...</p>
             <a class="nextora-box-image__link wp-block-button__link">...</a>
         </div>
@@ -197,7 +197,7 @@ The `--grid-active` class is added by `view.ts` when in grid mode (desktop). In 
     <div class="nextora-box-image__image-wrap">
         <img ... >  <!-- circular avatar -->
     </div>
-    <h3 class="nextora-box-image__title">...</h3>
+    <h4 class="nextora-box-image__title">...</h4>
     <p class="nextora-box-image__description">...</p>
     <a class="nextora-box-image__link nextora-box-image__link--template2">...</a>
 </article>

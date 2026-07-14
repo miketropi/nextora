@@ -509,7 +509,7 @@
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu > li > a {
 		padding: var(--wp--preset--spacing--10, 1rem) 0;
-		font-size: var(--wp--preset--font-size--medium, 1rem);
+		font-size: var(--wp--preset--font-size--base, 1rem);
 		font-weight: 500;
 		/* border-bottom: 1px solid var(--nextora-nav-mobile-drawer-border); */
 		border-radius: 0;

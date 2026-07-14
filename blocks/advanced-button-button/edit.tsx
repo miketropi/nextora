@@ -92,6 +92,7 @@ type ButtonColorKey =
 	| 'buttonBackgroundColor'
 	| 'buttonTextColor'
 	| 'buttonBorderColor'
+	| 'iconBackgroundColor'
 	| 'iconColor'
 	| 'hoverBackgroundColor'
 	| 'hoverTextColor'
@@ -145,6 +146,7 @@ export default function AdvancedButtonButtonEdit( {
 		strokeWidth = 2,
 		iconStyle = 'default',
 		iconBorderRadius = 8,
+		iconBackgroundColor = '',
 		buttonBackgroundColor = '',
 		buttonTextColor = '',
 		buttonBorderColor = '',
@@ -190,6 +192,7 @@ export default function AdvancedButtonButtonEdit( {
 			'buttonBackgroundColor',
 			'buttonTextColor',
 			'buttonBorderColor',
+			'iconBackgroundColor',
 			'iconColor',
 			'hoverBackgroundColor',
 			'hoverTextColor',
@@ -305,6 +308,7 @@ export default function AdvancedButtonButtonEdit( {
 			: {} ),
 		...( resolvedButtonBackgroundColor
 			? {
+					background: storedColorToCss( resolvedButtonBackgroundColor ),
 					'--nextora-advanced-button-bg': storedColorToCss(
 						resolvedButtonBackgroundColor,
 					),
@@ -312,6 +316,7 @@ export default function AdvancedButtonButtonEdit( {
 			: {} ),
 		...( resolvedButtonTextColor
 			? {
+					color: storedColorToCss( resolvedButtonTextColor ),
 					'--nextora-advanced-button-text': storedColorToCss(
 						resolvedButtonTextColor,
 					),
@@ -324,10 +329,10 @@ export default function AdvancedButtonButtonEdit( {
 					),
 				}
 			: {} ),
-		...( showIcon && iconStyle === 'stacked' && resolvedButtonBackgroundColor
+		...( showIcon && iconStyle === 'stacked' && iconBackgroundColor
 			? {
 					'--nextora-advanced-button-icon-bg': storedColorToCss(
-						resolvedButtonBackgroundColor,
+						iconBackgroundColor,
 					),
 				}
 			: {} ),
@@ -379,13 +384,9 @@ export default function AdvancedButtonButtonEdit( {
 	const hasLink = '' !== linkUrl;
 
 	const blockProps = useBlockProps( {
-		className: isModalLink
-			? 'nextora-advanced-button-button-wrap nextora-advanced-button-button-wrap--modal nextora-advanced-button-button-wrap--modal-editor'
-			: `${ buttonClassName }`,
-		style: isModalLink ? undefined : buttonStyleVars,
+		className: buttonClassName,
+		style: buttonStyleVars,
 	} );
-
-	const modalButtonStyle = buttonStyleVars;
 
 	useEffect( () => {
 		if ( isModalLink && '' === modalId ) {
@@ -834,6 +835,20 @@ export default function AdvancedButtonButtonEdit( {
 									},
 								]
 							: [] ),
+						...( hasSurfaceStyle && showIcon && iconSource === 'theme'
+							? [
+									{
+										value: colorValueForPicker(
+											iconBackgroundColor,
+											colorPalette,
+											lookupPalette,
+										),
+										onChange: ( value: string | undefined ) =>
+											setThemeColor( 'iconBackgroundColor', value ),
+										label: __( 'Icon background', 'nextora' ),
+									},
+								]
+							: [] ),
 						{
 							value: colorValueForPicker(
 								resolvedButtonBorderColor,
@@ -946,11 +961,10 @@ export default function AdvancedButtonButtonEdit( {
 			</InspectorControls>
 
 			{ isModalLink ? (
-				<div { ...blockProps }>
+				<div className="nextora-advanced-button-button-wrap nextora-advanced-button-button-wrap--modal nextora-advanced-button-button-wrap--modal-editor">
 					<button
 						type="button"
-						className={ buttonClassName }
-						style={ modalButtonStyle }
+						{ ...blockProps }
 						onClick={ ( event ) => event.preventDefault() }
 					>
 						{ buttonContent }

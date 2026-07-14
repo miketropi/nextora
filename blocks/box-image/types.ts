@@ -1,6 +1,6 @@
 export type BoxImageLayoutMode = 'slider' | 'grid';
 export type BoxImageFit = 'cover' | 'contain' | 'fill' | 'none';
-export type BoxImageTemplate = 'default' | 'template1' | 'template2';
+export type BoxImageTemplate = 'default' | 'template1' | 'template2' | 'template3';
 
 export interface BoxImageItem {
 	id: string;
@@ -55,5 +55,8 @@ export interface BoxImageAttributes {
 	paginationColor: string;
 	paginationActiveColor: string;
 	arrowColor: string;
+	badgeBackgroundColor: string;
+	badgeTextColor: string;
+	bulletIconColor: string;
 	enableScrollAnimation: boolean;
 }
