@@ -200,7 +200,15 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 		}
 
 		$out .= '<div class="nextora-box-image__image-wrap">';
-		if ( $image_id > 0 ) {
+		if ( '' !== $image_url ) {
+			$url = esc_url( $image_url );
+			if ( '' !== $url ) {
+				$out .= sprintf(
+					'<img class="nextora-box-image__card-image" src="%1$s" alt="" loading="lazy" decoding="async" />',
+					$url,
+				);
+			}
+		} elseif ( $image_id > 0 ) {
 			$out .= wp_get_attachment_image(
 				$image_id,
 				'medium_large',
@@ -212,14 +220,6 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 					'alt'      => '',
 				),
 			);
-		} elseif ( '' !== $image_url ) {
-			$url = esc_url( $image_url );
-			if ( '' !== $url ) {
-				$out .= sprintf(
-					'<img class="nextora-box-image__card-image" src="%1$s" alt="" loading="lazy" decoding="async" />',
-					$url,
-				);
-			}
 		} else {
 			$out .= sprintf(
 				'<img class="nextora-box-image__card-image" src="%1$s" alt="" loading="lazy" decoding="async" />',
