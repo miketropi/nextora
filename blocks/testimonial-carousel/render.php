@@ -138,7 +138,16 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 			}
 
 			$photo_markup = '';
-			if ( $photo_id > 0 ) {
+			if ( '' !== $photo_url ) {
+				$safe_url = esc_url( $photo_url );
+				if ( '' !== $safe_url ) {
+					$photo_markup = sprintf(
+						'<img class="nextora-testimonial-carousel__slide-author-photo" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+						$safe_url,
+						esc_attr( $alt ),
+					);
+				}
+			} elseif ( $photo_id > 0 ) {
 				$img = wp_get_attachment_image(
 					$photo_id,
 					'thumbnail',
@@ -152,17 +161,6 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 				);
 				if ( is_string( $img ) && '' !== $img ) {
 					$photo_markup = $img;
-				}
-			}
-
-			if ( '' === $photo_markup && '' !== $photo_url ) {
-				$safe_url = esc_url( $photo_url );
-				if ( '' !== $safe_url ) {
-					$photo_markup = sprintf(
-						'<img class="nextora-testimonial-carousel__slide-author-photo" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
-						$safe_url,
-						esc_attr( $alt ),
-					);
 				}
 			}
 
@@ -236,7 +234,16 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide_t1' ) ) {
 			}
 
 			$photo_markup = '';
-			if ( $photo_id > 0 ) {
+			if ( '' !== $photo_url ) {
+				$safe_url = esc_url( $photo_url );
+				if ( '' !== $safe_url ) {
+					$photo_markup = sprintf(
+						'<img class="nextora-testimonial-carousel__slide-author-photo" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+						$safe_url,
+						esc_attr( $alt ),
+					);
+				}
+			} elseif ( $photo_id > 0 ) {
 				$img = wp_get_attachment_image(
 					$photo_id,
 					'thumbnail',
@@ -250,17 +257,6 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide_t1' ) ) {
 				);
 				if ( is_string( $img ) && '' !== $img ) {
 					$photo_markup = $img;
-				}
-			}
-
-			if ( '' === $photo_markup && '' !== $photo_url ) {
-				$safe_url = esc_url( $photo_url );
-				if ( '' !== $safe_url ) {
-					$photo_markup = sprintf(
-						'<img class="nextora-testimonial-carousel__slide-author-photo" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
-						$safe_url,
-						esc_attr( $alt ),
-					);
 				}
 			}
 
@@ -319,7 +315,17 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_trust' ) ) {
 				$id  = isset( $avatar['id'] ) ? (int) $avatar['id'] : 0;
 				$url = isset( $avatar['url'] ) ? trim( (string) $avatar['url'] ) : '';
 				$alt = isset( $avatar['alt'] ) ? trim( (string) $avatar['alt'] ) : '';
-				if ( $id > 0 ) {
+				if ( '' !== $url ) {
+					$safe_url = esc_url( $url );
+					if ( '' !== $safe_url ) {
+						$out .= sprintf(
+							'<img class="nextora-testimonial-carousel__avatar" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+							$safe_url,
+							esc_attr( '' !== $alt ? $alt : __( 'Trust avatar', 'nextora' ) ),
+						);
+						++$index;
+					}
+				} elseif ( $id > 0 ) {
 					$img = wp_get_attachment_image(
 						$id,
 						'thumbnail',
@@ -335,17 +341,7 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_trust' ) ) {
 						$out .= $img;
 						++$index;
 					}
-				} elseif ( '' !== $url ) {
-					$safe_url = esc_url( $url );
-					if ( '' !== $safe_url ) {
-						$out .= sprintf(
-							'<img class="nextora-testimonial-carousel__avatar" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
-							$safe_url,
-							esc_attr( '' !== $alt ? $alt : __( 'Trust avatar', 'nextora' ) ),
-						);
-						++$index;
-					}
-				} elseif ( 'initials' === $fallback && '' !== $alt ) {
+			} elseif ( 'initials' === $fallback && '' !== $alt ) {
 					$bg   = $palette[ $index % count( $palette ) ];
 					$out .= '<span class="nextora-testimonial-carousel__avatar nextora-testimonial-carousel__avatar--initials" style="background-color:' . esc_attr( $bg ) . '">' . esc_html( strtoupper( substr( $alt, 0, 1 ) ) ) . '</span>';
 					++$index;
