@@ -3,6 +3,7 @@
  */
 
 @import './style.css';
+@import '../advanced-icon/editor.css';
 
 .nextora-box-icon--editor .nextora-box-icon__cards {
 	display: flex;
@@ -228,6 +229,12 @@
 	);
 }
 
+.nextora-box-icon--editor.nextora-box-icon--template-minimal .nextora-box-icon__card-link {
+	text-decoration: none;
+	color: inherit;
+	cursor: pointer;
+}
+
 .nextora-box-icon--editor.nextora-box-icon--template-minimal.nextora-box-icon--layout-grid
 	.nextora-box-icon__card--editable:hover,
 .nextora-box-icon--editor.nextora-box-icon--template-minimal.nextora-box-icon--layout-grid
@@ -379,6 +386,11 @@
 .nextora-box-icon__item-modal.components-modal__frame {
 	max-width: 960px !important;
 	width: min(960px, calc(100vw - 2rem)) !important;
+}
+
+/* Raise the item modal above the mega menu modal overlay. */
+.components-modal__screen-overlay:has(.nextora-box-icon__item-modal) {
+	z-index: 100001 !important;
 }
 
 .nextora-box-icon__item-modal .components-modal__content {
@@ -602,4 +614,53 @@
 	.nextora-box-icon--editor.nextora-box-icon--template-highlights.nextora-box-icon--layout-grid .nextora-box-icon__cards {
 		grid-template-columns: 1fr 1fr;
 	}
+}
+
+/* Editor: disable hover when card hover toggle is off */
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover .nextora-box-icon__card--editable:hover,
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover .nextora-box-icon__card--editable:focus-within {
+	background: var(--nextora-box-icon-card-bg, transparent);
+	color: var(--wp--preset--color--contrast, currentColor);
+}
+
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover .nextora-box-icon__card--editable:hover .nextora-box-icon__icon--style-stacked,
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover .nextora-box-icon__card--editable:focus-within .nextora-box-icon__icon--style-stacked {
+	background: var(--nextora-box-icon-icon-surface-bg, var(--wp--preset--color--primary, #f0531c));
+	color: var(--nextora-box-icon-icon-color, #fff);
+}
+
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover .nextora-box-icon__card--editable:hover .nextora-box-icon__description,
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover .nextora-box-icon__card--editable:focus-within .nextora-box-icon__description {
+	color: var(--nextora-box-icon-card-desc-color, color-mix(in srgb, currentColor 55%, transparent));
+}
+
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover .nextora-box-icon__card--editable:hover .nextora-box-icon__link {
+	color: var(--nextora-box-icon-link-color, var(--wp--preset--color--primary, currentColor));
+}
+
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover.nextora-box-icon--template-minimal.nextora-box-icon--layout-grid .nextora-box-icon__card--editable:hover,
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover.nextora-box-icon--template-minimal.nextora-box-icon--layout-grid .nextora-box-icon__card--editable:focus-within,
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover.nextora-box-icon--template-minimal .nextora-box-icon__card-link:focus-visible {
+	transform: none;
+	box-shadow: none;
+	border-color: var(--nextora-box-icon-card-border-color, color-mix(in srgb, var(--wp--preset--color--contrast, currentColor) 12%, transparent));
+	background: var(--nextora-box-icon-card-bg, var(--wp--preset--color--base, #fff));
+	color: var(--wp--preset--color--contrast, currentColor);
+}
+
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover.nextora-box-icon--template-minimal .nextora-box-icon__card--editable:hover .nextora-box-icon__icon,
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover.nextora-box-icon--template-minimal .nextora-box-icon__card--editable:focus-within .nextora-box-icon__icon {
+	background: var(--nextora-box-icon-icon-surface-bg, rgb(from var(--wp--preset--color--secondary, currentColor) r g b / 0.16));
+	color: var(--nextora-box-icon-icon-color, color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 72%, black));
+}
+
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card--editable:hover .nextora-box-icon__icon,
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card--editable:focus-within .nextora-box-icon__icon {
+	transform: none;
+}
+
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover.nextora-box-icon--template-highlights .nextora-box-icon__card--editable:hover,
+.nextora-box-icon--editor.nextora-box-icon--no-card-hover.nextora-box-icon--template-highlights .nextora-box-icon__card--editable:focus-within {
+	background: color-mix(in srgb, var(--__hl-accent, var(--wp--preset--color--secondary, #26C6C0)) 14%, var(--wp--preset--color--base, #fff));
+	color: inherit;
 }

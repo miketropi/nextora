@@ -33,6 +33,24 @@
 	position: relative;
 }
 
+.nextora-box-image--editor .nextora-box-image__card--editable .nextora-box-image__title {
+	margin: 0 0 10px;
+	font-size: var(--wp--preset--font-size--base, 1.4375rem);
+	color: var(--nextora-box-image-card-title-color, currentColor);
+}
+
+.nextora-box-image--editor .nextora-box-image__card--editable .nextora-box-image__description {
+	margin: 0 0 16px;
+	flex: 1 1 auto;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.5;
+	color: var(--nextora-box-image-card-desc-color, color-mix(in srgb, currentColor 55%, transparent));
+}
+
+.nextora-box-image--editor .nextora-box-image__card--editable .nextora-box-image__card-body {
+	padding: 20px;
+}
+
 .nextora-box-image--editor .nextora-box-image__card--editable,
 .nextora-box-image--editor .nextora-box-image__card--editable:hover,
 .nextora-box-image--editor .nextora-box-image__card--editable:focus-within {
@@ -325,7 +343,7 @@
 	align-items: center;
 	text-align: center;
 	padding: 24px;
-	border-radius: 24px;
+	border-radius: var(--nextora-box-image-card-radius, 24px);
 	border-width: 0;
 }
 
@@ -468,4 +486,10 @@
 
 .nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__link--template3 .nextora-box-image__link-icon {
 	color: var(--nextora-box-image-bullet-icon-color, var(--wp--preset--color--secondary, var(--wp--preset--color--primary, currentColor)));
+}
+
+.nextora-box-image--editor .nextora-box-image__card-link {
+	text-decoration: none;
+	color: inherit;
+	cursor: pointer;
 }

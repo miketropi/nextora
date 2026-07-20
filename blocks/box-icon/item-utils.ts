@@ -166,7 +166,9 @@ export function buildStyleVars(attrs: {
 	}
 	set('--nextora-box-icon-card-min-height', attrs.cardMinHeight ? `${attrs.cardMinHeight}px` : '');
 	Object.assign(vars, cardPaddingToStyleVars(attrs.cardPadding));
-	set('--nextora-box-icon-card-border-width', attrs.cardBorderWidth ? `${attrs.cardBorderWidth}px` : '');
+	if (typeof attrs.cardBorderWidth === 'number' && attrs.cardBorderWidth >= 0) {
+		vars['--nextora-box-icon-card-border-width'] = `${attrs.cardBorderWidth}px`;
+	}
 	if (typeof attrs.cardBorderRadius === 'number' && attrs.cardBorderRadius >= 0) {
 		vars['--nextora-box-icon-card-radius'] = `${attrs.cardBorderRadius}px`;
 	}

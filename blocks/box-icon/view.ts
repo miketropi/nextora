@@ -108,12 +108,29 @@ function shouldUseSwiper(root: HTMLElement): boolean {
 	if (getLayoutMode(root) === 'slider') {
 		return true;
 	}
+	if (root.getAttribute('data-disable-responsive-carousel') === '1') {
+		return false;
+	}
 	return window.innerWidth < getGridMinWidth(root);
 }
 
 function setRevealReady(section: HTMLElement): void {
+	// Never mark as ready if the container is currently hidden (reset in progress)
+	if (isElementHidden(section)) return;
 	section.classList.add('nextora-box-icon--reveal-ready');
 	section.classList.remove('nextora-box-icon--reveal-pending');
+}
+
+function nextRevealGen(section: HTMLElement): number {
+	const raw = section.getAttribute('data-reveal-gen');
+	const gen = raw ? parseInt(raw, 10) + 1 : 1;
+	section.setAttribute('data-reveal-gen', String(gen));
+	return gen;
+}
+
+function getRevealGen(section: HTMLElement): number {
+	const raw = section.getAttribute('data-reveal-gen');
+	return raw ? parseInt(raw, 10) : 0;
 }
 
 function clearRevealStyles(targets: HTMLElement[]): void {
@@ -133,6 +150,15 @@ function initScrollReveal(section: HTMLElement): void {
 	if (section.getAttribute('data-nextora-scroll-reveal') !== '1') {
 		return;
 	}
+
+	// Defer if section is inside a hidden container
+	if (isElementHidden(section)) {
+		if (!section.hasAttribute('data-deferred-reveal')) {
+			section.setAttribute('data-deferred-reveal', '1');
+		}
+		return;
+	}
+
 	if (section.getAttribute(SCROLL_INIT_ATTR) === '1') {
 		return;
 	}
@@ -145,6 +171,13 @@ function initScrollReveal(section: HTMLElement): void {
 
 	const header = section.querySelector<HTMLElement>('.nextora-box-icon__header');
 	const carousel = section.querySelector<HTMLElement>('.nextora-box-icon__carousel-root');
+	const style = section.getAttribute('data-nextora-scroll-reveal-style') || 'default';
+
+	if (style === 'sequential') {
+		initSequentialReveal(section, header, carousel);
+		return;
+	}
+
 	const targets = [header, carousel].filter((el): el is HTMLElement => el !== null);
 
 	if (targets.length === 0) {
@@ -154,10 +187,12 @@ function initScrollReveal(section: HTMLElement): void {
 
 	gsap.set(targets, { opacity: 0, y: 32, force3D: true });
 
+	const gen = nextRevealGen(section);
 	const timeline = gsap.timeline({
 		paused: true,
 		defaults: { ease: 'power3.out' },
 		onComplete: () => {
+			if (getRevealGen(section) !== gen) return;
 			clearRevealStyles(targets);
 			setRevealReady(section);
 		},
@@ -170,6 +205,100 @@ function initScrollReveal(section: HTMLElement): void {
 		timeline.to(carousel, { opacity: 1, y: 0, duration: 1.05 }, header ? 0.18 : 0);
 	}
 
+	playRevealOnEnter(section, targets, timeline);
+}
+
+function initSequentialReveal(
+	section: HTMLElement,
+	header: HTMLElement | null,
+	carousel: HTMLElement | null,
+): void {
+	let played = false;
+
+	const playReveal = (): void => {
+		if (played || section.classList.contains('nextora-box-icon--reveal-ready')) {
+			return;
+		}
+		played = true;
+
+		const cards = carousel
+			? Array.from(carousel.querySelectorAll<HTMLElement>('.swiper-slide'))
+			: [];
+
+		const targets = [header, ...cards].filter((el): el is HTMLElement => el !== null);
+
+		if (targets.length === 0) {
+			setRevealReady(section);
+			return;
+		}
+
+		gsap.set(targets, { opacity: 0, y: 40, force3D: true });
+
+		// Reveal carousel-root wrapper so card stagger is visible
+		gsap.set(carousel, { opacity: 1, y: 0 });
+
+		const gen = nextRevealGen(section);
+
+		const timeline = gsap.timeline({
+			defaults: { ease: 'power3.out' },
+			onComplete: () => {
+				if (getRevealGen(section) !== gen) return;
+				clearRevealStyles(targets);
+				if (carousel) {
+					gsap.set(carousel, { clearProps: 'opacity,transform,translate' });
+				}
+				setRevealReady(section);
+			},
+		});
+
+		if (header) {
+			timeline.to(header, { opacity: 1, y: 0, duration: 0.85 }, 0);
+		}
+
+		if (cards.length > 0) {
+			timeline.to(
+				cards,
+				{
+					opacity: 1,
+					y: 0,
+					duration: 0.75,
+					stagger: { each: 0.14, from: 'start' },
+				},
+				header ? 0.12 : 0,
+			);
+		}
+	};
+
+	window.setTimeout(() => {
+		if (section.classList.contains('nextora-box-icon--reveal-ready')) {
+			return;
+		}
+		if (!isRevealStartPassed(section)) {
+			return;
+		}
+		setRevealReady(section);
+	}, REVEAL_FALLBACK_MS);
+
+	if (isRevealStartPassed(section)) {
+		playReveal();
+		return;
+	}
+
+	ScrollTrigger.create({
+		trigger: section,
+		start: `top ${REVEAL_START_RATIO * 100}%`,
+		once: true,
+		onEnter: playReveal,
+	});
+
+	ScrollTrigger.refresh();
+}
+
+function playRevealOnEnter(
+	section: HTMLElement,
+	targets: HTMLElement[],
+	timeline: gsap.core.Timeline,
+): void {
 	let played = false;
 	const playReveal = (): void => {
 		if (played || section.classList.contains('nextora-box-icon--reveal-ready')) {
@@ -265,6 +394,22 @@ function setGridMode(root: HTMLElement, active: boolean): void {
 	if (section) {
 		section.classList.toggle('nextora-box-icon--grid-active', active);
 	}
+	if (active && root.getAttribute('data-disable-responsive-carousel') === '1') {
+		applyResponsiveGridColumns(root);
+	}
+}
+
+function applyResponsiveGridColumns(wrapper: HTMLElement): void {
+	const w = window.innerWidth;
+	let cols: string;
+	if (w >= 1024) {
+		cols = wrapper.getAttribute('data-grid-columns') || '4';
+	} else if (w >= 768) {
+		cols = wrapper.getAttribute('data-grid-columns-tablet') || '2';
+	} else {
+		cols = wrapper.getAttribute('data-grid-columns-mobile') || '1';
+	}
+	wrapper.style.setProperty('--nextora-box-icon-cols', cols);
 }
 
 function mountSwiper(root: HTMLElement): void {
@@ -411,7 +556,31 @@ function mountSwiper(root: HTMLElement): void {
 	tryMount();
 }
 
+function isElementHidden(el: HTMLElement): boolean {
+	// display:none or zero dimensions
+	if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+		return true;
+	}
+	// visibility:hidden on element or any ancestor
+	let current: HTMLElement | null = el;
+	while (current) {
+		if (window.getComputedStyle(current).visibility === 'hidden') {
+			return true;
+		}
+		current = current.parentElement;
+	}
+	return false;
+}
+
 function syncCarouselRoot(root: HTMLElement): void {
+	// Defer if root is inside a hidden container (e.g. mega menu)
+	if (isElementHidden(root)) {
+		if (!root.hasAttribute('data-deferred')) {
+			root.setAttribute('data-deferred', '1');
+		}
+		return;
+	}
+
 	if (shouldUseSwiper(root)) {
 		if (root.dataset.nextoraBoxIconSwiperInited !== '1') {
 			mountSwiper(root);
@@ -456,6 +625,9 @@ function onResize(): void {
 				}
 			} else {
 				syncCarouselRoot(root);
+				if (root.getAttribute('data-disable-responsive-carousel') === '1') {
+					applyResponsiveGridColumns(root);
+				}
 			}
 		});
 		ScrollTrigger.refresh();
@@ -463,10 +635,144 @@ function onResize(): void {
 }
 
 function run(): void {
-	initAllScrollReveals(document);
 	initCarouselRoots(document);
+	initAllScrollReveals(document);
+	watchDeferredElements();
 	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize' });
 	ScrollTrigger.refresh();
+}
+
+function watchDeferredElements(): void {
+	// Track per-element visibility state for replay
+	const visibilityState = new WeakMap<HTMLElement, boolean>();
+
+	const check = (): void => {
+		let hasWork = false;
+
+		// 1) Handle initially-deferred carousel roots
+		document
+			.querySelectorAll<HTMLElement>('.nextora-box-icon__carousel-root[data-deferred="1"]')
+			.forEach((root) => {
+				if (!isElementHidden(root)) {
+					root.removeAttribute('data-deferred');
+					root.setAttribute('data-deferred-replay', '1');
+					syncCarouselRoot(root);
+					const section = root.closest<HTMLElement>('.nextora-box-icon');
+					if (section) {
+						section.setAttribute('data-deferred-replay', '1');
+						initScrollReveal(section);
+					}
+				}
+				hasWork = true;
+			});
+
+		// 2) Handle initially-deferred reveal sections
+		document
+			.querySelectorAll<HTMLElement>('.nextora-box-icon[data-deferred-reveal="1"]')
+			.forEach((section) => {
+				if (!isElementHidden(section)) {
+					section.removeAttribute('data-deferred-reveal');
+					section.setAttribute('data-deferred-replay', '1');
+					initScrollReveal(section);
+				}
+				hasWork = true;
+			});
+
+		// 3) Toggle replay: reset when hidden, re-init when shown
+		document
+			.querySelectorAll<HTMLElement>(
+				'.nextora-box-icon__carousel-root[data-deferred-replay="1"]',
+			)
+			.forEach((root) => {
+				const hidden = isElementHidden(root);
+				const wasHidden = visibilityState.get(root);
+
+				if (hidden && !wasHidden) {
+					// Just became hidden — reset carousel + grid + animations
+					const section = root.closest<HTMLElement>('.nextora-box-icon');
+					const cards = Array.from(root.querySelectorAll<HTMLElement>('.swiper-slide'));
+					const headerEl = section?.querySelector<HTMLElement>('.nextora-box-icon__header');
+
+					// Kill all active GSAP tweens
+					const allTargets: (HTMLElement | HTMLElement[])[] = [];
+					if (cards.length) allTargets.push(cards as unknown as HTMLElement[]);
+					if (headerEl) allTargets.push(headerEl);
+					allTargets.push(root);
+					if (section) allTargets.push(section);
+					allTargets.forEach((t) => gsap.killTweensOf(t));
+
+					// Clear inline styles from cards
+					if (cards.length > 0) clearRevealStyles(cards);
+					if (headerEl) clearRevealStyles([headerEl]);
+					clearRevealStyles([root]);
+
+					destroySwiper(root);
+					setGridMode(root, false);
+					root.classList.remove('nextora-box-icon__carousel-root--grid-active');
+					if (section) {
+						section.removeAttribute(SCROLL_INIT_ATTR);
+						section.removeAttribute('data-reveal-gen');
+						section.classList.remove('nextora-box-icon--grid-active');
+						section.classList.remove('nextora-box-icon--reveal-ready');
+						section.classList.add('nextora-box-icon--reveal-pending');
+					}
+				} else if (!hidden && wasHidden) {
+					// Just became visible — force clean re-init
+					const section = root.closest<HTMLElement>('.nextora-box-icon');
+					// Remove stale scroll-init marker so initScrollReveal never skips
+					if (section) section.removeAttribute(SCROLL_INIT_ATTR);
+					syncCarouselRoot(root);
+					if (section) {
+						initScrollReveal(section);
+					}
+				}
+
+				visibilityState.set(root, hidden);
+				hasWork = true;
+			});
+
+		// 4) Toggle replay for reveal-only sections
+		document
+			.querySelectorAll<HTMLElement>('.nextora-box-icon[data-deferred-replay="1"]')
+			.forEach((section) => {
+				// Skip if already handled via carousel root above
+				if (section.querySelector('.nextora-box-icon__carousel-root[data-deferred-replay="1"]')) {
+					return;
+				}
+
+				const hidden = isElementHidden(section);
+				const wasHidden = visibilityState.get(section);
+
+				if (hidden && !wasHidden) {
+					const cards = Array.from(section.querySelectorAll<HTMLElement>('.swiper-slide'));
+					const headerEl = section.querySelector<HTMLElement>('.nextora-box-icon__header');
+					const allTargets: (HTMLElement | HTMLElement[])[] = [];
+					if (cards.length) allTargets.push(cards as unknown as HTMLElement[]);
+					if (headerEl) allTargets.push(headerEl);
+					allTargets.push(section);
+					allTargets.forEach((t) => gsap.killTweensOf(t));
+					if (cards.length > 0) clearRevealStyles(cards);
+					if (headerEl) clearRevealStyles([headerEl]);
+					section.removeAttribute(SCROLL_INIT_ATTR);
+					section.removeAttribute('data-reveal-gen');
+					section.classList.remove('nextora-box-icon--reveal-ready');
+					section.classList.add('nextora-box-icon--reveal-pending');
+				} else if (!hidden && wasHidden) {
+					// Force clean re-init
+					section.removeAttribute(SCROLL_INIT_ATTR);
+					initScrollReveal(section);
+				}
+
+				visibilityState.set(section, hidden);
+				hasWork = true;
+			});
+
+		if (hasWork) {
+			setTimeout(() => requestAnimationFrame(check), 200);
+		}
+	};
+
+	setTimeout(() => requestAnimationFrame(check), 200);
 }
 
 if (document.readyState === 'loading') {
@@ -478,7 +784,7 @@ if (document.readyState === 'loading') {
 window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
 window.addEventListener('resize', onResize);
 window.addEventListener('nextora-box-icon-reinit', () => {
-	initAllScrollReveals(document);
 	initCarouselRoots(document);
+	initAllScrollReveals(document);
 	ScrollTrigger.refresh();
 });

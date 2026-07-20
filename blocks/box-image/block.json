@@ -107,7 +107,10 @@
 		"layoutMode": { "type": "string", "default": "slider" },
 		"template": { "type": "string", "default": "default" },
 		"gridColumns": { "type": "number", "default": 4 },
+		"gridColumnsTablet": { "type": "number", "default": 2 },
+		"gridColumnsMobile": { "type": "number", "default": 1 },
 		"gridMinWidth": { "type": "number", "default": 981 },
+		"disableResponsiveCarousel": { "type": "boolean", "default": false },
 		"imageAspectRatio": { "type": "string", "default": "3/2" },
 		"imageFit": { "type": "string", "default": "cover" },
 		"cardMinHeight": { "type": "number", "default": 240 },
@@ -140,7 +143,9 @@
 		"badgeBackgroundColor": { "type": "string", "default": "" },
 		"badgeTextColor": { "type": "string", "default": "" },
 		"bulletIconColor": { "type": "string", "default": "" },
-		"enableScrollAnimation": { "type": "boolean", "default": true }
+		"enableScrollAnimation": { "type": "boolean", "default": true },
+		"scrollAnimationStyle": { "type": "string", "default": "default" },
+		"enableCardHover": { "type": "boolean", "default": true }
 	},
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",

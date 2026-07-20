@@ -4,6 +4,11 @@
 	max-height: 100%;
 }
 
+/* Raise the icon picker modal above the item modal. */
+.components-modal__screen-overlay:has(.nextora-icon-picker-modal) {
+	z-index: 100002 !important;
+}
+
 .nextora-icon-picker-modal .components-modal__content {
 	min-width: min(96vw, 1080px);
 	max-width: 100%;
