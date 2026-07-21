@@ -198,6 +198,60 @@ if ( ! function_exists( 'nextora_testimonials_render_media_item' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_testimonials_render_avatar' ) ) {
+	/**
+	 * Render a small round avatar for template-02 author section.
+	 *
+	 * @param array<string, mixed> $item Normalized testimonial.
+	 */
+	function nextora_testimonials_render_avatar( array $item ): string {
+		$portrait_id  = (int) $item['portraitId'];
+		$portrait_url = isset( $item['portraitUrl'] ) ? trim( (string) $item['portraitUrl'] ) : '';
+		$name         = (string) $item['authorName'];
+		$alt          = (string) $item['portraitAlt'];
+
+		if ( '' === $alt && $portrait_id > 0 ) {
+			$alt = (string) get_post_meta( $portrait_id, '_wp_attachment_image_alt', true );
+		}
+		if ( '' === $alt && '' !== $name ) {
+			$alt = $name;
+		}
+		if ( '' === $alt ) {
+			$alt = __( 'Testimonial avatar', 'nextora' );
+		}
+
+		if ( $portrait_id > 0 ) {
+			$img = wp_get_attachment_image(
+				$portrait_id,
+				'thumbnail',
+				false,
+				array(
+					'class'    => 'nextora-testimonials__avatar-img',
+					'alt'      => $alt,
+					'loading'  => 'lazy',
+					'decoding' => 'async',
+				),
+			);
+			if ( is_string( $img ) && '' !== $img ) {
+				return '<div class="nextora-testimonials__avatar">' . $img . '</div>';
+			}
+		}
+
+		if ( '' !== $portrait_url ) {
+			$url = esc_url( $portrait_url );
+			if ( '' !== $url ) {
+				return sprintf(
+					'<div class="nextora-testimonials__avatar"><img class="nextora-testimonials__avatar-img" src="%1$s" alt="%2$s" loading="lazy" decoding="async" /></div>',
+					$url,
+					esc_attr( $alt ),
+				);
+			}
+		}
+
+		return '<div class="nextora-testimonials__avatar nextora-testimonials__avatar--placeholder" aria-hidden="true"></div>';
+	}
+}
+
 if ( ! function_exists( 'nextora_testimonials_render_content_slide' ) ) {
 	/**
 	 * @param array<string, mixed> $item     Normalized testimonial.
@@ -210,20 +264,35 @@ if ( ! function_exists( 'nextora_testimonials_render_content_slide' ) ) {
 		}
 
 		$name     = (string) $item['authorName'];
+		$location = (string) $item['authorLocation'];
 		$meta     = nextora_testimonials_build_author_meta(
 			(string) $item['authorAge'],
-			(string) $item['authorLocation'],
+			$location,
 		);
 
 		$out  = '<div class="swiper-slide nextora-testimonials__slide">';
-		
-		if ( 'story' === $template ) {
+
+		if ( 'template-01' === $template || 'template-02' === $template ) {
 			$out .= '<svg class="nextora-testimonials__quote-mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.5 4C6 4 4 6.5 4 10v10h8v-9H7.5C7.5 8 8.3 7 10 7zm9 0C15 4 13 6.5 13 10v10h8v-9h-4.5C16.5 8 17.3 7 19 7z"/></svg>';
 		}
-		
+
 		$out .= '<div class="nextora-testimonials__quote"><p>' . esc_html( $quote ) . '</p></div>';
 
-		if ( '' !== $name || '' !== $meta ) {
+		if ( 'template-02' === $template ) {
+			if ( '' !== $name || '' !== $location ) {
+				$out .= '<footer class="nextora-testimonials__author nextora-testimonials__author--with-avatar">';
+				$out .= nextora_testimonials_render_avatar( $item );
+				$out .= '<div class="nextora-testimonials__author-text">';
+				if ( '' !== $name ) {
+					$out .= '<strong class="nextora-testimonials__author-name">' . esc_html( $name ) . '</strong>';
+				}
+				if ( '' !== $location ) {
+					$out .= '<span class="nextora-testimonials__author-meta">' . esc_html( $location ) . '</span>';
+				}
+				$out .= '</div>';
+				$out .= '</footer>';
+			}
+		} elseif ( '' !== $name || '' !== $meta ) {
 			$out .= '<footer class="nextora-testimonials__author">';
 			if ( '' !== $name ) {
 				$out .= '<strong class="nextora-testimonials__author-name">' . esc_html( $name ) . '</strong>';
@@ -261,7 +330,7 @@ if ( array() === $items ) {
 $items = array_values( (array) apply_filters( 'nextora_testimonials_items', $items, $attributes ) );
 
 $template = isset( $attributes['template'] ) ? sanitize_key( (string) $attributes['template'] ) : 'default';
-if ( ! in_array( $template, array( 'default', 'story' ), true ) ) {
+if ( ! in_array( $template, array( 'default', 'template-01', 'template-02' ), true ) ) {
 	$template = 'default';
 }
 
@@ -394,6 +463,7 @@ $heading_tag = 'h' . (string) $heading_level;
 		data-swiper-opts="<?php echo esc_attr( $opts_string ); ?>"
 	>
 		<div class="nextora-testimonials__layout">
+			<?php if ( 'template-02' !== $template ) : ?>
 			<div class="nextora-testimonials__media">
 				<div class="nextora-testimonials__media-stack">
 					<?php
@@ -404,6 +474,7 @@ $heading_tag = 'h' . (string) $heading_level;
 					?>
 				</div>
 			</div>
+			<?php endif; ?>
 
 			<div class="nextora-testimonials__content">
 				<div class="nextora-testimonials__content-inner">

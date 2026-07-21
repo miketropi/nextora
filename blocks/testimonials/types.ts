@@ -2,7 +2,7 @@ export type TestimonialsEffect = 'fade' | 'slide' | 'fadeUp';
 
 export type TestimonialsImagePosition = 'left' | 'right';
 
-export type TestimonialsTemplate = 'default' | 'story';
+export type TestimonialsTemplate = 'default' | 'template-01' | 'template-02';
 
 export interface TestimonialItem {
 	id: string;

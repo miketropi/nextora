@@ -30,6 +30,7 @@ add_filter(
 			'nextora/counters',
 			'nextora/advanced-icon',
 			'nextora/blog-list-carousel',
+			'nextora/testimonials',
 		);
 
 		foreach ( $theme_blocks as $block_name ) {

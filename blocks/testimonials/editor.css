@@ -254,21 +254,39 @@
 	}
 }
 
-/* Story template editor styles */
-.nextora-testimonials--template-story.nextora-testimonials--editor .nextora-testimonials__editor-section {
+/* Template 01 editor styles */
+.nextora-testimonials--template-template-01.nextora-testimonials--editor .nextora-testimonials__editor-section {
 	display: none;
 }
 
-.nextora-testimonials--template-story.nextora-testimonials--editor .nextora-testimonials__layout--item-preview {
+.nextora-testimonials--template-template-01.nextora-testimonials--editor .nextora-testimonials__layout--item-preview {
 	min-height: auto;
 }
 
-.nextora-testimonials--template-story.nextora-testimonials--editor .nextora-testimonials__layout--item-preview .nextora-testimonials__media {
+.nextora-testimonials--template-template-01.nextora-testimonials--editor .nextora-testimonials__layout--item-preview .nextora-testimonials__media {
 	aspect-ratio: 1;
 	min-height: 0;
 }
 
-.nextora-testimonials--template-story.nextora-testimonials--editor .nextora-testimonials__content {
+.nextora-testimonials--template-template-01.nextora-testimonials--editor .nextora-testimonials__content {
+	background-color: transparent;
+}
+
+/* Template 02 editor styles */
+.nextora-testimonials--template-template-02.nextora-testimonials--editor .nextora-testimonials__editor-section {
+	display: none;
+}
+
+.nextora-testimonials--template-template-02.nextora-testimonials--editor .nextora-testimonials__layout--item-preview {
+	grid-template-columns: 1fr;
+	min-height: auto;
+}
+
+.nextora-testimonials--template-template-02.nextora-testimonials--editor .nextora-testimonials__layout--item-preview .nextora-testimonials__media {
+	display: none;
+}
+
+.nextora-testimonials--template-template-02.nextora-testimonials--editor .nextora-testimonials__content {
 	background-color: transparent;
 }
 
