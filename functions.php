@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Nextora block theme bootstrap.
+  * Nextora block theme bootstrap.
+ *
+ * Description:
  *
  * @package Nextora
  */
