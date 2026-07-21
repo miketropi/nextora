@@ -22,20 +22,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 function nextora_get_supported_plugins(): array {
 	$plugins = array(
 		array(
-			'slug'         => 'woocommerce',
-			'name'         => 'WooCommerce',
-			'description'  => 'The most popular eCommerce platform for WordPress. Sell anything, beautifully.',
-			'image'        => 'https://pub-0645c3b9d3674132af6b362484df0f3c.r2.dev/Nextora/pms-integration-woocommerce-banner.png',
-			'url'          => 'https://woocommerce.com',
-			'isPremium'    => false,
-			'isComingSoon' => false,
-		),
-		array(
-			'slug'         => 'elementor',
-			'name'         => 'Elementor',
-			'description'  => 'Live drag-and-drop page builder with 100+ widgets, full theme design, and popup builder.',
-			'image'        => 'https://pub-0645c3b9d3674132af6b362484df0f3c.r2.dev/Nextora/desktop_-inner_720_440_-1024x626.avif',
-			'url'          => 'https://elementor.com/',
+			'slug'         => 'beplus-visual-mega-nav',
+			'name'         => 'Beplus Visual Mega Navigation',
+			'description'  => 'A Gutenberg-powered mega menu builder for WordPress. Build rich mega menus visually using the block editor.',
+			'image'        => 'https://i.pinimg.com/1200x/c2/7c/eb/c27ceb9be031dea4b4563c9bd88d1bfe.jpg',
+			'url'          => 'https://wordpress.org/plugins/beplus-visual-mega-nav/',
 			'isPremium'    => false,
 			'isComingSoon' => false,
 		),
@@ -48,7 +39,6 @@ function nextora_get_supported_plugins(): array {
 			'isPremium'    => true,
 			'isComingSoon' => false,
 		),
-		
 	);
 
 	return apply_filters( 'nextora_addon_plugins', $plugins );
