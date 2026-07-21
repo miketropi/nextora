@@ -29,6 +29,7 @@ add_filter(
 			'nextora/advanced-button-button',
 			'nextora/counters',
 			'nextora/advanced-icon',
+			'nextora/advanced-list',
 			'nextora/blog-list-carousel',
 			'nextora/testimonials',
 		);
