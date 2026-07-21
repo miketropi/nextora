@@ -348,7 +348,16 @@ if ( ! function_exists( 'nextora_box_icon_render_card' ) ) {
 	}
 
 	$out  = $as_slide ? '<div class="swiper-slide">' : '';
-	if ( '' !== $highlight_accent_style ) {
+
+	$is_minimal_link = 'minimal' === $card_template && $show_link && '' !== $link_url;
+
+	if ( $is_minimal_link ) {
+		$out .= sprintf(
+			'<a class="nextora-box-icon__card nextora-box-icon__card-link" href="%1$s"%2$s>',
+			esc_url( $link_url ),
+			'_blank' === $link_target ? ' target="_blank" rel="noopener noreferrer"' : '',
+		);
+	} elseif ( '' !== $highlight_accent_style ) {
 		$out .= '<article class="nextora-box-icon__card" style="' . esc_attr( $highlight_accent_style ) . '">';
 	} else {
 		$out .= '<article class="nextora-box-icon__card">';
@@ -399,26 +408,11 @@ if ( ! function_exists( 'nextora_box_icon_render_card' ) ) {
 			$out .= '</div>';
 		}
 
-		if ( 'minimal' !== $card_template && $show_link && '' !== $link_label ) {
-			$arrow = '<span class="nextora-box-icon__link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
-			if ( '' !== $link_url ) {
-				$out .= sprintf(
-					'<a class="nextora-box-icon__link" href="%1$s"%2$s>%3$s%4$s</a>',
-					esc_url( $link_url ),
-					'_blank' === $link_target ? ' target="_blank" rel="noopener noreferrer"' : '',
-					esc_html( $link_label ),
-					$arrow,
-				);
-			} else {
-				$out .= sprintf(
-					'<span class="nextora-box-icon__link nextora-box-icon__link--static">%1$s%2$s</span>',
-					esc_html( $link_label ),
-					$arrow,
-				);
-			}
+		if ( 'minimal' === $card_template && $show_link && '' !== $link_url ) {
+			$out .= '</a>';
+		} else {
+			$out .= '</article>';
 		}
-
-		$out .= '</article>';
 		$out .= $as_slide ? '</div>' : '';
 
 		return $out;
@@ -458,7 +452,10 @@ if ( ! in_array( $card_template, $allowed_card_templates, true ) ) {
 
 $content_max = isset( $attributes['contentMaxWidth'] ) ? trim( (string) $attributes['contentMaxWidth'] ) : '';
 $grid_cols   = isset( $attributes['gridColumns'] ) ? max( 1, min( 6, (int) $attributes['gridColumns'] ) ) : 4;
+$grid_cols_tablet  = isset( $attributes['gridColumnsTablet'] ) ? max( 1, min( 4, (int) $attributes['gridColumnsTablet'] ) ) : 2;
+$grid_cols_mobile  = isset( $attributes['gridColumnsMobile'] ) ? max( 1, min( 2, (int) $attributes['gridColumnsMobile'] ) ) : 1;
 $grid_min    = isset( $attributes['gridMinWidth'] ) ? max( 480, min( 1200, (int) $attributes['gridMinWidth'] ) ) : 981;
+$grid_no_carousel = ! empty( $attributes['disableResponsiveCarousel'] );
 $card_min_h  = isset( $attributes['cardMinHeight'] ) ? max( 160, min( 400, (int) $attributes['cardMinHeight'] ) ) : 240;
 $card_border = isset( $attributes['cardBorderWidth'] ) ? max( 0, min( 4, (int) $attributes['cardBorderWidth'] ) ) : 2;
 $card_radius = isset( $attributes['cardBorderRadius'] ) ? max( 0, min( 24, (int) $attributes['cardBorderRadius'] ) ) : 8;
@@ -496,6 +493,11 @@ $free_mode   = ! empty( $attributes['freeMode'] );
 $grab_cursor = ! isset( $attributes['grabCursor'] ) || (bool) $attributes['grabCursor'];
 
 $enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
+$scroll_style  = isset( $attributes['scrollAnimationStyle'] ) ? (string) $attributes['scrollAnimationStyle'] : 'default';
+if ( ! in_array( $scroll_style, array( 'default', 'sequential' ), true ) ) {
+	$scroll_style = 'default';
+}
+$enable_hover  = ! isset( $attributes['enableCardHover'] ) || (bool) $attributes['enableCardHover'];
 
 $slide_count = count( $items );
 $use_loop    = $loop && $slide_count > 1;
@@ -604,6 +606,9 @@ if ( $enable_scroll ) {
 if ( '' !== $heading_font_family ) {
 	$wrapper_classes[] = 'nextora-box-icon--has-heading-font';
 }
+if ( ! $enable_hover ) {
+	$wrapper_classes[] = 'nextora-box-icon--no-card-hover';
+}
 
 $wrapper_classes = (array) apply_filters(
 	'nextora_box_icon_wrapper_classes',
@@ -617,6 +622,7 @@ $wrapper_extra = array(
 );
 if ( $enable_scroll ) {
 	$wrapper_extra['data-nextora-scroll-reveal'] = '1';
+	$wrapper_extra['data-nextora-scroll-reveal-style'] = $scroll_style;
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
@@ -636,7 +642,12 @@ nextora_box_icon_enqueue_view_script();
 			data-layout-mode="<?php echo esc_attr( $layout_mode ); ?>"
 			data-grid-min-width="<?php echo esc_attr( (string) $grid_min ); ?>"
 			data-grid-columns="<?php echo esc_attr( (string) $grid_cols ); ?>"
+			data-grid-columns-tablet="<?php echo esc_attr( (string) $grid_cols_tablet ); ?>"
+			data-grid-columns-mobile="<?php echo esc_attr( (string) $grid_cols_mobile ); ?>"
 			data-swiper-opts="<?php echo esc_attr( $opts_string ); ?>"
+			<?php if ( $grid_no_carousel ) : ?>
+			data-disable-responsive-carousel="1"
+			<?php endif; ?>
 		>
 			<div class="swiper nextora-box-icon__swiper">
 				<div class="swiper-wrapper">

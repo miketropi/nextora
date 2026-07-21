@@ -1,6 +1,6 @@
 import type { BlogListCarouselAttributes } from './types';
 
-export type BlogListCardTemplate = 'default' | 'template-1';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2';
 
 export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	value: BlogListCardTemplate;
@@ -8,11 +8,15 @@ export const BLOG_LIST_TEMPLATE_OPTIONS: {
 }[] = [
 	{ value: 'default', labelKey: 'Default' },
 	{ value: 'template-1', labelKey: 'Template 1' },
+	{ value: 'template-2', labelKey: 'Template 2' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BlogListCardTemplate {
 	if ( value === 'template-1' || value === 'news-grid' ) {
 		return 'template-1';
+	}
+	if ( value === 'template-2' ) {
+		return 'template-2';
 	}
 	return 'default';
 }
@@ -41,6 +45,34 @@ export function getTemplateDefaultAttributes(
 			showReadMore: true,
 			readMoreText: 'Read story',
 			cardLinkBehavior: 'read-more',
+			showPagination: false,
+			showArrows: false,
+			showDate: true,
+			showCategory: true,
+			dateFormat: 'M j, Y',
+		};
+	}
+
+	if (template === 'template-2') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 1,
+			gridColumnGap: 0,
+			gridRowGap: 32,
+			spaceBetween: 24,
+			slidesPerView: 1,
+			slidesPerViewTablet: 1,
+			slidesPerViewMobile: 1,
+			imageAspectRatio: '4-3',
+			imageBorderRadius: 10,
+			imageWidthPercent: 40,
+			cardBorderRadius: 0,
+			cardPadding: 0,
+			showExcerpt: true,
+			showReadMore: true,
+			readMoreText: 'Read More',
+			cardLinkBehavior: 'title-only',
+			titleFontSize: 'md',
 			showPagination: false,
 			showArrows: false,
 			showDate: true,

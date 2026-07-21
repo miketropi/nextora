@@ -180,6 +180,16 @@ const cardLinkOptions = [
 	{ label: __('Read more button only', 'nextora'), value: 'read-more' },
 ];
 
+const titleFontSizeOptions = [
+	{ label: __('Theme default', 'nextora'), value: '' },
+	{ label: __('Small', 'nextora'), value: 'sm' },
+	{ label: __('Base', 'nextora'), value: 'base' },
+	{ label: __('Medium', 'nextora'), value: 'md' },
+	{ label: __('Large', 'nextora'), value: 'lg' },
+	{ label: __('Extra Large', 'nextora'), value: 'xl' },
+	{ label: __('2XL', 'nextora'), value: '2xl' },
+];
+
 const arrowStyleOptions = [
 	{ label: __('Minimal', 'nextora'), value: 'minimal' },
 	{ label: __('Circle', 'nextora'), value: 'circle' },
@@ -217,7 +227,9 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		imageAspectRatio = '4-3',
 		imageSize = 'medium_large',
 		imageBorderRadius = 8,
+		imageWidthPercent = 40,
 		showTitle = true,
+		titleFontSize = '',
 		titleLineClamp = 2,
 		showExcerpt = true,
 		excerptLineClamp = 3,
@@ -227,7 +239,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		showCategory = true,
 		showAuthor = false,
 		showReadMore = false,
-		readMoreText = 'Read More →',
+		readMoreText = 'Read More',
 		cardLinkBehavior = 'full-card',
 		slidesPerView = 3,
 		slidesPerViewTablet = 2,
@@ -255,6 +267,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		paginationActiveColor = '',
 		arrowColor = '',
 		enableScrollAnimation = true,
+		scrollAnimationStyle = 'default',
 	} = attributes;
 
 	const cardTemplate = normalizeCardTemplate(cardTemplateRaw);
@@ -284,6 +297,8 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 			'--nextora-blc-grid-row-gap': `${gridRowGap}px`,
 			'--nextora-blc-card-radius': `${cardBorderRadius}px`,
 			'--nextora-blc-card-padding': `${cardPadding}px`,
+			'--nextora-blc-img-col-width': `${imageWidthPercent}%`,
+			'--nextora-blc-img-col-gap': '24px',
 		} as React.CSSProperties,
 	});
 
@@ -416,21 +431,21 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 					/>
 				</PanelBody>
 
-			{/* ── Card Content ── */}
+				{/* ── Card Content ── */}
 			<PanelBody title={__('Card Content', 'nextora')} initialOpen={false}>
 					<RangeControl
 						label={__('Card border radius', 'nextora')}
 						value={cardBorderRadius}
 						onChange={(v) => setAttributes({ cardBorderRadius: v ?? 0 })}
 						min={0}
-						max={cardTemplate === 'template-1' ? 32 : 24}
+						max={cardTemplate === 'template-1' ? 32 : cardTemplate === 'template-2' ? 12 : 24}
 					/>
 					<RangeControl
 						label={__('Card inner padding', 'nextora')}
 						value={cardPadding}
 						onChange={(v) => setAttributes({ cardPadding: v ?? 0 })}
 						min={0}
-						max={cardTemplate === 'template-1' ? 32 : 24}
+						max={cardTemplate === 'template-1' ? 32 : cardTemplate === 'template-2' ? 12 : 24}
 					/>
 				<ToggleControl
 					label={__('Show featured image', 'nextora')}
@@ -466,13 +481,22 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						onChange={(v) => setAttributes({ showTitle: v })}
 					/>
 					{showTitle && (
-						<RangeControl
-							label={__('Title line clamp', 'nextora')}
-							value={titleLineClamp}
-							onChange={(v) => setAttributes({ titleLineClamp: v ?? 2 })}
-							min={1}
-							max={4}
-						/>
+						<>
+							<SelectControl
+								label={__('Title font size', 'nextora')}
+								value={titleFontSize}
+								options={titleFontSizeOptions}
+								onChange={(v) => setAttributes({ titleFontSize: v })}
+								help={__('Overrides the default card title size.', 'nextora')}
+							/>
+							<RangeControl
+								label={__('Title line clamp', 'nextora')}
+								value={titleLineClamp}
+								onChange={(v) => setAttributes({ titleLineClamp: v ?? 2 })}
+								min={1}
+								max={4}
+							/>
+						</>
 					)}
 					<ToggleControl
 						label={__('Show excerpt', 'nextora')}
@@ -530,7 +554,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							label={__('"Read More" text', 'nextora')}
 							value={readMoreText}
 							onChange={(v) => setAttributes({ readMoreText: v })}
-							placeholder={__('Read More →', 'nextora')}
+							placeholder={__('Read More', 'nextora')}
 						/>
 					)}
 					<SelectControl
@@ -580,20 +604,24 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				/>
 				{layoutMode === 'grid' ? (
 					<>
-						<RangeControl
-							label={__('Grid columns', 'nextora')}
-							value={gridColumns}
-							onChange={(v) => setAttributes({ gridColumns: v ?? 3 })}
-							min={1}
-							max={6}
-						/>
-						<RangeControl
-							label={__('Column gap (px)', 'nextora')}
-							value={gridColumnGap}
-							onChange={(v) => setAttributes({ gridColumnGap: v ?? 24 })}
-							min={0}
-							max={60}
-						/>
+						{cardTemplate !== 'template-2' && (
+							<RangeControl
+								label={__('Grid columns', 'nextora')}
+								value={gridColumns}
+								onChange={(v) => setAttributes({ gridColumns: v ?? 3 })}
+								min={1}
+								max={6}
+							/>
+						)}
+						{cardTemplate !== 'template-2' && (
+							<RangeControl
+								label={__('Column gap (px)', 'nextora')}
+								value={gridColumnGap}
+								onChange={(v) => setAttributes({ gridColumnGap: v ?? 24 })}
+								min={0}
+								max={60}
+							/>
+						)}
 						<RangeControl
 							label={__('Row gap (px)', 'nextora')}
 							value={gridRowGap}
@@ -601,6 +629,21 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							min={0}
 							max={60}
 						/>
+						{cardTemplate === 'template-2' && (
+							<RangeControl
+								label={__('Image width (%)', 'nextora')}
+								value={imageWidthPercent}
+								onChange={(v) =>
+									setAttributes({ imageWidthPercent: v ?? 40 })
+								}
+								min={20}
+								max={60}
+								help={__(
+									'Width of the image column as a percentage of the card.',
+									'nextora',
+								)}
+							/>
+						)}
 					</>
 				) : null}
 			</PanelBody>
@@ -666,6 +709,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				</PanelBody>
 
 				{/* ── Autoplay ── */}
+				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && (
 				<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Enable autoplay', 'nextora')}
@@ -690,8 +734,10 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						</>
 					)}
 				</PanelBody>
+				)}
 
 				{/* ── Pagination & Arrows ── */}
+				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && (
 				<PanelBody title={__('Pagination & Arrows', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Show pagination dots', 'nextora')}
@@ -712,6 +758,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						/>
 					)}
 				</PanelBody>
+				)}
 
 				{/* ── Colors ── */}
 				<PanelColorSettings
@@ -798,6 +845,19 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						checked={enableScrollAnimation !== false}
 						onChange={(v) => setAttributes({ enableScrollAnimation: v })}
 					/>
+					{enableScrollAnimation !== false && (
+						<SelectControl
+							label={__('Animation style', 'nextora')}
+							value={scrollAnimationStyle}
+							options={[
+								{ label: __('Default (section fade-in)', 'nextora'), value: 'default' },
+								{ label: __('Sequential (stagger per card)', 'nextora'), value: 'sequential' },
+							]}
+							onChange={(v) =>
+								setAttributes({ scrollAnimationStyle: v as 'default' | 'sequential' })
+							}
+						/>
+					)}
 				</PanelBody>
 			</InspectorControls>
 

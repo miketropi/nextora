@@ -114,7 +114,10 @@
 		"cardTemplate": { "type": "string", "default": "default" },
 		"layoutMode": { "type": "string", "default": "slider" },
 		"gridColumns": { "type": "number", "default": 4 },
+		"gridColumnsTablet": { "type": "number", "default": 2 },
+		"gridColumnsMobile": { "type": "number", "default": 1 },
 		"gridMinWidth": { "type": "number", "default": 981 },
+		"disableResponsiveCarousel": { "type": "boolean", "default": false },
 		"cardMinHeight": { "type": "number", "default": 240 },
 		"cardPadding": { "type": "object", "default": {} },
 		"cardBorderWidth": { "type": "number", "default": 2 },
@@ -165,7 +168,9 @@
 		"paginationColor": { "type": "string", "default": "" },
 		"paginationActiveColor": { "type": "string", "default": "" },
 		"arrowColor": { "type": "string", "default": "" },
-		"enableScrollAnimation": { "type": "boolean", "default": true }
+		"enableScrollAnimation": { "type": "boolean", "default": true },
+		"scrollAnimationStyle": { "type": "string", "default": "default" },
+		"enableCardHover": { "type": "boolean", "default": true }
 	},
 	"editorScript": "file:./index.js",
 	"viewScript": "file:./view.js",

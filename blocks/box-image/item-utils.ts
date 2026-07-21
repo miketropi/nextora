@@ -17,6 +17,7 @@ export const DEFAULT_ITEMS: BoxImageItem[] = [
 		descriptionColor: '',
 		linkColor: '',
 		badge: '',
+		linkWrapCard: false,
 	},
 	{
 		id: '2',
@@ -33,6 +34,7 @@ export const DEFAULT_ITEMS: BoxImageItem[] = [
 		descriptionColor: '',
 		linkColor: '',
 		badge: '',
+		linkWrapCard: false,
 	},
 	{
 		id: '3',
@@ -49,6 +51,7 @@ export const DEFAULT_ITEMS: BoxImageItem[] = [
 		descriptionColor: '',
 		linkColor: '',
 		badge: '',
+		linkWrapCard: false,
 	},
 	{
 		id: '4',
@@ -65,6 +68,7 @@ export const DEFAULT_ITEMS: BoxImageItem[] = [
 		descriptionColor: '',
 		linkColor: '',
 		badge: '',
+		linkWrapCard: false,
 	},
 ];
 
@@ -101,6 +105,7 @@ export function normalizeItems(items: BoxImageItem[] | undefined): BoxImageItem[
 		descriptionColor: typeof raw?.descriptionColor === 'string' ? raw.descriptionColor : '',
 		linkColor: typeof raw?.linkColor === 'string' ? raw.linkColor : '',
 		badge: typeof raw?.badge === 'string' ? raw.badge : '',
+		linkWrapCard: raw?.linkWrapCard === true,
 	}));
 }
 
@@ -151,8 +156,10 @@ export function buildStyleVars(attrs: {
 	if (typeof attrs.gapPx === 'number' && attrs.gapPx >= 0) {
 		vars['--nextora-box-image-gap'] = `${attrs.gapPx}px`;
 	}
-	set('--nextora-box-image-card-min-height', attrs.cardMinHeight ? `${attrs.cardMinHeight}px` : '');
-	set('--nextora-box-image-card-border-width', attrs.cardBorderWidth ? `${attrs.cardBorderWidth}px` : '');
+	set('--nextora-box-image-card-min-height', typeof attrs.cardMinHeight === 'number' && attrs.cardMinHeight >= 0 ? `${attrs.cardMinHeight}px` : '');
+	if (typeof attrs.cardBorderWidth === 'number' && attrs.cardBorderWidth >= 0) {
+		vars['--nextora-box-image-card-border-width'] = `${attrs.cardBorderWidth}px`;
+	}
 	if (typeof attrs.cardBorderRadius === 'number' && attrs.cardBorderRadius >= 0) {
 		vars['--nextora-box-image-card-radius'] = `${attrs.cardBorderRadius}px`;
 	}

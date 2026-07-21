@@ -208,7 +208,7 @@ export default function ItemModalForm({
 				</div>
 
 				<div className="nextora-box-icon__item-modal-form-group">
-					{cardTemplate !== 'minimal' && cardTemplate !== 'highlights' ? (
+					{cardTemplate !== 'highlights' ? (
 						<>
 							<p className="nextora-box-icon__item-modal-form-heading">{__('Link', 'nextora')}</p>
 							<ToggleControl
@@ -218,11 +218,13 @@ export default function ItemModalForm({
 							/>
 							{item.showLink ? (
 								<>
-									<TextControl
-										label={__('Link label', 'nextora')}
-										value={item.linkLabel}
-										onChange={(linkLabel) => onPatch({ linkLabel: linkLabel ?? '' })}
-									/>
+									{cardTemplate !== 'minimal' ? (
+										<TextControl
+											label={__('Link label', 'nextora')}
+											value={item.linkLabel}
+											onChange={(linkLabel) => onPatch({ linkLabel: linkLabel ?? '' })}
+										/>
+									) : null}
 									<p className="components-base-control__label">{__('Link URL', 'nextora')}</p>
 									<URLInput
 										value={item.linkUrl}

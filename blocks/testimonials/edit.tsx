@@ -45,7 +45,8 @@ interface EditProps {
 
 const templateOptions = [
 	{ label: __('Default', 'nextora'), value: 'default' },
-	{ label: __('Story (Quote style)', 'nextora'), value: 'story' },
+	{ label: __('Template 01', 'nextora'), value: 'template-01' },
+	{ label: __('Template 02', 'nextora'), value: 'template-02' },
 ];
 
 const effectOptions = [
@@ -333,28 +334,32 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 						value={template}
 						options={templateOptions}
 						onChange={(v) =>
-							setAttributes({ template: (v as 'default' | 'story') ?? 'default' })
+							setAttributes({ template: (v as TestimonialsAttributes['template']) ?? 'default' })
 						}
 						help={__(
-							'Story template shows a large quote mark and elegant typography.',
+							'Template 01: split layout with large quote mark. Template 02: text-only full-width.',
 							'nextora',
 						)}
 					/>
-					<SelectControl
-						label={__('Portrait position', 'nextora')}
-						value={imagePosition}
-						options={imagePositionOptions}
-						onChange={(v) =>
-							setAttributes({ imagePosition: (v as 'left' | 'right') ?? 'left' })
-						}
-					/>
-					<RangeControl
-						label={__('Portrait column width (%)', 'nextora')}
-						value={imageColumnRatio}
-						onChange={(v) => setAttributes({ imageColumnRatio: v ?? 50 })}
-						min={40}
-						max={60}
-					/>
+					{template !== 'template-02' && (
+						<>
+							<SelectControl
+								label={__('Portrait position', 'nextora')}
+								value={imagePosition}
+								options={imagePositionOptions}
+								onChange={(v) =>
+									setAttributes({ imagePosition: (v as 'left' | 'right') ?? 'left' })
+								}
+							/>
+							<RangeControl
+								label={__('Portrait column width (%)', 'nextora')}
+								value={imageColumnRatio}
+								onChange={(v) => setAttributes({ imageColumnRatio: v ?? 50 })}
+								min={40}
+								max={60}
+							/>
+						</>
+					)}
 				</PanelBody>
 
 				<PanelBody title={__('Carousel', 'nextora')} initialOpen={false}>
@@ -482,7 +487,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 			/>
 
 				<PanelBody title={__('Typography', 'nextora')} initialOpen={false}>
-					{template !== 'story' && (
+					{template === 'default' && (
 						<BaseControl
 							className="nextora-testimonials__font-size-control"
 							label={__('Heading font size', 'nextora')}
@@ -508,9 +513,9 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 						label={__('Quote font size', 'nextora')}
 						id="nextora-testimonials-quote-font-size"
 						help={
-							template === 'story'
+							template !== 'default'
 								? __(
-										'Default uses the theme heading font with large size for story template.',
+										'Default uses the theme heading font with large size for this template.',
 										'nextora',
 									)
 								: __(
@@ -529,7 +534,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 							}
 						/>
 					</BaseControl>
-					{template === 'story' && (
+					{template !== 'default' && (
 						<SelectControl
 							label={__('Quote font family', 'nextora')}
 							value={quoteFontFamily}

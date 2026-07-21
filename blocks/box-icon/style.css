@@ -151,7 +151,6 @@
 	margin: 0 !important;
 	margin-right: 0 !important;
 	flex-shrink: unset !important;
-	transform: none !important;
 }
 
 .nextora-box-icon--grid-active .swiper-slide.swiper-slide-visible,
@@ -668,8 +667,14 @@
 		border-color 0.25s ease;
 }
 
+.nextora-box-icon--template-minimal .nextora-box-icon__card-link {
+	text-decoration: none;
+	color: inherit;
+}
+
 .nextora-box-icon--template-minimal.nextora-box-icon--grid-active .nextora-box-icon__card:hover,
-.nextora-box-icon--template-minimal.nextora-box-icon--grid-active .nextora-box-icon__card:focus-within {
+.nextora-box-icon--template-minimal.nextora-box-icon--grid-active .nextora-box-icon__card:focus-within,
+.nextora-box-icon--template-minimal .nextora-box-icon__card-link:focus-visible {
 	background: var(--nextora-box-icon-card-bg, var(--wp--preset--color--base, #fff));
 	color: var(--wp--preset--color--contrast, currentColor);
 	transform: translateY(-5px);
@@ -720,17 +725,17 @@
 
 .nextora-box-icon--template-minimal .nextora-box-icon__title {
 	margin: 0;
-	font-size: 0.96875rem;
-	font-weight: 700;
+	font-size: var(--wp--preset--font-size--small, 0.96875rem);
+	font-weight: 600;
 	line-height: 1.2;
 	color: var(--nextora-box-icon-card-title-color, var(--wp--preset--color--contrast, currentColor));
-	margin-bottom: 0.25rem;
+	margin-bottom: 0.15rem;
 }
 
 .nextora-box-icon--template-minimal .nextora-box-icon__description {
 	margin: 0;
 	flex: unset;
-	font-size: 0.78125rem;
+	font-size: var(--wp--preset--font-size--small, 0.78125rem);
 	font-weight: 500;
 	line-height: 1.35;
 	color: var(
@@ -830,4 +835,80 @@
 	.nextora-box-icon--template-highlights .nextora-box-icon__card {
 		transition: none;
 	}
+}
+
+/* Disable card hover effects */
+.nextora-box-icon--no-card-hover .nextora-box-icon__card,
+.nextora-box-icon--no-card-hover .nextora-box-icon__card:hover,
+.nextora-box-icon--no-card-hover .nextora-box-icon__card:focus-within {
+	transition: none;
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:hover,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:focus-within {
+	background: var(--nextora-box-icon-card-bg, transparent);
+	color: var(--wp--preset--color--contrast, currentColor);
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:hover .nextora-box-icon__description,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:focus-within .nextora-box-icon__description {
+	color: var(--nextora-box-icon-card-desc-color, color-mix(in srgb, currentColor 70%, transparent));
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:hover .nextora-box-icon__link,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:focus-within .nextora-box-icon__link {
+	color: var(--nextora-box-icon-link-color, var(--wp--preset--color--primary, currentColor));
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:hover .nextora-box-icon__icon--style-stacked,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:focus-within .nextora-box-icon__icon--style-stacked,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:hover .nextora-box-icon__icon--style-framed,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:focus-within .nextora-box-icon__icon--style-framed {
+	background: var(--nextora-box-icon-icon-surface-bg, var(--wp--preset--color--primary, #f0531c));
+	color: var(--nextora-box-icon-icon-color, #fff);
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:hover .nextora-box-icon__icon--style-framed,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:focus-within .nextora-box-icon__icon--style-framed {
+	border-color: var(--nextora-box-icon-icon-surface-border, transparent);
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:hover .nextora-box-icon__icon--style-default,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:focus-within .nextora-box-icon__icon--style-default {
+	color: var(--nextora-box-icon-icon-color, currentColor);
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card:hover,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card:focus-within {
+	transform: none;
+	box-shadow: none;
+	border-color: var(--nextora-box-icon-card-border-color, color-mix(in srgb, var(--wp--preset--color--contrast, currentColor) 12%, transparent));
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card:hover::before,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card:focus-within::before {
+	transform: scaleY(0);
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card:hover .nextora-box-icon__card-ghost,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card:focus-within .nextora-box-icon__card-ghost {
+	opacity: 0.08;
+	transform: none;
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card:hover .nextora-box-icon__icon,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card:focus-within .nextora-box-icon__icon {
+	transform: none;
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card:hover .nextora-box-icon__link-icon svg,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-ways .nextora-box-icon__card:focus-within .nextora-box-icon__link-icon svg {
+	transform: none;
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-minimal .nextora-box-icon__card:hover,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-minimal .nextora-box-icon__card:focus-within,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-minimal .nextora-box-icon__card-link:focus-visible {
+	transform: none;
+	box-shadow: none;
 }

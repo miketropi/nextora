@@ -34,7 +34,7 @@ import {
 	normalizeCardTemplate,
 } from './template-utils';
 import { useFontFamilyOptions } from './font-family-utils';
-import type { BoxIconAttributes, BoxIconIconStyle } from './types';
+import type { BoxIconAttributes, BoxIconIconStyle, BoxIconScrollAnimationStyle } from './types';
 
 interface EditProps {
 	attributes: BoxIconAttributes;
@@ -58,6 +58,21 @@ function isEmptyColor(value: string | undefined): boolean {
 
 export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 	const [editingItemId, setEditingItemId] = useState<string | null>(null);
+	const [panelStates, setPanelStates] = useState<Record<string, boolean>>({
+		items: false,
+		layout: false,
+		icons: false,
+		colors: false,
+		typography: false,
+		animation: false,
+	});
+
+	const togglePanel = (panel: string) => (next?: boolean) => {
+		setPanelStates((prev) => ({
+			...prev,
+			[panel]: typeof next === 'boolean' ? next : !prev[panel],
+		}));
+	};
 	const items = normalizeItems(attributes.items);
 	const editingItem = editingItemId ? items.find((item) => item.id === editingItemId) : undefined;
 
@@ -69,7 +84,10 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		cardTemplate: cardTemplateRaw = 'default',
 		layoutMode = 'slider',
 		gridColumns = 4,
+		gridColumnsTablet = 2,
+		gridColumnsMobile = 1,
 		gridMinWidth = 981,
+		disableResponsiveCarousel = false,
 		cardMinHeight = 240,
 		cardPadding = {},
 		cardBorderWidth = 2,
@@ -117,6 +135,8 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		iconHoverSurfaceBackgroundColor = '',
 		headingFontFamily = '',
 		enableScrollAnimation = true,
+		scrollAnimationStyle = 'default',
+		enableCardHover = true,
 	} = attributes;
 
 	const cardTemplate = normalizeCardTemplate(cardTemplateRaw);
@@ -185,6 +205,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			`nextora-box-icon--layout-${layoutMode}`,
 			`nextora-box-icon--template-${cardTemplate}`,
 			headingFontFamily.trim() !== '' ? 'nextora-box-icon--has-heading-font' : '',
+			!enableCardHover ? 'nextora-box-icon--no-card-hover' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
@@ -457,7 +478,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={__('Items', 'nextora')} initialOpen>
+				<PanelBody title={__('Items', 'nextora')} opened={panelStates.items} onToggle={togglePanel('items')}>
 					<p className="nextora-box-icon__inspector-items-help">
 						{__(
 							'Click Edit on a card in the canvas, or use the buttons below. Full settings open in a dialog.',
@@ -508,7 +529,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					</Button>
 				</PanelBody>
 
-				<PanelBody title={__('Layout', 'nextora')} initialOpen>
+				<PanelBody title={__('Layout', 'nextora')} opened={panelStates.layout} onToggle={togglePanel('layout')}>
 					<SelectControl
 						label={__('Template', 'nextora')}
 						value={cardTemplate}
@@ -569,6 +590,42 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 								min={480}
 								max={1200}
 							/>
+							<ToggleControl
+								label={__('Keep grid on mobile', 'nextora')}
+								help={__(
+									'Keep the grid layout on tablet and mobile instead of switching to a carousel.',
+									'nextora',
+								)}
+								checked={disableResponsiveCarousel}
+								onChange={(v) =>
+									setAttributes({ disableResponsiveCarousel: v })
+								}
+							/>
+							{disableResponsiveCarousel ? (
+								<>
+									<p className="nextora-box-icon__inspector-subheading">
+										{__('Responsive columns', 'nextora')}
+									</p>
+									<RangeControl
+										label={__('Grid columns (tablet)', 'nextora')}
+										value={gridColumnsTablet}
+										onChange={(v) =>
+											setAttributes({ gridColumnsTablet: v ?? 2 })
+										}
+										min={1}
+										max={4}
+									/>
+									<RangeControl
+										label={__('Grid columns (mobile)', 'nextora')}
+										value={gridColumnsMobile}
+										onChange={(v) =>
+											setAttributes({ gridColumnsMobile: v ?? 1 })
+										}
+										min={1}
+										max={2}
+									/>
+								</>
+							) : null}
 						</>
 					) : null}
 
@@ -615,6 +672,8 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						max={24}
 					/>
 
+					{layoutMode === 'grid' && disableResponsiveCarousel ? null : (
+						<>
 					<p className="nextora-box-icon__inspector-subheading">
 						{layoutMode === 'grid'
 							? __('Carousel (tablet & mobile)', 'nextora')
@@ -703,9 +762,11 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						checked={showArrows}
 						onChange={(v) => setAttributes({ showArrows: v })}
 					/>
+						</>
+					)}
 				</PanelBody>
 
-				<PanelBody title={__('Icons', 'nextora')} initialOpen>
+				<PanelBody title={__('Icons', 'nextora')} opened={panelStates.icons} onToggle={togglePanel('icons')}>
 					{cardTemplate === 'ways' ? (
 						<p className="nextora-box-icon__inspector-items-help">
 							{__(
@@ -775,7 +836,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					colorSettings={colorSettings}
 				/>
 
-				<PanelBody title={__('Typography', 'nextora')} initialOpen={false}>
+				<PanelBody title={__('Typography', 'nextora')} opened={panelStates.typography} onToggle={togglePanel('typography')}>
 					<SelectControl
 						label={__('Heading font', 'nextora')}
 						value={headingFontFamily}
@@ -788,7 +849,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					/>
 				</PanelBody>
 
-				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
+				<PanelBody title={__('Animation', 'nextora')} opened={panelStates.animation} onToggle={togglePanel('animation')}>
 					<ToggleControl
 						label={__('Animate on scroll', 'nextora')}
 						help={__(
@@ -797,6 +858,32 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						)}
 						checked={enableScrollAnimation !== false}
 						onChange={(v) => setAttributes({ enableScrollAnimation: v })}
+					/>
+					{enableScrollAnimation !== false ? (
+						<SelectControl
+							label={__('Animation style', 'nextora')}
+							value={scrollAnimationStyle}
+							options={[
+								{ label: __('Default', 'nextora'), value: 'default' },
+								{ label: __('Sequential', 'nextora'), value: 'sequential' },
+							]}
+							onChange={(v) =>
+								setAttributes({ scrollAnimationStyle: v as BoxIconScrollAnimationStyle })
+							}
+							help={__(
+								'Default: the whole section fades up together. Sequential: cards appear one by one with a gentle upward motion.',
+								'nextora',
+							)}
+						/>
+					) : null}
+					<ToggleControl
+						label={__('Card hover effects', 'nextora')}
+						help={__(
+							'Background, icon, description and link color changes when hovering on cards.',
+							'nextora',
+						)}
+						checked={enableCardHover !== false}
+						onChange={(v) => setAttributes({ enableCardHover: v })}
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -845,10 +932,28 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					className="nextora-box-icon__cards"
 					aria-label={__('Box content items', 'nextora')}
 				>
-					{items.map((item, index) => (
-				<article
+					{items.map((item, index) => {
+				const isMinimalLink = cardTemplate === 'minimal' && item.showLink && !!item.linkUrl;
+				const CardTag = isMinimalLink ? 'a' : 'article';
+				const cardLinkProps = isMinimalLink
+					? {
+							href: item.linkUrl,
+							target: item.linkTarget === '_blank' ? '_blank' : undefined,
+							rel: item.linkTarget === '_blank' ? 'noopener noreferrer' : undefined,
+						}
+					: {};
+
+				return (
+				<CardTag
 					key={item.id}
-					className="nextora-box-icon__card nextora-box-icon__card--editable"
+					className={[
+						'nextora-box-icon__card',
+						'nextora-box-icon__card--editable',
+						isMinimalLink ? 'nextora-box-icon__card-link' : '',
+					]
+						.filter(Boolean)
+						.join(' ')}
+					{...cardLinkProps}
 					style={
 						cardTemplate === 'highlights' && item.highlightAccentColor
 							? ({
@@ -958,8 +1063,9 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 							) : null}
 						</>
 					)}
-						</article>
-					))}
+						</CardTag>
+					);
+					})}
 				</div>
 			</div>
 		</>
