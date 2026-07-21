@@ -69,6 +69,22 @@
 	box-shadow: none;
 }
 
+/* ── Template 2 horizontal cards in editor grid preview ── */
+.nextora-blog-list-carousel-block--editor .nextora-blog-list-carousel--template-template-2 .nextora-blc__card-image {
+	border-radius: var(--nextora-blc-img-radius, 10px);
+	aspect-ratio: var(--nextora-blc-img-ratio, 4/3);
+	overflow: hidden;
+	margin-bottom: 0;
+}
+
+.nextora-blog-list-carousel-block--editor .nextora-blog-list-carousel--template-template-2 .nextora-blc__card-img,
+.nextora-blog-list-carousel-block--editor .nextora-blog-list-carousel--template-template-2 .nextora-blc__card-img-placeholder {
+	width: 100% !important;
+	height: 100% !important;
+	max-width: none;
+	object-fit: cover;
+}
+
 /* Preserve card image sizing / radius in the block editor canvas */
 .nextora-blog-list-carousel-block--editor .nextora-blc__card-image {
 	border-radius: var(--nextora-blc-img-radius, 8px);

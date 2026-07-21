@@ -398,7 +398,7 @@ $show_category    = ! isset( $attributes['showCategory'] ) || (bool) $attributes
 $show_author      = isset( $attributes['showAuthor'] ) && (bool) $attributes['showAuthor'];
 $show_read_more   = isset( $attributes['showReadMore'] ) && (bool) $attributes['showReadMore'];
 $read_more_text   = isset( $attributes['readMoreText'] ) && is_string( $attributes['readMoreText'] )
-    ? esc_html( trim( $attributes['readMoreText'] ) ) : esc_html__( 'Read More →', 'nextora' );
+    ? esc_html( trim( $attributes['readMoreText'] ) ) : esc_html__( 'Read More', 'nextora' );
 $card_link_behavior = isset( $attributes['cardLinkBehavior'] ) && is_string( $attributes['cardLinkBehavior'] )
     ? $attributes['cardLinkBehavior'] : 'full-card';
 $valid_link_behaviors = array( 'full-card', 'title-only', 'read-more' );
@@ -1676,7 +1676,7 @@ All user-facing strings use the `nextora` text domain:
 - `__('Read: %s', 'nextora')`
 - `__('Previous posts', 'nextora')` / `__('Next posts', 'nextora')`
 - `__('view all', 'nextora')`
-- `__('Read More →', 'nextora')`
+- `__('Read More', 'nextora')`
 - `__('No image', 'nextora')`
 - Editor labels and help text: `__('Animate on scroll', 'nextora')`
 

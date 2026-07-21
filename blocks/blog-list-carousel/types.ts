@@ -1,5 +1,5 @@
 export interface BlogListCarouselAttributes {
-	cardTemplate: 'default' | 'template-1';
+	cardTemplate: 'default' | 'template-1' | 'template-2';
 	layoutMode: 'carousel' | 'grid';
 	gridColumns: number;
 	gridColumnGap: number;
@@ -21,7 +21,9 @@ export interface BlogListCarouselAttributes {
 	imageAspectRatio: string;
 	imageSize: string;
 	imageBorderRadius: number;
+	imageWidthPercent: number;
 	showTitle: boolean;
+	titleFontSize: string;
 	titleLineClamp: number;
 	showExcerpt: boolean;
 	excerptLineClamp: number;
@@ -59,4 +61,5 @@ export interface BlogListCarouselAttributes {
 	paginationActiveColor: string;
 	arrowColor: string;
 	enableScrollAnimation: boolean;
+	scrollAnimationStyle: 'default' | 'sequential';
 }

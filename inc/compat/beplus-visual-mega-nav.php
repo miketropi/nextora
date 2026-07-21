@@ -29,6 +29,7 @@ add_filter(
 			'nextora/advanced-button-button',
 			'nextora/counters',
 			'nextora/advanced-icon',
+			'nextora/blog-list-carousel',
 		);
 
 		foreach ( $theme_blocks as $block_name ) {
