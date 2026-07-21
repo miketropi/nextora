@@ -258,13 +258,26 @@ export function initScrollAnimations(): void {
 	}
 }
 
-/** Expose preset registration for child themes / small inline scripts. */
+/** Force-play ALL reveal tweens regardless of scroll position. */
+function forcePlayAllRevealTriggers(): void {
+	ScrollTrigger.getAll().forEach((st) => {
+		if (st.vars?.id !== SCROLL_REVEAL_TRIGGER_ID) return;
+		const tween = st.animation;
+		if (!tween || st.progress > 0) return;
+		st.kill(false);
+		tween.play();
+	});
+}
+
+/** Expose preset registration and force-play for child themes / portal reinit. */
 export function attachScrollAnimationGlobals(): void {
 	window.nextoraRegisterScrollAnimation = registerScrollAnimationPreset;
+	window.nextoraForceScrollAnimations = forcePlayAllRevealTriggers;
 }
 
 declare global {
 	interface Window {
 		nextoraRegisterScrollAnimation?: typeof registerScrollAnimationPreset;
+		nextoraForceScrollAnimations?: typeof forcePlayAllRevealTriggers;
 	}
 }
