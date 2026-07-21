@@ -27,7 +27,7 @@ import {
 	useThemeColorPalette,
 } from '../advanced-icon/color-utils';
 import { buildStyleVars, createItemId, normalizeItems } from './item-utils';
-import type { BoxImageAttributes, BoxImageTemplate } from './types';
+import type { BoxImageAttributes, BoxImageTemplate, BoxImageScrollAnimationStyle } from './types';
 
 interface EditProps {
 	attributes: BoxImageAttributes;
@@ -74,6 +74,19 @@ function resolveEditorImage(item: { imageId: number; imageUrl: string }, placeho
 
 export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 	const [editingItemId, setEditingItemId] = useState<string | null>(null);
+	const [panelStates, setPanelStates] = useState<Record<string, boolean>>({
+		items: false,
+		layout: false,
+		image: false,
+		animation: false,
+	});
+
+	const togglePanel = (panel: string) => (next?: boolean) => {
+		setPanelStates((prev) => ({
+			...prev,
+			[panel]: typeof next === 'boolean' ? next : !prev[panel],
+		}));
+	};
 	const items = normalizeItems(attributes.items);
 	const editingItem = editingItemId ? items.find((item) => item.id === editingItemId) : undefined;
 
@@ -94,7 +107,10 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 		layoutMode = 'slider',
 		template = 'default',
 		gridColumns = 4,
+		gridColumnsTablet = 2,
+		gridColumnsMobile = 1,
 		gridMinWidth = 981,
+		disableResponsiveCarousel = false,
 		imageAspectRatio = '3/2',
 		imageFit = 'cover',
 		cardMinHeight = 240,
@@ -128,6 +144,8 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 		badgeTextColor = '',
 		bulletIconColor = '',
 		enableScrollAnimation = true,
+		scrollAnimationStyle = 'default',
+		enableCardHover = true,
 	} = attributes;
 
 	const styleVars = buildStyleVars(
@@ -166,6 +184,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 			layoutMode === 'slider' ? 'nextora-box-image--editor-slider' : '',
 			`nextora-box-image--layout-${layoutMode}`,
 			template !== 'default' ? `nextora-box-image--template-${template}` : '',
+			!enableCardHover ? 'nextora-box-image--no-card-hover' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
@@ -291,6 +310,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 					descriptionColor: '',
 					linkColor: '',
 					badge: '',
+					linkWrapCard: false,
 				},
 			],
 		});
@@ -323,7 +343,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={__('Items', 'nextora')} initialOpen>
+				<PanelBody title={__('Items', 'nextora')} opened={panelStates.items} onToggle={togglePanel('items')}>
 					<p className="nextora-box-image__inspector-items-help">
 						{__(
 							'Click Edit on a card in the canvas, or use the buttons below. Full settings open in a dialog.',
@@ -374,7 +394,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 					</Button>
 				</PanelBody>
 
-				<PanelBody title={__('Layout', 'nextora')} initialOpen>
+				<PanelBody title={__('Layout', 'nextora')} opened={panelStates.layout} onToggle={togglePanel('layout')}>
 					<SelectControl
 						label={__('Template', 'nextora')}
 						help={
@@ -472,6 +492,42 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 								min={480}
 								max={1200}
 							/>
+							<ToggleControl
+								label={__('Keep grid on mobile', 'nextora')}
+								help={__(
+									'Keep the grid layout on tablet and mobile instead of switching to a carousel.',
+									'nextora',
+								)}
+								checked={disableResponsiveCarousel}
+								onChange={(v) =>
+									setAttributes({ disableResponsiveCarousel: v })
+								}
+							/>
+							{disableResponsiveCarousel ? (
+								<>
+									<p className="nextora-box-image__inspector-subheading">
+										{__('Responsive columns', 'nextora')}
+									</p>
+									<RangeControl
+										label={__('Grid columns (tablet)', 'nextora')}
+										value={gridColumnsTablet}
+										onChange={(v) =>
+											setAttributes({ gridColumnsTablet: v ?? 2 })
+										}
+										min={1}
+										max={4}
+									/>
+									<RangeControl
+										label={__('Grid columns (mobile)', 'nextora')}
+										value={gridColumnsMobile}
+										onChange={(v) =>
+											setAttributes({ gridColumnsMobile: v ?? 1 })
+										}
+										min={1}
+										max={2}
+									/>
+								</>
+							) : null}
 						</>
 					) : null}
 
@@ -505,6 +561,8 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						max={32}
 					/>
 
+					{layoutMode === 'grid' && disableResponsiveCarousel ? null : (
+						<>
 					<p className="nextora-box-image__inspector-subheading">
 						{layoutMode === 'grid'
 							? __('Carousel (tablet & mobile)', 'nextora')
@@ -593,9 +651,11 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						checked={showArrows}
 						onChange={(v) => setAttributes({ showArrows: v })}
 					/>
+						</>
+					)}
 				</PanelBody>
 
-				<PanelBody title={__('Image', 'nextora')} initialOpen={false}>
+				<PanelBody title={__('Image', 'nextora')} opened={panelStates.image} onToggle={togglePanel('image')}>
 					{template !== 'template2' ? (
 						<SelectControl
 							label={__('Aspect ratio', 'nextora')}
@@ -618,7 +678,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 					colorSettings={colorSettings}
 				/>
 
-				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
+				<PanelBody title={__('Animation', 'nextora')} opened={panelStates.animation} onToggle={togglePanel('animation')}>
 					<ToggleControl
 						label={__('Animate on scroll', 'nextora')}
 						help={__(
@@ -627,6 +687,32 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						)}
 						checked={enableScrollAnimation !== false}
 						onChange={(v) => setAttributes({ enableScrollAnimation: v })}
+					/>
+					{enableScrollAnimation !== false ? (
+						<SelectControl
+							label={__('Animation style', 'nextora')}
+							value={scrollAnimationStyle}
+							options={[
+								{ label: __('Default', 'nextora'), value: 'default' },
+								{ label: __('Sequential', 'nextora'), value: 'sequential' },
+							]}
+							onChange={(v) =>
+								setAttributes({ scrollAnimationStyle: v as BoxImageScrollAnimationStyle })
+							}
+							help={__(
+								'Default: the whole section fades up together. Sequential: cards appear one by one with a gentle upward motion.',
+								'nextora',
+							)}
+						/>
+					) : null}
+					<ToggleControl
+						label={__('Card hover effects', 'nextora')}
+						help={__(
+							'Background, title, description and link color changes when hovering on cards.',
+							'nextora',
+						)}
+						checked={enableCardHover !== false}
+						onChange={(v) => setAttributes({ enableCardHover: v })}
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -725,13 +811,23 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 							/>
 							{editingItem.showLink && (
 								<>
-									<TextControl
-										label={__('Link label', 'nextora')}
-										value={editingItem.linkLabel}
-										onChange={(linkLabel) =>
-											patchItem(editingItem.id, { linkLabel })
+									<ToggleControl
+										label={__('Entire card clickable', 'nextora')}
+										help={__('When enabled, clicking anywhere on the card follows the link and the label field is not needed.', 'nextora')}
+										checked={!!editingItem.linkWrapCard}
+										onChange={(v) =>
+											patchItem(editingItem.id, { linkWrapCard: v })
 										}
 									/>
+									{!editingItem.linkWrapCard ? (
+										<TextControl
+											label={__('Link label', 'nextora')}
+											value={editingItem.linkLabel}
+											onChange={(linkLabel) =>
+												patchItem(editingItem.id, { linkLabel })
+											}
+										/>
+									) : null}
 									<TextControl
 										label={__('Link URL', 'nextora')}
 										value={editingItem.linkUrl}
@@ -780,10 +876,21 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						<div
 							className={`nextora-box-image__cards${layoutMode === 'slider' ? ' nextora-box-image__cards--slider' : ''}`}
 						>
-							{items.map((item) => (
-								<article
+							{items.map((item) => {
+								const isWrapLink = !!item.linkWrapCard && item.showLink && !!item.linkUrl;
+								const CardTag = isWrapLink ? 'a' : 'article';
+								const wrapLinkProps = isWrapLink
+									? {
+											href: item.linkUrl,
+											target: item.linkTarget === '_blank' ? '_blank' : undefined,
+											rel: item.linkTarget === '_blank' ? 'noopener noreferrer' : undefined,
+										}
+									: {};
+
+								return (
+								<CardTag
 									key={item.id}
-									className={`nextora-box-image__card${template === 'template1' ? ' nextora-box-image__card--template1' : template === 'template2' ? ' nextora-box-image__card--template2' : template === 'template3' ? ' nextora-box-image__card--template3' : ''} nextora-box-image__card--editable`}
+									className={`nextora-box-image__card${template === 'template1' ? ' nextora-box-image__card--template1' : template === 'template2' ? ' nextora-box-image__card--template2' : template === 'template3' ? ' nextora-box-image__card--template3' : ''} nextora-box-image__card--editable${isWrapLink ? ' nextora-box-image__card-link' : ''}`}
 									style={
 										(item.backgroundColor || item.titleColor || item.descriptionColor || item.linkColor)
 											? ({
@@ -794,6 +901,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 											} as CSSProperties)
 											: undefined
 									}
+									{...wrapLinkProps}
 								>
 									<button
 										type="button"
@@ -823,7 +931,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 												<p className="nextora-box-image__description">
 													{item.description || __('Description…', 'nextora')}
 												</p>
-												{item.showLink && item.linkLabel ? (
+												{!item.linkWrapCard && item.showLink && item.linkLabel ? (
 													<span className="nextora-box-image__link wp-block-button__link nextora-box-image__link--static">
 														{item.linkLabel}
 														<span className="nextora-box-image__link-icon" aria-hidden="true">
@@ -844,13 +952,14 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													alt=""
 												/>
 											</div>
+											<div className="nextora-box-image__card-body">
 											<h3 className="nextora-box-image__title">
 												{item.title || __('Title', 'nextora')}
 											</h3>
 											<p className="nextora-box-image__description">
 												{item.description || __('Description…', 'nextora')}
 											</p>
-											{item.showLink && item.linkLabel ? (
+											{!item.linkWrapCard && item.showLink && item.linkLabel ? (
 												<span className="nextora-box-image__link nextora-box-image__link--static">
 													{item.linkLabel}
 													<span className="nextora-box-image__link-icon" aria-hidden="true">
@@ -860,6 +969,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													</span>
 												</span>
 											) : null}
+											</div>
 										</>
 									) : template === 'template3' ? (
 										<>
@@ -893,7 +1003,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 														{__('Add bullet points — one per line in the description field.', 'nextora')}
 													</p>
 												)}
-												{item.showLink && item.linkLabel ? (
+												{!item.linkWrapCard && item.showLink && item.linkLabel ? (
 													<span className="nextora-box-image__link nextora-box-image__link--template3 nextora-box-image__link--static">
 														{item.linkLabel}
 														<span className="nextora-box-image__link-icon" aria-hidden="true">
@@ -914,13 +1024,14 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													alt=""
 												/>
 											</div>
+											<div className="nextora-box-image__card-body">
 											<h3 className="nextora-box-image__title">
 												{item.title || __('Title', 'nextora')}
 											</h3>
 											<p className="nextora-box-image__description">
 												{item.description || __('Description…', 'nextora')}
 											</p>
-											{item.showLink && item.linkLabel ? (
+											{!item.linkWrapCard && item.showLink && item.linkLabel ? (
 												<span className="nextora-box-image__link nextora-box-image__link--static">
 													{item.linkLabel}
 													<span className="nextora-box-image__link-icon" aria-hidden="true">
@@ -930,10 +1041,12 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													</span>
 												</span>
 											) : null}
+											</div>
 										</>
 									)}
-								</article>
-							))}
+								</CardTag>
+							);
+							})}
 						</div>
 					</div>
 				</div>

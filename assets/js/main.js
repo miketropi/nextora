@@ -30283,6 +30283,30 @@ ${nextLine.slice(indentLevel + 2)}`;
   function prefersReducedMotion2() {
     return typeof window !== "undefined" && !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
+  function isElementHidden(el) {
+    if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+      return true;
+    }
+    let current = el;
+    while (current) {
+      if (window.getComputedStyle(current).visibility === "hidden") {
+        return true;
+      }
+      current = current.parentElement;
+    }
+    return false;
+  }
+  var REVEAL_GEN_ATTR = "data-scroll-reveal-gen";
+  function nextRevealGen(el) {
+    const raw = el.getAttribute(REVEAL_GEN_ATTR);
+    const gen = raw ? parseInt(raw, 10) + 1 : 1;
+    el.setAttribute(REVEAL_GEN_ATTR, String(gen));
+    return gen;
+  }
+  function getRevealGen(el) {
+    const raw = el.getAttribute(REVEAL_GEN_ATTR);
+    return raw ? parseInt(raw, 10) : 0;
+  }
   function getFadeListGridItems(el) {
     return Array.from(el.querySelectorAll("ul > li")).filter((li) => {
       const parentUl = li.parentElement;
@@ -30312,16 +30336,19 @@ ${nextLine.slice(indentLevel + 2)}`;
     return custom ?? null;
   }
   function markInitialized(el) {
+    if (isElementHidden(el)) return;
     el.setAttribute(INIT_ATTR, "1");
     el.classList.remove("nextora-scroll-animation--pending");
     el.classList.add("nextora-scroll-animation--ready");
   }
   function skipAnimation(el) {
+    if (isElementHidden(el)) return;
     gsapWithCSS.set(el, { clearProps: "opacity,transform,translate,rotate,scale" });
     markInitialized(el);
   }
   function buildScrollTweenVars(trigger, options, target) {
     const node = target ?? trigger;
+    const gen = nextRevealGen(trigger);
     return {
       delay: options.delay,
       duration: options.duration,
@@ -30333,6 +30360,7 @@ ${nextLine.slice(indentLevel + 2)}`;
         id: SCROLL_REVEAL_TRIGGER_ID
       },
       onComplete: () => {
+        if (getRevealGen(trigger) !== gen) return;
         gsapWithCSS.set(node, { clearProps: "opacity,transform,translate,rotate,scale" });
       }
     };
@@ -30345,12 +30373,14 @@ ${nextLine.slice(indentLevel + 2)}`;
     }
     const { from: from2, to } = animationPresets["animation-fade-list-grid"]({ distance: options.distance });
     el.classList.remove("nextora-scroll-animation--pending");
+    const gen = nextRevealGen(el);
     items.forEach((item) => {
       item.classList.add("nextora-scroll-animation--pending");
       gsapWithCSS.fromTo(item, from2, {
         ...to,
         ...buildScrollTweenVars(item, options, item),
         onComplete: () => {
+          if (getRevealGen(el) !== gen) return;
           item.classList.remove("nextora-scroll-animation--pending");
           item.classList.add("nextora-scroll-animation--ready");
           gsapWithCSS.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
@@ -30367,12 +30397,14 @@ ${nextLine.slice(indentLevel + 2)}`;
     }
     const { from: from2, to } = animationPresets["animation-inner-fade"]({ distance: options.distance });
     el.classList.remove("nextora-scroll-animation--pending");
+    const gen = nextRevealGen(el);
     targets.forEach((target) => {
       target.classList.add("nextora-scroll-animation--pending");
       gsapWithCSS.fromTo(target, from2, {
         ...to,
         ...buildScrollTweenVars(target, options, target),
         onComplete: () => {
+          if (getRevealGen(el) !== gen) return;
           target.classList.remove("nextora-scroll-animation--pending");
           target.classList.add("nextora-scroll-animation--ready");
           gsapWithCSS.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
@@ -30428,6 +30460,7 @@ ${nextLine.slice(indentLevel + 2)}`;
         if (options.stagger !== null && el.children.length > 0) {
           const targets = Array.from(el.children);
           el.classList.remove("nextora-scroll-animation--pending");
+          const gen = nextRevealGen(el);
           targets.forEach((child) => child.classList.add("nextora-scroll-animation--pending"));
           gsapWithCSS.set(targets, from2);
           gsapWithCSS.to(targets, {
@@ -30435,6 +30468,7 @@ ${nextLine.slice(indentLevel + 2)}`;
             ...tweenVars,
             stagger: options.stagger,
             onComplete: () => {
+              if (getRevealGen(el) !== gen) return;
               targets.forEach((child) => {
                 child.classList.remove("nextora-scroll-animation--pending");
                 child.classList.add("nextora-scroll-animation--ready");
@@ -30519,6 +30553,17 @@ ${nextLine.slice(indentLevel + 2)}`;
     ScrollTrigger2.refresh();
     revealBottomAnchoredTriggers();
   }
+  function forcePlayInViewTriggers() {
+    ScrollTrigger2.getAll().forEach((st) => {
+      if (st.vars?.id !== SCROLL_REVEAL_TRIGGER_ID) return;
+      const tween = st.animation;
+      if (!tween || st.progress > 0) return;
+      if (st.start !== void 0 && window.scrollY >= st.start) {
+        st.kill(false);
+        tween.play();
+      }
+    });
+  }
   function collectTargets(root = document) {
     const selector3 = `${getAnimationSelector()}, ${PARALLAX_SELECTOR}`;
     const nodes = root.querySelectorAll(selector3);
@@ -30526,12 +30571,18 @@ ${nextLine.slice(indentLevel + 2)}`;
       if (el.getAttribute(INIT_ATTR) === "1") {
         return false;
       }
+      if (isElementHidden(el)) {
+        if (!el.hasAttribute("data-scroll-deferred")) {
+          el.setAttribute("data-scroll-deferred", "1");
+        }
+        return false;
+      }
       return resolveAnimationClass(el) !== null || parseScrollAnimationOptions(el).parallaxSpeed !== null;
     });
   }
   function markPending(el) {
     const animationClass = resolveAnimationClass(el);
-    if (prefersReducedMotion2() || animationClass === null) {
+    if (prefersReducedMotion2() || animationClass === null || isElementHidden(el)) {
       return;
     }
     if (animationClass === "animation-fade-list-grid") {
@@ -30596,6 +30647,59 @@ ${nextLine.slice(indentLevel + 2)}`;
       attributeFilter: ["class"]
     });
   }
+  var DEFERRED_ATTR = "data-scroll-deferred";
+  var REPLAY_ATTR = "data-scroll-replay";
+  function watchDeferredScrollElements() {
+    const visibilityState = /* @__PURE__ */ new WeakMap();
+    let needsThrottle = false;
+    const check = () => {
+      let hasWork = false;
+      document.querySelectorAll(`[${DEFERRED_ATTR}="1"]`).forEach((el) => {
+        if (!isElementHidden(el)) {
+          el.removeAttribute(DEFERRED_ATTR);
+          el.setAttribute(REPLAY_ATTR, "1");
+          markPending(el);
+          initElementAnimations(el);
+          refreshScrollTriggers();
+          forcePlayInViewTriggers();
+        }
+        hasWork = true;
+      });
+      document.querySelectorAll(`[${REPLAY_ATTR}="1"]`).forEach((el) => {
+        const hidden = isElementHidden(el);
+        const wasHidden = visibilityState.get(el);
+        if (hidden && !wasHidden) {
+          gsapWithCSS.killTweensOf(el);
+          Array.from(el.children).forEach((child) => {
+            if (child instanceof HTMLElement) {
+              gsapWithCSS.killTweensOf(child);
+              gsapWithCSS.set(child, { clearProps: "opacity,transform,translate,rotate,scale" });
+              child.classList.remove("nextora-scroll-animation--pending");
+              child.classList.remove("nextora-scroll-animation--ready");
+            }
+          });
+          gsapWithCSS.set(el, { clearProps: "opacity,transform,translate,rotate,scale" });
+          el.removeAttribute(INIT_ATTR);
+          el.removeAttribute("data-scroll-reveal-gen");
+          el.classList.remove("nextora-scroll-animation--ready");
+          el.classList.add("nextora-scroll-animation--pending");
+        } else if (!hidden && wasHidden) {
+          el.removeAttribute(INIT_ATTR);
+          markPending(el);
+          initElementAnimations(el);
+          refreshScrollTriggers();
+          forcePlayInViewTriggers();
+        }
+        visibilityState.set(el, hidden);
+        hasWork = true;
+      });
+      if (needsThrottle || hasWork) {
+        needsThrottle = true;
+        setTimeout(() => requestAnimationFrame(check), 50);
+      }
+    };
+    requestAnimationFrame(check);
+  }
   function configureScrollTrigger() {
     ensureGsapPlugins();
     ScrollTrigger2.config({
@@ -30617,6 +30721,7 @@ ${nextLine.slice(indentLevel + 2)}`;
       configureScrollTrigger();
       scanScrollAnimations();
       observeDynamicContent();
+      watchDeferredScrollElements();
       window.addEventListener("load", onWindowLoad, { once: true });
     };
     if (document.readyState === "loading") {
@@ -30625,8 +30730,18 @@ ${nextLine.slice(indentLevel + 2)}`;
       boot();
     }
   }
+  function forcePlayAllRevealTriggers() {
+    ScrollTrigger2.getAll().forEach((st) => {
+      if (st.vars?.id !== SCROLL_REVEAL_TRIGGER_ID) return;
+      const tween = st.animation;
+      if (!tween || st.progress > 0) return;
+      st.kill(false);
+      tween.play();
+    });
+  }
   function attachScrollAnimationGlobals() {
     window.nextoraRegisterScrollAnimation = registerScrollAnimationPreset;
+    window.nextoraForceScrollAnimations = forcePlayAllRevealTriggers;
   }
 
   // resources/ts/header-sticky.ts
@@ -31152,6 +31267,47 @@ ${nextLine.slice(indentLevel + 2)}`;
     const closeBtn = ensurePortalCloseButton(panel, closeLabel);
     return { root, backdrop, panel, mount, closeBtn };
   }
+  var PORTAL_INIT_ATTRS = [
+    "data-nextora-testimonials-swiper-inited",
+    "data-nextora-testimonials-swiper-pending",
+    "data-nextora-testimonial-swiper-inited",
+    "data-nextora-testimonial-swiper-pending",
+    "data-nextora-box-image-swiper-inited",
+    "data-nextora-box-image-swiper-pending",
+    "data-nextora-box-icon-swiper-inited",
+    "data-nextora-box-icon-swiper-pending",
+    "data-nextora-blc-swiper-inited",
+    "data-nextora-blc-swiper-pending",
+    "data-nextora-team-swiper-inited",
+    "data-nextora-team-swiper-pending",
+    "data-nextora-instagram-swiper-inited",
+    "data-nextora-instagram-swiper-pending",
+    "data-nextora-instagram-lightbox-inited",
+    "data-nextora-event-swiper-inited",
+    "data-nextora-event-swiper-pending",
+    "data-nextora-arc-carousel-inited",
+    "data-nextora-contact-form-inited",
+    "data-nextora-google-maps-inited",
+    "data-swiper-inited",
+    "data-swiper-init-pending",
+    "data-nextora-scroll-animation-init",
+    "data-scroll-reveal-gen",
+    "data-nextora-advanced-button-scroll-init",
+    "data-scroll-deferred",
+    "data-scroll-replay"
+  ];
+  function clearBlockInitAttrs(root) {
+    PORTAL_INIT_ATTRS.forEach((attr) => {
+      root.querySelectorAll(`[${attr}]`).forEach((el) => {
+        el.removeAttribute(attr);
+      });
+    });
+    root.querySelectorAll("[class*='animation-fade-in'], [class*='animation-zoom-'], .nextora-scroll-animation--pending, .nextora-scroll-animation--ready").forEach((el) => {
+      el.style.removeProperty("opacity");
+      el.style.removeProperty("transform");
+      el.style.removeProperty("translate");
+    });
+  }
   function cloneNavIntoMount(sourcePanel, mount) {
     const clones = [];
     sourcePanel.childNodes.forEach((node) => {
@@ -31159,11 +31315,103 @@ ${nextLine.slice(indentLevel + 2)}`;
         const clone = node.cloneNode(true);
         dedupeCloneIds(clone);
         clearFollowUsBindingState(clone);
+        clearBlockInitAttrs(clone);
         clones.push(clone);
       }
     });
     mount.replaceChildren(...clones);
     bindHeaderFollowUsIn(mount);
+  }
+  function dispatchPortalBlockReinit() {
+    window.dispatchEvent(new CustomEvent("nextora-testimonials-reinit"));
+    window.dispatchEvent(new CustomEvent("nextora-testimonial-carousel-reinit"));
+    window.dispatchEvent(new CustomEvent("nextora-box-image-reinit"));
+    window.dispatchEvent(new CustomEvent("nextora-box-icon-reinit"));
+    window.dispatchEvent(new CustomEvent("nextora-blog-list-carousel-reinit"));
+    window.dispatchEvent(new CustomEvent("nextora-team-section-reinit"));
+    window.dispatchEvent(new CustomEvent("nextora-instagram-feed-reinit"));
+    window.dispatchEvent(new CustomEvent("nextora-image-gallery-reinit"));
+    window.dispatchEvent(new CustomEvent("nextora-advanced-list-reinit"));
+    window.dispatchEvent(new CustomEvent("nextora-advanced-button-reinit"));
+    revealPortalElements();
+    window.setTimeout(() => {
+      window.nextoraForceScrollAnimations?.();
+      revealPortalElements();
+    }, 150);
+    window.setTimeout(() => {
+      window.nextoraForceScrollAnimations?.();
+      revealPortalElements();
+    }, 400);
+  }
+  function revealPortalElements() {
+    const ANIM_SELECTORS = [
+      "[class*='animation-fade-in']",
+      "[class*='animation-zoom-']",
+      "[class*='animation-text-reveal']",
+      "[class*='animation-inner-fade']",
+      ".animation-text-typewriter",
+      ".animation-fade-list-grid",
+      ".animation-image-clip-reveal",
+      ".animation-image-border-reveal",
+      ".nextora-scroll-animation--pending",
+      ".nextora-scroll-animation--ready"
+    ];
+    const selector3 = ANIM_SELECTORS.map((s) => `.nextora-primary-nav-portal__mount ${s}`).join(", ");
+    document.querySelectorAll(selector3).forEach((el) => {
+      el.style.removeProperty("opacity");
+      el.style.removeProperty("transform");
+      el.style.removeProperty("translate");
+      el.style.removeProperty("rotate");
+      el.style.removeProperty("scale");
+      el.style.removeProperty("clip-path");
+      el.classList.remove(
+        "nextora-scroll-animation--pending",
+        "nextora-scroll-animation--ready",
+        "nextora-advanced-button--reveal-pending",
+        "nextora-advanced-button--reveal-ready"
+      );
+      if (!el.hasAttribute("data-nextora-scroll-animation-init")) {
+        el.setAttribute("data-nextora-scroll-animation-init", "1");
+      }
+      Array.from(el.children).forEach((child) => {
+        if (child instanceof HTMLElement) {
+          child.style.removeProperty("opacity");
+          child.style.removeProperty("transform");
+          child.style.removeProperty("translate");
+          child.style.removeProperty("rotate");
+          child.style.removeProperty("scale");
+          child.style.removeProperty("clip-path");
+          child.classList.remove(
+            "nextora-scroll-animation--pending",
+            "nextora-scroll-animation--ready"
+          );
+        }
+      });
+    });
+    document.querySelectorAll(
+      ".nextora-primary-nav-portal__mount .nextora-advanced-button"
+    ).forEach((root) => {
+      root.classList.remove(
+        "nextora-advanced-button--reveal-pending",
+        "nextora-advanced-button--reveal-ready",
+        "nextora-scroll-animation--pending",
+        "nextora-scroll-animation--ready"
+      );
+      root.style.removeProperty("opacity");
+      root.style.removeProperty("transform");
+      root.style.removeProperty("translate");
+      if (!root.hasAttribute("data-nextora-advanced-button-scroll-init")) {
+        root.setAttribute("data-nextora-advanced-button-scroll-init", "1");
+      }
+      if (!root.hasAttribute("data-nextora-scroll-animation-init")) {
+        root.setAttribute("data-nextora-scroll-animation-init", "1");
+      }
+    });
+    document.querySelectorAll(
+      ".nextora-primary-nav-portal__mount .wp-block-nextora-advanced-list"
+    ).forEach((el) => {
+      el.classList.add("is-visible");
+    });
   }
   function focusFirstNavLink(panel) {
     panel.querySelector("a[href]")?.focus();
@@ -31295,6 +31543,7 @@ ${nextLine.slice(indentLevel + 2)}`;
           } else {
             runPortalOpenGsap(p);
           }
+          dispatchPortalBlockReinit();
           btn.setAttribute("aria-expanded", "true");
           setExpandedLabel(true);
           document.documentElement.classList.add("nextora-primary-nav-drawer-open");

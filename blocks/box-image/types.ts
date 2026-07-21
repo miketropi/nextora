@@ -1,6 +1,7 @@
 export type BoxImageLayoutMode = 'slider' | 'grid';
 export type BoxImageFit = 'cover' | 'contain' | 'fill' | 'none';
 export type BoxImageTemplate = 'default' | 'template1' | 'template2' | 'template3';
+export type BoxImageScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxImageItem {
 	id: string;
@@ -17,6 +18,7 @@ export interface BoxImageItem {
 	descriptionColor: string;
 	linkColor: string;
 	badge: string;
+	linkWrapCard: boolean;
 }
 
 export interface BoxImageAttributes {
@@ -25,7 +27,10 @@ export interface BoxImageAttributes {
 	layoutMode: BoxImageLayoutMode;
 	template: BoxImageTemplate;
 	gridColumns: number;
+	gridColumnsTablet: number;
+	gridColumnsMobile: number;
 	gridMinWidth: number;
+	disableResponsiveCarousel: boolean;
 	imageAspectRatio: string;
 	imageFit: BoxImageFit;
 	cardMinHeight: number;
@@ -59,4 +64,6 @@ export interface BoxImageAttributes {
 	badgeTextColor: string;
 	bulletIconColor: string;
 	enableScrollAnimation: boolean;
+	scrollAnimationStyle: BoxImageScrollAnimationStyle;
+	enableCardHover: boolean;
 }

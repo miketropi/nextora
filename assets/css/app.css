@@ -1767,9 +1767,9 @@ footer.wp-block-template-part {
   text-decoration: auto;
   font-weight: 400;
   color: var(--wp--preset--color--paragraph, #9ca3af);
-  background-color: var(--color-primary);
+  background: var(--wp--preset--color--paragraph, #6b7280);
   @supports (color: color-mix(in lab, red, red)) {
-    background-color: color-mix(in oklab, var(--color-primary) 15%, transparent);
+    background: color-mix(in srgb, var(--wp--preset--color--paragraph, #6b7280) 8%, transparent);
   }
 }
 .is-placeholder-images {

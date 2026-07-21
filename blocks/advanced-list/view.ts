@@ -45,3 +45,12 @@ if (document.readyState === 'loading') {
 } else {
   initAdvancedListScrollAnimation();
 }
+
+window.addEventListener('nextora-advanced-list-reinit', () => {
+  initAdvancedListScrollAnimation();
+  document.querySelectorAll<HTMLElement>('.wp-block-nextora-advanced-list[data-nextora-scroll-reveal="1"]').forEach((el) => {
+    if (el.closest('.nextora-primary-nav-portal__mount')) {
+      el.classList.add('is-visible');
+    }
+  });
+});

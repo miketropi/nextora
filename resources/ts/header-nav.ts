@@ -178,6 +178,50 @@ function getOrCreatePortal(btn: HTMLButtonElement): PortalElements | null {
 	return { root, backdrop, panel, mount, closeBtn };
 }
 
+const PORTAL_INIT_ATTRS = [
+	"data-nextora-testimonials-swiper-inited",
+	"data-nextora-testimonials-swiper-pending",
+	"data-nextora-testimonial-swiper-inited",
+	"data-nextora-testimonial-swiper-pending",
+	"data-nextora-box-image-swiper-inited",
+	"data-nextora-box-image-swiper-pending",
+	"data-nextora-box-icon-swiper-inited",
+	"data-nextora-box-icon-swiper-pending",
+	"data-nextora-blc-swiper-inited",
+	"data-nextora-blc-swiper-pending",
+	"data-nextora-team-swiper-inited",
+	"data-nextora-team-swiper-pending",
+	"data-nextora-instagram-swiper-inited",
+	"data-nextora-instagram-swiper-pending",
+	"data-nextora-instagram-lightbox-inited",
+	"data-nextora-event-swiper-inited",
+	"data-nextora-event-swiper-pending",
+	"data-nextora-arc-carousel-inited",
+	"data-nextora-contact-form-inited",
+	"data-nextora-google-maps-inited",
+	"data-swiper-inited",
+	"data-swiper-init-pending",
+	"data-nextora-scroll-animation-init",
+	"data-scroll-reveal-gen",
+	"data-nextora-advanced-button-scroll-init",
+	"data-scroll-deferred",
+	"data-scroll-replay",
+];
+
+function clearBlockInitAttrs(root: HTMLElement): void {
+	PORTAL_INIT_ATTRS.forEach((attr) => {
+		root.querySelectorAll(`[${attr}]`).forEach((el) => {
+			el.removeAttribute(attr);
+		});
+	});
+
+	root.querySelectorAll<HTMLElement>("[class*='animation-fade-in'], [class*='animation-zoom-'], .nextora-scroll-animation--pending, .nextora-scroll-animation--ready").forEach((el) => {
+		el.style.removeProperty("opacity");
+		el.style.removeProperty("transform");
+		el.style.removeProperty("translate");
+	});
+}
+
 function cloneNavIntoMount(sourcePanel: HTMLElement, mount: HTMLElement): void {
 	const clones: HTMLElement[] = [];
 
@@ -186,12 +230,116 @@ function cloneNavIntoMount(sourcePanel: HTMLElement, mount: HTMLElement): void {
 			const clone = node.cloneNode(true) as HTMLElement;
 			dedupeCloneIds(clone);
 			clearFollowUsBindingState(clone);
+			clearBlockInitAttrs(clone);
 			clones.push(clone);
 		}
 	});
 
 	mount.replaceChildren(...clones);
 	bindHeaderFollowUsIn(mount);
+}
+
+function dispatchPortalBlockReinit(): void {
+	window.dispatchEvent(new CustomEvent("nextora-testimonials-reinit"));
+	window.dispatchEvent(new CustomEvent("nextora-testimonial-carousel-reinit"));
+	window.dispatchEvent(new CustomEvent("nextora-box-image-reinit"));
+	window.dispatchEvent(new CustomEvent("nextora-box-icon-reinit"));
+	window.dispatchEvent(new CustomEvent("nextora-blog-list-carousel-reinit"));
+	window.dispatchEvent(new CustomEvent("nextora-team-section-reinit"));
+	window.dispatchEvent(new CustomEvent("nextora-instagram-feed-reinit"));
+	window.dispatchEvent(new CustomEvent("nextora-image-gallery-reinit"));
+	window.dispatchEvent(new CustomEvent("nextora-advanced-list-reinit"));
+	window.dispatchEvent(new CustomEvent("nextora-advanced-button-reinit"));
+
+	revealPortalElements();
+
+	window.setTimeout(() => {
+		window.nextoraForceScrollAnimations?.();
+		revealPortalElements();
+	}, 150);
+
+	window.setTimeout(() => {
+		window.nextoraForceScrollAnimations?.();
+		revealPortalElements();
+	}, 400);
+}
+
+function revealPortalElements(): void {
+	const ANIM_SELECTORS = [
+		"[class*='animation-fade-in']",
+		"[class*='animation-zoom-']",
+		"[class*='animation-text-reveal']",
+		"[class*='animation-inner-fade']",
+		".animation-text-typewriter",
+		".animation-fade-list-grid",
+		".animation-image-clip-reveal",
+		".animation-image-border-reveal",
+		".nextora-scroll-animation--pending",
+		".nextora-scroll-animation--ready",
+	];
+
+	const selector = ANIM_SELECTORS.map((s) => `.nextora-primary-nav-portal__mount ${s}`).join(", ");
+
+	document.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+		el.style.removeProperty("opacity");
+		el.style.removeProperty("transform");
+		el.style.removeProperty("translate");
+		el.style.removeProperty("rotate");
+		el.style.removeProperty("scale");
+		el.style.removeProperty("clip-path");
+
+		el.classList.remove(
+			"nextora-scroll-animation--pending",
+			"nextora-scroll-animation--ready",
+			"nextora-advanced-button--reveal-pending",
+			"nextora-advanced-button--reveal-ready",
+		);
+
+		if (!el.hasAttribute("data-nextora-scroll-animation-init")) {
+			el.setAttribute("data-nextora-scroll-animation-init", "1");
+		}
+
+		Array.from(el.children).forEach((child) => {
+			if (child instanceof HTMLElement) {
+				child.style.removeProperty("opacity");
+				child.style.removeProperty("transform");
+				child.style.removeProperty("translate");
+				child.style.removeProperty("rotate");
+				child.style.removeProperty("scale");
+				child.style.removeProperty("clip-path");
+				child.classList.remove(
+					"nextora-scroll-animation--pending",
+					"nextora-scroll-animation--ready",
+				);
+			}
+		});
+	});
+
+	document.querySelectorAll<HTMLElement>(
+		".nextora-primary-nav-portal__mount .nextora-advanced-button"
+	).forEach((root) => {
+		root.classList.remove(
+			"nextora-advanced-button--reveal-pending",
+			"nextora-advanced-button--reveal-ready",
+			"nextora-scroll-animation--pending",
+			"nextora-scroll-animation--ready",
+		);
+		root.style.removeProperty("opacity");
+		root.style.removeProperty("transform");
+		root.style.removeProperty("translate");
+		if (!root.hasAttribute("data-nextora-advanced-button-scroll-init")) {
+			root.setAttribute("data-nextora-advanced-button-scroll-init", "1");
+		}
+		if (!root.hasAttribute("data-nextora-scroll-animation-init")) {
+			root.setAttribute("data-nextora-scroll-animation-init", "1");
+		}
+	});
+
+	document.querySelectorAll<HTMLElement>(
+		".nextora-primary-nav-portal__mount .wp-block-nextora-advanced-list"
+	).forEach((el) => {
+		el.classList.add("is-visible");
+	});
 }
 
 function focusFirstNavLink(panel: HTMLElement): void {
@@ -353,6 +501,7 @@ export function initHeaderNavigation(): void {
 				} else {
 					runPortalOpenGsap(p);
 				}
+				dispatchPortalBlockReinit();
 				btn.setAttribute("aria-expanded", "true");
 				setExpandedLabel(true);
 				document.documentElement.classList.add("nextora-primary-nav-drawer-open");

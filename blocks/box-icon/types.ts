@@ -2,6 +2,7 @@ export type BoxIconLayoutMode = 'slider' | 'grid';
 export type BoxIconIconSource = 'theme' | 'upload';
 export type BoxIconIconStyle = 'default' | 'stacked' | 'framed';
 export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
+export type BoxIconScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxIconItem {
 	id: string;
@@ -27,7 +28,10 @@ export interface BoxIconAttributes {
 	cardTemplate: BoxIconCardTemplate;
 	layoutMode: BoxIconLayoutMode;
 	gridColumns: number;
+	gridColumnsTablet: number;
+	gridColumnsMobile: number;
 	gridMinWidth: number;
+	disableResponsiveCarousel: boolean;
 	cardMinHeight: number;
 	cardPadding: Record<string, string>;
 	cardBorderWidth: number;
@@ -72,6 +76,8 @@ export interface BoxIconAttributes {
 	arrowColor: string;
 	headingFontFamily: string;
 	enableScrollAnimation: boolean;
+	scrollAnimationStyle: BoxIconScrollAnimationStyle;
+	enableCardHover: boolean;
 	highlightAccentColor1: string;
 	highlightAccentColor2: string;
 	highlightAccentColor3: string;

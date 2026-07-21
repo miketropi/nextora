@@ -122,9 +122,17 @@
       "type": "number",
       "default": 8
     },
+    "imageWidthPercent": {
+      "type": "number",
+      "default": 40
+    },
     "showTitle": {
       "type": "boolean",
       "default": true
+    },
+    "titleFontSize": {
+      "type": "string",
+      "default": ""
     },
     "titleLineClamp": {
       "type": "number",
@@ -277,6 +285,10 @@
     "enableScrollAnimation": {
       "type": "boolean",
       "default": true
+    },
+    "scrollAnimationStyle": {
+      "type": "string",
+      "default": "default"
     }
   },
   "editorScript": "file:./index.js",

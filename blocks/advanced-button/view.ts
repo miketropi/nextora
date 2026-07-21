@@ -78,3 +78,15 @@ if ( document.readyState === 'loading' ) {
 } else {
 	initAll();
 }
+
+window.addEventListener( 'nextora-advanced-button-reinit', () => {
+	initAll();
+
+	document.querySelectorAll< HTMLElement >( BLOCK_SELECTOR ).forEach( ( root ) => {
+		if ( root.closest( '.nextora-primary-nav-portal__mount' ) ) {
+			root.classList.remove( 'nextora-advanced-button--reveal-ready' );
+			root.removeAttribute( BLOCK_INIT_ATTR );
+			optOutScrollAnimation( root );
+		}
+	});
+} );
