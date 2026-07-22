@@ -267,6 +267,9 @@
   .start {
     inset-inline-start: var(--spacing);
   }
+  .start\! {
+    inset-inline-start: var(--spacing) !important;
+  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -410,6 +413,9 @@
   }
   .inline {
     display: inline;
+  }
+  .inline\! {
+    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -1128,6 +1134,9 @@
   .italic {
     font-style: italic;
   }
+  .italic\! {
+    font-style: italic !important;
+  }
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
@@ -1143,6 +1152,9 @@
   }
   .underline {
     text-decoration-line: underline;
+  }
+  .underline\! {
+    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -3759,9 +3771,9 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     }
     white-space: normal;
   }
-  .nextora-spotlight__kbd-hint::before {
-    content: "\00a0· ";
-    opacity: 0.65;
+  .nextora-spotlight__kbd-hint {
+    display: block;
+    margin-top: 8px;
   }
   @media (prefers-reduced-motion: reduce) {
     .nextora-spotlight__item {

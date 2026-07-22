@@ -23,6 +23,12 @@
  * Link color: Core enqueues `.wp-elements-* a` — :where() avoids overriding Core when vars are unset.
  * Optional `--nextora-header-nav-*` overrides on the block wrapper (via theme hooks / filters).
  */
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--nextora-header-menu-item-spacing, var(--wp--preset--spacing--20, 1.25rem));
+}
+
 .nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu > li > a {
 	font-family: inherit;
 	font-size: inherit;
@@ -195,6 +201,7 @@
 
 	.nextora-header-block--layout-logo-nav-center .nextora-header-block__logo {
 		grid-column: 1;
+		z-index: 3;
 	}
 
 	.nextora-header-block--layout-logo-nav-center .nextora-header-block__nav-source {

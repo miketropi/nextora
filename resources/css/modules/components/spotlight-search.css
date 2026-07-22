@@ -369,9 +369,9 @@
 		white-space: normal;
 	}
 
-	.nextora-spotlight__kbd-hint::before {
-		content: "\00a0· ";
-		opacity: 0.65;
+	.nextora-spotlight__kbd-hint {
+		display: block;
+		margin-top: 8px;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
