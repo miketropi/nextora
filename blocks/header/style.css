@@ -195,6 +195,7 @@
 
 	.nextora-header-block--layout-logo-nav-center .nextora-header-block__logo {
 		grid-column: 1;
+		z-index: 3;
 	}
 
 	.nextora-header-block--layout-logo-nav-center .nextora-header-block__nav-source {
