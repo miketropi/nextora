@@ -25,6 +25,13 @@
 	height: 100%;
 	width: 100%;
 	box-sizing: border-box;
+}
+
+.nextora-box-image__swiper .swiper-slide > .nextora-box-image__card:not(
+		.nextora-box-image__card--template1
+	):not(.nextora-box-image__card--template2):not(
+		.nextora-box-image__card--template3
+	) {
 	padding: 0;
 	display: block;
 }
@@ -523,6 +530,7 @@
 	color: var(--nextora-box-image-item-link-color, var(--wp--preset--color--secondary, var(--wp--preset--color--primary, currentColor)));
 	transition: color 0.18s;
 	margin: auto 0 0;
+	justify-content: center;
 }
 
 .nextora-box-image--template-template2 .nextora-box-image__link--template2:hover,
