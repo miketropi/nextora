@@ -1,0 +1,64 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/hero-paper-roll",
+  "title": "Hero Paper Roll",
+  "category": "theme",
+  "description": "Full-screen hero with an infinite 3D paper-roll background and InnerBlocks overlay for headings, text, and CTAs.",
+  "keywords": [
+    "hero",
+    "paper",
+    "roll",
+    "three",
+    "3d",
+    "nextora"
+  ],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    },
+    "dimensions": {
+      "minHeight": true
+    }
+  },
+  "attributes": {
+    "minHeight": {
+      "type": "string",
+      "default": "100vh"
+    },
+    "bgOverlayColor": {
+      "type": "string",
+      "default": "#000000"
+    },
+    "bgOverlayOpacity": {
+      "type": "number",
+      "default": 0
+    },
+    "contentMaxWidth": {
+      "type": "string",
+      "default": "content"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

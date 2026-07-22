@@ -1,0 +1,66 @@
+.wp-block-nextora-hero-paper-roll {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-paper-roll__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-paper-roll__bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-paper-roll__overlay {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* padding: var(--wp--preset--spacing--60, 2rem); */
+  width: 100%;
+  max-width: var(--hero-paper-roll--content-max-width, 780px);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+/* Editor placeholder */
+.wp-block-nextora-hero-paper-roll--editor .hero-paper-roll__canvas-placeholder {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f4f4f5 0px,
+    #f4f4f5 4px,
+    #eaeaec 4px,
+    #eaeaec 8px
+  );
+  color: #8a8a86;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-paper-roll__canvas {
+    display: none;
+  }
+}

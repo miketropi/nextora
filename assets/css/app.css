@@ -235,6 +235,9 @@
   .visible {
     visibility: visible;
   }
+  .visible\! {
+    visibility: visible !important;
+  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -257,6 +260,9 @@
   }
   .static {
     position: static;
+  }
+  .static\! {
+    position: static !important;
   }
   .sticky {
     position: sticky;
