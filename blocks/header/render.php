@@ -903,12 +903,18 @@ $render_nav = static function ( array $atts, string $menu_dom_id, string $uid ):
 	$nav_classes = (array) apply_filters( 'nextora_header_block_nav_wrapper_classes', $nav_classes, $atts );
 	$nav_classes = array_filter( array_map( 'trim', $nav_classes ) );
 
+	$nav_inline_style = '';
+	$menu_item_spacing = isset( $atts['menuItemSpacing'] ) && is_string( $atts['menuItemSpacing'] ) ? trim( $atts['menuItemSpacing'] ) : '';
+	if ( '' !== $menu_item_spacing ) {
+		$nav_inline_style = ' style="--nextora-header-menu-item-spacing:var(--wp--preset--spacing--' . sanitize_key( $menu_item_spacing ) . ')"';
+	}
+
 	ob_start();
 ?>
 	<nav
 		class="<?php echo esc_attr( implode( ' ', $nav_classes ) ); ?>"
 		aria-label="<?php echo esc_attr( $aria ); ?>"
-		data-nextora-header-block-nav="<?php echo esc_attr( $uid ); ?>">
+		data-nextora-header-block-nav="<?php echo esc_attr( $uid ); ?>"<?php echo $nav_inline_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 		<?php
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- From wp_nav_menu().
 		echo $nav_html;
