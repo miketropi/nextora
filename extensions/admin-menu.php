@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Add the Nextora Addon top-level menu page.
+ * Add the Nextora Addon top-level menu page and its submenu items.
  *
  * @return void
  */
@@ -28,6 +28,15 @@ function nextora_addon_add_menu_page(): void {
 		'data:image/svg+xml;base64,' . base64_encode( $icon ),
 		60,
 	);
+
+	add_submenu_page(
+		'nextora-addon',
+		__( 'Overview', 'nextora' ),
+		__( 'Overview', 'nextora' ),
+		'manage_options',
+		'nextora-addon-overview',
+		'nextora_addon_render_overview_page',
+	);
 }
 
 /**
@@ -41,6 +50,20 @@ function nextora_addon_render_page(): void {
 	echo '<div class="wrap">
 		<div style="display: none;"><h1></h1></div>
 		<div id="nextora-addon-root"></div> 
+	</div>';
+}
+
+/**
+ * Render the Nextora Addon Overview admin page shell.
+ *
+ * Prints the root <div> where the Overview React app mounts.
+ *
+ * @return void
+ */
+function nextora_addon_render_overview_page(): void {
+	echo '<div class="wrap">
+		<div style="display: none;"><h1></h1></div>
+		<div id="nextora-addon-overview-root"></div>
 	</div>';
 }
 
