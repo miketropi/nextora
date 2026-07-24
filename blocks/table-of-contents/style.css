@@ -1,0 +1,129 @@
+/**
+ * nextora/table-of-contents — front-end + editor canvas styles.
+ *
+ * Minimal documentation-sidebar TOC style.
+ * Uses theme presets via var(--wp--preset--*) for Global Styles alignment.
+ * The active left-border accent is driven by GSAP; CSS fallback covers
+ * reduced-motion or no-JS contexts.
+ */
+
+/* ---- Block root — sticky sidebar ---- */
+.nextora-toc {
+  position: sticky;
+  top: var(--nextora-toc-sticky-top, 2rem);
+  max-height: calc(100vh - var(--nextora-toc-sticky-top, 2rem) - 2rem);
+  overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ---- Title ---- */
+.nextora-toc__title {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--wp--preset--font-size--small, 0.875rem);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  margin: 0 0 0.625rem;
+  color: var(--wp--preset--color--contrast, #0f172a);
+  opacity: 0.85;
+}
+
+/* ---- Collapsible toggle button ---- */
+.nextora-toc__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  flex-shrink: 0;
+}
+
+.nextora-toc__toggle:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.nextora-toc__toggle:focus-visible {
+  outline: 2px solid var(--wp--preset--color--primary, currentColor);
+  outline-offset: 2px;
+}
+
+.nextora-toc__toggle-icon {
+  display: inline-block;
+  font-size: 0.625rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.nextora-toc__toggle[aria-expanded="false"] .nextora-toc__toggle-icon {
+  transform: rotate(-90deg);
+}
+
+/* ---- Navigation list ---- */
+.nextora-toc__nav[hidden] {
+  display: none;
+}
+
+.nextora-toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nextora-toc__item {
+  position: relative;
+  padding: 0.15rem 0 0.15rem 0.75rem;
+  border-left: 2px solid transparent;
+  font-size: var(--wp--preset--font-size--small, 0.875rem);
+  line-height: 1.35;
+}
+
+/* ---- Depth indentation (driven by view.ts via class) ---- */
+.nextora-toc__item--depth-0 { padding-left: 0.75rem; }
+.nextora-toc__item--depth-1 { padding-left: 1.75rem; }
+.nextora-toc__item--depth-2 { padding-left: 2.75rem; }
+.nextora-toc__item--depth-3 { padding-left: 3.75rem; }
+
+/* ---- Links ---- */
+.nextora-toc__link {
+  display: inline;
+  text-decoration: none;
+  color: var(--wp--preset--color--contrast, #0f172a);
+  opacity: 0.62;
+  transition: opacity 0.15s ease;
+  line-height: inherit;
+}
+
+.nextora-toc__link:hover {
+  opacity: 1;
+}
+
+/* ---- Active state (CSS fallback for reduced-motion / no-JS) ---- */
+.nextora-toc__item.is-active {
+  border-left-color: var(--wp--preset--color--primary, currentColor);
+}
+
+.nextora-toc__item.is-active .nextora-toc__link {
+  opacity: 1;
+  font-weight: 500;
+}
+
+/* ---- Scrollbar (for overflow) ---- */
+.nextora-toc::-webkit-scrollbar {
+  width: 4px;
+}
+.nextora-toc::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+.nextora-toc::-webkit-scrollbar-track {
+  background: transparent;
+}
