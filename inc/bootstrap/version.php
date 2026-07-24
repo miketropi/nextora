@@ -12,5 +12,5 @@
 declare( strict_types=1 );
 
 if ( ! defined( 'NEXTORA_VERSION' ) ) {
-	define( 'NEXTORA_VERSION', '0.0.11' );
+	define( 'NEXTORA_VERSION', '0.0.12' );
 }
