@@ -1,0 +1,83 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/related-posts",
+  "title": "Related Posts",
+  "category": "theme",
+  "description": "Display related posts based on shared categories, tags, or both. Server-side rendered for accurate post context.",
+  "keywords": [
+    "related posts",
+    "similar posts",
+    "recommended",
+    "nextora"
+  ],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    }
+  },
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Related Posts"
+    },
+    "headingLevel": {
+      "type": "string",
+      "default": "h4"
+    },
+    "postsToShow": {
+      "type": "number",
+      "default": 3
+    },
+    "relatedBy": {
+      "type": "string",
+      "default": "category"
+    },
+    "orderBy": {
+      "type": "string",
+      "default": "date"
+    },
+    "order": {
+      "type": "string",
+      "default": "DESC"
+    },
+    "showFeaturedImage": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDate": {
+      "type": "boolean",
+      "default": true
+    },
+    "showExcerpt": {
+      "type": "boolean",
+      "default": false
+    },
+    "excerptLength": {
+      "type": "number",
+      "default": 20
+    },
+    "postId": {
+      "type": "integer",
+      "default": 0
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php",
+  "style": "file:./style.css"
+}
