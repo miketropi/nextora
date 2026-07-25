@@ -45,12 +45,8 @@ export default function SlideWrapperEdit({ attributes, setAttributes, clientId }
     sliderHeight = '80vh',
     sliderMinHeight = '500px',
     contentMaxWidth = '600px',
+    containerMaxWidth = '1200px',
     contentHorizontalAlign = 'left',
-    contentVerticalAlign = 'center',
-    contentPaddingTop = 60,
-    contentPaddingBottom = 60,
-    contentPaddingLeft = 80,
-    contentPaddingRight = 80,
   } = attributes;
 
   const slideCount = useSelect(
@@ -58,25 +54,41 @@ export default function SlideWrapperEdit({ attributes, setAttributes, clientId }
     [clientId],
   );
 
-  const vAlignCss = contentVerticalAlign === 'top' ? 'flex-start' : contentVerticalAlign === 'bottom' ? 'flex-end' : 'center';
   const hAlignCss = contentHorizontalAlign === 'center' ? 'center' : contentHorizontalAlign === 'right' ? 'right' : 'left';
   const hMarginLeft = contentHorizontalAlign === 'center' ? 'auto' : contentHorizontalAlign === 'right' ? 'auto' : '0';
   const hMarginRight = contentHorizontalAlign === 'center' ? 'auto' : '0';
+
+  function resolveSpacing(raw: string | undefined): string {
+    if (!raw || raw === '') return 'var(--wp--preset--spacing--40, 1rem)';
+    if (raw.startsWith('var:preset|spacing|')) {
+      const slug = raw.slice('var:preset|spacing|'.length);
+      return `var(--wp--preset--spacing--${slug})`;
+    }
+    if (/^\d+(?:\.\d+)?(?:px|rem|em|vh|vw|%)$/.test(raw)) return raw;
+    return '0px';
+  }
+
+  const wpStyle = (attributes.style || {}) as Record<string, unknown>;
+  const wpPadding = (wpStyle.spacing as Record<string, unknown>)?.padding as Record<string, string | undefined> | undefined;
+  const padTop = resolveSpacing(wpPadding?.top);
+  const padBottom = resolveSpacing(wpPadding?.bottom);
+  const padLeft = resolveSpacing(wpPadding?.left);
+  const padRight = resolveSpacing(wpPadding?.right);
 
   const blockProps = useBlockProps({
     className: 'nextora-slider-editor',
     style: {
       '--nextora-slider-height': sliderHeight || '80vh',
       '--nextora-slider-min-height': sliderMinHeight || '500px',
+      '--nextora-slider-content-container-width': containerMaxWidth || '1200px',
       '--nextora-slider-content-max-width': contentMaxWidth || '600px',
-      '--nextora-slider-content-v-align': vAlignCss,
       '--nextora-slider-content-h-align': hAlignCss,
       '--nextora-slider-content-h-margin-left': hMarginLeft,
       '--nextora-slider-content-h-margin-right': hMarginRight,
-      '--nextora-slider-content-padding-top': (contentPaddingTop ?? 60) + 'px',
-      '--nextora-slider-content-padding-bottom': (contentPaddingBottom ?? 60) + 'px',
-      '--nextora-slider-content-padding-left': (contentPaddingLeft ?? 80) + 'px',
-      '--nextora-slider-content-padding-right': (contentPaddingRight ?? 80) + 'px',
+      '--nextora-slider-padding-top': padTop,
+      '--nextora-slider-padding-bottom': padBottom,
+      '--nextora-slider-padding-left': padLeft,
+      '--nextora-slider-padding-right': padRight,
     },
   });
 
@@ -246,15 +258,11 @@ export default function SlideWrapperEdit({ attributes, setAttributes, clientId }
         </PanelBody>
 
         <PanelBody title={__('Content Layout', 'nextora')} initialOpen={false}>
-          <SelectControl
-            label={__('Vertical alignment', 'nextora')}
-            value={contentVerticalAlign}
-            options={[
-              { label: __('Top', 'nextora'), value: 'top' },
-              { label: __('Center', 'nextora'), value: 'center' },
-              { label: __('Bottom', 'nextora'), value: 'bottom' },
-            ]}
-            onChange={(v) => setAttributes({ contentVerticalAlign: v || 'center' })}
+          <TextControl
+            label={__('Content container width', 'nextora')}
+            help={__('CSS value, e.g. 1200px, 90rem, 100%.', 'nextora')}
+            value={containerMaxWidth}
+            onChange={(v) => setAttributes({ containerMaxWidth: v || '1200px' })}
           />
           <SelectControl
             label={__('Horizontal alignment', 'nextora')}
@@ -271,34 +279,6 @@ export default function SlideWrapperEdit({ attributes, setAttributes, clientId }
             help={__('CSS value, e.g. 600px, 40rem, 100%.', 'nextora')}
             value={contentMaxWidth}
             onChange={(v) => setAttributes({ contentMaxWidth: v || '600px' })}
-          />
-          <RangeControl
-            label={__('Padding top (px)', 'nextora')}
-            value={contentPaddingTop}
-            onChange={(v) => setAttributes({ contentPaddingTop: v ?? 60 })}
-            min={0}
-            max={200}
-          />
-          <RangeControl
-            label={__('Padding bottom (px)', 'nextora')}
-            value={contentPaddingBottom}
-            onChange={(v) => setAttributes({ contentPaddingBottom: v ?? 60 })}
-            min={0}
-            max={200}
-          />
-          <RangeControl
-            label={__('Padding left (px)', 'nextora')}
-            value={contentPaddingLeft}
-            onChange={(v) => setAttributes({ contentPaddingLeft: v ?? 80 })}
-            min={0}
-            max={200}
-          />
-          <RangeControl
-            label={__('Padding right (px)', 'nextora')}
-            value={contentPaddingRight}
-            onChange={(v) => setAttributes({ contentPaddingRight: v ?? 80 })}
-            min={0}
-            max={200}
           />
         </PanelBody>
 

@@ -1,0 +1,144 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/text-list-hover-image",
+  "title": "Text List Hover Image",
+  "category": "design",
+  "description": "A list of text items that reveal a floating image following the cursor on hover.",
+  "keywords": [
+    "list",
+    "hover",
+    "image",
+    "project",
+    "showcase",
+    "nextora"
+  ],
+  "textdomain": "nextora",
+  "icon": "format-image",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": false,
+      "link": false
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    }
+  },
+  "attributes": {
+    "items": {
+      "type": "array",
+      "default": [
+        {
+          "id": "1",
+          "title": "Lumina",
+          "description": "AI-powered design system generator.",
+          "year": "2024",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "id": "2",
+          "title": "Flux",
+          "description": "Real-time collaboration for creative teams.",
+          "year": "2024",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "id": "3",
+          "title": "Prism",
+          "description": "Color palette extraction from any image.",
+          "year": "2023",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "id": "4",
+          "title": "Vertex",
+          "description": "3D modeling toolkit for the web.",
+          "year": "2023",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        }
+      ]
+    },
+    "titleSize": {
+      "type": "string",
+      "default": "medium"
+    },
+    "descriptionSize": {
+      "type": "string",
+      "default": "small"
+    },
+    "yearSize": {
+      "type": "string",
+      "default": "small"
+    },
+    "titleWeight": {
+      "type": "string",
+      "default": "500"
+    },
+    "imageWidth": {
+      "type": "number",
+      "default": 280
+    },
+    "imageHeight": {
+      "type": "number",
+      "default": 180
+    },
+    "showArrow": {
+      "type": "boolean",
+      "default": true
+    },
+    "titleColor": {
+      "type": "string",
+      "default": ""
+    },
+    "descriptionColor": {
+      "type": "string",
+      "default": ""
+    },
+    "yearColor": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverHighlightColor": {
+      "type": "string",
+      "default": ""
+    },
+    "numberColor": {
+      "type": "string",
+      "default": ""
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "render": "file:./render.php"
+}

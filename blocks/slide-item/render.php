@@ -197,6 +197,10 @@ $overlay_color_raw = isset( $attributes['overlayColor'] ) ? (string) $attributes
 $overlay_color     = nextora_si_resolve_color( $overlay_color_raw );
 $overlay_opacity   = isset( $attributes['overlayOpacity'] ) ? min( 1, max( 0, (float) $attributes['overlayOpacity'] ) ) : 0.4;
 $overlay_gradient  = nextora_si_sanitize_gradient( isset( $attributes['overlayGradient'] ) ? (string) $attributes['overlayGradient'] : '' );
+$overlay_mode      = isset( $attributes['overlayMode'] ) ? sanitize_key( (string) $attributes['overlayMode'] ) : 'color';
+if ( ! in_array( $overlay_mode, array( 'color', 'gradient' ), true ) ) {
+	$overlay_mode = 'color';
+}
 
 $inner_html = '';
 if ( $block instanceof WP_Block && $block->inner_blocks->count() > 0 ) {
@@ -215,7 +219,7 @@ $classes = array(
 );
 
 $overlay_style = '';
-if ( $overlay_gradient ) {
+if ( 'gradient' === $overlay_mode && $overlay_gradient ) {
 	$overlay_style = 'background:' . $overlay_gradient;
 } else {
 	$base_overlay = $overlay_color ? $overlay_color : 'var(--wp--preset--color--contrast, #000)';
@@ -261,7 +265,9 @@ if ( $overlay_gradient ) {
 
 	<div class="nextora-slide__overlay" style="<?php echo esc_attr( $overlay_style ); ?>" aria-hidden="true"></div>
 
-	<div class="nextora-slide__content">
-		<?php echo $inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered inner blocks.?>
+	<div class="nextora-slide__content-container">
+		<div class="nextora-slide__content">
+			<?php echo $inner_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered inner blocks.?>
+		</div>
 	</div>
 </div>

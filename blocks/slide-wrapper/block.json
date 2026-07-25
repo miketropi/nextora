@@ -100,29 +100,13 @@
       "type": "string",
       "default": "600px"
     },
+    "containerMaxWidth": {
+      "type": "string",
+      "default": "1200px"
+    },
     "contentHorizontalAlign": {
       "type": "string",
       "default": "left"
-    },
-    "contentVerticalAlign": {
-      "type": "string",
-      "default": "center"
-    },
-    "contentPaddingTop": {
-      "type": "number",
-      "default": 60
-    },
-    "contentPaddingBottom": {
-      "type": "number",
-      "default": 60
-    },
-    "contentPaddingLeft": {
-      "type": "number",
-      "default": 80
-    },
-    "contentPaddingRight": {
-      "type": "number",
-      "default": 80
     }
   },
   "editorScript": "file:./index.js",

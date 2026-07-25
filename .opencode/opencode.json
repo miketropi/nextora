@@ -7,19 +7,6 @@
       "/Users/ducdung/Local Sites/alonepro/app/public/wp-content/themes/alonepro/**": "allow"
     }
   },
-  "plugin": [
-    [
-      "file:///Volumes/Mike/tools/opencode-qdrant-plugin",
-      {
-        "qdrantUrl": "http://localhost:6333",
-        "embeddingProvider": "local",
-        "indexOnStart": true,
-        "excludePatterns": [
-          ".roo/**"
-        ]
-      }
-    ]
-  ],
   "mcp": {
        "chrome-devtools": {
       "enabled": true,

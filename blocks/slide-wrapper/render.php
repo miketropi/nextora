@@ -105,6 +105,39 @@ if ( ! function_exists( 'nextora_sw_sanitize_css_size' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_sw_resolve_spacing' ) ) {
+	/**
+	 * Resolve a spacing value from WP Dimensions preset or raw CSS.
+	 *
+	 * @param string $raw      Raw value (e.g. "var:preset|spacing|40" or "60px").
+	 * @param string $fallback Fallback value (default '0px').
+	 *
+	 * @return string CSS value.
+	 */
+	function nextora_sw_resolve_spacing( string $raw, string $fallback = 'var(--wp--preset--spacing--40, 1rem)' ): string {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return $fallback;
+		}
+
+		// Preset: "var:preset|spacing|40"
+		if ( str_starts_with( $raw, 'var:preset|spacing|' ) ) {
+			$slug = sanitize_key( substr( $raw, strlen( 'var:preset|spacing|' ) ) );
+			if ( '' !== $slug ) {
+				return 'var(--wp--preset--spacing--' . $slug . ')';
+			}
+			return $fallback;
+		}
+
+		// Raw CSS value like "60px", "2rem", etc.
+		if ( preg_match( '/^\d+(?:\.\d+)?(?:px|rem|em|vh|vw|%)$/', $raw ) ) {
+			return $raw;
+		}
+
+		return $fallback;
+	}
+}
+
 nextora_sw_enqueue_view_script();
 
 $slides_per_view  = isset( $attributes['slidesPerView'] ) ? max( 1, min( 5, (int) $attributes['slidesPerView'] ) ) : 1;
@@ -133,23 +166,21 @@ $dot_color    = nextora_sw_resolve_color( isset( $attributes['dotColor'] ) ? (st
 $dot_active   = nextora_sw_resolve_color( isset( $attributes['dotActiveColor'] ) ? (string) $attributes['dotActiveColor'] : '' );
 
 $content_max_width = nextora_sw_sanitize_css_size( isset( $attributes['contentMaxWidth'] ) ? (string) $attributes['contentMaxWidth'] : '', '600px' );
+$container_max_width = nextora_sw_sanitize_css_size( isset( $attributes['containerMaxWidth'] ) ? (string) $attributes['containerMaxWidth'] : '', '1200px' );
 $content_h_align   = isset( $attributes['contentHorizontalAlign'] ) ? sanitize_key( (string) $attributes['contentHorizontalAlign'] ) : 'left';
-$content_v_align   = isset( $attributes['contentVerticalAlign'] ) ? sanitize_key( (string) $attributes['contentVerticalAlign'] ) : 'center';
 if ( ! in_array( $content_h_align, array( 'left', 'center', 'right' ), true ) ) {
 	$content_h_align = 'left';
 }
-if ( ! in_array( $content_v_align, array( 'top', 'center', 'bottom' ), true ) ) {
-	$content_v_align = 'center';
-}
-$v_align_css = 'center' === $content_v_align ? 'center' : ( 'top' === $content_v_align ? 'flex-start' : 'flex-end' );
 $h_align_css = 'center' === $content_h_align ? 'center' : ( 'right' === $content_h_align ? 'right' : 'left' );
 $h_margin_left  = 'center' === $content_h_align ? 'auto' : ( 'right' === $content_h_align ? 'auto' : '0' );
 $h_margin_right = 'center' === $content_h_align ? 'auto' : '0';
 
-$pad_top    = isset( $attributes['contentPaddingTop'] ) ? max( 0, min( 200, (int) $attributes['contentPaddingTop'] ) ) : 60;
-$pad_bottom = isset( $attributes['contentPaddingBottom'] ) ? max( 0, min( 200, (int) $attributes['contentPaddingBottom'] ) ) : 60;
-$pad_left   = isset( $attributes['contentPaddingLeft'] ) ? max( 0, min( 200, (int) $attributes['contentPaddingLeft'] ) ) : 80;
-$pad_right  = isset( $attributes['contentPaddingRight'] ) ? max( 0, min( 200, (int) $attributes['contentPaddingRight'] ) ) : 80;
+$block_styles = isset( $attributes['style'] ) && is_array( $attributes['style'] ) ? $attributes['style'] : array();
+$spacing_pads = isset( $block_styles['spacing']['padding'] ) && is_array( $block_styles['spacing']['padding'] ) ? $block_styles['spacing']['padding'] : array();
+$pad_top    = nextora_sw_resolve_spacing( isset( $spacing_pads['top'] ) ? (string) $spacing_pads['top'] : '' );
+$pad_bottom = nextora_sw_resolve_spacing( isset( $spacing_pads['bottom'] ) ? (string) $spacing_pads['bottom'] : '' );
+$pad_left   = nextora_sw_resolve_spacing( isset( $spacing_pads['left'] ) ? (string) $spacing_pads['left'] : '' );
+$pad_right  = nextora_sw_resolve_spacing( isset( $spacing_pads['right'] ) ? (string) $spacing_pads['right'] : '' );
 
 $slides_html = '';
 $slide_count = 0;
@@ -196,6 +227,7 @@ $style_rules = array(
 	'--nextora-slider-height:' . $slider_height,
 	'--nextora-slider-min-height:' . $slider_min_height,
 	'--nextora-slider-arrow-size:' . $arrow_size . 'px',
+	'--nextora-slider-content-container-width:' . $container_max_width,
 );
 
 if ( $arrow_color ) {
@@ -208,14 +240,13 @@ if ( $dot_active ) {
 	$style_rules[] = '--nextora-slider-dot-active:' . $dot_active;
 }
 $style_rules[] = '--nextora-slider-content-max-width:' . $content_max_width;
-$style_rules[] = '--nextora-slider-content-v-align:' . $v_align_css;
 $style_rules[] = '--nextora-slider-content-h-align:' . $h_align_css;
 $style_rules[] = '--nextora-slider-content-h-margin-left:' . $h_margin_left;
 $style_rules[] = '--nextora-slider-content-h-margin-right:' . $h_margin_right;
-$style_rules[] = '--nextora-slider-content-padding-top:' . $pad_top . 'px';
-$style_rules[] = '--nextora-slider-content-padding-bottom:' . $pad_bottom . 'px';
-$style_rules[] = '--nextora-slider-content-padding-left:' . $pad_left . 'px';
-$style_rules[] = '--nextora-slider-content-padding-right:' . $pad_right . 'px';
+$style_rules[] = '--nextora-slider-padding-top:' . $pad_top;
+$style_rules[] = '--nextora-slider-padding-bottom:' . $pad_bottom;
+$style_rules[] = '--nextora-slider-padding-left:' . $pad_left;
+$style_rules[] = '--nextora-slider-padding-right:' . $pad_right;
 
 $sw_classes = array(
 	'nextora-slider',

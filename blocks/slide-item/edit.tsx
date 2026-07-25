@@ -80,6 +80,7 @@ export default function SlideItemEdit({ attributes, setAttributes }) {
     overlayColor = '',
     overlayOpacity = 0.4,
     overlayGradient = '',
+    overlayMode = 'color',
   } = attributes;
 
   const [editorImageUrl, setEditorImageUrl] = useState('');
@@ -118,12 +119,12 @@ export default function SlideItemEdit({ attributes, setAttributes }) {
   );
 
   const overlayStyle = useMemo(() => {
-    if (overlayGradient) {
+    if (overlayMode === 'gradient' && overlayGradient) {
       return { background: overlayGradient };
     }
     const base = overlayColor || 'var(--wp--preset--color--contrast, #000)';
     return { backgroundColor: base, opacity: overlayOpacity };
-  }, [overlayColor, overlayOpacity, overlayGradient]);
+  }, [overlayColor, overlayOpacity, overlayGradient, overlayMode]);
 
   const blockProps = useBlockProps({
     className: 'nextora-slide nextora-slide--editor',
@@ -238,33 +239,45 @@ export default function SlideItemEdit({ attributes, setAttributes }) {
         </PanelBody>
 
         <PanelBody title={__('Overlay', 'nextora')} initialOpen={false}>
-          <PanelColorSettings
-            title={__('Overlay color', 'nextora')}
-            colorSettings={[
-              {
-                value: overlayColor,
-                onChange: (v) => setAttributes({ overlayColor: v || '' }),
-                label: __('Color', 'nextora'),
-              },
+          <SelectControl
+            label={__('Overlay mode', 'nextora')}
+            value={overlayMode}
+            options={[
+              { label: __('Solid color', 'nextora'), value: 'color' },
+              { label: __('Gradient', 'nextora'), value: 'gradient' },
             ]}
+            onChange={(v) => setAttributes({ overlayMode: v || 'color' })}
           />
-          <RangeControl
-            label={__('Overlay opacity', 'nextora')}
-            value={overlayOpacity}
-            onChange={(v) => setAttributes({ overlayOpacity: v ?? 0.4 })}
-            min={0}
-            max={1}
-            step={0.05}
-          />
-          <p className="components-base-control__help" style={{ marginBottom: '0.5rem' }}>
-            {__('Gradient overrides solid color. Empty = no gradient overlay.', 'nextora')}
-          </p>
-          <GradientPicker
-            value={overlayGradient || null}
-            gradients={themeGradients}
-            onChange={(v) => setAttributes({ overlayGradient: v || '' })}
-            clearable
-          />
+          {overlayMode === 'color' && (
+            <>
+              <PanelColorSettings
+                title={__('Overlay color', 'nextora')}
+                colorSettings={[
+                  {
+                    value: overlayColor,
+                    onChange: (v) => setAttributes({ overlayColor: v || '' }),
+                    label: __('Color', 'nextora'),
+                  },
+                ]}
+              />
+              <RangeControl
+                label={__('Overlay opacity', 'nextora')}
+                value={overlayOpacity}
+                onChange={(v) => setAttributes({ overlayOpacity: v ?? 0.4 })}
+                min={0}
+                max={1}
+                step={0.05}
+              />
+            </>
+          )}
+          {overlayMode === 'gradient' && (
+            <GradientPicker
+              value={overlayGradient || null}
+              gradients={themeGradients}
+              onChange={(v) => setAttributes({ overlayGradient: v || '' })}
+              clearable
+            />
+          )}
         </PanelBody>
       </InspectorControls>
 
@@ -298,7 +311,9 @@ export default function SlideItemEdit({ attributes, setAttributes }) {
           />
         )}
         <div className="nextora-slide__overlay" style={overlayStyle} aria-hidden="true" />
-        <div {...innerBlocksProps} />
+        <div className="nextora-slide__content-container">
+          <div {...innerBlocksProps} />
+        </div>
       </div>
     </>
   );

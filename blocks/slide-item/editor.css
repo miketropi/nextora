@@ -4,9 +4,13 @@
 	border-radius: 0.375rem;
 }
 
-.nextora-slide--editor .nextora-slide__content {
+.nextora-slide--editor .nextora-slide__content-container {
 	position: relative;
 	z-index: 2;
+}
+
+.nextora-slide--editor .nextora-slide__content {
+	position: relative;
 }
 
 .nextora-slide--editor .nextora-slide__background--placeholder {

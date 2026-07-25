@@ -57,6 +57,10 @@
     "overlayGradient": {
       "type": "string",
       "default": ""
+    },
+    "overlayMode": {
+      "type": "string",
+      "default": "color"
     }
   },
   "editorScript": "file:./index.js",
