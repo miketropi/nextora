@@ -4,7 +4,7 @@ Requires at least: 6.4
 Tested up to: 7.0
 Requires PHP: 8.1
 Tags: full-site-editing, blog, portfolio, e-commerce, one-column, custom-logo, custom-menu, editor-style, featured-images, footer-widgets, theme-options, threaded-comments, translation-ready, wide-blocks, custom-header, style-variations, template-editing
-Stable tag: 0.0.11
+Stable tag: 0.0.12
 Text Domain: nextora
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
