@@ -48,4 +48,5 @@ export interface OverviewData {
 	changelog: ChangelogEntry[];
 	quickLinks: QuickLink[];
 	gallery: GalleryItem[];
+	extensionsGallery: GalleryItem[];
 }
