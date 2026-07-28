@@ -95,6 +95,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     bottomBorderColor,
     headerLayout,
     innerMaxWidth,
+    mobileBreakpoint,
   } = attributes;
 
   const menus = useSelect(
@@ -731,6 +732,18 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               )}
             />
           )}
+          <RangeControl
+            label={__('Mobile breakpoint (px)', 'nextora')}
+            value={mobileBreakpoint}
+            onChange={(v) => setAttributes({ mobileBreakpoint: v ?? 768 })}
+            min={320}
+            max={1920}
+            step={1}
+            help={__(
+              'Viewports at or above this width use the desktop layout. Below this width the mobile layout (hamburger menu, stacked columns) is shown. Default is 768.',
+              'nextora'
+            )}
+          />
         </PanelBody>
 
         <PanelBody title={__('Advanced', 'nextora')} initialOpen={false}>

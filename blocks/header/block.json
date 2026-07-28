@@ -241,6 +241,10 @@
     "innerMaxWidth": {
       "type": "string",
       "default": ""
+    },
+    "mobileBreakpoint": {
+      "type": "number",
+      "default": 768
     }
   },
   "editorScript": "file:./index.js",

@@ -7,7 +7,18 @@
 import gsap from "gsap";
 import { bindHeaderFollowUsIn, clearFollowUsBindingState } from "./header-follow-us";
 
-const DESKTOP_MQ = "(min-width: 768px)";
+function getDesktopMediaQuery(): string {
+	const toggle = document.querySelector<HTMLButtonElement>("[data-nextora-nav-toggle]");
+	if (toggle?.dataset.nextoraMobileBreakpoint) {
+		const bp = parseInt(toggle.dataset.nextoraMobileBreakpoint, 10);
+		if (bp >= 320) {
+			return `(min-width: ${bp}px)`;
+		}
+	}
+	return "(min-width: 768px)";
+}
+
+const DESKTOP_MQ = getDesktopMediaQuery();
 /** Must match `--nextora-offcanvas-dur` in `resources/css/app.css` (seconds). */
 const OFFCANVAS_DUR_S = 0.4;
 /** Fallback if GSAP path fails; slightly longer than `OFFCANVAS_DUR_S` for paint/rounding. */
@@ -237,6 +248,93 @@ function cloneNavIntoMount(sourcePanel: HTMLElement, mount: HTMLElement): void {
 
 	mount.replaceChildren(...clones);
 	bindHeaderFollowUsIn(mount);
+	setupPortalMegaGuards();
+}
+
+/**
+ * Two observers prevent beplus JS from interfering with mega panels
+ * inside the portal:
+ * 1. Child-list watcher — moves panels back from body (off-canvas 768-1023px).
+ * 2. Class watcher — strips `is-open` from mega panels so the beplus
+ *    hover / focusout / closeAll handlers never find them.
+ */
+let portalMegaBodyObserver: MutationObserver | null = null;
+let portalMegaClassObserver: MutationObserver | null = null;
+
+function setupPortalMegaGuards(): void {
+	if (portalMegaBodyObserver) {
+		portalMegaBodyObserver.disconnect();
+		portalMegaBodyObserver = null;
+	}
+	if (portalMegaClassObserver) {
+		portalMegaClassObserver.disconnect();
+		portalMegaClassObserver = null;
+	}
+
+	const mount = document.querySelector<HTMLElement>(".nextora-primary-nav-portal__mount");
+	if (!mount) return;
+
+	// 1. Move panels back that beplus portaled to body (off-canvas 768-1023px).
+	portalMegaBodyObserver = new MutationObserver((mutations) => {
+		for (const m of mutations) {
+			for (const node of m.addedNodes) {
+				if (!(node instanceof HTMLElement)) continue;
+				if (!node.classList.contains("beplus-vmn-mega-panel")) continue;
+				const origParent = (node as unknown as { _snapOriginalParent?: HTMLElement })._snapOriginalParent;
+				if (!origParent) continue;
+				if (!origParent.closest(".nextora-primary-nav-portal__mount")) continue;
+				const origNext = (node as unknown as { _snapOriginalNext?: ChildNode })._snapOriginalNext;
+				if (origNext && origNext.parentElement === origParent) {
+					origParent.insertBefore(node, origNext);
+				} else {
+					origParent.appendChild(node);
+				}
+				// Clear beplus internal refs so restoreFromBody is a no-op later.
+				(node as unknown as Record<string, unknown>)._snapOriginalParent = null;
+				(node as unknown as Record<string, unknown>)._snapOriginalNext = null;
+				// Hide overlay & unlock scroll that beplus may have set.
+				const overlay = document.querySelector<HTMLElement>(".beplus-vmn-overlay");
+				if (overlay) {
+					overlay.classList.remove("is-visible");
+					overlay.setAttribute("aria-hidden", "true");
+				}
+				document.body.style.removeProperty("overflow");
+			}
+		}
+	});
+	portalMegaBodyObserver.observe(document.body, { childList: true });
+
+	// 2. Strip `is-open` from mega panels inside the portal so that
+	//    beplus `closeAll` / `closeAllExcept` / `focusout` handlers
+	//    (which key off that class) never close portal panels.
+	//    Also sync: when a mega opens, close normal submenu accordions.
+	portalMegaClassObserver = new MutationObserver((mutations) => {
+		for (const m of mutations) {
+			if (m.type !== "attributes" || m.attributeName !== "class") continue;
+			const panel = m.target as HTMLElement;
+			if (!panel.classList.contains("beplus-vmn-mega-panel")) continue;
+			if (!panel.classList.contains("is-open")) continue;
+			if (!panel.closest(".nextora-primary-nav-portal__mount")) continue;
+			panel.classList.remove("is-open");
+			// Close normal submenu accordions for sync
+			const li = panel.closest<HTMLElement>("li.has-mega-menu");
+			if (li) {
+				const parentUl = li.parentElement;
+				if (parentUl) {
+					parentUl.querySelectorAll<HTMLElement>(":scope > li.menu-item-has-children.nextora-submenu--open").forEach((sib) => {
+						sib.classList.remove("nextora-submenu--open");
+						const subToggle = sib.querySelector<HTMLButtonElement>(":scope > button.nextora-submenu-toggle");
+						if (subToggle) subToggle.setAttribute("aria-expanded", "false");
+					});
+				}
+			}
+		}
+	});
+	portalMegaClassObserver.observe(mount, {
+		attributes: true,
+		attributeFilter: ["class"],
+		subtree: true,
+	});
 }
 
 function dispatchPortalBlockReinit(): void {
@@ -592,6 +690,14 @@ function bindPortalSubmenuAccordions(): void {
 					if (oth instanceof HTMLButtonElement) {
 						oth.setAttribute("aria-expanded", "false");
 					}
+				}
+			});
+			// Also close beplus mega accordions for sync
+			parentUl.querySelectorAll(":scope > li.has-mega-menu.beplus-vmn--open").forEach((sib) => {
+				sib.classList.remove("beplus-vmn--open");
+				const megaToggle = sib.querySelector(":scope > .beplus-vmn-toggle");
+				if (megaToggle instanceof HTMLButtonElement) {
+					megaToggle.setAttribute("aria-expanded", "false");
 				}
 			});
 		}
