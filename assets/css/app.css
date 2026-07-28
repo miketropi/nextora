@@ -236,6 +236,9 @@
   .visible {
     visibility: visible;
   }
+  .visible\! {
+    visibility: visible !important;
+  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -259,6 +262,9 @@
   .static {
     position: static;
   }
+  .static\! {
+    position: static !important;
+  }
   .sticky {
     position: sticky;
   }
@@ -267,6 +273,9 @@
   }
   .start {
     inset-inline-start: var(--spacing);
+  }
+  .start\! {
+    inset-inline-start: var(--spacing) !important;
   }
   .end {
     inset-inline-end: var(--spacing);
@@ -420,6 +429,9 @@
   }
   .inline {
     display: inline;
+  }
+  .inline\! {
+    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -1210,6 +1222,9 @@
   .italic {
     font-style: italic;
   }
+  .italic\! {
+    font-style: italic !important;
+  }
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
@@ -1225,6 +1240,9 @@
   }
   .underline {
     text-decoration-line: underline;
+  }
+  .underline\! {
+    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -2316,7 +2334,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
 }
 @media (max-width: 767.98px) {
   .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel {
-    padding: 4rem 1rem 1rem;
+    padding: 4rem 1rem 0;
     background-color: var(--nextora-nav-mobile-drawer-bg);
     color: var(--nextora-nav-mobile-drawer-fg);
     border-block-start: 1px solid var(--nextora-nav-mobile-drawer-border);
