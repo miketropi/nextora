@@ -31140,7 +31140,17 @@ ${nextLine.slice(indentLevel + 2)}`;
   }
 
   // resources/ts/header-nav.ts
-  var DESKTOP_MQ = "(min-width: 768px)";
+  function getDesktopMediaQuery() {
+    const toggle = document.querySelector("[data-nextora-nav-toggle]");
+    if (toggle?.dataset.nextoraMobileBreakpoint) {
+      const bp = parseInt(toggle.dataset.nextoraMobileBreakpoint, 10);
+      if (bp >= 320) {
+        return `(min-width: ${bp}px)`;
+      }
+    }
+    return "(min-width: 768px)";
+  }
+  var DESKTOP_MQ = getDesktopMediaQuery();
   var OFFCANVAS_DUR_S = 0.4;
   var PORTAL_CLOSE_MS = Math.round(OFFCANVAS_DUR_S * 1e3) + 80;
   var FOCUS_AFTER_OPEN_MS = 80;
@@ -31321,6 +31331,73 @@ ${nextLine.slice(indentLevel + 2)}`;
     });
     mount.replaceChildren(...clones);
     bindHeaderFollowUsIn(mount);
+    setupPortalMegaGuards();
+  }
+  var portalMegaBodyObserver = null;
+  var portalMegaClassObserver = null;
+  function setupPortalMegaGuards() {
+    if (portalMegaBodyObserver) {
+      portalMegaBodyObserver.disconnect();
+      portalMegaBodyObserver = null;
+    }
+    if (portalMegaClassObserver) {
+      portalMegaClassObserver.disconnect();
+      portalMegaClassObserver = null;
+    }
+    const mount = document.querySelector(".nextora-primary-nav-portal__mount");
+    if (!mount) return;
+    portalMegaBodyObserver = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
+          if (!node.classList.contains("beplus-vmn-mega-panel")) continue;
+          const origParent = node._snapOriginalParent;
+          if (!origParent) continue;
+          if (!origParent.closest(".nextora-primary-nav-portal__mount")) continue;
+          const origNext = node._snapOriginalNext;
+          if (origNext && origNext.parentElement === origParent) {
+            origParent.insertBefore(node, origNext);
+          } else {
+            origParent.appendChild(node);
+          }
+          node._snapOriginalParent = null;
+          node._snapOriginalNext = null;
+          const overlay = document.querySelector(".beplus-vmn-overlay");
+          if (overlay) {
+            overlay.classList.remove("is-visible");
+            overlay.setAttribute("aria-hidden", "true");
+          }
+          document.body.style.removeProperty("overflow");
+        }
+      }
+    });
+    portalMegaBodyObserver.observe(document.body, { childList: true });
+    portalMegaClassObserver = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type !== "attributes" || m.attributeName !== "class") continue;
+        const panel = m.target;
+        if (!panel.classList.contains("beplus-vmn-mega-panel")) continue;
+        if (!panel.classList.contains("is-open")) continue;
+        if (!panel.closest(".nextora-primary-nav-portal__mount")) continue;
+        panel.classList.remove("is-open");
+        const li = panel.closest("li.has-mega-menu");
+        if (li) {
+          const parentUl = li.parentElement;
+          if (parentUl) {
+            parentUl.querySelectorAll(":scope > li.menu-item-has-children.nextora-submenu--open").forEach((sib) => {
+              sib.classList.remove("nextora-submenu--open");
+              const subToggle = sib.querySelector(":scope > button.nextora-submenu-toggle");
+              if (subToggle) subToggle.setAttribute("aria-expanded", "false");
+            });
+          }
+        }
+      }
+    });
+    portalMegaClassObserver.observe(mount, {
+      attributes: true,
+      attributeFilter: ["class"],
+      subtree: true
+    });
   }
   function dispatchPortalBlockReinit() {
     window.dispatchEvent(new CustomEvent("nextora-testimonials-reinit"));
@@ -31618,6 +31695,13 @@ ${nextLine.slice(indentLevel + 2)}`;
             if (oth instanceof HTMLButtonElement) {
               oth.setAttribute("aria-expanded", "false");
             }
+          }
+        });
+        parentUl.querySelectorAll(":scope > li.has-mega-menu.beplus-vmn--open").forEach((sib) => {
+          sib.classList.remove("beplus-vmn--open");
+          const megaToggle = sib.querySelector(":scope > .beplus-vmn-toggle");
+          if (megaToggle instanceof HTMLButtonElement) {
+            megaToggle.setAttribute("aria-expanded", "false");
           }
         });
       }

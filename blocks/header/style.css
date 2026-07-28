@@ -23,6 +23,12 @@
  * Link color: Core enqueues `.wp-elements-* a` — :where() avoids overriding Core when vars are unset.
  * Optional `--nextora-header-nav-*` overrides on the block wrapper (via theme hooks / filters).
  */
+.nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--nextora-header-menu-item-spacing, var(--wp--preset--spacing--20, 1.25rem));
+}
+
 .nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu > li > a {
 	font-family: inherit;
 	font-size: inherit;
@@ -195,6 +201,7 @@
 
 	.nextora-header-block--layout-logo-nav-center .nextora-header-block__logo {
 		grid-column: 1;
+		z-index: 3;
 	}
 
 	.nextora-header-block--layout-logo-nav-center .nextora-header-block__nav-source {
@@ -586,7 +593,7 @@
 	width: 100%;
 	flex-shrink: 0;
 	margin-block-start: auto;
-	padding-block: 1.2rem 0;
+	padding: 1.2rem 0;
 	padding-inline: 0;
 	border-block-start: 1px solid
 		var(--nextora-nav-mobile-drawer-border, color-mix(in srgb, currentColor 12%, transparent));
@@ -649,7 +656,7 @@
 	bottom: calc(100% + 0.5rem);
 	z-index: 31;
 	width: 100%;
-	max-width: none;
+	max-width: 450px;
 	max-height: min(32rem, calc(100dvh - 6rem));
 	margin: 0;
 	padding: 1rem;
@@ -1036,8 +1043,8 @@
 }
 
 .nextora-header-block__cart--woo .wc-block-mini-cart__icon {
-	width: 1.72rem;
-	height: 1.72rem;
+	width: 2rem;
+	height: 2rem;
 }
 
 .nextora-header-block__cart--woo .wc-block-mini-cart__badge {

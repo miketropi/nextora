@@ -77,6 +77,10 @@
       "type": "number",
       "default": 4
     },
+    "menuItemSpacing": {
+      "type": "string",
+      "default": ""
+    },
     "showFollowUs": {
       "type": "boolean",
       "default": false
@@ -237,6 +241,10 @@
     "innerMaxWidth": {
       "type": "string",
       "default": ""
+    },
+    "mobileBreakpoint": {
+      "type": "number",
+      "default": 768
     }
   },
   "editorScript": "file:./index.js",

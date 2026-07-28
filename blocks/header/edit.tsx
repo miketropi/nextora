@@ -58,6 +58,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     menuId,
     menuLocation,
     menuDepth,
+    menuItemSpacing,
     showFollowUs,
     showFollowUsMobile,
     followUsLabel,
@@ -94,6 +95,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     bottomBorderColor,
     headerLayout,
     innerMaxWidth,
+    mobileBreakpoint,
   } = attributes;
 
   const menus = useSelect(
@@ -142,6 +144,16 @@ export default function HeaderEdit({ attributes, setAttributes }) {
         typeof (c.color ?? c.value) === 'string'
     );
   }, [themeColorPaletteRaw]);
+
+  const menuItemSpacingOptions = useMemo(() => [
+    { label: __('— Theme default —', 'nextora'), value: '' },
+    { label: __('Tiny', 'nextora'), value: '10' },
+    { label: __('Small', 'nextora'), value: '20' },
+    { label: __('Medium', 'nextora'), value: '30' },
+    { label: __('Large', 'nextora'), value: '40' },
+    { label: __('X-Large', 'nextora'), value: '50' },
+    { label: __('XX-Large', 'nextora'), value: '60' },
+  ], []);
 
   const blockProps = useBlockProps({
     className: 'nextora-header-block--editor',
@@ -386,6 +398,13 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             ]}
             onChange={(v) => setAttributes({ menuLocation: v })}
             help={__('Used when no menu is chosen above.', 'nextora')}
+          />
+          <SelectControl
+            label={__('Menu item spacing', 'nextora')}
+            value={menuItemSpacing ?? ''}
+            options={menuItemSpacingOptions}
+            onChange={(v) => setAttributes({ menuItemSpacing: v ?? '' })}
+            help={__('Horizontal gap between top-level menu items. Empty uses the theme default.', 'nextora')}
           />
         </PanelBody>
 
@@ -713,6 +732,18 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               )}
             />
           )}
+          <RangeControl
+            label={__('Mobile breakpoint (px)', 'nextora')}
+            value={mobileBreakpoint}
+            onChange={(v) => setAttributes({ mobileBreakpoint: v ?? 768 })}
+            min={320}
+            max={1920}
+            step={1}
+            help={__(
+              'Viewports at or above this width use the desktop layout. Below this width the mobile layout (hamburger menu, stacked columns) is shown. Default is 768.',
+              'nextora'
+            )}
+          />
         </PanelBody>
 
         <PanelBody title={__('Advanced', 'nextora')} initialOpen={false}>
@@ -779,6 +810,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               ctaButtonIconPosition,
               ctaButtonIconSize,
               ctaButtonIconStrokeWidth,
+              menuItemSpacing,
             ].join('|')}
             block={metadata.name}
             attributes={attributes}

@@ -64,3 +64,56 @@ function nextora_addon_enqueue_admin_assets( string $hook_suffix ): void {
 }
 
 add_action( 'admin_enqueue_scripts', 'nextora_addon_enqueue_admin_assets' );
+
+/**
+ * Enqueue the Overview React app JS and CSS on the Nextora Addon > Overview admin page.
+ *
+ * @param string $hook_suffix The current admin page hook.
+ *
+ * @return void
+ */
+function nextora_addon_enqueue_overview_assets( string $hook_suffix ): void {
+	if ( 'nextora-addon_page_nextora-addon-overview' !== $hook_suffix ) {
+		return;
+	}
+
+	$js_path  = NEXTORA_DIR . '/assets/js/admin-addon-overview.js';
+	$css_path = NEXTORA_DIR . '/assets/css/admin-addon-overview.css';
+	$asset    = NEXTORA_DIR . '/assets/js/admin-addon-overview.asset.php';
+
+	$deps       = array();
+	$version    = (string) filemtime( NEXTORA_DIR . '/style.css' );
+	$asset_data = is_readable( $asset ) ? require $asset : null;
+
+	if ( is_array( $asset_data ) ) {
+		$deps    = isset( $asset_data['dependencies'] ) ? (array) $asset_data['dependencies'] : array();
+		$version = isset( $asset_data['version'] ) ? (string) $asset_data['version'] : $version;
+	}
+
+	wp_enqueue_script(
+		'nextora-admin-addon-overview',
+		NEXTORA_URI . '/assets/js/admin-addon-overview.js',
+		$deps,
+		$version,
+		true,
+	);
+
+	wp_localize_script(
+		'nextora-admin-addon-overview',
+		'nextoraAddon',
+		array(
+			'nonce' => wp_create_nonce( 'wp_rest' ),
+		),
+	);
+
+	if ( is_readable( $css_path ) ) {
+		wp_enqueue_style(
+			'nextora-admin-addon-overview-style',
+			NEXTORA_URI . '/assets/css/admin-addon-overview.css',
+			array(),
+			(string) filemtime( $css_path ),
+		);
+	}
+}
+
+add_action( 'admin_enqueue_scripts', 'nextora_addon_enqueue_overview_assets' );

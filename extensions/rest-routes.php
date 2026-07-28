@@ -73,6 +73,31 @@ function nextora_addon_rest_plugins(): void {
 }
 
 /**
+ * Register GET /nextora/v1/addon/overview.
+ *
+ * @return void
+ */
+function nextora_addon_rest_overview(): void {
+	register_rest_route(
+		'nextora/v1',
+		'/addon/overview',
+		array(
+			'methods'             => 'GET',
+			'callback'            => static function (): array {
+				return nextora_get_overview_data();
+			},
+			'permission_callback' => static function ( WP_REST_Request $request ): bool {
+				$nonce = $request->get_header( 'X-WP-Nonce' );
+				if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+					return false;
+				}
+				return current_user_can( 'manage_options' );
+			},
+		),
+	);
+}
+
+/**
  * Register GET /nextora/v1/addon/business-services.
  *
  * @return void
@@ -105,6 +130,7 @@ function nextora_addon_rest_business_services(): void {
 function nextora_addon_register_rest_routes(): void {
 	nextora_addon_rest_child_themes();
 	nextora_addon_rest_plugins();
+	nextora_addon_rest_overview();
 	nextora_addon_rest_business_services();
 }
 

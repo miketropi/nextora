@@ -1,0 +1,85 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/table-of-contents",
+  "title": "Table of Contents",
+  "category": "theme",
+  "description": "Auto-generated table of contents from post headings with scroll-spy and smooth-scroll navigation.",
+  "keywords": [
+    "table of contents",
+    "toc",
+    "headings",
+    "navigation",
+    "scroll-spy",
+    "nextora"
+  ],
+  "textdomain": "nextora",
+  "style": "file:./style.css",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    }
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": "Contents"
+    },
+    "selector": {
+      "type": "string",
+      "default": ".wp-block-post-content"
+    },
+    "showH1": {
+      "type": "boolean",
+      "default": true
+    },
+    "showH2": {
+      "type": "boolean",
+      "default": true
+    },
+    "showH3": {
+      "type": "boolean",
+      "default": true
+    },
+    "showH4": {
+      "type": "boolean",
+      "default": false
+    },
+    "showH5": {
+      "type": "boolean",
+      "default": false
+    },
+    "showH6": {
+      "type": "boolean",
+      "default": false
+    },
+    "collapsible": {
+      "type": "boolean",
+      "default": false
+    },
+    "listStyle": {
+      "type": "string",
+      "default": "ul"
+    },
+    "stickyTop": {
+      "type": "string",
+      "default": "2rem"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}
