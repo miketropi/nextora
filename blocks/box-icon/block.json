@@ -165,6 +165,8 @@
 		"highlightAccentColor2": { "type": "string", "default": "" },
 		"highlightAccentColor3": { "type": "string", "default": "" },
 		"highlightAccentColor4": { "type": "string", "default": "" },
+		"protocolTimelineColor": { "type": "string", "default": "" },
+		"showTimelineLine": { "type": "boolean", "default": true },
 		"paginationColor": { "type": "string", "default": "" },
 		"paginationActiveColor": { "type": "string", "default": "" },
 		"arrowColor": { "type": "string", "default": "" },

@@ -6,7 +6,7 @@ import {
   MediaUpload,
   MediaUploadCheck,
   URLInput,
-  __experimentalSpacingSizesControl as SpacingSizesControl,
+	__experimentalSpacingSizesControl as SpacingSizesControl,
   __experimentalBorderRadiusControl as BorderRadiusControl,
 } from '@wordpress/block-editor';
 import { useMemo, useState, useEffect } from '@wordpress/element';
