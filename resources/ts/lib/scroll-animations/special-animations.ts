@@ -315,6 +315,90 @@ function initTextCharScrubReveal(
 	markInitialized(el);
 }
 
+/** `animation-scroll-reveal` — scrubbed container rotation + word opacity + optional blur. */
+function initScrollReveal(
+	el: HTMLElement,
+	markInitialized: MarkInitialized,
+): void {
+	const enableBlur = el.getAttribute("data-enable-blur") !== "false";
+	const baseOpacity = parseFloat(el.getAttribute("data-base-opacity") ?? "0.1");
+	const baseRotation = parseFloat(el.getAttribute("data-base-rotation") ?? "3");
+	const blurStrength = parseFloat(el.getAttribute("data-blur-strength") ?? "4");
+	const rotationEnd = el.getAttribute("data-rotation-end") ?? "bottom bottom";
+	const wordAnimationEnd = el.getAttribute("data-word-animation-end") ?? "bottom 65%";
+
+	revertElementTextSplit(el);
+	const split = splitElementText(el, "words");
+	if (!split.words.length) {
+		markInitialized(el);
+		return;
+	}
+
+	el.classList.remove("nextora-scroll-animation--pending");
+
+	gsap.fromTo(el,
+		{ transformOrigin: "0% 50%", rotate: baseRotation },
+		{
+			ease: "none",
+			rotate: 0,
+			scrollTrigger: {
+				trigger: el,
+				start: "top bottom",
+				end: rotationEnd,
+				scrub: true,
+			},
+			onComplete: () => {
+				gsap.set(el, { clearProps: "transformOrigin,rotate" });
+			},
+		},
+	);
+
+	gsap.fromTo(split.words,
+		{ opacity: baseOpacity, willChange: "opacity" },
+		{
+			ease: "none",
+			opacity: 1,
+			stagger: 0.2,
+			scrollTrigger: {
+				trigger: el,
+				start: "top bottom-=30%",
+				end: wordAnimationEnd,
+				scrub: true,
+			},
+			onComplete: () => {
+				el.classList.add("nextora-scroll-animation--ready");
+				split.words.forEach((word) => {
+					gsap.set(word, { clearProps: "opacity,willChange" });
+				});
+			},
+		},
+	);
+
+	if (enableBlur) {
+		gsap.fromTo(split.words,
+			{ filter: `blur(${blurStrength}px)` },
+			{
+				ease: "none",
+				filter: "blur(0px)",
+				stagger: 0.2,
+				scrollTrigger: {
+					trigger: el,
+					start: "top bottom-=30%",
+					end: wordAnimationEnd,
+					scrub: true,
+				},
+				onComplete: () => {
+					split.words.forEach((word) => {
+						gsap.set(word, { clearProps: "filter" });
+					});
+				},
+			},
+		);
+	}
+
+	markInitialized(el);
+}
+
 /** Route text/image special presets by utility class name. */
 export function initSpecialScrollAnimation(
 	el: HTMLElement,
@@ -345,6 +429,9 @@ export function initSpecialScrollAnimation(
 		case "animation-text-typewriter":
 			initTextTypewriter(el, markInitialized);
 			return true;
+		case "animation-scroll-reveal":
+			initScrollReveal(el, markInitialized);
+			return true;
 		default:
 			return false;
 	}
@@ -352,7 +439,7 @@ export function initSpecialScrollAnimation(
 
 /** Clear split markup and inline styles when reduced motion is enabled. */
 export function skipSpecialScrollAnimation(el: HTMLElement, animationClass: string): void {
-	if (animationClass.startsWith("animation-text-reveal-")) {
+	if (animationClass.startsWith("animation-text-reveal-") || animationClass === "animation-scroll-reveal") {
 		revertElementTextSplit(el);
 	}
 

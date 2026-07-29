@@ -181,7 +181,10 @@
 			)
 		);
 	color: var(--nextora-event-register-text-color, var(--wp--preset--color--contrast, #2e1a47));
-	background: transparent;
+	background: var(
+		--nextora-event-register-bg,
+		transparent
+	);
 	transition:
 		border-color 0.2s ease,
 		color 0.2s ease,
@@ -200,8 +203,11 @@
 		var(--wp--preset--color--contrast, #2e1a47)
 	);
 	border-color: var(
-		--nextora-event-register-hover-bg,
-		var(--wp--preset--color--contrast, #2e1a47)
+		--nextora-event-register-hover-border-color,
+		var(
+			--nextora-event-register-hover-bg,
+			var(--wp--preset--color--contrast, #2e1a47)
+		)
 	);
 	text-decoration: none;
 }
@@ -455,7 +461,10 @@
 			var(--wp--preset--color--primary, #7C4DEF)
 		);
 	color: var(--nextora-event-register-text-color, var(--wp--preset--color--primary, #7C4DEF));
-	background: transparent;
+	background: var(
+		--nextora-event-register-bg,
+		transparent
+	);
 	transition:
 		border-color 0.2s ease,
 		color 0.2s ease,
@@ -475,8 +484,11 @@
 		var(--wp--preset--color--primary, #7C4DEF)
 	);
 	border-color: var(
-		--nextora-event-register-hover-bg,
-		var(--wp--preset--color--primary, #7C4DEF)
+		--nextora-event-register-hover-border-color,
+		var(
+			--nextora-event-register-hover-bg,
+			var(--wp--preset--color--primary, #7C4DEF)
+		)
 	);
 	text-decoration: none;
 }
