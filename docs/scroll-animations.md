@@ -25,6 +25,7 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-text-reveal-chars-rise` | Characters rise in with perspective + `back.out` easing |
 | `animation-text-reveal-chars-scrub` | Characters brighten and slide in while scrolling (scrubbed) |
 | `animation-text-typewriter` | Character-by-character typewriter with blinking caret on scroll (inspired by [MiMo Code] hero subtitle) |
+| `animation-scroll-reveal` | Scrubbed container rotation + word opacity + optional blur — container tilts from a start angle to straight as you scroll, words fade/blur in (inspired by React Bits `ScrollReveal`) |
 | `animation-video-button-ripple` | Expanding concentric ripple for video play buttons (CSS-only, no scroll trigger) |
 
 ## Image & text reveal presets
@@ -40,6 +41,7 @@ These map from legacy Elementor utility classes (`at-animation-*`) to theme-nati
 | `animation-text-reveal-chars-rise` | 3D-style character rise | `duration: 1`, `stagger: 0.02`, `distance: 50`, `ease: back.out(1.7)` |
 | `animation-text-reveal-chars-scrub` | Scroll-scrubbed character reveal | `duration: 0.7`, `stagger: 0.2`, scrub between `top 92%` → `top 60%` |
 | `animation-text-typewriter` | Typewriter print + caret | `delay: 0.35`, `stagger: 0.055` (seconds per character), trigger `top 85%` |
+| `animation-scroll-reveal` | Scrubbed rotation + word opacity + blur | Scrubbed, `start: "top bottom"` (rotation) / `"top bottom-=30%"` (words), `rotationEnd: "bottom bottom"`, `wordAnimationEnd: "bottom 65%"` |
 
 All presets honor `data-delay`, `data-duration`, `data-ease`, `data-stagger`, and `data-distance` when set on the same element.
 
@@ -94,6 +96,39 @@ Put the class on a **Paragraph** or **Heading** block. Text prints left-to-right
 </p>
 <!-- /wp:paragraph -->
 ```
+
+### Scroll reveal (headings)
+
+Put the class on a **Heading** block. The container rotates from a starting angle to 0deg as you scroll; words fade in from low opacity and optionally un-blur — all scrubbed to scroll position.
+
+```html
+<!-- wp:heading {"className":"animation-scroll-reveal"} -->
+<h2 class="wp-block-heading animation-scroll-reveal">When does a man die? When he is hit by a bullet? No!</h2>
+<!-- /wp:heading -->
+```
+
+**Data attributes** (all optional, add on the same Heading block):
+
+| Attribute | Default | Description |
+|-----------|---------|-------------|
+| `data-enable-blur` | `"true"` | Set to `"false"` to disable the blur effect |
+| `data-base-opacity` | `0.1` | Initial opacity of words before reveal |
+| `data-base-rotation` | `3` | Starting container rotation in degrees |
+| `data-blur-strength` | `4` | Blur strength in pixels at animation start |
+| `data-rotation-end` | `"bottom bottom"` | ScrollTrigger end point for container rotation |
+| `data-word-animation-end` | `"bottom 65%"` | ScrollTrigger end point for word opacity and blur |
+
+Example with custom values:
+
+```html
+<!-- wp:heading {"className":"animation-scroll-reveal"} -->
+<h2 class="wp-block-heading animation-scroll-reveal" data-base-opacity="0" data-base-rotation="5" data-blur-strength="10">
+  A man dies when he is forgotten!
+</h2>
+<!-- /wp:heading -->
+```
+
+Text is split into words at runtime (no GSAP SplitText plugin required). The animation honours `prefers-reduced-motion: reduce`.
 
 **Legacy class mapping**
 

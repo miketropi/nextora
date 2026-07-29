@@ -170,7 +170,9 @@ function initScrollReveal(section: HTMLElement): void {
 	}
 
 	const header = section.querySelector<HTMLElement>('.nextora-box-icon__header');
-	const carousel = section.querySelector<HTMLElement>('.nextora-box-icon__carousel-root');
+	const carousel =
+		section.querySelector<HTMLElement>('.nextora-box-icon__carousel-root') ||
+		section.querySelector<HTMLElement>('.nextora-box-icon__timeline-grid');
 	const style = section.getAttribute('data-nextora-scroll-reveal-style') || 'default';
 
 	if (style === 'sequential') {
@@ -222,7 +224,11 @@ function initSequentialReveal(
 		played = true;
 
 		const cards = carousel
-			? Array.from(carousel.querySelectorAll<HTMLElement>('.swiper-slide'))
+			? Array.from(
+					carousel.querySelectorAll<HTMLElement>(
+						'.swiper-slide, .nextora-box-icon__card',
+					),
+				)
 			: [];
 
 		const targets = [header, ...cards].filter((el): el is HTMLElement => el !== null);

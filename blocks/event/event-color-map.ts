@@ -10,10 +10,12 @@ export const EVENT_COLOR_ATTR_TO_VAR: Record<EventColorAttribute, string> = {
 	titleColor: '--nextora-event-title-color',
 	metaColor: '--nextora-event-meta-color',
 	metaIconColor: '--nextora-event-meta-icon-color',
+	registerBackgroundColor: '--nextora-event-register-bg',
 	registerTextColor: '--nextora-event-register-text-color',
 	registerBorderColor: '--nextora-event-register-border-color',
 	registerHoverTextColor: '--nextora-event-register-hover-text-color',
 	registerHoverBackgroundColor: '--nextora-event-register-hover-bg',
+	registerHoverBorderColor: '--nextora-event-register-hover-border-color',
 };
 
 /**

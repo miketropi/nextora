@@ -27,10 +27,12 @@ export interface EventAttributes {
 	titleColor: string;
 	metaColor: string;
 	metaIconColor: string;
+	registerBackgroundColor: string;
 	registerTextColor: string;
 	registerBorderColor: string;
 	registerHoverTextColor: string;
 	registerHoverBackgroundColor: string;
+	registerHoverBorderColor: string;
 	enableScrollAnimation: boolean;
 	autoplay: boolean;
 	autoplayDelay: number;
@@ -54,8 +56,10 @@ export type EventColorAttribute = keyof Pick<
 	| 'titleColor'
 	| 'metaColor'
 	| 'metaIconColor'
+	| 'registerBackgroundColor'
 	| 'registerTextColor'
 	| 'registerBorderColor'
 	| 'registerHoverTextColor'
 	| 'registerHoverBackgroundColor'
+	| 'registerHoverBorderColor'
 >;

@@ -382,6 +382,20 @@ if ( ! function_exists( 'nextora_box_icon_render_card' ) ) {
 		return $out;
 	}
 
+	if ( 'timeline' === $card_template ) {
+		if ( '' !== $icon_html ) {
+			$out .= $icon_html;
+		}
+		$out .= '<time class="nextora-box-icon__timeline-time">' . esc_html( $number ) . '</time>';
+		$out .= '<h3 class="nextora-box-icon__title">' . esc_html( $title ) . '</h3>';
+		if ( '' !== trim( wp_strip_all_tags( $description ) ) ) {
+			$out .= '<p class="nextora-box-icon__description">' . esc_html( $description ) . '</p>';
+		}
+		$out .= '</article>';
+		$out .= $as_slide ? '</div>' : '';
+		return $out;
+	}
+
 	if ( 'ways' === $card_template ) {
 			$ghost = str_pad( (string) ( $card_index + 1 ), 2, '0', STR_PAD_LEFT );
 			$out  .= sprintf(
@@ -445,7 +459,7 @@ if ( ! in_array( $layout_mode, array( 'slider', 'grid' ), true ) ) {
 }
 
 $card_template = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-$allowed_card_templates = array( 'default', 'ways', 'minimal', 'highlights' );
+$allowed_card_templates = array( 'default', 'ways', 'minimal', 'highlights', 'timeline' );
 if ( ! in_array( $card_template, $allowed_card_templates, true ) ) {
 	$card_template = 'default';
 }
@@ -497,6 +511,7 @@ $scroll_style  = isset( $attributes['scrollAnimationStyle'] ) ? (string) $attrib
 if ( ! in_array( $scroll_style, array( 'default', 'sequential' ), true ) ) {
 	$scroll_style = 'default';
 }
+$show_timeline_line = ! isset( $attributes['showTimelineLine'] ) || (bool) $attributes['showTimelineLine'];
 $enable_hover  = ! isset( $attributes['enableCardHover'] ) || (bool) $attributes['enableCardHover'];
 
 $slide_count = count( $items );
@@ -523,34 +538,35 @@ $swiper_opts = (array) apply_filters( 'nextora_box_icon_swiper_options', $swiper
 $opts_json   = wp_json_encode( $swiper_opts );
 $opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 
-$color_keys = array(
-	'eyebrowColor'                 => '--nextora-box-icon-eyebrow-color',
-	'headingColor'                 => '--nextora-box-icon-heading-color',
-	'descriptionColor'             => '--nextora-box-icon-description-color',
-	'cardBorderColor'              => '--nextora-box-icon-card-border-color',
-	'cardBackgroundColor'          => '--nextora-box-icon-card-bg',
-	'cardHoverBackgroundColor'     => '--nextora-box-icon-card-hover-bg',
-	'cardTitleColor'               => '--nextora-box-icon-card-title-color',
-	'cardDescriptionColor'         => '--nextora-box-icon-card-desc-color',
-	'descriptionHoverColor'        => '--nextora-box-icon-card-desc-hover-color',
-	'linkColor'                    => '--nextora-box-icon-link-color',
-	'linkHoverColor'               => '--nextora-box-icon-link-hover-color',
-	'waysAccentColor1'             => '--nextora-box-icon-ways-accent-1',
-	'waysAccentColor2'             => '--nextora-box-icon-ways-accent-2',
-	'waysAccentColor3'             => '--nextora-box-icon-ways-accent-3',
-	'highlightAccentColor1'        => '--nextora-box-icon-highlight-accent-1',
-	'highlightAccentColor2'        => '--nextora-box-icon-highlight-accent-2',
-	'highlightAccentColor3'        => '--nextora-box-icon-highlight-accent-3',
-	'highlightAccentColor4'        => '--nextora-box-icon-highlight-accent-4',
-	'paginationColor'              => '--nextora-box-icon-dot-color',
-	'paginationActiveColor'        => '--nextora-box-icon-dot-active',
-	'arrowColor'                   => '--nextora-box-icon-arrow-color',
-	'iconColor'                    => '--nextora-box-icon-icon-color',
-	'iconSurfaceBackgroundColor'   => '--nextora-box-icon-icon-surface-bg',
-	'iconSurfaceBorderColor'       => '--nextora-box-icon-icon-surface-border',
-	'iconHoverColor'               => '--nextora-box-icon-icon-hover-color',
-	'iconHoverSurfaceBackgroundColor' => '--nextora-box-icon-icon-hover-surface-bg',
-);
+	$color_keys = array(
+		'eyebrowColor'                 => '--nextora-box-icon-eyebrow-color',
+		'headingColor'                 => '--nextora-box-icon-heading-color',
+		'descriptionColor'             => '--nextora-box-icon-description-color',
+		'cardBorderColor'              => '--nextora-box-icon-card-border-color',
+		'cardBackgroundColor'          => '--nextora-box-icon-card-bg',
+		'cardHoverBackgroundColor'     => '--nextora-box-icon-card-hover-bg',
+		'cardTitleColor'               => '--nextora-box-icon-card-title-color',
+		'cardDescriptionColor'         => '--nextora-box-icon-card-desc-color',
+		'descriptionHoverColor'        => '--nextora-box-icon-card-desc-hover-color',
+		'linkColor'                    => '--nextora-box-icon-link-color',
+		'linkHoverColor'               => '--nextora-box-icon-link-hover-color',
+		'waysAccentColor1'             => '--nextora-box-icon-ways-accent-1',
+		'waysAccentColor2'             => '--nextora-box-icon-ways-accent-2',
+		'waysAccentColor3'             => '--nextora-box-icon-ways-accent-3',
+		'highlightAccentColor1'        => '--nextora-box-icon-highlight-accent-1',
+		'highlightAccentColor2'        => '--nextora-box-icon-highlight-accent-2',
+		'highlightAccentColor3'        => '--nextora-box-icon-highlight-accent-3',
+		'highlightAccentColor4'        => '--nextora-box-icon-highlight-accent-4',
+		'protocolTimelineColor'        => '--nextora-box-icon-timeline-line-color',
+		'paginationColor'              => '--nextora-box-icon-dot-color',
+		'paginationActiveColor'        => '--nextora-box-icon-dot-active',
+		'arrowColor'                   => '--nextora-box-icon-arrow-color',
+		'iconColor'                    => '--nextora-box-icon-icon-color',
+		'iconSurfaceBackgroundColor'   => '--nextora-box-icon-icon-surface-bg',
+		'iconSurfaceBorderColor'       => '--nextora-box-icon-icon-surface-border',
+		'iconHoverColor'               => '--nextora-box-icon-icon-hover-color',
+		'iconHoverSurfaceBackgroundColor' => '--nextora-box-icon-icon-hover-surface-bg',
+	);
 
 $css_vars = array(
 	'--nextora-box-icon-cols'              => (string) $grid_cols,
@@ -637,6 +653,22 @@ nextora_box_icon_enqueue_view_script();
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<div class="nextora-box-icon__inner">
+		<?php if ( 'timeline' === $card_template ) : ?>
+			<div class="nextora-box-icon__timeline-grid<?php echo ! $show_timeline_line ? ' nextora-box-icon__timeline-grid--no-line' : ''; ?>">
+				<?php
+				foreach ( $items as $index => $item ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+					echo nextora_box_icon_render_card(
+						$item,
+						$icon_defaults,
+						false,
+						(int) $index,
+						$card_template,
+					);
+				}
+				?>
+			</div>
+		<?php else : ?>
 		<div
 			class="nextora-box-icon__carousel-root"
 			data-layout-mode="<?php echo esc_attr( $layout_mode ); ?>"
@@ -677,5 +709,6 @@ nextora_box_icon_enqueue_view_script();
 				<div class="swiper-pagination nextora-box-icon__pagination"></div>
 			<?php endif; ?>
 		</div>
+		<?php endif; ?>
 	</div>
 </div>

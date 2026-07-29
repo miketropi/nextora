@@ -146,10 +146,12 @@ export function buildSectionStyleVars(attrs: {
 	titleColor?: string;
 	metaColor?: string;
 	metaIconColor?: string;
+	registerBackgroundColor?: string;
 	registerTextColor?: string;
 	registerBorderColor?: string;
 	registerHoverTextColor?: string;
 	registerHoverBackgroundColor?: string;
+	registerHoverBorderColor?: string;
 }): Record<string, string> {
 	return buildEventColorStyleVars(attrs);
 }

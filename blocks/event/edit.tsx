@@ -147,10 +147,12 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		titleColor = '',
 		metaColor = '',
 		metaIconColor = '',
+		registerBackgroundColor = '',
 		registerTextColor = '',
 		registerBorderColor = '',
 		registerHoverTextColor = '',
 		registerHoverBackgroundColor = '',
+		registerHoverBorderColor = '',
 		enableScrollAnimation = true,
 		autoplay = true,
 		autoplayDelay = 5000,
@@ -181,10 +183,12 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			titleColor,
 			metaColor,
 			metaIconColor,
+			registerBackgroundColor,
 			registerTextColor,
 			registerBorderColor,
 			registerHoverTextColor,
 			registerHoverBackgroundColor,
+			registerHoverBorderColor,
 		}) as CSSProperties,
 			...(isTemplate1 ? { '--nextora-event-editor-slides': String(slidesPerView), '--nextora-event-editor-gap': `${spaceBetween}px` } as CSSProperties : {}),
 		},
@@ -239,6 +243,11 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				label: __('Details icons', 'nextora'),
 			},
 			{
+				value: colorValueForPicker(registerBackgroundColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('registerBackgroundColor', v),
+				label: __('Register background', 'nextora'),
+			},
+			{
 				value: colorValueForPicker(registerTextColor, colorPalette, lookupPalette),
 				onChange: (v: string | undefined) => setThemeColor('registerTextColor', v),
 				label: __('Register text', 'nextora'),
@@ -259,6 +268,12 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					setThemeColor('registerHoverBackgroundColor', v),
 				label: __('Register hover background', 'nextora'),
 			},
+			{
+				value: colorValueForPicker(registerHoverBorderColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) =>
+					setThemeColor('registerHoverBorderColor', v),
+				label: __('Register hover border', 'nextora'),
+			},
 		],
 		[
 			colorPalette,
@@ -271,10 +286,12 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			titleColor,
 			metaColor,
 			metaIconColor,
+			registerBackgroundColor,
 			registerTextColor,
 			registerBorderColor,
 			registerHoverTextColor,
 			registerHoverBackgroundColor,
+			registerHoverBorderColor,
 		],
 	);
 

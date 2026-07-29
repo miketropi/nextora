@@ -1,7 +1,7 @@
 export type BoxIconLayoutMode = 'slider' | 'grid';
 export type BoxIconIconSource = 'theme' | 'upload';
 export type BoxIconIconStyle = 'default' | 'stacked' | 'framed';
-export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline';
 export type BoxIconScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxIconItem {
@@ -82,4 +82,6 @@ export interface BoxIconAttributes {
 	highlightAccentColor2: string;
 	highlightAccentColor3: string;
 	highlightAccentColor4: string;
+	protocolTimelineColor: string;
+	showTimelineLine: boolean;
 }

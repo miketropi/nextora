@@ -64,6 +64,7 @@
 .nextora-blog-list-carousel {
 	background-color: var(--nextora-blc-bg);
 	box-sizing: border-box;
+	border:none;
 }
 
 .nextora-blc__inner {
@@ -480,7 +481,6 @@ a.nextora-blc__card-cat:focus-visible {
 .nextora-blog-list-carousel--template-template-1 .nextora-blc__card--template-1:hover,
 .nextora-blog-list-carousel--template-template-1 .nextora-blc__card--template-1:focus-within {
 	transform: translateY(-6px);
-	border-color: transparent;
     box-shadow: 0 10px 24px -12px rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.25);
 }
 

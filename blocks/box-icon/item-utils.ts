@@ -131,6 +131,7 @@ export function buildStyleVars(attrs: {
 	highlightAccentColor2?: string;
 	highlightAccentColor3?: string;
 	highlightAccentColor4?: string;
+	protocolTimelineColor?: string;
 	paginationColor?: string;
 	paginationActiveColor?: string;
 	arrowColor?: string;
@@ -193,6 +194,7 @@ export function buildStyleVars(attrs: {
 	setColor('--nextora-box-icon-highlight-accent-2', attrs.highlightAccentColor2);
 	setColor('--nextora-box-icon-highlight-accent-3', attrs.highlightAccentColor3);
 	setColor('--nextora-box-icon-highlight-accent-4', attrs.highlightAccentColor4);
+	setColor('--nextora-box-icon-timeline-line-color', attrs.protocolTimelineColor);
 	setColor('--nextora-box-icon-dot-color', attrs.paginationColor);
 	setColor('--nextora-box-icon-dot-active', attrs.paginationActiveColor);
 	setColor('--nextora-box-icon-arrow-color', attrs.arrowColor);

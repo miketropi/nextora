@@ -1,6 +1,6 @@
 import type { BoxIconAttributes } from './types';
 
-export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline';
 
 export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	value: BoxIconCardTemplate;
@@ -10,6 +10,7 @@ export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	{ value: 'ways', labelKey: 'Ways' },
 	{ value: 'minimal', labelKey: 'Minimal' },
 	{ value: 'highlights', labelKey: 'Highlights Stats' },
+	{ value: 'timeline', labelKey: 'Timeline' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BoxIconCardTemplate {
@@ -21,6 +22,9 @@ export function normalizeCardTemplate(value: string | undefined): BoxIconCardTem
 	}
 	if (value === 'highlights') {
 		return 'highlights';
+	}
+	if (value === 'timeline') {
+		return 'timeline';
 	}
 	return 'default';
 }
@@ -101,6 +105,33 @@ export function getTemplateDefaultAttributes(
 				right: '24px',
 				bottom: '30px',
 				left: '24px',
+			},
+		};
+	}
+
+	if (template === 'timeline') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 4,
+			gridMinWidth: 761,
+			spaceBetween: 0,
+			slidesPerView: 4,
+			slidesPerViewTablet: 2,
+			slidesPerViewMobile: 1.15,
+			cardBorderWidth: 0,
+			cardBorderRadius: 0,
+			cardMinHeight: 0,
+			iconCircleSize: 44,
+			iconSize: 20,
+			iconCircleRadius: 50,
+			iconStyle: 'framed',
+			showPagination: false,
+			showArrows: false,
+			cardPadding: {
+				top: '0px',
+				right: '28px',
+				bottom: '0px',
+				left: '0px',
 			},
 		};
 	}
