@@ -953,6 +953,24 @@
 	transition: none;
 }
 
+.nextora-box-icon--timeline-align-center .nextora-box-icon__card {
+	align-items: center;
+	text-align: center;
+}
+
+.nextora-box-icon--timeline-align-center .nextora-box-icon__icon {
+	align-self: center;
+}
+
+.nextora-box-icon--timeline-align-right .nextora-box-icon__card {
+	align-items: flex-end;
+	text-align: right;
+}
+
+.nextora-box-icon--timeline-align-right .nextora-box-icon__icon {
+	align-self: flex-end;
+}
+
 .nextora-box-icon--template-timeline .nextora-box-icon__icon {
 	position: relative;
 	z-index: 2;
@@ -961,7 +979,7 @@
 
 .nextora-box-icon--template-timeline .nextora-box-icon__icon--style-framed {
 	border-width: 2px;
-	border-color: var(--nextora-box-icon-icon-color, #FF7A00);
+	border-color: var(--nextora-box-icon-icon-surface-border, var(--nextora-box-icon-icon-color, #FF7A00));
 	border-style: solid;
 	background: var(--nextora-box-icon-icon-surface-bg, #fff);
 	color: var(--nextora-box-icon-icon-color, #FF7A00);
@@ -978,17 +996,16 @@
 }
 
 .nextora-box-icon--template-timeline .nextora-box-icon__title {
-	margin: 6px 0 8px;
-	font-size: 21px;
+	margin: 6px 0 12px;
+	font-size: var(--wp--preset--font-size--medium);
 	font-weight: 800;
 	line-height: 1;
-	text-transform: uppercase;
 }
 
 .nextora-box-icon--template-timeline .nextora-box-icon__description {
 	margin: 0;
 	flex: unset;
-	font-size: 14px;
+	font-size: var(--wp--preset--font-size--small);
 	line-height: 1.6;
 	color: var(--nextora-box-icon-card-desc-color, color-mix(in srgb, currentColor 70%, transparent));
 }

@@ -322,6 +322,7 @@ if ( ! function_exists( 'nextora_box_icon_render_card' ) ) {
 		bool $as_slide = true,
 		int $card_index = 0,
 		string $card_template = 'default',
+		bool $show_timeline_time = true,
 	): string {
 	$title = (string) $item['title'];
 	$number = isset( $item['number'] ) ? (string) $item['number'] : '';
@@ -386,7 +387,9 @@ if ( ! function_exists( 'nextora_box_icon_render_card' ) ) {
 		if ( '' !== $icon_html ) {
 			$out .= $icon_html;
 		}
-		$out .= '<time class="nextora-box-icon__timeline-time">' . esc_html( $number ) . '</time>';
+		if ( $show_timeline_time ) {
+			$out .= '<time class="nextora-box-icon__timeline-time">' . esc_html( $number ) . '</time>';
+		}
 		$out .= '<h3 class="nextora-box-icon__title">' . esc_html( $title ) . '</h3>';
 		if ( '' !== trim( wp_strip_all_tags( $description ) ) ) {
 			$out .= '<p class="nextora-box-icon__description">' . esc_html( $description ) . '</p>';
@@ -512,6 +515,8 @@ if ( ! in_array( $scroll_style, array( 'default', 'sequential' ), true ) ) {
 	$scroll_style = 'default';
 }
 $show_timeline_line = ! isset( $attributes['showTimelineLine'] ) || (bool) $attributes['showTimelineLine'];
+$show_timeline_time = ! isset( $attributes['showTimelineTime'] ) || (bool) $attributes['showTimelineTime'];
+$timeline_align     = isset( $attributes['timelineAlign'] ) && in_array( (string) $attributes['timelineAlign'], array( 'left', 'center', 'right' ), true ) ? (string) $attributes['timelineAlign'] : 'left';
 $enable_hover  = ! isset( $attributes['enableCardHover'] ) || (bool) $attributes['enableCardHover'];
 
 $slide_count = count( $items );
@@ -654,7 +659,7 @@ nextora_box_icon_enqueue_view_script();
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<div class="nextora-box-icon__inner">
 		<?php if ( 'timeline' === $card_template ) : ?>
-			<div class="nextora-box-icon__timeline-grid<?php echo ! $show_timeline_line ? ' nextora-box-icon__timeline-grid--no-line' : ''; ?>">
+			<div class="nextora-box-icon__timeline-grid<?php echo ! $show_timeline_line ? ' nextora-box-icon__timeline-grid--no-line' : ''; ?><?php echo 'left' !== $timeline_align ? ' nextora-box-icon--timeline-align-' . esc_attr( $timeline_align ) : ''; ?>">
 				<?php
 				foreach ( $items as $index => $item ) {
 					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
@@ -664,6 +669,7 @@ nextora_box_icon_enqueue_view_script();
 						false,
 						(int) $index,
 						$card_template,
+						$show_timeline_time,
 					);
 				}
 				?>
