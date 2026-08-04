@@ -411,6 +411,7 @@ export default function ScrollingPromotionEdit({
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
@@ -486,6 +487,7 @@ export default function ScrollingPromotionEdit({
 
 				{attributes.showBorders && (
 					<PanelColorSettings
+						enableAlpha
 						title={__('Border', 'nextora')}
 						colorSettings={[
 							{

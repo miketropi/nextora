@@ -48,6 +48,29 @@ const paginationTypeOptions = [
 	{ label: __('Progress bar', 'nextora'), value: 'progressbar' },
 ];
 
+const ICONS = {
+	pencil:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>',
+	chevronUp:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>',
+	chevronDown:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+	trash:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
+	plus:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+};
+
+function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: string }): JSX.Element {
+	return (
+		<span
+			className={className}
+			dangerouslySetInnerHTML={{ __html: ICONS[name] }}
+			style={{ display: 'inline-flex', alignItems: 'center' }}
+		/>
+	);
+}
+
 export default function TeamSectionEdit({ attributes, setAttributes }: EditProps) {
 	const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
 
@@ -190,54 +213,100 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		<>
 			<InspectorControls>
 				<PanelBody title={__('Members', 'nextora')} initialOpen>
-					<p className="nextora-team-section__inspector-members-help">
-						{__(
-							'Use Edit to open the member form in a larger dialog with photo, bio, tags, and social links.',
-							'nextora',
-						)}
-					</p>
-					{members.map((member, index) => (
-						<div key={member.id} className="nextora-team-section__inspector-member">
-							<div className="nextora-team-section__inspector-member-summary">
-								<p className="nextora-team-section__inspector-member-name">
-									{member.name || sprintf(__('Member %d', 'nextora'), index + 1)}
-								</p>
-								{member.role ? (
-									<p className="nextora-team-section__inspector-member-role">{member.role}</p>
-								) : null}
-							</div>
-							<div className="nextora-team-section__inspector-member-actions">
-								<Button variant="primary" onClick={() => openMemberEditor(member.id)}>
-									{__('Edit', 'nextora')}
-								</Button>
+					{members.length === 0 && (
+						<p className="components-base-control__help" style={{ marginBottom: '8px' }}>
+							{__('No members yet. Click "Add member" to create one.', 'nextora')}
+						</p>
+					)}
+					{members.map((member, index) => {
+						const photoUrl = resolvePhotoUrl(member, mediaUrlById);
+						return (
+							<div
+								key={member.id}
+								style={{
+									display: 'flex',
+									alignItems: 'center',
+									gap: '6px',
+									marginBottom: '6px',
+									padding: '6px 8px',
+									background: '#f9f9f9',
+									border: '1px solid #ddd',
+									borderRadius: '4px',
+								}}
+							>
+								<div
+									style={{
+										flex: 1,
+										display: 'flex',
+										alignItems: 'center',
+										gap: '8px',
+										overflow: 'hidden',
+										minWidth: 0,
+									}}
+								>
+									{photoUrl ? (
+										<img
+											src={photoUrl}
+											alt=""
+											style={{
+												width: '32px',
+												height: '24px',
+												objectFit: 'cover',
+												borderRadius: '2px',
+												flexShrink: 0,
+											}}
+										/>
+									) : null}
+									<span
+										style={{
+											overflow: 'hidden',
+											textOverflow: 'ellipsis',
+											whiteSpace: 'nowrap',
+											fontSize: '12px',
+											lineHeight: '1.4',
+											fontWeight: 500,
+										}}
+									>
+										{member.name || sprintf(__('Member %d', 'nextora'), index + 1)}
+									</span>
+								</div>
 								<Button
-									variant="secondary"
-									disabled={index === 0}
-									onClick={() => moveMember(member.id, -1)}
+									icon={<InlineSvg name="pencil" />}
+									label={__('Edit', 'nextora')}
+									onClick={() => openMemberEditor(member.id)}
+									isSmall
+								/>
+								<Button
+									icon={<InlineSvg name="chevronUp" />}
 									label={__('Move up', 'nextora')}
-								>
-									{__('Up', 'nextora')}
-								</Button>
+									onClick={() => moveMember(member.id, -1)}
+									disabled={index === 0}
+									isSmall
+								/>
 								<Button
-									variant="secondary"
-									disabled={index >= members.length - 1}
-									onClick={() => moveMember(member.id, 1)}
+									icon={<InlineSvg name="chevronDown" />}
 									label={__('Move down', 'nextora')}
-								>
-									{__('Down', 'nextora')}
-								</Button>
+									onClick={() => moveMember(member.id, 1)}
+									disabled={index >= members.length - 1}
+									isSmall
+								/>
 								<Button
-									variant="secondary"
-									isDestructive
-									disabled={members.length <= 1}
+									icon={<InlineSvg name="trash" />}
+									label={__('Remove', 'nextora')}
 									onClick={() => removeMember(member.id)}
-								>
-									{__('Remove', 'nextora')}
-								</Button>
+									disabled={members.length <= 1}
+									isSmall
+									isDestructive
+								/>
 							</div>
-						</div>
-					))}
-					<Button variant="primary" onClick={addMember}>
+						);
+					})}
+					<Button
+						variant="secondary"
+						onClick={addMember}
+						icon={<InlineSvg name="plus" />}
+						style={{ width: '100%', justifyContent: 'center', marginTop: members.length > 0 ? '4px' : '0' }}
+					>
 						{__('Add member', 'nextora')}
 					</Button>
 				</PanelBody>
@@ -436,6 +505,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{

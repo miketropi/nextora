@@ -12,6 +12,7 @@ export interface CountersAttributes {
 	columnsTablet: number;
 	columnsMobile: number;
 	columnGap: string;
+	numberLabelGap: string;
 	divider: boolean;
 	dividerColor: string;
 	textAlign: string;

@@ -36,46 +36,6 @@
 	min-height: 0;
 }
 
-.nextora-team-section__inspector-member {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	padding-bottom: 12px;
-	margin-bottom: 12px;
-	border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
-}
-
-.nextora-team-section__inspector-members-help {
-	margin: 0 0 12px;
-	font-size: 12px;
-	line-height: 1.45;
-	color: color-mix(in srgb, currentColor 65%, transparent);
-}
-
-.nextora-team-section__inspector-member-summary {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-}
-
-.nextora-team-section__inspector-member-name {
-	margin: 0;
-	font-size: 13px;
-	font-weight: 600;
-}
-
-.nextora-team-section__inspector-member-role {
-	margin: 0;
-	font-size: 12px;
-	color: color-mix(in srgb, currentColor 60%, transparent);
-}
-
-.nextora-team-section__inspector-member-actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
-}
-
 .nextora-team-section--editor .nextora-team-section__card--editable {
 	position: relative;
 }
@@ -287,11 +247,6 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-}
-
-.nextora-team-section__inspector-member:last-child {
-	border-bottom: none;
-	margin-bottom: 0;
 }
 
 .nextora-team-section__inspector-subheading {

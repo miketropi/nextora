@@ -431,6 +431,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 				</PanelBody>
 
 			<PanelColorSettings
+				enableAlpha
 				title={__('Colors', 'nextora')}
 				colorSettings={[
 					...(template === 'default'

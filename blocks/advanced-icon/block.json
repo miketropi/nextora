@@ -72,6 +72,10 @@
 			"type": "string",
 			"default": ""
 		},
+		"surfaceGradient": {
+			"type": "string",
+			"default": ""
+		},
 		"surfaceBorderColor": {
 			"type": "string",
 			"default": ""

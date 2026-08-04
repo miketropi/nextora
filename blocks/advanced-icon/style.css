@@ -67,6 +67,10 @@
 	background: color-mix(in srgb, var(--nextora-advanced-icon-auto-bg) 20%, transparent);
 }
 
+.wp-block-nextora-advanced-icon.nextora-advanced-icon--bg-gradient.nextora-advanced-icon--style-stacked .nextora-advanced-icon__surface {
+	background: var(--nextora-advanced-icon-bg-gradient);
+}
+
 /* Framed — bordered container */
 .wp-block-nextora-advanced-icon.nextora-advanced-icon--style-framed .nextora-advanced-icon__surface {
 	display: inline-flex;

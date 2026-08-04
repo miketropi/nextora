@@ -799,6 +799,7 @@ export default function AdvancedButtonButtonEdit( {
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={ __( 'Colors', 'nextora' ) }
 					colorSettings={ [
 						{
@@ -883,6 +884,7 @@ export default function AdvancedButtonButtonEdit( {
 
 					{ showHoverColors && (
 						<PanelColorSettings
+							enableAlpha
 							title={ __( 'Hover colors', 'nextora' ) }
 							colorSettings={ [
 								{

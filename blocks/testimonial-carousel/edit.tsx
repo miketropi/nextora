@@ -624,6 +624,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{

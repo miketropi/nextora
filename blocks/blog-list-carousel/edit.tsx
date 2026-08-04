@@ -762,6 +762,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 
 				{/* ── Colors ── */}
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colors={colorPalette}
 					colorSettings={[

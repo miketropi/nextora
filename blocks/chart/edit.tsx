@@ -264,6 +264,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Chart
                 </PanelBody>
 
                 <PanelColorSettings
+                    enableAlpha
                     title={__('Colors', 'nextora')}
                     colorSettings={[
                         {

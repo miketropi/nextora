@@ -961,6 +961,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colors={colorPalette}
 					colorSettings={colorSettings}

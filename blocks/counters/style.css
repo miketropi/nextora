@@ -44,7 +44,7 @@
 .nextora-counters__item {
 	display: flex;
 	flex-direction: column;
-	gap: var(--wp--preset--spacing--10, 0.5rem);
+	gap: var(--nextora-counters-number-label-gap, var(--wp--preset--spacing--10, 0.5rem));
 	padding-inline: 0;
 }
 
