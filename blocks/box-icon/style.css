@@ -1019,14 +1019,14 @@
 	.nextora-box-icon--template-timeline .nextora-box-icon__timeline-grid::before {
 		top: 0;
 		bottom: 0;
-		left: 22px;
+		left: calc(var(--nextora-box-icon-icon-circle-size, 44px) / 2);
 		right: auto;
 		width: 2px;
 		height: auto;
 	}
 
 	.nextora-box-icon--template-timeline .nextora-box-icon__card {
-		padding: 0 0 0 60px;
+		padding: 0 0 0 calc(var(--nextora-box-icon-icon-circle-size, 44px) + 16px);
 	}
 
 	.nextora-box-icon--template-timeline .nextora-box-icon__icon {
@@ -1034,5 +1034,17 @@
 		left: 0;
 		top: 0;
 		margin: 0;
+	}
+
+	.nextora-box-icon--timeline-align-center .nextora-box-icon__card,
+	.nextora-box-icon--timeline-align-right .nextora-box-icon__card {
+		align-items: flex-start;
+		text-align: left;
+	}
+
+	.nextora-box-icon--timeline-align-center .nextora-box-icon__icon,
+	.nextora-box-icon--timeline-align-right .nextora-box-icon__icon {
+		left: 0;
+		right: auto;
 	}
 }
