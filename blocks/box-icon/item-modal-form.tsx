@@ -141,6 +141,7 @@ export default function ItemModalForm({
 				)}
 				{cardTemplate === 'default' || cardTemplate === 'minimal' ? (
 					<PanelColorSettings
+						enableAlpha
 						title={__('Icon colors', 'nextora')}
 						colors={colorPalette}
 						colorSettings={[
@@ -163,6 +164,7 @@ export default function ItemModalForm({
 				) : null}
 				{cardTemplate === 'highlights' ? (
 					<PanelColorSettings
+						enableAlpha
 						title={__('Accent color', 'nextora')}
 						colors={colorPalette}
 						colorSettings={[

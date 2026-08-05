@@ -7,10 +7,10 @@ export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	labelKey: string;
 }[] = [
 	{ value: 'default', labelKey: 'Default' },
-	{ value: 'ways', labelKey: 'Ways' },
 	{ value: 'minimal', labelKey: 'Minimal' },
-	{ value: 'highlights', labelKey: 'Highlights Stats' },
-	{ value: 'timeline', labelKey: 'Timeline' },
+	{ value: 'ways', labelKey: 'Template 01' },
+	{ value: 'highlights', labelKey: 'Template 02' },
+	{ value: 'timeline', labelKey: 'Template 03' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BoxIconCardTemplate {
@@ -73,12 +73,6 @@ export function getTemplateDefaultAttributes(
 			iconStyle: 'stacked',
 			showPagination: true,
 			showArrows: false,
-			cardPadding: {
-				top: '16px',
-				right: '22px',
-				bottom: '16px',
-				left: '22px',
-			},
 		};
 	}
 
@@ -100,12 +94,6 @@ export function getTemplateDefaultAttributes(
 			iconStyle: 'stacked',
 			showPagination: false,
 			showArrows: false,
-			cardPadding: {
-				top: '30px',
-				right: '24px',
-				bottom: '30px',
-				left: '24px',
-			},
 		};
 	}
 
@@ -127,12 +115,6 @@ export function getTemplateDefaultAttributes(
 			iconStyle: 'framed',
 			showPagination: false,
 			showArrows: false,
-			cardPadding: {
-				top: '0px',
-				right: '28px',
-				bottom: '0px',
-				left: '0px',
-			},
 		};
 	}
 

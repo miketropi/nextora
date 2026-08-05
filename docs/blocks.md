@@ -55,10 +55,17 @@ Only enable `supports.color.background` / `text` if the **entire block wrapper**
 |----------------------|-------------------|------------------|
 | Theme preset “Secondary” | slug: `"secondary"` | `var(--wp--preset--color--secondary)` |
 | Custom colour (hex) | `"#e50a46"` | `#e50a46` |
+| Theme preset “Secondary” with opacity < 100% | `"#e50a4680"` (8-digit hex with alpha) | `#e50a4680` (preserve alpha) |
+| Theme gradient “Primary” | slug: `"gradient-primary"` | `var(--wp--preset--gradient--gradient-primary)` |
+| Custom gradient CSS | `"linear-gradient(135deg, …)"` | `linear-gradient(135deg, …)` |
 
 **Never store resolved hex for a theme preset.** If the user selects Secondary, save `"secondary"`, not `#FFC247`. Otherwise **Browse styles → Color variations** will not update the block when the palette changes.
 
 `PanelColorSettings` `onChange` often returns **hex** even for theme swatches — normalize to slug before `setAttributes`.
+
+**8-digit hex with alpha:** `enableAlpha` causes `onChange` to return `#RRGGBBFF` (8-digit with full-opacity alpha `ff`). The hex→slug normalizer must **strip alpha** before comparing against palette entries (palette only has 6-digit hex). Only convert to slug when alpha = `ff`; keep the raw 8-digit hex when alpha < `ff` (to preserve intentional transparency).
+
+**Gradient slugs:** `onGradientChange` from `PanelColorSettings` returns CSS gradient strings. Normalize to slug when the CSS matches a theme gradient preset. Resolve slug back to CSS string for the `gradientValue` prop (to highlight the correct swatch).
 
 ### 4. Editor (`edit.tsx`)
 
@@ -69,6 +76,9 @@ Only enable `supports.color.background` / `text` if the **entire block wrapper**
 | **value** | Run through `colorValueForPicker(stored, currentPalette, lookupPalette)` — show current palette hex for a stored slug so the swatch highlights correctly |
 | **Palette lookup** | Merge active editor palette + all style-variation entries (localize from PHP via `register-editor.php` when hex→slug migration is needed) |
 | **Migration** | On block load: legacy reserved names → scoped names; legacy hex → slug when identifiable |
+| **enableAlpha** | Always pass `enableAlpha` to `PanelColorSettings` so the colour picker shows an opacity slider — `PanelColorSettings` should be `<PanelColorSettings enableAlpha title={…} colorSettings={…} />`. Without it, only a 6-digit hex picker is shown and alpha/transparency cannot be set. |
+| **Gradient tabs** | Pass `gradients={themeGradients}` to `PanelColorSettings` and add `gradientValue`/`onGradientChange` to the colour setting entry that supports gradients. This enables the native Solid **\|** Gradient tabs. Also set `disableCustomGradients={false}` to show the manual gradient builder. |
+| **Gradient storage** | Use `normalizeGradientForStorage(value, gradients)` on `onGradientChange` — map CSS gradient string → slug; use `gradientValueForPicker(slug, gradients)` to resolve slug → CSS string for the `gradientValue` prop. |
 | **i18n** | Labels via `__('Background color', 'nextora')`, etc. |
 
 Reusable helpers live in [`blocks/advanced-icon/color-utils.ts`](../../blocks/advanced-icon/color-utils.ts) — copy or extract shared utilities when adding a second block with the same pattern.
@@ -77,7 +87,7 @@ Reusable helpers live in [`blocks/advanced-icon/color-utils.ts`](../../blocks/ad
 
 | Requirement | Detail |
 |-------------|--------|
-| **Resolve** | Map slug → `var(--wp--preset--color--{slug})`; pass through custom hex; handle `var:preset\|color\|*` if present |
+| **Resolve** | Map slug → `var(--wp--preset--color--{slug})`; pass through custom hex (including 8-digit `#RRGGBBAA` with alpha); handle `var:preset\|color\|*` if present. **Important:** check 8-digit hex **before** `sanitize_hex_color()` since WP core only accepts 3/6-digit hex. |
 | **Legacy hex** | Optionally map old saved hex back to slug by scanning theme + child + style-variation palettes (see `nextora_icon_hex_to_preset_slug()` in [`blocks/advanced-icon/lucide.php`](../../blocks/advanced-icon/lucide.php)) |
 | **Apply colour** | On the **target inner element** (BEM modifier or CSS custom property), not on `get_block_wrapper_attributes()` unless the whole block is the target |
 | **Fallback** | Read scoped attribute first, then legacy name: `$attributes['surfaceBackgroundColor'] ?? $attributes['backgroundColor'] ?? ''` |
@@ -108,8 +118,9 @@ Editor-only: reset accidental `has-*-background-color` on the block list wrapper
 - [ ] Attribute names are **scoped** — not `backgroundColor` / `textColor` for inner/surface colours
 - [ ] `supports.color.*` all `false` (or native support only for wrapper — not both)
 - [ ] `PanelColorSettings` in **Colors** panel; labels match sibling blocks
-- [ ] Store preset **slugs**; `normalizeColorForStorage` on change; resolve slug in PHP
-- [ ] Picker `value` uses current palette hex for stored slug
+- [ ] Store preset **slugs** (colors and gradients); `normalizeColorForStorage`/`normalizeGradientForStorage` on change; resolve slug in PHP
+- [ ] Picker `value` uses current palette hex for stored slug; `gradientValue` uses `gradientValueForPicker`
+- [ ] `normalizeColorForStorage` strips alpha for palette comparison; only stores slug when alpha = `ff`
 - [ ] Colour rendered on correct inner element / CSS variable — not block wrapper background
 - [ ] Legacy attribute + hex migration where templates already exist
 - [ ] `width: fit-content` / `align-self: flex-start` when parent is flex/stack/column

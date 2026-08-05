@@ -58,6 +58,7 @@ export default function SpotlightSearchEdit({ attributes, setAttributes }: EditP
           )}
         </PanelBody>
         <PanelColorSettings
+          enableAlpha
           title={__('Icon', 'nextora')}
           colorSettings={[
             {

@@ -25,7 +25,21 @@ function normalizeHex( hex: string ): string {
 	if ( value.length === 4 ) {
 		return `#${ value[1] }${ value[1] }${ value[2] }${ value[2] }${ value[3] }${ value[3] }`;
 	}
+	if ( value.length === 9 ) {
+		return value.slice( 0, 7 );
+	}
 	return value;
+}
+
+function stripHexAlpha( hex: string ): string {
+	const trimmed = hex.trim().toLowerCase();
+	if ( ! trimmed.startsWith( '#' ) ) {
+		return trimmed;
+	}
+	if ( trimmed.length === 9 ) {
+		return trimmed.slice( 0, 7 );
+	}
+	return trimmed;
 }
 
 function paletteColorMatches( entry: PaletteColor, candidate: string ): boolean {
@@ -36,8 +50,16 @@ function paletteColorMatches( entry: PaletteColor, candidate: string ): boolean 
 	if ( entry.color.trim().toLowerCase() === normalized ) {
 		return true;
 	}
-	if ( /^#[0-9a-f]{3,8}$/i.test( normalized ) && /^#[0-9a-f]{3,8}$/i.test( entry.color ) ) {
+	const entryIsHex  = /^#[0-9a-f]{3,8}$/i.test( entry.color );
+	const candIsHex   = /^#[0-9a-f]{3,8}$/i.test( normalized );
+	if ( entryIsHex && candIsHex ) {
 		return normalizeHex( entry.color ) === normalizeHex( normalized );
+	}
+	if ( entryIsHex ) {
+		return normalizeHex( entry.color ) === stripHexAlpha( normalized );
+	}
+	if ( candIsHex ) {
+		return normalizeHex( normalized ) === stripHexAlpha( entry.color );
 	}
 	return false;
 }
@@ -115,6 +137,9 @@ export function normalizeColorForStorage(
 
 	const paletteMatch = palette.find( ( entry ) => paletteColorMatches( entry, trimmed ) );
 	if ( paletteMatch ) {
+		if ( /^#[0-9a-f]{8}$/i.test( trimmed ) && ! trimmed.endsWith( 'ff' ) ) {
+			return trimmed;
+		}
 		return paletteMatch.slug;
 	}
 
@@ -204,4 +229,65 @@ export function useThemeColorPalette(): PaletteColor[] {
 
 		return mapped.length ? mapped : FALLBACK_COLORS;
 	}, [ themeColors ] );
+}
+
+export type GradientPreset = {
+	name: string;
+	slug: string;
+	gradient: string;
+};
+
+function normalizeGradientCss( value: string ): string {
+	return value.replace( /\s+/g, ' ' ).trim().toLowerCase();
+}
+
+/**
+ * Store gradient preset slugs; keep custom linear/radial CSS as-is.
+ */
+export function normalizeGradientForStorage(
+	value: string | undefined,
+	gradients: GradientPreset[],
+): string {
+	if ( ! value ) {
+		return '';
+	}
+
+	const trimmed = value.trim();
+	if ( ! trimmed ) {
+		return '';
+	}
+
+	const normalizedCss = normalizeGradientCss( trimmed );
+	for ( const preset of gradients ) {
+		if ( normalizeGradientCss( preset.gradient ) === normalizedCss ) {
+			return preset.slug;
+		}
+	}
+
+	if ( /^(linear|radial|conic)-gradient\(/i.test( trimmed ) ) {
+		return trimmed;
+	}
+
+	return '';
+}
+
+export function gradientValueForPicker(
+	stored: string,
+	gradients: GradientPreset[],
+): string | undefined {
+	if ( ! stored ) {
+		return undefined;
+	}
+
+	for ( const preset of gradients ) {
+		if ( preset.slug === stored ) {
+			return preset.gradient;
+		}
+	}
+
+	if ( /^(linear|radial|conic)-gradient\(/i.test( stored ) ) {
+		return stored;
+	}
+
+	return undefined;
 }

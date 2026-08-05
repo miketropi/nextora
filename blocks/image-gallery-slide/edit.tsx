@@ -157,6 +157,7 @@ export default function ImageGallerySlideEdit({ attributes, setAttributes }: Pro
             )}
           />
           <PanelColorSettings
+            enableAlpha
             title={__('Slide background', 'nextora')}
             colorSettings={[
               {

@@ -583,25 +583,27 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						});
 					}}
 				/>
-				<SelectControl
-					label={__('Desktop layout', 'nextora')}
-					help={
-						layoutMode === 'grid'
-							? __(
-									'Desktop shows a grid; tablet and mobile use a carousel.',
-									'nextora',
-								)
-							: __(
-									'All screen sizes use a carousel.',
-									'nextora',
-								)
-					}
-					value={layoutMode}
-					options={layoutModeOptions}
-					onChange={(v) =>
-						setAttributes({ layoutMode: v === 'grid' ? 'grid' : 'carousel' })
-					}
-				/>
+				{cardTemplate !== 'template-4' && (
+					<SelectControl
+						label={__('Desktop layout', 'nextora')}
+						help={
+							layoutMode === 'grid'
+								? __(
+										'Desktop shows a grid; tablet and mobile use a carousel.',
+										'nextora',
+									)
+								: __(
+										'All screen sizes use a carousel.',
+										'nextora',
+									)
+						}
+						value={layoutMode}
+						options={layoutModeOptions}
+						onChange={(v) =>
+							setAttributes({ layoutMode: v === 'grid' ? 'grid' : 'carousel' })
+						}
+					/>
+				)}
 				{layoutMode === 'grid' ? (
 					<>
 						{cardTemplate !== 'template-2' && (
@@ -709,7 +711,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				</PanelBody>
 
 				{/* ── Autoplay ── */}
-				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && (
+				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && cardTemplate !== 'template-4' && (
 				<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Enable autoplay', 'nextora')}
@@ -737,7 +739,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				)}
 
 				{/* ── Pagination & Arrows ── */}
-				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && (
+				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && cardTemplate !== 'template-4' && (
 				<PanelBody title={__('Pagination & Arrows', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Show pagination dots', 'nextora')}
@@ -762,6 +764,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 
 				{/* ── Colors ── */}
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colors={colorPalette}
 					colorSettings={[

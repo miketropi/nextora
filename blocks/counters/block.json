@@ -65,6 +65,10 @@
       "type": "string",
       "default": ""
     },
+    "numberLabelGap": {
+      "type": "string",
+      "default": ""
+    },
     "divider": {
       "type": "boolean",
       "default": false

@@ -31,6 +31,7 @@ export interface IconAttributes extends Record< string, unknown > {
 	borderRadius: number;
 	surfacePadding: number;
 	surfaceBackgroundColor: string;
+	surfaceGradient: string;
 	surfaceBorderColor: string;
 	/** @deprecated Legacy alias — migrated to surfaceBackgroundColor. */
 	backgroundColor?: string;

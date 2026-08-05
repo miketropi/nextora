@@ -134,6 +134,8 @@ $columns_mobile = max( 1, min( 4, $columns_mobile ) );
 
 $column_gap = isset( $attributes['columnGap'] ) ? trim( (string) $attributes['columnGap'] ) : '';
 
+$number_label_gap = isset( $attributes['numberLabelGap'] ) ? trim( (string) $attributes['numberLabelGap'] ) : '';
+
 $divider = ! empty( $attributes['divider'] );
 
 $divider_color = nextora_counters_resolve_color(
@@ -181,6 +183,9 @@ $style_parts = array(
 );
 if ( '' !== $column_gap ) {
 	$style_parts[] = '--nextora-counters-gap:' . esc_attr( $column_gap );
+}
+if ( '' !== $number_label_gap ) {
+	$style_parts[] = '--nextora-counters-number-label-gap:' . esc_attr( $number_label_gap );
 }
 if ( '' !== $divider_color ) {
 	$style_parts[] = '--nextora-counters-divider-color:' . esc_attr( $divider_color );

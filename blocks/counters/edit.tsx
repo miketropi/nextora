@@ -176,6 +176,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 		columnsTablet = 2,
 		columnsMobile = 1,
 		columnGap = '',
+		numberLabelGap = '',
 		divider = false,
 		dividerColor = '',
 		textAlign = 'center',
@@ -216,6 +217,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 			'--nextora-counters-cols-t': String(colsTablet),
 			'--nextora-counters-cols-d': String(colsDesktop),
 			...(columnGap ? { '--nextora-counters-gap': columnGap } : {}),
+			...(numberLabelGap ? { '--nextora-counters-number-label-gap': numberLabelGap } : {}),
 			...(dividerColor ? { '--nextora-counters-divider-color': dividerColor } : {}),
 			...typographyVars,
 		} as CSSProperties,
@@ -369,6 +371,13 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 						help={__('Leave empty to use the theme default spacing.', 'nextora')}
 						placeholder="2rem"
 					/>
+					<TextControl
+						label={__('Number ↔ label gap', 'nextora')}
+						value={numberLabelGap}
+						onChange={(value) => setAttributes({ numberLabelGap: value ?? '' })}
+						help={__('Leave empty to use the theme default spacing.', 'nextora')}
+						placeholder="0.5rem"
+					/>
 					<ToggleControl
 						label={__('Show dividers', 'nextora')}
 						checked={divider}
@@ -384,6 +393,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 
 				{divider && (
 					<PanelColorSettings
+						enableAlpha
 						title={__('Divider', 'nextora')}
 						colorSettings={[
 							{
@@ -396,6 +406,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 				)}
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{

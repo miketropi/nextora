@@ -1,0 +1,82 @@
+.wp-block-nextora-chart {
+    width: 100%;
+    overflow: hidden;
+}
+
+.nextora-chart {
+    --nextora-chart-height: 400px;
+}
+
+.nextora-chart--loading .nextora-chart__canvas-wrapper {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.nextora-chart--ready .nextora-chart__canvas-wrapper {
+    opacity: 1;
+}
+
+.nextora-chart--reveal-pending .nextora-chart__canvas-wrapper {
+    opacity: 0;
+    transform: translateY(24px);
+}
+
+.nextora-chart--reveal-ready .nextora-chart__canvas-wrapper {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+/* Clip-path sweep for line only */
+.nextora-chart--type-line.nextora-chart--reveal-pending .nextora-chart__canvas-wrapper {
+    clip-path: inset(0 100% 0 0);
+}
+
+.nextora-chart--type-line.nextora-chart--reveal-ready .nextora-chart__canvas-wrapper {
+    clip-path: inset(0 0% 0 0);
+    transition: opacity 0.8s ease, transform 0.8s ease, clip-path 0.9s ease-in-out;
+}
+
+.nextora-chart__canvas-wrapper {
+    position: relative;
+    width: 100%;
+    height: var(--nextora-chart-height);
+}
+
+.nextora-chart__canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.nextora-chart__sr-table {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 767px) {
+    .nextora-chart__canvas-wrapper {
+        height: 280px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nextora-chart--reveal-pending .nextora-chart__canvas-wrapper {
+        opacity: 1;
+        transform: none;
+    }
+
+    .nextora-chart--type-line.nextora-chart--reveal-pending .nextora-chart__canvas-wrapper {
+        clip-path: inset(0 0% 0 0);
+    }
+
+    .nextora-chart--type-line.nextora-chart--reveal-ready .nextora-chart__canvas-wrapper {
+        transition: none;
+    }
+}

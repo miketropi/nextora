@@ -16,16 +16,20 @@ import {
 	SelectControl,
 	Button,
 	Notice,
-	ToggleControl,
+		ToggleControl,
 } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 import ServerSideRender from '@wordpress/server-side-render';
 import { IconPicker } from './icon-picker';
 import {
 	colorValueForPicker,
 	getMergedPaletteEntries,
+	gradientValueForPicker,
 	normalizeColorForStorage,
+	normalizeGradientForStorage,
 	useThemeColorPalette,
 } from './color-utils';
+import type { GradientPreset } from './color-utils';
 import type { IconAttributes, IconAlign, IconLinkTarget, IconSource, IconStyle } from './types';
 
 export default function IconEdit( {
@@ -45,6 +49,7 @@ export default function IconEdit( {
 		borderRadius = 8,
 		surfacePadding = 16,
 		surfaceBackgroundColor = '',
+		surfaceGradient = '',
 		surfaceBorderColor = '',
 		backgroundColor: legacyBackgroundColor = '',
 		borderColor: legacyBorderColor = '',
@@ -56,6 +61,25 @@ export default function IconEdit( {
 
 	const [ pickerOpen, setPickerOpen ] = useState( false );
 	const colorPalette = useThemeColorPalette();
+	const themeGradients = useSelect(
+		( select ): GradientPreset[] => {
+			try {
+				const settings =
+					(
+						select( 'core/block-editor' ) as {
+							getSettings?: () => { gradients?: GradientPreset[] };
+						}
+					).getSettings?.() ?? {};
+				if ( Array.isArray( settings.gradients ) && settings.gradients.length ) {
+					return settings.gradients;
+				}
+			} catch {
+				/* getSettings unavailable */
+			}
+			return [];
+		},
+		[],
+	);
 	const lookupPalette = useMemo(
 		() => getMergedPaletteEntries( colorPalette ),
 		[ colorPalette ],
@@ -300,50 +324,60 @@ export default function IconEdit( {
 					iconStyle === 'framed' ) && (
 					<PanelColorSettings
 						title={ __( 'Colors', 'nextora' ) }
-						colorSettings={ [
-							...( iconSource === 'theme'
-								? [
-										{
-											value: colorValueForPicker(
-												iconColor,
-												colorPalette,
-												lookupPalette,
-											),
-											onChange: ( value: string | undefined ) =>
-												setThemeColor( 'iconColor', value ),
-											label: __( 'Icon color', 'nextora' ),
-										},
-									]
-								: [] ),
-							...( iconStyle === 'stacked'
-								? [
-										{
-											value: colorValueForPicker(
-												resolvedSurfaceBackgroundColor,
-												colorPalette,
-												lookupPalette,
-											),
-											onChange: ( value: string | undefined ) =>
-												setThemeColor( 'surfaceBackgroundColor', value ),
-											label: __( 'Background color', 'nextora' ),
-										},
-									]
-								: [] ),
-							...( iconStyle === 'framed'
-								? [
-										{
-											value: colorValueForPicker(
-												resolvedSurfaceBorderColor,
-												colorPalette,
-												lookupPalette,
-											),
-											onChange: ( value: string | undefined ) =>
-												setThemeColor( 'surfaceBorderColor', value ),
-											label: __( 'Border color', 'nextora' ),
-										},
-									]
-								: [] ),
-						] }
+						enableAlpha
+						gradients={ themeGradients }
+						disableCustomGradients={ false }
+						colorSettings={
+							[
+								...( iconSource === 'theme'
+									? [
+											{
+												value: colorValueForPicker(
+													iconColor,
+													colorPalette,
+													lookupPalette,
+												),
+												onChange: ( value: string | undefined ) =>
+													setThemeColor( 'iconColor', value ),
+												label: __( 'Icon color', 'nextora' ),
+											},
+										]
+									: [] ),
+								...( iconStyle === 'stacked'
+									? [
+											{
+												value: colorValueForPicker(
+													resolvedSurfaceBackgroundColor,
+													colorPalette,
+													lookupPalette,
+												),
+												onChange: ( value: string | undefined ) =>
+													setThemeColor( 'surfaceBackgroundColor', value ),
+												label: __( 'Background color', 'nextora' ),
+												gradientValue: gradientValueForPicker( surfaceGradient, themeGradients ),
+											onGradientChange: ( value: string | undefined ) =>
+												setAttributes( {
+													surfaceGradient: normalizeGradientForStorage( value, themeGradients ),
+												} ),
+											},
+										]
+									: [] ),
+								...( iconStyle === 'framed'
+									? [
+											{
+												value: colorValueForPicker(
+													resolvedSurfaceBorderColor,
+													colorPalette,
+													lookupPalette,
+												),
+												onChange: ( value: string | undefined ) =>
+													setThemeColor( 'surfaceBorderColor', value ),
+												label: __( 'Border color', 'nextora' ),
+											},
+										]
+									: [] ),
+							] as any[]
+						}
 					/>
 				) }
 

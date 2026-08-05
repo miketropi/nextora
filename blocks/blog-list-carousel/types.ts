@@ -1,5 +1,5 @@
 export interface BlogListCarouselAttributes {
-	cardTemplate: 'default' | 'template-1' | 'template-2';
+	cardTemplate: 'default' | 'template-1' | 'template-2' | 'template-4';
 	layoutMode: 'carousel' | 'grid';
 	gridColumns: number;
 	gridColumnGap: number;

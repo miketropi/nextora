@@ -468,6 +468,7 @@ export default function TextListHoverImageEdit({ attributes, setAttributes }: Ed
         </PanelBody>
 
         <PanelColorSettings
+          enableAlpha
           title={__('Colors', 'nextora')}
           colors={colorPalette}
           colorSettings={[

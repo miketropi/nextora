@@ -84,4 +84,6 @@ export interface BoxIconAttributes {
 	highlightAccentColor4: string;
 	protocolTimelineColor: string;
 	showTimelineLine: boolean;
+	showTimelineTime: boolean;
+	timelineAlign: 'left' | 'center' | 'right';
 }

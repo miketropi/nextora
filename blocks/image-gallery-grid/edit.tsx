@@ -259,6 +259,7 @@ export default function ImageGalleryGridEdit({ attributes, setAttributes }: Prop
             onChange={(v) => setAttributes({ imageFit: v })}
           />
           <PanelColorSettings
+            enableAlpha
             title={__('Image area', 'nextora')}
             colorSettings={[
               {

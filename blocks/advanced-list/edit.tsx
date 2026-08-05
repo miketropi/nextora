@@ -444,6 +444,7 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
         </PanelBody>
 
         <PanelColorSettings
+          enableAlpha
           title={__('Colors', 'nextora')}
           colors={colorPalette}
           colorSettings={[

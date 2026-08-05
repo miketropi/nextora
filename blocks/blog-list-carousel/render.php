@@ -348,10 +348,14 @@ $grab_cursor = ! isset( $attributes['grabCursor'] ) || (bool) $attributes['grabC
 $card_template_raw = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
 $card_template     = in_array( $card_template_raw, array( 'template-1', 'news-grid' ), true )
     ? 'template-1'
-    : ( in_array( $card_template_raw, array( 'template-2' ), true ) ? 'template-2' : 'default' );
+    : ( in_array( $card_template_raw, array( 'template-2' ), true ) ? 'template-2'
+    : ( in_array( $card_template_raw, array( 'template-4' ), true ) ? 'template-4' : 'default' ) );
 
 // Layout
 $layout_mode = isset( $attributes['layoutMode'] ) && 'grid' === (string) $attributes['layoutMode'] ? 'grid' : 'carousel';
+if ( 'template-4' === $card_template ) {
+	$layout_mode = 'grid';
+}
 $grid_cols   = isset( $attributes['gridColumns'] ) ? max( 1, min( 6, (int) $attributes['gridColumns'] ) ) : 3;
 $grid_min    = isset( $attributes['gridMinWidth'] ) ? max( 480, min( 1200, (int) $attributes['gridMinWidth'] ) ) : 981;
 $grid_col_gap = isset( $attributes['gridColumnGap'] )
@@ -519,7 +523,7 @@ while ( $query->have_posts() ) :
 
     // Title
     $title_html = '';
-	$title_tag  = in_array( $card_template, array( 'template-1', 'template-2' ), true ) ? 'h3' : ( 'title-only' === $card_link_behavior || 'full-card' === $card_link_behavior ? 'h4' : 'h3' );
+	$title_tag  = in_array( $card_template, array( 'template-1', 'template-2', 'template-4' ), true ) ? 'h3' : ( 'title-only' === $card_link_behavior || 'full-card' === $card_link_behavior ? 'h4' : 'h3' );
     if ( $show_title && '' !== $title ) {
         if ( 'title-only' === $card_link_behavior || 'full-card' === $card_link_behavior ) {
             $title_html = sprintf(
@@ -647,7 +651,9 @@ while ( $query->have_posts() ) :
     }
 
     // Card body
-    if ( 'template-1' === $card_template ) {
+    if ( 'template-4' === $card_template ) {
+		$card_body = $title_html . $meta_html . $excerpt_html . $read_more_html;
+	} elseif ( 'template-1' === $card_template ) {
         $card_body = $meta_html . $title_html . $read_more_html;
     } elseif ( 'template-2' === $card_template ) {
         $card_body = $title_html . $meta_html . $excerpt_html . $read_more_html;
@@ -659,17 +665,26 @@ while ( $query->have_posts() ) :
     if ( 'full-card' === $card_link_behavior ) {
         $card_class .= ' nextora-blc__card--linked';
     }
-	if ( in_array( $card_template, array( 'template-1', 'template-2' ), true ) ) {
+	if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-4' ), true ) ) {
 		$card_class .= ' nextora-blc__card--' . $card_template;
 	}
 
     // Card wrapper
-    $cards_html .= sprintf(
-    	'<div class="swiper-slide"><article class="%1$s">%2$s<div class="nextora-blc__card-body">%3$s</div></article></div>',
-    	esc_attr( $card_class ),
-    	$image_html,
-    	$card_body,
-    );
+    if ( 'template-4' === $card_template ) {
+        $cards_html .= sprintf(
+        	'<div class="swiper-slide"><article class="%1$s"><div class="nextora-blc__card-image-wrapper">%2$s<div class="nextora-blc__image-overlay"></div></div><div class="nextora-blc__card-body-overlay">%3$s</div></article></div>',
+        	esc_attr( $card_class ),
+        	$image_html,
+        	$card_body,
+        );
+    } else {
+        $cards_html .= sprintf(
+        	'<div class="swiper-slide"><article class="%1$s">%2$s<div class="nextora-blc__card-body">%3$s</div></article></div>',
+        	esc_attr( $card_class ),
+        	$image_html,
+        	$card_body,
+        );
+    }
 endwhile;
 wp_reset_postdata();
 

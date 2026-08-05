@@ -211,6 +211,7 @@ export default function ContactFormEdit({ attributes, setAttributes }: EditProps
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{

@@ -1,0 +1,102 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/chart",
+  "title": "Chart",
+  "category": "design",
+  "icon": "chart-bar",
+  "description": "Data visualisation with line, bar, or doughnut charts. Displays values directly on chart elements.",
+  "keywords": ["chart", "graph", "data", "statistics", "diagram"],
+  "textdomain": "nextora",
+  "supports": {
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": false,
+      "link": false
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    }
+  },
+  "attributes": {
+    "chartType": {
+      "type": "string",
+      "default": "line",
+      "enum": ["line", "bar", "doughnut"]
+    },
+    "dataPoints": {
+      "type": "array",
+      "default": [
+        { "id": "default-1", "label": "Item 1", "value": 50 },
+        { "id": "default-2", "label": "Item 2", "value": 80 },
+        { "id": "default-3", "label": "Item 3", "value": 65 },
+        { "id": "default-4", "label": "Item 4", "value": 90 }
+      ]
+    },
+    "showDataLabels": {
+      "type": "boolean",
+      "default": true
+    },
+    "showLegend": {
+      "type": "boolean",
+      "default": true
+    },
+    "legendPosition": {
+      "type": "string",
+      "default": "top",
+      "enum": ["top", "bottom", "left", "right"]
+    },
+    "showTooltip": {
+      "type": "boolean",
+      "default": true
+    },
+    "chartHeight": {
+      "type": "number",
+      "default": 400
+    },
+    "lineColor": {
+      "type": "string",
+      "default": ""
+    },
+    "fillColor": {
+      "type": "string",
+      "default": ""
+    },
+    "textColor": {
+      "type": "string",
+      "default": ""
+    },
+    "gridColor": {
+      "type": "string",
+      "default": ""
+    },
+    "showXGrid": {
+      "type": "boolean",
+      "default": true
+    },
+    "showYGrid": {
+      "type": "boolean",
+      "default": true
+    },
+    "showXTickLabels": {
+      "type": "boolean",
+      "default": true
+    },
+    "showYTickLabels": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "style": "file:./style.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

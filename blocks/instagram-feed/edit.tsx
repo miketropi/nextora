@@ -384,6 +384,7 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{

@@ -407,6 +407,7 @@ export default function ArcGallerySectionEdit({ attributes, setAttributes }) {
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{

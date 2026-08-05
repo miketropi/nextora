@@ -139,6 +139,8 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		scrollAnimationStyle = 'default',
 		enableCardHover = true,
 		showTimelineLine = true,
+		showTimelineTime = true,
+		timelineAlign = 'left',
 	} = attributes;
 
 	const cardTemplate = normalizeCardTemplate(cardTemplateRaw);
@@ -210,6 +212,9 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			headingFontFamily.trim() !== '' ? 'nextora-box-icon--has-heading-font' : '',
 			!enableCardHover ? 'nextora-box-icon--no-card-hover' : '',
 			cardTemplate === 'timeline' && !showTimelineLine ? 'nextora-box-icon__timeline-grid--no-line' : '',
+			cardTemplate === 'timeline' && timelineAlign !== 'left'
+				? `nextora-box-icon--timeline-align-${timelineAlign}`
+				: '',
 		]
 			.filter(Boolean)
 			.join(' '),
@@ -305,12 +310,17 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				{
 					value: colorValueForPicker(iconColor, colorPalette, lookupPalette),
 					onChange: (v: string | undefined) => setThemeColor('iconColor', v),
-					label: __('Dot border & time color', 'nextora'),
+					label: __('Icon & time color', 'nextora'),
 				},
 				{
 					value: colorValueForPicker(iconSurfaceBackgroundColor, colorPalette, lookupPalette),
 					onChange: (v: string | undefined) => setThemeColor('iconSurfaceBackgroundColor', v),
 					label: __('Dot background', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(iconSurfaceBorderColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('iconSurfaceBorderColor', v),
+					label: __('Dot border color', 'nextora'),
 				},
 				{
 					value: colorValueForPicker(protocolTimelineColor, colorPalette, lookupPalette),
@@ -518,53 +528,88 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={__('Items', 'nextora')} opened={panelStates.items} onToggle={togglePanel('items')}>
-					<p className="nextora-box-icon__inspector-items-help">
-						{__(
-							'Click Edit on a card in the canvas, or use the buttons below. Full settings open in a dialog.',
-							'nextora',
-						)}
-					</p>
+				<PanelBody title={__('Items List', 'nextora')} opened={panelStates.items} onToggle={togglePanel('items')}>
+					{items.length === 0 ? (
+						<p className="nextora-box-icon__inspector-items-help">
+							{__(
+								'No items yet. Click "Add item" to create one.',
+								'nextora',
+							)}
+						</p>
+					) : null}
 					{items.map((item, index) => (
-						<div key={item.id} className="nextora-box-icon__inspector-item">
-							<div className="nextora-box-icon__inspector-item-summary">
-								<p className="nextora-box-icon__inspector-item-name">
-									{item.title || sprintf(__('Item %d', 'nextora'), index + 1)}
-								</p>
-								{item.description ? (
-									<p className="nextora-box-icon__inspector-item-desc">{item.description}</p>
-								) : null}
-							</div>
-							<div className="nextora-box-icon__inspector-item-actions">
-								<Button variant="primary" onClick={() => setEditingItemId(item.id)}>
-									{__('Edit', 'nextora')}
-								</Button>
-								<Button
-									variant="secondary"
-									disabled={index === 0}
-									onClick={() => moveItem(item.id, -1)}
-								>
-									{__('Up', 'nextora')}
-								</Button>
-								<Button
-									variant="secondary"
-									disabled={index >= items.length - 1}
-									onClick={() => moveItem(item.id, 1)}
-								>
-									{__('Down', 'nextora')}
-								</Button>
-								<Button
-									variant="secondary"
-									isDestructive
-									disabled={items.length <= 1}
-									onClick={() => removeItem(item.id)}
-								>
-									{__('Remove', 'nextora')}
-								</Button>
-							</div>
+						<div
+							key={item.id}
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								gap: '6px',
+								marginBottom: '6px',
+								padding: '6px 8px',
+								background: '#f9f9f9',
+								border: '1px solid #ddd',
+								borderRadius: '4px',
+							}}
+						>
+							<span
+								style={{
+									flex: 1,
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap',
+									fontSize: '12px',
+									lineHeight: '1.4',
+									fontWeight: 500,
+								}}
+							>
+								{item.title || sprintf(__('Item %d', 'nextora'), index + 1)}
+							</span>
+							<Button
+								icon={
+									<span style={{ display: 'inline-flex', alignItems: 'center' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></span>
+								}
+								label={__('Edit', 'nextora')}
+								onClick={() => setEditingItemId(item.id)}
+								isSmall
+							/>
+							<Button
+								icon={
+									<span style={{ display: 'inline-flex', alignItems: 'center' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg></span>
+								}
+								label={__('Move up', 'nextora')}
+								onClick={() => moveItem(item.id, -1)}
+								disabled={index === 0}
+								isSmall
+							/>
+							<Button
+								icon={
+									<span style={{ display: 'inline-flex', alignItems: 'center' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+								}
+								label={__('Move down', 'nextora')}
+								onClick={() => moveItem(item.id, 1)}
+								disabled={index >= items.length - 1}
+								isSmall
+							/>
+							<Button
+								icon={
+									<span style={{ display: 'inline-flex', alignItems: 'center' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></span>
+								}
+								label={__('Remove', 'nextora')}
+								onClick={() => removeItem(item.id)}
+								disabled={items.length <= 1}
+								isSmall
+								isDestructive
+							/>
 						</div>
 					))}
-					<Button variant="primary" onClick={addItem}>
+					<Button
+						variant="secondary"
+						onClick={addItem}
+						icon={
+							<span style={{ display: 'inline-flex', alignItems: 'center' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></span>
+						}
+						style={{ width: '100%', justifyContent: 'center', marginTop: items.length > 0 ? '4px' : '0' }}
+					>
 						{__('Add item', 'nextora')}
 					</Button>
 				</PanelBody>
@@ -626,6 +671,25 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 								label={__('Show connector line', 'nextora')}
 								checked={showTimelineLine}
 								onChange={(v) => setAttributes({ showTimelineLine: v })}
+							/>
+							)}
+							{cardTemplate === 'timeline' && (
+							<ToggleControl
+								label={__('Show time label', 'nextora')}
+								checked={showTimelineTime}
+								onChange={(v) => setAttributes({ showTimelineTime: v })}
+							/>
+							)}
+							{cardTemplate === 'timeline' && (
+							<SelectControl
+								label={__('Content alignment', 'nextora')}
+								value={timelineAlign}
+								options={[
+									{ label: __('Left', 'nextora'), value: 'left' },
+									{ label: __('Center', 'nextora'), value: 'center' },
+									{ label: __('Right', 'nextora'), value: 'right' },
+								]}
+								onChange={(v) => setAttributes({ timelineAlign: v as 'left' | 'center' | 'right' })}
 							/>
 							)}
 							{cardTemplate !== 'timeline' && (
@@ -839,15 +903,16 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 								'nextora',
 							)}
 						</p>
-					) : cardTemplate === 'timeline' ? (
-						<p className="nextora-box-icon__inspector-items-help">
-							{__(
-								'Timeline uses framed circle dots connected by a line. Adjust dot size below.',
-								'nextora',
-							)}
-						</p>
 					) : (
 						<>
+							{cardTemplate === 'timeline' ? (
+								<p className="nextora-box-icon__inspector-items-help">
+									{__(
+										'Timeline uses circle dots connected by a line. Adjust style below.',
+										'nextora',
+									)}
+								</p>
+							) : null}
 							<SelectControl
 								label={__('Theme style', 'nextora')}
 								value={iconStyle}
@@ -896,6 +961,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colors={colorPalette}
 					colorSettings={colorSettings}
@@ -1092,9 +1158,11 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 								iconSurfaceBorderColor={iconSurfaceBorderColor}
 								lookupPalette={lookupPalette}
 							/>
-							<time className="nextora-box-icon__timeline-time">
-								{item.number || __('T + 0H', 'nextora')}
-							</time>
+							{showTimelineTime ? (
+								<time className="nextora-box-icon__timeline-time">
+									{item.number || __('T + 0H', 'nextora')}
+								</time>
+							) : null}
 							<h3 className="nextora-box-icon__title">
 								{item.title || __('Title', 'nextora')}
 							</h3>

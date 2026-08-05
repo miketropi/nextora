@@ -268,6 +268,15 @@ if ( ! function_exists( 'nextora_icon_resolve_color' ) ) {
 			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $preset_m[1] ) ) . ')';
 		}
 
+		if ( preg_match( '/^#([0-9a-f]{8})$/i', $raw ) ) {
+			$preset_slug = nextora_icon_hex_to_preset_slug( $raw );
+			if ( '' !== $preset_slug ) {
+				return 'var(--wp--preset--color--' . sanitize_html_class( $preset_slug ) . ')';
+			}
+
+			return strtolower( $raw );
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( is_string( $hex ) && '' !== $hex ) {
 			$preset_slug = nextora_icon_hex_to_preset_slug( $hex );
@@ -276,15 +285,6 @@ if ( ! function_exists( 'nextora_icon_resolve_color' ) ) {
 			}
 
 			return $hex;
-		}
-
-		if ( preg_match( '/^#([0-9a-f]{8})$/i', $raw ) ) {
-			$preset_slug = nextora_icon_hex_to_preset_slug( $raw );
-			if ( '' !== $preset_slug ) {
-				return 'var(--wp--preset--color--' . sanitize_html_class( $preset_slug ) . ')';
-			}
-
-			return strtolower( $raw );
 		}
 
 		if ( preg_match( '/^var\(\s*--wp--preset--color--[a-z0-9_-]+\s*\)$/i', $raw ) ) {

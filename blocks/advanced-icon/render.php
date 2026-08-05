@@ -29,6 +29,7 @@ $surface_padding  = isset( $attributes['surfacePadding'] ) ? max( 0, (int) $attr
 $background_color = isset( $attributes['surfaceBackgroundColor'] )
 	? (string) $attributes['surfaceBackgroundColor']
 	: ( isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '' );
+$surface_gradient  = isset( $attributes['surfaceGradient'] ) ? trim( (string) $attributes['surfaceGradient'] ) : '';
 $border_color     = isset( $attributes['surfaceBorderColor'] )
 	? (string) $attributes['surfaceBorderColor']
 	: ( isset( $attributes['borderColor'] ) ? (string) $attributes['borderColor'] : '' );
@@ -113,7 +114,17 @@ if ( $has_surface ) {
 }
 
 if ( 'stacked' === $icon_style ) {
-	if ( '' !== $background_color ) {
+	if ( '' !== $surface_gradient ) {
+		$wrapper_classes[] = 'nextora-advanced-icon--bg-gradient';
+		$gradient_value    = $surface_gradient;
+		if ( preg_match( '/^[a-z0-9-]+$/i', $surface_gradient ) ) {
+			$gradient_value = 'var(--wp--preset--gradient--' . sanitize_html_class( $surface_gradient ) . ')';
+		}
+		$inline_styles[] = sprintf(
+			'--nextora-advanced-icon-bg-gradient:%s;',
+			esc_attr( $gradient_value ),
+		);
+	} elseif ( '' !== $background_color ) {
 		$inline_styles[] = sprintf(
 			'--nextora-advanced-icon-bg:%s;',
 			esc_attr( nextora_icon_resolve_color( $background_color ) ),

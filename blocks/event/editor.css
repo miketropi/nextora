@@ -14,51 +14,6 @@
 	padding: 0;
 }
 
-.nextora-event__inspector-events-help {
-	margin: 0 0 12px;
-	font-size: 12px;
-	line-height: 1.45;
-	color: color-mix(in srgb, currentColor 65%, transparent);
-}
-
-.nextora-event__inspector-item {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	padding-bottom: 12px;
-	margin-bottom: 12px;
-	border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
-}
-
-.nextora-event__inspector-item:last-of-type {
-	border-bottom: none;
-	margin-bottom: 0;
-}
-
-.nextora-event__inspector-item-summary {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-}
-
-.nextora-event__inspector-item-title {
-	margin: 0;
-	font-size: 13px;
-	font-weight: 600;
-}
-
-.nextora-event__inspector-item-meta {
-	margin: 0;
-	font-size: 12px;
-	color: color-mix(in srgb, currentColor 60%, transparent);
-}
-
-.nextora-event__inspector-item-actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
-}
-
 /* Editor card — edit control floats above register column */
 .nextora-event--editor .nextora-event__item--editable {
 	position: relative;

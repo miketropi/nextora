@@ -2,9 +2,9 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "nextora/blog-list-carousel",
-  "title": "Blog List Carousel",
+  "title": "Blog Posts",
   "category": "design",
-  "description": "A dynamic blog post carousel that pulls posts from WordPress and displays them in a Swiper.js card slider.",
+  "description": "Display blog posts in a carousel, grid, or list layout with customizable query and card settings.",
   "keywords": [
     "blog",
     "posts",
