@@ -112,6 +112,8 @@
     "tagBackgroundColor": { "type": "string", "default": "" },
     "tagTextColor": { "type": "string", "default": "" },
     "cardBorderRadius": { "type": "number", "default": 16 },
+    "nameColor": { "type": "string", "default": "" },
+    "roleColor": { "type": "string", "default": "" },
     "enableScrollAnimation": { "type": "boolean", "default": true }
   },
   "editorScript": "file:./index.js",

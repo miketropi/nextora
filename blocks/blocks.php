@@ -33,6 +33,11 @@ if ( is_readable( $scrolling_promotion_styles ) ) {
 	require_once $scrolling_promotion_styles;
 }
 
+$scrolling_promotion_editor = __DIR__ . '/scrolling-promotion/register-editor.php';
+if ( is_readable( $scrolling_promotion_editor ) ) {
+	require_once $scrolling_promotion_editor;
+}
+
 $arc_gallery_styles = __DIR__ . '/arc-gallery-section/register-styles.php';
 if ( is_readable( $arc_gallery_styles ) ) {
 	require_once $arc_gallery_styles;

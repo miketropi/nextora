@@ -61,6 +61,10 @@ if ( ! function_exists( 'nextora_pt_resolve_color' ) ) {
 			return '';
 		}
 
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;

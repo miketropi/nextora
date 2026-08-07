@@ -6,6 +6,7 @@
  */
 import { initHoverReveal } from './hover-reveal';
 import { initLightRays } from './light-rays';
+import { initRipples } from './ripples';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -292,6 +293,24 @@ function initAmbientIcons(root: HTMLElement): void {
   });
 }
 
+function initRipplesWrapper(root: HTMLElement): void {
+  if (!root.classList.contains('nextora-advanced-container--ripples')) {
+    return;
+  }
+  if (root.getAttribute(AMBIENT_INIT_ATTR) === 'ripples') {
+    return;
+  }
+  root.setAttribute(AMBIENT_INIT_ATTR, 'ripples');
+
+  if (prefersReducedMotion()) {
+    return;
+  }
+
+  try {
+    initRipples(root);
+  } catch { /* */ }
+}
+
 function initRoot(root: HTMLElement): void {
   if (root.getAttribute(INIT_ATTR) === '1') {
     return;
@@ -303,6 +322,7 @@ function initRoot(root: HTMLElement): void {
   initHoverReveal(root);
   initAmbientIcons(root);
   initLightRays(root);
+  initRipplesWrapper(root);
   bindBgImageRefresh(root);
 }
 

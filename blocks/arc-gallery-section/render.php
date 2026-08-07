@@ -18,6 +18,10 @@ if ( ! function_exists( 'nextora_arc_gallery_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
@@ -275,9 +279,13 @@ $image_border = max( 0, min( 8, $image_border ) );
 $raw_border_color = isset( $attributes['imageBorderColor'] ) ? trim( (string) $attributes['imageBorderColor'] ) : '';
 $image_border_color = nextora_arc_gallery_resolve_color( $raw_border_color );
 if ( '' === $image_border_color && '' !== $raw_border_color ) {
-	$hex = sanitize_hex_color( $raw_border_color );
-	if ( $hex && '#ffffff' !== strtolower( $hex ) ) {
-		$image_border_color = $hex;
+	if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw_border_color ) ) {
+		$image_border_color = $raw_border_color;
+	} else {
+		$hex = sanitize_hex_color( $raw_border_color );
+		if ( $hex && '#ffffff' !== strtolower( $hex ) ) {
+			$image_border_color = $hex;
+		}
 	}
 }
 

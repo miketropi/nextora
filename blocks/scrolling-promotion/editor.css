@@ -85,6 +85,13 @@
 	border-radius: 2px;
 }
 
+.nextora-scrolling-promotion__inspector-icon {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+}
+
 @keyframes nextora-marquee-scroll-left {
 	0% {
 		transform: translateX(0);

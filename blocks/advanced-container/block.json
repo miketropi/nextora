@@ -240,6 +240,18 @@
     "lightRaysDistortion": {
       "type": "number",
       "default": 0
+    },
+    "ripplesDropRadius": {
+      "type": "number",
+      "default": 20
+    },
+    "ripplesPerturbance": {
+      "type": "number",
+      "default": 0.03
+    },
+    "ripplesResolution": {
+      "type": "number",
+      "default": 256
     }
   },
   "editorScript": "file:./index.js",

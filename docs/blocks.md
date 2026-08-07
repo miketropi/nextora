@@ -92,6 +92,49 @@ Reusable helpers live in [`blocks/advanced-icon/color-utils.ts`](../../blocks/ad
 | **Apply colour** | On the **target inner element** (BEM modifier or CSS custom property), not on `get_block_wrapper_attributes()` unless the whole block is the target |
 | **Fallback** | Read scoped attribute first, then legacy name: `$attributes['surfaceBackgroundColor'] ?? $attributes['backgroundColor'] ?? ''` |
 
+#### PHP colour resolution reference
+
+When writing a `*_resolve_color()` function in block `render.php`, follow this order to avoid silently dropping 8-digit hex alpha colors:
+
+1. **`var:preset|color|slug`** → `var(--wp--preset--color--slug)`
+2. **8-digit hex** → `preg_match('/^#[0-9a-fA-F]{8}$/', $raw)` — return as-is BEFORE `sanitize_hex_color()`
+3. **3/6-digit hex** → `sanitize_hex_color($raw)`
+4. **Preset slug** → `var(--wp--preset--color--slug)`
+5. **`var(...)` passthrough** (if used)
+6. Return empty string
+
+```php
+function nextora_xxx_resolve_color( string $raw ): string {
+    $raw = trim( $raw );
+    if ( '' === $raw ) {
+        return '';
+    }
+
+    if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
+        return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $m[1] ) ) . ')';
+    }
+
+    // 8-digit hex with alpha — MUST come before sanitize_hex_color()
+    if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+        return $raw;
+    }
+
+    $hex = sanitize_hex_color( $raw );
+    if ( is_string( $hex ) && '' !== $hex ) {
+        return $hex;
+    }
+
+    // fallback to preset slug
+    if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
+        return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
+    }
+
+    return '';
+}
+```
+
+**Rationale:** WordPress `sanitize_hex_color()` only validates `#RGB` and `#RRGGBB`. An 8-digit hex like `#eaf6f624` is rejected (returns null/empty), causing the color to be silently dropped on the frontend. Checking 8-digit hex first preserves alpha transparency.
+
 ### 6. CSS layout
 
 When the coloured element sits inside **flex**, **stack**, or **columns**, prevent stretch:

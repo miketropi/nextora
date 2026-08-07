@@ -99,9 +99,10 @@
 	row-gap: var(--nextora-team-grid-row-gap, 1.5rem);
 }
 
-.nextora-team-section__member-modal .components-modal__frame {
-	max-width: 720px;
-	width: calc(100vw - 2rem);
+.components-modal__frame.nextora-team-section__member-modal,
+.nextora-team-section__member-modal.components-modal__frame {
+	max-width: 960px !important;
+	width: min(960px, calc(100vw - 2rem)) !important;
 }
 
 .nextora-team-section__member-form {
@@ -287,10 +288,11 @@
     font-weight: 700;
     margin: 0 0 .5rem;
     line-height: 1.2;
+	color: var(--nextora-team-name-color, var(--wp--preset--color--contrast, #0a0a0a));
 }
 
 .nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-role {
-    color: var(--wp--preset--color--secondary, #FF6B5B);
+    color: var(--nextora-team-role-color, var(--wp--preset--color--secondary, #FF6B5B));
     font-size: var(--wp--preset--font-size--small, 1rem);
     margin: 0 !important;
     line-height: 1.4;

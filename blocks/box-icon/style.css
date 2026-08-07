@@ -282,7 +282,7 @@
 /* Title & description */
 .nextora-box-icon__title {
 	margin: 1.5rem 0 1.15rem;
-	font-size: 1.4375rem;
+	font-size: var(--wp--preset--font-size--medium);
 	line-height: 1.15;
 	font-weight: inherit;
 	color: var(--nextora-box-icon-card-title-color, currentColor);
@@ -292,8 +292,7 @@
 	margin: 0;
 	flex: 1 1 auto;
 	min-height: 0;
-	/* font-size: 0.875rem; */
-	/* line-height: 1.5; */
+	font-size: var(--wp--preset--font-size--small);
 	color: var(
 		--nextora-box-icon-card-desc-color,
 		color-mix(in srgb, currentColor 70%, transparent)
@@ -315,10 +314,9 @@
 	gap: 0.4375rem;
 	margin-top: 1rem;
 	flex-shrink: 0;
-	font-size: 0.8125rem;
+	font-size: var(--wp--preset--font-size--base);
 	font-weight: 700;
 	letter-spacing: 0.03em;
-	text-transform: uppercase;
 	text-decoration: none;
 	color: var(--nextora-box-icon-link-color, var(--wp--preset--color--primary, currentColor));
 	transition: color 0.2s ease;

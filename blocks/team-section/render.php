@@ -57,6 +57,10 @@ if ( ! function_exists( 'nextora_team_section_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
@@ -442,6 +446,8 @@ $dot_active_c = nextora_team_section_resolve_color( isset( $attributes['paginati
 $card_bg_c    = nextora_team_section_resolve_color( isset( $attributes['cardBackgroundColor'] ) ? (string) $attributes['cardBackgroundColor'] : '' );
 $tag_bg_c     = nextora_team_section_resolve_color( isset( $attributes['tagBackgroundColor'] ) ? (string) $attributes['tagBackgroundColor'] : '' );
 $tag_text_c   = nextora_team_section_resolve_color( isset( $attributes['tagTextColor'] ) ? (string) $attributes['tagTextColor'] : '' );
+$name_c       = nextora_team_section_resolve_color( isset( $attributes['nameColor'] ) ? (string) $attributes['nameColor'] : '' );
+$role_c       = nextora_team_section_resolve_color( isset( $attributes['roleColor'] ) ? (string) $attributes['roleColor'] : '' );
 
 $spv_mobile  = round( isset( $attributes['slidesPerViewMobile'] ) ? (float) $attributes['slidesPerViewMobile'] : 1.2, 3 );
 $spv_tablet  = round( isset( $attributes['slidesPerViewTablet'] ) ? (float) $attributes['slidesPerViewTablet'] : 2.5, 3 );
@@ -519,6 +525,12 @@ if ( '' !== $tag_bg_c ) {
 }
 if ( '' !== $tag_text_c ) {
 	$css_vars['--nextora-team-tag-color'] = $tag_text_c;
+}
+if ( '' !== $name_c ) {
+	$css_vars['--nextora-team-name-color'] = $name_c;
+}
+if ( '' !== $role_c ) {
+	$css_vars['--nextora-team-role-color'] = $role_c;
 }
 
 $style_parts = array();

@@ -22,6 +22,7 @@ import {
 	ToolbarGroup,
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
+import { IconPicker } from '../advanced-icon/icon-picker';
 import type {
 	ScrollingPromotionAttributes,
 	ScrollingPromotionItem,
@@ -59,6 +60,7 @@ const itemTypeOptions = [
 	{ label: __('Text', 'nextora'), value: 'text' },
 	{ label: __('Image', 'nextora'), value: 'image' },
 	{ label: __('Text + image', 'nextora'), value: 'text-image' },
+	{ label: __('Icon + text', 'nextora'), value: 'icon-text' },
 ];
 
 const fontWeightOptions = [
@@ -83,10 +85,12 @@ const EMPTY_ITEM: ScrollingPromotionItem = {
 	imageId: 0,
 	imageUrl: '',
 	imageAlt: '',
+	iconName: '',
+	iconSize: 24,
 };
 
 function normalizeItemType(raw: unknown): ScrollingPromotionItemType {
-	if (raw === 'image' || raw === 'text-image') {
+	if (raw === 'image' || raw === 'text-image' || raw === 'icon-text') {
 		return raw;
 	}
 	return 'text';
@@ -102,6 +106,8 @@ function normalizeItems(items: ScrollingPromotionItem[] | undefined): ScrollingP
 		imageId: typeof item?.imageId === 'number' ? item.imageId : 0,
 		imageUrl: typeof item?.imageUrl === 'string' ? item.imageUrl : '',
 		imageAlt: typeof item?.imageAlt === 'string' ? item.imageAlt : '',
+		iconName: typeof item?.iconName === 'string' ? item.iconName : '',
+		iconSize: typeof item?.iconSize === 'number' ? item.iconSize : 24,
 	}));
 }
 
@@ -110,6 +116,7 @@ export default function ScrollingPromotionEdit({
 	setAttributes,
 }: EditProps) {
 	const [previewAnimating, setPreviewAnimating] = useState(false);
+	const [iconPickerIndex, setIconPickerIndex] = useState<number | null>(null);
 	const editorRootRef = useRef<HTMLDivElement>(null);
 	const items = normalizeItems(attributes.items);
 	const imageHeight = attributes.imageHeight ?? 32;
@@ -181,10 +188,13 @@ export default function ScrollingPromotionEdit({
 	};
 
 	const showTextField = (type: ScrollingPromotionItemType): boolean =>
-		type === 'text' || type === 'text-image';
+		type === 'text' || type === 'text-image' || type === 'icon-text';
 
 	const showImageField = (type: ScrollingPromotionItemType): boolean =>
 		type === 'image' || type === 'text-image';
+
+	const showIconField = (type: ScrollingPromotionItemType): boolean =>
+		type === 'icon-text';
 
 	return (
 		<>
@@ -226,6 +236,39 @@ export default function ScrollingPromotionEdit({
 										value={item.text}
 										onChange={(text) => patchItem(index, { text: text ?? '' })}
 									/>
+								)}
+								{showIconField(item.itemType) && (
+									<div className="nextora-scrolling-promotion__inspector-icon">
+										<Button
+											variant="secondary"
+											onClick={() => setIconPickerIndex(index)}
+										>
+											{item.iconName
+												? __('Change icon', 'nextora')
+												: __('Choose icon', 'nextora')}
+										</Button>
+										{item.iconName ? (
+											<Button
+												variant="link"
+												isDestructive
+												onClick={() =>
+													patchItem(index, { iconName: '', iconSize: 24 })
+												}
+											>
+												{__('Remove icon', 'nextora')}
+											</Button>
+										) : null}
+										{iconPickerIndex !== null && iconPickerIndex === index ? (
+											<IconPicker
+												currentIcon={item.iconName}
+												onSelect={(iconName) => {
+													patchItem(index, { iconName });
+													setIconPickerIndex(null);
+												}}
+												onClose={() => setIconPickerIndex(null)}
+											/>
+										) : null}
+									</div>
 								)}
 								{showImageField(item.itemType) && (
 									<MediaUploadCheck>

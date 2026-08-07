@@ -72,6 +72,17 @@ if ( ! function_exists( 'nextora_ac_resolve_color' ) ) {
 			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $preset_m[1] ) ) . ')';
 		}
 
+		if ( preg_match( '/^#([0-9a-f]{8})$/i', $raw ) ) {
+			if ( function_exists( 'nextora_icon_hex_to_preset_slug' ) ) {
+				$preset_slug = nextora_icon_hex_to_preset_slug( $raw );
+				if ( '' !== $preset_slug ) {
+					return 'var(--wp--preset--color--' . sanitize_html_class( $preset_slug ) . ')';
+				}
+			}
+
+			return strtolower( $raw );
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( is_string( $hex ) && '' !== $hex ) {
 			if ( function_exists( 'nextora_icon_hex_to_preset_slug' ) ) {
@@ -82,17 +93,6 @@ if ( ! function_exists( 'nextora_ac_resolve_color' ) ) {
 			}
 
 			return $hex;
-		}
-
-		if ( preg_match( '/^#([0-9a-f]{8})$/i', $raw ) ) {
-			if ( function_exists( 'nextora_icon_hex_to_preset_slug' ) ) {
-				$preset_slug = nextora_icon_hex_to_preset_slug( $raw );
-				if ( '' !== $preset_slug ) {
-					return 'var(--wp--preset--color--' . sanitize_html_class( $preset_slug ) . ')';
-				}
-			}
-
-			return strtolower( $raw );
 		}
 
 		if ( strlen( $raw ) < 220 && preg_match( '/^var\(\s*--wp--preset--color--[a-z0-9_-]+\s*\)$/i', $raw ) ) {
@@ -342,6 +342,9 @@ $light_rays_follow_mouse   = ! array_key_exists( 'lightRaysFollowMouse', $attrib
 $light_rays_mouse_influence = isset( $attributes['lightRaysMouseInfluence'] ) ? max( 0, min( 1, (float) $attributes['lightRaysMouseInfluence'] ) ) : 0.3;
 $light_rays_noise_amount   = isset( $attributes['lightRaysNoiseAmount'] ) ? max( 0, min( 1, (float) $attributes['lightRaysNoiseAmount'] ) ) : 0.05;
 $light_rays_distortion     = isset( $attributes['lightRaysDistortion'] ) ? max( 0, min( 1, (float) $attributes['lightRaysDistortion'] ) ) : 0.05;
+$ripples_drop_radius       = isset( $attributes['ripplesDropRadius'] ) ? max( 5, min( 120, (int) $attributes['ripplesDropRadius'] ) ) : 20;
+$ripples_perturbance       = isset( $attributes['ripplesPerturbance'] ) ? max( 0.005, min( 0.15, (float) $attributes['ripplesPerturbance'] ) ) : 0.03;
+$ripples_resolution        = isset( $attributes['ripplesResolution'] ) ? max( 64, min( 1024, (int) $attributes['ripplesResolution'] ) ) : 256;
 
 if ( $background_image_id > 0 && '' === $background_image_url ) {
 	$resolved_image = wp_get_attachment_image_url( $background_image_id, 'full' );
@@ -483,6 +486,9 @@ if ( $enable_ambient_animation && 'ambient-icons' === $ambient_animation_type ) 
 if ( $enable_ambient_animation && 'light-rays' === $ambient_animation_type ) {
 	$classes[] = 'nextora-advanced-container--light-rays';
 }
+if ( $enable_ambient_animation && 'ripples' === $ambient_animation_type ) {
+	$classes[] = 'nextora-advanced-container--ripples';
+}
 
 $wrapper_args = array(
 	'class' => implode( ' ', $classes ),
@@ -527,6 +533,16 @@ if ( $enable_ambient_animation && 'light-rays' === $ambient_animation_type ) {
 			'mouseInfluence' => $light_rays_mouse_influence,
 			'noiseAmount'    => $light_rays_noise_amount,
 			'distortion'     => $light_rays_distortion,
+		),
+	);
+}
+if ( $enable_ambient_animation && 'ripples' === $ambient_animation_type ) {
+	$wrapper_args['data-nextora-ac-ripples'] = (string) wp_json_encode(
+		array(
+			'dropRadius'  => $ripples_drop_radius,
+			'perturbance' => $ripples_perturbance,
+			'resolution'  => $ripples_resolution,
+			'interactive' => true,
 		),
 	);
 }
