@@ -60,6 +60,10 @@ if ( ! function_exists( 'nextora_event_resolve_color' ) ) {
 			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $preset_m[1] ) ) . ')';
 		}
 
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( is_string( $hex ) && '' !== $hex ) {
 			return $hex;

@@ -356,3 +356,16 @@
     display: none;
   }
 }
+
+/* Ripples */
+.nextora-advanced-container--ripples {
+  --nextora-ac-ripples-resolution: 512;
+  --nextora-ac-ripples-drop-radius: 35px;
+  --nextora-ac-ripples-perturbance: 0.12;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nextora-advanced-container--ripples canvas {
+    display: none;
+  }
+}

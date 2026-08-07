@@ -1,4 +1,4 @@
-export type ScrollingPromotionItemType = 'text' | 'image' | 'text-image';
+export type ScrollingPromotionItemType = 'text' | 'image' | 'text-image' | 'icon-text';
 
 export interface ScrollingPromotionItem {
 	itemType: ScrollingPromotionItemType;
@@ -6,6 +6,8 @@ export interface ScrollingPromotionItem {
 	imageId: number;
 	imageUrl: string;
 	imageAlt: string;
+	iconName: string;
+	iconSize: number;
 }
 
 export interface ScrollingPromotionAttributes {

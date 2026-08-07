@@ -38,14 +38,14 @@ if ( ! function_exists( 'nextora_header_block_sanitize_border_color' ) ) {
 			return 'var(--wp--preset--color--' . strtolower( $preset_m[1] ) . ')';
 		}
 
-		$hex = sanitize_hex_color( $value );
-		if ( is_string( $hex ) && '' !== $hex ) {
-			return $hex;
-		}
-
 		// 8-digit RGBA hex (common from the color picker with alpha).
 		if ( preg_match( '/^#([0-9a-f]{8})$/i', $value ) ) {
 			return strtolower( $value );
+		}
+
+		$hex = sanitize_hex_color( $value );
+		if ( is_string( $hex ) && '' !== $hex ) {
+			return $hex;
 		}
 
 		// Theme palette (CSS variable).

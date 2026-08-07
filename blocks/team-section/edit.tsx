@@ -126,6 +126,8 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		tagBackgroundColor = '',
 		tagTextColor = '',
 		cardBorderRadius = 16,
+		nameColor = '',
+		roleColor = '',
 		enableScrollAnimation = true,
 	} = attributes;
 
@@ -148,6 +150,8 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 			cardBackgroundColor,
 			tagBackgroundColor,
 			tagTextColor,
+			nameColor,
+			roleColor,
 			cardBorderRadius,
 		}) as CSSProperties,
 	});
@@ -513,21 +517,36 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 							onChange: (v) => setAttributes({ backgroundColor: v ?? '' }),
 							label: __('Background', 'nextora'),
 						},
-						{
-							value: cardBackgroundColor,
-							onChange: (v) => setAttributes({ cardBackgroundColor: v ?? '' }),
-							label: __('Card background', 'nextora'),
-						},
-						{
-							value: tagBackgroundColor,
-							onChange: (v) => setAttributes({ tagBackgroundColor: v ?? '' }),
-							label: __('Tag background', 'nextora'),
-						},
-						{
-							value: tagTextColor,
-							onChange: (v) => setAttributes({ tagTextColor: v ?? '' }),
-							label: __('Tag text', 'nextora'),
-						},
+						...(cardTemplate === 'overlay-social'
+							? [
+									{
+										value: nameColor,
+										onChange: (v: string | undefined) => setAttributes({ nameColor: v ?? '' }),
+										label: __('Name', 'nextora'),
+									},
+									{
+										value: roleColor,
+										onChange: (v: string | undefined) => setAttributes({ roleColor: v ?? '' }),
+										label: __('Role', 'nextora'),
+									},
+								]
+							: [
+									{
+										value: cardBackgroundColor,
+										onChange: (v: string | undefined) => setAttributes({ cardBackgroundColor: v ?? '' }),
+										label: __('Card background', 'nextora'),
+									},
+									{
+										value: tagBackgroundColor,
+										onChange: (v: string | undefined) => setAttributes({ tagBackgroundColor: v ?? '' }),
+										label: __('Tag background', 'nextora'),
+									},
+									{
+										value: tagTextColor,
+										onChange: (v: string | undefined) => setAttributes({ tagTextColor: v ?? '' }),
+										label: __('Tag text', 'nextora'),
+									},
+								]),
 						...(showPagination
 							? [
 									{
@@ -578,6 +597,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 					<MemberEditForm
 						member={editingMember}
 						photoUrl={resolvePhotoUrl(editingMember, mediaUrlById)}
+						cardTemplate={cardTemplate}
 						onPatch={(patch) => patchMember(editingMember.id, patch)}
 					/>
 				</Modal>

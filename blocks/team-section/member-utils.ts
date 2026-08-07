@@ -82,6 +82,8 @@ export function buildSectionStyleVars(attrs: {
 	cardBackgroundColor?: string;
 	tagBackgroundColor?: string;
 	tagTextColor?: string;
+	nameColor?: string;
+	roleColor?: string;
 	cardBorderRadius?: number;
 	gridColumns?: number;
 	gridColumnGap?: number;
@@ -104,5 +106,7 @@ export function buildSectionStyleVars(attrs: {
 	if (attrs.cardBackgroundColor) vars['--nextora-team-card-bg'] = attrs.cardBackgroundColor;
 	if (attrs.tagBackgroundColor) vars['--nextora-team-tag-bg'] = attrs.tagBackgroundColor;
 	if (attrs.tagTextColor) vars['--nextora-team-tag-color'] = attrs.tagTextColor;
+	if (attrs.nameColor) vars['--nextora-team-name-color'] = attrs.nameColor;
+	if (attrs.roleColor) vars['--nextora-team-role-color'] = attrs.roleColor;
 	return vars;
 }

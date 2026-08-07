@@ -29,7 +29,9 @@
           "text": "Your promotion here",
           "imageId": 0,
           "imageUrl": "",
-          "imageAlt": ""
+          "imageAlt": "",
+          "iconName": "",
+          "iconSize": 24
         }
       ]
     },

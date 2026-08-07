@@ -65,6 +65,8 @@ export interface TeamSectionAttributes {
 	tagBackgroundColor: string;
 	tagTextColor: string;
 	cardBorderRadius: number;
+	nameColor: string;
+	roleColor: string;
 	enableScrollAnimation: boolean;
 }
 

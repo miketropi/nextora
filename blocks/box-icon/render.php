@@ -60,6 +60,10 @@ if ( ! function_exists( 'nextora_box_icon_resolve_color' ) ) {
 			return '';
 		}
 
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
@@ -423,6 +427,15 @@ if ( ! function_exists( 'nextora_box_icon_render_card' ) ) {
 
 		if ( 'minimal' === $card_template ) {
 			$out .= '</div>';
+		}
+
+		if ( $show_link && '' !== $link_label && '' !== $link_url && ! in_array( $card_template, array( 'minimal', 'highlights', 'timeline' ), true ) ) {
+			$out .= sprintf(
+				'<a class="nextora-box-icon__link" href="%1$s"%2$s>%3$s<span class="nextora-box-icon__link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>',
+				esc_url( $link_url ),
+				'_blank' === $link_target ? ' target="_blank" rel="noopener noreferrer"' : '',
+				esc_html( $link_label ),
+			);
 		}
 
 		if ( 'minimal' === $card_template && $show_link && '' !== $link_url ) {

@@ -48,6 +48,9 @@ function nextora_thli_resolve_color( string $raw ): string {
         return 'transparent';
     }
     if ( str_starts_with( $raw, '#' ) ) {
+        if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+            return $raw;
+        }
         return sanitize_hex_color( $raw ) ?: 'transparent';
     }
     if ( str_starts_with( $raw, 'var:preset|color|' ) ) {

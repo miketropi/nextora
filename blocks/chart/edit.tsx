@@ -10,6 +10,7 @@ import {
     Button,
 } from '@wordpress/components';
 import type { BlockEditProps } from '@wordpress/blocks';
+import { normalizeColorForStorage, colorValueForPicker, useThemeColorPalette } from './color-utils';
 import type { ChartAttributes, ChartDataPoint } from './types';
 
 function createDataPointId(): string {
@@ -82,8 +83,23 @@ function formatDisplayValue(num: number): string {
     return num.toLocaleString('vi-VN');
 }
 
+function resolveColor(raw: string): string {
+    const trimmed = raw.trim();
+    if (!trimmed) {
+        return '';
+    }
+    if (/^#[0-9a-fA-F]{3,8}$/.test(trimmed)) {
+        return trimmed;
+    }
+    if (/^[a-z0-9-]+$/.test(trimmed)) {
+        return `var(--wp--preset--color--${trimmed})`;
+    }
+    return trimmed;
+}
+
 export default function Edit({ attributes, setAttributes }: BlockEditProps<ChartAttributes>) {
     const blockProps = useBlockProps();
+    const palette = useThemeColorPalette();
     const {
         chartType,
         dataPoints,
@@ -268,23 +284,23 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Chart
                     title={__('Colors', 'nextora')}
                     colorSettings={[
                         {
-                            value: lineColor ?? '',
-                            onChange: (v) => setAttributes({ lineColor: v }),
+                            value: colorValueForPicker(lineColor ?? '', palette),
+                            onChange: (v) => setAttributes({ lineColor: normalizeColorForStorage(v, palette) }),
                             label: __('Line / Bar color', 'nextora'),
                         },
                         {
-                            value: fillColor ?? '',
-                            onChange: (v) => setAttributes({ fillColor: v }),
+                            value: colorValueForPicker(fillColor ?? '', palette),
+                            onChange: (v) => setAttributes({ fillColor: normalizeColorForStorage(v, palette) }),
                             label: __('Fill color', 'nextora'),
                         },
                         {
-                            value: textColor ?? '',
-                            onChange: (v) => setAttributes({ textColor: v }),
+                            value: colorValueForPicker(textColor ?? '', palette),
+                            onChange: (v) => setAttributes({ textColor: normalizeColorForStorage(v, palette) }),
                             label: __('Text & label color', 'nextora'),
                         },
                         {
-                            value: gridColor ?? '',
-                            onChange: (v) => setAttributes({ gridColor: v }),
+                            value: colorValueForPicker(gridColor ?? '', palette),
+                            onChange: (v) => setAttributes({ gridColor: normalizeColorForStorage(v, palette) }),
                             label: __('Grid line color', 'nextora'),
                         },
                     ]}
@@ -349,7 +365,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Chart
                                             className="nextora-chart-editor__preview-bar"
                                             style={{
                                                 width: `${(dp.value / maxValue) * 100}%`,
-                                                backgroundColor: lineColor || '#3b82f6',
+                                                backgroundColor: resolveColor(lineColor ?? '') || '#3b82f6',
                                             }}
                                         />
                                     </div>

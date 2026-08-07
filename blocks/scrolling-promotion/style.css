@@ -120,6 +120,17 @@
 	gap: calc(var(--nextora-marquee-gap, 40px) * 0.35);
 }
 
+.nextora-scrolling-promotion__item-body--icon-text {
+	display: inline-flex;
+	align-items: center;
+	gap: calc(var(--nextora-marquee-gap, 40px) * 0.35);
+}
+
+.nextora-scrolling-promotion__item-body--icon-text .lucide {
+	flex-shrink: 0;
+	opacity: 0.8;
+}
+
 .nextora-scrolling-promotion__media {
 	display: block;
 	height: var(--nextora-marquee-image-height, 32px);

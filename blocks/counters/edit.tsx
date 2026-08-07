@@ -19,6 +19,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { buildTypographyStyleVars } from './counters-styles';
+import { normalizeColorForStorage, colorValueForPicker, useThemeColorPalette } from './color-utils';
 import type { CounterItem, CountersAttributes } from './types';
 
 interface EditProps {
@@ -170,6 +171,7 @@ function useFontFamilyOptions(): FontFamilyOption[] {
 export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 	const items = normalizeItems(attributes.items);
 	const fontFamilyOptions = useFontFamilyOptions();
+	const palette = useThemeColorPalette();
 
 	const {
 		columns = 3,
@@ -397,8 +399,8 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 						title={__('Divider', 'nextora')}
 						colorSettings={[
 							{
-								value: dividerColor,
-								onChange: (value) => setAttributes({ dividerColor: value ?? '' }),
+								value: colorValueForPicker(dividerColor, palette),
+								onChange: (value) => setAttributes({ dividerColor: normalizeColorForStorage(value, palette) }),
 								label: __('Divider color', 'nextora'),
 							},
 						]}
@@ -410,13 +412,13 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
-							value: numberColor,
-							onChange: (value) => setAttributes({ numberColor: value ?? '' }),
+							value: colorValueForPicker(numberColor, palette),
+							onChange: (value) => setAttributes({ numberColor: normalizeColorForStorage(value, palette) }),
 							label: __('Number', 'nextora'),
 						},
 						{
-							value: labelColor,
-							onChange: (value) => setAttributes({ labelColor: value ?? '' }),
+							value: colorValueForPicker(labelColor, palette),
+							onChange: (value) => setAttributes({ labelColor: normalizeColorForStorage(value, palette) }),
 							label: __('Label', 'nextora'),
 						},
 					]}

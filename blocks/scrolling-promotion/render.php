@@ -9,6 +9,11 @@
 
 declare( strict_types=1 );
 
+$lucide_path = __DIR__ . '/../advanced-icon/lucide.php';
+if ( is_readable( $lucide_path ) ) {
+	require_once $lucide_path;
+}
+
 if ( ! function_exists( 'nextora_scrolling_promotion_enqueue_view_script' ) ) {
 	/**
 	 * Ensure the block view script is queued (marquee loop fill).
@@ -57,6 +62,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
@@ -131,7 +140,7 @@ if ( ! function_exists( 'nextora_scrolling_promotion_normalize_item_type' ) ) {
 	 */
 	function nextora_scrolling_promotion_normalize_item_type( array $item ): string {
 		$type = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
-		if ( in_array( $type, array( 'text', 'image', 'text-image' ), true ) ) {
+		if ( in_array( $type, array( 'text', 'image', 'text-image', 'icon-text' ), true ) ) {
 			return $type;
 		}
 		return 'text';
@@ -155,6 +164,11 @@ if ( ! function_exists( 'nextora_scrolling_promotion_item_has_content' ) ) {
 
 		if ( 'image' === $type ) {
 			return $image_id > 0 || '' !== $image_url;
+		}
+
+		if ( 'icon-text' === $type ) {
+			$icon_name = isset( $item['iconName'] ) ? trim( (string) $item['iconName'] ) : '';
+			return '' !== $text && '' !== $icon_name;
 		}
 
 		return '' !== $text || $image_id > 0 || '' !== $image_url;
@@ -250,6 +264,29 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_body' ) ) {
 			return implode( '', $parts );
 		}
 
+		if ( 'icon-text' === $type ) {
+			$icon_name = isset( $item['iconName'] ) ? trim( (string) $item['iconName'] ) : '';
+			$icon_size = isset( $item['iconSize'] ) ? (int) $item['iconSize'] : 24;
+			$icon_size = max( 12, min( 48, $icon_size ) );
+			$icon_html = '';
+
+			if ( '' !== $icon_name && function_exists( 'nextora_get_lucide_svg' ) ) {
+				$icon_html = nextora_get_lucide_svg( $icon_name, $icon_size, 'currentColor', 2, '' );
+			}
+
+			$inner = '';
+			if ( '' !== $icon_html ) {
+				$inner .= $icon_html;
+			}
+			if ( '' !== $text ) {
+				$inner .= '<span class="nextora-scrolling-promotion__text">' . esc_html( $text ) . '</span>';
+			}
+			if ( '' === $inner ) {
+				return '';
+			}
+			return '<span class="nextora-scrolling-promotion__item-body nextora-scrolling-promotion__item-body--icon-text">' . $inner . '</span>';
+		}
+
 		if ( 'text-image' === $type ) {
 			$inner = '';
 			if ( '' !== $img ) {
@@ -320,6 +357,8 @@ foreach ( $raw_items as $item ) {
 		'imageId'  => isset( $item['imageId'] ) ? (int) $item['imageId'] : 0,
 		'imageUrl' => isset( $item['imageUrl'] ) ? trim( (string) $item['imageUrl'] ) : '',
 		'imageAlt' => isset( $item['imageAlt'] ) ? trim( (string) $item['imageAlt'] ) : '',
+		'iconName' => isset( $item['iconName'] ) ? trim( (string) $item['iconName'] ) : '',
+		'iconSize' => isset( $item['iconSize'] ) ? (int) $item['iconSize'] : 24,
 	);
 	if ( nextora_scrolling_promotion_item_has_content( $normalized ) ) {
 		$items[] = $normalized;
@@ -333,6 +372,8 @@ if ( array() === $items ) {
 		'imageId'  => 0,
 		'imageUrl' => '',
 		'imageAlt' => '',
+		'iconName' => '',
+		'iconSize' => 24,
 	);
 }
 
