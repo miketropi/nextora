@@ -182,14 +182,14 @@ export default function ItemModalForm({
 			</div>
 
 			<div className="nextora-box-icon__item-modal-form-fields">
-				{cardTemplate === 'highlights' || cardTemplate === 'timeline' ? (
+				{cardTemplate === 'highlights' || cardTemplate === 'timeline' || cardTemplate === 'template-4' ? (
 					<div className="nextora-box-icon__item-modal-form-group">
 						<p className="nextora-box-icon__item-modal-form-heading">{__('Number', 'nextora')}</p>
 						<TextControl
-							label={cardTemplate === 'timeline' ? __('Time label', 'nextora') : __('Stat number', 'nextora')}
+							label={cardTemplate === 'timeline' ? __('Time label', 'nextora') : cardTemplate === 'template-4' ? __('Tag label', 'nextora') : __('Stat number', 'nextora')}
 							value={item.number}
 							onChange={(number) => onPatch({ number: number ?? '' })}
-							help={cardTemplate === 'timeline' ? __('Time marker shown above the phase title (e.g. T + 0H).', 'nextora') : __('Large number shown above the label (e.g. 1200+).', 'nextora')}
+							help={cardTemplate === 'timeline' ? __('Time marker shown above the phase title (e.g. T + 0H).', 'nextora') : cardTemplate === 'template-4' ? __('Label shown in the row tag (e.g. ADOPT). Shown as "01 · ADOPT".', 'nextora') : __('Large number shown above the label (e.g. 1200+).', 'nextora')}
 						/>
 					</div>
 				) : null}

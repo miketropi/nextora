@@ -1,7 +1,7 @@
 export type BoxIconLayoutMode = 'slider' | 'grid';
 export type BoxIconIconSource = 'theme' | 'upload';
 export type BoxIconIconStyle = 'default' | 'stacked' | 'framed';
-export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4';
 export type BoxIconScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxIconItem {
@@ -86,4 +86,14 @@ export interface BoxIconAttributes {
 	showTimelineLine: boolean;
 	showTimelineTime: boolean;
 	timelineAlign: 'left' | 'center' | 'right';
+	showEyebrow: boolean;
+	eyebrowText: string;
+	showSubtitle: boolean;
+	subtitleText: string;
+	showHeading: boolean;
+	headingText: string;
+	headingLevel: number;
+	showDescription: boolean;
+	descriptionText: string;
+	headerAlign: string;
 }

@@ -1,3 +1,5 @@
+export {};
+
 /**
  * Count-up animation for `nextora/counters` (front end).
  */

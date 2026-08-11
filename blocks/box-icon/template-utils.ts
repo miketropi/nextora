@@ -1,6 +1,6 @@
 import type { BoxIconAttributes } from './types';
 
-export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4';
 
 export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	value: BoxIconCardTemplate;
@@ -11,6 +11,7 @@ export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	{ value: 'ways', labelKey: 'Template 01' },
 	{ value: 'highlights', labelKey: 'Template 02' },
 	{ value: 'timeline', labelKey: 'Template 03' },
+	{ value: 'template-4', labelKey: 'Template 04' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BoxIconCardTemplate {
@@ -25,6 +26,9 @@ export function normalizeCardTemplate(value: string | undefined): BoxIconCardTem
 	}
 	if (value === 'timeline') {
 		return 'timeline';
+	}
+	if (value === 'template-4') {
+		return 'template-4';
 	}
 	return 'default';
 }
@@ -113,6 +117,27 @@ export function getTemplateDefaultAttributes(
 			iconSize: 20,
 			iconCircleRadius: 50,
 			iconStyle: 'framed',
+			showPagination: false,
+			showArrows: false,
+		};
+	}
+
+	if (template === 'template-4') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 1,
+			disableResponsiveCarousel: true,
+			spaceBetween: 0,
+			slidesPerView: 1.15,
+			slidesPerViewTablet: 1,
+			slidesPerViewMobile: 1,
+			cardBorderWidth: 0,
+			cardBorderRadius: 0,
+			cardMinHeight: 0,
+			iconCircleSize: 68,
+			iconSize: 32,
+			iconCircleRadius: 29,
+			iconStyle: 'stacked',
 			showPagination: false,
 			showArrows: false,
 		};
