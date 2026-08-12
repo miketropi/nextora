@@ -1,0 +1,270 @@
+/**
+ * Scrolling Image Strip — front-end CSS.
+ */
+
+.wp-block-nextora-scrolling-image-strip {
+  border: 0 !important;
+}
+
+.nextora-sis {
+  --nextora-sis-height: 200px;
+  --nextora-sis-aspect-ratio: 3/4;
+  --nextora-sis-fit: cover;
+  --nextora-sis-radius: 16px;
+  --nextora-sis-gap: 16px;
+  --nextora-sis-speed: 40s;
+  --nextora-sis-tilt-even: -2deg;
+  --nextora-sis-tilt-odd: 5deg;
+  --nextora-sis-overlay-color: transparent;
+  --nextora-sis-overlay-opacity: 0;
+  --nextora-sis-bg: transparent;
+  --nextora-sis-min-height: auto;
+  --nextora-sis-section-height: auto;
+  --nextora-sis-border-color: transparent;
+  --nextora-sis-border-width: 0;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  background-color: var(--nextora-sis-bg);
+  border-top: var(--nextora-sis-border-width) solid var(--nextora-sis-border-color);
+  border-bottom: var(--nextora-sis-border-width) solid var(--nextora-sis-border-color);
+  border-left: 0;
+  border-right: 0;
+  min-height: var(--nextora-sis-min-height);
+  height: var(--nextora-sis-section-height);
+  box-sizing: border-box;
+}
+
+/* ── Track ── */
+
+.nextora-sis__track {
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Inner flex + keyframes ── */
+
+.nextora-sis__inner {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  width: max-content;
+  gap: 0;
+}
+
+.nextora-sis__half {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nextora-sis__inner--left {
+  animation: nextora-sis-scroll-left var(--nextora-sis-speed) linear infinite;
+}
+
+.nextora-sis__inner--right {
+  animation: nextora-sis-scroll-right var(--nextora-sis-speed) linear infinite;
+}
+
+@keyframes nextora-sis-scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes nextora-sis-scroll-right {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Pause on hover */
+.nextora-sis:hover .nextora-sis__inner {
+  animation-play-state: paused;
+}
+
+.nextora-sis--no-pause-on-hover:hover .nextora-sis__inner {
+  animation-play-state: running;
+}
+
+.nextora-sis:focus-within .nextora-sis__inner {
+  animation-play-state: paused;
+}
+
+/* ── Image items and tilt ── */
+
+.nextora-sis__item {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 0 calc(var(--nextora-sis-gap) / 2);
+  align-items: center;
+  justify-content: center;
+}
+
+.nextora-sis__item--tilted {
+  transform: rotate(var(--nextora-sis-rotate));
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.nextora-sis__item:not(.nextora-sis__item--tilted) {
+  transform: none;
+}
+
+.nextora-sis__frame {
+  overflow: hidden;
+  border-radius: var(--nextora-sis-radius);
+  aspect-ratio: var(--nextora-sis-aspect-ratio);
+  height: var(--nextora-sis-height);
+  width: auto;
+}
+
+.nextora-sis__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--nextora-sis-fit);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  image-rendering: auto;
+}
+
+/* ── Fade mask ── */
+
+.nextora-sis--mask-horizontal .nextora-sis__track {
+  -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+}
+
+.nextora-sis--mask-vertical-top .nextora-sis__track {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 100%);
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 100%);
+}
+
+.nextora-sis--mask-vertical-bottom .nextora-sis__track {
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 80%, transparent);
+  mask-image: linear-gradient(to bottom, black 0%, black 80%, transparent);
+}
+
+.nextora-sis--mask-vertical-both .nextora-sis__track {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+}
+
+.nextora-sis--mask-both .nextora-sis__track {
+  -webkit-mask-image: radial-gradient(ellipse at center, black 60%, transparent 100%);
+  mask-image: radial-gradient(ellipse at center, black 60%, transparent 100%);
+}
+
+.nextora-sis--mask-none .nextora-sis__track {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* ── Overlay ── */
+
+.nextora-sis__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.nextora-sis__overlay--solid {
+  background-color: var(--nextora-sis-overlay-color);
+  opacity: var(--nextora-sis-overlay-opacity);
+}
+
+.nextora-sis__overlay--fade-right {
+  background: linear-gradient(
+    to right,
+    var(--nextora-sis-overlay-color),
+    transparent 70%
+  );
+  opacity: var(--nextora-sis-overlay-opacity);
+}
+
+.nextora-sis__overlay--cinematic {
+  opacity: var(--nextora-sis-overlay-opacity);
+  background:
+    linear-gradient(
+      to top,
+      var(--nextora-sis-overlay-color) 6%,
+      color-mix(in srgb, var(--nextora-sis-overlay-color) 55%, transparent) 46%,
+      color-mix(in srgb, var(--nextora-sis-overlay-color) 25%, transparent)
+    ),
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--nextora-sis-overlay-color) 80%, transparent),
+      transparent 62%
+    );
+}
+
+.nextora-sis__overlay--diagonal {
+  opacity: var(--nextora-sis-overlay-opacity);
+  background: linear-gradient(
+    105deg,
+    var(--nextora-sis-overlay-color) 32%,
+    color-mix(in srgb, var(--nextora-sis-overlay-color) 70%, transparent) 60%,
+    transparent
+  );
+}
+
+/* ── Scroll reveal ── */
+
+.nextora-sis--scroll-reveal.nextora-sis--reveal-pending:not(.nextora-sis--ready) {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.nextora-sis--scroll-reveal:not(.nextora-sis--reveal-pending),
+.nextora-sis--scroll-reveal.nextora-sis--ready {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .nextora-sis {
+    --nextora-sis-height: calc(var(--nextora-sis-height) * 0.7);
+    --nextora-sis-gap: calc(var(--nextora-sis-gap) * 0.75);
+  }
+}
+
+@media (max-width: 480px) {
+  .nextora-sis {
+    --nextora-sis-height: calc(var(--nextora-sis-height) * 0.55);
+    --nextora-sis-radius: calc(var(--nextora-sis-radius) * 0.75);
+  }
+}
+
+/* ── Prefers reduced motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .nextora-sis__inner {
+    animation: none !important;
+  }
+
+  .nextora-sis__half[aria-hidden="true"] {
+    display: none;
+  }
+
+  .nextora-sis__item--tilted {
+    transform: none !important;
+  }
+
+  .nextora-sis--scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

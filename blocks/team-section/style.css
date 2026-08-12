@@ -234,6 +234,7 @@
 	height: 100%;
 	display: block;
 	object-fit: cover;
+	image-rendering: auto;
 }
 
 .nextora-team-section__card-body {

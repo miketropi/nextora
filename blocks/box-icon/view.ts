@@ -172,7 +172,8 @@ function initScrollReveal(section: HTMLElement): void {
 	const header = section.querySelector<HTMLElement>('.nextora-box-icon__header');
 	const carousel =
 		section.querySelector<HTMLElement>('.nextora-box-icon__carousel-root') ||
-		section.querySelector<HTMLElement>('.nextora-box-icon__timeline-grid');
+		section.querySelector<HTMLElement>('.nextora-box-icon__timeline-grid') ||
+		section.querySelector<HTMLElement>('.nextora-box-icon__ways-rows');
 	const style = section.getAttribute('data-nextora-scroll-reveal-style') || 'default';
 
 	if (style === 'sequential') {
@@ -226,7 +227,7 @@ function initSequentialReveal(
 		const cards = carousel
 			? Array.from(
 					carousel.querySelectorAll<HTMLElement>(
-						'.swiper-slide, .nextora-box-icon__card',
+						'.swiper-slide, .nextora-box-icon__card, .nextora-box-icon__ways-row',
 					),
 				)
 			: [];
@@ -605,6 +606,12 @@ function initCarouselRoots(container: Element | Document = document): void {
 		.querySelectorAll<HTMLElement>('.nextora-box-icon__carousel-root')
 		.forEach((root) => {
 			syncCarouselRoot(root);
+		});
+
+	container
+		.querySelectorAll<HTMLElement>('.nextora-box-icon--template-template-4')
+		.forEach((section) => {
+			markSectionReady(section);
 		});
 }
 

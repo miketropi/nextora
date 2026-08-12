@@ -182,12 +182,12 @@ const cardLinkOptions = [
 
 const titleFontSizeOptions = [
 	{ label: __('Theme default', 'nextora'), value: '' },
-	{ label: __('Small', 'nextora'), value: 'sm' },
+	{ label: __('Small', 'nextora'), value: 'small' },
 	{ label: __('Base', 'nextora'), value: 'base' },
-	{ label: __('Medium', 'nextora'), value: 'md' },
-	{ label: __('Large', 'nextora'), value: 'lg' },
-	{ label: __('Extra Large', 'nextora'), value: 'xl' },
-	{ label: __('2XL', 'nextora'), value: '2xl' },
+	{ label: __('Medium', 'nextora'), value: 'medium' },
+	{ label: __('Large', 'nextora'), value: 'large' },
+	{ label: __('Extra Large', 'nextora'), value: 'x-large' },
+	{ label: __('2XL', 'nextora'), value: 'xx-large' },
 ];
 
 const arrowStyleOptions = [
@@ -288,6 +288,11 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		setAttributes({ [key]: normalizeColorForStorage(value, lookupPalette) } as Partial<BlogListCarouselAttributes>);
 	};
 
+	const titleFontSizeCSS =
+		titleFontSize && ['small', 'base', 'medium', 'large', 'x-large', 'xx-large'].includes(titleFontSize)
+			? `var(--wp--preset--font-size--${titleFontSize})`
+			: undefined;
+
 	const blockProps = useBlockProps({
 		className: 'nextora-blog-list-carousel-block--editor',
 		style: {
@@ -299,6 +304,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 			'--nextora-blc-card-padding': `${cardPadding}px`,
 			'--nextora-blc-img-col-width': `${imageWidthPercent}%`,
 			'--nextora-blc-img-col-gap': '24px',
+			'--nextora-blc-title-font-size': titleFontSizeCSS,
 		} as React.CSSProperties,
 	});
 

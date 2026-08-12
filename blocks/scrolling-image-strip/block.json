@@ -1,0 +1,157 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/scrolling-image-strip",
+  "title": "Scrolling Image Strip",
+  "category": "media",
+  "icon": "images-alt2",
+  "description": "A continuous horizontal scrolling image strip with alternating tilt, fade mask, and overlay.",
+  "keywords": [
+    "image",
+    "marquee",
+    "scrolling",
+    "gallery",
+    "strip",
+    "nextora"
+  ],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": false,
+      "text": false,
+      "link": false
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "dimensions": {
+      "minHeight": true
+    }
+  },
+  "attributes": {
+    "imageIds": {
+      "type": "array",
+      "default": []
+    },
+    "imageHeight": {
+      "type": "number",
+      "default": 200
+    },
+    "imageHeightUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "imageAspectRatio": {
+      "type": "string",
+      "default": "3/4"
+    },
+    "imageFit": {
+      "type": "string",
+      "default": "cover"
+    },
+    "imageBorderRadius": {
+      "type": "number",
+      "default": 16
+    },
+    "imageGap": {
+      "type": "number",
+      "default": 16
+    },
+    "enableTilt": {
+      "type": "boolean",
+      "default": true
+    },
+    "tiltEvenAngle": {
+      "type": "number",
+      "default": -2
+    },
+    "tiltOddAngle": {
+      "type": "number",
+      "default": 5
+    },
+    "direction": {
+      "type": "string",
+      "default": "left"
+    },
+    "speed": {
+      "type": "number",
+      "default": 40
+    },
+    "pauseOnHover": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableFadeMask": {
+      "type": "boolean",
+      "default": true
+    },
+    "fadeMaskDirection": {
+      "type": "string",
+      "default": "horizontal"
+    },
+    "fadeMaskColor": {
+      "type": "string",
+      "default": ""
+    },
+    "overlayColor": {
+      "type": "string",
+      "default": ""
+    },
+    "overlayOpacity": {
+      "type": "number",
+      "default": 0
+    },
+    "overlayStyle": {
+      "type": "string",
+      "default": "solid"
+    },
+    "sectionBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "paddingVertical": {
+      "type": "number",
+      "default": 32
+    },
+    "sectionMinHeight": {
+      "type": "string",
+      "default": ""
+    },
+    "sectionHeight": {
+      "type": "string",
+      "default": ""
+    },
+    "showBorders": {
+      "type": "boolean",
+      "default": false
+    },
+    "borderColor": {
+      "type": "string",
+      "default": ""
+    },
+    "borderWidth": {
+      "type": "number",
+      "default": 1
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    },
+    "ariaLabel": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "render": "file:./render.php"
+}

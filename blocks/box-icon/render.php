@@ -475,10 +475,21 @@ if ( ! in_array( $layout_mode, array( 'slider', 'grid' ), true ) ) {
 }
 
 $card_template = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-$allowed_card_templates = array( 'default', 'ways', 'minimal', 'highlights', 'timeline' );
+$allowed_card_templates = array( 'default', 'ways', 'minimal', 'highlights', 'timeline', 'template-4' );
 if ( ! in_array( $card_template, $allowed_card_templates, true ) ) {
 	$card_template = 'default';
 }
+
+$show_eyebrow  = ! empty( $attributes['showEyebrow'] );
+$eyebrow_text  = isset( $attributes['eyebrowText'] ) ? (string) $attributes['eyebrowText'] : '';
+$show_subtitle = ! empty( $attributes['showSubtitle'] );
+$subtitle_text = isset( $attributes['subtitleText'] ) ? (string) $attributes['subtitleText'] : '';
+$show_heading  = ! empty( $attributes['showHeading'] );
+$heading_text  = isset( $attributes['headingText'] ) ? (string) $attributes['headingText'] : '';
+$heading_level = isset( $attributes['headingLevel'] ) ? max( 2, min( 3, (int) $attributes['headingLevel'] ) ) : 2;
+$show_desc     = ! empty( $attributes['showDescription'] );
+$desc_text     = isset( $attributes['descriptionText'] ) ? (string) $attributes['descriptionText'] : '';
+$header_align  = isset( $attributes['headerAlign'] ) ? (string) $attributes['headerAlign'] : 'center';
 
 $content_max = isset( $attributes['contentMaxWidth'] ) ? trim( (string) $attributes['contentMaxWidth'] ) : '';
 $grid_cols   = isset( $attributes['gridColumns'] ) ? max( 1, min( 6, (int) $attributes['gridColumns'] ) ) : 4;
@@ -632,7 +643,7 @@ $wrapper_classes = array(
 	'nextora-box-icon',
 	'nextora-box-icon--loading',
 	'nextora-box-icon--layout-' . sanitize_html_class( $layout_mode ),
-	'nextora-box-icon--template-' . sanitize_html_class( $card_template ),
+	'nextora-box-icon--template-' . ( 'template-4' === $card_template ? 'template-4' : sanitize_html_class( $card_template ) ),
 );
 if ( $enable_scroll ) {
 	$wrapper_classes[] = 'nextora-box-icon--reveal-pending';
@@ -671,7 +682,75 @@ nextora_box_icon_enqueue_view_script();
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<div class="nextora-box-icon__inner">
-		<?php if ( 'timeline' === $card_template ) : ?>
+		<?php if ( 'template-4' === $card_template ) : ?>
+			<?php
+			$has_header = $show_eyebrow || $show_subtitle || $show_heading || $show_desc;
+			$ways_rows_classes = array(
+				'nextora-box-icon__ways-rows',
+				$has_header ? 'nextora-box-icon__ways-rows--has-header' : '',
+			);
+			?>
+			<div class="<?php echo esc_attr( implode( ' ', array_filter( $ways_rows_classes ) ) ); ?>">
+				<?php if ( $has_header ) : ?>
+					<div class="nextora-box-icon__ways-rows-header nextora-box-icon__header--<?php echo esc_attr( $header_align ); ?>">
+						<?php if ( $show_eyebrow && '' !== $eyebrow_text ) : ?>
+							<span class="nextora-box-icon__eyebrow"><?php echo esc_html( $eyebrow_text ); ?></span>
+						<?php endif; ?>
+						<?php if ( $show_subtitle && '' !== $subtitle_text ) : ?>
+							<p class="nextora-box-icon__ways-rows-subtitle"><?php echo esc_html( $subtitle_text ); ?></p>
+						<?php endif; ?>
+						<?php if ( $show_heading && '' !== $heading_text ) : ?>
+							<<?php echo 'h' . (int) $heading_level; ?> class="nextora-box-icon__heading"><?php echo esc_html( $heading_text ); ?></<?php echo 'h' . (int) $heading_level; ?>>
+						<?php endif; ?>
+						<?php if ( $show_desc && '' !== $desc_text ) : ?>
+							<p class="nextora-box-icon__description-intro"><?php echo esc_html( $desc_text ); ?></p>
+						<?php endif; ?>
+					</div>
+				<?php endif; ?>
+
+				<div class="nextora-box-icon__ways-rows-list">
+					<?php foreach ( $items as $index => $item ) :
+						$row_icon = nextora_box_icon_render_icon( $item, $icon_defaults );
+						$row_title = (string) $item['title'];
+						$row_desc  = (string) $item['description'];
+						$row_number = isset( $item['number'] ) ? trim( (string) $item['number'] ) : '';
+						$row_show_link = ! empty( $item['showLink'] );
+						$row_link_label = (string) $item['linkLabel'];
+						$row_link_url   = (string) $item['linkUrl'];
+						$row_link_target = (string) $item['linkTarget'];
+					?>
+						<article class="nextora-box-icon__ways-row">
+							<?php if ( '' !== $row_icon ) : ?>
+								<div class="nextora-box-icon__ways-row-icon"><?php echo $row_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*?></div>
+							<?php endif; ?>
+							<div class="nextora-box-icon__ways-row-body">
+								<span class="nextora-box-icon__ways-row-tag"><?php echo esc_html( sprintf( '%02d · %s', $index + 1, '' !== $row_number ? strtoupper( $row_number ) : strtoupper( $row_title ) ) ); ?></span>
+								<?php if ( '' !== trim( wp_strip_all_tags( $row_title ) ) ) : ?>
+									<h3 class="nextora-box-icon__title"><?php echo esc_html( $row_title ); ?></h3>
+								<?php endif; ?>
+								<?php if ( '' !== trim( wp_strip_all_tags( $row_desc ) ) ) : ?>
+									<p class="nextora-box-icon__description"><?php echo esc_html( $row_desc ); ?></p>
+								<?php endif; ?>
+							</div>
+							<?php if ( $row_show_link && '' !== $row_link_url ) : ?>
+								<a
+									class="nextora-box-icon__ways-row-arrow"
+									href="<?php echo esc_url( $row_link_url ); ?>"
+									<?php echo '_blank' === $row_link_target ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>
+									aria-label="<?php echo '' !== $row_link_label ? esc_attr( $row_link_label ) : esc_attr__( 'Go to page', 'nextora' ); ?>"
+								>
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+								</a>
+							<?php else : ?>
+								<span class="nextora-box-icon__ways-row-arrow" aria-hidden="true">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+								</span>
+							<?php endif; ?>
+						</article>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		<?php elseif ( 'timeline' === $card_template ) : ?>
 			<div class="nextora-box-icon__timeline-grid<?php echo ! $show_timeline_line ? ' nextora-box-icon__timeline-grid--no-line' : ''; ?><?php echo 'left' !== $timeline_align ? ' nextora-box-icon--timeline-align-' . esc_attr( $timeline_align ) : ''; ?>">
 				<?php
 				foreach ( $items as $index => $item ) {

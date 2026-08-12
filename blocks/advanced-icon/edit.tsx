@@ -179,6 +179,29 @@ export default function IconEdit( {
 			: { 'data-nextora-scroll-animation-init': '1' } ),
 	} );
 
+	/*
+     * Strip spacing classes/styles from the outer wrapper — ServerSideRender
+	 * already applies them on the inner wrapper via render.php.
+	 */
+	if ( typeof blockProps.className === 'string' ) {
+		blockProps.className = blockProps.className
+			.split( /\s+/ )
+			.filter( ( c: string ) => ! /^has-(margin|padding)-/.test( c ) )
+			.join( ' ' )
+			.trim();
+	}
+
+	if ( blockProps.style && typeof blockProps.style === 'object' ) {
+		const spacingProps = new Set( [ 'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft' ] );
+		const filtered: Record< string, string > = {};
+		for ( const [ key, value ] of Object.entries( blockProps.style as Record< string, string > ) ) {
+			if ( ! spacingProps.has( key ) ) {
+				filtered[ key ] = value;
+			}
+		}
+		blockProps.style = filtered;
+	}
+
 	const hasSurfaceStyle = iconStyle === 'stacked' || iconStyle === 'framed';
 
 	const showLinkAriaWarning = '' !== linkUrl.trim() && '' === ariaLabel.trim();

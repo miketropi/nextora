@@ -141,6 +141,16 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		showTimelineLine = true,
 		showTimelineTime = true,
 		timelineAlign = 'left',
+		showEyebrow = false,
+		eyebrowText = '',
+		showSubtitle = false,
+		subtitleText = '',
+		showHeading = false,
+		headingText = '',
+		headingLevel = 2,
+		showDescription = false,
+		descriptionText = '',
+		headerAlign = 'center',
 	} = attributes;
 
 	const cardTemplate = normalizeCardTemplate(cardTemplateRaw);
@@ -296,6 +306,46 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					label: __('Icon color', 'nextora'),
 				},
 				...navColors,
+			];
+		}
+
+		if (cardTemplate === 'template-4') {
+			return [
+				{
+					value: colorValueForPicker(waysAccentColor1, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('waysAccentColor1', v),
+					label: __('Accent color (rows 1, 4, 7…)', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(waysAccentColor2, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('waysAccentColor2', v),
+					label: __('Accent color (rows 2, 5, 8…)', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(waysAccentColor3, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('waysAccentColor3', v),
+					label: __('Accent color (rows 3, 6, 9…)', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(cardBorderColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardBorderColor', v),
+					label: __('Divider color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(cardTitleColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardTitleColor', v),
+					label: __('Title color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(cardDescriptionColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardDescriptionColor', v),
+					label: __('Description color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(iconColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('iconColor', v),
+					label: __('Icon color', 'nextora'),
+				},
 			];
 		}
 
@@ -630,7 +680,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 							});
 						}}
 					/>
-				{cardTemplate !== 'timeline' ? (
+				{cardTemplate !== 'timeline' && cardTemplate !== 'template-4' ? (
 					<SelectControl
 					label={__('Desktop layout', 'nextora')}
 					help={
@@ -657,7 +707,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				/>
 				) : null}
 
-					{layoutMode === 'grid' ? (
+				{layoutMode === 'grid' && cardTemplate !== 'template-4' ? (
 						<>
 							<RangeControl
 								label={__('Grid columns', 'nextora')}
@@ -748,15 +798,19 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						</>
 					) : null}
 
-					<p className="nextora-box-icon__inspector-subheading">{__('Cards', 'nextora')}</p>
-					<RangeControl
-						label={__('Gap between cards (px)', 'nextora')}
-						value={spaceBetween}
-						onChange={(v) => setAttributes({ spaceBetween: v ?? 18 })}
-						min={0}
-						max={60}
-					/>
-					{cardTemplate !== 'minimal' && cardTemplate !== 'timeline' ? (
+					{cardTemplate !== 'template-4' ? (
+						<>
+						<p className="nextora-box-icon__inspector-subheading">{__('Cards', 'nextora')}</p>
+						<RangeControl
+							label={__('Gap between cards (px)', 'nextora')}
+							value={spaceBetween}
+							onChange={(v) => setAttributes({ spaceBetween: v ?? 18 })}
+							min={0}
+							max={60}
+						/>
+						</>
+					) : null}
+					{cardTemplate !== 'minimal' && cardTemplate !== 'timeline' && cardTemplate !== 'template-4' ? (
 						<RangeControl
 							label={__('Card min height (px)', 'nextora')}
 							value={cardMinHeight}
@@ -765,6 +819,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 							max={400}
 						/>
 					) : null}
+					{cardTemplate !== 'template-4' ? (
 					<SpacingSizesControl
 						label={__('Card padding', 'nextora')}
 						values={cardPaddingValues}
@@ -775,7 +830,8 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						}
 						minimumCustomValue={0}
 					/>
-					{cardTemplate !== 'timeline' ? (
+					) : null}
+					{cardTemplate !== 'timeline' && cardTemplate !== 'template-4' ? (
 					<RangeControl
 						label={__('Card border width (px)', 'nextora')}
 						value={cardBorderWidth}
@@ -784,7 +840,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						max={4}
 					/>
 					) : null}
-					{cardTemplate !== 'timeline' ? (
+					{cardTemplate !== 'timeline' && cardTemplate !== 'template-4' ? (
 					<RangeControl
 						label={__('Card border radius (px)', 'nextora')}
 						value={cardBorderRadius}
@@ -794,7 +850,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					/>
 					) : null}
 
-					{cardTemplate === 'timeline' || (layoutMode === 'grid' && disableResponsiveCarousel) ? null : (
+					{cardTemplate === 'timeline' || cardTemplate === 'template-4' || (layoutMode === 'grid' && disableResponsiveCarousel) ? null : (
 						<>
 					<p className="nextora-box-icon__inspector-subheading">
 						{layoutMode === 'grid'
@@ -896,6 +952,13 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 								'nextora',
 							)}
 						</p>
+					) : cardTemplate === 'template-4' ? (
+						<p className="nextora-box-icon__inspector-items-help">
+							{__(
+								'Template 04 uses accent gradient icons beside each row. Adjust sizes below.',
+								'nextora',
+							)}
+						</p>
 					) : cardTemplate === 'minimal' ? (
 						<p className="nextora-box-icon__inspector-items-help">
 							{__(
@@ -950,6 +1013,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						min={32}
 						max={80}
 					/>
+					<div style={{height:1}}></div>
 					<RangeControl
 						label={__('Stroke width', 'nextora')}
 						value={strokeWidth}
@@ -1059,6 +1123,73 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			) : null}
 
 			<div {...blockProps}>
+				{cardTemplate === 'template-4' ? (
+					<div className={`nextora-box-icon__ways-rows${(showEyebrow || showSubtitle || showHeading || showDescription) ? ' nextora-box-icon__ways-rows--has-header' : ''}`}>
+						{(showEyebrow || showSubtitle || showHeading || showDescription) ? (
+							<div className={`nextora-box-icon__ways-rows-header nextora-box-icon__header--${headerAlign}`}>
+								{showEyebrow ? (
+									<span className="nextora-box-icon__eyebrow">{eyebrowText || __('Get involved', 'nextora')}</span>
+								) : null}
+								{showSubtitle ? (
+									<p className="nextora-box-icon__ways-rows-subtitle">{subtitleText || __('Subtitle...', 'nextora')}</p>
+								) : null}
+								{showHeading ? (
+									<h2 className="nextora-box-icon__heading">{headingText || __('Title here', 'nextora')}</h2>
+								) : null}
+								{showDescription ? (
+									<p className="nextora-box-icon__description-intro">{descriptionText || __('Description...', 'nextora')}</p>
+								) : null}
+							</div>
+						) : null}
+						<div className="nextora-box-icon__ways-rows-list">
+							{items.map((item, index) => (
+								<article key={item.id} className="nextora-box-icon__ways-row nextora-box-icon__card--editable">
+									<button
+										type="button"
+										className="nextora-box-icon__card-edit"
+										onClick={() => setEditingItemId(item.id)}
+									>
+										{__('Edit item', 'nextora')}
+									</button>
+									<div className="nextora-box-icon__ways-row-icon">
+										<BoxIconEditorIcon
+											iconSource={item.iconSource}
+											iconName={item.iconName}
+											uploadedIconUrl={item.uploadedIconUrl}
+											iconSize={iconSize}
+											strokeWidth={strokeWidth}
+											iconStyle={iconStyle}
+											iconCircleSize={iconCircleSize}
+											iconCircleRadius={iconCircleRadius}
+											iconColor={item.iconColor || iconColor}
+											iconSurfaceBackgroundColor={
+												item.iconSurfaceBackgroundColor || iconSurfaceBackgroundColor
+											}
+											iconSurfaceBorderColor={iconSurfaceBorderColor}
+											lookupPalette={lookupPalette}
+										/>
+									</div>
+									<div className="nextora-box-icon__ways-row-body">
+										<span className="nextora-box-icon__ways-row-tag">
+											{`${String(index + 1).padStart(2, '0')} · ${(item.number || item.title || __('LABEL', 'nextora')).toUpperCase()}`}
+										</span>
+										<h3 className="nextora-box-icon__title">
+											{item.title || __('Title', 'nextora')}
+										</h3>
+										<p className="nextora-box-icon__description">
+											{item.description || __('Description…', 'nextora')}
+										</p>
+									</div>
+									{item.showLink && item.linkLabel && item.linkUrl ? (
+										<span className="nextora-box-icon__ways-row-arrow nextora-box-icon__link--static" aria-hidden="true">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+										</span>
+									) : null}
+								</article>
+							))}
+						</div>
+					</div>
+				) : (
 				<div
 					className="nextora-box-icon__cards"
 					aria-label={__('Box content items', 'nextora')}
@@ -1228,6 +1359,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					);
 					})}
 				</div>
+				)}
 			</div>
 		</>
 	);

@@ -1,0 +1,359 @@
+/**
+ * Expanding Cards — front-end styles.
+ * Desktop: horizontal flex row with hover expand.
+ * Mobile: stacked cards with visible content.
+ */
+
+/* ==========================================================================
+   Block wrapper
+   ========================================================================== */
+
+.wp-block-nextora-expanding-cards {
+  width: 100%;
+  border: none;
+}
+
+.wp-block-nextora-expanding-cards .has-scroll-animation .nextora-expanding-cards__card {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.wp-block-nextora-expanding-cards.has-scroll-animation.is-visible .nextora-expanding-cards__card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.wp-block-nextora-expanding-cards.has-scroll-animation.is-visible .nextora-expanding-cards__card:nth-child(1) { transition-delay: 0.1s; }
+.wp-block-nextora-expanding-cards.has-scroll-animation.is-visible .nextora-expanding-cards__card:nth-child(2) { transition-delay: 0.2s; }
+.wp-block-nextora-expanding-cards.has-scroll-animation.is-visible .nextora-expanding-cards__card:nth-child(3) { transition-delay: 0.3s; }
+.wp-block-nextora-expanding-cards.has-scroll-animation.is-visible .nextora-expanding-cards__card:nth-child(4) { transition-delay: 0.4s; }
+.wp-block-nextora-expanding-cards.has-scroll-animation.is-visible .nextora-expanding-cards__card:nth-child(5) { transition-delay: 0.5s; }
+.wp-block-nextora-expanding-cards.has-scroll-animation.is-visible .nextora-expanding-cards__card:nth-child(n+6) { transition-delay: 0.6s; }
+
+/* ==========================================================================
+   Card row
+   ========================================================================== */
+
+.nextora-expanding-cards__row {
+  display: flex;
+  gap: var(--nextora-ec-gap, 10px);
+  height: var(--nextora-ec-height, 400px);
+}
+
+/* ==========================================================================
+   Card
+   ========================================================================== */
+
+.nextora-expanding-cards__card {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  border-radius: var(--nextora-ec-radius, 12px);
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: none;
+  cursor: pointer;
+  transition: flex 0.5s ease-in-out;
+  appearance: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+  color: inherit;
+}
+
+/* Active card — expanded on load */
+.nextora-expanding-cards__card--active {
+  flex: 2.5;
+}
+
+/* When ANY card in the row is hovered — reset all to flex: 1 (active card reverts) */
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card {
+  flex: 1;
+}
+
+/* Hovered card expands — same size as active-card default, so no size jump */
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover,
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible {
+  flex: 2.5;
+}
+
+.nextora-expanding-cards__card:focus-visible {
+  outline: 2px solid var(--wp--preset--color--primary, #3b82f6);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   Background image
+   ========================================================================== */
+
+.nextora-expanding-cards__card-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform 0.6s ease;
+}
+
+.nextora-expanding-cards__card:hover .nextora-expanding-cards__card-bg,
+.nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-bg,
+.nextora-expanding-cards__card--active .nextora-expanding-cards__card-bg {
+  transform: scale(1.05);
+}
+
+/* Row hovered — reset bg scale on all cards */
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card .nextora-expanding-cards__card-bg {
+  transform: scale(1);
+}
+
+/* Hovered card — scale bg */
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-bg,
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-bg {
+  transform: scale(1.05);
+}
+
+/* ==========================================================================
+   Overlay — only visible on expanded cards (active or hovered)
+   ========================================================================== */
+
+.nextora-expanding-cards__card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    var(--nextora-ec-overlay-bg, #000000) 0%,
+    var(--nextora-ec-overlay-bg, #000000) 35%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+/* Active card overlay — visible from load, uses setting opacity */
+.nextora-expanding-cards__card--active .nextora-expanding-cards__card-overlay {
+  opacity: var(--nextora-ec-overlay-opacity, 0.7);
+}
+
+/* Row hovered — hide overlay on all cards */
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card .nextora-expanding-cards__card-overlay {
+  opacity: 0;
+}
+
+/* Hovered card — show overlay using setting opacity */
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-overlay,
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-overlay {
+  opacity: var(--nextora-ec-overlay-opacity, 0.7);
+}
+
+/* ==========================================================================
+   Card content — hidden by default, slides up on expand
+   ========================================================================== */
+
+.nextora-expanding-cards__card-content {
+  position: absolute;
+  bottom: var(--nextora-ec-content-padding-y, 24px);
+  left: var(--nextora-ec-content-padding-x, 24px);
+  right: var(--nextora-ec-content-padding-x, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  opacity: 0;
+  transform: translateY(20px);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Active card — content visible immediately with slide-up, pointer-events restored */
+.nextora-expanding-cards__card--active .nextora-expanding-cards__card-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease 0.15s, transform 0.3s ease 0.15s;
+  pointer-events: auto;
+}
+
+/* Row hovered — hide content on all cards */
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card .nextora-expanding-cards__card-content {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+}
+
+/* Hovered card — content slides up after flex expansion is done (0.55s delay), pointer-events restored */
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-content,
+.nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.2s ease 0.65s, transform 0.2s ease 0.65s;
+  pointer-events: auto;
+}
+
+/* ==========================================================================
+   Heading
+   ========================================================================== */
+
+.nextora-expanding-cards__card-heading {
+  font-size: var(--nextora-ec-heading-size, var(--wp--preset--font-size--medium));
+  font-weight: 700;
+  color: var(--nextora-ec-heading-color, #ffffff);
+  line-height: 1.2;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   Description
+   ========================================================================== */
+
+.nextora-expanding-cards__card-description {
+  font-size: var(--nextora-ec-description-size, var(--wp--preset--font-size--small));
+  color: var(--nextora-ec-description-color, rgba(255, 255, 255, 0.85));
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* ==========================================================================
+   Card button (outline pill)
+   ========================================================================== */
+
+.nextora-expanding-cards__card-content .nextora-expanding-cards__card-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  padding: 0.6rem 1.25rem;
+  border: 1.5px solid var(--nextora-ec-button-border-color, #ffffff);
+  border-radius: 999px;
+  color: var(--nextora-ec-button-text-color, #ffffff);
+  background: var(--nextora-ec-button-bg-color, transparent);
+  font-size: var(--nextora-ec-button-size, var(--wp--preset--font-size--small));
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.4;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  text-decoration: none;
+}
+
+.nextora-expanding-cards__card-button-icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .wp-block-nextora-expanding-cards.has-scroll-animation .nextora-expanding-cards__card {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .nextora-expanding-cards__card {
+    transition: none;
+  }
+
+  .nextora-expanding-cards__card-bg {
+    transition: none;
+  }
+
+  .nextora-expanding-cards__card-overlay {
+    transition: none;
+  }
+
+  .nextora-expanding-cards__card-content {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Responsive — mobile (stacked vertical, hover → always visible)
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .nextora-expanding-cards__row {
+    flex-direction: column;
+    height: auto;
+    gap: var(--nextora-ec-gap, 10px);
+  }
+
+  .nextora-expanding-cards__card {
+    flex: none;
+    height: 280px;
+  }
+
+  /* Keep the stacked mobile layout static; touch devices can retain :hover after tapping. */
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible {
+    flex: none;
+  }
+
+  .nextora-expanding-cards__card-content {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card .nextora-expanding-cards__card-content,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-content,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-content {
+    opacity: 1;
+    transform: translateY(0);
+    transition: none;
+    pointer-events: auto;
+  }
+
+  .nextora-expanding-cards__card-overlay {
+    opacity: var(--nextora-ec-overlay-opacity, 0.7);
+  }
+
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card .nextora-expanding-cards__card-overlay,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-overlay,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-overlay {
+    opacity: var(--nextora-ec-overlay-opacity, 0.7);
+  }
+
+  .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__card--active .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-bg {
+    transform: none;
+  }
+}
+
+/* Extra small */
+@media (max-width: 480px) {
+  .nextora-expanding-cards__card {
+    height: 220px;
+  }
+
+  .nextora-expanding-cards__card-content {
+    bottom: calc(var(--nextora-ec-content-padding-y, 24px) * 0.75);
+    left: calc(var(--nextora-ec-content-padding-x, 24px) * 0.75);
+    right: calc(var(--nextora-ec-content-padding-x, 24px) * 0.75);
+    gap: 0.375rem;
+  }
+
+  .nextora-expanding-cards__card-heading {
+    font-size: calc(var(--nextora-ec-heading-size, var(--wp--preset--font-size--medium-plus)) * 0.9);
+  }
+
+  .nextora-expanding-cards__card-description {
+    font-size: calc(var(--nextora-ec-description-size, var(--wp--preset--font-size--small)) * 0.9);
+  }
+
+  .nextora-expanding-cards__card-button {
+    padding: 0.375rem 1rem;
+    font-size: calc(var(--nextora-ec-button-size, var(--wp--preset--font-size--small)) * 0.9);
+  }
+}

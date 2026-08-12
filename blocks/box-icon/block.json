@@ -104,6 +104,8 @@
 		},
 		"showEyebrow": { "type": "boolean", "default": false },
 		"eyebrowText": { "type": "string", "default": "Get involved" },
+		"showSubtitle": { "type": "boolean", "default": false },
+		"subtitleText": { "type": "string", "default": "" },
 		"showHeading": { "type": "boolean", "default": false },
 		"headingText": { "type": "string", "default": "Four ways to fight hunger." },
 		"headingLevel": { "type": "number", "default": 2 },

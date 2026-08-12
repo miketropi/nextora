@@ -1,3 +1,5 @@
+export {};
+
 /**
  * Text List Hover Image — front-end JavaScript
  * Hover image follows cursor with smooth lerp. Scroll animation via IntersectionObserver.

@@ -327,7 +327,7 @@
 		--nextora-event-card-bg,
 		var(--wp--preset--color--base, #fff)
 	);
-	border: 2px solid
+	border: 1px solid
 		var(
 			--nextora-event-card-border-color,
 			rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.12)
@@ -412,7 +412,7 @@
 	display: grid;
 	gap: 0.5rem;
 	font-size: var(--wp--preset--font-size--small, 0.84375rem);
-	font-weight: 600;
+	font-weight: 400;
 	color: var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #5a5a5a));
 	margin-bottom: 1.125rem;
 }

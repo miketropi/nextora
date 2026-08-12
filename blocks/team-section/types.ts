@@ -58,7 +58,7 @@ export interface TeamSectionAttributes {
 	showArrows: boolean;
 	freeMode: boolean;
 	grabCursor: boolean;
-	backgroundColor: string;
+	sectionBackgroundColor: string;
 	paginationColor: string;
 	paginationActiveColor: string;
 	cardBackgroundColor: string;

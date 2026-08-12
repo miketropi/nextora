@@ -14,6 +14,23 @@ function resolveColorValue(raw: string): string {
 	return '';
 }
 
+function resolveFontSizeValue(raw: string): string | undefined {
+	const value = raw.trim();
+	if (!value) {
+		return undefined;
+	}
+	if (/^clamp\(.+\)$/i.test(value) || /^[\d.]+(?:rem|px|em|vw|vh|%)$/i.test(value)) {
+		return value;
+	}
+	if (/^[\d.]+$/.test(value)) {
+		return `${value}px`;
+	}
+	if (/^[a-z][a-z0-9-]*$/.test(value)) {
+		return `var(--wp--preset--font-size--${value})`;
+	}
+	return value;
+}
+
 export function createTestimonialId(): string {
 	if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
 		return crypto.randomUUID();
@@ -88,6 +105,8 @@ export function buildSectionStyleVars(attrs: {
 	arrowColor?: string;
 	arrowBorderColor?: string;
 	quoteColor?: string;
+	quoteFontFamily?: string;
+	quoteFontSize?: string;
 	labelColor?: string;
 	authorColor?: string;
 	authorNameColor?: string;
@@ -117,6 +136,18 @@ export function buildSectionStyleVars(attrs: {
 	if (attrs.arrowColor) vars['--nextora-testimonial-arrow-color'] = resolveColorValue(attrs.arrowColor);
 	if (attrs.arrowBorderColor) vars['--nextora-testimonial-arrow-border'] = resolveColorValue(attrs.arrowBorderColor);
 	if (attrs.quoteColor) vars['--nextora-testimonial-quote-color'] = resolveColorValue(attrs.quoteColor);
+	if (attrs.quoteFontFamily && attrs.quoteFontFamily.trim() !== '') {
+		const ff = attrs.quoteFontFamily.trim();
+		vars['--nextora-testimonial-quote-font-family'] = /^[a-z0-9-]+$/.test(ff)
+			? `var(--wp--preset--font-family--${ff})`
+			: ff;
+	}
+	if (attrs.quoteFontSize) {
+		const resolvedQuoteSize = resolveFontSizeValue(attrs.quoteFontSize);
+		if (resolvedQuoteSize) {
+			vars['--nextora-testimonial-quote-size'] = resolvedQuoteSize;
+		}
+	}
 	if (attrs.labelColor) vars['--nextora-testimonial-label-color'] = resolveColorValue(attrs.labelColor);
 	if (attrs.authorColor) vars['--nextora-testimonial-author-color'] = resolveColorValue(attrs.authorColor);
 	if (attrs.authorNameColor) vars['--nextora-testimonial-author-name-color'] = resolveColorValue(attrs.authorNameColor);

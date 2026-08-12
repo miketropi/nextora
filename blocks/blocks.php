@@ -90,3 +90,8 @@ $header_editor = __DIR__ . '/header/register-editor.php';
 if ( is_readable( $header_editor ) ) {
 	require_once $header_editor;
 }
+
+$scrolling_image_strip_editor = __DIR__ . '/scrolling-image-strip/register-editor.php';
+if ( is_readable( $scrolling_image_strip_editor ) ) {
+	require_once $scrolling_image_strip_editor;
+}

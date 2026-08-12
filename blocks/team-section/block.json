@@ -13,9 +13,9 @@
     "align": ["wide", "full"],
     "anchor": true,
     "color": {
-      "background": true,
-      "text": true,
-      "link": true
+      "background": false,
+      "text": false,
+      "link": false
     },
     "spacing": {
       "padding": true,
@@ -105,7 +105,7 @@
     "showArrows": { "type": "boolean", "default": false },
     "freeMode": { "type": "boolean", "default": false },
     "grabCursor": { "type": "boolean", "default": true },
-    "backgroundColor": { "type": "string", "default": "" },
+    "sectionBackgroundColor": { "type": "string", "default": "" },
     "paginationColor": { "type": "string", "default": "" },
     "paginationActiveColor": { "type": "string", "default": "" },
     "cardBackgroundColor": { "type": "string", "default": "" },
