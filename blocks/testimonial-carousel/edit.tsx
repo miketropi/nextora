@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useState } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	InspectorControls,
@@ -8,14 +8,17 @@ import {
 	PanelColorSettings,
 	RichText,
 	useBlockProps,
+	FontSizePicker,
 } from '@wordpress/block-editor';
 import {
+	BaseControl,
 	Button,
 	Modal,
 	PanelBody,
 	RangeControl,
 	SelectControl,
 	TextareaControl,
+	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -33,12 +36,12 @@ import {
 	resolveAuthorPhotoUrl,
 	resolveTrustAvatarUrl,
 } from './testimonial-utils';
-import TestimonialEditForm from './testimonial-edit-form';
 import {
 	normalizeColorForStorage,
 	colorValueForPicker,
 	useThemeColorPalette,
 } from './color-utils';
+import { useFontFamilyOptions } from '../box-icon/font-family-utils';
 import { ChevronLeftIcon, ChevronRightIcon, StarRating, TopIconSvg } from './icons';
 
 interface EditProps {
@@ -87,9 +90,193 @@ const avatarFallbackOptions = [
 	{ label: __('None', 'nextora'), value: 'none' },
 ];
 
+const ICONS = {
+	pencil: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>',
+	chevronUp: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>',
+	chevronDown: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+	trash: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
+	plus: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+};
+
+function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: string }) {
+	return (
+		<span
+			className={className}
+			dangerouslySetInnerHTML={{ __html: ICONS[name] }}
+			style={{ display: 'inline-flex', alignItems: 'center' }}
+		/>
+	);
+}
+
+function normalizeFontSizeAttribute(
+	value: number | string | undefined,
+	selectedItem?: { slug?: string },
+): string {
+	if (value === undefined) {
+		return '';
+	}
+	if (selectedItem?.slug) {
+		return selectedItem.slug;
+	}
+	return String(value);
+}
+
+interface TestimonialItemModalProps {
+	item: TestimonialItem;
+	authorPhotoUrl?: string;
+	onSave: (item: TestimonialItem) => void;
+	onClose: () => void;
+}
+
+function TestimonialItemModal({ item, authorPhotoUrl, onSave, onClose }: TestimonialItemModalProps) {
+	const [edit, setEdit] = useState<TestimonialItem>({ ...item });
+
+	const displayPhotoUrl = edit.authorPhotoUrl || authorPhotoUrl;
+
+	const onSelectImage = useCallback(
+		(media: WPMedia) => {
+			setEdit((prev) => ({
+				...prev,
+				authorPhotoId: media.id ?? 0,
+				authorPhotoUrl: media.url ?? '',
+				authorPhotoAlt: media.alt ?? '',
+				showAuthorPhoto: true,
+			}));
+		},
+		[],
+	);
+
+	const handleSave = () => {
+		onSave(edit);
+		onClose();
+	};
+
+	return (
+		<Modal
+			title={__('Edit testimonial', 'nextora')}
+			onRequestClose={onClose}
+			className="nextora-testimonial-carousel-item-modal"
+		>
+			<div className="nextora-testimonial-carousel-item-modal__content">
+				<div className="nextora-testimonial-carousel-item-modal__image-col">
+					<MediaUploadCheck>
+						<MediaUpload
+							onSelect={onSelectImage}
+							allowedTypes={['image']}
+							value={edit.authorPhotoId > 0 ? edit.authorPhotoId : undefined}
+							render={({ open }) => (
+								<div className="nextora-testimonial-carousel-item-modal__media">
+									{displayPhotoUrl ? (
+										<img
+											src={displayPhotoUrl}
+											alt=""
+											className="nextora-testimonial-carousel-item-modal__media-preview"
+										/>
+									) : (
+										<div
+											className="nextora-testimonial-carousel-item-modal__media-placeholder"
+											onClick={open}
+											role="button"
+											tabIndex={0}
+											onKeyDown={(e) => {
+												if (e.key === 'Enter' || e.key === ' ') open();
+											}}
+										>
+											<span>{__('Choose photo', 'nextora')}</span>
+										</div>
+									)}
+									<div className="nextora-testimonial-carousel-item-modal__media-actions">
+										<Button variant="secondary" onClick={open} size="small">
+											{displayPhotoUrl
+												? __('Replace photo', 'nextora')
+												: __('Choose photo', 'nextora')}
+										</Button>
+										{displayPhotoUrl ? (
+											<Button
+												variant="link"
+												isDestructive
+												size="small"
+												onClick={() =>
+													setEdit((prev) => ({
+														...prev,
+														authorPhotoId: 0,
+														authorPhotoUrl: '',
+														authorPhotoAlt: '',
+														showAuthorPhoto: false,
+													}))
+												}
+											>
+												{__('Remove', 'nextora')}
+											</Button>
+										) : null}
+									</div>
+								</div>
+							)}
+						/>
+					</MediaUploadCheck>
+					{displayPhotoUrl ? (
+						<TextControl
+							label={__('Photo alt text', 'nextora')}
+							value={edit.authorPhotoAlt}
+							onChange={(authorPhotoAlt) =>
+								setEdit((prev) => ({ ...prev, authorPhotoAlt: authorPhotoAlt ?? '' }))
+							}
+						/>
+					) : null}
+				</div>
+
+				<div className="nextora-testimonial-carousel-item-modal__fields-col">
+					<TextareaControl
+						label={__('Quote', 'nextora')}
+						value={edit.quoteText}
+						onChange={(quoteText) =>
+							setEdit((prev) => ({ ...prev, quoteText: quoteText ?? '' }))
+						}
+						rows={4}
+					/>
+					<TextControl
+						label={__('Author name', 'nextora')}
+						value={edit.authorName}
+						onChange={(authorName) =>
+							setEdit((prev) => ({ ...prev, authorName: authorName ?? '' }))
+						}
+					/>
+					<TextControl
+						label={__('Author role', 'nextora')}
+						value={edit.authorRole}
+						onChange={(authorRole) =>
+							setEdit((prev) => ({ ...prev, authorRole: authorRole ?? '' }))
+						}
+					/>
+					<RangeControl
+						label={__('Star rating', 'nextora')}
+						help={__('0 hides stars on the slide.', 'nextora')}
+						value={edit.rating}
+						onChange={(rating) =>
+							setEdit((prev) => ({ ...prev, rating: rating ?? 0 }))
+						}
+						min={0}
+						max={5}
+					/>
+				</div>
+			</div>
+
+			<div className="nextora-testimonial-carousel-item-modal__actions">
+				<Button variant="primary" onClick={handleSave}>
+					{__('Save', 'nextora')}
+				</Button>
+				<Button variant="secondary" onClick={onClose}>
+					{__('Cancel', 'nextora')}
+				</Button>
+			</div>
+		</Modal>
+	);
+}
+
 export default function TestimonialCarouselEdit({ attributes, setAttributes }: EditProps) {
 	const [editingId, setEditingId] = useState<string | null>(null);
 	const palette = useThemeColorPalette();
+	const fontFamilyOptions = useFontFamilyOptions();
 
 	const testimonials = normalizeTestimonials(attributes.testimonials);
 	const trustAvatars = normalizeTrustAvatars(attributes.trustAvatars);
@@ -157,6 +344,8 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 		arrowColor = '',
 		arrowBorderColor = '',
 		quoteColor = '',
+		quoteFontFamily = '',
+		quoteFontSize = '',
 		labelColor = '',
 		authorColor = '',
 		authorNameColor = '',
@@ -184,6 +373,8 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 			arrowColor,
 			arrowBorderColor,
 			quoteColor,
+			quoteFontFamily,
+			quoteFontSize,
 			labelColor,
 			authorColor,
 			authorNameColor,
@@ -373,49 +564,100 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 				)}
 
 				<PanelBody title={__('Testimonials', 'nextora')} initialOpen>
-					<p className="nextora-testimonial-carousel__inspector-help">
-						{__(
-							'Use Edit to open the testimonial form in a larger dialog.',
-							'nextora',
-						)}
-					</p>
-					{testimonials.map((item, index) => (
-						<div key={item.id} className="nextora-testimonial-carousel__inspector-item">
-							<p className="nextora-testimonial-carousel__inspector-item-name">
-								{item.authorName ||
-									sprintf(__('Testimonial %d', 'nextora'), index + 1)}
-							</p>
-							<div className="nextora-testimonial-carousel__inspector-item-actions">
-								<Button variant="primary" onClick={() => setEditingId(item.id)}>
-									{__('Edit', 'nextora')}
-								</Button>
+					{testimonials.length === 0 && (
+						<p className="components-base-control__help" style={{ marginBottom: '8px' }}>
+							{__('No items yet. Click "Add item" to create one.', 'nextora')}
+						</p>
+					)}
+					{testimonials.map((item, index) => {
+						const thumbnailUrl = resolveAuthorPhotoUrl(item, mediaUrlById);
+						return (
+							<div
+								key={item.id}
+								style={{
+									display: 'flex',
+									alignItems: 'center',
+									gap: '6px',
+									marginBottom: '6px',
+									padding: '6px 8px',
+									background: '#f9f9f9',
+									border: '1px solid #ddd',
+									borderRadius: '4px',
+								}}
+							>
+								<div
+									style={{
+										flex: 1,
+										display: 'flex',
+										alignItems: 'center',
+										gap: '8px',
+										overflow: 'hidden',
+										minWidth: 0,
+									}}
+								>
+									{thumbnailUrl ? (
+										<img
+											src={thumbnailUrl}
+											alt=""
+											style={{
+												width: '32px',
+												height: '32px',
+												objectFit: 'cover',
+												borderRadius: '50%',
+												flexShrink: 0,
+											}}
+										/>
+									) : null}
+									<span
+										style={{
+											overflow: 'hidden',
+											textOverflow: 'ellipsis',
+											whiteSpace: 'nowrap',
+											fontSize: '12px',
+											lineHeight: '1.4',
+											fontWeight: 500,
+										}}
+									>
+										{item.authorName || sprintf(__('Testimonial %d', 'nextora'), index + 1)}
+									</span>
+								</div>
 								<Button
-									variant="secondary"
-									disabled={index === 0}
+									icon={<InlineSvg name="pencil" />}
+									label={__('Edit', 'nextora')}
+									onClick={() => setEditingId(item.id)}
+									isSmall
+								/>
+								<Button
+									icon={<InlineSvg name="chevronUp" />}
+									label={__('Move up', 'nextora')}
 									onClick={() => moveTestimonial(item.id, -1)}
-								>
-									{__('Up', 'nextora')}
-								</Button>
+									disabled={index === 0}
+									isSmall
+								/>
 								<Button
-									variant="secondary"
-									disabled={index >= testimonials.length - 1}
+									icon={<InlineSvg name="chevronDown" />}
+									label={__('Move down', 'nextora')}
 									onClick={() => moveTestimonial(item.id, 1)}
-								>
-									{__('Down', 'nextora')}
-								</Button>
+									disabled={index === testimonials.length - 1}
+									isSmall
+								/>
 								<Button
-									variant="secondary"
-									isDestructive
-									disabled={testimonials.length <= 1}
+									icon={<InlineSvg name="trash" />}
+									label={__('Remove', 'nextora')}
 									onClick={() => removeTestimonial(item.id)}
-								>
-									{__('Remove', 'nextora')}
-								</Button>
+									isSmall
+									isDestructive
+								/>
 							</div>
-						</div>
-					))}
-					<Button variant="primary" onClick={addTestimonial}>
-						{__('Add testimonial', 'nextora')}
+						);
+					})}
+					<Button
+						variant="secondary"
+						onClick={addTestimonial}
+						icon={<InlineSvg name="plus" />}
+						style={{ width: '100%', justifyContent: 'center', marginTop: testimonials.length > 0 ? '4px' : '0' }}
+					>
+						{__('Add item', 'nextora')}
 					</Button>
 				</PanelBody>
 
@@ -725,6 +967,38 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 					]}
 				/>
 
+				<PanelBody title={__('Typography', 'nextora')} initialOpen={false}>
+					<BaseControl
+						label={__('Quote font size', 'nextora')}
+						id="nextora-testimonial-carousel-quote-font-size"
+						help={__(
+							'Default uses the Medium Plus theme preset.',
+							'nextora',
+						)}
+					>
+						<FontSizePicker
+							value={quoteFontSize || undefined}
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									quoteFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+					<SelectControl
+						label={__('Quote font family', 'nextora')}
+						value={quoteFontFamily}
+						options={fontFamilyOptions}
+						onChange={(value) =>
+							setAttributes({ quoteFontFamily: value ?? '' })
+						}
+						help={__(
+							'Default uses the theme heading font.',
+							'nextora',
+						)}
+					/>
+				</PanelBody>
+
 				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Animate on scroll', 'nextora')}
@@ -739,27 +1013,14 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 			</InspectorControls>
 
 			{editingItem && (
-				<Modal
-					className="nextora-testimonial-carousel__item-modal"
-					size="large"
-					title={
-						editingItem.authorName
-							? sprintf(__('Edit testimonial: %s', 'nextora'), editingItem.authorName)
-							: __('Edit testimonial', 'nextora')
-					}
-					headerActions={
-						<Button variant="primary" onClick={() => setEditingId(null)}>
-							{__('Done', 'nextora')}
-						</Button>
-					}
-					onRequestClose={() => setEditingId(null)}
-				>
-					<TestimonialEditForm
-						item={editingItem}
-						authorPhotoUrl={resolveAuthorPhotoUrl(editingItem, mediaUrlById)}
-						onPatch={(patch) => patchItem(editingItem.id, patch)}
-					/>
-				</Modal>
+				<TestimonialItemModal
+					item={editingItem}
+					authorPhotoUrl={resolveAuthorPhotoUrl(editingItem, mediaUrlById)}
+					onSave={(updatedItem) => {
+						patchItem(editingItem.id, updatedItem);
+					}}
+					onClose={() => setEditingId(null)}
+				/>
 			)}
 
 			<div {...blockProps}>

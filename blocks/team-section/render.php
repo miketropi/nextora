@@ -57,12 +57,17 @@ if ( ! function_exists( 'nextora_team_section_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+
+		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
+			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $m[1] ) ) . ')';
+		}
+
 		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
 			return $raw;
 		}
 
 		$hex = sanitize_hex_color( $raw );
-		if ( $hex ) {
+		if ( is_string( $hex ) && '' !== $hex ) {
 			return $hex;
 		}
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
@@ -185,7 +190,7 @@ if ( ! function_exists( 'nextora_team_section_render_member_photo_fallback' ) ) 
 		}
 
 		return sprintf(
-			'<img class="nextora-team-section__card-img" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+			'<img class="nextora-team-section__card-img" src="%1$s" alt="%2$s" loading="lazy" decoding="async" sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 50vw" />',
 			$url,
 			esc_attr( $photo_alt ),
 		);
@@ -238,6 +243,7 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 					'alt'      => $alt,
 					'loading'  => 'lazy',
 					'decoding' => 'async',
+					'sizes'    => '(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 50vw',
 				),
 			);
 			if ( is_string( $img ) && '' !== $img ) {
@@ -337,6 +343,7 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide_overlay' ) ) {
 					'alt'      => $alt,
 					'loading'  => 'lazy',
 					'decoding' => 'async',
+					'sizes'    => '(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 50vw',
 				),
 			);
 			if ( is_string( $img ) && '' !== $img ) {
@@ -440,7 +447,7 @@ $grid_row_gap   = isset( $attributes['gridRowGap'] ) ? max( 0, min( 60, (int) $a
 
 $card_radius = isset( $attributes['cardBorderRadius'] ) ? max( 0, min( 30, (int) $attributes['cardBorderRadius'] ) ) : 16;
 
-$bg_color     = nextora_team_section_resolve_color( isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '' );
+$bg_color     = nextora_team_section_resolve_color( (string) ( $attributes['sectionBackgroundColor'] ?? $attributes['backgroundColor'] ?? '' ) );
 $dot_c        = nextora_team_section_resolve_color( isset( $attributes['paginationColor'] ) ? (string) $attributes['paginationColor'] : '' );
 $dot_active_c = nextora_team_section_resolve_color( isset( $attributes['paginationActiveColor'] ) ? (string) $attributes['paginationActiveColor'] : '' );
 $card_bg_c    = nextora_team_section_resolve_color( isset( $attributes['cardBackgroundColor'] ) ? (string) $attributes['cardBackgroundColor'] : '' );

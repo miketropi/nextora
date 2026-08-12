@@ -236,6 +236,7 @@
   white-space: nowrap;
   line-height: 1.4;
   transition: background 0.3s ease, border-color 0.3s ease;
+  text-decoration: none;
 }
 
 .nextora-expanding-cards__card-button-icon {
@@ -288,7 +289,10 @@
     height: 280px;
   }
 
-  .nextora-expanding-cards__card:hover {
+  /* Keep the stacked mobile layout static; touch devices can retain :hover after tapping. */
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible {
     flex: none;
   }
 
@@ -297,8 +301,33 @@
     transform: translateY(0);
   }
 
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card .nextora-expanding-cards__card-content,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-content,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-content {
+    opacity: 1;
+    transform: translateY(0);
+    transition: none;
+    pointer-events: auto;
+  }
+
   .nextora-expanding-cards__card-overlay {
     opacity: var(--nextora-ec-overlay-opacity, 0.7);
+  }
+
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card .nextora-expanding-cards__card-overlay,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-overlay,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-overlay {
+    opacity: var(--nextora-ec-overlay-opacity, 0.7);
+  }
+
+  .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__card--active .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:hover .nextora-expanding-cards__card-bg,
+  .nextora-expanding-cards__row:hover .nextora-expanding-cards__card:focus-visible .nextora-expanding-cards__card-bg {
+    transform: none;
   }
 }
 

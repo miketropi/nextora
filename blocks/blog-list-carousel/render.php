@@ -304,7 +304,7 @@ $title_font_size = isset( $attributes['titleFontSize'] ) && is_string( $attribut
     ? sanitize_html_class( $attributes['titleFontSize'] ) : '';
 $title_font_size_css = '';
 if ( '' !== $title_font_size ) {
-    $allowed_font_sizes = array( 'sm', 'base', 'md', 'lg', 'xl', '2xl' );
+    $allowed_font_sizes = array( 'small', 'base', 'medium', 'large', 'x-large', 'xx-large' );
     if ( in_array( $title_font_size, $allowed_font_sizes, true ) ) {
         $title_font_size_css = 'var(--wp--preset--font-size--' . $title_font_size . ')';
     }

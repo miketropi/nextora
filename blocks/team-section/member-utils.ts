@@ -76,7 +76,7 @@ export function resolvePhotoUrl(
 }
 
 export function buildSectionStyleVars(attrs: {
-	backgroundColor?: string;
+	sectionBackgroundColor?: string;
 	paginationColor?: string;
 	paginationActiveColor?: string;
 	cardBackgroundColor?: string;
@@ -100,7 +100,7 @@ export function buildSectionStyleVars(attrs: {
 		'--nextora-team-grid-row-gap': `${attrs.gridRowGap ?? 24}px`,
 	};
 	if (attrs.gridColumns) vars['--nextora-team-grid-columns'] = String(attrs.gridColumns);
-	if (attrs.backgroundColor) vars['--nextora-team-bg'] = attrs.backgroundColor;
+	if (attrs.sectionBackgroundColor) vars['--nextora-team-bg'] = attrs.sectionBackgroundColor;
 	if (attrs.paginationColor) vars['--nextora-team-dot-color'] = attrs.paginationColor;
 	if (attrs.paginationActiveColor) vars['--nextora-team-dot-active'] = attrs.paginationActiveColor;
 	if (attrs.cardBackgroundColor) vars['--nextora-team-card-bg'] = attrs.cardBackgroundColor;

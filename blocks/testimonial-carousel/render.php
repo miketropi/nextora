@@ -33,6 +33,22 @@ if ( ! function_exists( 'nextora_testimonial_carousel_resolve_color' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_testimonial_carousel_resolve_font_family' ) ) {
+	/**
+	 * Preset slug or custom font-family stack → CSS font-family value.
+	 */
+	function nextora_testimonial_carousel_resolve_font_family( string $raw ): string {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return '';
+		}
+		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
+			return 'var(--wp--preset--font-family--' . sanitize_html_class( $raw ) . ')';
+		}
+		return $raw;
+	}
+}
+
 if ( ! function_exists( 'nextora_testimonial_carousel_icon_svg' ) ) {
 	/**
 	 * Inline SVG for top decorator icon.
@@ -142,16 +158,7 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 			}
 
 			$photo_markup = '';
-			if ( '' !== $photo_url ) {
-				$safe_url = esc_url( $photo_url );
-				if ( '' !== $safe_url ) {
-					$photo_markup = sprintf(
-						'<img class="nextora-testimonial-carousel__slide-author-photo" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
-						$safe_url,
-						esc_attr( $alt ),
-					);
-				}
-			} elseif ( $photo_id > 0 ) {
+			if ( $photo_id > 0 ) {
 				$img = wp_get_attachment_image(
 					$photo_id,
 					'thumbnail',
@@ -165,6 +172,15 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 				);
 				if ( is_string( $img ) && '' !== $img ) {
 					$photo_markup = $img;
+				}
+			} elseif ( '' !== $photo_url ) {
+				$safe_url = esc_url( $photo_url );
+				if ( '' !== $safe_url ) {
+					$photo_markup = sprintf(
+						'<img class="nextora-testimonial-carousel__slide-author-photo" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+						$safe_url,
+						esc_attr( $alt ),
+					);
 				}
 			}
 
@@ -238,16 +254,7 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide_t1' ) ) {
 			}
 
 			$photo_markup = '';
-			if ( '' !== $photo_url ) {
-				$safe_url = esc_url( $photo_url );
-				if ( '' !== $safe_url ) {
-					$photo_markup = sprintf(
-						'<img class="nextora-testimonial-carousel__slide-author-photo" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
-						$safe_url,
-						esc_attr( $alt ),
-					);
-				}
-			} elseif ( $photo_id > 0 ) {
+			if ( $photo_id > 0 ) {
 				$img = wp_get_attachment_image(
 					$photo_id,
 					'thumbnail',
@@ -261,6 +268,15 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide_t1' ) ) {
 				);
 				if ( is_string( $img ) && '' !== $img ) {
 					$photo_markup = $img;
+				}
+			} elseif ( '' !== $photo_url ) {
+				$safe_url = esc_url( $photo_url );
+				if ( '' !== $safe_url ) {
+					$photo_markup = sprintf(
+						'<img class="nextora-testimonial-carousel__slide-author-photo" src="%1$s" alt="%2$s" loading="lazy" decoding="async" />',
+						$safe_url,
+						esc_attr( $alt ),
+					);
 				}
 			}
 
@@ -434,6 +450,17 @@ $bg_color          = nextora_testimonial_carousel_resolve_color( isset( $attribu
 $icon_color        = nextora_testimonial_carousel_resolve_color( isset( $attributes['topIconColor'] ) ? (string) $attributes['topIconColor'] : '' );
 $label_color       = nextora_testimonial_carousel_resolve_color( isset( $attributes['labelColor'] ) ? (string) $attributes['labelColor'] : '' );
 $quote_color       = nextora_testimonial_carousel_resolve_color( isset( $attributes['quoteColor'] ) ? (string) $attributes['quoteColor'] : '' );
+$quote_font_family = nextora_testimonial_carousel_resolve_font_family( isset( $attributes['quoteFontFamily'] ) ? (string) $attributes['quoteFontFamily'] : '' );
+$quote_font_size   = isset( $attributes['quoteFontSize'] ) ? trim( (string) $attributes['quoteFontSize'] ) : '';
+if ( '' !== $quote_font_size ) {
+	if ( preg_match( '/^[\d.]+(?:rem|px|em|vw|vh|%)$/i', $quote_font_size ) || preg_match( '/^clamp\(.+\)$/i', $quote_font_size ) ) {
+		// already has unit or is clamp()
+	} elseif ( preg_match( '/^[\d.]+$/', $quote_font_size ) ) {
+		$quote_font_size .= 'px';
+	} elseif ( preg_match( '/^[a-z][a-z0-9-]*$/', $quote_font_size ) ) {
+		$quote_font_size = 'var(--wp--preset--font-size--' . sanitize_html_class( $quote_font_size ) . ')';
+	}
+}
 $author_color      = nextora_testimonial_carousel_resolve_color( isset( $attributes['authorColor'] ) ? (string) $attributes['authorColor'] : '' );
 $author_name_color = nextora_testimonial_carousel_resolve_color( isset( $attributes['authorNameColor'] ) ? (string) $attributes['authorNameColor'] : '' );
 $trust_color       = nextora_testimonial_carousel_resolve_color( isset( $attributes['trustColor'] ) ? (string) $attributes['trustColor'] : '' );
@@ -483,6 +510,8 @@ $css_vars = array(
 	'--nextora-testimonial-icon-color'        => '' !== $icon_color ? $icon_color : 'color-mix(in srgb, currentColor 50%, transparent)',
 	'--nextora-testimonial-label-color'       => '' !== $label_color ? $label_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
 	'--nextora-testimonial-quote-color'       => '' !== $quote_color ? $quote_color : 'inherit',
+	'--nextora-testimonial-quote-font-family' => '' !== $quote_font_family ? $quote_font_family : 'var(--wp--preset--font-family--heading)',
+	'--nextora-testimonial-quote-size'        => '' !== $quote_font_size ? $quote_font_size : 'var(--wp--preset--font-size--medium-plus)',
 	'--nextora-testimonial-author-color'      => '' !== $author_color ? $author_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
 	'--nextora-testimonial-author-name-color' => '' !== $author_name_color ? $author_name_color : 'inherit',
 	'--nextora-testimonial-trust-color'       => '' !== $trust_color ? $trust_color : 'var(--wp--preset--color--contrast, #0a0a0a)',

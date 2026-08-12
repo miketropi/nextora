@@ -76,7 +76,7 @@ export function getTemplateDefaultAttributes(
 			showReadMore: true,
 			readMoreText: 'Read More',
 			cardLinkBehavior: 'title-only',
-			titleFontSize: 'md',
+			titleFontSize: 'medium',
 			showPagination: false,
 			showArrows: false,
 			showDate: true,

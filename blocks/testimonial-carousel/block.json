@@ -106,6 +106,8 @@
     "arrowColor": { "type": "string", "default": "" },
     "arrowBorderColor": { "type": "string", "default": "" },
     "quoteColor": { "type": "string", "default": "" },
+    "quoteFontFamily": { "type": "string", "default": "" },
+    "quoteFontSize": { "type": "string", "default": "" },
     "labelColor": { "type": "string", "default": "" },
     "authorColor": { "type": "string", "default": "" },
     "authorNameColor": { "type": "string", "default": "" },

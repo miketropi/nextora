@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useState } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	InspectorControls,
@@ -19,6 +19,11 @@ import { useSelect } from '@wordpress/data';
 import type { TeamMember, TeamSectionAttributes } from './types';
 import { buildSectionStyleVars, createMemberId, normalizeMembers, resolvePhotoUrl } from './member-utils';
 import MemberEditForm from './member-edit-form';
+import {
+	normalizeColorForStorage,
+	colorValueForPicker,
+	useThemeColorPalette,
+} from './color-utils';
 
 interface EditProps {
 	attributes: TeamSectionAttributes;
@@ -74,6 +79,15 @@ function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: 
 export default function TeamSectionEdit({ attributes, setAttributes }: EditProps) {
 	const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
 
+	const palette = useThemeColorPalette();
+
+	useEffect(() => {
+		const raw = attributes as unknown as Record<string, unknown>;
+		if (typeof raw.backgroundColor === 'string' && raw.backgroundColor !== '' && !attributes.sectionBackgroundColor) {
+			setAttributes({ sectionBackgroundColor: normalizeColorForStorage(raw.backgroundColor as string, palette) });
+		}
+	}, []);
+
 	const members = normalizeMembers(attributes.members);
 	const editingMember = editingMemberId
 		? members.find((m) => m.id === editingMemberId)
@@ -119,7 +133,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		showArrows = false,
 		freeMode = false,
 		grabCursor = true,
-		backgroundColor = '',
+		sectionBackgroundColor = '',
 		paginationColor = '',
 		paginationActiveColor = '',
 		cardBackgroundColor = '',
@@ -144,7 +158,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 			gridRowGap,
 			photoAspectRatio,
 			spaceBetween,
-			backgroundColor,
+			sectionBackgroundColor,
 			paginationColor,
 			paginationActiveColor,
 			cardBackgroundColor,
@@ -513,52 +527,52 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
-							value: backgroundColor,
-							onChange: (v) => setAttributes({ backgroundColor: v ?? '' }),
+							value: colorValueForPicker(sectionBackgroundColor, palette),
+							onChange: (v) => setAttributes({ sectionBackgroundColor: normalizeColorForStorage(v, palette) }),
 							label: __('Background', 'nextora'),
 						},
 						...(cardTemplate === 'overlay-social'
 							? [
 									{
-										value: nameColor,
-										onChange: (v: string | undefined) => setAttributes({ nameColor: v ?? '' }),
+										value: colorValueForPicker(nameColor, palette),
+										onChange: (v: string | undefined) => setAttributes({ nameColor: normalizeColorForStorage(v, palette) }),
 										label: __('Name', 'nextora'),
 									},
 									{
-										value: roleColor,
-										onChange: (v: string | undefined) => setAttributes({ roleColor: v ?? '' }),
+										value: colorValueForPicker(roleColor, palette),
+										onChange: (v: string | undefined) => setAttributes({ roleColor: normalizeColorForStorage(v, palette) }),
 										label: __('Role', 'nextora'),
 									},
 								]
 							: [
 									{
-										value: cardBackgroundColor,
-										onChange: (v: string | undefined) => setAttributes({ cardBackgroundColor: v ?? '' }),
+										value: colorValueForPicker(cardBackgroundColor, palette),
+										onChange: (v: string | undefined) => setAttributes({ cardBackgroundColor: normalizeColorForStorage(v, palette) }),
 										label: __('Card background', 'nextora'),
 									},
 									{
-										value: tagBackgroundColor,
-										onChange: (v: string | undefined) => setAttributes({ tagBackgroundColor: v ?? '' }),
+										value: colorValueForPicker(tagBackgroundColor, palette),
+										onChange: (v: string | undefined) => setAttributes({ tagBackgroundColor: normalizeColorForStorage(v, palette) }),
 										label: __('Tag background', 'nextora'),
 									},
 									{
-										value: tagTextColor,
-										onChange: (v: string | undefined) => setAttributes({ tagTextColor: v ?? '' }),
+										value: colorValueForPicker(tagTextColor, palette),
+										onChange: (v: string | undefined) => setAttributes({ tagTextColor: normalizeColorForStorage(v, palette) }),
 										label: __('Tag text', 'nextora'),
 									},
 								]),
 						...(showPagination
 							? [
 									{
-										value: paginationColor,
+										value: colorValueForPicker(paginationColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ paginationColor: v ?? '' }),
+											setAttributes({ paginationColor: normalizeColorForStorage(v, palette) }),
 										label: __('Pagination dot', 'nextora'),
 									},
 									{
-										value: paginationActiveColor,
+										value: colorValueForPicker(paginationActiveColor, palette),
 										onChange: (v: string | undefined) =>
-											setAttributes({ paginationActiveColor: v ?? '' }),
+											setAttributes({ paginationActiveColor: normalizeColorForStorage(v, palette) }),
 										label: __('Active pagination', 'nextora'),
 									},
 								]

@@ -122,7 +122,8 @@
 	margin: 0;
 	padding: 0;
 	border: none;
-	font-size: var(--wp--preset--font-size--medium-plus);
+	font-family: var(--nextora-testimonial-quote-font-family, var(--wp--preset--font-family--heading));
+	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--medium-plus));
 	font-weight: 500;
 	line-height: 1.45;
 	color: var(
@@ -335,7 +336,7 @@
 }
 
 .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-quote {
-	font-size: var(--wp--preset--font-size--small, 15px);
+	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--small, 15px));
 	font-weight: 400;
 	line-height: 1.5;
 	margin-bottom: 22px;
@@ -364,14 +365,14 @@
 }
 
 .nextora-testimonial-carousel__slide-author--t1 .nextora-testimonial-carousel__slide-author-name {
-	font-size: 15.5px;
+	font-size: var(--wp--preset--font-size--small, 15.5px);
 	font-weight: 600;
 	color: var(--nextora-testimonial-author-name-color, var(--wp--preset--color--contrast, currentColor));
 	margin-bottom: 0.3rem;
 }
 
 .nextora-testimonial-carousel__slide-author--t1 .nextora-testimonial-carousel__slide-author-role {
-	font-size: 13px;
+    font-size: 0.8rem;
 	font-weight: 400;
 	color: var(
 		--nextora-testimonial-slide-author-color,
