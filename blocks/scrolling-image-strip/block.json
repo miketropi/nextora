@@ -96,6 +96,14 @@
       "type": "string",
       "default": "horizontal"
     },
+    "fadeMaskLeft": {
+      "type": "number",
+      "default": 20
+    },
+    "fadeMaskRight": {
+      "type": "number",
+      "default": 20
+    },
     "fadeMaskColor": {
       "type": "string",
       "default": ""

@@ -17,6 +17,8 @@
   --nextora-sis-tilt-odd: 5deg;
   --nextora-sis-overlay-color: transparent;
   --nextora-sis-overlay-opacity: 0;
+  --nextora-sis-mask-left: 20%;
+  --nextora-sis-mask-right: 20%;
   --nextora-sis-bg: transparent;
   --nextora-sis-min-height: auto;
   --nextora-sis-section-height: auto;
@@ -141,8 +143,8 @@
 /* ── Fade mask ── */
 
 .nextora-sis--mask-horizontal .nextora-sis__track {
-  -webkit-mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
-  mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black var(--nextora-sis-mask-left), black calc(100% - var(--nextora-sis-mask-right)), transparent);
+  mask-image: linear-gradient(to right, transparent, black var(--nextora-sis-mask-left), black calc(100% - var(--nextora-sis-mask-right)), transparent);
 }
 
 .nextora-sis--mask-vertical-top .nextora-sis__track {

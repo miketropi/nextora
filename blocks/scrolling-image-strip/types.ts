@@ -14,6 +14,8 @@ export interface ScrollingImageStripAttributes {
   pauseOnHover: boolean;
   enableFadeMask: boolean;
   fadeMaskDirection: string;
+  fadeMaskLeft: number;
+  fadeMaskRight: number;
   fadeMaskColor: string;
   overlayColor: string;
   overlayOpacity: number;

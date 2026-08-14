@@ -5,6 +5,7 @@
  */
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { afterInitialLayout, isInInitialRevealViewport } from '../../resources/ts/lib/scroll-animations/initial-layout';
 
 gsap.registerPlugin( ScrollTrigger );
 
@@ -30,6 +31,29 @@ function optOutScrollAnimation( root: HTMLElement ): void {
 	gsap.set( root, { clearProps: 'opacity,transform,translate,rotate,scale' } );
 }
 
+function playReveal( root: HTMLElement, useScrollTrigger: boolean ): void {
+	const vars: gsap.TweenVars = {
+		opacity: 1,
+		y: 0,
+		duration: 0.95,
+		ease: 'power3.out',
+		onComplete: () => {
+			root.classList.remove( 'nextora-advanced-button--reveal-pending' );
+			root.classList.add( 'nextora-advanced-button--reveal-ready' );
+		},
+	};
+
+	if (useScrollTrigger) {
+		vars.scrollTrigger = {
+			trigger: root,
+			start: 'top 88%',
+			once: true,
+		};
+	}
+
+	gsap.fromTo( root, { opacity: 0, y: 28 }, vars );
+}
+
 function initReveal( root: HTMLElement ): void {
 	if ( root.getAttribute( 'data-nextora-scroll-reveal' ) !== '1' ) {
 		optOutScrollAnimation( root );
@@ -48,25 +72,12 @@ function initReveal( root: HTMLElement ): void {
 	root.setAttribute( BLOCK_INIT_ATTR, '1' );
 	root.classList.add( 'nextora-advanced-button--reveal-pending' );
 
-	gsap.fromTo(
-		root,
-		{ opacity: 0, y: 28 },
-		{
-			opacity: 1,
-			y: 0,
-			duration: 0.95,
-			ease: 'power3.out',
-			scrollTrigger: {
-				trigger: root,
-				start: 'top 88%',
-				once: true,
-			},
-			onComplete: () => {
-				root.classList.remove( 'nextora-advanced-button--reveal-pending' );
-				root.classList.add( 'nextora-advanced-button--reveal-ready' );
-			},
-		},
-	);
+	if ( isInInitialRevealViewport( root ) ) {
+		afterInitialLayout( () => playReveal( root, false ) );
+		return;
+	}
+
+	playReveal( root, true );
 }
 
 function initAll(): void {

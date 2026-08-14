@@ -217,32 +217,59 @@ function initSequentialReveal(
 	carousel: HTMLElement | null,
 ): void {
 	let played = false;
+	let readyCheck = 0;
+
+	const waitForLayout = (callback: () => void): void => {
+		const hasCards = Boolean(
+			carousel?.querySelector(
+				'.swiper-slide, .nextora-box-icon__card, .nextora-box-icon__ways-row',
+			),
+		);
+		if (carousel && (!hasCards || carousel.clientWidth < 2)) {
+			if (readyCheck < 60) {
+				readyCheck += 1;
+				requestAnimationFrame(() => waitForLayout(callback));
+				return;
+			}
+		}
+
+		requestAnimationFrame(() => requestAnimationFrame(callback));
+	};
 
 	const playReveal = (): void => {
 		if (played || section.classList.contains('nextora-box-icon--reveal-ready')) {
 			return;
 		}
-		played = true;
 
-		const cards = carousel
-			? Array.from(
-					carousel.querySelectorAll<HTMLElement>(
-						'.swiper-slide, .nextora-box-icon__card, .nextora-box-icon__ways-row',
-					),
-				)
+		waitForLayout(() => {
+			if (played || section.classList.contains('nextora-box-icon--reveal-ready')) {
+				return;
+			}
+			played = true;
+
+		const slides = carousel
+			? Array.from(carousel.querySelectorAll<HTMLElement>('.swiper-slide'))
 			: [];
+		const cards =
+			slides.length > 0
+				? slides
+				: carousel
+					? Array.from(
+							carousel.querySelectorAll<HTMLElement>(
+								'.nextora-box-icon__card, .nextora-box-icon__ways-row',
+							),
+						)
+					: [];
 
 		const targets = [header, ...cards].filter((el): el is HTMLElement => el !== null);
 
-		if (targets.length === 0) {
-			setRevealReady(section);
-			return;
-		}
+			if (targets.length === 0) {
+				setRevealReady(section);
+				return;
+			}
 
-		gsap.set(targets, { opacity: 0, y: 40, force3D: true });
-
-		// Reveal carousel-root wrapper so card stagger is visible
-		gsap.set(carousel, { opacity: 1, y: 0 });
+			gsap.set(targets, { opacity: 0, y: 40, force3D: true });
+			section.classList.remove('nextora-box-icon--reveal-pending');
 
 		const gen = nextRevealGen(section);
 
@@ -258,26 +285,27 @@ function initSequentialReveal(
 			},
 		});
 
-		if (header) {
-			timeline.to(header, { opacity: 1, y: 0, duration: 0.85 }, 0);
-		}
+			if (header) {
+				timeline.to(header, { opacity: 1, y: 0, duration: 0.85 }, 0);
+			}
 
-		if (cards.length > 0) {
-			timeline.to(
-				cards,
-				{
-					opacity: 1,
-					y: 0,
-					duration: 0.75,
-					stagger: { each: 0.14, from: 'start' },
-				},
-				header ? 0.12 : 0,
-			);
-		}
+			if (cards.length > 0) {
+				timeline.to(
+					cards,
+					{
+						opacity: 1,
+						y: 0,
+						duration: 0.75,
+						stagger: { each: 0.14, from: 'start' },
+					},
+					header ? 0.12 : 0,
+				);
+			}
+		});
 	};
 
 	window.setTimeout(() => {
-		if (section.classList.contains('nextora-box-icon--reveal-ready')) {
+		if (played || section.classList.contains('nextora-box-icon--reveal-ready')) {
 			return;
 		}
 		if (!isRevealStartPassed(section)) {

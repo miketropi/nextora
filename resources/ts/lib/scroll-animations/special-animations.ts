@@ -9,6 +9,7 @@ import {
 import { parseScrollAnimationOptions } from "./parse-options";
 import { revertElementTextSplit, splitElementText } from "./split-text";
 import { initTextTypewriter, skipTypewriterText } from "./typewriter-text";
+import { afterInitialLayout, isInInitialRevealViewport } from "./initial-layout";
 import type { ScrollAnimationOptions } from "./types";
 
 type MarkInitialized = (el: HTMLElement) => void;
@@ -248,25 +249,49 @@ function initTextCharRiseReveal(
 	el.classList.remove("nextora-scroll-animation--pending");
 	gsap.set(el, { perspective: 400 });
 	gsap.set(split.chars, { opacity: 0, x: resolved.distance });
+	const revealImmediately = isInInitialRevealViewport(el);
+	const play = (): void => {
+		gsap.to(split.chars, {
+			x: 0,
+			y: 0,
+			rotateX: 0,
+			opacity: 1,
+			duration: resolved.duration,
+			delay: resolved.delay,
+			ease: resolved.ease,
+			stagger: resolved.stagger ?? 0.02,
+			onComplete: () => {
+				el.classList.add("nextora-scroll-animation--ready");
+				gsap.set(el, { clearProps: "perspective" });
+				split.chars.forEach((char) => {
+					gsap.set(char, { clearProps: "opacity,transform,translate,rotate" });
+				});
+			},
+		});
+	};
 
-	gsap.to(split.chars, {
-		x: 0,
-		y: 0,
-		rotateX: 0,
-		opacity: 1,
-		duration: resolved.duration,
-		delay: resolved.delay,
-		ease: resolved.ease,
-		stagger: resolved.stagger ?? 0.02,
-		scrollTrigger: buildRevealScrollTrigger(el, "top 90%"),
-		onComplete: () => {
-			el.classList.add("nextora-scroll-animation--ready");
-			gsap.set(el, { clearProps: "perspective" });
-			split.chars.forEach((char) => {
-				gsap.set(char, { clearProps: "opacity,transform,translate,rotate" });
-			});
-		},
-	});
+	if (revealImmediately) {
+		afterInitialLayout(play);
+	} else {
+		gsap.to(split.chars, {
+			x: 0,
+			y: 0,
+			rotateX: 0,
+			opacity: 1,
+			duration: resolved.duration,
+			delay: resolved.delay,
+			ease: resolved.ease,
+			stagger: resolved.stagger ?? 0.02,
+			scrollTrigger: buildRevealScrollTrigger(el, "top 90%"),
+			onComplete: () => {
+				el.classList.add("nextora-scroll-animation--ready");
+				gsap.set(el, { clearProps: "perspective" });
+				split.chars.forEach((char) => {
+					gsap.set(char, { clearProps: "opacity,transform,translate,rotate" });
+				});
+			},
+		});
+	}
 
 	markInitialized(el);
 }
