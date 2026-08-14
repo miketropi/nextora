@@ -6,8 +6,9 @@ vendor/
 .DS_Store
 .php-cs-fixer.cache
 .opencode/qdrant-status.json
+.opencode/opencode.json
+opencode.jsonc
 nextora-v*.zip
 .env
 .roo
-.opencode/opencode.json
 .orchestrator/
