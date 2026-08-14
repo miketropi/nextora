@@ -314,9 +314,8 @@
 	gap: 0.4375rem;
 	margin-top: 1rem;
 	flex-shrink: 0;
-	font-size: var(--wp--preset--font-size--base);
-	font-weight: 700;
-	letter-spacing: 0.03em;
+	font-size: var(--wp--preset--font-size--small);
+	font-weight: 600;
 	text-decoration: none;
 	color: var(--nextora-box-icon-link-color, var(--wp--preset--color--primary, currentColor));
 	transition: color 0.2s ease;
