@@ -80,9 +80,9 @@ if ( ! function_exists( 'nextora_counters_format_number' ) ) {
 	 */
 	function nextora_counters_format_number( float $number ): string {
 		if ( abs( $number - round( $number ) ) < 0.00001 ) {
-			return (string) (int) round( $number );
+			return number_format( $number, 0, '.', ',' );
 		}
-		return number_format( $number, 1, '.', '' );
+		return number_format( $number, 1, '.', ',' );
 	}
 }
 
@@ -91,7 +91,7 @@ if ( ! function_exists( 'nextora_counters_format_display' ) ) {
 	 * @param array<string, mixed> $item Counter item.
 	 */
 	function nextora_counters_format_display( array $item ): string {
-		$number = isset( $item['number'] ) ? (float) $item['number'] : 0.0;
+		$number = isset( $item['number'] ) ? abs( (float) $item['number'] ) : 0.0;
 		$prefix = isset( $item['prefix'] ) ? (string) $item['prefix'] : '';
 		$suffix = isset( $item['suffix'] ) ? (string) $item['suffix'] : '';
 		return $prefix . nextora_counters_format_number( $number ) . $suffix;
@@ -107,7 +107,7 @@ foreach ( $raw_items as $item ) {
 	}
 	$items[] = array(
 		'id'     => isset( $item['id'] ) ? (string) $item['id'] : '',
-		'number' => isset( $item['number'] ) ? (float) $item['number'] : 0.0,
+		'number' => isset( $item['number'] ) ? abs( (float) $item['number'] ) : 0.0,
 		'prefix' => isset( $item['prefix'] ) ? (string) $item['prefix'] : '',
 		'suffix' => isset( $item['suffix'] ) ? (string) $item['suffix'] : '',
 		'label'  => isset( $item['label'] ) ? (string) $item['label'] : '',
@@ -265,6 +265,7 @@ foreach ( $items as $item ) {
 	$suffix  = $item['suffix'];
 	$label   = $item['label'];
 	$display = nextora_counters_format_display( $item );
+	$initial_display = $enable_count_up ? $prefix . '0' . $suffix : $display;
 
 	$items_html .= sprintf(
 		'<div class="nextora-counters__item">
@@ -275,7 +276,7 @@ foreach ( $items as $item ) {
 		esc_attr( $prefix ),
 		esc_attr( $suffix ),
 		esc_attr( $display ),
-		esc_html( $display ),
+		esc_html( $initial_display ),
 		esc_html( $label ),
 	);
 }

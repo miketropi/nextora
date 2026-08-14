@@ -77,7 +77,9 @@ function normalizeItems(items: CounterItem[] | undefined): CounterItem[] {
 
 	return items.map((item, index) => ({
 		id: typeof item?.id === 'string' && item.id !== '' ? item.id : String(index + 1),
-		number: typeof item?.number === 'number' ? item.number : parseFloat(String(item?.number)) || 0,
+		number: Math.abs(
+			typeof item?.number === 'number' ? item.number : parseFloat(String(item?.number)) || 0,
+		),
 		prefix: typeof item?.prefix === 'string' ? item.prefix : '',
 		suffix: typeof item?.suffix === 'string' ? item.suffix : '',
 		label: typeof item?.label === 'string' ? item.label : '',
@@ -85,7 +87,9 @@ function normalizeItems(items: CounterItem[] | undefined): CounterItem[] {
 }
 
 function formatNumber(value: number): string {
-	return Number.isInteger(value) ? String(value) : value.toFixed(1);
+	return value.toLocaleString('en-US', {
+		maximumFractionDigits: Number.isInteger(value) ? 0 : 1,
+	});
 }
 
 function formatDisplay(item: CounterItem): string {
@@ -276,10 +280,10 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 									<TextControl
 										label={__('Number', 'nextora')}
 										type="number"
-										value={String(item.number)}
-										onChange={(value) =>
-											updateItem(item.id, 'number', parseFloat(value ?? '') || 0)
-										}
+							value={String(item.number)}
+							onChange={(value) =>
+								updateItem(item.id, 'number', Math.abs(parseFloat(value ?? '') || 0))
+							}
 									/>
 									<TextControl
 										label={__('Suffix', 'nextora')}

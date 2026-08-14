@@ -12,6 +12,7 @@ import {
 import { animationPresets } from "./presets";
 import { parseScrollAnimationOptions } from "./parse-options";
 import { initSpecialScrollAnimation, skipSpecialScrollAnimation } from "./special-animations";
+import { afterInitialLayout, isInInitialRevealViewport } from "./initial-layout";
 import type { AnimationClassName } from "./constants";
 import type { ScrollAnimationOptions } from "./types";
 
@@ -250,36 +251,60 @@ export function initElementAnimations(el: HTMLElement): void {
 		initFadeListGridAnimation(el, options);
 	} else if (animationClass === "animation-inner-fade") {
 		initInnerFadeAnimation(el, options);
-	} else if (animationClass) {
-		const factory = animationPresets[animationClass];
-		if (!factory) {
-			markInitialized(el);
-		} else {
-			const { from, to } = factory({ distance: options.distance });
-			const tweenVars = buildScrollTweenVars(el, options);
+		} else if (animationClass) {
+			const factory = animationPresets[animationClass];
+			if (!factory) {
+				markInitialized(el);
+			} else {
+				const { from, to } = factory({ distance: options.distance });
+				const revealImmediately = isInInitialRevealViewport(el);
 
 			if (options.stagger !== null && el.children.length > 0) {
-				const targets = Array.from(el.children) as HTMLElement[];
+					const targets = Array.from(el.children) as HTMLElement[];
+					const stagger = options.stagger;
 				el.classList.remove("nextora-scroll-animation--pending");
 				const gen = nextRevealGen(el);
 				targets.forEach((child) => child.classList.add("nextora-scroll-animation--pending"));
 				gsap.set(targets, from);
-				gsap.to(targets, {
-					...to,
-					...tweenVars,
-					stagger: options.stagger,
-					onComplete: () => {
-						if (getRevealGen(el) !== gen) return;
-						targets.forEach((child) => {
+					const play = (): void => {
+						const tweenVars = revealImmediately
+							? { delay: options.delay, duration: options.duration, ease: options.ease }
+							: buildScrollTweenVars(el, options);
+						gsap.to(targets, {
+							...to,
+							...tweenVars,
+							stagger,
+							onComplete: () => {
+							if (getRevealGen(el) !== gen) return;
+							targets.forEach((child) => {
 							child.classList.remove("nextora-scroll-animation--pending");
 							child.classList.add("nextora-scroll-animation--ready");
 							gsap.set(child, { clearProps: "opacity,transform,translate,rotate,scale" });
 						});
-					},
-				});
-			} else {
-				gsap.fromTo(el, from, { ...to, ...tweenVars });
-			}
+							},
+						});
+					};
+					if (revealImmediately) {
+						afterInitialLayout(play);
+					} else {
+						play();
+					}
+				} else {
+					if (revealImmediately) {
+						gsap.set(el, from);
+						afterInitialLayout(() => {
+							gsap.to(el, {
+								...to,
+								delay: options.delay,
+								duration: options.duration,
+								ease: options.ease,
+								onComplete: () => gsap.set(el, { clearProps: "opacity,transform,translate,rotate,scale" }),
+							});
+						});
+					} else {
+						gsap.fromTo(el, from, { ...to, ...buildScrollTweenVars(el, options) });
+					}
+				}
 		}
 	}
 

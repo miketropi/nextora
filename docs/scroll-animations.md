@@ -6,6 +6,12 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 
 ## Animation classes
 
+The built-in utility inventory contains **19 classes**. The first 17 are handled by
+the GSAP scroll-animation scanner; parallax and the video-button ripple are
+additional utilities implemented outside the preset registry. Custom classes
+registered with `window.nextoraRegisterScrollAnimation` are not part of this
+built-in list.
+
 | Class | Effect |
 |-------|--------|
 | `animation-fade-in` | Fade in |
@@ -27,6 +33,15 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-text-typewriter` | Character-by-character typewriter with blinking caret on scroll (inspired by [MiMo Code] hero subtitle) |
 | `animation-scroll-reveal` | Scrubbed container rotation + word opacity + optional blur — container tilts from a start angle to straight as you scroll, words fade/blur in (inspired by React Bits `ScrollReveal`) |
 | `animation-video-button-ripple` | Expanding concentric ripple for video play buttons (CSS-only, no scroll trigger) |
+
+### Implementation groups
+
+| Group | Classes |
+|-------|---------|
+| GSAP preset registry | `animation-fade-in`, `animation-fade-in-up`, `animation-fade-in-down`, `animation-fade-in-left`, `animation-fade-in-right`, `animation-zoom-in`, `animation-zoom-out`, `animation-fade-list-grid`, `animation-inner-fade` |
+| GSAP special handlers | `animation-image-clip-reveal`, `animation-image-border-reveal`, `animation-text-reveal-words`, `animation-text-reveal-chars`, `animation-text-reveal-chars-rise`, `animation-text-reveal-chars-scrub`, `animation-text-typewriter`, `animation-scroll-reveal` |
+| Parallax utility | `animation-parallax` (also activated by `data-parallax-speed`) |
+| CSS-only utility | `animation-video-button-ripple` |
 
 ## Image & text reveal presets
 

@@ -220,6 +220,65 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
 	text-decoration: none;
 }
 
+/* Foodbank hero layout. The Site Editor owns content; this class owns responsiveness. */
+.foodbank-hero {
+	--foodbank-hero-gap: clamp(1.5rem, 4vw, 4rem);
+	align-items: center;
+	column-gap: var(--foodbank-hero-gap);
+	flex-wrap: nowrap;
+	width: min(100%, 1200px);
+	margin-inline: auto;
+}
+
+.foodbank-hero > .wp-block-group {
+	box-sizing: border-box;
+	flex: 0 0 min(50%, 760px);
+	width: auto;
+	min-width: 0;
+	z-index: 1;
+}
+
+.foodbank-hero > .nextora-sis {
+	box-sizing: border-box;
+	width: 75%;
+	min-width: 0;
+	margin-left: -25% !important;
+}
+
+.foodbank-hero > .nextora-sis .nextora-sis__track {
+	max-width: 100%;
+}
+
+@media (max-width: 900px) {
+	.foodbank-hero {
+		align-items: stretch;
+		flex-direction: column;
+		row-gap: clamp(1.75rem, 6vw, 2rem);
+		width: 100%;
+	}
+
+	.foodbank-hero > .wp-block-group,
+	.foodbank-hero > .nextora-sis {
+		flex: 0 0 auto;
+		width: 100%;
+		margin-left: 0 !important;
+	}
+
+	.foodbank-hero > .nextora-sis {
+		order: 2;
+	}
+}
+
+@media (max-width: 480px) {
+	.foodbank-hero {
+		row-gap: 1.5rem;
+	}
+
+	.foodbank-hero > .wp-block-group {
+		padding-inline: 0;
+	}
+}
+
 /* reset group padding */
 .wp-block-group .wp-block-group {
 	padding-top: 0;

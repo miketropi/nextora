@@ -1,0 +1,39 @@
+.wp-block-nextora-vertical-showcase.nextora-vertical-showcase--editor { border: 0 !important; box-shadow: none !important; }
+.wp-block-nextora-vertical-showcase.nextora-vertical-showcase--editor .nextora-vertical-showcase__item-description {
+  display: block;
+  min-height: 0;
+  max-width: 100%;
+  overflow: visible;
+  white-space: normal;
+  -webkit-box-orient: initial;
+  -webkit-line-clamp: unset;
+}
+.wp-block-nextora-vertical-showcase.nextora-vertical-showcase--editor .nextora-vertical-showcase__item-details[aria-hidden="false"] {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+.wp-block-nextora-vertical-showcase.nextora-vertical-showcase--editor .nextora-vertical-showcase__item-details[aria-hidden="true"] {
+  height: 0;
+}
+.wp-block-nextora-vertical-showcase.nextora-vertical-showcase--editor .nextora-vertical-showcase__frame {
+  height: 100%;
+}
+.wp-block-nextora-vertical-showcase.nextora-vertical-showcase--editor .nextora-vertical-showcase__image-layer,
+.wp-block-nextora-vertical-showcase.nextora-vertical-showcase--editor .nextora-vertical-showcase__image {
+  width: 100% !important;
+  height: 100% !important;
+}
+.nextora-vertical-showcase__editor-row { display: flex; align-items: center; gap: 0.25rem; margin-bottom: 0.375rem; padding: 0.375rem; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; }
+.nextora-vertical-showcase__editor-label { display: flex; min-width: 0; flex: 1; align-items: center; gap: 0.5rem; overflow: hidden; font-size: 12px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.nextora-vertical-showcase__editor-label img { width: 32px; height: 24px; flex: 0 0 auto; border-radius: 2px; object-fit: cover; }
+.nextora-vertical-showcase-modal { width: 100%; max-width: 720px !important; }
+.nextora-vertical-showcase-modal .components-modal__content { padding: 0; }
+.nextora-vertical-showcase-modal__content { display: grid; grid-template-columns: 220px 1fr; }
+.nextora-vertical-showcase-modal__image-col, .nextora-vertical-showcase-modal__fields-col { display: flex; flex-direction: column; gap: 0.875rem; padding: 1.25rem; }
+.nextora-vertical-showcase-modal__image-col { border-right: 1px solid #e5e7eb; background: #f9fafb; }
+.nextora-vertical-showcase-modal__preview, .nextora-vertical-showcase-modal__placeholder { display: flex; width: 100%; aspect-ratio: 4 / 3; align-items: center; justify-content: center; border: 1px solid #ddd; border-radius: 6px; object-fit: cover; }
+.nextora-vertical-showcase-modal__placeholder { border: 2px dashed #d1d5db; background: transparent; color: #6b7280; cursor: pointer; }
+.nextora-vertical-showcase-modal__media-actions, .nextora-vertical-showcase-modal__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.nextora-vertical-showcase-modal__actions { padding: 0.875rem 1.25rem; border-top: 1px solid #e5e7eb; }
+@media (max-width: 640px) { .nextora-vertical-showcase-modal__content { grid-template-columns: 1fr; } .nextora-vertical-showcase-modal__image-col { border-right: 0; border-bottom: 1px solid #e5e7eb; } }

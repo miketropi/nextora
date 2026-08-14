@@ -127,6 +127,8 @@ export default function ScrollingImageStripEdit({ attributes, setAttributes }: E
     pauseOnHover,
     enableFadeMask,
     fadeMaskDirection,
+    fadeMaskLeft,
+    fadeMaskRight,
     overlayColor,
     overlayOpacity,
     overlayStyle,
@@ -290,12 +292,34 @@ export default function ScrollingImageStripEdit({ attributes, setAttributes }: E
             onChange={(v) => setAttributes({ enableFadeMask: v })}
           />
           {enableFadeMask && (
-            <SelectControl
-              label={__('Fade direction', 'nextora')}
-              value={fadeMaskDirection}
-              options={maskDirectionOptions}
-              onChange={(v) => setAttributes({ fadeMaskDirection: v })}
-            />
+            <>
+              <SelectControl
+                label={__('Fade direction', 'nextora')}
+                value={fadeMaskDirection}
+                options={maskDirectionOptions}
+                onChange={(v) => setAttributes({ fadeMaskDirection: v })}
+              />
+              {(fadeMaskDirection === 'horizontal' || fadeMaskDirection === 'both') && (
+                <>
+                  <RangeControl
+                    label={__('Left fade amount', 'nextora')}
+                    help={__('How far the mask fades in from the left edge.', 'nextora')}
+                    value={fadeMaskLeft}
+                    onChange={(v) => setAttributes({ fadeMaskLeft: v ?? 20 })}
+                    min={0}
+                    max={50}
+                  />
+                  <RangeControl
+                    label={__('Right fade amount', 'nextora')}
+                    help={__('How far the mask fades out toward the right edge.', 'nextora')}
+                    value={fadeMaskRight}
+                    onChange={(v) => setAttributes({ fadeMaskRight: v ?? 20 })}
+                    min={0}
+                    max={50}
+                  />
+                </>
+              )}
+            </>
           )}
         </PanelBody>
 

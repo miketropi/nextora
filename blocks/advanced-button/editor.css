@@ -1,5 +1,16 @@
 /* Editor preview: scroll reveal JS does not run — keep buttons visible */
 .editor-styles-wrapper
+	.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-reveal='1']:not(
+		[data-nextora-advanced-button-scroll-init='1']
+	),
+.block-editor-block-preview__content
+	.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-reveal='1']:not(
+		[data-nextora-advanced-button-scroll-init='1']
+	) {
+	opacity: 1 !important;
+}
+
+.editor-styles-wrapper
 	.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-reveal='1'].nextora-advanced-button--reveal-pending,
 .editor-styles-wrapper
 	.wp-block-nextora-advanced-button.nextora-advanced-button.nextora-advanced-button--scroll-off {

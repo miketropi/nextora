@@ -97,6 +97,15 @@
 	overflow: hidden;
 }
 
+.nextora-testimonial-carousel__swiper .swiper-wrapper {
+	align-items: stretch;
+}
+
+.nextora-testimonial-carousel__swiper .swiper-slide {
+	height: auto !important;
+	display: flex;
+}
+
 .nextora-testimonial-carousel__slide {
 	padding: 0 0.5rem;
 }

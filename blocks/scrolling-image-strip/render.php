@@ -281,6 +281,8 @@ $pause_on_hover = ! isset( $attributes['pauseOnHover'] ) || (bool) $attributes['
 $enable_fade_mask = isset( $attributes['enableFadeMask'] ) ? (bool) $attributes['enableFadeMask'] : true;
 $fade_mask_dir    = isset( $attributes['fadeMaskDirection'] ) ? (string) $attributes['fadeMaskDirection'] : 'horizontal';
 $fade_mask_dir    = in_array( $fade_mask_dir, array( 'horizontal', 'vertical-top', 'vertical-bottom', 'vertical-both', 'both' ), true ) ? $fade_mask_dir : 'horizontal';
+$fade_mask_left   = isset( $attributes['fadeMaskLeft'] ) ? max( 0, min( 50, (int) $attributes['fadeMaskLeft'] ) ) : 20;
+$fade_mask_right  = isset( $attributes['fadeMaskRight'] ) ? max( 0, min( 50, (int) $attributes['fadeMaskRight'] ) ) : 20;
 $fade_mask_color  = nextora_sis_resolve_color( isset( $attributes['fadeMaskColor'] ) ? (string) $attributes['fadeMaskColor'] : '' );
 
 $overlay_color   = nextora_sis_resolve_color( isset( $attributes['overlayColor'] ) ? (string) $attributes['overlayColor'] : '' );
@@ -359,6 +361,8 @@ $style_rules = array(
 	'--nextora-sis-overlay-color:' . ( '' !== $overlay_color ? $overlay_color : 'transparent' ),
 	'--nextora-sis-overlay-opacity:' . $overlay_opacity,
 	'--nextora-sis-mask-color:' . ( '' !== $fade_mask_color ? $fade_mask_color : 'transparent' ),
+	'--nextora-sis-mask-left:' . $fade_mask_left . '%',
+	'--nextora-sis-mask-right:' . $fade_mask_right . '%',
 	'--nextora-sis-bg:' . ( '' !== $section_bg_color ? $section_bg_color : 'transparent' ),
 	'--nextora-sis-min-height:' . $section_min_height,
 	'--nextora-sis-section-height:' . $section_height,

@@ -11,6 +11,13 @@
 	width: 100%;
 }
 
+/* Hide animated buttons before the view script initializes them to prevent FOUC. */
+.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-reveal='1']:not(
+		[data-nextora-advanced-button-scroll-init='1']
+	) {
+	opacity: 0;
+}
+
 .wp-block-nextora-advanced-button.nextora-advanced-button--align-left .nextora-advanced-button__buttons,
 .wp-block-nextora-advanced-button .nextora-advanced-button__buttons.is-content-justification-left {
 	justify-content: flex-start;
