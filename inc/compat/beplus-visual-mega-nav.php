@@ -71,3 +71,34 @@ add_action(
 		);
 	},
 );
+
+/**
+ * Theme the mega panel / sub-menu / mobile portal background to the theme's
+ * "base" preset color so the color-scheme switcher's dark/light presets flow
+ * through the plugin's surfaces instead of staying hardcoded white.
+ *
+ * Loaded after the plugin's `beplus-vmn-front` stylesheet via a dependency,
+ * so this override wins the cascade.
+ */
+add_action(
+	'wp_enqueue_scripts',
+	static function (): void {
+		if ( ! wp_style_is( 'beplus-vmn-front', 'registered' ) && ! wp_style_is( 'beplus-vmn-front', 'enqueued' ) ) {
+			return;
+		}
+
+		wp_register_style(
+			'nextora-beplus-vmn-theme',
+			false,
+			array( 'beplus-vmn-front' ),
+			NEXTORA_VERSION,
+		);
+		wp_enqueue_style( 'nextora-beplus-vmn-theme' );
+
+		wp_add_inline_style(
+			'nextora-beplus-vmn-theme',
+			':root{--beplus-vmn-mega-bg:var(--wp--preset--color--base,#fff);}',
+		);
+	},
+	20,
+);
