@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { MediaUpload, MediaUploadCheck, URLInput } from '@wordpress/block-editor';
-import { BaseControl, Button, CheckboxControl, TextControl } from '@wordpress/components';
+import { BaseControl, Button, CheckboxControl, TextareaControl, TextControl } from '@wordpress/components';
 import type { EventItem } from './types';
 import {
 	eventDateInputValue,
@@ -19,10 +19,11 @@ interface WPMedia {
 export interface EventEditFormProps {
 	event: EventItem;
 	imageUrl?: string;
+	showEditorialFields?: boolean;
 	onPatch: (patch: Partial<EventItem>) => void;
 }
 
-export default function EventEditForm({ event, imageUrl, onPatch }: EventEditFormProps) {
+export default function EventEditForm({ event, imageUrl, showEditorialFields = false, onPatch }: EventEditFormProps) {
 	const dateInputValue = eventDateInputValue(event.day, event.month);
 	const timeInputValue = eventTimeInputValue(event.time);
 
@@ -86,11 +87,30 @@ export default function EventEditForm({ event, imageUrl, onPatch }: EventEditFor
 			</div>
 
 			<div className="nextora-event__event-form-fields">
+				{showEditorialFields ? (
+					<>
+						<TextControl
+							label={__('Category', 'nextora')}
+							value={event.category}
+							onChange={(category) => onPatch({ category: category ?? '' })}
+							help={__('Small uppercase label used by the editorial event list.', 'nextora')}
+						/>
+					</>
+				) : null}
 				<TextControl
 					label={__('Title', 'nextora')}
 					value={event.title}
 					onChange={(title) => onPatch({ title: title ?? '' })}
 				/>
+				{showEditorialFields ? (
+					<TextareaControl
+						label={__('Description', 'nextora')}
+						value={event.description}
+						onChange={(description) => onPatch({ description: description ?? '' })}
+						help={__('Keep this to one or two short lines.', 'nextora')}
+						rows={4}
+					/>
+				) : null}
 
 				<div className="nextora-event__event-form-row nextora-event__event-form-row--datetime">
 					<BaseControl

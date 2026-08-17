@@ -195,15 +195,18 @@
    Template 1 — Editor preview (scrollable carousel)
    ======================================================================== */
 
-.nextora-event--template1-editor .nextora-event__inner {
+.nextora-event--template1-editor .nextora-event__inner,
+.nextora-event--template2-editor .nextora-event__inner {
 	padding: 0;
 }
 
-.nextora-event--template1-editor .nextora-event__swiper {
+.nextora-event--template1-editor .nextora-event__swiper,
+.nextora-event--template2-editor .nextora-event__swiper {
 	overflow: visible;
 }
 
-.nextora-event--template1-editor .swiper-wrapper {
+.nextora-event--template1-editor .swiper-wrapper,
+.nextora-event--template2-editor .swiper-wrapper {
 	display: flex !important;
 	flex-direction: row !important;
 	transform: none !important;
@@ -215,24 +218,60 @@
 	padding-bottom: 0.5rem;
 }
 
-.nextora-event--template1-editor .swiper-slide {
+.nextora-event--template1-editor .swiper-slide,
+.nextora-event--template2-editor .swiper-slide {
 	flex-shrink: 0;
 	scroll-snap-align: start;
 	width: calc((100% - (var(--nextora-event-editor-gap, 24px) * (var(--nextora-event-editor-slides, 3) - 1))) / var(--nextora-event-editor-slides, 3));
 }
 
-.nextora-event--template1-editor .nextora-event__card:hover {
+.nextora-event--template1-editor .nextora-event__card:hover,
+.nextora-event--template2-editor .nextora-event__template2-card:hover {
 	transform: none;
 	box-shadow: none;
 }
 
-.nextora-event--template1-editor .nextora-event--loading .nextora-event__card {
+.nextora-event--template1-editor .nextora-event--loading .nextora-event__card,
+.nextora-event--template2-editor .nextora-event--loading .nextora-event__template2-card {
 	opacity: 1;
 }
 
-.nextora-event--template1-editor .nextora-event__card-thumb .nextora-event__thumb-img {
+.nextora-event--template1-editor .nextora-event__card-thumb .nextora-event__thumb-img,
+.nextora-event--template2-editor .nextora-event__template2-media .nextora-event__thumb-img {
 	width: 100% !important;
 	height: 100% !important;
+	max-width: none;
+	object-fit: cover;
+}
+
+/* Template 3 editor preview uses the same hierarchy as the frontend without
+ * inheriting card/list editor rules from the other templates. */
+.nextora-event--template3-editor .nextora-event__template3-item {
+	position: relative;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-title {
+	margin: 0;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-description {
+	margin-bottom: 0;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-meta {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-media {
+	overflow: hidden;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-media img,
+.nextora-event--template3-editor .nextora-event__template3-media .nextora-event__thumb-img {
+	display: block;
+	width: 100%;
+	height: 100%;
 	max-width: none;
 	object-fit: cover;
 }

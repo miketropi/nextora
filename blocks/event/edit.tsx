@@ -190,12 +190,14 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	} = attributes;
 
 	const isTemplate1 = template === 'template1';
+	const isTemplate2 = template === 'template2';
+	const isTemplate3 = template === 'template3';
 
 	const colorPalette = useThemeColorPalette();
 	const lookupPalette = getMergedPaletteEntries(colorPalette);
 
 	const blockProps = useBlockProps({
-		className: `nextora-event nextora-event--editor${isTemplate1 ? ' nextora-event--template1 nextora-event--template1-editor' : ''}`,
+		className: `nextora-event nextora-event--editor${isTemplate1 ? ' nextora-event--template1 nextora-event--template1-editor' : ''}${isTemplate2 ? ' nextora-event--template2 nextora-event--template2-editor' : ''}${isTemplate3 ? ' nextora-event--template3 nextora-event--template3-editor' : ''}`,
 		style: {
 			...buildSectionStyleVars({
 			cardBackgroundColor,
@@ -369,10 +371,12 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				<PanelBody title={__('Template', 'nextora')} initialOpen>
 					<SelectControl
 						label={__('Layout template', 'nextora')}
-						value={template as 'default' | 'template1'}
+						value={template as 'default' | 'template1' | 'template2' | 'template3'}
 						options={[
 							{ label: __('Default — List', 'nextora'), value: 'default' as const },
 							{ label: __('Template 1 — Slider', 'nextora'), value: 'template1' as const },
+							{ label: __('Template 2 — Event cards', 'nextora'), value: 'template2' as const },
+							{ label: __('Template 3 — Editorial list', 'nextora'), value: 'template3' as const },
 						]}
 						onChange={(value: string) => setAttributes({ template: value })}
 					/>
@@ -496,7 +500,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 
 				<PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />
 
-				{!isTemplate1 ? (
+				{!isTemplate1 && !isTemplate2 && !isTemplate3 ? (
 					<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
 						<ToggleControl
 							label={__('Animate on scroll', 'nextora')}
@@ -510,7 +514,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					</PanelBody>
 				) : null}
 
-				{isTemplate1 ? (
+				{isTemplate1 || isTemplate2 ? (
 					<PanelBody title={__('Slider', 'nextora')} initialOpen={false}>
 						<ToggleControl
 							label={__('Autoplay', 'nextora')}
@@ -621,10 +625,11 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 						</div>
 					}
 				>
-					<EventEditForm
-						event={editingEvent}
-						imageUrl={resolveImageUrl(editingEvent, mediaUrlById)}
-						onPatch={(patch) => patchEvent(editingEvent.id, patch)}
+						<EventEditForm
+							event={editingEvent}
+							imageUrl={resolveImageUrl(editingEvent, mediaUrlById)}
+							showEditorialFields={isTemplate3}
+							onPatch={(patch) => patchEvent(editingEvent.id, patch)}
 					/>
 				</Modal>
 			) : null}
@@ -700,6 +705,56 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 									);
 								})}
 							</div>
+						</div>
+					) : isTemplate2 ? (
+						<div className="nextora-event__carousel-root">
+						<div className="swiper nextora-event__swiper">
+						<div className="swiper-wrapper">
+							{events.map((event) => {
+								const imageUrl = resolveImageUrl(event, mediaUrlById);
+								const registerLabel = event.registerLabel.trim() || registerButtonText || __('Register', 'nextora');
+								return (
+									<div key={event.id} className="swiper-slide">
+										<article className="nextora-event__template2-card nextora-event__template2-card--editable">
+											<button type="button" className="nextora-event__item-edit" onClick={() => openEventEditor(event.id)}>
+												{__('Edit event', 'nextora')}
+											</button>
+											<div className="nextora-event__template2-media">
+												{imageUrl ? <img src={imageUrl} alt="" className="nextora-event__thumb-img" /> : null}
+												<div className="nextora-event__template2-date"><b>{event.day || '01'}</b><span>{event.month || __('Jan', 'nextora')}</span></div>
+														{showRegisterButton && event.linkUrl.trim() !== '' ? <span className="nextora-event__template2-register nextora-event__template2-register--static">{registerLabel}<span className="nextora-event__register-icon" aria-hidden="true">→</span></span> : null}
+											</div>
+											<div className="nextora-event__template2-content">
+												<h3 className="nextora-event__template2-title">{event.title || __('Community fundraiser', 'nextora')}</h3>
+												<div className="nextora-event__template2-details">
+													<DetailRow icon="clock">{event.time || __('10:00 AM', 'nextora')}</DetailRow>
+													<DetailRow icon="map-pin">{event.location || __('Main venue', 'nextora')}</DetailRow>
+												</div>
+											</div>
+										</article>
+									</div>
+								);
+							})}
+						</div>
+						</div>
+						</div>
+					) : isTemplate3 ? (
+						<div className="nextora-event__template3-list" aria-label={__('Events', 'nextora')}>
+							{events.map((event) => (
+								<article key={event.id} className="nextora-event__template3-item nextora-event__template3-item--editable">
+									<button type="button" className="nextora-event__item-edit" onClick={() => openEventEditor(event.id)}>
+										{__('Edit event', 'nextora')}
+									</button>
+									<div className="nextora-event__template3-date-frame"><div className="nextora-event__template3-date"><span>{event.month || __('Jan', 'nextora')}</span><b>{event.day || '01'}</b><small>{__('Day', 'nextora')}</small></div></div>
+									<div className="nextora-event__template3-content">
+										<div className="nextora-event__template3-category">{event.category || __('Upcoming event', 'nextora')}</div>
+										<h3 className="nextora-event__template3-title">{event.title || __('Community fundraiser', 'nextora')}</h3>
+										<div className="nextora-event__template3-meta"><DetailRow icon="clock">{event.time || __('Time TBC', 'nextora')}</DetailRow><DetailRow icon="map-pin">{event.location || __('Location TBC', 'nextora')}</DetailRow></div>
+										{event.description ? <p className="nextora-event__template3-description">{event.description}</p> : null}
+									</div>
+									<div className="nextora-event__template3-media">{resolveImageUrl(event, mediaUrlById) ? <img src={resolveImageUrl(event, mediaUrlById)} alt="" /> : null}</div>
+								</article>
+							))}
 						</div>
 					) : (
 						<ul className="nextora-event__list" aria-label={__('Events', 'nextora')}>
