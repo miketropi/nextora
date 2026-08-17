@@ -309,9 +309,10 @@ if ( ! function_exists( 'nextora_build_svg_nodes' ) ) {
 	/**
 	 * Recursively build SVG child nodes from lucide icon-nodes format.
 	 *
-	 * @param array<int, mixed> $nodes Node list.
+	 * @param array<int, mixed>                                                                   $nodes           Node list.
+	 * @param array<int, array{classes?: list<string>, styles?: array<string, string|int|float>}> $animation_nodes Per-node animation metadata.
 	 */
-	function nextora_build_svg_nodes( array $nodes ): string {
+	function nextora_build_svg_nodes( array $nodes, array $animation_nodes = array(), int &$node_index = 0 ): string {
 		$html = '';
 
 		foreach ( $nodes as $node ) {
@@ -336,7 +337,34 @@ if ( ! function_exists( 'nextora_build_svg_nodes' ) ) {
 				$attr_str .= ' ' . esc_attr( $key ) . '="' . esc_attr( (string) $val ) . '"';
 			}
 
-			$inner = ! empty( $children ) ? nextora_build_svg_nodes( $children ) : '';
+			if ( isset( $animation_nodes[ $node_index ] ) && is_array( $animation_nodes[ $node_index ] ) ) {
+				$animation = $animation_nodes[ $node_index ];
+				$classes   = isset( $animation['classes'] ) && is_array( $animation['classes'] ) ? $animation['classes'] : array();
+				$styles    = isset( $animation['styles'] ) && is_array( $animation['styles'] ) ? $animation['styles'] : array();
+
+				if ( ! empty( $classes ) ) {
+					$attr_str .= ' class="' . esc_attr( implode( ' ', array_map( 'sanitize_html_class', $classes ) ) ) . '"';
+					if ( in_array( 'al-anim-draw', $classes, true ) || in_array( 'al-anim-draw-line', $classes, true ) ) {
+						$dash_length = isset( $styles['--al-dash-len'] ) ? (string) $styles['--al-dash-len'] : '50';
+						$attr_str   .= ' stroke-dasharray="' . esc_attr( $dash_length ) . '" stroke-dashoffset="' . esc_attr( $dash_length ) . '"';
+					}
+				}
+
+				if ( ! empty( $styles ) ) {
+					$style_values = array();
+					foreach ( $styles as $property => $value ) {
+						if ( is_string( $property ) && preg_match( '/^--[a-z0-9-]+$/', $property ) && ( is_string( $value ) || is_numeric( $value ) ) ) {
+							$style_values[] = $property . ':' . esc_attr( (string) $value );
+						}
+					}
+					if ( ! empty( $style_values ) ) {
+						$attr_str .= ' style="' . esc_attr( implode( ';', $style_values ) ) . '"';
+					}
+				}
+			}
+
+			$node_index++;
+			$inner = ! empty( $children ) ? nextora_build_svg_nodes( $children, $animation_nodes, $node_index ) : '';
 
 			$html .= "<{$tag_esc}{$attr_str}>{$inner}</{$tag_esc}>";
 		}
@@ -354,6 +382,7 @@ if ( ! function_exists( 'nextora_get_lucide_svg' ) ) {
 	 * @param string $color        CSS color value or currentColor.
 	 * @param float  $stroke_width SVG stroke-width attribute value.
 	 * @param string $aria_label   Accessible label (empty = decorative).
+	 * @param bool   $animate      Add the optional Lucide hover animation class.
 	 */
 	function nextora_get_lucide_svg(
 		string $icon_name,
@@ -361,6 +390,7 @@ if ( ! function_exists( 'nextora_get_lucide_svg' ) ) {
 		string $color = 'currentColor',
 		float $stroke_width = 2,
 		string $aria_label = '',
+		bool $animate = false,
 	): string {
 		static $icon_data = null;
 
@@ -380,7 +410,12 @@ if ( ! function_exists( 'nextora_get_lucide_svg' ) ) {
 							&& is_string( $item['name'] )
 							&& is_array( $item['nodes'] )
 						) {
-							$icon_data[ $item['name'] ] = $item['nodes'];
+							$icon_data[ $item['name'] ] = array(
+								'nodes'     => $item['nodes'],
+								'animation' => isset( $item['animation']['nodes'] ) && is_array( $item['animation']['nodes'] )
+									? $item['animation']['nodes']
+									: array(),
+							);
 						}
 					}
 				}
@@ -391,17 +426,23 @@ if ( ! function_exists( 'nextora_get_lucide_svg' ) ) {
 			return '';
 		}
 
-		$nodes      = $icon_data[ $icon_name ];
+		$icon       = $icon_data[ $icon_name ];
+		$nodes      = $icon['nodes'];
+		$animations = $animate ? $icon['animation'] : array();
 		$size_attr  = esc_attr( (string) $size );
 		$color_attr = esc_attr( $color );
 		$sw_attr    = esc_attr( (string) $stroke_width );
 		$class      = 'lucide lucide-' . esc_attr( $icon_name );
+		if ( $animate ) {
+			$class .= ' animated-lucide-icon';
+		}
 
 		$aria = '' !== $aria_label
 			? 'role="img" aria-label="' . esc_attr( $aria_label ) . '"'
 			: 'aria-hidden="true" focusable="false"';
 
-		$inner = nextora_build_svg_nodes( $nodes );
+		$node_index = 0;
+		$inner      = nextora_build_svg_nodes( $nodes, $animations, $node_index );
 
 		return sprintf(
 			'<svg xmlns="http://www.w3.org/2000/svg" width="%1$s" height="%1$s" viewBox="0 0 24 24"'

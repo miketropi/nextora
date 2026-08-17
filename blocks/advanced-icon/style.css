@@ -25,6 +25,278 @@
 	flex-shrink: 0;
 }
 
+/* Animated child paths may extend beyond the 24x24 viewBox while transformed. */
+.wp-block-nextora-advanced-icon svg.animated-lucide-icon {
+	overflow: visible;
+}
+
+/* Matches animated-icons' CSS-only Lucide trigger contract. */
+.wp-block-nextora-advanced-icon .animated-lucide-icon {
+	transform-origin: center;
+}
+
+/* Per-element animation primitives adapted from animated-icons. */
+.wp-block-nextora-advanced-icon .al-delay-0 { --al-delay: 0ms; }
+.wp-block-nextora-advanced-icon .al-delay-1 { --al-delay: 80ms; }
+.wp-block-nextora-advanced-icon .al-delay-2 { --al-delay: 160ms; }
+.wp-block-nextora-advanced-icon .al-delay-3 { --al-delay: 240ms; }
+.wp-block-nextora-advanced-icon .al-delay-4 { --al-delay: 320ms; }
+.wp-block-nextora-advanced-icon .al-delay-5 { --al-delay: 400ms; }
+.wp-block-nextora-advanced-icon .al-delay-6 { --al-delay: 480ms; }
+.wp-block-nextora-advanced-icon .al-delay-7 { --al-delay: 560ms; }
+
+.wp-block-nextora-advanced-icon .al-anim-fill { fill: currentColor; fill-opacity: 0; transition: fill-opacity 500ms ease var(--al-delay, 0ms); }
+.wp-block-nextora-advanced-icon .al-anim-fade { transform-origin: center; }
+.wp-block-nextora-advanced-icon .al-anim-scale-pop { transform-origin: center; }
+.wp-block-nextora-advanced-icon .al-anim-dot-appear { transform-origin: center; }
+.wp-block-nextora-advanced-icon .al-anim-draw { stroke-dashoffset: 0; }
+.wp-block-nextora-advanced-icon .al-anim-wave { transform-origin: center; }
+.wp-block-nextora-advanced-icon .al-anim-locate { transform-origin: center; }
+.wp-block-nextora-advanced-icon .al-anim-shield { transform-origin: center; }
+.wp-block-nextora-advanced-icon .al-anim-ambient { transform-origin: center; }
+.wp-block-nextora-advanced-icon .al-anim-bar { transform-origin: center bottom; }
+.wp-block-nextora-advanced-icon .al-anim-pulse-element { transform-origin: center; }
+.wp-block-nextora-advanced-icon .al-anim-gear { transform-origin: 12px 12px; transition: transform 700ms cubic-bezier(0.34, 1.56, 0.64, 1) var(--al-delay, 0ms); }
+.wp-block-nextora-advanced-icon .al-anim-nudge { transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1) var(--al-delay, 0ms); }
+.wp-block-nextora-advanced-icon .al-anim-bell-ring { transform-origin: 12px 3px; }
+.wp-block-nextora-advanced-icon .al-anim-heart-beat { transform-origin: 12px 13px; }
+.wp-block-nextora-advanced-icon .al-anim-mail-flap { transform-origin: center top; }
+.wp-block-nextora-advanced-icon .al-anim-shake { transform-origin: center; }
+.wp-block-nextora-advanced-icon .al-anim-spin { transform-origin: 12px 12px; }
+.wp-block-nextora-advanced-icon .al-anim-rocket-lift,
+.wp-block-nextora-advanced-icon .al-anim-handle-lift { transition: transform 500ms ease var(--al-delay, 0ms); }
+
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-fill,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-fill { fill-opacity: 0.18; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-fade,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-fade { animation: nextora-al-fade-pop 500ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-scale-pop,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-scale-pop { animation: nextora-al-scale-pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-dot-appear,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-dot-appear { animation: nextora-al-dot-pop 500ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-draw,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-draw { animation: nextora-al-draw 600ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-bar,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-bar { animation: nextora-al-bar-grow 600ms cubic-bezier(0.34, 1.56, 0.64, 1) var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-pulse-element,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-pulse-element { animation: nextora-al-pulse 700ms ease-in-out var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-gear,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-gear { transform: rotate(var(--al-rotation, 90deg)); }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-nudge,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-nudge { transform: translate(var(--al-tx, 0px), var(--al-ty, 0px)); }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-bell-ring,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-bell-ring { animation: nextora-al-bell-ring 700ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-heart-beat,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-heart-beat { animation: nextora-al-heart-beat 800ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-mail-flap,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-mail-flap { animation: nextora-al-mail-flap 700ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-shake,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-shake { animation: nextora-al-shake 600ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-spin,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-spin { animation: nextora-al-spin 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-rocket-lift,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-rocket-lift { transform: translate(1px, -1.5px); }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-handle-lift,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-handle-lift { transform: translateY(-1.5px); }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-wave,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-wave { animation: nextora-al-wave 700ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-locate,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-locate { animation: nextora-al-locate 700ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-shield,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-shield { animation: nextora-al-shield 600ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon .al-anim-ambient,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon .al-anim-ambient { animation: nextora-al-ambient 800ms ease var(--al-delay, 0ms) both; }
+
+/* Automatic triggers use the same node animations as hover/focus. */
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-fill { fill-opacity: 0.18; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-fade { animation: nextora-al-fade-pop 500ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-scale-pop { animation: nextora-al-scale-pop 500ms cubic-bezier(0.34, 1.56, 0.64, 1) var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-dot-appear { animation: nextora-al-dot-pop 500ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-draw { animation: nextora-al-draw 600ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-bar { animation: nextora-al-bar-grow 600ms cubic-bezier(0.34, 1.56, 0.64, 1) var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-pulse-element { animation: nextora-al-pulse 700ms ease-in-out var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-gear { transform: rotate(var(--al-rotation, 90deg)); }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-nudge { transform: translate(var(--al-tx, 0px), var(--al-ty, 0px)); }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-bell-ring { animation: nextora-al-bell-ring 700ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-heart-beat { animation: nextora-al-heart-beat 800ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-mail-flap { animation: nextora-al-mail-flap 700ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-shake { animation: nextora-al-shake 600ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-spin { animation: nextora-al-spin 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-rocket-lift { transform: translate(1px, -1.5px); }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-handle-lift { transform: translateY(-1.5px); }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-wave { animation: nextora-al-wave 700ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-locate { animation: nextora-al-locate 700ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-shield { animation: nextora-al-shield 600ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon .al-anim-ambient { animation: nextora-al-ambient 800ms ease var(--al-delay, 0ms) both; }
+.wp-block-nextora-advanced-icon[data-nextora-icon-animation="loop"][data-nextora-icon-animation-state="playing"] .animated-lucide-icon * {
+		animation-iteration-count: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-nextora-advanced-icon[data-nextora-icon-animation-state="playing"] .animated-lucide-icon *,
+	.wp-block-nextora-advanced-icon[data-nextora-icon-animation="loop"] .animated-lucide-icon * {
+		animation: none !important;
+		transition: none !important;
+		transform: none !important;
+	}
+}
+
+@keyframes nextora-al-fade-pop { 0% { opacity: .3; transform: scale(.92); } 60% { opacity: 1; transform: scale(1.04); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes nextora-al-scale-pop { 0% { transform: scale(1); } 40% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes nextora-al-dot-pop { 0% { transform: scale(1); } 40% { transform: scale(.3); } 70% { transform: scale(1.3); } 100% { transform: scale(1); } }
+@keyframes nextora-al-bar-grow { 0% { transform: scaleY(.2); } 60% { transform: scaleY(1.08); } 100% { transform: scaleY(1); } }
+@keyframes nextora-al-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+@keyframes nextora-al-draw { from { stroke-dashoffset: var(--al-dash-len, 50); } to { stroke-dashoffset: 0; } }
+@keyframes nextora-al-bell-ring { 0%, 100% { transform: rotate(0); } 12% { transform: rotate(14deg); } 24% { transform: rotate(-12deg); } 36% { transform: rotate(8deg); } 60% { transform: rotate(2deg); } }
+@keyframes nextora-al-heart-beat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.2); } 30% { transform: scale(1); } 45% { transform: scale(1.15); } 60% { transform: scale(1); } }
+@keyframes nextora-al-mail-flap { 0%, 100% { transform: rotateX(0); } 40% { transform: rotateX(-30deg); } 70% { transform: rotateX(5deg); } }
+@keyframes nextora-al-shake { 0%, 100% { transform: translateX(0) rotate(0); } 15% { transform: translateX(-1.5px) rotate(-3deg); } 30% { transform: translateX(1.5px) rotate(3deg); } 60% { transform: translateX(1px) rotate(2deg); } }
+@keyframes nextora-al-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+@keyframes nextora-al-wave { 0%, 100% { transform: rotate(0); } 35% { transform: rotate(8deg); } 65% { transform: rotate(-5deg); } }
+@keyframes nextora-al-locate { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-2px); } }
+@keyframes nextora-al-shield { 0%, 100% { fill-opacity: 0; } 50% { fill-opacity: .18; } }
+@keyframes nextora-al-ambient { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-1.5px) rotate(2deg); } }
+
+.wp-block-nextora-advanced-icon:hover .animated-lucide-icon,
+.wp-block-nextora-advanced-icon:focus-within .animated-lucide-icon {
+	animation-duration: 600ms;
+	animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+	animation-fill-mode: both;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--directional,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--directional {
+	animation-name: nextora-lucide-directional;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--pop-envelope,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--pop-envelope {
+	animation-name: nextora-lucide-pop-envelope;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--playback,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--playback,
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--toggle,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--toggle {
+	animation-name: nextora-lucide-toggle;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--unfold,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--unfold {
+	animation-name: nextora-lucide-unfold;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--pulse,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--pulse {
+	animation-name: nextora-lucide-pulse;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--ambient,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--ambient {
+	animation-name: nextora-lucide-ambient;
+	animation-duration: 900ms;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--bounce-in,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--bounce-in {
+	animation-name: nextora-lucide-bounce-in;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--draw,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--draw,
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--type-in,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--type-in {
+	animation-name: nextora-lucide-draw;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--wave,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--wave {
+	animation-name: nextora-lucide-wave;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--locate,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--locate {
+	animation-name: nextora-lucide-locate;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--chart-rise,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--chart-rise {
+	animation-name: nextora-lucide-chart-rise;
+}
+
+.wp-block-nextora-advanced-icon:hover .nextora-lucide-animation--shield,
+.wp-block-nextora-advanced-icon:focus-within .nextora-lucide-animation--shield {
+	animation-name: nextora-lucide-shield;
+}
+
+@keyframes nextora-lucide-directional {
+	0%, 100% { transform: translateX(0); }
+	55% { transform: translateX(3px); }
+}
+
+@keyframes nextora-lucide-pop-envelope {
+	0%, 100% { transform: translateY(0) scale(1); }
+	45% { transform: translateY(-2px) scale(1.08); }
+}
+
+@keyframes nextora-lucide-toggle {
+	0% {
+		transform: scale(1);
+	}
+	40% {
+		transform: scale(1.15) rotate(4deg);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes nextora-lucide-unfold {
+	0%, 100% { transform: scaleY(1); opacity: 1; }
+	45% { transform: scaleY(0.78); opacity: 0.75; }
+}
+
+@keyframes nextora-lucide-pulse {
+	0%, 100% { transform: scale(1); opacity: 1; }
+	50% { transform: scale(1.12); opacity: 0.7; }
+}
+
+@keyframes nextora-lucide-ambient {
+	0%, 100% { transform: translateY(0) rotate(0); }
+	50% { transform: translateY(-2px) rotate(3deg); }
+}
+
+@keyframes nextora-lucide-bounce-in {
+	0%, 100% { transform: translateY(0); }
+	45% { transform: translateY(-3px); }
+}
+
+@keyframes nextora-lucide-draw {
+	0%, 100% { transform: scale(1); }
+	45% { transform: scale(1.08); }
+}
+
+@keyframes nextora-lucide-wave {
+	0%, 100% { transform: rotate(0); }
+	35% { transform: rotate(10deg); }
+	65% { transform: rotate(-7deg); }
+}
+
+@keyframes nextora-lucide-locate {
+	0%, 100% { transform: translateY(0) scale(1); }
+	45% { transform: translateY(-3px) scale(1.08); }
+}
+
+@keyframes nextora-lucide-chart-rise {
+	0%, 100% { transform: scaleY(1); transform-origin: center bottom; }
+	45% { transform: scaleY(1.12); transform-origin: center bottom; }
+}
+
+@keyframes nextora-lucide-shield {
+	0%, 100% { transform: scale(1); }
+	45% { transform: scale(1.08); }
+}
+
 .wp-block-nextora-advanced-icon .nextora-advanced-icon__img {
 	display: block;
 	flex-shrink: 0;
@@ -106,6 +378,17 @@
 @media (prefers-reduced-motion: reduce) {
 	.wp-block-nextora-advanced-icon .nextora-advanced-icon__link {
 		transition: none;
+	}
+
+	.wp-block-nextora-advanced-icon .animated-lucide-icon {
+		animation: none;
+		transform: none;
+	}
+
+	.wp-block-nextora-advanced-icon .animated-lucide-icon * {
+		animation: none !important;
+		transition: none !important;
+		transform: none !important;
 	}
 
 	.wp-block-nextora-advanced-icon.nextora-advanced-icon[data-nextora-scroll-reveal='1'].nextora-advanced-icon--reveal-pending {

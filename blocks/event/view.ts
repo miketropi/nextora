@@ -260,7 +260,10 @@ function initTemplate1Swiper(root: HTMLElement): void {
 }
 
 function initRoot(root: HTMLElement): void {
-	if (root.getAttribute('data-nextora-event-template') === 'template1') {
+	if (
+		root.getAttribute('data-nextora-event-template') === 'template1' ||
+		root.getAttribute('data-nextora-event-template') === 'template2'
+	) {
 		initTemplate1Swiper(root);
 	} else {
 		initScrollReveal(root);

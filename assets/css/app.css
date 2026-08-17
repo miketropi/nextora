@@ -238,6 +238,9 @@
   .visible {
     visibility: visible;
   }
+  .visible\! {
+    visibility: visible !important;
+  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -260,6 +263,9 @@
   }
   .static {
     position: static;
+  }
+  .static\! {
+    position: static !important;
   }
   .sticky {
     position: sticky;
@@ -2230,7 +2236,8 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
 }
 @media (max-width: 768px) {
   .wp-site-blocks {
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 }
 .aspect-ratio-4-5 img, .aspect-ratio-4-5 iframe, .aspect-ratio-4-5 video {
