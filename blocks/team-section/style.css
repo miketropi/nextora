@@ -412,13 +412,13 @@
 }
 
 /* Block style presets */
-.is-style-soft-band.nextora-team-section {
-	--nextora-team-bg: color-mix(
-		in srgb,
-		var(--wp--preset--color--base, #fff) 92%,
-		var(--wp--preset--color--primary, #000) 8%
-	);
-}
+/* .is-style-soft-band.nextora-team-section { */
+/* 	--nextora-team-bg: color-mix( */
+/* 		in srgb, */
+/* 		var(--wp--preset--color--base, #fff) 92%, */
+/* 		var(--wp--preset--color--primary, #000) 8% */
+/* 	); */
+/* } */
 
 .is-style-contrast-band.nextora-team-section {
 	--nextora-team-bg: var(--wp--preset--color--contrast, #0a0a0a);
