@@ -286,7 +286,8 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
 }
 @media (max-width: 768px) {
 	.wp-site-blocks {
-		overflow: hidden;
+		overflow-x: clip;
+		overflow-y: visible;
 	}
 }
 /* aspect ratio */

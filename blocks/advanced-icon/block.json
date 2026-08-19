@@ -95,6 +95,19 @@
 		"enableScrollAnimation": {
 			"type": "boolean",
 			"default": true
+		},
+		"enableIconAnimation": {
+			"type": "boolean",
+			"default": false
+		},
+		"iconAnimationTrigger": {
+			"type": "string",
+			"enum": ["hover", "when-visible", "loop"],
+			"default": "hover"
+		},
+		"iconAnimationLoopPause": {
+			"type": "number",
+			"default": 600
 		}
 	},
 	"editorScript": "file:./index.js",

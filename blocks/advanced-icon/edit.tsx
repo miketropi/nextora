@@ -30,7 +30,7 @@ import {
 	useThemeColorPalette,
 } from './color-utils';
 import type { GradientPreset } from './color-utils';
-import type { IconAttributes, IconAlign, IconLinkTarget, IconSource, IconStyle } from './types';
+import type { IconAttributes, IconAlign, IconAnimationTrigger, IconLinkTarget, IconSource, IconStyle } from './types';
 
 export default function IconEdit( {
 	attributes,
@@ -57,6 +57,9 @@ export default function IconEdit( {
 		linkTarget = '_self',
 		ariaLabel = '',
 		enableScrollAnimation = true,
+		enableIconAnimation = false,
+		iconAnimationTrigger = 'hover',
+		iconAnimationLoopPause = 600,
 	} = attributes;
 
 	const [ pickerOpen, setPickerOpen ] = useState( false );
@@ -456,6 +459,44 @@ export default function IconEdit( {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Animation', 'nextora' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Enable Lucide icon animation', 'nextora' ) }
+						help={ __(
+							'Enables the selected Lucide icon animation. Choose whether it responds to hover, appears once when visible, or loops while visible. Uploaded icons are not animated.',
+							'nextora'
+						) }
+						checked={ iconSource === 'theme' && enableIconAnimation }
+						disabled={ iconSource !== 'theme' }
+						onChange={ ( value: boolean ) =>
+							setAttributes( { enableIconAnimation: value } )
+						}
+					/>
+					{ iconSource === 'theme' && enableIconAnimation && (
+						<SelectControl
+							label={ __( 'Animation trigger', 'nextora' ) }
+							value={ iconAnimationTrigger }
+							options={ [
+								{ label: __( 'On hover and keyboard focus', 'nextora' ), value: 'hover' },
+								{ label: __( 'Once when visible', 'nextora' ), value: 'when-visible' },
+								{ label: __( 'Loop while visible (slow)', 'nextora' ), value: 'loop' },
+							] }
+							onChange={ ( value: string ) =>
+								setAttributes( { iconAnimationTrigger: value as IconAnimationTrigger } )
+							}
+							help={ __( 'Automatic modes are disabled when reduced motion is preferred.', 'nextora' ) }
+						/>
+					) }
+					{ iconSource === 'theme' && enableIconAnimation && iconAnimationTrigger === 'loop' && (
+						<RangeControl
+							label={ __( 'Pause between loop cycles (ms)', 'nextora' ) }
+							value={ iconAnimationLoopPause }
+							onChange={ ( value: number | undefined ) => setAttributes( { iconAnimationLoopPause: value ?? 600 } ) }
+							min={ 0 }
+							max={ 3000 }
+							step={ 100 }
+							help={ __( 'Wait time after one animation finishes before it starts again.', 'nextora' ) }
+						/>
+					) }
 					<ToggleControl
 						label={ __( 'Animate on scroll', 'nextora' ) }
 						help={ __(

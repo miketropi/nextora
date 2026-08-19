@@ -37,6 +37,13 @@ $link_url         = isset( $attributes['linkUrl'] ) ? trim( (string) $attributes
 $link_target      = isset( $attributes['linkTarget'] ) ? (string) $attributes['linkTarget'] : '_self';
 $aria_label       = isset( $attributes['ariaLabel'] ) ? trim( (string) $attributes['ariaLabel'] ) : '';
 $icon_color       = isset( $attributes['iconColor'] ) ? (string) $attributes['iconColor'] : '';
+$enable_icon_animation = 'theme' === $source && ! empty( $attributes['enableIconAnimation'] );
+$icon_animation_trigger = isset( $attributes['iconAnimationTrigger'] ) ? (string) $attributes['iconAnimationTrigger'] : 'hover';
+$icon_animation_loop_pause = isset( $attributes['iconAnimationLoopPause'] ) ? max( 0, min( 3000, (int) $attributes['iconAnimationLoopPause'] ) ) : 600;
+$allowed_icon_animation_triggers = array( 'hover', 'when-visible', 'loop' );
+if ( ! in_array( $icon_animation_trigger, $allowed_icon_animation_triggers, true ) ) {
+	$icon_animation_trigger = 'hover';
+}
 $enable_scroll = nextora_icon_scroll_animation_enabled( $attributes );
 
 $allowed_align = array( 'left', 'center', 'right' );
@@ -65,7 +72,7 @@ if ( 'upload' === $source && '' !== $upload_url ) {
 	);
 } elseif ( 'theme' === $source ) {
 	$svg_aria = '' !== $link_url ? '' : $aria_label;
-	$icon_markup = nextora_get_lucide_svg( $icon_name, $size, $color, $stroke_w, $svg_aria );
+	$icon_markup = nextora_get_lucide_svg( $icon_name, $size, $color, $stroke_w, $svg_aria, $enable_icon_animation );
 }
 
 if ( '' === $icon_markup ) {
@@ -148,6 +155,9 @@ if ( 'framed' === $icon_style && '' !== $border_color ) {
 $wrapper_args = array(
 	'class' => implode( ' ', $wrapper_classes ),
 	'style' => implode( ' ', $inline_styles ),
+	'data-nextora-icon-animation' => $enable_icon_animation ? $icon_animation_trigger : 'off',
+	'data-nextora-icon-animation-state' => $enable_icon_animation ? 'idle' : 'off',
+	'data-nextora-icon-animation-loop-pause' => $enable_icon_animation ? (string) $icon_animation_loop_pause : '0',
 );
 
 nextora_icon_enqueue_view_script();

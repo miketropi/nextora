@@ -2,7 +2,9 @@ export interface EventItem {
 	id: string;
 	day: string;
 	month: string;
+	category: string;
 	title: string;
+	description: string;
 	location: string;
 	time: string;
 	price: string;
