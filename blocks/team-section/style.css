@@ -27,7 +27,11 @@
 .nextora-team-section[data-nextora-scroll-reveal='1'].nextora-team-section--reveal-pending:not(
 		.nextora-team-section--reveal-ready
 	)
-	.nextora-team-section__carousel-root {
+	.nextora-team-section__carousel-root,
+.nextora-team-section[data-nextora-scroll-reveal='1'].nextora-team-section--reveal-pending:not(
+		.nextora-team-section--reveal-ready
+	)
+	.nextora-team-section__deck-container {
 	opacity: 0;
 	transform: translate3d(0, 2rem, 0);
 }
@@ -35,7 +39,9 @@
 .nextora-team-section[data-nextora-scroll-reveal='1'].nextora-team-section--reveal-ready
 	.nextora-team-section__header,
 .nextora-team-section[data-nextora-scroll-reveal='1'].nextora-team-section--reveal-ready
-	.nextora-team-section__carousel-root {
+	.nextora-team-section__carousel-root,
+.nextora-team-section[data-nextora-scroll-reveal='1'].nextora-team-section--reveal-ready
+	.nextora-team-section__deck-container {
 	opacity: 1;
 	transform: none;
 }
@@ -589,4 +595,193 @@
 	.nextora-team-section__card:hover {
 		transform: none;
 	}
+}
+
+/* ── Template 02: Animated Card Stack Deck & Details ──────── */
+
+.nextora-team-section--template-template-02 .nextora-team-section__deck-container {
+	width: 100%;
+	max-width: 1080px;
+	margin-inline: auto;
+	padding: 1.5rem 0.5rem;
+	box-sizing: border-box;
+}
+
+.nextora-team-section--template-template-02 .nextora-team-section__deck-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 2.5rem;
+	align-items: center;
+}
+
+@media (min-width: 768px) {
+	.nextora-team-section--template-template-02 .nextora-team-section__deck-grid {
+		grid-template-columns: 1fr 1.15fr;
+		gap: 3.5rem;
+	}
+}
+
+@media (min-width: 1024px) {
+	.nextora-team-section--template-template-02 .nextora-team-section__deck-grid {
+		gap: 4.5rem;
+	}
+}
+
+/* Left Photo Stack Column */
+.nextora-team-section__deck-photo-col {
+	position: relative;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	padding: 1rem 0;
+}
+
+.nextora-team-section__deck-photo-stack {
+	position: relative;
+	width: 100%;
+	max-width: 360px;
+	aspect-ratio: var(--nextora-team-photo-aspect, 3/4);
+	perspective: 1000px;
+}
+
+.nextora-team-section__deck-photo-card {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	border-radius: var(--nextora-team-card-radius, 24px);
+	box-shadow: 0 20px 45px -15px rgb(0 0 0 / 0.16), 0 0 0 1px rgb(0 0 0 / 0.05);
+	background-color: var(--nextora-team-card-bg, var(--wp--preset--color--surface, #f8f9fa));
+	transform-origin: bottom center;
+	will-change: transform, opacity;
+	user-select: none;
+	-webkit-user-select: none;
+	cursor: grab;
+}
+
+.nextora-team-section__deck-photo-card img,
+.nextora-team-section__deck-photo-card .nextora-team-section__deck-photo-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	pointer-events: none;
+}
+
+/* Right Details Column */
+.nextora-team-section__deck-info-col {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-height: 260px;
+}
+
+.nextora-team-section__deck-info-pane {
+	display: none;
+}
+
+.nextora-team-section__deck-info-pane.is-active {
+	display: block;
+}
+
+.nextora-team-section__deck-name {
+	font-size: var(--wp--preset--font-size--large, clamp(1.5rem, 2.5vw, 1.875rem));
+	font-weight: 700;
+	line-height: 1.25;
+	color: var(--nextora-team-name-color, var(--wp--preset--color--contrast, #0a0a0a));
+	margin: 0 0 1rem 0;
+}
+
+.nextora-team-section__deck-role {
+	font-size: var(--wp--preset--font-size--small, 0.95rem);
+	font-weight: 500;
+	letter-spacing: 0.025em;
+	color: var(--nextora-team-role-color, var(--wp--preset--color--primary, #1a56db));
+	margin: 1rem 0 0;
+}
+
+.nextora-team-section--template-template-02 .nextora-team-section__card-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: 1.25rem;
+}
+
+.nextora-team-section__deck-bio {
+	font-size: var(--wp--preset--font-size--base, clamp(1rem, 1.2vw, 1.125rem));
+	font-weight: 400;
+	line-height: 1.7;
+	color: var(--nextora-team-desc-color, var(--wp--preset--color--paragraph, #4d6995));
+	margin: 1rem 0 0;
+}
+
+.nextora-deck-word {
+	display: inline-block;
+	will-change: transform, opacity, filter;
+}
+
+.nextora-team-section__deck-social {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-top: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.nextora-team-section__deck-social-link {
+	font-size: 0.85rem;
+	font-weight: 600;
+	padding: 0.35rem 0.85rem;
+	border-radius: 9999px;
+	background: rgb(from var(--wp--preset--color--contrast, #000) r g b / 0.06);
+	color: var(--wp--preset--color--contrast, #0a0a0a);
+	text-decoration: none;
+	transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nextora-team-section__deck-social-link:hover {
+	background: var(--wp--preset--color--primary, #2E1A47);
+	color: var(--wp--preset--color--base, #ffffff);
+}
+
+/* Nav Controls */
+.nextora-team-section__deck-nav {
+	display: flex;
+	align-items: center;
+	gap: 0.875rem;
+	margin-top: 1.5rem;
+}
+
+.nextora-team-section__deck-nav-btn {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--surface, #f3f4f6);
+	border: 1px solid rgb(from var(--wp--preset--color--contrast, #000) r g b / 0.1);
+	color: var(--wp--preset--color--contrast, #0a0a0a);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.nextora-team-section__deck-nav-btn:hover {
+	background: var(--wp--preset--color--contrast, #0a0a0a);
+	color: var(--wp--preset--color--base, #ffffff);
+	border-color: var(--wp--preset--color--contrast, #0a0a0a);
+	transform: scale(1.05);
+}
+
+.nextora-team-section__deck-nav-btn--prev:hover .nextora-team-section__deck-nav-icon {
+	transform: rotate(12deg);
+}
+
+.nextora-team-section__deck-nav-btn--next:hover .nextora-team-section__deck-nav-icon {
+	transform: rotate(-12deg);
+}
+
+.nextora-team-section__deck-nav-icon {
+	transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }

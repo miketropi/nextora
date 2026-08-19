@@ -316,3 +316,57 @@
 		max-width: min(280px, 85vw);
 	}
 }
+
+/* Template 02 editor preview */
+.nextora-team-section--editor.nextora-team-section--template-template-02 .nextora-team-section__deck-wrap {
+	display: grid;
+	grid-template-columns: 1fr 1.15fr;
+	gap: 3.5rem;
+	align-items: center;
+	padding: 1.5rem 0.5rem;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-template-02 .nextora-team-section__deck-left {
+	position: relative;
+	display: flex;
+	justify-content: center;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-template-02 .nextora-team-section__deck-stack {
+	position: relative;
+	width: 100%;
+	max-width: 320px;
+	aspect-ratio: var(--nextora-team-photo-aspect, 3/4);
+}
+
+.nextora-team-section--editor.nextora-team-section--template-template-02 .nextora-team-section__deck-card {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: var(--nextora-team-card-radius, 24px);
+	overflow: hidden;
+	box-shadow: 0 15px 35px -10px rgb(0 0 0 / 0.15);
+	cursor: pointer;
+	background: var(--nextora-team-card-bg, #fff);
+}
+
+.nextora-team-section--editor.nextora-team-section--template-template-02 .nextora-team-section__deck-card img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-template-02 .nextora-team-section__deck-right {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+@media (max-width: 768px) {
+	.nextora-team-section--editor.nextora-team-section--template-template-02 .nextora-team-section__deck-wrap {
+		grid-template-columns: 1fr;
+		gap: 2rem;
+	}
+}

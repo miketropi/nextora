@@ -152,8 +152,10 @@ function initScrollReveal(section: HTMLElement): void {
 	}
 
 	const header = section.querySelector<HTMLElement>('.nextora-team-section__header');
-	const carousel = section.querySelector<HTMLElement>('.nextora-team-section__carousel-root');
-	const targets = [header, carousel].filter((el): el is HTMLElement => el !== null);
+	const content = section.querySelector<HTMLElement>(
+		'.nextora-team-section__carousel-root, .nextora-team-section__deck-container'
+	);
+	const targets = [header, content].filter((el): el is HTMLElement => el !== null);
 
 	if (targets.length === 0) {
 		setRevealReady(section);
@@ -175,9 +177,9 @@ function initScrollReveal(section: HTMLElement): void {
 		timeline.to(header, { opacity: 1, y: 0, duration: 1 }, 0);
 	}
 
-	if (carousel) {
+	if (content) {
 		timeline.to(
-			carousel,
+			content,
 			{
 				opacity: 1,
 				y: 0,
@@ -458,9 +460,254 @@ function initSwiperIn(container: Element | Document): void {
 	});
 }
 
+function initTeamSectionTemplate02(container: Element | Document = document): void {
+	const decks = container.querySelectorAll<HTMLElement>('.nextora-team-section__deck-container');
+
+	decks.forEach((deck) => {
+		if (deck.dataset.nextoraDeckInited === '1') {
+			return;
+		}
+		deck.dataset.nextoraDeckInited = '1';
+
+		const section = deck.closest<HTMLElement>('.nextora-team-section');
+		const cards = Array.from(deck.querySelectorAll<HTMLElement>('.nextora-team-section__deck-photo-card'));
+		const panes = Array.from(deck.querySelectorAll<HTMLElement>('.nextora-team-section__deck-info-pane'));
+		const prevBtn = deck.querySelector<HTMLButtonElement>('.nextora-team-section__deck-nav-btn--prev');
+		const nextBtn = deck.querySelector<HTMLButtonElement>('.nextora-team-section__deck-nav-btn--next');
+
+		const total = cards.length;
+		if (total === 0) {
+			markSectionReady(section);
+			return;
+		}
+
+		const autoplay = deck.getAttribute('data-autoplay') === '1';
+		const autoplayDelay = parseInt(deck.getAttribute('data-autoplay-delay') || '4000', 10);
+		const pauseOnHover = deck.getAttribute('data-pause-on-hover') !== '0';
+		const loop = deck.getAttribute('data-loop') === '1';
+		const speedMs = parseInt(deck.getAttribute('data-speed') || '500', 10);
+		const speedSec = Math.max(0.1, (Number.isFinite(speedMs) ? speedMs : 500) / 1000);
+		const reduced = prefersReducedMotion();
+
+		let activeIndex = 0;
+		let autoplayTimer: number | null = null;
+		let isHovered = false;
+
+		const rotations = [-7, 6, -5, 7, -4, 6, -6, 5];
+		const getCardRotation = (index: number) => rotations[index % rotations.length];
+
+		const startAutoplay = () => {
+			if (!autoplay || total <= 1) return;
+			stopAutoplay();
+			autoplayTimer = window.setInterval(() => {
+				if (!pauseOnHover || !isHovered) {
+					next(false);
+				}
+			}, autoplayDelay);
+		};
+
+		const stopAutoplay = () => {
+			if (autoplayTimer !== null) {
+				clearInterval(autoplayTimer);
+				autoplayTimer = null;
+			}
+		};
+
+		const restartAutoplay = () => {
+			if (autoplay) {
+				startAutoplay();
+			}
+		};
+
+		const updateDeck = (instant = false): void => {
+			cards.forEach((card, i) => {
+				const offset = (i - activeIndex + total) % total;
+				const isCurrent = offset === 0;
+
+				card.classList.toggle('is-active', isCurrent);
+				card.style.pointerEvents = isCurrent ? 'auto' : 'none';
+
+				if (instant || reduced) {
+					card.style.transform = isCurrent
+						? 'none'
+						: `rotate(${getCardRotation(i)}deg) scale(${Math.max(0.86, 0.95 - offset * 0.03)})`;
+					card.style.zIndex = isCurrent ? '30' : String(Math.max(1, 20 - offset));
+					card.style.opacity = isCurrent ? '1' : offset > 3 ? '0' : String(Math.max(0.4, 0.85 - offset * 0.15));
+					card.style.transformOrigin = 'bottom center';
+				} else {
+					gsap.to(card, {
+						scale: isCurrent ? 1 : Math.max(0.86, 0.95 - offset * 0.03),
+						rotation: isCurrent ? 0 : getCardRotation(i),
+						zIndex: isCurrent ? 30 : Math.max(1, 20 - offset),
+						opacity: isCurrent ? 1 : offset > 3 ? 0 : Math.max(0.4, 0.85 - offset * 0.15),
+						y: 0,
+						duration: speedSec,
+						ease: 'power2.out',
+					});
+				}
+			});
+
+			panes.forEach((pane, i) => {
+				pane.classList.toggle('is-active', i === activeIndex);
+			});
+		};
+
+		const animDuration = Math.min(0.24, Math.max(0.15, speedSec * 0.45));
+
+		const goTo = (newIndex: number, dir: 1 | -1 = 1, isUserAction = true): void => {
+			if (total <= 1) return;
+			if (!loop && (newIndex < 0 || newIndex >= total)) return;
+
+			const targetIndex = (newIndex + total) % total;
+			if (targetIndex === activeIndex) return;
+
+			if (isUserAction) {
+				restartAutoplay();
+			}
+
+			activeIndex = targetIndex;
+
+			if (reduced) {
+				updateDeck(true);
+				return;
+			}
+
+			const targetCard = cards[targetIndex];
+
+			// 21st.dev True Card Lift Animation:
+			// The incoming target card jumps up, rotates straight, scales up to 1, and drops over the front
+			gsap.killTweensOf(cards);
+			gsap.set(targetCard, { zIndex: 40, pointerEvents: 'auto' });
+
+			const cardTl = gsap.timeline({
+				onComplete: () => {
+					cards.forEach((card, i) => {
+						const offset = (i - activeIndex + total) % total;
+						const isCurrent = offset === 0;
+						card.classList.toggle('is-active', isCurrent);
+						card.style.pointerEvents = isCurrent ? 'auto' : 'none';
+						card.style.zIndex = isCurrent ? '30' : String(Math.max(1, 20 - offset));
+					});
+				},
+			});
+
+			// Lift and straighten
+			cardTl.fromTo(
+				targetCard,
+				{
+					y: 0,
+					scale: 0.94,
+					rotation: getCardRotation(targetIndex),
+					opacity: 0.85,
+				},
+				{
+					y: -65,
+					rotation: 0,
+					scale: 1,
+					opacity: 1,
+					duration: animDuration,
+					ease: 'power2.out',
+				}
+			);
+
+			// Drop down to front
+			cardTl.to(targetCard, {
+				y: 0,
+				duration: animDuration,
+				ease: 'power2.inOut',
+			});
+
+			// Other cards animate to their new positions in the stack
+			cards.forEach((card, i) => {
+				if (i === targetIndex) return;
+				const offset = (i - targetIndex + total) % total;
+				gsap.to(card, {
+					scale: Math.max(0.86, 0.95 - offset * 0.03),
+					rotation: getCardRotation(i),
+					zIndex: Math.max(1, 20 - offset),
+					opacity: offset > 3 ? 0 : Math.max(0.4, 0.85 - offset * 0.15),
+					y: 0,
+					duration: animDuration * 1.6,
+					ease: 'power2.out',
+				});
+			});
+
+			// Text Transition - Smooth Direct Fade
+			gsap.killTweensOf(panes);
+			panes.forEach((p, i) => {
+				const isCurrent = i === targetIndex;
+				p.classList.toggle('is-active', isCurrent);
+				if (isCurrent) {
+					gsap.fromTo(
+						p,
+						{ opacity: 0 },
+						{
+							opacity: 1,
+							duration: 0.22,
+							ease: 'power1.out',
+							clearProps: 'opacity',
+						}
+					);
+				} else {
+					p.removeAttribute('style');
+				}
+			});
+
+			cards.forEach((card, i) => {
+				const isCurrent = i === targetIndex;
+				card.classList.toggle('is-active', isCurrent);
+				card.style.pointerEvents = isCurrent ? 'auto' : 'none';
+			});
+		};
+
+		const next = (isUserAction = true) => goTo(activeIndex + 1, 1, isUserAction);
+		const prev = (isUserAction = true) => goTo(activeIndex - 1, -1, isUserAction);
+
+		if (nextBtn) nextBtn.addEventListener('click', () => next(true));
+		if (prevBtn) prevBtn.addEventListener('click', () => prev(true));
+
+		let touchStartX = 0;
+		deck.addEventListener(
+			'touchstart',
+			(e: TouchEvent) => {
+				touchStartX = e.touches[0].clientX;
+			},
+			{ passive: true }
+		);
+		deck.addEventListener(
+			'touchend',
+			(e: TouchEvent) => {
+				const touchEndX = e.changedTouches[0].clientX;
+				const diff = touchEndX - touchStartX;
+				if (Math.abs(diff) > 40) {
+					if (diff < 0) next(true);
+					else prev(true);
+				}
+			},
+			{ passive: true }
+		);
+
+		if (autoplay) {
+			startAutoplay();
+			if (pauseOnHover) {
+				deck.addEventListener('mouseenter', () => {
+					isHovered = true;
+				});
+				deck.addEventListener('mouseleave', () => {
+					isHovered = false;
+				});
+			}
+		}
+
+		updateDeck(true);
+		markSectionReady(section);
+	});
+}
+
 function run(): void {
 	initAllScrollReveals(document);
 	initSwiperIn(document);
+	initTeamSectionTemplate02(document);
 	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize' });
 	ScrollTrigger.refresh();
 }
@@ -475,5 +722,6 @@ window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
 window.addEventListener('nextora-team-section-reinit', () => {
 	initAllScrollReveals(document);
 	initSwiperIn(document);
+	initTeamSectionTemplate02(document);
 	ScrollTrigger.refresh();
 });
