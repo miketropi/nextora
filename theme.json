@@ -449,7 +449,7 @@
 			"text": "var(--wp--preset--color--paragraph)"
 		},
 		"typography": {
-			"fontFamily": "var(--wp--preset--font-family--sans)",
+			"fontFamily": "var(--nextora-font-body)",
 			"fontSize": "var(--wp--preset--font-size--base)",
 			"lineHeight": "1.65"
 		},
@@ -462,6 +462,7 @@
 					"text": "var(--wp--preset--color--contrast)"
 				},
 				"typography": {
+					"fontFamily": "var(--nextora-font-heading)",
 					"fontWeight": "600",
 					"lineHeight": "1.5"
 				}
@@ -602,6 +603,7 @@
 					}
 				},
 				"typography": {
+					"fontFamily": "var(--nextora-font-button)",
 					"fontSize": "var(--wp--preset--font-size--small)",
 					"fontWeight": "600",
 					"textDecoration": "none"

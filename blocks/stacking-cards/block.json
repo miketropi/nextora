@@ -1,0 +1,59 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/stacking-cards",
+  "title": "Stacking Cards",
+  "category": "design",
+  "description": "A CSS-only scrolling stack of content cards with text and images.",
+  "keywords": ["cards", "stacking", "sticky", "scroll", "image", "nextora"],
+  "textdomain": "nextora",
+  "icon": "index-card",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": { "background": true, "text": false, "link": false },
+    "spacing": { "padding": true, "margin": true, "blockGap": true },
+    "typography": { "fontSize": true, "lineHeight": true }
+  },
+  "attributes": {
+    "cards": {
+      "type": "array",
+      "default": [
+        { "id": "1", "heading": "Shape the future", "description": "Ideas become meaningful when they are made tangible.", "linkText": "Explore project", "linkUrl": "", "imageId": 0, "imageUrl": "", "imageAlt": "" },
+        { "id": "2", "heading": "Make room for wonder", "description": "A considered visual language for ambitious work and generous spaces.", "linkText": "Read more", "linkUrl": "", "imageId": 0, "imageUrl": "", "imageAlt": "" },
+        { "id": "3", "heading": "Move with intention", "description": "Clear systems and expressive details working together in one rhythm.", "linkText": "View case study", "linkUrl": "", "imageId": 0, "imageUrl": "", "imageAlt": "" },
+        { "id": "4", "heading": "Leave a trace", "description": "Build experiences people remember long after the first impression.", "linkText": "Discover more", "linkUrl": "", "imageId": 0, "imageUrl": "", "imageAlt": "" }
+      ]
+    },
+    "cardHeight": { "type": "number", "default": 520 },
+    "cardGap": { "type": "number", "default": 32 },
+    "stackOffset": { "type": "number", "default": 24 },
+    "stickyTopOffset": { "type": "number", "default": 24 },
+    "cardRadius": { "type": "number", "default": 20 },
+    "contentPadding": { "type": "number", "default": 48 },
+    "imageWidth": { "type": "number", "default": 50 },
+    "contentMaxWidth": { "type": "string", "default": "1200px" },
+    "mobileCardHeight": { "type": "number", "default": 460 },
+    "mobileContentPadding": { "type": "number", "default": 24 },
+    "mobileImageHeight": { "type": "number", "default": 240 },
+    "mobileStackOffset": { "type": "number", "default": 16 },
+    "headingSize": { "type": "string", "default": "medium-plus" },
+    "descriptionSize": { "type": "string", "default": "base" },
+    "linkSize": { "type": "string", "default": "small" },
+    "headingWeight": { "type": "string", "default": "600" },
+    "showLink": { "type": "boolean", "default": true },
+    "openLinksInNewTab": { "type": "boolean", "default": false },
+    "imageObjectFit": { "type": "string", "default": "cover" },
+    "enableSticky": { "type": "boolean", "default": true },
+    "enableScrollAnimation": { "type": "boolean", "default": true },
+    "cardBackgroundColor": { "type": "string", "default": "" },
+    "headingColor": { "type": "string", "default": "" },
+    "descriptionColor": { "type": "string", "default": "" },
+    "linkColor": { "type": "string", "default": "" }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

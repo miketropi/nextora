@@ -45,6 +45,14 @@
 	);
 
 	/**
+	 * Font switcher role variables — defaults track theme.json presets; the
+	 * color-scheme switcher overrides these inline on <html> for font presets.
+	 */
+	--nextora-font-body: var(--wp--preset--font-family--sans, Arial, Helvetica, sans-serif);
+	--nextora-font-heading: var(--nextora-font-body);
+	--nextora-font-button: var(--nextora-font-body);
+
+	/**
 	 * Layout rhythm — built from theme.json spacing presets (05–50).
 	 */
 	--nextora-gutter: clamp(

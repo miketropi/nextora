@@ -301,3 +301,15 @@ export function destroyAllHoverReveal(): void {
     .querySelectorAll<HTMLElement>('[data-nextora-ac-hover-reveal-init="1"]')
     .forEach((root) => destroyHoverReveal(root));
 }
+
+/** Repaint masks after client-side theme variables change. */
+export function refreshAllHoverReveal(): void {
+  document
+    .querySelectorAll<HTMLElement>(`[${INIT_ATTR}="1"]`)
+    .forEach((root) => {
+      const state = stateByRoot.get(root);
+      if (state) {
+        resize(state, root);
+      }
+    });
+}
