@@ -45,6 +45,88 @@ function tickFormatter(value: unknown): string {
     return abbrevNumber(num);
 }
 
+function resolveSchemeColor(source: unknown, fallback: string): string {
+    const value = typeof source === 'string' ? source.trim() : '';
+    if (!value || !/^[a-z0-9-]+$/i.test(value)) {
+        return fallback;
+    }
+
+    const probe = document.createElement('span');
+    probe.style.color = `var(--wp--preset--color--${value})`;
+    document.body.appendChild(probe);
+    const resolved = getComputedStyle(probe).color;
+    probe.remove();
+    return resolved || fallback;
+}
+
+function resolveChartColor(source: unknown, fallback: string): string {
+    const value = typeof source === 'string' ? source.trim() : '';
+    return value && /^[a-z0-9-]+$/i.test(value) ? resolveSchemeColor(value, fallback) : fallback;
+}
+
+function refreshChartColors(config: any): void {
+    const sources = config?.colorSources;
+    if (!sources) return;
+
+    const datasets = config?.data?.datasets || [];
+    const line = resolveChartColor(sources.line, '#3b82f6');
+    const fill = sources.fill && !/^[a-z0-9-]+$/i.test(sources.fill)
+        ? sources.fill
+        : (sources.fill ? resolveSchemeColor(sources.fill, line) : `rgba(${line.match(/\d+/g)?.slice(0, 3).join(',') || '59,130,246'},0.15)`);
+    const text = resolveChartColor(sources.text, '#333333');
+    const grid = resolveChartColor(sources.grid, '#e5e5e5');
+
+    datasets.forEach((dataset: any) => {
+        if (config.type === 'doughnut') {
+            dataset.backgroundColor = Array.from({ length: dataset.data?.length || 1 }, (_, index) => line);
+        } else if (config.type === 'bar') {
+            dataset.backgroundColor = line;
+            dataset.borderColor = line;
+        } else {
+            dataset.borderColor = line;
+            dataset.backgroundColor = fill;
+            dataset.pointBackgroundColor = line;
+        }
+    });
+
+    const options = config.options || {};
+    const scales = options.scales || {};
+    ['x', 'y'].forEach((axis) => {
+        if (scales[axis]?.grid) scales[axis].grid.color = scales[axis].grid.display ? grid : 'transparent';
+        if (scales[axis]?.ticks) scales[axis].ticks.color = text;
+    });
+    if (options.plugins?.legend?.labels) options.plugins.legend.labels.color = text;
+    if (options.plugins?.datalabels) options.plugins.datalabels.color = text;
+}
+
+const chartStates = new WeakMap<HTMLElement, { chart: any; config: any }>();
+const staggerTimers = new WeakMap<HTMLElement, number[]>();
+
+function clearChartTimers(root: HTMLElement): void {
+    const timers = staggerTimers.get(root);
+    if (timers) {
+        timers.forEach((timer) => window.clearTimeout(timer));
+        staggerTimers.delete(root);
+    }
+}
+
+function rebuildChart(root: HTMLElement): void {
+    const canvas = root.querySelector<HTMLCanvasElement>('.nextora-chart__canvas');
+    if (canvas) {
+        const chart = Chart.getChart(canvas);
+        if (chart) {
+            chart.destroy();
+        }
+    }
+    clearChartTimers(root);
+    root.removeAttribute('data-nextora-chart-inited');
+    initChart(root);
+}
+
+function rebuildAllCharts(): void {
+    document.querySelectorAll<HTMLElement>('.nextora-chart').forEach(rebuildChart);
+}
+
 function applyAbbrevFormatters(config: any): void {
     const isDoughnut = config?.type === 'doughnut';
 
@@ -79,12 +161,13 @@ function resolveFormatters(config: any): void {
     }
 }
 
-function animateBarStagger(chart: any): void {
+function animateBarStagger(chart: any, root: HTMLElement): void {
     const dataset = chart.data.datasets[0];
     if (!dataset?.data?.length) return;
 
     const targetData = [...dataset.data];
     const barCount = targetData.length;
+    const timers: number[] = [];
 
     // Start all bars at 0
     dataset.data = dataset.data.map(() => 0);
@@ -96,10 +179,9 @@ function animateBarStagger(chart: any): void {
 
     // Stagger each bar with setTimeout
     for (let i = 0; i < barCount; i++) {
-        setTimeout(() => {
+        const timer = window.setTimeout(() => {
             // Animate bar i from 0 to target
             const from = { y: 0 };
-            const to = { y: targetData[i] };
 
             gsap.fromTo(
                 from,
@@ -109,13 +191,18 @@ function animateBarStagger(chart: any): void {
                     duration: 0.5,
                     ease: 'power2.out',
                     onUpdate: () => {
-                        dataset.data[i] = Math.round(from.y);
-                        chart.update('none');
+                        if (chart.ctx) {
+                            dataset.data[i] = Math.round(from.y);
+                            chart.update('none');
+                        }
                     },
                 }
             );
         }, i * 200);
+        timers.push(timer);
     }
+
+    staggerTimers.set(root, timers);
 }
 
 function applyStaggeredAnimation(config: any): void {
@@ -152,6 +239,7 @@ function initChart(root: HTMLElement): void {
     resolveFormatters(config);
     applyAbbrevFormatters(config);
     applyStaggeredAnimation(config);
+    refreshChartColors(config);
 
     const canvas = root.querySelector<HTMLCanvasElement>('.nextora-chart__canvas');
     if (!canvas) return;
@@ -159,10 +247,11 @@ function initChart(root: HTMLElement): void {
     try {
         (window as any).__chartDebugCfg = config;
         const chart = new Chart(canvas, config);
+        chartStates.set(root, { chart, config });
         (window as any).__chartInst = chart;
 
         if (config?.type === 'bar') {
-            animateBarStagger(chart);
+            animateBarStagger(chart, root);
         }
     } catch {
         root.classList.remove('nextora-chart--loading');
@@ -172,6 +261,8 @@ function initChart(root: HTMLElement): void {
     root.classList.remove('nextora-chart--loading');
     root.classList.add('nextora-chart--ready');
 }
+
+window.addEventListener('nextora:schemechange', rebuildAllCharts);
 
 function initChartRoot(root: HTMLElement): void {
     if (root.hasAttribute('data-nextora-chart-inited')) return;

@@ -431,6 +431,10 @@ if ( 'color' === $background_type && ! $use_hover_reveal ) {
 	}
 }
 
+if ( 'color' === $background_type && $use_hover_reveal && '' !== $section_background_color ) {
+	$style_bits[] = 'background-color:' . $section_background_color;
+}
+
 if ( $use_overlay && 'diagonal' === $overlay_style ) {
 	$classes[]  = 'nextora-advanced-container--overlay-diagonal';
 	$style_bits[] = 'background-color:' . ( '' !== $overlay_color ? $overlay_color : 'var(--wp--preset--color--contrast, #0f172a)' );
@@ -494,6 +498,9 @@ $wrapper_args = array(
 	'class' => implode( ' ', $classes ),
 	'style' => implode( ';', $style_bits ),
 );
+if ( '' !== $section_background_color ) {
+	$wrapper_args['data-nextora-has-section-background'] = '1';
+}
 if ( $enable_scroll ) {
 	$wrapper_args['data-nextora-scroll-reveal'] = '1';
 }

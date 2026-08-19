@@ -4,7 +4,7 @@
  * Dynamic blocks often do not auto-enqueue `viewScript`;
  * render.php enqueues this file when needed.
  */
-import { initHoverReveal } from './hover-reveal';
+import { initHoverReveal, refreshAllHoverReveal } from './hover-reveal';
 import { initLightRays } from './light-rays';
 import { initRipples } from './ripples';
 import gsap from 'gsap';
@@ -354,6 +354,8 @@ function boot(): void {
   ScrollTrigger.refresh();
   forceRevealPendingRoots();
 }
+
+window.addEventListener('nextora:schemechange', refreshAllHoverReveal);
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', boot, { once: true });

@@ -163,10 +163,15 @@ function nextora_chart_build_config( array $attributes ): array {
     }
 
     // --- Colours ---
-    $line_color = nextora_chart_resolve_color( $attributes['lineColor'] ?? '' );
-    $fill_color = nextora_chart_resolve_color( $attributes['fillColor'] ?? '' );
-    $text_color = nextora_chart_resolve_color( $attributes['textColor'] ?? '' );
-    $grid_color = nextora_chart_resolve_color( $attributes['gridColor'] ?? '' );
+    $line_source = is_string( $attributes['lineColor'] ?? null ) ? trim( (string) $attributes['lineColor'] ) : '';
+    $fill_source = is_string( $attributes['fillColor'] ?? null ) ? trim( (string) $attributes['fillColor'] ) : '';
+    $text_source = is_string( $attributes['textColor'] ?? null ) ? trim( (string) $attributes['textColor'] ) : '';
+    $grid_source = is_string( $attributes['gridColor'] ?? null ) ? trim( (string) $attributes['gridColor'] ) : '';
+
+    $line_color = nextora_chart_resolve_color( $line_source );
+    $fill_color = nextora_chart_resolve_color( $fill_source );
+    $text_color = nextora_chart_resolve_color( $text_source );
+    $grid_color = nextora_chart_resolve_color( $grid_source );
 
     // Fallback colours from theme tokens or sensible defaults
     if ( $line_color === '' ) {
@@ -276,6 +281,12 @@ function nextora_chart_build_config( array $attributes ): array {
     // --- Build full config ---
     $config = array(
         'type' => $chart_type,
+        'colorSources' => array(
+            'line' => $line_source,
+            'fill' => $fill_source,
+            'text' => $text_source,
+            'grid' => $grid_source,
+        ),
         'data' => array(
             'labels'   => $labels,
             'datasets' => $datasets,

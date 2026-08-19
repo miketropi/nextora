@@ -30,7 +30,7 @@
   isolation: isolate;
 }
 
-.nextora-advanced-container--hover-reveal:not(.nextora-advanced-container--fill-gradient):not([class*="-gradient-background"]) {
+.nextora-advanced-container--hover-reveal:not(.nextora-advanced-container--fill-gradient):not([class*="-gradient-background"]):not([data-nextora-has-section-background]) {
   background: transparent;
 }
 

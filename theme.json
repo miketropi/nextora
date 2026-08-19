@@ -603,6 +603,7 @@
 					}
 				},
 				"typography": {
+					"fontFamily": "var(--nextora-font-button)",
 					"fontSize": "var(--wp--preset--font-size--small)",
 					"fontWeight": "600",
 					"textDecoration": "none"

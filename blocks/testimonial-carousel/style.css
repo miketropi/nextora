@@ -132,7 +132,7 @@
 	padding: 0;
 	border: none;
 	font-family: var(--nextora-testimonial-quote-font-family, var(--wp--preset--font-family--heading));
-	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--medium-plus));
+	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--base));
 	font-weight: 500;
 	line-height: 1.45;
 	color: var(
@@ -345,7 +345,7 @@
 }
 
 .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-quote {
-	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--small, 15px));
+	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--base));
 	font-weight: 400;
 	line-height: 1.5;
 	margin-bottom: 22px;

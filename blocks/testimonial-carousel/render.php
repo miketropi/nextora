@@ -511,7 +511,7 @@ $css_vars = array(
 	'--nextora-testimonial-label-color'       => '' !== $label_color ? $label_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
 	'--nextora-testimonial-quote-color'       => '' !== $quote_color ? $quote_color : 'inherit',
 	'--nextora-testimonial-quote-font-family' => '' !== $quote_font_family ? $quote_font_family : 'var(--wp--preset--font-family--heading)',
-	'--nextora-testimonial-quote-size'        => '' !== $quote_font_size ? $quote_font_size : 'var(--wp--preset--font-size--medium-plus)',
+	'--nextora-testimonial-quote-size'        => '' !== $quote_font_size ? $quote_font_size : 'var(--wp--preset--font-size--base)',
 	'--nextora-testimonial-author-color'      => '' !== $author_color ? $author_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
 	'--nextora-testimonial-author-name-color' => '' !== $author_name_color ? $author_name_color : 'inherit',
 	'--nextora-testimonial-trust-color'       => '' !== $trust_color ? $trust_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
