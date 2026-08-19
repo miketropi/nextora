@@ -37,7 +37,7 @@ const layoutModeOptions = [
 
 const cardTemplateOptions = [
 	{ label: __('Default', 'nextora'), value: 'default' },
-	{ label: __('Overlay Social', 'nextora'), value: 'overlay-social' },
+	{ label: __('Template 01', 'nextora'), value: 'overlay-social' },
 ];
 
 const photoAspectRatioOptions = [

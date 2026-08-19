@@ -14,6 +14,29 @@ function teamPhotoPlaceholderVar(): string {
 	return url ? `url("${url}")` : 'none';
 }
 
+function resolveColorValue(raw: string): string {
+
+	const value = raw.trim();
+	if (value === '') {
+		return '';
+	}
+
+	if (
+		value.startsWith('#') ||
+		value.startsWith('rgb') ||
+		value.startsWith('hsl') ||
+		value.startsWith('var(')
+	) {
+		return value;
+	}
+
+	if (/^[a-z0-9-]+$/i.test(value)) {
+		return `var(--wp--preset--color--${value})`;
+	}
+
+	return value;
+}
+
 export function createMemberId(): string {
 	if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
 		return crypto.randomUUID();
@@ -100,13 +123,13 @@ export function buildSectionStyleVars(attrs: {
 		'--nextora-team-grid-row-gap': `${attrs.gridRowGap ?? 24}px`,
 	};
 	if (attrs.gridColumns) vars['--nextora-team-grid-columns'] = String(attrs.gridColumns);
-	if (attrs.sectionBackgroundColor) vars['--nextora-team-bg'] = attrs.sectionBackgroundColor;
-	if (attrs.paginationColor) vars['--nextora-team-dot-color'] = attrs.paginationColor;
-	if (attrs.paginationActiveColor) vars['--nextora-team-dot-active'] = attrs.paginationActiveColor;
-	if (attrs.cardBackgroundColor) vars['--nextora-team-card-bg'] = attrs.cardBackgroundColor;
-	if (attrs.tagBackgroundColor) vars['--nextora-team-tag-bg'] = attrs.tagBackgroundColor;
-	if (attrs.tagTextColor) vars['--nextora-team-tag-color'] = attrs.tagTextColor;
-	if (attrs.nameColor) vars['--nextora-team-name-color'] = attrs.nameColor;
-	if (attrs.roleColor) vars['--nextora-team-role-color'] = attrs.roleColor;
+	if (attrs.sectionBackgroundColor) vars['--nextora-team-bg'] = resolveColorValue(attrs.sectionBackgroundColor);
+	if (attrs.paginationColor) vars['--nextora-team-dot-color'] = resolveColorValue(attrs.paginationColor);
+	if (attrs.paginationActiveColor) vars['--nextora-team-dot-active'] = resolveColorValue(attrs.paginationActiveColor);
+	if (attrs.cardBackgroundColor) vars['--nextora-team-card-bg'] = resolveColorValue(attrs.cardBackgroundColor);
+	if (attrs.tagBackgroundColor) vars['--nextora-team-tag-bg'] = resolveColorValue(attrs.tagBackgroundColor);
+	if (attrs.tagTextColor) vars['--nextora-team-tag-color'] = resolveColorValue(attrs.tagTextColor);
+	if (attrs.nameColor) vars['--nextora-team-name-color'] = resolveColorValue(attrs.nameColor);
+	if (attrs.roleColor) vars['--nextora-team-role-color'] = resolveColorValue(attrs.roleColor);
 	return vars;
 }
