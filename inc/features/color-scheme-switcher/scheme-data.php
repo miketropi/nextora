@@ -60,7 +60,7 @@ function nextora_glob_preset_files( string $rel_glob ): array {
  *
  * @param string $file Absolute path to the JSON file.
  *
- * @return array{ title: string, colors: array<string, string> }|null
+ * @return array{ title: string, colors: array<string, string>, gradients: array<string, string> }|null
  */
 function nextora_parse_color_preset( string $file ): ?array {
 	if ( ! is_readable( $file ) ) {
@@ -80,6 +80,7 @@ function nextora_parse_color_preset( string $file ): ?array {
 	}
 
 	$colors = array();
+	$gradients = array();
 
 	/** @var mixed $color */
 	foreach ( $palette as $color ) {
@@ -94,13 +95,25 @@ function nextora_parse_color_preset( string $file ): ?array {
 		return null;
 	}
 
+	$raw_gradients = $data['settings']['color']['gradients'] ?? array();
+	if ( is_array( $raw_gradients ) ) {
+		foreach ( $raw_gradients as $gradient ) {
+			if ( ! is_array( $gradient ) || empty( $gradient['slug'] ) || empty( $gradient['gradient'] ) ) {
+				continue;
+			}
+
+			$gradients[ _wp_to_kebab_case( (string) $gradient['slug'] ) ] = (string) $gradient['gradient'];
+		}
+	}
+
 	$title = isset( $data['title'] ) && is_string( $data['title'] ) && '' !== $data['title']
 		? $data['title']
 		: basename( $file, '.json' );
 
 	return array(
-		'title'  => $title,
-		'colors' => $colors,
+		'title'     => $title,
+		'colors'    => $colors,
+		'gradients' => $gradients,
 	);
 }
 
@@ -113,7 +126,7 @@ function nextora_parse_color_preset( string $file ): ?array {
  *   3. {parent}/styles/*.json  (top-level style variations)
  *   4. {child}/styles/*.json   (top-level style variations)
  *
- * @return array<string, array{ title: string, colors: array<string, string> }>
+ * @return array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string> }>
  */
 function nextora_get_color_presets(): array {
 	$presets = array();
@@ -234,15 +247,15 @@ function nextora_get_font_presets( array $fonts ): array {
  * Parse a preset file into a bundled theme (color palette + font pairing).
  *
  * A file is a "theme" only when it carries BOTH a color palette and a font.
- * Fonts come from `settings.typography.fontFamilies` (first entry = body,
- * second = heading) or, when absent, are resolved from the `styles` element
- * mappings. Unresolvable font values make the file a color-only preset
- * (not a theme).
+ * Font roles are resolved from the `styles` mappings first. The ordered
+ * `settings.typography.fontFamilies` list is only a fallback for variations
+ * that do not declare body/heading roles. Unresolvable font values make the
+ * file a color-only preset (not a theme).
  *
  * @param string                $file     Absolute path to the JSON file.
  * @param array<string, string> $font_map Font registry slug => family stack.
  *
- * @return array{ title: string, colors: array<string, string>, body: string, heading: string }|null
+ * @return array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }|null
  */
 function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 	if ( ! is_readable( $file ) ) {
@@ -262,6 +275,7 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 	}
 
 	$colors = array();
+	$gradients = array();
 
 	/** @var mixed $color */
 	foreach ( $palette as $color ) {
@@ -276,35 +290,82 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 		return null;
 	}
 
+	$raw_gradients = $data['settings']['color']['gradients'] ?? array();
+	if ( is_array( $raw_gradients ) ) {
+		foreach ( $raw_gradients as $gradient ) {
+			if ( ! is_array( $gradient ) || empty( $gradient['slug'] ) || empty( $gradient['gradient'] ) ) {
+				continue;
+			}
+
+			$gradients[ _wp_to_kebab_case( (string) $gradient['slug'] ) ] = (string) $gradient['gradient'];
+		}
+	}
+
 	$body    = null;
 	$heading = null;
+	$button  = null;
+	$font_slugs = array();
+	$local_font_map = array();
 
 	$file_fonts = $data['settings']['typography']['fontFamilies'] ?? null;
+	if ( is_array( $file_fonts ) && array() !== $file_fonts ) {
+		foreach ( $file_fonts as $file_font ) {
+			if ( ! is_array( $file_font ) || empty( $file_font['slug'] ) ) {
+				continue;
+			}
+
+			$font_slug = sanitize_key( (string) $file_font['slug'] );
+			if ( '' === $font_slug ) {
+				continue;
+			}
+
+			$font_slugs[] = $font_slug;
+			if ( isset( $file_font['fontFamily'] ) && is_string( $file_font['fontFamily'] ) && '' !== $file_font['fontFamily'] ) {
+				$local_font_map[ $font_slug ] = $file_font['fontFamily'];
+			}
+		}
+
+	}
+
+	$font_map = array_merge( $font_map, $local_font_map );
+
+	$styles = $data['styles'] ?? null;
+	if ( is_array( $styles ) ) {
+		$body_var = $styles['typography']['fontFamily'] ?? null;
+		if ( is_string( $body_var ) && '' !== $body_var ) {
+			$resolved_body = nextora_resolve_heading_font_family_stack( $body_var, $font_map );
+			if ( ! str_starts_with( $resolved_body, 'var(' ) ) {
+				$body = $resolved_body;
+			}
+		}
+
+		$heading_var = $styles['elements']['heading']['typography']['fontFamily'] ?? null;
+		if ( is_string( $heading_var ) && '' !== $heading_var ) {
+			$resolved_heading = nextora_resolve_heading_font_family_stack( $heading_var, $font_map );
+			if ( ! str_starts_with( $resolved_heading, 'var(' ) ) {
+				$heading = $resolved_heading;
+			}
+		}
+
+		$button_var = $styles['elements']['button']['typography']['fontFamily'] ?? null;
+		if ( is_string( $button_var ) && '' !== $button_var ) {
+			$resolved_button = nextora_resolve_heading_font_family_stack( $button_var, $font_map );
+			if ( ! str_starts_with( $resolved_button, 'var(' ) ) {
+				$button = $resolved_button;
+			}
+		}
+	}
+
 	if ( is_array( $file_fonts ) && array() !== $file_fonts ) {
 		$first  = isset( $file_fonts[0] ) && is_array( $file_fonts[0] ) ? $file_fonts[0] : null;
 		$second = isset( $file_fonts[1] ) && is_array( $file_fonts[1] ) ? $file_fonts[1] : null;
 
-		if ( null !== $first && isset( $first['fontFamily'] ) && is_string( $first['fontFamily'] ) && '' !== $first['fontFamily'] ) {
+		if ( null === $body && null !== $first && isset( $first['fontFamily'] ) && is_string( $first['fontFamily'] ) && '' !== $first['fontFamily'] ) {
 			$body = $first['fontFamily'];
 		}
 
-		if ( null !== $second && isset( $second['fontFamily'] ) && is_string( $second['fontFamily'] ) && '' !== $second['fontFamily'] ) {
+		if ( null === $heading && null !== $second && isset( $second['fontFamily'] ) && is_string( $second['fontFamily'] ) && '' !== $second['fontFamily'] ) {
 			$heading = $second['fontFamily'];
-		}
-	}
-
-	if ( null === $body ) {
-		$styles = $data['styles'] ?? null;
-		if ( is_array( $styles ) ) {
-			$body_var = $styles['typography']['fontFamily'] ?? null;
-			if ( is_string( $body_var ) && '' !== $body_var ) {
-				$body = nextora_resolve_heading_font_family_stack( $body_var, $font_map );
-			}
-
-			$heading_var = $styles['elements']['heading']['typography']['fontFamily'] ?? null;
-			if ( is_string( $heading_var ) && '' !== $heading_var ) {
-				$heading = nextora_resolve_heading_font_family_stack( $heading_var, $font_map );
-			}
 		}
 	}
 
@@ -316,15 +377,30 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 		$heading = $body;
 	}
 
+	if ( null === $button || '' === $button || str_starts_with( $button, 'var(' ) ) {
+		$button = $body;
+	}
+
+	if ( array() === $font_slugs ) {
+		foreach ( $font_map as $font_slug => $font_family ) {
+			if ( $font_family === $body || $font_family === $heading ) {
+				$font_slugs[] = $font_slug;
+			}
+		}
+	}
+
 	$title = isset( $data['title'] ) && is_string( $data['title'] ) && '' !== $data['title']
 		? $data['title']
 		: basename( $file, '.json' );
 
 	return array(
-		'title'   => $title,
-		'colors'  => $colors,
-		'body'    => $body,
-		'heading' => $heading,
+		'title'     => $title,
+		'colors'    => $colors,
+		'gradients' => $gradients,
+		'body'      => $body,
+		'heading'   => $heading,
+		'button'    => $button,
+		'fontSlugs' => array_values( array_unique( $font_slugs ) ),
 	);
 }
 
@@ -334,7 +410,7 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
  *
  * @param array<string, array{ name: string, family: string }> $fonts Font registry.
  *
- * @return array<string, array{ title: string, colors: array<string, string>, body: string, heading: string }>
+ * @return array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }>
  */
 function nextora_get_themes( array $fonts ): array {
 	$font_map = array();
@@ -473,9 +549,9 @@ function nextora_get_switcher_config(): array {
  * `initial` slugs are validated against the filtered sets.
  *
  * @return array{
- *   colorPresets: array<string, array{ title: string, colors: array<string, string> }>,
+ *   colorPresets: array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string> }>,
  *   fontPresets: array<string, array{ title: string, body: string, heading: string }>,
- *   themes: array<string, array{ title: string, colors: array<string, string>, body: string, heading: string }>,
+ *   themes: array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }>,
  *   fonts: array<string, array{ name: string, family: string }>,
  *   config: array{
  *     initial: array{ theme: string, color: string, font: string },
@@ -495,7 +571,7 @@ function nextora_get_switcher_payload(): array {
 	$color_rules   = $config['presets']['colors'];
 
 	if ( null !== $color_rules ) {
-		/** @var array<string, array{ title: string, colors: array<string, string> }> $filtered_colors */
+		/** @var array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string> }> $filtered_colors */
 		$filtered_colors = array();
 
 		foreach ( $color_rules as $rule ) {
@@ -561,7 +637,7 @@ function nextora_get_switcher_payload(): array {
 	$theme_rules = $config['presets']['themes'];
 
 	if ( null !== $theme_rules ) {
-		/** @var array<string, array{ title: string, colors: array<string, string>, body: string, heading: string }> $filtered_themes */
+		/** @var array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }> $filtered_themes */
 		$filtered_themes = array();
 
 		foreach ( $theme_rules as $rule ) {

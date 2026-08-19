@@ -221,7 +221,7 @@
 }
 
 .nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-quote {
-	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--small, 0.9375rem));
+	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--base));
 	font-weight: 400;
 	line-height: 1.5;
 	margin-bottom: 22px;

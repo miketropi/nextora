@@ -110,13 +110,9 @@ function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: 
 
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
-	selectedItem?: { slug?: string },
 ): string {
 	if (value === undefined) {
 		return '';
-	}
-	if (selectedItem?.slug) {
-		return selectedItem.slug;
 	}
 	return String(value);
 }
@@ -345,7 +341,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 		arrowBorderColor = '',
 		quoteColor = '',
 		quoteFontFamily = '',
-		quoteFontSize = '',
+					quoteFontSize = 'base',
 		labelColor = '',
 		authorColor = '',
 		authorNameColor = '',
@@ -972,17 +968,17 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						label={__('Quote font size', 'nextora')}
 						id="nextora-testimonial-carousel-quote-font-size"
 						help={__(
-							'Default uses the Medium Plus theme preset.',
+							'Default uses the Base theme preset.',
 							'nextora',
 						)}
 					>
-						<FontSizePicker
-							value={quoteFontSize || undefined}
-							onChange={(value, selectedItem) =>
-								setAttributes({
-									quoteFontSize: normalizeFontSizeAttribute(value, selectedItem),
-								})
-							}
+							<FontSizePicker
+								value={quoteFontSize || undefined}
+								onChange={(value) =>
+									setAttributes({
+										quoteFontSize: normalizeFontSizeAttribute(value),
+									})
+								}
 						/>
 					</BaseControl>
 					<SelectControl

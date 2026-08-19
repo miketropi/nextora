@@ -12,6 +12,7 @@
 
 	var OPTIONS = window.NEXTORA_THEME_OPTIONS || {};
 	var COLOR_PRESETS = OPTIONS.colorPresets || {};
+	var GRADIENT_PRESETS = {};
 	var FONT_PRESETS = OPTIONS.fontPresets || {};
 	var THEMES = OPTIONS.themes || {};
 	var FONTS = OPTIONS.fonts || {};
@@ -37,12 +38,147 @@
 	var themeList = switcher.querySelector( '[data-scheme-theme-list]' );
 	var copyBtn = switcher.querySelector( '[data-scheme-copy-link]' );
 	var resetBtn = switcher.querySelector( '[data-scheme-reset]' );
+	var fontFallbackStyle = null;
 
 	var state = {
 		theme: null,
 		color: null,
 		font: null,
 	};
+
+	Object.keys( COLOR_PRESETS ).forEach( function ( slug ) {
+		Object.keys( COLOR_PRESETS[ slug ].gradients || {} ).forEach( function ( gradientSlug ) {
+			GRADIENT_PRESETS[ gradientSlug ] = COLOR_PRESETS[ slug ].gradients[ gradientSlug ];
+		} );
+	} );
+
+	function notifySchemeChange() {
+		window.dispatchEvent( new CustomEvent( 'nextora:schemechange' ) );
+	}
+
+	/* ------------------------------------------------------------------
+	 * Block font fallbacks
+	 * ------------------------------------------------------------------ */
+
+	function clearInvalidFontFallbacks() {
+		if ( fontFallbackStyle ) {
+			fontFallbackStyle.textContent = '';
+		}
+
+		document.querySelectorAll( '[data-nextora-invalid-fonts]' ).forEach( function ( element ) {
+			element.removeAttribute( 'data-nextora-invalid-fonts' );
+		} );
+	}
+
+	function refreshInvalidFontFallbacks() {
+		clearInvalidFontFallbacks();
+
+		if ( ! state.theme || ! THEMES[ state.theme ] || ! Array.isArray( THEMES[ state.theme ].fontSlugs ) ) {
+			notifySchemeChange();
+			return;
+		}
+
+		if ( ! fontFallbackStyle ) {
+			fontFallbackStyle = document.createElement( 'style' );
+			fontFallbackStyle.id = 'nextora-scheme-font-fallbacks';
+			document.head.appendChild( fontFallbackStyle );
+		}
+
+		var availableFonts = {};
+		THEMES[ state.theme ].fontSlugs.forEach( function ( slug ) {
+			availableFonts[ slug ] = true;
+		} );
+
+		var knownFontSlugs = {};
+		Object.keys( FONTS ).forEach( function ( slug ) {
+			knownFontSlugs[ slug ] = true;
+		} );
+		Object.keys( THEMES ).forEach( function ( themeSlug ) {
+			( THEMES[ themeSlug ].fontSlugs || [] ).forEach( function ( slug ) {
+				knownFontSlugs[ slug ] = true;
+			} );
+		} );
+
+		// Include font classes already saved in blocks, even when their font
+		// only exists in a variation that is not part of the current registry.
+		var fontClassSuffix = '-font-family';
+		document.querySelectorAll( '[class]' ).forEach( function ( element ) {
+			element.classList.forEach( function ( className ) {
+				if ( className.indexOf( 'has-' ) === 0 && className.slice( -fontClassSuffix.length ) === fontClassSuffix ) {
+					knownFontSlugs[ className.slice( 4, -fontClassSuffix.length ) ] = true;
+				}
+			} );
+		} );
+
+		var bodySelectors = [];
+		var headingSelectors = [];
+		var customPropertySelectors = {};
+		Object.keys( knownFontSlugs ).forEach( function ( slug ) {
+			if ( availableFonts[ slug ] ) {
+				return;
+			}
+
+			var selector = '.has-' + slug + '-font-family';
+			bodySelectors.push( selector );
+			headingSelectors.push( 'h1' + selector );
+			headingSelectors.push( 'h2' + selector );
+			headingSelectors.push( 'h3' + selector );
+			headingSelectors.push( 'h4' + selector );
+			headingSelectors.push( 'h5' + selector );
+			headingSelectors.push( 'h6' + selector );
+		} );
+
+		// Block attributes can store a preset font in an inline CSS variable
+		// instead of a .has-*-font-family class (for example testimonials).
+		document.querySelectorAll( '[style]' ).forEach( function ( element ) {
+			var style = element.getAttribute( 'style' ) || '';
+			var invalidSlugs = [];
+			var match;
+			var presetPattern = /(--[a-z0-9-]+font-family)\s*:[^;]*?var\(--wp--preset--font-family--([a-z0-9-]+)\)/gi;
+
+			while ( ( match = presetPattern.exec( style ) ) !== null ) {
+				var property = match[ 1 ];
+				var slug = match[ 2 ];
+				if ( ! availableFonts[ slug ] ) {
+					invalidSlugs.push( slug );
+					if ( ! customPropertySelectors[ property ] ) {
+						customPropertySelectors[ property ] = [];
+					}
+					var selector = '[data-nextora-invalid-fonts~="' + slug + '"]';
+					if ( customPropertySelectors[ property ].indexOf( selector ) === -1 ) {
+						customPropertySelectors[ property ].push( selector );
+					}
+				}
+			}
+
+			invalidSlugs = invalidSlugs.filter( function ( slug, index, slugs ) {
+				return slugs.indexOf( slug ) === index;
+			} );
+
+			if ( ! invalidSlugs.length ) {
+				return;
+			}
+
+			element.setAttribute( 'data-nextora-invalid-fonts', invalidSlugs.join( ' ' ) );
+		} );
+
+		var rules = [];
+		if ( bodySelectors.length ) {
+			rules.push( bodySelectors.join( ',\n' ) + ' { font-family: var(--nextora-font-body) !important; }' );
+		}
+		if ( headingSelectors.length ) {
+			rules.push( headingSelectors.join( ',\n' ) + ' { font-family: var(--nextora-font-heading) !important; }' );
+		}
+		Object.keys( customPropertySelectors ).forEach( function ( property ) {
+			var selectors = customPropertySelectors[ property ].join( ',\n' );
+			rules.push(
+				selectors + ' { ' + property + ': var(--nextora-font-body) !important; }'
+			);
+		} );
+
+		fontFallbackStyle.textContent = rules.join( '\n' );
+		notifySchemeChange();
+	}
 
 	/* ------------------------------------------------------------------
 	 * Color application
@@ -53,6 +189,9 @@
 			Object.keys( COLOR_PRESETS[ slug ].colors || {} ).forEach( function ( colorSlug ) {
 				root.style.removeProperty( '--wp--preset--color--' + colorSlug );
 			} );
+		} );
+		Object.keys( GRADIENT_PRESETS ).forEach( function ( gradientSlug ) {
+			root.style.removeProperty( '--wp--preset--gradient--' + gradientSlug );
 		} );
 	}
 
@@ -70,9 +209,13 @@
 				preset.colors[ colorSlug ]
 			);
 		} );
+		Object.keys( preset.gradients || {} ).forEach( function ( gradientSlug ) {
+			root.style.setProperty( '--wp--preset--gradient--' + gradientSlug, preset.gradients[ gradientSlug ] );
+		} );
 
 		state.theme = null;
 		state.color = slug;
+		refreshInvalidFontFallbacks();
 		return true;
 	}
 
@@ -80,6 +223,7 @@
 		clearColorOverrides();
 		state.theme = null;
 		state.color = null;
+		refreshInvalidFontFallbacks();
 	}
 
 	/* ------------------------------------------------------------------
@@ -89,6 +233,7 @@
 	function clearFontOverrides() {
 		root.style.removeProperty( '--nextora-font-body' );
 		root.style.removeProperty( '--nextora-font-heading' );
+		root.style.removeProperty( '--nextora-font-button' );
 	}
 
 	function applyFont( slug ) {
@@ -108,9 +253,11 @@
 		if ( heading ) {
 			root.style.setProperty( '--nextora-font-heading', heading.family );
 		}
+		root.style.setProperty( '--nextora-font-button', heading ? heading.family : body.family );
 
 		state.theme = null;
 		state.font = slug;
+		refreshInvalidFontFallbacks();
 		return true;
 	}
 
@@ -118,6 +265,7 @@
 		clearFontOverrides();
 		state.theme = null;
 		state.font = null;
+		refreshInvalidFontFallbacks();
 	}
 
 	/* ------------------------------------------------------------------
@@ -136,6 +284,9 @@
 		Object.keys( theme.colors || {} ).forEach( function ( colorSlug ) {
 			root.style.setProperty( '--wp--preset--color--' + colorSlug, theme.colors[ colorSlug ] );
 		} );
+		Object.keys( theme.gradients || {} ).forEach( function ( gradientSlug ) {
+			root.style.setProperty( '--wp--preset--gradient--' + gradientSlug, theme.gradients[ gradientSlug ] );
+		} );
 
 		if ( theme.body ) {
 			root.style.setProperty( '--nextora-font-body', theme.body );
@@ -143,10 +294,14 @@
 		if ( theme.heading ) {
 			root.style.setProperty( '--nextora-font-heading', theme.heading );
 		}
+		if ( theme.button ) {
+			root.style.setProperty( '--nextora-font-button', theme.button );
+		}
 
 		state.theme = slug;
 		state.color = null;
 		state.font = null;
+		refreshInvalidFontFallbacks();
 		return true;
 	}
 
@@ -156,6 +311,7 @@
 		state.theme = null;
 		state.color = null;
 		state.font = null;
+		refreshInvalidFontFallbacks();
 	}
 
 	/* ------------------------------------------------------------------
@@ -254,6 +410,7 @@
 			save();
 		}
 
+		refreshInvalidFontFallbacks();
 		updateUI();
 	}
 
