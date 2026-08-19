@@ -575,7 +575,6 @@
 /* Responsive adjustments */
 @media (max-width: 480px) {
 	.nextora-team-section--template-overlay-social .nextora-team-section__card-photo {
-		max-width: 300px;
 		margin-left: auto;
 		margin-right: auto;
 	}
