@@ -1,11 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
 import { parse } from '@wordpress/blocks';
-import {
-	Button,
-	Modal,
-	SelectControl,
-	Spinner,
-} from '@wordpress/components';
+import { Modal, Spinner } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
@@ -14,6 +9,7 @@ import {
 	CheckCircleIcon,
 	CloudIcon,
 	DownloadIcon,
+	PaletteIcon,
 	RefreshIcon,
 	SearchIcon,
 } from '../cloud-templates/components/icons';
@@ -39,9 +35,8 @@ export function CloudLibraryModal({
 	onClose: () => void;
 }) {
 	const config = window.nextoraCloudEditorData;
-	const [selectedTheme, setSelectedTheme] = useState<string>(
-		config?.activeTheme || 'nextora',
-	);
+	const activeTheme = config?.activeTheme || 'nextora';
+	const [selectedTheme, setSelectedTheme] = useState<string>(activeTheme);
 	const [themes, setThemes] = useState<CloudThemeItem[]>([]);
 	const [templates, setTemplates] = useState<CloudTemplateItem[]>([]);
 	const [category, setCategory] = useState<string>('all');
@@ -51,12 +46,11 @@ export function CloudLibraryModal({
 	const [error, setError] = useState<string | null>(null);
 	const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-	// Block editor dispatch
 	const { insertBlocks } = useDispatch('core/block-editor') as {
 		insertBlocks: (blocks: unknown[]) => void;
 	};
 
-	// Fetch themes on open
+	// Fetch strictly allowed themes (only active child theme and parent theme)
 	useEffect(() => {
 		if (!isOpen) return;
 
@@ -117,7 +111,6 @@ export function CloudLibraryModal({
 		}
 	}, [isOpen, selectedTheme, category, search]);
 
-	// Insert template directly into current post canvas
 	const handleInsert = async (tpl: CloudTemplateItem) => {
 		setInsertingId(tpl.id);
 		setError(null);
@@ -135,7 +128,6 @@ export function CloudLibraryModal({
 				throw new Error('Template payload is empty.');
 			}
 
-			// Parse raw block markup into Gutenberg block objects
 			const parsedBlocks = parse(res.content);
 
 			if (parsedBlocks.length > 0 && typeof insertBlocks === 'function') {
@@ -166,135 +158,158 @@ export function CloudLibraryModal({
 
 	if (!isOpen) return null;
 
-	const themeOptions =
-		themes.length > 0
-			? themes.map((t) => ({
-					label: `${t.name} (${t.type === 'CHILD' ? 'Child' : 'Parent'})`,
-					value: t.slug,
-				}))
-			: [
-					{ label: 'Nextora (Parent)', value: 'nextora' },
-					{ label: 'Nextora SaaS', value: 'nextora-saas' },
-					{ label: 'Nextora Agency', value: 'nextora-agency' },
-				];
+	const isChildTheme = Boolean(config?.isChildTheme);
 
 	return (
 		<Modal
 			title={__('Nextora Cloud Template Library', 'nextora')}
 			onRequestClose={onClose}
 			className="nextora-cloud-editor-modal"
-			style={{ maxWidth: '960px', width: '92vw' }}
+			style={{ maxWidth: '980px', width: '92vw' }}
 		>
-			<div className="nextora-cloud-modal-content">
-				<div className="nextora-cloud-modal-toolbar">
-					<div className="nextora-cloud-modal-toolbar__theme">
-						<SelectControl
-							label={__('Catalog:', 'nextora')}
-							value={selectedTheme}
-							options={themeOptions}
-							onChange={setSelectedTheme}
-						/>
+			<div className="nextora-addon-wrap" style={{ padding: '16px 20px 24px', background: 'none' }}>
+				{/* Theme Selector Tabs */}
+				{isChildTheme && themes.length > 1 && (
+					<div className="nextora-addon-nav" style={{ marginBottom: '20px' }}>
+						{themes.map((t) => (
+							<button
+								key={t.slug}
+								type="button"
+								className={`nextora-addon-nav__item${selectedTheme === t.slug ? ' is-active' : ''}`}
+								onClick={() => setSelectedTheme(t.slug)}
+							>
+								<PaletteIcon className="nextora-addon-nav__icon" />
+								{t.slug === activeTheme
+									? sprintf(
+											/* translators: %s: theme name */
+											__('%s (Active)', 'nextora'),
+											t.name || t.slug,
+										)
+									: sprintf(
+											/* translators: %s: theme name */
+											__('%s (Parent)', 'nextora'),
+											t.name || t.slug,
+										)}
+							</button>
+						))}
 					</div>
+				)}
 
-					<div className="nextora-cloud-modal-toolbar__search">
-						<SearchIcon className="nextora-cloud-filterbar__search-icon" />
-						<input
-							type="search"
-							value={search}
-							placeholder={__('Search templates...', 'nextora')}
-							onChange={(e) => setSearch(e.target.value)}
-							className="nextora-cloud-filterbar__search-input"
-						/>
+				{/* Search & Refresh Bar */}
+				<div className="nextora-addon-section-intro" style={{ marginBottom: '16px' }}>
+					<span className="nextora-addon-section-intro__count">
+						{sprintf(
+							/* translators: %d: count */
+							__('%d templates in %s', 'nextora'),
+							templates.length,
+							selectedTheme,
+						)}
+					</span>
+
+					<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+						<div className="nextora-addon-search">
+							<SearchIcon className="nextora-addon-search__icon" />
+							<input
+								type="text"
+								className="nextora-addon-search__input"
+								placeholder={__('Filter templates\u2026', 'nextora')}
+								value={search}
+								onChange={(e) => setSearch(e.target.value)}
+							/>
+						</div>
+
+						<button
+							type="button"
+							className="nextora-cloud-refresh-btn"
+							onClick={() => loadCatalog(true)}
+							title={__('Refresh', 'nextora')}
+						>
+							<RefreshIcon width={14} height={14} />
+						</button>
 					</div>
-
-					<Button
-						variant="tertiary"
-						icon={<RefreshIcon />}
-						onClick={() => loadCatalog(true)}
-						isBusy={loading}
-					/>
 				</div>
 
 				{error && (
-					<div className="nextora-cloud-alert nextora-cloud-alert--error">
-						<AlertCircleIcon width={16} height={16} />
+					<div className="nextora-addon-error" style={{ marginBottom: '16px' }}>
+						<AlertCircleIcon width={16} height={16} className="nextora-addon-error__icon" />
 						<span>{error}</span>
 					</div>
 				)}
 
 				{successMsg && (
-					<div className="nextora-cloud-alert nextora-cloud-alert--success">
+					<div className="nextora-cloud-success-alert" style={{ marginBottom: '16px' }}>
 						<CheckCircleIcon width={16} height={16} />
 						<span>{successMsg}</span>
 					</div>
 				)}
 
 				{loading ? (
-					<div
-						style={{
-							padding: '60px',
-							textAlign: 'center',
-							display: 'flex',
-							justifyContent: 'center',
-						}}
-					>
+					<div style={{ padding: '60px 0', textAlign: 'center' }}>
 						<Spinner />
 					</div>
 				) : templates.length === 0 ? (
-					<div className="nextora-cloud-empty">
-						<CloudIcon width={40} height={40} />
-						<p>{__('No templates found in catalog.', 'nextora')}</p>
+					<div className="nextora-addon-empty">
+						<div className="nextora-addon-empty__icon">
+							<CloudIcon width={24} height={24} />
+						</div>
+						<h3 className="nextora-addon-empty__title">
+							{__('No templates found', 'nextora')}
+						</h3>
+						<p className="nextora-addon-empty__text">
+							{__('No templates are available in this catalog.', 'nextora')}
+						</p>
 					</div>
 				) : (
-					<div className="nextora-cloud-grid" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+					<div
+						className="nextora-addon-grid"
+						style={{ maxHeight: '55vh', overflowY: 'auto', padding: '4px' }}
+					>
 						{templates.map((tpl) => (
-							<div key={tpl.id} className="nextora-cloud-card">
-								<div
-									className="nextora-cloud-card__preview"
-									style={{ height: '140px' }}
-								>
+							<div key={tpl.id} className="nextora-addon-card">
+								<div className="nextora-cloud-card__preview">
 									{tpl.thumbnailUrl ? (
 										<img
 											src={tpl.thumbnailUrl}
 											alt={tpl.title}
-											className="nextora-cloud-card__img"
+											className="nextora-addon-card__image"
 											loading="lazy"
 										/>
 									) : (
-										<div className="nextora-cloud-card__placeholder">
+										<div className="nextora-addon-card__placeholder">
 											<span>{tpl.title}</span>
 										</div>
 									)}
 								</div>
-								<div className="nextora-cloud-card__body">
-									<div className="nextora-cloud-card__header">
-										<h4 className="nextora-cloud-card__title">
-											{tpl.title}
-										</h4>
-										<span className="nextora-cloud-card__category">
-											{tpl.category}
-										</span>
-									</div>
-									<div style={{ marginTop: '10px' }}>
-										<Button
-											variant="primary"
-											style={{
-												width: '100%',
-												justifyContent: 'center',
-											}}
-											isBusy={insertingId === tpl.id}
-											disabled={insertingId !== null}
-											onClick={() => handleInsert(tpl)}
-										>
-											<DownloadIcon
-												width={14}
-												height={14}
-											/>
-											{insertingId === tpl.id
-												? __('Inserting...', 'nextora')
-												: __('Insert into Canvas', 'nextora')}
-										</Button>
-									</div>
+
+								<h3 className="nextora-addon-card__title">
+									{tpl.title}
+								</h3>
+								<p className="nextora-addon-card__desc" style={{ marginBottom: '8px' }}>
+									<code>{tpl.slug}</code>
+								</p>
+
+								<div className="nextora-addon-card__meta">
+									<span className="nextora-addon-card__tag nextora-addon-card__tag--premium">
+										{tpl.category}
+									</span>
+									<span className="nextora-addon-card__status nextora-addon-card__status--active">
+										v{tpl.version}
+									</span>
+								</div>
+
+								<div style={{ marginTop: '12px' }}>
+									<button
+										type="button"
+										className="nextora-cloud-btn nextora-cloud-btn--primary"
+										style={{ width: '100%' }}
+										disabled={insertingId !== null}
+										onClick={() => handleInsert(tpl)}
+									>
+										<DownloadIcon width={14} height={14} />
+										{insertingId === tpl.id
+											? __('Inserting…', 'nextora')
+											: __('Insert into Canvas', 'nextora')}
+									</button>
 								</div>
 							</div>
 						))}

@@ -1,11 +1,12 @@
-import { Button } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
-import { AlertCircleIcon, CheckCircleIcon, CloudIcon } from './components/icons';
+import Header from './components/Header';
+import Footer from '../admin-addon/components/Footer';
 import { FilterBar } from './components/FilterBar';
 import { TemplateCard } from './components/TemplateCard';
+import { AlertCircleIcon, CheckCircleIcon, CloudIcon } from './components/icons';
 import { useCloudCatalog } from './hooks/useCloudCatalog';
 
-export default function App() {
+export default function App(): JSX.Element {
 	const {
 		config,
 		selectedTheme,
@@ -30,86 +31,55 @@ export default function App() {
 		setImportError,
 	} = useCloudCatalog();
 
-	return (
-		<div className="nextora-cloud-app">
-			<header className="nextora-cloud-header">
-				<div className="nextora-cloud-header__brand">
-					<div className="nextora-cloud-header__icon-wrap">
-						<CloudIcon width={28} height={28} />
-					</div>
-					<div>
-						<h1 className="nextora-cloud-header__title">
-							{__('Nextora Cloud Templates', 'nextora')}
-						</h1>
-						<p className="nextora-cloud-header__subtitle">
-							{__(
-								'Browse and import production-ready block templates directly into your WordPress site.',
-								'nextora',
-							)}
-						</p>
-					</div>
-				</div>
+	const activeTheme = config?.activeTheme || 'nextora';
+	const parentTheme = config?.parentTheme || 'nextora';
+	const isChildTheme = Boolean(config?.isChildTheme);
+	const themeVersion = config?.themeVersion || '1.0.0';
 
-				<div className="nextora-cloud-header__meta">
-					<span className="nextora-cloud-header__badge">
-						{config?.isChildTheme
-							? sprintf(
-									/* translators: 1: active child theme, 2: parent theme */
-									__('Child Theme: %1$s (Parent: %2$s)', 'nextora'),
-									config.activeTheme,
-									config.parentTheme,
-								)
-							: sprintf(
-									/* translators: %s: theme name */
-									__('Active: %s', 'nextora'),
-									config?.activeTheme || 'nextora',
-								)}
-					</span>
-					<span className="nextora-cloud-header__version">
-						{sprintf(
-							/* translators: %s: version */
-							__('v%s', 'nextora'),
-							config?.themeVersion || '1.0.0',
-						)}
-					</span>
-				</div>
-			</header>
+	return (
+		<div className="nextora-addon-wrap nextora-cloud-wrap">
+			<Header
+				activeTheme={activeTheme}
+				parentTheme={parentTheme}
+				isChildTheme={isChildTheme}
+				themeVersion={themeVersion}
+			/>
 
 			{error && (
-				<div className="nextora-cloud-alert nextora-cloud-alert--error">
-					<AlertCircleIcon width={18} height={18} />
+				<div className="nextora-addon-error nextora-cloud-alert">
+					<AlertCircleIcon width={16} height={16} className="nextora-addon-error__icon" />
 					<span>{error}</span>
-					<Button
-						variant="secondary"
-						isSmall
+					<button
+						type="button"
+						className="nextora-cloud-alert__retry"
 						onClick={() => fetchCatalog(true)}
 					>
 						{__('Retry', 'nextora')}
-					</Button>
+					</button>
 				</div>
 			)}
 
 			{importError && (
-				<div className="nextora-cloud-alert nextora-cloud-alert--error">
-					<AlertCircleIcon width={18} height={18} />
+				<div className="nextora-addon-error nextora-cloud-alert">
+					<AlertCircleIcon width={16} height={16} className="nextora-addon-error__icon" />
 					<span>{importError}</span>
-					<Button
-						variant="tertiary"
-						isSmall
+					<button
+						type="button"
+						className="nextora-cloud-alert__dismiss"
 						onClick={() => setImportError(null)}
 					>
 						{__('Dismiss', 'nextora')}
-					</Button>
+					</button>
 				</div>
 			)}
 
 			{importSuccess && (
-				<div className="nextora-cloud-alert nextora-cloud-alert--success">
-					<CheckCircleIcon width={18} height={18} />
+				<div className="nextora-cloud-success-alert">
+					<CheckCircleIcon width={16} height={16} />
 					<span>
 						{importSuccess.message ||
 							sprintf(
-								/* translators: %s: template title */
+								/* translators: %s: title */
 								__('Template "%s" imported successfully as a draft page.', 'nextora'),
 								importSuccess.title,
 							)}
@@ -118,7 +88,7 @@ export default function App() {
 						href={importSuccess.edit_url}
 						target="_blank"
 						rel="noreferrer noopener"
-						className="nextora-cloud-alert__link"
+						className="nextora-cloud-success-alert__link"
 					>
 						{__('Open Editor', 'nextora')} →
 					</a>
@@ -132,6 +102,9 @@ export default function App() {
 					setSelectedTheme(th);
 					setPage(1);
 				}}
+				isChildTheme={isChildTheme}
+				activeTheme={activeTheme}
+				parentTheme={parentTheme}
 				category={category}
 				onCategoryChange={(cat) => {
 					setCategory(cat);
@@ -148,44 +121,43 @@ export default function App() {
 			/>
 
 			{loading && templates.length === 0 ? (
-				<div className="nextora-cloud-skeleton-grid">
+				<div className="nextora-addon-skeleton-grid">
 					{Array.from({ length: 6 }).map((_, i) => (
-						<div key={i} className="nextora-cloud-skeleton-card">
-							<div className="nextora-cloud-skeleton-card__thumb" />
-							<div className="nextora-cloud-skeleton-card__body">
-								<div className="nextora-cloud-skeleton-card__line nextora-cloud-skeleton-card__line--title" />
-								<div className="nextora-cloud-skeleton-card__line nextora-cloud-skeleton-card__line--sub" />
-							</div>
+						<div key={i} className="nextora-addon-skeleton">
+							<div className="nextora-addon-skeleton__thumb nextora-addon-skeleton__shimmer" />
+							<div className="nextora-addon-skeleton__line nextora-addon-skeleton__shimmer" />
+							<div className="nextora-addon-skeleton__line nextora-addon-skeleton__line--short nextora-addon-skeleton__shimmer" />
 						</div>
 					))}
 				</div>
 			) : templates.length === 0 ? (
-				<div className="nextora-cloud-empty">
-					<CloudIcon width={48} height={48} className="nextora-cloud-empty__icon" />
-					<h3>{__('No templates found', 'nextora')}</h3>
-					<p>
+				<div className="nextora-addon-empty">
+					<div className="nextora-addon-empty__icon">
+						<CloudIcon width={24} height={24} />
+					</div>
+					<h3 className="nextora-addon-empty__title">
+						{__('No templates found', 'nextora')}
+					</h3>
+					<p className="nextora-addon-empty__text">
 						{category !== 'all' || search.trim()
-							? __(
-									'Try clearing your search query or selecting a different category.',
-									'nextora',
-								)
-							: __(
-									'No templates are currently available for this theme catalog.',
-									'nextora',
-								)}
+							? __('Try clearing your search query or selecting a different category.', 'nextora')
+							: __('No templates are currently available in this catalog.', 'nextora')}
 					</p>
 					{selectedTheme !== 'nextora' && (
-						<Button
-							variant="secondary"
-							onClick={() => setSelectedTheme('nextora')}
-						>
-							{__('Browse Nextora Parent Catalog', 'nextora')}
-						</Button>
+						<div style={{ marginTop: '16px' }}>
+							<button
+								type="button"
+								className="nextora-cloud-btn nextora-cloud-btn--secondary"
+								onClick={() => setSelectedTheme('nextora')}
+							>
+								{__('Browse Nextora Parent Catalog', 'nextora')}
+							</button>
+						</div>
 					)}
 				</div>
 			) : (
 				<>
-					<div className="nextora-cloud-grid">
+					<div className="nextora-addon-grid nextora-cloud-grid">
 						{templates.map((tpl) => (
 							<TemplateCard
 								key={tpl.id}
@@ -205,14 +177,15 @@ export default function App() {
 
 					{totalPages > 1 && (
 						<div className="nextora-cloud-pagination">
-							<Button
-								variant="secondary"
+							<button
+								type="button"
+								className="nextora-cloud-page-btn"
 								disabled={page <= 1 || loading}
 								onClick={() => setPage((p) => Math.max(1, p - 1))}
 							>
 								← {__('Previous', 'nextora')}
-							</Button>
-							<span className="nextora-cloud-pagination__page-info">
+							</button>
+							<span className="nextora-cloud-page-info">
 								{sprintf(
 									/* translators: 1: current page, 2: total pages */
 									__('Page %1$d of %2$d', 'nextora'),
@@ -220,19 +193,22 @@ export default function App() {
 									totalPages,
 								)}
 							</span>
-							<Button
-								variant="secondary"
+							<button
+								type="button"
+								className="nextora-cloud-page-btn"
 								disabled={page >= totalPages || loading}
 								onClick={() =>
 									setPage((p) => Math.min(totalPages, p + 1))
 								}
 							>
 								{__('Next', 'nextora')} →
-							</Button>
+							</button>
 						</div>
 					)}
 				</>
 			)}
+
+			<Footer />
 		</div>
 	);
 }

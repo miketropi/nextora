@@ -1,12 +1,14 @@
-import { Button, SelectControl } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import { CloudThemeItem } from '../types';
-import { CloudIcon, RefreshIcon, SearchIcon } from './icons';
+import { PaletteIcon, RefreshIcon, SearchIcon } from './icons';
 
 interface FilterBarProps {
 	themes: CloudThemeItem[];
 	selectedTheme: string;
 	onThemeChange: (theme: string) => void;
+	isChildTheme: boolean;
+	activeTheme: string;
+	parentTheme: string;
 	category: string;
 	onCategoryChange: (cat: string) => void;
 	search: string;
@@ -30,6 +32,9 @@ export function FilterBar({
 	themes,
 	selectedTheme,
 	onThemeChange,
+	isChildTheme,
+	activeTheme,
+	parentTheme,
 	category,
 	onCategoryChange,
 	search,
@@ -37,89 +42,86 @@ export function FilterBar({
 	onRefresh,
 	loading,
 	total,
-}: FilterBarProps) {
-	const themeOptions =
-		themes.length > 0
-			? themes.map((t) => ({
-					label: `${t.name} (${t.type === 'CHILD' ? 'Child' : 'Parent'})`,
-					value: t.slug,
-				}))
-			: [
-					{ label: 'Nextora (Parent)', value: 'nextora' },
-					{ label: 'Nextora SaaS', value: 'nextora-saas' },
-					{ label: 'Nextora Agency', value: 'nextora-agency' },
-				];
-
+}: FilterBarProps): JSX.Element {
 	return (
-		<div className="nextora-cloud-filterbar">
-			<div className="nextora-cloud-filterbar__row">
-				<div className="nextora-cloud-filterbar__group">
-					<div className="nextora-cloud-filterbar__theme-select">
-						<label
-							htmlFor="nextora-cloud-theme-select"
-							className="nextora-cloud-filterbar__label"
-						>
-							<CloudIcon width={16} height={16} />
-							{__('Catalog Theme:', 'nextora')}
-						</label>
-						<SelectControl
-							id="nextora-cloud-theme-select"
-							value={selectedTheme}
-							options={themeOptions}
-							onChange={onThemeChange}
-							className="nextora-cloud-filterbar__control"
-						/>
-					</div>
-
-					<div className="nextora-cloud-filterbar__categories">
-						{CATEGORIES.map((cat) => (
+		<div className="nextora-cloud-controls">
+			{/* Theme Selector Tabs (Only active child theme + parent theme allowed) */}
+			{isChildTheme && themes.length > 1 && (
+				<div className="nextora-addon-nav nextora-cloud-theme-nav" aria-label="Theme catalogs">
+					{themes.map((t) => {
+						const isActive = selectedTheme === t.slug;
+						return (
 							<button
-								key={cat.value}
+								key={t.slug}
 								type="button"
-								className={`nextora-cloud-filterbar__cat-btn ${
-									category === cat.value ? 'is-active' : ''
-								}`}
-								onClick={() => onCategoryChange(cat.value)}
+								className={`nextora-addon-nav__item${isActive ? ' is-active' : ''}`}
+								onClick={() => onThemeChange(t.slug)}
 							>
-								{cat.label}
+								<PaletteIcon className="nextora-addon-nav__icon" />
+								{t.slug === activeTheme
+									? sprintf(
+											/* translators: %s: theme name */
+											__('%s (Active Child)', 'nextora'),
+											t.name || t.slug,
+										)
+									: sprintf(
+											/* translators: %s: theme name */
+											__('%s (Parent)', 'nextora'),
+											t.name || t.slug,
+										)}
 							</button>
-						))}
-					</div>
+						);
+					})}
+				</div>
+			)}
+
+			{/* Filter & Search Bar */}
+			<div className="nextora-addon-section-intro nextora-cloud-filter-row">
+				<div className="nextora-cloud-categories">
+					{CATEGORIES.map((cat) => (
+						<button
+							key={cat.value}
+							type="button"
+							className={`nextora-cloud-cat-pill${
+								category === cat.value ? ' is-active' : ''
+							}`}
+							onClick={() => onCategoryChange(cat.value)}
+						>
+							{cat.label}
+						</button>
+					))}
 				</div>
 
-				<div className="nextora-cloud-filterbar__actions">
-					<div className="nextora-cloud-filterbar__search">
-						<SearchIcon className="nextora-cloud-filterbar__search-icon" />
+				<div className="nextora-cloud-search-actions">
+					<div className="nextora-addon-search">
+						<SearchIcon className="nextora-addon-search__icon" />
 						<input
-							type="search"
+							type="text"
+							className="nextora-addon-search__input"
+							placeholder={__('Filter templates\u2026', 'nextora')}
 							value={search}
-							placeholder={__(
-								'Search templates...',
-								'nextora',
-							)}
 							onChange={(e) => onSearchChange(e.target.value)}
-							className="nextora-cloud-filterbar__search-input"
 						/>
 					</div>
 
-					<Button
-						variant="tertiary"
-						icon={<RefreshIcon />}
+					<button
+						type="button"
+						className="nextora-cloud-refresh-btn"
 						onClick={onRefresh}
-						isBusy={loading}
 						disabled={loading}
-						className="nextora-cloud-filterbar__refresh-btn"
-						label={__('Refresh catalog', 'nextora')}
-					/>
+						title={__('Refresh catalog', 'nextora')}
+					>
+						<RefreshIcon width={14} height={14} />
+					</button>
 				</div>
 			</div>
 
-			<div className="nextora-cloud-filterbar__meta">
-				<span className="nextora-cloud-filterbar__count">
+			<div className="nextora-cloud-count-bar">
+				<span className="nextora-addon-section-intro__count">
 					{loading
-						? __('Loading templates...', 'nextora')
+						? __('Loading templates\u2026', 'nextora')
 						: sprintf(
-								/* translators: %d: total templates */
+								/* translators: %d: count */
 								__('%d templates available', 'nextora'),
 								total,
 							)}

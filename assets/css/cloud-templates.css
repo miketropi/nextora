@@ -1,529 +1,785 @@
-/* Nextora Cloud Templates Admin Styles */
-:root {
-	--nx-cloud-primary: #008055;
-	--nx-cloud-primary-hover: #006644;
-	--nx-cloud-accent: #00ffb6;
-	--nx-cloud-accent-bg: #e6fff6;
-	--nx-cloud-dark: #1d2327;
-	--nx-cloud-gray-100: #f6f7f8;
-	--nx-cloud-gray-200: #f0f0f1;
-	--nx-cloud-gray-300: #dcdcde;
-	--nx-cloud-gray-600: #646970;
-	--nx-cloud-gray-700: #3c434a;
-	--nx-cloud-card-bg: #ffffff;
-	--nx-cloud-border: #e2e4e7;
-	--nx-cloud-radius: 8px;
-	--nx-cloud-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-	--nx-cloud-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+/*! tailwindcss v4.2.2 | MIT License | https://tailwindcss.com */
+.nextora-addon-wrap {
+  --nx-accent: #00ffb6;
+  --nx-accent-dark: #008055;
+  --nx-accent-darker: #006644;
+  --nx-accent-bg: #e6fff6;
+  --nx-text: #1d2327;
+  --nx-text-secondary: #646970;
+  --nx-text-tertiary: #787c82;
+  --nx-text-muted: #9499a0;
+  --nx-border: #e8eaed;
+  --nx-border-light: #f0f0f1;
+  --nx-border-hover: #c3c4c7;
+  --nx-bg-page: #ffffff;
+  --nx-bg-subtle: #f6f7f8;
+  --nx-bg-footer: #f0f0f0;
+  --nx-error-bg: #fef2f2;
+  --nx-error-border: #fecaca;
+  --nx-error-text: #991b1b;
+  --nx-shimmer-1: #ececec;
+  --nx-shimmer-2: #f5f5f5;
 }
-
+.nextora-addon-wrap {
+  margin: 0;
+  padding: 32px 40px 0;
+  background: var(--nx-bg-page);
+  font-family: Arial, Helvetica, sans-serif;
+}
+@media (max-width: 782px) {
+  .nextora-addon-wrap {
+    padding: 24px 20px 0;
+  }
+}
+.nextora-addon-header {
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--nx-border-light);
+}
+.nextora-addon-header__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--nx-text);
+  margin: 0 0 8px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.nextora-addon-header__description {
+  font-size: 13.5px;
+  color: var(--nx-text-tertiary);
+  margin: 0 0 10px;
+  line-height: 1.6;
+  max-width: 580px;
+}
+.nextora-addon-header__contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--nx-text-secondary);
+  margin: 0;
+}
+.nextora-addon-header__contact a {
+  color: var(--nx-accent-dark);
+  text-decoration: none;
+  font-weight: 500;
+}
+.nextora-addon-header__contact a:hover {
+  color: var(--nx-accent-darker);
+  text-decoration: underline;
+}
+.nextora-addon-header__contact-icon {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+.nextora-addon-nav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 36px;
+  padding: 4px;
+  background: var(--nx-bg-subtle);
+  border-radius: 10px;
+  width: fit-content;
+}
+.nextora-addon-nav__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--nx-text-secondary);
+  background: none;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.nextora-addon-nav__item:hover {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--nx-text);
+}
+.nextora-addon-nav__item.is-active {
+  background: var(--nx-bg-page);
+  color: var(--nx-accent-dark);
+  font-weight: 600;
+}
+.nextora-addon-nav__icon {
+  flex-shrink: 0;
+  opacity: 0.65;
+}
+.nextora-addon-nav__item.is-active .nextora-addon-nav__icon {
+  opacity: 1;
+}
+.nextora-addon-content {
+  animation: nextoraFade 0.2s ease;
+}
+@keyframes nextoraFade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.nextora-addon-section-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.nextora-addon-section-intro__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--nx-text);
+  margin: 0;
+  white-space: nowrap;
+}
+.nextora-addon-section-intro__count {
+  font-size: 12.5px;
+  color: var(--nx-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.nextora-addon-search {
+  position: relative;
+  margin-left: auto;
+}
+.nextora-addon-search__input {
+  width: 240px;
+  height: 36px;
+  padding: 0 14px 0 36px !important;
+  font-size: 13px;
+  color: var(--nx-text);
+  line-height: 36px;
+  background: var(--nx-bg-subtle);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  outline: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  appearance: none;
+}
+.nextora-addon-search__input::placeholder {
+  color: var(--nx-text-muted);
+}
+.nextora-addon-search__input:focus {
+  background: var(--nx-bg-page);
+  border-color: var(--nx-accent);
+}
+.nextora-addon-search__icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--nx-text-muted);
+  pointer-events: none;
+  display: flex;
+}
+.nextora-addon-no-results {
+  padding: 40px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--nx-text-muted);
+}
+.nextora-addon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+@media (max-width: 1200px) {
+  .nextora-addon-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 782px) {
+  .nextora-addon-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.nextora-addon-card {
+  background: var(--nx-bg-page);
+  border: 1px solid var(--nx-border);
+  border-radius: 10px;
+  padding: 22px 24px 20px;
+  transition: border-color 0.2s ease;
+}
+.nextora-addon-card:hover {
+  border-color: var(--nx-accent);
+}
+.nextora-addon-card__image {
+  width: 100%;
+  height: 142px;
+  border-radius: 6px;
+  object-fit: cover;
+  object-position: top;
+  margin-bottom: 16px;
+}
+.nextora-addon-card__placeholder {
+  width: 100%;
+  height: 142px;
+  border-radius: 7px;
+  background: var(--nx-bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.nextora-addon-card__placeholder-icon {
+  color: var(--nx-text-muted);
+  opacity: 0.45;
+}
+.nextora-addon-card__title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--nx-text);
+  margin: 0 0 6px;
+  line-height: 1.35;
+}
+.nextora-addon-card__desc {
+  font-size: 13px;
+  color: var(--nx-text-secondary);
+  margin: 0 0 14px;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.nextora-addon-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  min-height: 22px;
+}
+.nextora-addon-card__author {
+  font-size: 12px;
+  color: var(--nx-text-muted);
+}
+.nextora-addon-card__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 10px;
+  line-height: 1.45;
+}
+.nextora-addon-card__status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.nextora-addon-card__status--active {
+  background: var(--nx-accent-bg);
+  color: var(--nx-accent-dark);
+}
+.nextora-addon-card__status--active::before {
+  background: var(--nx-accent);
+}
+.nextora-addon-card__status--inactive {
+  background: var(--nx-bg-subtle);
+  color: var(--nx-text-tertiary);
+}
+.nextora-addon-card__status--inactive::before {
+  background: var(--nx-text-muted);
+}
+.nextora-addon-card__tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  line-height: 1.6;
+}
+.nextora-addon-card__tag--soon {
+  background: #fef3c7;
+  color: #92400e;
+}
+.nextora-addon-card__tag--premium {
+  background: #ede9fe;
+  color: #6b21a8;
+}
+.nextora-addon-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--nx-accent-dark);
+  text-decoration: none;
+}
+.nextora-addon-card__link:hover {
+  gap: 7px;
+  color: var(--nx-accent-darker);
+}
+.nextora-addon-card__link-icon {
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+.nextora-addon-card__link:hover .nextora-addon-card__link-icon {
+  transform: translateX(2px);
+}
+.nextora-addon-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+@media (max-width: 1200px) {
+  .nextora-addon-skeleton-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 782px) {
+  .nextora-addon-skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.nextora-addon-skeleton {
+  background: var(--nx-bg-page);
+  border: 1px solid var(--nx-border);
+  border-radius: 10px;
+  padding: 22px 24px 20px;
+}
+.nextora-addon-skeleton__thumb {
+  width: 100%;
+  height: 72px;
+  border-radius: 7px;
+  margin-bottom: 16px;
+}
+.nextora-addon-skeleton__line {
+  height: 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.nextora-addon-skeleton__line--short {
+  width: 50%;
+  height: 10px;
+}
+.nextora-addon-skeleton__shimmer {
+  background: linear-gradient(	110deg,	var(--nx-shimmer-1) 30%,	var(--nx-shimmer-2) 50%,	var(--nx-shimmer-1) 70%	);
+  background-size: 200% 100%;
+  animation: nextoraShimmer 1.5s ease infinite;
+}
+@keyframes nextoraShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+.nextora-addon-empty {
+  padding: 72px 24px;
+  text-align: center;
+}
+.nextora-addon-empty__icon {
+  margin: 0 auto 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--nx-bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nx-text-muted);
+}
+.nextora-addon-empty__icon svg {
+  display: block;
+}
+.nextora-addon-empty__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--nx-text-secondary);
+  margin: 0 0 6px;
+}
+.nextora-addon-empty__text {
+  font-size: 13px;
+  color: var(--nx-text-muted);
+  margin: 0;
+}
+.nextora-addon-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: var(--nx-error-bg);
+  border: 1px solid var(--nx-error-border);
+  border-radius: 8px;
+  color: var(--nx-error-text);
+  font-size: 13px;
+}
+.nextora-addon-error__icon {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+.nextora-addon-footer {
+  margin: 60px -40px 0;
+  padding: 48px 40px 44px;
+  background: var(--nx-bg-footer);
+}
+@media (max-width: 782px) {
+  .nextora-addon-footer {
+    margin: 48px -20px 0;
+    padding: 36px 20px 32px;
+  }
+}
+.nextora-addon-footer__head {
+  max-width: 520px;
+  margin-bottom: 32px;
+}
+.nextora-addon-footer__head-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--nx-text);
+  margin: 0 0 4px;
+}
+.nextora-addon-footer__head-desc {
+  font-size: 12.5px;
+  color: var(--nx-text-tertiary);
+  margin: 0;
+  line-height: 1.5;
+}
+.nextora-addon-footer__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+@media (max-width: 1000px) {
+  .nextora-addon-footer__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 782px) {
+  .nextora-addon-footer__grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+.nextora-addon-footer__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.nextora-addon-footer__icon {
+  flex-shrink: 0;
+  color: var(--nx-accent-dark);
+  margin-top: 2px;
+}
+.nextora-addon-footer__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--nx-text);
+  margin: 0 0 3px;
+}
+.nextora-addon-footer__desc {
+  font-size: 12px;
+  color: var(--nx-text-tertiary);
+  margin: 0;
+  line-height: 1.5;
+}
+.nextora-addon-footer__thanks {
+  margin: 32px 0 0;
+  font-size: 12px;
+  color: var(--nx-text-muted);
+}
 .nextora-cloud-wrap {
-	margin: 16px 20px 0 0;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  max-width: 100%;
 }
-
-.nextora-cloud-app {
-	background: #ffffff;
-	border: 1px solid var(--nx-cloud-border);
-	border-radius: var(--nx-cloud-radius);
-	padding: 24px;
-	box-shadow: var(--nx-cloud-shadow);
+.nextora-cloud-header__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
 }
-
-/* Header */
-.nextora-cloud-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding-bottom: 20px;
-	margin-bottom: 20px;
-	border-bottom: 1px solid var(--nx-cloud-gray-200);
-	flex-wrap: wrap;
-	gap: 16px;
+.nextora-cloud-header__badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-
-.nextora-cloud-header__brand {
-	display: flex;
-	align-items: center;
-	gap: 14px;
+.nextora-cloud-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  background: var(--nx-bg-subtle);
+  border: 1px solid var(--nx-border);
+  border-radius: 20px;
+  color: var(--nx-text-secondary);
 }
-
-.nextora-cloud-header__icon-wrap {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 44px;
-	height: 44px;
-	background: var(--nx-cloud-accent-bg);
-	color: var(--nx-cloud-primary);
-	border-radius: 10px;
+.nextora-cloud-badge--version {
+  background: var(--nx-accent-bg);
+  border-color: rgba(0, 255, 182, 0.3);
+  color: var(--nx-accent-darker);
+  font-weight: 600;
 }
-
-.nextora-cloud-header__title {
-	font-size: 20px;
-	font-weight: 600;
-	color: var(--nx-cloud-dark);
-	margin: 0 0 4px 0;
+.nextora-cloud-categories {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
 }
-
-.nextora-cloud-header__subtitle {
-	font-size: 13px;
-	color: var(--nx-cloud-gray-600);
-	margin: 0;
+.nextora-cloud-cat-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--nx-text-secondary);
+  background: var(--nx-bg-subtle);
+  border: 1px solid transparent;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-
-.nextora-cloud-header__meta {
-	display: flex;
-	align-items: center;
-	gap: 8px;
+.nextora-cloud-cat-pill:hover {
+  background: var(--nx-border-light);
+  color: var(--nx-text);
 }
-
-.nextora-cloud-header__badge {
-	font-size: 12px;
-	background: var(--nx-cloud-gray-100);
-	color: var(--nx-cloud-gray-700);
-	padding: 4px 10px;
-	border-radius: 20px;
-	border: 1px solid var(--nx-cloud-gray-200);
-	font-weight: 500;
+.nextora-cloud-cat-pill.is-active {
+  background: var(--nx-text);
+  color: #ffffff;
+  font-weight: 600;
 }
-
-.nextora-cloud-header__version {
-	font-size: 11px;
-	background: var(--nx-cloud-accent-bg);
-	color: var(--nx-cloud-primary);
-	padding: 4px 8px;
-	border-radius: 20px;
-	font-weight: 600;
+.nextora-cloud-search-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
 }
-
-/* Alerts */
-.nextora-cloud-alert {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	padding: 12px 16px;
-	border-radius: 6px;
-	margin-bottom: 20px;
-	font-size: 13px;
+.nextora-cloud-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--nx-bg-subtle);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--nx-text-secondary);
+  transition: background 0.15s ease, color 0.15s ease;
 }
-
-.nextora-cloud-alert--error {
-	background: #fcf0f0;
-	color: #d63638;
-	border: 1px solid #f8cbcb;
+.nextora-cloud-refresh-btn:hover {
+  background: var(--nx-border-light);
+  color: var(--nx-text);
 }
-
-.nextora-cloud-alert--success {
-	background: #edfaef;
-	color: #007017;
-	border: 1px solid #c3e6cb;
+.nextora-cloud-count-bar {
+  margin-bottom: 20px;
 }
-
-.nextora-cloud-alert__link {
-	margin-left: auto;
-	font-weight: 600;
-	color: #007017;
-	text-decoration: underline;
-}
-
-/* Filter Bar */
-.nextora-cloud-filterbar {
-	margin-bottom: 24px;
-	background: var(--nx-cloud-gray-100);
-	padding: 14px 16px;
-	border-radius: 8px;
-}
-
-.nextora-cloud-filterbar__row {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: 16px;
-	flex-wrap: wrap;
-}
-
-.nextora-cloud-filterbar__group {
-	display: flex;
-	align-items: center;
-	gap: 16px;
-	flex-wrap: wrap;
-}
-
-.nextora-cloud-filterbar__theme-select {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
-.nextora-cloud-filterbar__label {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	font-size: 13px;
-	font-weight: 600;
-	color: var(--nx-cloud-gray-700);
-}
-
-.nextora-cloud-filterbar__control .components-select-control__input {
-	height: 34px !important;
-	min-height: 34px !important;
-	font-size: 13px !important;
-	border-radius: 4px !important;
-}
-
-.nextora-cloud-filterbar__categories {
-	display: flex;
-	gap: 4px;
-	flex-wrap: wrap;
-}
-
-.nextora-cloud-filterbar__cat-btn {
-	background: transparent;
-	border: 1px solid transparent;
-	padding: 5px 12px;
-	border-radius: 20px;
-	font-size: 12px;
-	cursor: pointer;
-	color: var(--nx-cloud-gray-700);
-	font-weight: 500;
-	transition: all 0.15s ease;
-}
-
-.nextora-cloud-filterbar__cat-btn:hover {
-	background: #ffffff;
-	border-color: var(--nx-cloud-gray-300);
-}
-
-.nextora-cloud-filterbar__cat-btn.is-active {
-	background: var(--nx-cloud-dark);
-	color: #ffffff;
-	border-color: var(--nx-cloud-dark);
-}
-
-.nextora-cloud-filterbar__actions {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	margin-left: auto;
-}
-
-.nextora-cloud-filterbar__search {
-	position: relative;
-}
-
-.nextora-cloud-filterbar__search-icon {
-	position: absolute;
-	left: 10px;
-	top: 50%;
-	transform: translateY(-50%);
-	color: var(--nx-cloud-gray-600);
-}
-
-.nextora-cloud-filterbar__search-input {
-	padding-left: 32px !important;
-	height: 34px !important;
-	font-size: 13px !important;
-	border-radius: 4px !important;
-	border: 1px solid var(--nx-cloud-gray-300) !important;
-	width: 200px;
-}
-
-.nextora-cloud-filterbar__refresh-btn {
-	height: 34px !important;
-	min-width: 34px !important;
-}
-
-.nextora-cloud-filterbar__meta {
-	margin-top: 10px;
-	font-size: 12px;
-	color: var(--nx-cloud-gray-600);
-}
-
-/* Card Grid */
-.nextora-cloud-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-	gap: 20px;
-	margin-bottom: 24px;
-}
-
 .nextora-cloud-card {
-	background: var(--nx-cloud-card-bg);
-	border: 1px solid var(--nx-cloud-border);
-	border-radius: 8px;
-	overflow: hidden;
-	transition: box-shadow 0.2s ease, transform 0.2s ease;
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
-
-.nextora-cloud-card:hover {
-	box-shadow: var(--nx-cloud-shadow-hover);
-	transform: translateY(-2px);
-}
-
 .nextora-cloud-card__preview {
-	position: relative;
-	width: 100%;
-	height: 190px;
-	background: var(--nx-cloud-gray-100);
-	border-bottom: 1px solid var(--nx-cloud-border);
-	overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 160px;
+  border-radius: 7px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: var(--nx-bg-subtle);
 }
-
-.nextora-cloud-card__img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	object-position: top;
-	display: block;
+.nextora-cloud-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  margin-bottom: 0;
+  transition: transform 0.25s ease;
 }
-
+.nextora-cloud-card:hover .nextora-cloud-card__image {
+  transform: scale(1.02);
+}
 .nextora-cloud-card__placeholder {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: var(--nx-cloud-gray-600);
-	font-weight: 500;
-	font-size: 14px;
+  width: 100%;
+  height: 100%;
+  margin-bottom: 0;
+  color: var(--nx-text-muted);
+  font-size: 13px;
+  font-weight: 500;
 }
-
-.nextora-cloud-card__badge-wrap {
-	position: absolute;
-	top: 10px;
-	left: 10px;
-	right: 10px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+.nextora-cloud-card__badges {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
 }
-
-.nextora-cloud-card__type-badge {
-	background: rgba(29, 35, 39, 0.8);
-	color: #ffffff;
-	font-size: 10px;
-	font-weight: 600;
-	text-transform: uppercase;
-	padding: 3px 8px;
-	border-radius: 4px;
-	backdrop-filter: blur(4px);
+.nextora-cloud-card__type {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(29, 35, 39, 0.85);
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(4px);
 }
-
-.nextora-cloud-card__compat-badge {
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-	font-size: 10px;
-	font-weight: 600;
-	padding: 3px 8px;
-	border-radius: 4px;
-	backdrop-filter: blur(4px);
+.nextora-cloud-card__compat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
 }
-
-.nextora-cloud-card__compat-badge.is-compatible {
-	background: rgba(0, 128, 85, 0.9);
-	color: #ffffff;
+.nextora-cloud-card__compat.is-compatible {
+  background: var(--nx-accent-bg);
+  color: var(--nx-accent-darker);
+  border: 1px solid rgba(0, 255, 182, 0.4);
 }
-
-.nextora-cloud-card__compat-badge.is-incompatible {
-	background: rgba(214, 54, 56, 0.9);
-	color: #ffffff;
+.nextora-cloud-card__compat.is-incompatible {
+  background: var(--nx-error-bg);
+  color: var(--nx-error-text);
+  border: 1px solid var(--nx-error-border);
 }
-
-.nextora-cloud-card__body {
-	padding: 16px;
-	display: flex;
-	flex-direction: column;
-	flex-grow: 1;
-}
-
-.nextora-cloud-card__header {
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	margin-bottom: 6px;
-}
-
 .nextora-cloud-card__title {
-	font-size: 15px;
-	font-weight: 600;
-	color: var(--nx-cloud-dark);
-	margin: 0;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	max-width: 220px;
+  margin-bottom: 4px;
 }
-
-.nextora-cloud-card__category {
-	font-size: 11px;
-	text-transform: uppercase;
-	color: var(--nx-cloud-gray-600);
-	font-weight: 600;
-	letter-spacing: 0.5px;
-}
-
 .nextora-cloud-card__slug {
-	font-size: 12px;
-	margin: 0 0 14px 0;
-	color: var(--nx-cloud-gray-600);
+  margin-bottom: 12px;
 }
-
 .nextora-cloud-card__slug code {
-	background: var(--nx-cloud-gray-100);
-	padding: 2px 5px;
-	border-radius: 3px;
-	font-size: 11px;
+  font-size: 11.5px;
+  color: var(--nx-text-tertiary);
+  background: var(--nx-bg-subtle);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
-
-.nextora-cloud-card__actions {
-	margin-top: auto;
+.nextora-cloud-card__footer {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--nx-border-light);
 }
-
 .nextora-cloud-card__btn-group {
-	display: flex;
-	gap: 6px;
+  display: flex;
+  gap: 8px;
 }
-
-.nextora-cloud-card__import-btn {
-	flex-grow: 1;
-	justify-content: center;
-	background: var(--nx-cloud-primary) !important;
-	border-color: var(--nx-cloud-primary) !important;
-	color: #ffffff !important;
+.nextora-cloud-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 7px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s ease, opacity 0.15s ease;
 }
-
-.nextora-cloud-card__import-btn:hover {
-	background: var(--nx-cloud-primary-hover) !important;
+.nextora-cloud-btn--primary {
+  flex-grow: 1;
+  background: var(--nx-accent);
+  color: var(--nx-text);
 }
-
-.nextora-cloud-card__template-btn {
-	min-width: 50px;
-	justify-content: center;
+.nextora-cloud-btn--primary:hover {
+  background: #00e6a4;
 }
-
-.nextora-cloud-card__success-state {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background: #edfaef;
-	border: 1px solid #c3e6cb;
-	border-radius: 4px;
-	padding: 6px 10px;
+.nextora-cloud-btn--secondary {
+  background: var(--nx-bg-subtle);
+  color: var(--nx-text-secondary);
+  border: 1px solid var(--nx-border);
 }
-
-.nextora-cloud-card__success-msg {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	font-size: 12px;
-	font-weight: 600;
-	color: #007017;
+.nextora-cloud-btn--secondary:hover {
+  background: var(--nx-border-light);
+  color: var(--nx-text);
 }
-
-.nextora-cloud-card__edit-btn {
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-	font-size: 12px;
-	color: #007017;
-	font-weight: 600;
-	text-decoration: none;
+.nextora-cloud-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
-
-.nextora-cloud-card__edit-btn:hover {
-	text-decoration: underline;
+.nextora-cloud-card__success {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-
-/* Empty & Skeleton states */
-.nextora-cloud-empty {
-	text-align: center;
-	padding: 60px 20px;
-	background: var(--nx-cloud-gray-100);
-	border-radius: 8px;
-	margin: 20px 0;
+.nextora-cloud-card__success-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--nx-accent-darker);
 }
-
-.nextora-cloud-empty__icon {
-	color: var(--nx-cloud-gray-600);
-	margin-bottom: 12px;
+.nextora-cloud-success-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: var(--nx-accent-bg);
+  border: 1px solid rgba(0, 255, 182, 0.4);
+  border-radius: 8px;
+  color: var(--nx-accent-darker);
+  font-size: 13px;
+  margin-bottom: 20px;
 }
-
-.nextora-cloud-empty h3 {
-	margin: 0 0 6px 0;
-	font-size: 16px;
-	color: var(--nx-cloud-dark);
+.nextora-cloud-success-alert__link {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--nx-accent-darker);
+  text-decoration: none;
 }
-
-.nextora-cloud-empty p {
-	color: var(--nx-cloud-gray-600);
-	font-size: 13px;
-	margin: 0 0 16px 0;
+.nextora-cloud-success-alert__link:hover {
+  text-decoration: underline;
 }
-
-.nextora-cloud-skeleton-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-	gap: 20px;
+.nextora-cloud-alert__retry,
+.nextora-cloud-alert__dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
 }
-
-.nextora-cloud-skeleton-card {
-	background: #ffffff;
-	border: 1px solid var(--nx-cloud-border);
-	border-radius: 8px;
-	overflow: hidden;
-	height: 280px;
-}
-
-.nextora-cloud-skeleton-card__thumb {
-	height: 190px;
-	background: #ebebeb;
-	animation: nextoraPulse 1.5s infinite ease-in-out;
-}
-
-.nextora-cloud-skeleton-card__body {
-	padding: 16px;
-}
-
-.nextora-cloud-skeleton-card__line {
-	background: #ebebeb;
-	border-radius: 4px;
-	animation: nextoraPulse 1.5s infinite ease-in-out;
-}
-
-.nextora-cloud-skeleton-card__line--title {
-	height: 16px;
-	width: 60%;
-	margin-bottom: 8px;
-}
-
-.nextora-cloud-skeleton-card__line--sub {
-	height: 12px;
-	width: 40%;
-}
-
-@keyframes nextoraPulse {
-	0% { opacity: 0.6; }
-	50% { opacity: 1; }
-	100% { opacity: 0.6; }
-}
-
-/* Pagination */
 .nextora-cloud-pagination {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: 12px;
-	margin-top: 24px;
-	padding-top: 16px;
-	border-top: 1px solid var(--nx-cloud-gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid var(--nx-border-light);
 }
-
-.nextora-cloud-pagination__page-info {
-	font-size: 13px;
-	color: var(--nx-cloud-gray-700);
-	font-weight: 500;
+.nextora-cloud-page-btn {
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  background: var(--nx-bg-subtle);
+  border: 1px solid var(--nx-border);
+  border-radius: 6px;
+  color: var(--nx-text);
+  cursor: pointer;
+}
+.nextora-cloud-page-btn:hover:not(:disabled) {
+  background: var(--nx-border-light);
+}
+.nextora-cloud-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.nextora-cloud-page-info {
+  font-size: 12.5px;
+  color: var(--nx-text-secondary);
 }

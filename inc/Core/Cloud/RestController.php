@@ -158,6 +158,22 @@ final class RestController {
 	}
 
 	/**
+	 * Get allowed theme slugs (only active stylesheet and parent template).
+	 *
+	 * @return list<string>
+	 */
+	public static function get_allowed_theme_slugs(): array {
+		$active_stylesheet = get_stylesheet();
+		$parent_template   = get_template();
+
+		if ( $active_stylesheet === $parent_template ) {
+			return array( $active_stylesheet );
+		}
+
+		return array( $active_stylesheet, $parent_template );
+	}
+
+	/**
 	 * Handler for GET /nextora/v1/cloud/catalog.
 	 *
 	 * @param WP_REST_Request<array<string, mixed>> $request The REST request.
@@ -165,16 +181,23 @@ final class RestController {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public static function get_catalog( WP_REST_Request $request ): WP_REST_Response|WP_Error {
-		$theme_param = (string) $request->get_param( 'theme' );
+		$theme_param       = (string) $request->get_param( 'theme' );
 		$active_stylesheet = get_stylesheet();
 		$parent_template   = get_template();
+		$allowed_slugs     = self::get_allowed_theme_slugs();
 
 		$theme_slug = ! empty( $theme_param ) ? $theme_param : $active_stylesheet;
-		$category   = (string) $request->get_param( 'category' );
-		$search     = (string) $request->get_param( 'search' );
-		$page       = (int) ( $request->get_param( 'page' ) ?: 1 );
-		$per_page   = (int) ( $request->get_param( 'perPage' ) ?: 12 );
-		$refresh    = (bool) $request->get_param( 'refresh' );
+
+		// Strictly enforce theme restriction: only allow active child or parent theme.
+		if ( ! in_array( $theme_slug, $allowed_slugs, true ) ) {
+			$theme_slug = $active_stylesheet;
+		}
+
+		$category = (string) $request->get_param( 'category' );
+		$search   = (string) $request->get_param( 'search' );
+		$page     = (int) ( $request->get_param( 'page' ) ?: 1 );
+		$per_page = (int) ( $request->get_param( 'perPage' ) ?: 12 );
+		$refresh  = (bool) $request->get_param( 'refresh' );
 
 		$args = array(
 			'category' => $category,
@@ -199,8 +222,8 @@ final class RestController {
 			if ( ! is_array( $tpl ) ) {
 				continue;
 			}
-			$requires            = isset( $tpl['requires'] ) && is_array( $tpl['requires'] ) ? $tpl['requires'] : array();
-			$tpl['compatibility'] = ApiClient::check_compatibility( $requires );
+			$requires             = isset( $tpl['requires'] ) && is_array( $tpl['requires'] ) ? $tpl['requires'] : array();
+			$tpl['compatibility']  = ApiClient::check_compatibility( $requires );
 			$enhanced_templates[] = $tpl;
 		}
 
@@ -215,6 +238,7 @@ final class RestController {
 					'parentSlug'   => $parent_template,
 					'queriedSlug'  => $theme_slug,
 					'isChildTheme' => $active_stylesheet !== $parent_template,
+					'allowedSlugs' => $allowed_slugs,
 				),
 			),
 			200,
@@ -223,6 +247,8 @@ final class RestController {
 
 	/**
 	 * Handler for GET /nextora/v1/cloud/themes.
+	 *
+	 * Filters returned themes to strictly only the currently active child theme and parent theme.
 	 *
 	 * @return WP_REST_Response|WP_Error
 	 */
@@ -233,7 +259,52 @@ final class RestController {
 			return $themes;
 		}
 
-		return new WP_REST_Response( $themes, 200 );
+		$allowed_slugs = self::get_allowed_theme_slugs();
+
+		/** @var array{data?: list<array<string, mixed>>} $themes */
+		$all_themes     = $themes['data'] ?? array();
+		$filtered_themes = array();
+
+		foreach ( $all_themes as $theme_item ) {
+			$slug = isset( $theme_item['slug'] ) ? (string) $theme_item['slug'] : '';
+			if ( in_array( $slug, $allowed_slugs, true ) ) {
+				$filtered_themes[] = $theme_item;
+			}
+		}
+
+		// If the active child theme isn't explicitly in cloud themes catalog yet, synthesize it so it can be selected.
+		$active_stylesheet = get_stylesheet();
+		$parent_template   = get_template();
+		$has_active        = false;
+
+		foreach ( $filtered_themes as $ft ) {
+			if ( ( $ft['slug'] ?? '' ) === $active_stylesheet ) {
+				$has_active = true;
+				break;
+			}
+		}
+
+		if ( ! $has_active && $active_stylesheet !== $parent_template ) {
+			$wp_theme = wp_get_theme();
+			array_unshift(
+				$filtered_themes,
+				array(
+					'id'             => 'local_' . $active_stylesheet,
+					'slug'           => $active_stylesheet,
+					'name'           => $wp_theme->get( 'Name' ) ?: $active_stylesheet,
+					'description'    => $wp_theme->get( 'Description' ) ?: '',
+					'type'           => 'CHILD',
+					'currentVersion' => $wp_theme->get( 'Version' ) ?: '1.0.0',
+				),
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'data' => $filtered_themes,
+			),
+			200,
+		);
 	}
 
 	/**
