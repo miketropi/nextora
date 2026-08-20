@@ -36,6 +36,7 @@ const socialPlatformOptions = [
 
 export default function MemberEditForm({ member, photoUrl, cardTemplate, onPatch }: MemberEditFormProps) {
 	const isOverlay = cardTemplate === 'overlay-social';
+	const showTags = cardTemplate === 'default';
 
 	return (
 		<div className="nextora-team-section__member-form">
@@ -82,7 +83,12 @@ export default function MemberEditForm({ member, photoUrl, cardTemplate, onPatch
 										<Button
 											variant="link"
 											isDestructive
-											onClick={() => onPatch({ photoId: 0, photoAlt: '' })}
+											onClick={() =>
+												onPatch({
+													photoId: 0,
+													photoAlt: '',
+												})
+											}
 										>
 											{__('Remove photo', 'nextora')}
 										</Button>
@@ -124,18 +130,20 @@ export default function MemberEditForm({ member, photoUrl, cardTemplate, onPatch
 								onChange={(bio) => onPatch({ bio: bio ?? '' })}
 								help={__('Short description shown on the member card.', 'nextora')}
 							/>
-							<RangeControl
-								label={__('Bio line clamp', 'nextora')}
-								value={member.bioLineClamp}
-								onChange={(bioLineClamp) => onPatch({ bioLineClamp: bioLineClamp ?? 3 })}
-								min={1}
-								max={5}
-							/>
+							{cardTemplate !== 'template-02' && (
+								<RangeControl
+									label={__('Bio line clamp', 'nextora')}
+									value={member.bioLineClamp}
+									onChange={(bioLineClamp) => onPatch({ bioLineClamp: bioLineClamp ?? 3 })}
+									min={1}
+									max={5}
+								/>
+							)}
 						</>
 					)}
 				</div>
 
-				{!isOverlay && (
+				{showTags && (
 					<div className="nextora-team-section__member-form-section">
 						<div className="nextora-team-section__member-form-section-header">
 							<h4 className="nextora-team-section__member-form-section-heading">
