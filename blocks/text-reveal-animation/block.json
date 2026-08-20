@@ -1,0 +1,243 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/text-reveal-animation",
+  "title": "Text Reveal Animation",
+  "category": "theme",
+  "icon": "editor-italic",
+  "description": "Large scale typography with staggered letter reveal and animated media shutters.",
+  "keywords": [
+    "text",
+    "reveal",
+    "animation",
+    "typography",
+    "letters",
+    "nextora"
+  ],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": false,
+      "link": false
+    },
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "attributes": {
+    "rows": {
+      "type": "array",
+      "default": [
+        {
+          "id": "row-1",
+          "showDivider": true,
+          "rowAlign": "center",
+          "elements": [
+            {
+              "id": "el-1-1",
+              "type": "image",
+              "imageId": 0,
+              "imageUrl": "",
+              "imageAlt": "Branding visual 1",
+              "imageWidth": 200,
+              "imageRatio": "auto",
+              "animationStyle": "curtain",
+              "imageStyle": "rounded"
+            },
+            {
+              "id": "el-1-2",
+              "type": "text",
+              "text": "BRANDING",
+              "tag": "div"
+            },
+            {
+              "id": "el-1-3",
+              "type": "image",
+              "imageId": 0,
+              "imageUrl": "",
+              "imageAlt": "Branding visual 2",
+              "imageWidth": 200,
+              "imageRatio": "auto",
+              "animationStyle": "curtain",
+              "imageStyle": "rounded"
+            }
+          ]
+        },
+        {
+          "id": "row-2",
+          "showDivider": true,
+          "rowAlign": "center",
+          "elements": [
+            {
+              "id": "el-2-1",
+              "type": "text",
+              "text": "DIGITAL",
+              "tag": "div"
+            },
+            {
+              "id": "el-2-2",
+              "type": "image",
+              "imageId": 0,
+              "imageUrl": "",
+              "imageAlt": "Digital design visual",
+              "imageWidth": 200,
+              "imageRatio": "auto",
+              "animationStyle": "expand",
+              "imageStyle": "rounded"
+            },
+            {
+              "id": "el-2-3",
+              "type": "text",
+              "text": "DESIGN",
+              "tag": "div"
+            }
+          ]
+        },
+        {
+          "id": "row-3",
+          "showDivider": false,
+          "rowAlign": "center",
+          "elements": [
+            {
+              "id": "el-3-1",
+              "type": "image",
+              "imageId": 0,
+              "imageUrl": "",
+              "imageAlt": "Storytelling visual 1",
+              "imageWidth": 100,
+              "imageRatio": "auto",
+              "animationStyle": "curtain",
+              "imageStyle": "rounded"
+            },
+            {
+              "id": "el-3-2",
+              "type": "text",
+              "text": "STORYTELLING",
+              "tag": "div"
+            },
+            {
+              "id": "el-3-3",
+              "type": "image",
+              "imageId": 0,
+              "imageUrl": "",
+              "imageAlt": "Storytelling visual 2",
+              "imageWidth": 100,
+              "imageRatio": "auto",
+              "animationStyle": "curtain",
+              "imageStyle": "rounded"
+            }
+          ]
+        }
+      ]
+    },
+    "headingFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "textScaleY": {
+      "type": "number",
+      "default": 1.35
+    },
+    "fontWeight": {
+      "type": "string",
+      "default": "700"
+    },
+    "textTransform": {
+      "type": "string",
+      "default": "uppercase"
+    },
+    "letterSpacing": {
+      "type": "number",
+      "default": 6
+    },
+    "lineHeight": {
+      "type": "number",
+      "default": 1
+    },
+    "maxWidth": {
+      "type": "string",
+      "default": "100%"
+    },
+    "rowGap": {
+      "type": "number",
+      "default": 0
+    },
+    "elementGap": {
+      "type": "number",
+      "default": 20
+    },
+    "imageHeight": {
+      "type": "number",
+      "default": 150
+    },
+    "imageBorderRadius": {
+      "type": "number",
+      "default": 16
+    },
+    "showDividers": {
+      "type": "boolean",
+      "default": true
+    },
+    "dividerStyle": {
+      "type": "string",
+      "default": "solid"
+    },
+    "dividerWidth": {
+      "type": "number",
+      "default": 1
+    },
+    "dividerOpacity": {
+      "type": "number",
+      "default": 0.3
+    },
+    "textColor": {
+      "type": "string",
+      "default": ""
+    },
+    "revealCoverColor": {
+      "type": "string",
+      "default": ""
+    },
+    "dividerColor": {
+      "type": "string",
+      "default": ""
+    },
+    "imageOverlayColor": {
+      "type": "string",
+      "default": ""
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    },
+    "animationTrigger": {
+      "type": "string",
+      "default": "scroll"
+    },
+    "textRevealDuration": {
+      "type": "number",
+      "default": 2.4
+    },
+    "imageRevealDuration": {
+      "type": "number",
+      "default": 1.0
+    },
+    "ariaLabel": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "render": "file:./render.php"
+}
