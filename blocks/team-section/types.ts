@@ -1,6 +1,6 @@
 export type TeamLayoutMode = 'carousel' | 'grid';
 
-export type TeamCardTemplate = 'default' | 'overlay-social';
+export type TeamCardTemplate = 'default' | 'overlay-social' | 'template-02';
 
 export type TeamPhotoAspectRatio = '3/4' | '4/3' | '1/1' | '16/9';
 
