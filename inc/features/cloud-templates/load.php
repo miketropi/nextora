@@ -23,18 +23,19 @@ use Nextora\Core\Cloud\RestController;
 add_action( 'rest_api_init', array( RestController::class, 'register_routes' ) );
 
 /**
- * Add "Nextora Templates" menu page under Appearance.
+ * Add "Templates" menu page under the Nextora Addon top-level menu.
  */
 function nextora_cloud_templates_admin_menu(): void {
-	add_theme_page(
+	add_submenu_page(
+		'nextora-addon',
 		__( 'Nextora Templates', 'nextora' ),
-		__( 'Nextora Templates', 'nextora' ),
+		__( 'Templates', 'nextora' ),
 		'edit_posts',
 		'nextora-cloud-templates',
 		'nextora_cloud_templates_render_admin_page',
 	);
 }
-add_action( 'admin_menu', 'nextora_cloud_templates_admin_menu' );
+add_action( 'admin_menu', 'nextora_cloud_templates_admin_menu', 20 );
 
 /**
  * Render the root shell for the Nextora Templates admin page.
@@ -47,12 +48,12 @@ function nextora_cloud_templates_render_admin_page(): void {
 }
 
 /**
- * Enqueue scripts and styles on the Appearance > Nextora Templates admin page.
+ * Enqueue scripts and styles on the Nextora Templates admin page.
  *
  * @param string $hook_suffix Current admin page hook.
  */
 function nextora_cloud_templates_enqueue_admin_assets( string $hook_suffix ): void {
-	if ( 'appearance_page_nextora-cloud-templates' !== $hook_suffix ) {
+	if ( false === strpos( $hook_suffix, 'nextora-cloud-templates' ) ) {
 		return;
 	}
 
