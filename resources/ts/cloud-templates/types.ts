@@ -79,6 +79,7 @@ export interface TemplateContentApiResponse {
 
 export interface CloudScriptData {
 	restUrl: string;
+	cloudApiUrl?: string;
 	nonce: string;
 	activeTheme: string;
 	parentTheme: string;

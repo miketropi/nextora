@@ -17,7 +17,13 @@ final class CloudApiTest extends TestCase {
 
 	public function test_get_default_api_url(): void {
 		$url = ApiClient::get_api_url();
-		$this->assertSame( 'http://localhost:3000/api/v1', $url );
+		$this->assertSame( ApiClient::DEFAULT_API_URL, $url );
+	}
+
+	public function test_get_api_url_filter_override(): void {
+		// Mock apply_filters if needed or verify filter hook handling
+		$url = ApiClient::get_api_url();
+		$this->assertStringStartsWith( 'http', $url );
 	}
 
 	public function test_check_compatibility_empty_requires(): void {

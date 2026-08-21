@@ -17,7 +17,7 @@ use WP_Error;
 
 final class ApiClient {
 
-	public const DEFAULT_API_URL = 'http://localhost:3000/api/v1';
+	public const DEFAULT_API_URL = 'https://nextora-cloud-api.beplus-agency.cloud/api/v1';
 
 	public const CACHE_GROUP = 'nextora_cloud';
 

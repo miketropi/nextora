@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use Nextora\Core\Cloud\ApiClient;
 use Nextora\Core\Cloud\RestController;
 
 /**
@@ -85,6 +86,7 @@ function nextora_cloud_templates_enqueue_admin_assets( string $hook_suffix ): vo
 		'nextoraCloudData',
 		array(
 			'restUrl'      => esc_url_raw( rest_url( 'nextora/v1/cloud' ) ),
+			'cloudApiUrl'  => ApiClient::get_api_url(),
 			'nonce'        => wp_create_nonce( 'wp_rest' ),
 			'activeTheme'  => get_stylesheet(),
 			'parentTheme'  => get_template(),
@@ -120,6 +122,7 @@ function nextora_cloud_templates_editor_assets(): void {
 		'nextoraCloudEditorData',
 		array(
 			'restUrl'      => esc_url_raw( rest_url( 'nextora/v1/cloud' ) ),
+			'cloudApiUrl'  => ApiClient::get_api_url(),
 			'nonce'        => wp_create_nonce( 'wp_rest' ),
 			'activeTheme'  => get_stylesheet(),
 			'parentTheme'  => get_template(),
