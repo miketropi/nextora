@@ -105,14 +105,15 @@ function nextora_cloud_templates_enqueue_admin_assets( string $hook_suffix ): vo
 add_action( 'admin_enqueue_scripts', 'nextora_cloud_templates_enqueue_admin_assets' );
 
 /**
- * Localize Block Editor with Nextora Cloud config and permissions.
+ * Localize Block Editor with Nextora Cloud config and enqueue styles.
  */
 function nextora_cloud_templates_editor_assets(): void {
 	if ( ! current_user_can( 'edit_posts' ) ) {
 		return;
 	}
 
-	$handle = 'nextora-editor';
+	$handle   = 'nextora-editor';
+	$css_path = NEXTORA_DIR . '/assets/css/cloud-templates.css';
 
 	wp_localize_script(
 		$handle,
@@ -126,5 +127,14 @@ function nextora_cloud_templates_editor_assets(): void {
 			'isChildTheme' => get_stylesheet() !== get_template(),
 		),
 	);
+
+	if ( is_readable( $css_path ) ) {
+		wp_enqueue_style(
+			'nextora-cloud-templates-style',
+			NEXTORA_URI . '/assets/css/cloud-templates.css',
+			array(),
+			(string) filemtime( $css_path ),
+		);
+	}
 }
 add_action( 'enqueue_block_editor_assets', 'nextora_cloud_templates_editor_assets', 20 );
