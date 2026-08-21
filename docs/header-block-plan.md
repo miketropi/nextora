@@ -148,7 +148,7 @@ function mytheme_register_header_block() {
 }
 ```
 
-> `"multiple": false` — chỉ cho phép 1 Header block trên mỗi template.
+> `"multiple": false` — only allows 1 Header block per template.
 
 ---
 

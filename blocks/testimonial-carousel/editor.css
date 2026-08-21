@@ -86,48 +86,164 @@
 	background: color-mix(in srgb, currentColor 55%, transparent);
 }
 
-.nextora-testimonial-carousel__item-modal .components-modal__frame {
-	max-width: 640px;
-	width: calc(100vw - 2rem);
+/* ==========================================================================
+   Testimonial Item Modal — two-column layout
+   ========================================================================== */
+
+.nextora-testimonial-carousel-item-modal {
+	max-width: 720px !important;
+	width: 100%;
 }
 
-.nextora-testimonial-carousel__item-form {
+.nextora-testimonial-carousel-item-modal .components-modal__content {
+	padding: 0;
+}
+
+.nextora-testimonial-carousel-item-modal .components-modal__header {
+	padding: 1rem 1.25rem;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.nextora-testimonial-carousel-item-modal__content {
+	display: grid;
+	grid-template-columns: 220px 1fr;
+	gap: 0;
+}
+
+.nextora-testimonial-carousel-item-modal__image-col {
+	padding: 1.25rem;
+	border-right: 1px solid #e5e7eb;
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 0.75rem;
+	background: #f9fafb;
 }
 
-.nextora-testimonial-carousel__item-form-media {
+.nextora-testimonial-carousel-item-modal__media {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
-	align-items: flex-start;
+	gap: 0.5rem;
 }
 
-.nextora-testimonial-carousel__item-form-media-preview {
-	max-height: 80px;
-	width: auto;
-	border-radius: 50%;
+.nextora-testimonial-carousel-item-modal__media-preview {
+	width: 100%;
+	aspect-ratio: 4/3;
+	object-fit: cover;
+	border-radius: 6px;
+	border: 1px solid #ddd;
 }
 
-.nextora-testimonial-carousel__item-form-media-empty {
-	min-height: 80px;
-	padding: 1rem;
+.nextora-testimonial-carousel-item-modal__media-placeholder {
+	width: 100%;
+	aspect-ratio: 4/3;
+	border: 2px dashed #d1d5db;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: #6b7280;
 	font-size: 0.8125rem;
-	color: color-mix(in srgb, currentColor 55%, transparent);
-	background: color-mix(in srgb, currentColor 6%, transparent);
-	border-radius: 8px;
+	transition: border-color 0.15s ease, color 0.15s ease;
 }
 
-.nextora-testimonial-carousel__item-modal-footer {
+.nextora-testimonial-carousel-item-modal__media-placeholder:hover {
+	border-color: var(--wp--preset--color--primary, #7f4d3e);
+	color: var(--wp--preset--color--primary, #7f4d3e);
+}
+
+.nextora-testimonial-carousel-item-modal__media-actions {
 	display: flex;
-	justify-content: flex-end;
-	margin-top: 1.25rem;
-	padding-top: 1rem;
-	border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+	flex-wrap: wrap;
+	gap: 0.375rem;
+}
+
+.nextora-testimonial-carousel-item-modal__fields-col {
+	padding: 1.25rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.875rem;
+}
+
+.nextora-testimonial-carousel-item-modal__actions {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: flex-start;
+	padding: 0.875rem 1.25rem;
+	border-top: 1px solid #e5e7eb;
 }
 
 .nextora-testimonial-carousel__icon-custom svg {
 	width: var(--nextora-testimonial-icon-size, 20px);
 	height: var(--nextora-testimonial-icon-size, 20px);
+}
+
+/* Template 1 editor preview — horizontal slider strip */
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slides-editor--template-1 {
+	display: flex;
+	flex-direction: row;
+	gap: var(--nextora-testimonial-card-gap, 22px);
+	overflow-x: auto;
+	padding-bottom: 4px;
+	scrollbar-width: thin;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 {
+	flex: 0 0 auto;
+	min-width: min(320px, 90vw);
+	max-width: min(380px, 90vw);
+	padding: 28px;
+	border-radius: 20px;
+	text-align: left;
+	display: flex;
+	flex-direction: column;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-badge {
+	display: none;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-author {
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	margin-top: auto;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-author-photo {
+	width: 50px;
+	height: 50px;
+	flex-shrink: 0;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-rating {
+	justify-content: flex-start;
+	margin-bottom: 12px;
+}
+
+.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-quote {
+	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--base));
+	font-weight: 400;
+	line-height: 1.5;
+	margin-bottom: 22px;
+	flex: 1;
+}
+
+.nextora-testimonial-carousel--template-1 .nextora-testimonial-carousel__inner {
+	max-width: var(--nextora-testimonial-max-width, 1200px);
+}
+
+.nextora-testimonial-carousel__slide-author-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.nextora-testimonial-carousel__slide-author-text .nextora-testimonial-carousel__slide-author-name {
+	display: block;
+	font-size: 15.5px;
+	font-weight: 600;
+}
+
+.nextora-testimonial-carousel__slide-author-text .nextora-testimonial-carousel__slide-author-role {
+	font-size: 0.8125rem;
+	color: color-mix(in srgb, currentColor 65%, transparent);
 }

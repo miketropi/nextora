@@ -407,6 +407,7 @@ export default function CallToActionEdit({ attributes, setAttributes }) {
         {backgroundMode === 'colorMix' && (
           <>
             <PanelColorSettings
+              enableAlpha
               title={__('Color mix', 'nextora')}
               colorSettings={[
                 {

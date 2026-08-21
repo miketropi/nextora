@@ -18,6 +18,10 @@ if ( ! function_exists( 'nextora_contact_form_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
@@ -220,7 +224,7 @@ if ( $uses_recaptcha && '' !== $recaptcha_site_key && $source_post_id > 0 && fun
 	}
 }
 
-$tiptap_shell_class = 'nextora-tiptap-shell nextora-contact-form__tiptap-shell mb-0 max-w-none rounded-md border border-secondary/40 bg-base shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20';
+$tiptap_shell_class = 'nextora-tiptap-shell nextora-contact-form__tiptap-shell mb-0 max-w-none rounded-md border border-contrast/40 bg-base shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20';
 
 nextora_contact_form_enqueue_view_script();
 
@@ -231,13 +235,17 @@ if ( $rich_text_message && ! is_admin() ) {
 
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<?php
-	printf(
-		'<%1$s class="nextora-contact-form__heading">%2$s</%1$s>',
-		'h' . (string) $heading_level,
-		esc_html( $heading ),
-	);
+	if ( ! isset( $attributes['showHeading'] ) || (bool) $attributes['showHeading'] ) :
+		printf(
+			'<%1$s class="nextora-contact-form__heading">%2$s</%1$s>',
+			'h' . (string) $heading_level,
+			esc_html( $heading ),
+		);
+	endif;
 	?>
+	<?php if ( ! isset( $attributes['showDescription'] ) || (bool) $attributes['showDescription'] ) : ?>
 	<p class="nextora-contact-form__subheading"><?php echo esc_html( $subheading ); ?></p>
+	<?php endif; ?>
 
 	<div
 		class="nextora-contact-form__notice nextora-contact-form__notice--hidden"

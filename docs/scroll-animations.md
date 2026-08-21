@@ -6,6 +6,12 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 
 ## Animation classes
 
+The built-in utility inventory contains **19 classes**. The first 17 are handled by
+the GSAP scroll-animation scanner; parallax and the video-button ripple are
+additional utilities implemented outside the preset registry. Custom classes
+registered with `window.nextoraRegisterScrollAnimation` are not part of this
+built-in list.
+
 | Class | Effect |
 |-------|--------|
 | `animation-fade-in` | Fade in |
@@ -18,6 +24,138 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-fade-list-grid` | Each `ul > li` fades in up (`animation-fade-in-up`) when **that item** enters the viewport |
 | `animation-inner-fade` | Each **direct child** (`> p`, `> div`, `> h4`, …) fades in up when it enters the viewport |
 | `animation-parallax` | Vertical parallax while scrolling (use with `data-parallax-speed`) |
+| `animation-image-clip-reveal` | Image wipe reveal via `clip-path` (targets nested `img`, or the `img` itself) |
+| `animation-image-border-reveal` | Gradient border wipe around `img` — animated gradient runs around a 2px border at image edge |
+| `animation-text-reveal-words` | Split heading into words; stagger fade + slide in on scroll |
+| `animation-text-reveal-chars` | Split heading into characters; stagger fade + slide in on scroll |
+| `animation-text-reveal-chars-rise` | Characters rise in with perspective + `back.out` easing |
+| `animation-text-reveal-chars-scrub` | Characters brighten and slide in while scrolling (scrubbed) |
+| `animation-text-typewriter` | Character-by-character typewriter with blinking caret on scroll (inspired by [MiMo Code] hero subtitle) |
+| `animation-scroll-reveal` | Scrubbed container rotation + word opacity + optional blur — container tilts from a start angle to straight as you scroll, words fade/blur in (inspired by React Bits `ScrollReveal`) |
+| `animation-video-button-ripple` | Expanding concentric ripple for video play buttons (CSS-only, no scroll trigger) |
+
+### Implementation groups
+
+| Group | Classes |
+|-------|---------|
+| GSAP preset registry | `animation-fade-in`, `animation-fade-in-up`, `animation-fade-in-down`, `animation-fade-in-left`, `animation-fade-in-right`, `animation-zoom-in`, `animation-zoom-out`, `animation-fade-list-grid`, `animation-inner-fade` |
+| GSAP special handlers | `animation-image-clip-reveal`, `animation-image-border-reveal`, `animation-text-reveal-words`, `animation-text-reveal-chars`, `animation-text-reveal-chars-rise`, `animation-text-reveal-chars-scrub`, `animation-text-typewriter`, `animation-scroll-reveal` |
+| Parallax utility | `animation-parallax` (also activated by `data-parallax-speed`) |
+| CSS-only utility | `animation-video-button-ripple` |
+
+## Image & text reveal presets
+
+These map from legacy Elementor utility classes (`at-animation-*`) to theme-native names. Add the class on a **Heading**, **Image**, or **Group** block wrapper via **Advanced → Additional CSS class(es)**.
+
+| Class | Effect | Default timing |
+|-------|--------|----------------|
+| `animation-image-clip-reveal` | Horizontal clip-path wipe on `img` | `duration: 1.5`, `ease: power2.out`, trigger `top 90%` |
+| `animation-image-border-reveal` | Gradient border wipe + fade on `img` | `duration: 1.5`, `ease: power2.out`, trigger `top 90%` |
+| `animation-text-reveal-words` | Word stagger, slide from right | `duration: 1`, `delay: 0.5`, `stagger: 0.05`, `distance: 20` |
+| `animation-text-reveal-chars` | Character stagger, slide from right | `duration: 1`, `delay: 0.1`, `stagger: 0.03`, `distance: 20`, `ease: power2.out` |
+| `animation-text-reveal-chars-rise` | 3D-style character rise | `duration: 1`, `stagger: 0.02`, `distance: 50`, `ease: back.out(1.7)` |
+| `animation-text-reveal-chars-scrub` | Scroll-scrubbed character reveal | `duration: 0.7`, `stagger: 0.2`, scrub between `top 92%` → `top 60%` |
+| `animation-text-typewriter` | Typewriter print + caret | `delay: 0.35`, `stagger: 0.055` (seconds per character), trigger `top 85%` |
+| `animation-scroll-reveal` | Scrubbed rotation + word opacity + blur | Scrubbed, `start: "top bottom"` (rotation) / `"top bottom-=30%"` (words), `rotationEnd: "bottom bottom"`, `wordAnimationEnd: "bottom 65%"` |
+
+All presets honor `data-delay`, `data-duration`, `data-ease`, `data-stagger`, and `data-distance` when set on the same element.
+
+`animation-text-typewriter` uses `data-delay` as the pre-type pause (default `0.35`s) and `data-stagger` as per-character cadence in seconds (default `0.055` ≈ 55ms, matching MiMo). Text wraps naturally to the container width. On viewports ≤700px or when reduced motion is preferred, the full line is shown immediately.
+
+### Image clip reveal
+
+Put the class on an **Image** block or a **Group/Cover** wrapper that contains an `img`:
+
+```html
+<!-- wp:image {"className":"animation-image-clip-reveal"} -->
+<figure class="wp-block-image animation-image-clip-reveal">
+  <img src="…" alt="…" />
+</figure>
+<!-- /wp:image -->
+```
+
+### Image border reveal
+
+Put the class on an **Image** block or a **Group/Cover** wrapper that contains an `img`. A 3px dashed outline draws around the image at 14px distance as you scroll, with colors cycling between `--wp--preset--color--primary` → `--wp--preset--color--secondary` (falls back to coral/cyan). The outline uses CSS `outline-offset: 14px` and `@keyframes nextoraOutlineDash` (3s linear infinite) for the running-color effect.
+
+```html
+<!-- wp:image {"className":"animation-image-border-reveal"} -->
+<figure class="wp-block-image animation-image-border-reveal">
+  <img src="…" alt="…" />
+</figure>
+<!-- /wp:image -->
+```
+
+The outline naturally follows the image's `border-radius` in modern browsers (Chrome 94+, Safari 16+, Firefox 88+).
+
+### Text reveal (headings)
+
+Put the class on the **Heading** block (not a parent Group). Text is split into spans at runtime — no GSAP SplitText plugin required.
+
+```html
+<!-- wp:heading {"className":"animation-text-reveal-chars"} -->
+<h2 class="wp-block-heading animation-text-reveal-chars">Animated headline</h2>
+<!-- /wp:heading -->
+```
+
+For scrubbed text, use `animation-text-reveal-chars-scrub` on longer headlines where scroll-linked motion reads well.
+
+### Typewriter (paragraphs / subtitles)
+
+Put the class on a **Paragraph** or **Heading** block. Text prints left-to-right with a blinking caret when the block enters the viewport — same motion language as the [MiMo Code](https://mimo.xiaomi.com/coder) `.hero__subtitle`.
+
+```html
+<!-- wp:paragraph {"className":"animation-text-typewriter"} -->
+<p class="animation-text-typewriter" data-delay="0.35" data-stagger="0.055">
+  A next-generation AI coding assistant for developers.
+</p>
+<!-- /wp:paragraph -->
+```
+
+### Scroll reveal (headings)
+
+Put the class on a **Heading** block. The container rotates from a starting angle to 0deg as you scroll; words fade in from low opacity and optionally un-blur — all scrubbed to scroll position.
+
+```html
+<!-- wp:heading {"className":"animation-scroll-reveal"} -->
+<h2 class="wp-block-heading animation-scroll-reveal">When does a man die? When he is hit by a bullet? No!</h2>
+<!-- /wp:heading -->
+```
+
+**Data attributes** (all optional, add on the same Heading block):
+
+| Attribute | Default | Description |
+|-----------|---------|-------------|
+| `data-enable-blur` | `"true"` | Set to `"false"` to disable the blur effect |
+| `data-base-opacity` | `0.1` | Initial opacity of words before reveal |
+| `data-base-rotation` | `3` | Starting container rotation in degrees |
+| `data-blur-strength` | `4` | Blur strength in pixels at animation start |
+| `data-rotation-end` | `"bottom bottom"` | ScrollTrigger end point for container rotation |
+| `data-word-animation-end` | `"bottom 65%"` | ScrollTrigger end point for word opacity and blur |
+
+Example with custom values:
+
+```html
+<!-- wp:heading {"className":"animation-scroll-reveal"} -->
+<h2 class="wp-block-heading animation-scroll-reveal" data-base-opacity="0" data-base-rotation="5" data-blur-strength="10">
+  A man dies when he is forgotten!
+</h2>
+<!-- /wp:heading -->
+```
+
+Text is split into words at runtime (no GSAP SplitText plugin required). The animation honours `prefers-reduced-motion: reduce`.
+
+**Legacy class mapping**
+
+| Old (Elementor) | New (Nextora) |
+|-----------------|---------------|
+| `at-animation-image-style-1` | `animation-image-clip-reveal` |
+| `at-animation-heading-style-1` | `animation-text-reveal-words` |
+| `at-animation-heading-style-2` | `animation-text-reveal-chars` |
+| `at-animation-heading-style-3` | `animation-text-reveal-chars-rise` |
+| `at-animation-heading-style-4` | `animation-text-reveal-chars-scrub` |
+| `at-animation-typewriter` | `animation-text-typewriter` |
+
 
 ## Data attributes (optional)
 
@@ -75,6 +213,18 @@ Put the class on a wrapper (e.g. `entry-content`, post content Group). **Every d
 </div>
 ```
 
+### Video button ripple
+
+Put the class on any play-button element for an expanding concentric ripple:
+
+```html
+<div class="wp-block-group animation-video-button-ripple">
+  <!-- video play button markup -->
+</div>
+```
+
+Uses `::before` and `::after` pseudo-elements with staggered `animation-delay`. The animation runs as a pure CSS keyframe (no GSAP/ScrollTrigger). Ripple is disabled when `prefers-reduced-motion: reduce`.
+
 ### Staggered children (Group / Columns)
 
 Put the animation class on the **parent** and `data-stagger` — each direct child reveals in sequence:
@@ -97,6 +247,8 @@ Put the animation class on the **parent** and `data-stagger` — each direct chi
 
 Combine reveal + parallax on one wrapper when needed.
 
+**Theme blocks with built-in GSAP parallax:** `nextora/advanced-container` and `nextora/page-title` each have an **Enable parallax** toggle and a **Parallax speed** slider (0–1). When enabled, the block's background element moves with a smooth GSAP scrub-driven y-translate — no CSS `background-attachment: fixed` required. Both honour `prefers-reduced-motion: reduce`.
+
 ## HTML example (non-Gutenberg)
 
 ```html
@@ -110,13 +262,16 @@ Combine reveal + parallax on one wrapper when needed.
 
 ```text
 resources/ts/lib/scroll-animations/
-  constants.ts       # Defaults, class list, selectors
-  types.ts           # Shared TypeScript types
-  presets.ts         # Animation preset registry + registerScrollAnimationPreset()
-  parse-options.ts   # data-* parsing
-  helpers.ts         # GSAP wiring per element
-  scroll-animations.ts # scan, MutationObserver, boot
-  index.ts           # Public exports
+  constants.ts           # Defaults, class list, selectors
+  types.ts               # Shared TypeScript types
+  presets.ts             # Animation preset registry + registerScrollAnimationPreset()
+  parse-options.ts       # data-* parsing
+  split-text.ts          # DOM word/char splitter (no SplitText plugin)
+  special-animations.ts  # Image clip + text reveal handlers
+  typewriter-text.ts     # MiMo-style typewriter preset
+  helpers.ts             # GSAP wiring per element
+  scroll-animations.ts   # scan, MutationObserver, boot
+  index.ts               # Public exports
 
 resources/css/modules/components/scroll-animations.css  # FOUC guard
 resources/ts/main.ts                                    # initScrollAnimations()

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/vertical-showcase",
+  "title": "Vertical Showcase",
+  "category": "design",
+  "description": "A vertical list of services that crossfade into a large image, with autoplay and a progress indicator.",
+  "keywords": ["services", "showcase", "tabs", "list", "image", "nextora"],
+  "textdomain": "nextora",
+  "icon": "format-gallery",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": { "background": true, "text": false, "link": false },
+    "spacing": { "padding": true, "margin": true, "blockGap": true },
+    "typography": { "fontSize": true, "lineHeight": true }
+  },
+  "attributes": {
+    "items": {
+      "type": "array",
+      "default": [
+        { "id": "1", "title": "Web Design", "description": "Creating beautiful, functional, and user-centric digital experiences.", "imageId": 0, "imageUrl": "", "imageAlt": "", "showViewMore": true, "viewMoreText": "View More", "link": "#" },
+        { "id": "2", "title": "Framer Development", "description": "Building high-performance, animated websites with Framer.", "imageId": 0, "imageUrl": "", "imageAlt": "", "showViewMore": true, "viewMoreText": "View More", "link": "#" },
+        { "id": "3", "title": "Branding", "description": "Defining your brand's visual identity and voice for a lasting impression.", "imageId": 0, "imageUrl": "", "imageAlt": "", "showViewMore": true, "viewMoreText": "View More", "link": "#" }
+      ]
+    },
+    "autoplay": { "type": "boolean", "default": true },
+    "autoplayDuration": { "type": "number", "default": 5000 },
+    "titleSize": { "type": "string", "default": "medium-plus" },
+    "descriptionSize": { "type": "string", "default": "small" },
+    "showViewMore": { "type": "boolean", "default": true },
+    "showArrows": { "type": "boolean", "default": true },
+    "titleColor": { "type": "string", "default": "" },
+    "inactiveTitleColor": { "type": "string", "default": "" },
+    "descriptionColor": { "type": "string", "default": "" },
+    "numberColor": { "type": "string", "default": "" },
+    "activeIndicatorColor": { "type": "string", "default": "" },
+    "buttonColor": { "type": "string", "default": "" },
+    "enableScrollAnimation": { "type": "boolean", "default": true }
+  },
+  "editorScript": "file:./index.js",
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "render": "file:./render.php"
+}

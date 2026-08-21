@@ -44,7 +44,6 @@
 		text-decoration: none;
 		text-decoration-line: none;
 	}
-
 	/**
 	 * Plain native controls in theme/Elementor content (no block/widget skin):
 	 * matches theme.json `elements.button` so they align with Gutenberg buttons.
@@ -74,20 +73,6 @@
 		background-color: var(--wp--preset--color--primary, #4f46e5);
 		color: var(--wp--preset--color--base, #fafafa);
 		box-shadow: 0 1px 2px color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 8%, transparent);
-	}
-
-	:where(
-		.nextora-main button:not([class]):hover,
-		.nextora-main input[type="submit"]:not([class]):hover,
-		.nextora-main input[type="button"]:not([class]):hover,
-		.nextora-main input[type="reset"]:not([class]):hover,
-		.elementor-widget-html button:not([class]):hover,
-		.elementor-widget-html input[type="submit"]:not([class]):hover,
-		.elementor-widget-html input[type="button"]:not([class]):hover,
-		.elementor-widget-html input[type="reset"]:not([class]):hover
-	) {
-		background-color: var(--wp--preset--color--contrast, #0f172a);
-		color: var(--wp--preset--color--base, #fafafa);
 	}
 
 	:where(
@@ -135,4 +120,24 @@
 	) {
 		border-radius: 0.25rem;
 	}
+}
+
+/**
+ * Outline button hover fill.
+ * Unlayered so it overrides WP inline variant rules (both use :where() → 0 specificity,
+ * but inline styles are unlayered and beat @layer components).
+ */
+.wp-block-button.is-style-outline .wp-element-button:hover,
+.wp-block-button.is-style-outline .wp-block-button__link:hover,
+.wp-block-button.is-style-outline .wp-block-button__link:focus-visible {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--base);
+	border-color: transparent;
+}
+
+.wp-block-button.is-style-outline .wp-element-button:focus-visible {
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--base);
+	border-color: transparent;
+	outline-color: var(--wp--preset--color--primary);
 }

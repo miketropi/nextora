@@ -71,7 +71,7 @@
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-		color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 78%, transparent);
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 78%, transparent);
 	}
 
 	.nextora-spotlight__field-icon-slot {
@@ -109,7 +109,7 @@
 
 	.nextora-spotlight--loading .nextora-spotlight__field-icon-slot--loading {
 		display: flex;
-		color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 70%, transparent);
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 70%, transparent);
 	}
 
 	.nextora-spotlight:focus-within .nextora-spotlight__field-icon {
@@ -117,7 +117,7 @@
 	}
 
 	.nextora-spotlight--loading:focus-within .nextora-spotlight__field-icon {
-		color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 75%, transparent);
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 75%, transparent);
 	}
 
 	.nextora-spotlight__input {
@@ -133,7 +133,7 @@
 	}
 
 	.nextora-spotlight__input::placeholder {
-		color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 65%, transparent);
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 65%, transparent);
 	}
 
 	@keyframes nextora-spotlight-spin {
@@ -232,7 +232,7 @@
 		padding: 0;
 		border-radius: 0;
 		background: transparent;
-		color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 88%, transparent);
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 88%, transparent);
 	}
 
 	.nextora-spotlight__link--active .nextora-spotlight__thumb {
@@ -273,7 +273,7 @@
 		gap: 0.3rem;
 		font-size: 0.71875rem;
 		line-height: 1.35;
-		color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 88%, transparent);
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 88%, transparent);
 	}
 
 	.nextora-spotlight__type {
@@ -323,7 +323,7 @@
 		font-weight: 400;
 		line-height: 1.55;
 		letter-spacing: 0.01em;
-		color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 22%, var(--wp--preset--color--contrast, #0f172a));
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 22%, var(--wp--preset--color--contrast, #0f172a));
 	}
 
 	.nextora-spotlight__hint::before {
@@ -333,7 +333,7 @@
 		width: 0.875rem;
 		height: 0.875rem;
 		margin-inline-end: 0.4rem;
-		background-color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 48%, transparent);
+		background-color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 48%, transparent);
 		opacity: 0.55;
 		-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
 		mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
@@ -353,7 +353,7 @@
 		font-size: 0.78125rem;
 		line-height: 1.5;
 		font-weight: 400;
-		color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 82%, transparent);
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 82%, transparent);
 	}
 
 	.nextora-spotlight__kbd-hint {
@@ -365,13 +365,13 @@
 		font-weight: 400;
 		line-height: inherit;
 		letter-spacing: 0.012em;
-		color: color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 88%, transparent);
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 88%, transparent);
 		white-space: normal;
 	}
 
-	.nextora-spotlight__kbd-hint::before {
-		content: "\00a0· ";
-		opacity: 0.65;
+	.nextora-spotlight__kbd-hint {
+		display: block;
+		margin-top: 8px;
 	}
 
 	@media (prefers-reduced-motion: reduce) {

@@ -2,9 +2,9 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "nextora/blog-list-carousel",
-  "title": "Blog List Carousel",
+  "title": "Blog Posts",
   "category": "design",
-  "description": "A dynamic blog post carousel that pulls posts from WordPress and displays them in a Swiper.js card slider.",
+  "description": "Display blog posts in a carousel, grid, or list layout with customizable query and card settings.",
   "keywords": [
     "blog",
     "posts",
@@ -34,6 +34,30 @@
     }
   },
   "attributes": {
+    "cardTemplate": {
+      "type": "string",
+      "default": "default"
+    },
+    "layoutMode": {
+      "type": "string",
+      "default": "carousel"
+    },
+    "gridColumns": {
+      "type": "number",
+      "default": 3
+    },
+    "gridColumnGap": {
+      "type": "number",
+      "default": 24
+    },
+    "gridRowGap": {
+      "type": "number",
+      "default": 24
+    },
+    "gridMinWidth": {
+      "type": "number",
+      "default": 981
+    },
     "postType": {
       "type": "string",
       "default": "post"
@@ -82,46 +106,6 @@
       "type": "boolean",
       "default": true
     },
-    "headingText": {
-      "type": "string",
-      "default": "Latest Posts"
-    },
-    "headingLevel": {
-      "type": "number",
-      "default": 4
-    },
-    "showHeading": {
-      "type": "boolean",
-      "default": true
-    },
-    "descriptionText": {
-      "type": "string",
-      "default": "Explore our latest articles, tips, and stories from the blog."
-    },
-    "showViewAll": {
-      "type": "boolean",
-      "default": true
-    },
-    "viewAllText": {
-      "type": "string",
-      "default": "view all"
-    },
-    "viewAllUrl": {
-      "type": "string",
-      "default": ""
-    },
-    "viewAllStyle": {
-      "type": "string",
-      "default": "pill-outline"
-    },
-    "viewAllTarget": {
-      "type": "boolean",
-      "default": false
-    },
-    "headerLayout": {
-      "type": "string",
-      "default": "split"
-    },
     "showImage": {
       "type": "boolean",
       "default": true
@@ -138,9 +122,17 @@
       "type": "number",
       "default": 8
     },
+    "imageWidthPercent": {
+      "type": "number",
+      "default": 40
+    },
     "showTitle": {
       "type": "boolean",
       "default": true
+    },
+    "titleFontSize": {
+      "type": "string",
+      "default": ""
     },
     "titleLineClamp": {
       "type": "number",
@@ -246,31 +238,35 @@
       "type": "boolean",
       "default": true
     },
-    "backgroundColor": {
+    "cardTitleColor": {
       "type": "string",
       "default": ""
     },
-    "headingColor": {
+    "cardExcerptColor": {
       "type": "string",
       "default": ""
     },
-    "descriptionColor": {
+    "cardMetaColor": {
       "type": "string",
       "default": ""
     },
-    "titleColor": {
+    "cardBackgroundColor": {
       "type": "string",
       "default": ""
     },
-    "excerptColor": {
+    "cardBorderColor": {
       "type": "string",
       "default": ""
     },
-    "metaColor": {
-      "type": "string",
-      "default": ""
+    "cardBorderRadius": {
+      "type": "number",
+      "default": 0
     },
-    "viewAllColor": {
+    "cardPadding": {
+      "type": "number",
+      "default": 0
+    },
+    "readMoreLinkColor": {
       "type": "string",
       "default": ""
     },
@@ -282,25 +278,17 @@
       "type": "string",
       "default": ""
     },
-    "contentMaxWidth": {
-      "type": "string",
-      "default": "1200px"
-    },
-    "cardBorderRadius": {
-      "type": "number",
-      "default": 0
-    },
-    "cardBackground": {
+    "arrowColor": {
       "type": "string",
       "default": ""
-    },
-    "cardPadding": {
-      "type": "number",
-      "default": 0
     },
     "enableScrollAnimation": {
       "type": "boolean",
       "default": true
+    },
+    "scrollAnimationStyle": {
+      "type": "string",
+      "default": "default"
     }
   },
   "editorScript": "file:./index.js",

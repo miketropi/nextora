@@ -1,0 +1,845 @@
+import type { CSSProperties } from 'react';
+import { useMemo, useState } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import {
+	InspectorControls,
+	PanelColorSettings,
+	useBlockProps,
+} from '@wordpress/block-editor';
+import {
+	Button,
+	Modal,
+	PanelBody,
+	SelectControl,
+	RangeControl,
+	TextControl,
+	ToggleControl,
+} from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
+import type { EventAttributes, EventItem } from './types';
+import EventEditForm from './event-edit-form';
+import {
+	buildSectionStyleVars,
+	createDefaultEventItem,
+	normalizeEvents,
+	resolveImageUrl,
+} from './event-utils';
+import {
+	colorValueForPicker,
+	getMergedPaletteEntries,
+	normalizeColorForStorage,
+	useThemeColorPalette,
+} from '../advanced-icon/color-utils';
+import type { EventColorAttribute } from './types';
+
+interface EditProps {
+	attributes: EventAttributes;
+	setAttributes: (attrs: Partial<EventAttributes>) => void;
+}
+
+function DetailIcon({ type }: { type: 'map-pin' | 'clock' | 'ticket' }): JSX.Element {
+	if (type === 'map-pin') {
+		return (
+			<span className="nextora-event__detail-icon" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+					<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C10.539 20.193 5 14.993 5 10a7 7 0 1 1 14 0" />
+					<circle cx="12" cy="10" r="3" />
+				</svg>
+			</span>
+		);
+	}
+	if (type === 'clock') {
+		return (
+			<span className="nextora-event__detail-icon" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+					<circle cx="12" cy="12" r="10" />
+					<path d="M12 6v6l4 2" />
+				</svg>
+			</span>
+		);
+	}
+	return (
+		<span className="nextora-event__detail-icon" aria-hidden="true">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+				<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+				<path d="M13 5v2" />
+				<path d="M13 17v2" />
+				<path d="M13 11v2" />
+			</svg>
+		</span>
+	);
+}
+
+const ICONS = {
+	pencil:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>',
+	chevronUp:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>',
+	chevronDown:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+	trash:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
+	plus:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+};
+
+function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: string }): JSX.Element {
+	return (
+		<span
+			className={className}
+			dangerouslySetInnerHTML={{ __html: ICONS[name] }}
+			style={{ display: 'inline-flex', alignItems: 'center' }}
+		/>
+	);
+}
+
+function CalendarIcon(): JSX.Element {
+	return (
+		<span className="nextora-event__register-icon" aria-hidden="true">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+				<path d="M8 2v4" />
+				<path d="M16 2v4" />
+				<rect width="18" height="18" x="3" y="4" rx="2" />
+				<path d="M3 10h18" />
+				<path d="M8 14h.01" />
+				<path d="M12 14h.01" />
+				<path d="M16 14h.01" />
+				<path d="M8 18h.01" />
+				<path d="M12 18h.01" />
+				<path d="M16 18h.01" />
+			</svg>
+		</span>
+	);
+}
+
+function DetailRow({
+	icon,
+	children,
+}: {
+	icon: 'map-pin' | 'clock' | 'ticket';
+	children: string;
+}): JSX.Element | null {
+	if (!children) {
+		return null;
+	}
+	return (
+		<span className="nextora-event__detail">
+			<DetailIcon type={icon} />
+			{children}
+		</span>
+	);
+}
+
+export default function EventEdit({ attributes, setAttributes }: EditProps) {
+	const [editingEventId, setEditingEventId] = useState<string | null>(null);
+
+	const events = normalizeEvents(attributes.events);
+	const editingEvent = editingEventId
+		? events.find((event) => event.id === editingEventId)
+		: undefined;
+
+	const imageIds = events.map((event) => event.imageId).filter((id) => id > 0);
+
+	const mediaRecords = useSelect(
+		(select) => {
+			const { getMedia } = select('core') as {
+				getMedia: (id: number) => { source_url?: string } | undefined;
+			};
+			return imageIds.map((id) => getMedia(id));
+		},
+		[imageIds.join(',')],
+	);
+
+	const mediaUrlById = new Map<number, string>();
+	imageIds.forEach((id, index) => {
+		const url = mediaRecords[index]?.source_url;
+		if (url) {
+			mediaUrlById.set(id, url);
+		}
+	});
+
+	const {
+		template = 'default',
+		showRegisterButton = true,
+		registerButtonText = __('Register', 'nextora'),
+		cardBackgroundColor = '',
+		cardBorderColor = '',
+		dateBackgroundColor = '',
+		dateDayColor = '',
+		dateAccentColor = '',
+		titleColor = '',
+		metaColor = '',
+		metaIconColor = '',
+		registerBackgroundColor = '',
+		registerTextColor = '',
+		registerBorderColor = '',
+		registerHoverTextColor = '',
+		registerHoverBackgroundColor = '',
+		registerHoverBorderColor = '',
+		enableScrollAnimation = true,
+		autoplay = true,
+		autoplayDelay = 5000,
+		loop = true,
+		speed = 600,
+		showArrows = false,
+		showPagination = true,
+		slidesPerView = 3,
+		spaceBetween = 24,
+		tabletSlides = 2,
+		mobileSlides = 1,
+	} = attributes;
+
+	const isTemplate1 = template === 'template1';
+	const isTemplate2 = template === 'template2';
+	const isTemplate3 = template === 'template3';
+
+	const colorPalette = useThemeColorPalette();
+	const lookupPalette = getMergedPaletteEntries(colorPalette);
+
+	const blockProps = useBlockProps({
+		className: `nextora-event nextora-event--editor${isTemplate1 ? ' nextora-event--template1 nextora-event--template1-editor' : ''}${isTemplate2 ? ' nextora-event--template2 nextora-event--template2-editor' : ''}${isTemplate3 ? ' nextora-event--template3 nextora-event--template3-editor' : ''}`,
+		style: {
+			...buildSectionStyleVars({
+			cardBackgroundColor,
+			cardBorderColor,
+			dateBackgroundColor,
+			dateDayColor,
+			dateAccentColor,
+			titleColor,
+			metaColor,
+			metaIconColor,
+			registerBackgroundColor,
+			registerTextColor,
+			registerBorderColor,
+			registerHoverTextColor,
+			registerHoverBackgroundColor,
+			registerHoverBorderColor,
+		}) as CSSProperties,
+			...(isTemplate1 ? { '--nextora-event-editor-slides': String(slidesPerView), '--nextora-event-editor-gap': `${spaceBetween}px` } as CSSProperties : {}),
+		},
+	});
+
+	const setThemeColor = (key: EventColorAttribute, value: string | undefined): void => {
+		setAttributes({
+			[key]: normalizeColorForStorage(value, lookupPalette),
+		});
+	};
+
+	const colorSettings = useMemo(
+		() => [
+			{
+				value: colorValueForPicker(cardBackgroundColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('cardBackgroundColor', v),
+				label: __('Card background', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(cardBorderColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('cardBorderColor', v),
+				label: __('Card border', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(dateBackgroundColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('dateBackgroundColor', v),
+				label: __('Date badge background', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(dateDayColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('dateDayColor', v),
+				label: __('Date day number', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(dateAccentColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('dateAccentColor', v),
+				label: __('Date month label', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(titleColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('titleColor', v),
+				label: __('Event title', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(metaColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('metaColor', v),
+				label: __('Details text', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(metaIconColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('metaIconColor', v),
+				label: __('Details icons', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(registerBackgroundColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('registerBackgroundColor', v),
+				label: __('Register background', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(registerTextColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('registerTextColor', v),
+				label: __('Register text', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(registerBorderColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('registerBorderColor', v),
+				label: __('Register border', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(registerHoverTextColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('registerHoverTextColor', v),
+				label: __('Register hover text', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(registerHoverBackgroundColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) =>
+					setThemeColor('registerHoverBackgroundColor', v),
+				label: __('Register hover background', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(registerHoverBorderColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) =>
+					setThemeColor('registerHoverBorderColor', v),
+				label: __('Register hover border', 'nextora'),
+			},
+		],
+		[
+			colorPalette,
+			lookupPalette,
+			cardBackgroundColor,
+			cardBorderColor,
+			dateBackgroundColor,
+			dateDayColor,
+			dateAccentColor,
+			titleColor,
+			metaColor,
+			metaIconColor,
+			registerBackgroundColor,
+			registerTextColor,
+			registerBorderColor,
+			registerHoverTextColor,
+			registerHoverBackgroundColor,
+			registerHoverBorderColor,
+		],
+	);
+
+	const setEvents = (next: EventItem[]): void => {
+		setAttributes({ events: next });
+	};
+
+	const patchEvent = (id: string, patch: Partial<EventItem>): void => {
+		setEvents(events.map((event) => (event.id === id ? { ...event, ...patch } : event)));
+	};
+
+	const addEvent = (): void => {
+		const newEvent = createDefaultEventItem(registerButtonText || __('Register', 'nextora'), {
+			title: __('Community fundraiser', 'nextora'),
+			location: __('Main venue', 'nextora'),
+			price: __('Free', 'nextora'),
+		});
+		setEvents([...events, newEvent]);
+		setEditingEventId(newEvent.id);
+	};
+
+	const removeEvent = (id: string): void => {
+		if (events.length <= 1) {
+			return;
+		}
+		setEvents(events.filter((event) => event.id !== id));
+		if (editingEventId === id) {
+			setEditingEventId(null);
+		}
+	};
+
+	const moveEvent = (id: string, delta: number): void => {
+		const index = events.findIndex((event) => event.id === id);
+		const target = index + delta;
+		if (index < 0 || target < 0 || target >= events.length) {
+			return;
+		}
+		const next = [...events];
+		const tmp = next[index];
+		next[index] = next[target];
+		next[target] = tmp;
+		setEvents(next);
+	};
+
+	const openEventEditor = (id: string): void => {
+		setEditingEventId(id);
+	};
+
+	return (
+		<>
+			<InspectorControls>
+				<PanelBody title={__('Template', 'nextora')} initialOpen>
+					<SelectControl
+						label={__('Layout template', 'nextora')}
+						value={template as 'default' | 'template1' | 'template2' | 'template3'}
+						options={[
+							{ label: __('Default — List', 'nextora'), value: 'default' as const },
+							{ label: __('Template 1 — Slider', 'nextora'), value: 'template1' as const },
+							{ label: __('Template 2 — Event cards', 'nextora'), value: 'template2' as const },
+							{ label: __('Template 3 — Editorial list', 'nextora'), value: 'template3' as const },
+						]}
+						onChange={(value: string) => setAttributes({ template: value })}
+					/>
+				</PanelBody>
+
+				<PanelBody title={__('Events', 'nextora')} initialOpen>
+					{events.length === 0 && (
+						<p className="components-base-control__help" style={{ marginBottom: '8px' }}>
+							{__('No events yet. Click "Add event" to create one.', 'nextora')}
+						</p>
+					)}
+					{events.map((event, index) => {
+						const imageUrl = resolveImageUrl(event, mediaUrlById);
+						return (
+							<div
+								key={event.id}
+								style={{
+									display: 'flex',
+									alignItems: 'center',
+									gap: '6px',
+									marginBottom: '6px',
+									padding: '6px 8px',
+									background: '#f9f9f9',
+									border: '1px solid #ddd',
+									borderRadius: '4px',
+								}}
+							>
+								<div
+									style={{
+										flex: 1,
+										display: 'flex',
+										alignItems: 'center',
+										gap: '8px',
+										overflow: 'hidden',
+										minWidth: 0,
+									}}
+								>
+									{imageUrl ? (
+										<img
+											src={imageUrl}
+											alt=""
+											style={{
+												width: '32px',
+												height: '24px',
+												objectFit: 'cover',
+												borderRadius: '2px',
+												flexShrink: 0,
+											}}
+										/>
+									) : null}
+									<span
+										style={{
+											overflow: 'hidden',
+											textOverflow: 'ellipsis',
+											whiteSpace: 'nowrap',
+											fontSize: '12px',
+											lineHeight: '1.4',
+											fontWeight: 500,
+										}}
+									>
+										{event.title || sprintf(__('Event %d', 'nextora'), index + 1)}
+									</span>
+								</div>
+								<Button
+									icon={<InlineSvg name="pencil" />}
+									label={__('Edit', 'nextora')}
+									onClick={() => openEventEditor(event.id)}
+									isSmall
+								/>
+								<Button
+									icon={<InlineSvg name="chevronUp" />}
+									label={__('Move up', 'nextora')}
+									onClick={() => moveEvent(event.id, -1)}
+									disabled={index === 0}
+									isSmall
+								/>
+								<Button
+									icon={<InlineSvg name="chevronDown" />}
+									label={__('Move down', 'nextora')}
+									onClick={() => moveEvent(event.id, 1)}
+									disabled={index >= events.length - 1}
+									isSmall
+								/>
+								<Button
+									icon={<InlineSvg name="trash" />}
+									label={__('Remove', 'nextora')}
+									onClick={() => removeEvent(event.id)}
+									disabled={events.length <= 1}
+									isSmall
+									isDestructive
+								/>
+							</div>
+						);
+					})}
+					<Button
+						variant="secondary"
+						onClick={addEvent}
+						icon={<InlineSvg name="plus" />}
+						style={{ width: '100%', justifyContent: 'center', marginTop: events.length > 0 ? '4px' : '0' }}
+					>
+						{__('Add event', 'nextora')}
+					</Button>
+				</PanelBody>
+
+				<PanelBody title={__('Settings', 'nextora')} initialOpen={false}>
+					<ToggleControl
+						label={__('Show register button', 'nextora')}
+						checked={showRegisterButton !== false}
+						onChange={(value: boolean) => setAttributes({ showRegisterButton: value })}
+					/>
+					<TextControl
+						label={__('Default register label', 'nextora')}
+						value={registerButtonText}
+						onChange={(value: string) => setAttributes({ registerButtonText: value })}
+						help={__(
+							'Used when an event does not have its own register label.',
+							'nextora',
+						)}
+					/>
+				</PanelBody>
+
+				<PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />
+
+				{!isTemplate1 && !isTemplate2 && !isTemplate3 ? (
+					<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
+						<ToggleControl
+							label={__('Animate on scroll', 'nextora')}
+							help={__(
+								'Fade or move content in when it enters the viewport. Disabled automatically when the visitor prefers reduced motion.',
+								'nextora',
+							)}
+							checked={enableScrollAnimation !== false}
+							onChange={(value: boolean) => setAttributes({ enableScrollAnimation: value })}
+						/>
+					</PanelBody>
+				) : null}
+
+				{isTemplate1 || isTemplate2 ? (
+					<PanelBody title={__('Slider', 'nextora')} initialOpen={false}>
+						<ToggleControl
+							label={__('Autoplay', 'nextora')}
+							checked={autoplay !== false}
+							onChange={(value: boolean) => setAttributes({ autoplay: value })}
+						/>
+						{autoplay !== false ? (
+							<RangeControl
+								label={__('Autoplay delay (ms)', 'nextora')}
+								value={autoplayDelay}
+								onChange={(value: number | undefined) =>
+									setAttributes({ autoplayDelay: value ?? 5000 })
+								}
+								min={2000}
+								max={15000}
+								step={500}
+							/>
+						) : null}
+						<ToggleControl
+							label={__('Loop', 'nextora')}
+							checked={loop !== false}
+							onChange={(value: boolean) => setAttributes({ loop: value })}
+						/>
+						<RangeControl
+							label={__('Speed (ms)', 'nextora')}
+							value={speed}
+							onChange={(value: number | undefined) =>
+								setAttributes({ speed: value ?? 600 })
+							}
+							min={200}
+							max={2000}
+							step={100}
+						/>
+						<RangeControl
+							label={__('Slides per view', 'nextora')}
+							value={slidesPerView}
+							onChange={(value: number | undefined) =>
+								setAttributes({ slidesPerView: value ?? 3 })
+							}
+							min={1}
+							max={6}
+							step={0.1}
+							help={__('Desktop columns.', 'nextora')}
+						/>
+						<RangeControl
+							label={__('Tablet slides', 'nextora')}
+							value={tabletSlides}
+							onChange={(value: number | undefined) =>
+								setAttributes({ tabletSlides: value ?? 2 })
+							}
+							min={1}
+							max={4}
+							step={0.1}
+						/>
+						<RangeControl
+							label={__('Mobile slides', 'nextora')}
+							value={mobileSlides}
+							onChange={(value: number | undefined) =>
+								setAttributes({ mobileSlides: value ?? 1 })
+							}
+							min={1}
+							max={2}
+							step={0.1}
+						/>
+						<RangeControl
+							label={__('Space between (px)', 'nextora')}
+							value={spaceBetween}
+							onChange={(value: number | undefined) =>
+								setAttributes({ spaceBetween: value ?? 24 })
+							}
+							min={0}
+							max={60}
+							step={4}
+						/>
+						<ToggleControl
+							label={__('Show pagination', 'nextora')}
+							checked={showPagination !== false}
+							onChange={(value: boolean) => setAttributes({ showPagination: value })}
+						/>
+						<ToggleControl
+							label={__('Show arrows', 'nextora')}
+							checked={showArrows === true}
+							onChange={(value: boolean) => setAttributes({ showArrows: value })}
+						/>
+					</PanelBody>
+				) : null}
+			</InspectorControls>
+
+			{editingEvent ? (
+				<Modal
+					className="nextora-event__event-modal"
+					title={
+						editingEvent.title
+							? sprintf(__('Edit event: %s', 'nextora'), editingEvent.title)
+							: __('Edit event', 'nextora')
+					}
+					onRequestClose={() => setEditingEventId(null)}
+					shouldCloseOnClickOutside={false}
+					headerActions={
+						<div className="nextora-event__event-modal-header-actions">
+							<Button
+								size="compact"
+								variant="primary"
+								onClick={() => setEditingEventId(null)}
+							>
+								{__('Done', 'nextora')}
+							</Button>
+						</div>
+					}
+				>
+						<EventEditForm
+							event={editingEvent}
+							imageUrl={resolveImageUrl(editingEvent, mediaUrlById)}
+							showEditorialFields={isTemplate3}
+							onPatch={(patch) => patchEvent(editingEvent.id, patch)}
+					/>
+				</Modal>
+			) : null}
+
+			<div {...blockProps}>
+				<div className="nextora-event__inner">
+					{isTemplate1 ? (
+						<div className="swiper nextora-event__swiper">
+							<div className="swiper-wrapper">
+								{events.map((event) => {
+									const imageUrl = resolveImageUrl(event, mediaUrlById);
+									const registerLabel =
+										event.registerLabel.trim() !== ''
+											? event.registerLabel
+											: registerButtonText || __('Register', 'nextora');
+									const displayDay = event.day.trim() !== '' ? event.day : '01';
+									const displayMonth =
+										event.month.trim() !== '' ? event.month : __('Jan', 'nextora');
+									const displayLocation =
+										event.location.trim() !== '' ? event.location : __('Main venue', 'nextora');
+									const displayTime =
+										event.time.trim() !== '' ? event.time : __('10:00 AM', 'nextora');
+									const displayPrice =
+										event.price.trim() !== '' ? event.price : __('Free', 'nextora');
+
+									return (
+										<div key={event.id} className="swiper-slide">
+											<article className="nextora-event__card nextora-event__card--editable">
+												<button
+													type="button"
+													className="nextora-event__item-edit"
+													onClick={() => openEventEditor(event.id)}
+												>
+													{__('Edit event', 'nextora')}
+												</button>
+
+												<div className="nextora-event__card-thumb">
+													<div className="nextora-event__date">
+														<b className="nextora-event__date-day">{displayDay}</b>
+														<span className="nextora-event__date-month">{displayMonth}</span>
+													</div>
+													{imageUrl ? (
+														<img
+															src={imageUrl}
+															alt=""
+															className={`nextora-event__thumb-img${event.imageId === 0 && !event.imageUrl
+																	? ' nextora-event__thumb-img--placeholder'
+																	: ''
+																}`}
+														/>
+													) : null}
+												</div>
+
+												<div className="nextora-event__card-info">
+													<h3 className="nextora-event__title">
+														{event.title || __('Community fundraiser', 'nextora')}
+													</h3>
+													<div className="nextora-event__details">
+														<DetailRow icon="map-pin">{displayLocation}</DetailRow>
+														<DetailRow icon="clock">{displayTime}</DetailRow>
+														<DetailRow icon="ticket">{displayPrice}</DetailRow>
+													</div>
+
+													{showRegisterButton ? (
+														<span className="nextora-event__register-card nextora-event__register-card--static">
+															<CalendarIcon />
+															{registerLabel}
+														</span>
+													) : null}
+												</div>
+											</article>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+					) : isTemplate2 ? (
+						<div className="nextora-event__carousel-root">
+						<div className="swiper nextora-event__swiper">
+						<div className="swiper-wrapper">
+							{events.map((event) => {
+								const imageUrl = resolveImageUrl(event, mediaUrlById);
+								const registerLabel = event.registerLabel.trim() || registerButtonText || __('Register', 'nextora');
+								return (
+									<div key={event.id} className="swiper-slide">
+										<article className="nextora-event__template2-card nextora-event__template2-card--editable">
+											<button type="button" className="nextora-event__item-edit" onClick={() => openEventEditor(event.id)}>
+												{__('Edit event', 'nextora')}
+											</button>
+											<div className="nextora-event__template2-media">
+												{imageUrl ? <img src={imageUrl} alt="" className="nextora-event__thumb-img" /> : null}
+												<div className="nextora-event__template2-date"><b>{event.day || '01'}</b><span>{event.month || __('Jan', 'nextora')}</span></div>
+														{showRegisterButton && event.linkUrl.trim() !== '' ? <span className="nextora-event__template2-register nextora-event__template2-register--static">{registerLabel}<span className="nextora-event__register-icon" aria-hidden="true">→</span></span> : null}
+											</div>
+											<div className="nextora-event__template2-content">
+												<h3 className="nextora-event__template2-title">{event.title || __('Community fundraiser', 'nextora')}</h3>
+												<div className="nextora-event__template2-details">
+													<DetailRow icon="clock">{event.time || __('10:00 AM', 'nextora')}</DetailRow>
+													<DetailRow icon="map-pin">{event.location || __('Main venue', 'nextora')}</DetailRow>
+												</div>
+											</div>
+										</article>
+									</div>
+								);
+							})}
+						</div>
+						</div>
+						</div>
+					) : isTemplate3 ? (
+						<div className="nextora-event__template3-list" aria-label={__('Events', 'nextora')}>
+							{events.map((event) => (
+								<article key={event.id} className="nextora-event__template3-item nextora-event__template3-item--editable">
+									<button type="button" className="nextora-event__item-edit" onClick={() => openEventEditor(event.id)}>
+										{__('Edit event', 'nextora')}
+									</button>
+									<div className="nextora-event__template3-date-frame"><div className="nextora-event__template3-date"><span>{event.month || __('Jan', 'nextora')}</span><b>{event.day || '01'}</b><small>{__('Day', 'nextora')}</small></div></div>
+									<div className="nextora-event__template3-content">
+										<div className="nextora-event__template3-category">{event.category || __('Upcoming event', 'nextora')}</div>
+										<h3 className="nextora-event__template3-title">{event.title || __('Community fundraiser', 'nextora')}</h3>
+										<div className="nextora-event__template3-meta"><DetailRow icon="clock">{event.time || __('Time TBC', 'nextora')}</DetailRow><DetailRow icon="map-pin">{event.location || __('Location TBC', 'nextora')}</DetailRow></div>
+										{event.description ? <p className="nextora-event__template3-description">{event.description}</p> : null}
+									</div>
+									<div className="nextora-event__template3-media">{resolveImageUrl(event, mediaUrlById) ? <img src={resolveImageUrl(event, mediaUrlById)} alt="" /> : null}</div>
+								</article>
+							))}
+						</div>
+					) : (
+						<ul className="nextora-event__list" aria-label={__('Events', 'nextora')}>
+							{events.map((event) => {
+								const imageUrl = resolveImageUrl(event, mediaUrlById);
+								const registerLabel =
+									event.registerLabel.trim() !== ''
+										? event.registerLabel
+										: registerButtonText || __('Register', 'nextora');
+								const displayDay = event.day.trim() !== '' ? event.day : '01';
+								const displayMonth =
+									event.month.trim() !== '' ? event.month : __('Jan', 'nextora');
+								const displayLocation =
+									event.location.trim() !== '' ? event.location : __('Main venue', 'nextora');
+								const displayTime =
+									event.time.trim() !== '' ? event.time : __('10:00 AM', 'nextora');
+								const displayPrice =
+									event.price.trim() !== '' ? event.price : __('Free', 'nextora');
+
+								return (
+									<li key={event.id} className="nextora-event__item-wrap">
+										<article className="nextora-event__item nextora-event__item--editable">
+											<button
+												type="button"
+												className="nextora-event__item-edit"
+												onClick={() => openEventEditor(event.id)}
+											>
+												{__('Edit event', 'nextora')}
+											</button>
+
+											<div className="nextora-event__date">
+												<b className="nextora-event__date-day">{displayDay}</b>
+												<span className="nextora-event__date-month">{displayMonth}</span>
+											</div>
+
+											<div className="nextora-event__thumb">
+												{imageUrl ? (
+													<img
+														src={imageUrl}
+														alt=""
+														className={`nextora-event__thumb-img${event.imageId === 0 && !event.imageUrl
+																? ' nextora-event__thumb-img--placeholder'
+																: ''
+															}`}
+													/>
+												) : null}
+											</div>
+
+											<div className="nextora-event__info">
+												<h3 className="nextora-event__title">
+													{event.title || __('Community fundraiser', 'nextora')}
+												</h3>
+												<div className="nextora-event__details">
+													<DetailRow icon="map-pin">{displayLocation}</DetailRow>
+													<DetailRow icon="clock">{displayTime}</DetailRow>
+													<DetailRow icon="ticket">{displayPrice}</DetailRow>
+												</div>
+											</div>
+
+											{showRegisterButton ? (
+												<span className="nextora-event__register nextora-event__register--static">
+													{registerLabel}
+													<span
+														className="nextora-event__register-icon"
+														aria-hidden="true"
+													>
+														<svg
+															viewBox="0 0 24 24"
+															fill="none"
+															stroke="currentColor"
+															strokeWidth="2"
+														>
+															<path d="M5 12h14M13 6l6 6-6 6" />
+														</svg>
+													</span>
+												</span>
+											) : null}
+										</article>
+									</li>
+								);
+							})}
+						</ul>
+					)}
+				</div>
+			</div>
+		</>
+	);
+}

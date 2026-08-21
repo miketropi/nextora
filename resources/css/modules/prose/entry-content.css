@@ -81,12 +81,12 @@
 			display: block;
 			font-size: 0.875em;
 			font-style: normal;
-			color: var(--wp--preset--color--secondary, #64748b);
+			color: var(--wp--preset--color--paragraph, #64748b);
 		}
 
 		& :where(hr) {
 			border: 0;
-			border-block-start: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 45%, transparent);
+			border-block-start: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 45%, transparent);
 			margin-block: clamp(1.75rem, 4vw, 2.5rem);
 		}
 
@@ -126,7 +126,7 @@
 			);
 			font-size: 0.85em;
 			padding: 0.1em 0.35em;
-			border: 1px solid var(--wp--preset--color--secondary, #64748b);
+			border: 1px solid var(--wp--preset--color--paragraph, #64748b);
 			border-radius: 0.25rem;
 			background: var(--wp--preset--color--surface, #f1f5f9);
 		}
@@ -182,7 +182,7 @@
 		& :where(address) {
 			margin-block: 1em;
 			font-style: normal;
-			color: var(--wp--preset--color--secondary, #64748b);
+			color: var(--wp--preset--color--paragraph, #64748b);
 		}
 
 		& :where(figure) {
@@ -194,7 +194,7 @@
 			margin-block-start: 0.55em;
 			font-size: 0.875em;
 			line-height: 1.5;
-			color: var(--wp--preset--color--secondary, #64748b);
+			color: var(--wp--preset--color--paragraph, #64748b);
 		}
 
 		& :where(table) {
@@ -205,7 +205,7 @@
 		}
 
 		& :where(th, td) {
-			border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 55%, transparent);
+			border-color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 55%, transparent);
 			padding: 0.55em 0.7em;
 			text-align: start;
 			vertical-align: top;
@@ -248,7 +248,7 @@
 				monospace
 			);
 			font-size: 0.9em;
-			border: 1px solid color-mix(in srgb, var(--wp--preset--color--secondary, #64748b) 22%, transparent);
+			border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 22%, transparent);
 		}
 
 		& :where(img) {

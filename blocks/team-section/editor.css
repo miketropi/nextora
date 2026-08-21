@@ -14,53 +14,26 @@
 	-webkit-overflow-scrolling: touch;
 }
 
+/* Grid preview in editor */
+.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__members-row {
+	display: grid;
+	grid-template-columns: repeat(var(--nextora-team-grid-columns, 4), 1fr);
+	gap: 1.5rem;
+	overflow-x: visible;
+}
+
+.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__card {
+	flex: initial;
+	max-width: none;
+}
+
 .nextora-team-section--editor .nextora-team-section__card {
-	flex: 0 0 min(280px, 85vw);
-	max-width: min(280px, 85vw);
+	flex: 0 0 min(260px, 85vw);
+	max-width: min(260px, 85vw);
 }
 
 .nextora-team-section--editor .nextora-team-section__card-photo--empty {
 	min-height: 0;
-}
-
-.nextora-team-section__inspector-member {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	padding-bottom: 12px;
-	margin-bottom: 12px;
-	border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
-}
-
-.nextora-team-section__inspector-members-help {
-	margin: 0 0 12px;
-	font-size: 12px;
-	line-height: 1.45;
-	color: color-mix(in srgb, currentColor 65%, transparent);
-}
-
-.nextora-team-section__inspector-member-summary {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-}
-
-.nextora-team-section__inspector-member-name {
-	margin: 0;
-	font-size: 13px;
-	font-weight: 600;
-}
-
-.nextora-team-section__inspector-member-role {
-	margin: 0;
-	font-size: 12px;
-	color: color-mix(in srgb, currentColor 60%, transparent);
-}
-
-.nextora-team-section__inspector-member-actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
 }
 
 .nextora-team-section--editor .nextora-team-section__card--editable {
@@ -90,9 +63,46 @@
 	outline-offset: 1px;
 }
 
-.nextora-team-section__member-modal .components-modal__frame {
-	max-width: 720px;
-	width: calc(100vw - 2rem);
+/* Image fill full in editor */
+.nextora-team-section--editor .nextora-team-section__card-photo img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+/* Default grid layout for members row */
+.nextora-team-section--editor .nextora-team-section__members-row {
+	display: grid;
+	grid-template-columns: repeat(var(--nextora-team-grid-columns, 4), 1fr);
+	column-gap: var(--nextora-team-grid-column-gap, 1.5rem);
+	row-gap: var(--nextora-team-grid-row-gap, 1.5rem);
+}
+
+/* Carousel mode - show slidesPerView columns */
+.nextora-team-section--editor.nextora-team-section--layout-carousel .nextora-team-section__members-row {
+	gap: var(--nextora-team-space-between, 1.5rem);
+	scroll-snap-type: x proximity;
+	display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Grid layout editor */
+.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__members-row {
+	display: grid;
+	grid-template-columns: repeat(var(--nextora-team-grid-columns, 4), 1fr);
+	column-gap: var(--nextora-team-grid-column-gap, 1.5rem);
+	row-gap: var(--nextora-team-grid-row-gap, 1.5rem);
+}
+
+.components-modal__frame.nextora-team-section__member-modal,
+.nextora-team-section__member-modal.components-modal__frame {
+	max-width: 960px !important;
+	width: min(960px, calc(100vw - 2rem)) !important;
 }
 
 .nextora-team-section__member-form {
@@ -112,7 +122,63 @@
 .nextora-team-section__member-form-section {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 14px;
+}
+
+.nextora-team-section__member-form-section-heading {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: var(--wp-components-color-foreground, #1e1e1e);
+}
+
+.nextora-team-section__member-form-section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.nextora-team-section__member-form-section-header .nextora-team-section__member-form-section-heading {
+	margin: 0;
+}
+
+.nextora-team-section__member-form-items {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.nextora-team-section__member-form-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: flex-end;
+	padding: 10px;
+	background: color-mix(in srgb, currentColor 4%, transparent);
+	border: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+	border-radius: 6px;
+}
+
+.nextora-team-section__member-form-social {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 12px;
+	background: color-mix(in srgb, currentColor 4%, transparent);
+	border: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+	border-radius: 6px;
+}
+
+.nextora-team-section__member-form-row .components-base-control,
+.nextora-team-section__member-form-social .components-base-control {
+	flex: 1;
+	min-width: 160px;
+}
+
+.nextora-team-section__member-form-social .components-base-control:last-of-type {
+	margin-bottom: 0;
 }
 
 .nextora-team-section__member-form-media {
@@ -121,26 +187,43 @@
 	gap: 8px;
 }
 
+.nextora-team-section__member-form-media-preview-wrap {
+	aspect-ratio: 3 / 4;
+	overflow: hidden;
+	border-radius: 10px;
+	border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
 .nextora-team-section__member-form-media-preview {
 	display: block;
-	width: auto;
-	max-width: 100%;
-	max-height: 220px;
-	object-fit: contain;
-	border-radius: 8px;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .nextora-team-section__member-form-media-empty {
 	display: flex;
+	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	min-height: 140px;
+	gap: 8px;
+	aspect-ratio: 3 / 4;
 	padding: 1rem;
 	font-size: 0.8125rem;
 	text-align: center;
-	color: color-mix(in srgb, currentColor 55%, transparent);
-	background: color-mix(in srgb, currentColor 6%, transparent);
-	border-radius: 8px;
+	color: color-mix(in srgb, currentColor 50%, transparent);
+	background: color-mix(in srgb, currentColor 5%, transparent);
+	border: 2px dashed color-mix(in srgb, currentColor 15%, transparent);
+	border-radius: 10px;
+}
+
+.nextora-team-section__member-form-media-empty-icon::before {
+	content: "+";
+	display: block;
+	font-size: 28px;
+	font-weight: 300;
+	line-height: 1;
+	color: color-mix(in srgb, currentColor 35%, transparent);
 }
 
 .nextora-team-section__member-form-media-actions {
@@ -150,31 +233,86 @@
 	align-items: center;
 }
 
-.nextora-team-section__member-form-row,
-.nextora-team-section__member-form-social {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	align-items: flex-end;
-	padding-bottom: 8px;
-	border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+/* Modal header — Done button sits between title and close (X) */
+.nextora-team-section__member-modal .components-modal__header {
+	flex-wrap: nowrap;
+	gap: 12px;
 }
 
-.nextora-team-section__member-form-row .components-base-control,
-.nextora-team-section__member-form-social .components-base-control {
-	flex: 1;
-	min-width: 160px;
+.nextora-team-section__member-modal .components-modal__header-heading-container {
+	flex: 1 1 auto;
+	min-width: 0;
 }
 
-.nextora-team-section__member-modal-footer {
-	display: flex;
-	justify-content: flex-end;
-	margin-top: 1.25rem;
-	padding-top: 1rem;
-	border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+.nextora-team-section__member-modal .components-modal__header-heading {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
-.nextora-team-section__inspector-member:last-child {
-	border-bottom: none;
-	margin-bottom: 0;
+.nextora-team-section__inspector-subheading {
+	margin: 1rem 0 0.5rem;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--wp--preset--color--contrast, inherit);
+}
+
+/* Overlay social template editor preview */
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card {
+	text-align: center;
+	border: none;
+	background: transparent;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card:hover {
+	transform: none;
+	box-shadow: none;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-photo {
+	aspect-ratio: var(--nextora-team-photo-aspect, 3/4);
+	margin-bottom: 1.125rem;
+	border-radius: 20px;
+}
+
+.nextora-team-section--editor .nextora-team-section__card-photo {
+	aspect-ratio: var(--nextora-team-photo-aspect, 4/3);
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-body {
+	padding: 0;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-name {
+	font-size: var(--wp--preset--font-size--medium, 1.25rem);
+    font-weight: 700;
+    margin: 0 0 .5rem;
+    line-height: 1.2;
+	color: var(--nextora-team-name-color, var(--wp--preset--color--contrast, #0a0a0a));
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-role {
+    color: var(--nextora-team-role-color, var(--wp--preset--color--secondary, #FF6B5B));
+    font-size: var(--wp--preset--font-size--small, 1rem);
+    margin: 0 !important;
+    line-height: 1.4;
+}
+
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-tags,
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-bio,
+.nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-social {
+	display: none;
+}
+
+/* Responsive grid breakpoint for editor */
+@media (max-width: 980px) {
+	.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__members-row {
+		display: flex;
+		overflow-x: auto;
+	}
+
+	.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__card {
+		flex: 0 0 min(280px, 85vw);
+		max-width: min(280px, 85vw);
+	}
 }

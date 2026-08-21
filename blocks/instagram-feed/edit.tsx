@@ -4,8 +4,6 @@ import { __, sprintf } from '@wordpress/i18n';
 import {
 	InspectorControls,
 	PanelColorSettings,
-	RichText,
-	URLInput,
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
@@ -35,34 +33,11 @@ interface EditProps {
 	setAttributes: (attrs: Partial<InstagramFeedAttributes>) => void;
 }
 
-const headerLayoutOptions = [
-	{ label: __('Split (heading left, button right)', 'nextora'), value: 'split' },
-	{ label: __('Stacked (centered)', 'nextora'), value: 'stacked' },
-	{ label: __('Left aligned', 'nextora'), value: 'left-aligned' },
-];
-
-const buttonStyleOptions = [
-	{ label: __('Outline', 'nextora'), value: 'outline' },
-	{ label: __('Solid', 'nextora'), value: 'solid' },
-	{ label: __('Link', 'nextora'), value: 'link' },
-];
-
 const paginationTypeOptions = [
 	{ label: __('Bullets', 'nextora'), value: 'bullets' },
 	{ label: __('Fraction', 'nextora'), value: 'fraction' },
 	{ label: __('Progress bar', 'nextora'), value: 'progressbar' },
 ];
-
-const HEADING_LEVELS = [
-	{ label: 'H1', value: '1' },
-	{ label: 'H2', value: '2' },
-	{ label: 'H3', value: '3' },
-	{ label: 'H4', value: '4' },
-];
-
-function clampHeading(level: number): number {
-	return Math.max(1, Math.min(6, level));
-}
 
 export default function InstagramFeedEdit({ attributes, setAttributes }: EditProps) {
 	const [editingPostId, setEditingPostId] = useState<string | null>(null);
@@ -91,19 +66,7 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 	});
 
 	const {
-		eyebrowText = '',
-		handleText = '',
-		handleLevel = 4,
-		headerLayout = 'split',
 		contentMaxWidth = '1200px',
-		showButton = true,
-		buttonText = '',
-		buttonUrl = '',
-		buttonTarget = true,
-		buttonStyle = 'outline',
-		buttonBorderColor = '',
-		buttonTextColor = '',
-		buttonBorderRadius = 50,
 		tileBorderRadius = 8,
 		tileBackground = '',
 		showTileOverlay = false,
@@ -127,8 +90,6 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 		lightboxLinkText = '',
 		lightboxHandleOverride = '',
 		backgroundColor = '',
-		eyebrowColor = '',
-		handleColor = '',
 		tileOverlayColor = '',
 		paginationColor = '',
 		paginationActiveColor = '',
@@ -140,12 +101,7 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 		contentMaxWidth,
 		tileBorderRadius,
 		spaceBetween,
-		buttonBorderRadius,
 		backgroundColor,
-		eyebrowColor,
-		handleColor,
-		buttonTextColor,
-		buttonBorderColor,
 		tileBackground,
 		tileOverlayColor,
 		paginationColor,
@@ -154,7 +110,7 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 	});
 
 	const blockProps = useBlockProps({
-		className: `nextora-instagram-feed nextora-instagram-feed--editor nextora-instagram-feed--header-${headerLayout}`,
+		className: 'nextora-instagram-feed nextora-instagram-feed--editor',
 		style: styleVars as CSSProperties,
 	});
 
@@ -215,8 +171,6 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 		setPosts(next);
 	};
 
-	const headingTag = `h${clampHeading(handleLevel)}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-
 	return (
 		<>
 			<InspectorControls>
@@ -273,72 +227,12 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 					</Button>
 				</PanelBody>
 
-				<PanelBody title={__('Header layout', 'nextora')} initialOpen={false}>
-					<SelectControl
-						label={__('Layout', 'nextora')}
-						value={headerLayout}
-						options={headerLayoutOptions}
-						onChange={(v) =>
-							setAttributes({
-								headerLayout: (v as InstagramFeedAttributes['headerLayout']) ?? 'split',
-							})
-						}
-					/>
-					<SelectControl
-						label={__('Handle heading level', 'nextora')}
-						value={String(handleLevel)}
-						options={HEADING_LEVELS}
-						onChange={(v) => setAttributes({ handleLevel: parseInt(v, 10) || 4 })}
-					/>
+				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
 					<TextControl
 						label={__('Content max width', 'nextora')}
 						value={contentMaxWidth}
 						onChange={(v) => setAttributes({ contentMaxWidth: v ?? '1200px' })}
 					/>
-				</PanelBody>
-
-				<PanelBody title={__('Follow button', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Show button', 'nextora')}
-						checked={showButton}
-						onChange={(v) => setAttributes({ showButton: v })}
-					/>
-					{showButton && (
-						<>
-							<TextControl
-								label={__('Button text', 'nextora')}
-								value={buttonText}
-								onChange={(v) => setAttributes({ buttonText: v ?? '' })}
-							/>
-							<p className="components-base-control__label">{__('Button URL', 'nextora')}</p>
-							<URLInput value={buttonUrl} onChange={(v) => setAttributes({ buttonUrl: v ?? '' })} />
-							<ToggleControl
-								label={__('Open in new tab', 'nextora')}
-								checked={buttonTarget}
-								onChange={(v) => setAttributes({ buttonTarget: v })}
-							/>
-							<SelectControl
-								label={__('Button style', 'nextora')}
-								value={buttonStyle}
-								options={buttonStyleOptions}
-								onChange={(v) =>
-									setAttributes({
-										buttonStyle: (v as InstagramFeedAttributes['buttonStyle']) ?? 'outline',
-									})
-								}
-							/>
-							<RangeControl
-								label={__('Border radius (px)', 'nextora')}
-								value={buttonBorderRadius}
-								onChange={(v) => setAttributes({ buttonBorderRadius: v ?? 50 })}
-								min={0}
-								max={50}
-							/>
-						</>
-					)}
-				</PanelBody>
-
-				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
 					<RangeControl
 						label={__('Tile border radius (px)', 'nextora')}
 						value={tileBorderRadius}
@@ -483,39 +377,20 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 								label={__('Sidebar handle override', 'nextora')}
 								value={lightboxHandleOverride}
 								onChange={(v) => setAttributes({ lightboxHandleOverride: v ?? '' })}
-								help={__('Leave empty to use the section handle.', 'nextora')}
+								help={__('Leave empty to use the default handle.', 'nextora')}
 							/>
 						</>
 					)}
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
 							value: backgroundColor,
 							onChange: (v) => setAttributes({ backgroundColor: v ?? '' }),
 							label: __('Background', 'nextora'),
-						},
-						{
-							value: eyebrowColor,
-							onChange: (v) => setAttributes({ eyebrowColor: v ?? '' }),
-							label: __('Eyebrow', 'nextora'),
-						},
-						{
-							value: handleColor,
-							onChange: (v) => setAttributes({ handleColor: v ?? '' }),
-							label: __('Handle', 'nextora'),
-						},
-						{
-							value: buttonTextColor,
-							onChange: (v) => setAttributes({ buttonTextColor: v ?? '' }),
-							label: __('Button text', 'nextora'),
-						},
-						{
-							value: buttonBorderColor,
-							onChange: (v) => setAttributes({ buttonBorderColor: v ?? '' }),
-							label: __('Button border', 'nextora'),
 						},
 						{
 							value: tileBackground,
@@ -584,38 +459,6 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 
 			<div {...blockProps}>
 				<div className="nextora-instagram-feed__inner">
-					<header
-						className={`nextora-instagram-feed__header nextora-instagram-feed__header--${headerLayout}`}
-					>
-						<div className="nextora-instagram-feed__header-copy">
-							<RichText
-								tagName="p"
-								className="nextora-instagram-feed__eyebrow"
-								value={eyebrowText}
-								onChange={(v) => setAttributes({ eyebrowText: v })}
-								placeholder={__('Follow us on Instagram', 'nextora')}
-								allowedFormats={[]}
-							/>
-							<RichText
-								tagName={headingTag}
-								className="nextora-instagram-feed__handle"
-								value={handleText}
-								onChange={(v) => setAttributes({ handleText: v })}
-								placeholder="@yourbrand"
-								allowedFormats={[]}
-							/>
-						</div>
-						{showButton && (
-							<div className="nextora-instagram-feed__header-cta">
-								<span
-									className={`nextora-instagram-feed__btn nextora-instagram-feed__btn--${buttonStyle}`}
-								>
-									{buttonText || __('Follow on Instagram', 'nextora')}
-								</span>
-							</div>
-						)}
-					</header>
-
 					<div className="nextora-instagram-feed__tiles-row" aria-label={__('Instagram posts', 'nextora')}>
 						{posts.map((post, index) => {
 							const mediaUrl = resolveMediaUrl(post, mediaUrlById);

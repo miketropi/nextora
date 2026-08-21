@@ -20,6 +20,9 @@ if ( ! function_exists( 'nextora_ig_sanitize_slide_bg' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;

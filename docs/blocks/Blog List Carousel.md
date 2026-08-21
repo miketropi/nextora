@@ -398,7 +398,7 @@ $show_category    = ! isset( $attributes['showCategory'] ) || (bool) $attributes
 $show_author      = isset( $attributes['showAuthor'] ) && (bool) $attributes['showAuthor'];
 $show_read_more   = isset( $attributes['showReadMore'] ) && (bool) $attributes['showReadMore'];
 $read_more_text   = isset( $attributes['readMoreText'] ) && is_string( $attributes['readMoreText'] )
-    ? esc_html( trim( $attributes['readMoreText'] ) ) : esc_html__( 'Read More →', 'nextora' );
+    ? esc_html( trim( $attributes['readMoreText'] ) ) : esc_html__( 'Read More', 'nextora' );
 $card_link_behavior = isset( $attributes['cardLinkBehavior'] ) && is_string( $attributes['cardLinkBehavior'] )
     ? $attributes['cardLinkBehavior'] : 'full-card';
 $valid_link_behaviors = array( 'full-card', 'title-only', 'read-more' );
@@ -490,9 +490,9 @@ $css_vars = array(
     '--nextora-blc-max-width'      => $content_max,
     '--nextora-blc-heading-color'  => '' !== $heading_color ? $heading_color : 'var(--wp--preset--color--contrast, #1A1A2E)',
     '--nextora-blc-title-color'    => '' !== $title_color ? $title_color : 'var(--wp--preset--color--contrast, #1A1A2E)',
-    '--nextora-blc-excerpt-color'  => '' !== $excerpt_color ? $excerpt_color : 'var(--wp--preset--color--secondary, #6B7280)',
-    '--nextora-blc-meta-color'     => '' !== $meta_color ? $meta_color : 'var(--wp--preset--color--secondary, #9CA3AF)',
-    '--nextora-blc-viewall-color'  => '' !== $view_all_color ? $view_all_color : 'var(--wp--preset--color--secondary, #6B7280)',
+    '--nextora-blc-excerpt-color'  => '' !== $excerpt_color ? $excerpt_color : 'var(--wp--preset--color--paragraph, #6B7280)',
+    '--nextora-blc-meta-color'     => '' !== $meta_color ? $meta_color : 'var(--wp--preset--color--paragraph, #9CA3AF)',
+    '--nextora-blc-viewall-color'  => '' !== $view_all_color ? $view_all_color : 'var(--wp--preset--color--paragraph, #6B7280)',
     '--nextora-blc-dot-color'      => '' !== $dot_color ? $dot_color : 'color-mix(in srgb, currentColor 35%, transparent)',
     '--nextora-blc-dot-active'     => '' !== $dot_active ? $dot_active : 'var(--wp--preset--color--primary, currentColor)',
     '--nextora-blc-img-radius'     => $img_radius . 'px',
@@ -790,7 +790,7 @@ echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -
             --nextora-blc-max-width: 1200px;
             --nextora-blc-heading-color: var(--wp--preset--color--contrast, #1A1A2E);
             --nextora-blc-title-color: var(--wp--preset--color--contrast, #1A1A2E);
-            --nextora-blc-excerpt-color: var(--wp--preset--color--secondary, #6B7280);
+            --nextora-blc-excerpt-color: var(--wp--preset--color--paragraph, #6B7280);
             ...">
 
   <div class="nextora-blc__inner">
@@ -866,9 +866,9 @@ echo $output; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -
 | `--nextora-blc-max-width` | `1200px` | Content max width |
 | `--nextora-blc-heading-color` | `var(--wp--preset--color--contrast, #1A1A2E)` | Heading color |
 | `--nextora-blc-title-color` | `var(--wp--preset--color--contrast, #1A1A2E)` | Card title color |
-| `--nextora-blc-excerpt-color` | `var(--wp--preset--color--secondary, #6B7280)` | Excerpt color |
-| `--nextora-blc-meta-color` | `var(--wp--preset--color--secondary, #9CA3AF)` | Date / category color |
-| `--nextora-blc-viewall-color` | `var(--wp--preset--color--secondary, #6B7280)` | View all button color |
+| `--nextora-blc-excerpt-color` | `var(--wp--preset--color--paragraph, #6B7280)` | Excerpt color |
+| `--nextora-blc-meta-color` | `var(--wp--preset--color--paragraph, #9CA3AF)` | Date / category color |
+| `--nextora-blc-viewall-color` | `var(--wp--preset--color--paragraph, #6B7280)` | View all button color |
 | `--nextora-blc-dot-color` | `color-mix(in srgb, currentColor 35%, transparent)` | Inactive dot |
 | `--nextora-blc-dot-active` | `var(--wp--preset--color--primary, currentColor)` | Active dot |
 | `--nextora-blc-img-radius` | `8px` | Image corner radius |
@@ -941,11 +941,11 @@ Naming convention: `--nextora-blc-{name}` (consistent with `--nextora-testimonia
   padding: 8px 20px;
   border: 1px solid var(--nextora-blc-viewall-color, currentColor);
   border-radius: 50px;
-  color: var(--nextora-blc-viewall-color, var(--wp--preset--color--secondary, #6B7280));
+  color: var(--nextora-blc-viewall-color, var(--wp--preset--color--paragraph, #6B7280));
   transition: background 0.2s, color 0.2s;
 }
 .nextora-blc__viewall--pill-outline:hover {
-  background: var(--nextora-blc-viewall-color, var(--wp--preset--color--secondary, #6B7280));
+  background: var(--nextora-blc-viewall-color, var(--wp--preset--color--paragraph, #6B7280));
   color: #fff;
 }
 
@@ -953,20 +953,20 @@ Naming convention: `--nextora-blc-{name}` (consistent with `--nextora-testimonia
   padding: 8px 20px;
   border: none;
   border-radius: 50px;
-  background: var(--nextora-blc-viewall-color, var(--wp--preset--color--secondary, #6B7280));
+  background: var(--nextora-blc-viewall-color, var(--wp--preset--color--paragraph, #6B7280));
   color: #fff;
   transition: opacity 0.2s;
 }
 .nextora-blc__viewall--pill-solid:hover { opacity: 0.85; }
 
 .nextora-blc__viewall--text-link {
-  color: var(--nextora-blc-viewall-color, var(--wp--preset--color--secondary, #6B7280));
+  color: var(--nextora-blc-viewall-color, var(--wp--preset--color--paragraph, #6B7280));
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .nextora-blc__viewall--arrow-link {
-  color: var(--nextora-blc-viewall-color, var(--wp--preset--color--secondary, #6B7280));
+  color: var(--nextora-blc-viewall-color, var(--wp--preset--color--paragraph, #6B7280));
 }
 .nextora-blc__viewall--arrow-link svg { transition: transform 0.2s; }
 .nextora-blc__viewall--arrow-link:hover svg { transform: translateX(3px); }
@@ -1056,7 +1056,7 @@ Naming convention: `--nextora-blc-{name}` (consistent with `--nextora-testimonia
 .nextora-blc__card-excerpt {
   font-size: 14px;
   line-height: 1.6;
-  color: var(--nextora-blc-excerpt-color, var(--wp--preset--color--secondary, #6B7280));
+  color: var(--nextora-blc-excerpt-color, var(--wp--preset--color--paragraph, #6B7280));
   margin: 0 0 14px;
   display: -webkit-box;
   -webkit-line-clamp: var(--nextora-blc-excerpt-clamp, 3);
@@ -1074,7 +1074,7 @@ Naming convention: `--nextora-blc-{name}` (consistent with `--nextora-testimonia
 }
 .nextora-blc__card-date {
   font-size: 12px;
-  color: var(--nextora-blc-meta-color, var(--wp--preset--color--secondary, #9CA3AF));
+  color: var(--nextora-blc-meta-color, var(--wp--preset--color--paragraph, #9CA3AF));
 }
 .nextora-blc__card-divider {
   width: 3px;
@@ -1085,7 +1085,7 @@ Naming convention: `--nextora-blc-{name}` (consistent with `--nextora-testimonia
 }
 .nextora-blc__card-cat {
   font-size: 11px;
-  color: var(--nextora-blc-meta-color, var(--wp--preset--color--secondary, #9CA3AF));
+  color: var(--nextora-blc-meta-color, var(--wp--preset--color--paragraph, #9CA3AF));
   background: color-mix(in srgb, currentColor 8%, transparent);
   padding: 2px 8px;
   border-radius: 4px;
@@ -1093,7 +1093,7 @@ Naming convention: `--nextora-blc-{name}` (consistent with `--nextora-testimonia
 }
 .nextora-blc__card-author {
   font-size: 12px;
-  color: var(--nextora-blc-meta-color, var(--wp--preset--color--secondary, #9CA3AF));
+  color: var(--nextora-blc-meta-color, var(--wp--preset--color--paragraph, #9CA3AF));
 }
 
 /* Read more */
@@ -1154,7 +1154,7 @@ Naming convention: `--nextora-blc-{name}` (consistent with `--nextora-testimonia
 .nextora-blc__empty {
   text-align: center;
   padding: 40px 24px;
-  color: var(--wp--preset--color--secondary, #6B7280);
+  color: var(--wp--preset--color--paragraph, #6B7280);
   font-size: 14px;
 }
 
@@ -1676,7 +1676,7 @@ All user-facing strings use the `nextora` text domain:
 - `__('Read: %s', 'nextora')`
 - `__('Previous posts', 'nextora')` / `__('Next posts', 'nextora')`
 - `__('view all', 'nextora')`
-- `__('Read More →', 'nextora')`
+- `__('Read More', 'nextora')`
 - `__('No image', 'nextora')`
 - Editor labels and help text: `__('Animate on scroll', 'nextora')`
 

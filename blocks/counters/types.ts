@@ -9,7 +9,10 @@ export interface CounterItem {
 export interface CountersAttributes {
 	items: CounterItem[];
 	columns: number;
+	columnsTablet: number;
+	columnsMobile: number;
 	columnGap: string;
+	numberLabelGap: string;
 	divider: boolean;
 	dividerColor: string;
 	textAlign: string;
@@ -20,4 +23,6 @@ export interface CountersAttributes {
 	labelColor: string;
 	numberFontSize: string;
 	labelFontSize: string;
+	numberFontFamily: string;
+	labelFontFamily: string;
 }

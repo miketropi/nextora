@@ -6,6 +6,8 @@ export type TestimonialArrowPosition = 'below-dots' | 'sides';
 
 export type TestimonialTrustPosition = 'below-quote' | 'above-dots' | 'bottom';
 
+export type TestimonialTemplateStyle = 'default' | 'template-1';
+
 export type TestimonialAvatarFallback = 'initials' | 'icon' | 'none';
 
 export interface TrustAvatar {
@@ -29,6 +31,11 @@ export interface TestimonialItem {
 }
 
 export interface TestimonialCarouselAttributes {
+	templateStyle: TestimonialTemplateStyle;
+	itemsPerViewDesktop: number;
+	itemsPerViewTablet: number;
+	itemsPerViewMobile: number;
+	cardGap: number;
 	testimonials: TestimonialItem[];
 	showTopIcon: boolean;
 	topIconType: TestimonialIconType;
@@ -64,6 +71,8 @@ export interface TestimonialCarouselAttributes {
 	arrowColor: string;
 	arrowBorderColor: string;
 	quoteColor: string;
+	quoteFontFamily: string;
+	quoteFontSize: string;
 	labelColor: string;
 	authorColor: string;
 	authorNameColor: string;

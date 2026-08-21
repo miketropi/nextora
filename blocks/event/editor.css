@@ -1,0 +1,277 @@
+/**
+ * Events block — editor-only styles.
+ */
+
+@import './style.css';
+
+.wp-block-nextora-event.nextora-event--editor,
+.nextora-event--editor {
+	padding: 0;
+	margin: 0;
+}
+
+.nextora-event--editor .nextora-event__inner {
+	padding: 0;
+}
+
+/* Editor card — edit control floats above register column */
+.nextora-event--editor .nextora-event__item--editable {
+	position: relative;
+	padding-top: 2rem;
+}
+
+.nextora-event--editor .nextora-event__item-edit {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 3;
+	padding: 0.3125rem 0.75rem;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	line-height: 1.3;
+	color: inherit;
+	background: var(--wp--preset--color--base, #fff);
+	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+	border-radius: 999px;
+	cursor: pointer;
+	box-shadow: 0 1px 4px rgb(from var(--wp--preset--color--contrast, #000) r g b / 0.08);
+}
+
+.nextora-event--editor .nextora-event__item-edit:hover,
+.nextora-event--editor .nextora-event__item-edit:focus-visible {
+	background: var(--wp--preset--color--surface, #f4f4f4);
+	outline: 2px solid var(--wp-admin-theme-color, #3858e9);
+	outline-offset: 1px;
+}
+
+.nextora-event--editor .nextora-event__item:hover {
+	transform: none;
+}
+
+.nextora-event--editor .nextora-event__register {
+	margin-top: 0.25rem;
+}
+
+.nextora-event--template1-editor .nextora-event__card .nextora-event__register {
+	margin-top: auto;
+}
+
+/* Modal */
+.nextora-event__event-modal .components-modal__frame {
+	max-width: 720px;
+	width: calc(100vw - 2rem);
+}
+
+.nextora-event__event-modal .components-modal__header-heading {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.nextora-event__event-modal-header-actions {
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
+	gap: 8px;
+	margin-inline-end: 8px;
+}
+
+.nextora-event__event-form {
+	display: grid;
+	gap: 1.25rem;
+}
+
+@media (min-width: 600px) {
+	.nextora-event__event-form {
+		grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+		align-items: start;
+	}
+}
+
+.nextora-event__event-form-label {
+	margin: 0;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 1.4;
+	text-transform: uppercase;
+	color: color-mix(in srgb, currentColor 72%, transparent);
+}
+
+.nextora-event__event-form-media,
+.nextora-event__event-form-fields {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.nextora-event__event-form-row {
+	display: grid;
+	gap: 12px;
+}
+
+.nextora-event__event-form-row--datetime {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.nextora-event__event-form-row--split {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.nextora-event__event-form-link {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding-top: 4px;
+}
+
+.nextora-event__native-input {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	padding: 8px 10px;
+	font-size: 14px;
+	line-height: 1.4;
+	color: inherit;
+	background: var(--wp--preset--color--base, #fff);
+	border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+.nextora-event__native-input:focus {
+	border-color: var(--wp-admin-theme-color, #3858e9);
+	outline: 2px solid transparent;
+	box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #3858e9);
+}
+
+.nextora-event__event-form-media-inner {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.nextora-event__event-form-media-preview {
+	display: block;
+	width: 100%;
+	max-height: 220px;
+	object-fit: cover;
+	border-radius: 8px;
+}
+
+.nextora-event__event-form-media-empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 140px;
+	padding: 1rem;
+	font-size: 0.8125rem;
+	text-align: center;
+	color: color-mix(in srgb, currentColor 55%, transparent);
+	background: color-mix(in srgb, currentColor 6%, transparent);
+	border-radius: 8px;
+}
+
+.nextora-event__event-form-media-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+@media (max-width: 520px) {
+	.nextora-event__event-form-row--datetime,
+	.nextora-event__event-form-row--split {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 55rem) {
+	.nextora-event--editor .nextora-event__item--editable {
+		padding-top: 2.25rem;
+	}
+}
+
+/* ========================================================================
+   Template 1 — Editor preview (scrollable carousel)
+   ======================================================================== */
+
+.nextora-event--template1-editor .nextora-event__inner,
+.nextora-event--template2-editor .nextora-event__inner {
+	padding: 0;
+}
+
+.nextora-event--template1-editor .nextora-event__swiper,
+.nextora-event--template2-editor .nextora-event__swiper {
+	overflow: visible;
+}
+
+.nextora-event--template1-editor .swiper-wrapper,
+.nextora-event--template2-editor .swiper-wrapper {
+	display: flex !important;
+	flex-direction: row !important;
+	transform: none !important;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-snap-type: x mandatory;
+	-webkit-overflow-scrolling: touch;
+	gap: var(--nextora-event-editor-gap, 24px);
+	padding-bottom: 0.5rem;
+}
+
+.nextora-event--template1-editor .swiper-slide,
+.nextora-event--template2-editor .swiper-slide {
+	flex-shrink: 0;
+	scroll-snap-align: start;
+	width: calc((100% - (var(--nextora-event-editor-gap, 24px) * (var(--nextora-event-editor-slides, 3) - 1))) / var(--nextora-event-editor-slides, 3));
+}
+
+.nextora-event--template1-editor .nextora-event__card:hover,
+.nextora-event--template2-editor .nextora-event__template2-card:hover {
+	transform: none;
+	box-shadow: none;
+}
+
+.nextora-event--template1-editor .nextora-event--loading .nextora-event__card,
+.nextora-event--template2-editor .nextora-event--loading .nextora-event__template2-card {
+	opacity: 1;
+}
+
+.nextora-event--template1-editor .nextora-event__card-thumb .nextora-event__thumb-img,
+.nextora-event--template2-editor .nextora-event__template2-media .nextora-event__thumb-img {
+	width: 100% !important;
+	height: 100% !important;
+	max-width: none;
+	object-fit: cover;
+}
+
+/* Template 3 editor preview uses the same hierarchy as the frontend without
+ * inheriting card/list editor rules from the other templates. */
+.nextora-event--template3-editor .nextora-event__template3-item {
+	position: relative;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-title {
+	margin: 0;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-description {
+	margin-bottom: 0;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-meta {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-media {
+	overflow: hidden;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-media img,
+.nextora-event--template3-editor .nextora-event__template3-media .nextora-event__thumb-img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	object-fit: cover;
+}

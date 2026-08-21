@@ -1,0 +1,121 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/event",
+  "title": "Events",
+  "category": "design",
+  "description": "Upcoming events list with date badge, thumbnail, location, time, price, and register link.",
+  "keywords": ["event", "events", "fundraiser", "list", "calendar", "nextora"],
+  "textdomain": "nextora",
+  "icon": "calendar",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    }
+  },
+  "attributes": {
+    "template": { "type": "string", "default": "default" },
+    "events": {
+      "type": "array",
+      "default": [
+        {
+          "id": "1",
+          "day": "14",
+          "month": "Jul",
+          "category": "Community",
+          "title": "Run for the Children — Charity 10K",
+          "description": "A practical day of movement and community support for children in need.",
+          "location": "Riverside Park",
+          "time": "7:00 AM",
+          "price": "From $25",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": "",
+          "linkUrl": "",
+          "linkTarget": "_self",
+          "registerLabel": "Register"
+        },
+        {
+          "id": "2",
+          "day": "02",
+          "month": "Aug",
+          "category": "Community",
+          "title": "Haven Open Day — Visit a home",
+          "description": "Meet the team, tour the space, and learn how neighbours can get involved.",
+          "location": "Greenfield House",
+          "time": "10:00 AM",
+          "price": "Free",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": "",
+          "linkUrl": "",
+          "linkTarget": "_self",
+          "registerLabel": "Register"
+        },
+        {
+          "id": "3",
+          "day": "20",
+          "month": "Sep",
+          "category": "Fundraising",
+          "title": "A Night for Haven — Charity Gala Dinner",
+          "description": "An evening of connection and giving to help create a safer future for every family.",
+          "location": "Grand Hall",
+          "time": "6:30 PM",
+          "price": "From $120",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": "",
+          "linkUrl": "",
+          "linkTarget": "_self",
+          "registerLabel": "Register"
+        }
+      ]
+    },
+    "showRegisterButton": { "type": "boolean", "default": true },
+    "registerButtonText": { "type": "string", "default": "Register" },
+    "cardBackgroundColor": { "type": "string", "default": "" },
+    "cardBorderColor": { "type": "string", "default": "" },
+    "dateBackgroundColor": { "type": "string", "default": "" },
+    "dateDayColor": { "type": "string", "default": "" },
+    "dateAccentColor": { "type": "string", "default": "" },
+    "titleColor": { "type": "string", "default": "" },
+    "metaColor": { "type": "string", "default": "" },
+    "metaIconColor": { "type": "string", "default": "" },
+    "registerTextColor": { "type": "string", "default": "" },
+    "registerBackgroundColor": { "type": "string", "default": "" },
+    "registerBorderColor": { "type": "string", "default": "" },
+    "registerHoverTextColor": { "type": "string", "default": "" },
+    "registerHoverBackgroundColor": { "type": "string", "default": "" },
+    "registerHoverBorderColor": { "type": "string", "default": "" },
+    "enableScrollAnimation": { "type": "boolean", "default": true },
+    "autoplay": { "type": "boolean", "default": true },
+    "autoplayDelay": { "type": "number", "default": 5000 },
+    "loop": { "type": "boolean", "default": true },
+    "speed": { "type": "number", "default": 600 },
+    "showArrows": { "type": "boolean", "default": false },
+    "showPagination": { "type": "boolean", "default": true },
+    "slidesPerView": { "type": "number", "default": 3 },
+    "spaceBetween": { "type": "number", "default": 24 },
+    "tabletSlides": { "type": "number", "default": 2 },
+    "mobileSlides": { "type": "number", "default": 1 }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "style": "file:./style.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

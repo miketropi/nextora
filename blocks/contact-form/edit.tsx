@@ -108,6 +108,8 @@ export default function ContactFormEdit({ attributes, setAttributes }: EditProps
 		messageLabel = '',
 		messagePlaceholder = '',
 		enableRichTextMessage = true,
+		showHeading = true,
+		showDescription = true,
 		enableScrollAnimation = true,
 		enableRecaptcha = false,
 		recaptchaSiteKey = '',
@@ -144,13 +146,25 @@ export default function ContactFormEdit({ attributes, setAttributes }: EditProps
 		<>
 			<InspectorControls>
 				<PanelBody title={__('Content', 'nextora')} initialOpen>
-					<SelectControl
-						label={__('Heading level', 'nextora')}
-						value={String(level)}
-						options={HEADING_LEVELS}
-						onChange={(value) =>
-							setAttributes({ headingLevel: parseInt(value ?? '4', 10) || 4 })
-						}
+					<ToggleControl
+						label={__('Show heading', 'nextora')}
+						checked={showHeading !== false}
+						onChange={(value: boolean) => setAttributes({ showHeading: value })}
+					/>
+					{showHeading !== false ? (
+						<SelectControl
+							label={__('Heading level', 'nextora')}
+							value={String(level)}
+							options={HEADING_LEVELS}
+							onChange={(value) =>
+								setAttributes({ headingLevel: parseInt(value ?? '4', 10) || 4 })
+							}
+						/>
+					) : null}
+					<ToggleControl
+						label={__('Show description', 'nextora')}
+						checked={showDescription !== false}
+						onChange={(value: boolean) => setAttributes({ showDescription: value })}
 					/>
 					<ToggleControl
 						label={__('Show phone field', 'nextora')}
@@ -197,6 +211,7 @@ export default function ContactFormEdit({ attributes, setAttributes }: EditProps
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
@@ -265,25 +280,29 @@ export default function ContactFormEdit({ attributes, setAttributes }: EditProps
 			</InspectorControls>
 
 			<div {...blockProps}>
-				<RichText
-					tagName={HeadingTag}
-					className="nextora-contact-form__heading"
-					value={heading}
-					onChange={(value: string) => setAttributes({ heading: value })}
-					placeholder={__('Get In Touch', 'nextora')}
-					allowedFormats={[]}
-				/>
-				<RichText
-					tagName="p"
-					className="nextora-contact-form__subheading"
-					value={subheading}
-					onChange={(value: string) => setAttributes({ subheading: value })}
-					placeholder={__(
-						"We'd love to hear from you! If you have any questions",
-						'nextora',
-					)}
-					allowedFormats={[]}
-				/>
+				{showHeading !== false ? (
+					<RichText
+						tagName={HeadingTag}
+						className="nextora-contact-form__heading"
+						value={heading}
+						onChange={(value: string) => setAttributes({ heading: value })}
+						placeholder={__('Get In Touch', 'nextora')}
+						allowedFormats={[]}
+					/>
+				) : null}
+				{showDescription !== false ? (
+					<RichText
+						tagName="p"
+						className="nextora-contact-form__subheading"
+						value={subheading}
+						onChange={(value: string) => setAttributes({ subheading: value })}
+						placeholder={__(
+							"We'd love to hear from you! If you have any questions",
+							'nextora',
+						)}
+						allowedFormats={[]}
+					/>
+				) : null}
 
 				<div
 					className="nextora-contact-form__notice nextora-contact-form__notice--hidden"

@@ -6,8 +6,10 @@ import {
   MediaUpload,
   MediaUploadCheck,
   URLInput,
+	__experimentalSpacingSizesControl as SpacingSizesControl,
+  __experimentalBorderRadiusControl as BorderRadiusControl,
 } from '@wordpress/block-editor';
-import { useMemo } from '@wordpress/element';
+import { useMemo, useState, useEffect } from '@wordpress/element';
 import {
   Disabled,
   PanelBody,
@@ -22,6 +24,8 @@ import {
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import ServerSideRender from '@wordpress/server-side-render';
+import { IconPicker } from '../advanced-icon/icon-picker';
+import { LucideSvgPreview } from '../advanced-icon/lucide-preview';
 import metadata from './block.json';
 
 const DEFAULT_FOLLOW_US_SOCIALS = [
@@ -54,6 +58,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     menuId,
     menuLocation,
     menuDepth,
+    menuItemSpacing,
     showFollowUs,
     showFollowUsMobile,
     followUsLabel,
@@ -77,12 +82,20 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     ctaButtonTarget,
     ctaButtonStyle,
     showCtaButtonMobile,
+    ctaButtonPadding,
+    ctaButtonBorderRadius,
+    ctaButtonShowIcon = false,
+    ctaButtonIconName = 'arrow-right',
+    ctaButtonIconPosition = 'right',
+    ctaButtonIconSize = 20,
+    ctaButtonIconStrokeWidth = 2,
     stickyHeader,
     stickyStyle,
     showBottomBorder,
     bottomBorderColor,
     headerLayout,
     innerMaxWidth,
+    mobileBreakpoint,
   } = attributes;
 
   const menus = useSelect(
@@ -132,6 +145,16 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     );
   }, [themeColorPaletteRaw]);
 
+  const menuItemSpacingOptions = useMemo(() => [
+    { label: __('— Theme default —', 'nextora'), value: '' },
+    { label: __('Tiny', 'nextora'), value: '10' },
+    { label: __('Small', 'nextora'), value: '20' },
+    { label: __('Medium', 'nextora'), value: '30' },
+    { label: __('Large', 'nextora'), value: '40' },
+    { label: __('X-Large', 'nextora'), value: '50' },
+    { label: __('XX-Large', 'nextora'), value: '60' },
+  ], []);
+
   const blockProps = useBlockProps({
     className: 'nextora-header-block--editor',
   });
@@ -155,6 +178,56 @@ export default function HeaderEdit({ attributes, setAttributes }) {
       (fallback) => byNetwork[fallback.network] ?? fallback
     );
   }, [followUsSocials]);
+
+  const ctaPaddingValues = useMemo(() => {
+    const raw = ctaButtonPadding && typeof ctaButtonPadding === 'object' ? ctaButtonPadding : {};
+    return {
+      top: raw.top,
+      right: raw.right,
+      bottom: raw.bottom,
+      left: raw.left,
+    };
+  }, [ctaButtonPadding]);
+
+  const ctaRadiusValues = useMemo(() => {
+    if (!ctaButtonBorderRadius || typeof ctaButtonBorderRadius !== 'object') {
+      return {};
+    }
+    return ctaButtonBorderRadius;
+  }, [ctaButtonBorderRadius]);
+
+  const [ iconPickerOpen, setIconPickerOpen ] = useState( false );
+  const [ iconNodes, setIconNodes ] = useState( null );
+
+  useEffect( () => {
+    if ( ! ctaButtonShowIcon ) {
+      setIconNodes( null );
+      return;
+    }
+
+    const iconsUrl = window.nextoraIconBlock?.iconsUrl ?? '';
+    if ( ! iconsUrl ) {
+      return;
+    }
+
+    let active = true;
+    fetch( iconsUrl )
+      .then( ( res ) => res.json() )
+      .then( ( icons ) => {
+        if ( ! active ) {
+          return;
+        }
+        const found = Array.isArray( icons )
+          ? icons.find( ( icon ) => icon.name === ctaButtonIconName )
+          : undefined;
+        setIconNodes( found?.nodes ?? null );
+      } )
+      .catch( () => {} );
+
+    return () => {
+      active = false;
+    };
+  }, [ ctaButtonShowIcon, ctaButtonIconName ] );
 
   const updateFollowUsSocial = (network, patch) => {
     const next = followUsSocialRows.map((row) =>
@@ -326,6 +399,13 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             onChange={(v) => setAttributes({ menuLocation: v })}
             help={__('Used when no menu is chosen above.', 'nextora')}
           />
+          <SelectControl
+            label={__('Menu item spacing', 'nextora')}
+            value={menuItemSpacing ?? ''}
+            options={menuItemSpacingOptions}
+            onChange={(v) => setAttributes({ menuItemSpacing: v ?? '' })}
+            help={__('Horizontal gap between top-level menu items. Empty uses the theme default.', 'nextora')}
+          />
         </PanelBody>
 
         <PanelBody title={__('Icons & utilities', 'nextora')} initialOpen>
@@ -341,9 +421,13 @@ export default function HeaderEdit({ attributes, setAttributes }) {
           {showFollowUs && (
             <>
               <ToggleControl
-                label={__('Show Follow Us on small screens', 'nextora')}
+                label={__('Show Follow Us in header bar on small screens', 'nextora')}
                 checked={showFollowUsMobile}
                 onChange={(v) => setAttributes({ showFollowUsMobile: v })}
+                help={__(
+                  'When off, Follow Us appears inside the mobile menu instead of the header bar.',
+                  'nextora'
+                )}
               />
               <TextControl
                 label={__('Trigger label', 'nextora')}
@@ -445,6 +529,10 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             label={__('Shopping cart', 'nextora')}
             checked={showMiniCart}
             onChange={(v) => setAttributes({ showMiniCart: v })}
+            help={__(
+              'Uses the official WooCommerce Mini-Cart block (drawer and live cart updates).',
+              'nextora',
+            )}
           />
           <ToggleControl
             label={__('My account', 'nextora')}
@@ -508,6 +596,80 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                 checked={showCtaButtonMobile}
                 onChange={(v) => setAttributes({ showCtaButtonMobile: v })}
               />
+              <SpacingSizesControl
+                label={__('Padding', 'nextora')}
+                values={ctaPaddingValues}
+                onChange={(next) =>
+                  setAttributes({
+                    ctaButtonPadding: next && typeof next === 'object' ? next : {},
+                  })
+                }
+                sides={['horizontal', 'vertical']}
+                minimumCustomValue={0}
+              />
+              <BorderRadiusControl
+                values={ctaRadiusValues}
+                onChange={(next) =>
+                  setAttributes({
+                    ctaButtonBorderRadius: next && typeof next === 'object' ? next : {},
+                  })
+                }
+              />
+              <ToggleControl
+                label={__('Show icon', 'nextora')}
+                checked={ctaButtonShowIcon}
+                onChange={(v) => setAttributes({ ctaButtonShowIcon: v })}
+                help={__(
+                  'Add a Lucide icon inside the CTA button.',
+                  'nextora',
+                )}
+              />
+              {ctaButtonShowIcon && (
+                <>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setIconPickerOpen(true)}
+                  >
+                    {__('Choose icon', 'nextora')}
+                    {`: ${ctaButtonIconName}`}
+                  </Button>
+                  <SelectControl
+                    label={__('Icon position', 'nextora')}
+                    value={ctaButtonIconPosition}
+                    options={[
+                      { label: __('Left of text', 'nextora'), value: 'left' },
+                      { label: __('Right of text', 'nextora'), value: 'right' },
+                    ]}
+                    onChange={(v) => setAttributes({ ctaButtonIconPosition: v || 'right' })}
+                  />
+                  <RangeControl
+                    label={__('Icon size (px)', 'nextora')}
+                    value={ctaButtonIconSize}
+                    onChange={(v) => setAttributes({ ctaButtonIconSize: v ?? 20 })}
+                    min={12}
+                    max={48}
+                    step={1}
+                  />
+                  <RangeControl
+                    label={__('Icon stroke width', 'nextora')}
+                    value={ctaButtonIconStrokeWidth}
+                    onChange={(v) => setAttributes({ ctaButtonIconStrokeWidth: v ?? 2 })}
+                    min={0.5}
+                    max={4}
+                    step={0.5}
+                  />
+                  {iconNodes && (
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <LucideSvgPreview
+                        nodes={iconNodes}
+                        size={ctaButtonIconSize}
+                        color="currentColor"
+                        strokeWidth={ctaButtonIconStrokeWidth}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
             </>
           )}
         </PanelBody>
@@ -570,6 +732,18 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               )}
             />
           )}
+          <RangeControl
+            label={__('Mobile breakpoint (px)', 'nextora')}
+            value={mobileBreakpoint}
+            onChange={(v) => setAttributes({ mobileBreakpoint: v ?? 768 })}
+            min={320}
+            max={1920}
+            step={1}
+            help={__(
+              'Viewports at or above this width use the desktop layout. Below this width the mobile layout (hamburger menu, stacked columns) is shown. Default is 768.',
+              'nextora'
+            )}
+          />
         </PanelBody>
 
         <PanelBody title={__('Advanced', 'nextora')} initialOpen={false}>
@@ -626,6 +800,17 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               followUsContactButtonText,
               followUsContactButtonUrl,
               JSON.stringify(followUsSocialRows),
+              showCtaButton,
+              ctaButtonText,
+              ctaButtonStyle,
+              JSON.stringify(ctaPaddingValues),
+              JSON.stringify(ctaRadiusValues),
+              ctaButtonShowIcon,
+              ctaButtonIconName,
+              ctaButtonIconPosition,
+              ctaButtonIconSize,
+              ctaButtonIconStrokeWidth,
+              menuItemSpacing,
             ].join('|')}
             block={metadata.name}
             attributes={attributes}
@@ -633,6 +818,17 @@ export default function HeaderEdit({ attributes, setAttributes }) {
           />
         </Disabled>
       </div>
+
+      {iconPickerOpen && (
+        <IconPicker
+          currentIcon={ctaButtonIconName}
+          onSelect={(name) => {
+            setAttributes({ ctaButtonIconName: name });
+            setIconPickerOpen(false);
+          }}
+          onClose={() => setIconPickerOpen(false)}
+        />
+      )}
     </>
   );
 }

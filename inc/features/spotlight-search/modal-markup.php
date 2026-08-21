@@ -78,7 +78,7 @@ function nextora_get_header_search_modal_markup_args(): array {
 		'spotlight_modal_header_class' => 'nextora-spotlight__modal-header nextora-modal__header shrink-0 border-b border-secondary/12 px-4 py-3 pe-14 sm:px-5 sm:pe-16',
 		'spotlight_modal_header_text_class' => 'nextora-spotlight__modal-header-text min-w-0',
 		'spotlight_title_class'   => 'nextora-spotlight__title-modal !m-0 text-lg font-semibold tracking-tight text-contrast sm:text-xl',
-		'spotlight_subtitle_class' => 'nextora-spotlight__subtitle-modal mt-1.5 mb-0 max-w-prose text-sm leading-snug text-secondary',
+		'spotlight_subtitle_class' => 'nextora-spotlight__subtitle-modal mt-1.5 mb-0 max-w-prose text-sm leading-snug text-paragraph',
 		'spotlight_subtitle_text' => __( 'Search posts, pages, and other site content.', 'nextora' ),
 		'open_label'              => __( 'Open search', 'nextora' ),
 		'close_label'             => __( 'Close dialog', 'nextora' ),
@@ -92,7 +92,7 @@ function nextora_get_header_search_modal_markup_args(): array {
 		'surface_class'           => 'nextora-modal__surface nextora-modal__surface--spotlight relative flex flex-col overflow-hidden',
 		'spotlight_body_class'    => 'nextora-modal__body nextora-modal__body--spotlight flex min-h-0 min-w-0 flex-1 flex-col !border-t-0 !px-0 !pb-0 !pt-0 relative',
 		'spotlight_close_wrap_class' => 'nextora-spotlight__close-wrap pointer-events-none absolute end-2 top-2 z-10 sm:end-3 sm:top-3',
-		'spotlight_close_class'   => 'nextora-modal__close nextora-spotlight__close pointer-events-auto inline-flex size-8 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-secondary/80 transition-colors hover:bg-contrast/[0.055] hover:text-contrast/90 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-primary/35',
+		'spotlight_close_class'   => 'nextora-modal__close nextora-spotlight__close pointer-events-auto inline-flex size-8 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-paragraph/80 transition-colors hover:bg-contrast/[0.055] hover:text-contrast/90 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-primary/35',
 		'close_icon_wrap_class'   => 'nextora-modal__close-icon flex leading-none text-lg',
 		/* Legacy keys kept for filters that still merge them; spotlight layout uses spotlight_* instead of header. */
 		'header_class'            => 'nextora-modal__header',

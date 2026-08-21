@@ -86,7 +86,7 @@
 	font-weight: 500;
 	letter-spacing: 0.16em;
 	text-transform: uppercase;
-	color: var(--nextora-testimonial-label-color, var(--wp--preset--color--secondary, #525252));
+	color: var(--nextora-testimonial-label-color, var(--wp--preset--color--contrast));
 }
 
 .nextora-testimonial-carousel__carousel-root {
@@ -95,6 +95,15 @@
 
 .nextora-testimonial-carousel__swiper {
 	overflow: hidden;
+}
+
+.nextora-testimonial-carousel__swiper .swiper-wrapper {
+	align-items: stretch;
+}
+
+.nextora-testimonial-carousel__swiper .swiper-slide {
+	height: auto !important;
+	display: flex;
 }
 
 .nextora-testimonial-carousel__slide {
@@ -106,7 +115,7 @@
 	justify-content: center;
 	gap: 0.125rem;
 	margin-bottom: 1rem;
-	color: var(--nextora-testimonial-star-color, var(--wp--preset--color--primary, currentColor));
+	color: var(--nextora-testimonial-star-color, #F59E0B);
 }
 
 .nextora-testimonial-carousel__slide-rating svg {
@@ -114,17 +123,21 @@
 	height: 1.125rem;
 }
 
+.nextora-testimonial-carousel__star--dim {
+	opacity: 0.3;
+}
+
 .nextora-testimonial-carousel__slide-quote {
 	margin: 0;
 	padding: 0;
 	border: none;
-	font-family: var(--wp--preset--font-family--sans, inherit);
-	font-size: clamp(1.25rem, 3vw, 1.75rem);
+	font-family: var(--nextora-testimonial-quote-font-family, var(--wp--preset--font-family--heading));
+	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--base));
 	font-weight: 500;
 	line-height: 1.45;
 	color: var(
 		--nextora-testimonial-slide-quote-color,
-		var(--nextora-testimonial-quote-color, inherit)
+		var(--nextora-testimonial-quote-color, var(--wp--preset--color--contrast, currentColor))
 	);
 }
 
@@ -149,7 +162,7 @@
 	font-size: 1rem;
 	color: var(
 		--nextora-testimonial-slide-author-color,
-		var(--nextora-testimonial-author-color, var(--wp--preset--color--secondary, #525252))
+		var(--nextora-testimonial-author-color, var(--wp--preset--color--paragraph, #525252))
 	);
 }
 
@@ -174,7 +187,7 @@
 .nextora-testimonial-carousel__trust-text {
 	font-size: 0.9rem;
 	font-weight: 500;
-	color: var(--nextora-testimonial-trust-color, var(--wp--preset--color--secondary, #525252));
+	color: var(--nextora-testimonial-trust-color, var(--wp--preset--color--paragraph, #525252));
 }
 
 .nextora-testimonial-carousel__avatars {
@@ -213,7 +226,7 @@
 }
 
 .nextora-testimonial-carousel__avatar--count {
-	background: var(--wp--preset--color--secondary, #525252);
+	background: var(--wp--preset--color--paragraph, #525252);
 }
 
 .nextora-testimonial-carousel__pagination.swiper-pagination {
@@ -275,13 +288,13 @@
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
-	color: var(--nextora-testimonial-arrow-color, var(--wp--preset--color--secondary, #525252));
+	color: var(--nextora-testimonial-arrow-color, var(--wp--preset--color--paragraph, #525252));
 	transition: background 0.2s ease, color 0.2s ease;
 }
 
 .nextora-testimonial-carousel__arrow:hover,
 .nextora-testimonial-carousel__arrow:focus-visible {
-	background: var(--nextora-testimonial-arrow-color, var(--wp--preset--color--secondary, #525252));
+	background: var(--nextora-testimonial-arrow-color, var(--wp--preset--color--paragraph, #525252));
 	color: var(--wp--preset--color--base, #fff);
 }
 
@@ -302,4 +315,80 @@
 	.nextora-testimonial-carousel--ready .nextora-testimonial-carousel__swiper {
 		transition: none;
 	}
+}
+
+/* Template 1 — Card grid slider */
+.nextora-testimonial-carousel--template-1 .nextora-testimonial-carousel__inner {
+	max-width: var(--nextora-testimonial-max-width, 1200px);
+}
+
+.nextora-testimonial-carousel__slide--t1 {
+	padding: 28px;
+	border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+	border-radius: 20px;
+	background: color-mix(in srgb, var(--wp--preset--color--base, #fff) 100%, transparent);
+	text-align: left;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+.nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-rating {
+	justify-content: flex-start;
+	margin-bottom: 12px;
+}
+
+.nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-rating svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.nextora-testimonial-carousel__slide--t1 .nextora-testimonial-carousel__slide-quote {
+	font-size: var(--nextora-testimonial-quote-size, var(--wp--preset--font-size--base));
+	font-weight: 400;
+	line-height: 1.5;
+	margin-bottom: 22px;
+	flex: 1;
+}
+
+.nextora-testimonial-carousel__slide-author--t1 {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 13px;
+	flex-wrap: nowrap;
+	margin-top: auto;
+}
+
+.nextora-testimonial-carousel__slide-author--t1 .nextora-testimonial-carousel__slide-author-photo {
+	width: 50px;
+	height: 50px;
+	flex-shrink: 0;
+}
+
+.nextora-testimonial-carousel__slide-author--t1 .nextora-testimonial-carousel__slide-author-text {
+	display: flex;
+	flex-direction: column;
+	line-height: 1.35;
+}
+
+.nextora-testimonial-carousel__slide-author--t1 .nextora-testimonial-carousel__slide-author-name {
+	font-size: var(--wp--preset--font-size--small, 15.5px);
+	font-weight: 600;
+	color: var(--nextora-testimonial-author-name-color, var(--wp--preset--color--contrast, currentColor));
+	margin-bottom: 0.3rem;
+}
+
+.nextora-testimonial-carousel__slide-author--t1 .nextora-testimonial-carousel__slide-author-role {
+    font-size: 0.8rem;
+	font-weight: 400;
+	color: var(
+		--nextora-testimonial-slide-author-color,
+		var(--nextora-testimonial-author-color, var(--wp--preset--color--paragraph, #525252))
+	);
+}
+
+.nextora-testimonial-carousel--template-1 .nextora-testimonial-carousel__pagination.swiper-pagination {
+	margin-top: 2rem;
 }

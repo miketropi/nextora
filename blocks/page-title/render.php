@@ -61,6 +61,10 @@ if ( ! function_exists( 'nextora_pt_resolve_color' ) ) {
 			return '';
 		}
 
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
@@ -173,6 +177,11 @@ if ( $block instanceof WP_Block && is_countable( $block->inner_blocks ) && count
 	}
 } elseif ( '' !== $content_string ) {
 	$content_inner = $content_string;
+}
+
+// Default inner wrapper when no inner blocks exist.
+if ( '' === $content_inner ) {
+	$content_inner = '<!-- wp:group --><div class="wp-block-group"></div><!-- /wp:group -->';
 }
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>

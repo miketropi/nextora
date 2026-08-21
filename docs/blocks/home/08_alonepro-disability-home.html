@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Doors — Disability & Inclusion · AlonePro Demo</title>
+<meta name="description" content="Open Doors — a disability & special-needs inclusion theme demo. Part of AlonePro by Beplus.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15181F;
+    --ink-2:#0e1014;
+    --blue:#1A56DB;        /* primary */
+    --blue-2:#123e9e;
+    --yellow:#FFD23F;      /* accent */
+    --cream:#F4F6FB;
+    --paper:#fff;
+    --muted:#5A616E;
+    --line:rgba(21,24,31,.1);
+    --maxw:1240px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  html.bigtext{zoom:1.12}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}
+  a{text-decoration:none;color:inherit}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  ul{list-style:none}
+  /* strong, visible focus (accessibility) */
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:6px}
+  h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;line-height:1.05;letter-spacing:-.02em}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(20px,5vw,40px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;letter-spacing:.04em;text-transform:uppercase;font-weight:700;color:var(--blue)}
+  .eyebrow::before{content:"";width:24px;height:24px;border-radius:7px;background:var(--yellow);display:inline-block}
+  .lucide-wrap [data-lucide]{width:1em;height:1em;stroke-width:2.2}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:15.5px;border-radius:12px;padding:15px 28px;transition:.18s;white-space:nowrap}
+  .btn svg{width:19px;height:19px}
+  .btn-blue{background:var(--blue);color:#fff}
+  .btn-blue:hover{background:var(--blue-2);transform:translateY(-2px)}
+  .btn-yellow{background:var(--yellow);color:var(--ink)}
+  .btn-yellow:hover{background:#ffda61;transform:translateY(-2px)}
+  .btn-ink{background:var(--ink);color:#fff}
+  .btn-ink:hover{background:var(--ink-2);transform:translateY(-2px)}
+  .btn-ghost{border:2px solid var(--ink);color:var(--ink)}
+  .btn-ghost:hover{background:var(--ink);color:#fff}
+  .btn-ghost-w{border:2px solid rgba(255,255,255,.5);color:#fff}
+  .btn-ghost-w:hover{background:rgba(255,255,255,.14);border-color:#fff}
+  .section{padding:clamp(60px,7vw,100px) 0}
+  .sec-head{max-width:680px;margin:0 0 clamp(36px,4vw,52px)}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-head h2{font-size:clamp(32px,4.4vw,54px);margin:14px 0 12px}
+  .sec-head p{color:var(--muted);font-size:17px}
+
+  /* skip link */
+  .skip{position:absolute;left:-9999px;top:8px;background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;z-index:500}
+  .skip:focus{left:12px}
+
+  /* ============ header ============ */
+  .site-header{position:sticky;top:0;z-index:200;background:rgba(244,246,251,.92);backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:.25s}
+  .site-header.scrolled{border-bottom-color:var(--line);box-shadow:0 6px 24px -16px rgba(21,24,31,.4)}
+  .nav{display:flex;align-items:center;justify-content:space-between;gap:20px;height:76px}
+  .logo{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;display:flex;align-items:center;gap:10px}
+  .logo .mark{width:30px;height:30px;border-radius:9px;background:var(--blue);color:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:16px}
+  .menu{display:flex;gap:28px;font-size:15px;font-weight:600}
+  .menu a{transition:.2s}.menu a:hover{color:var(--blue)}
+  .nav-right{display:flex;align-items:center;gap:12px}
+  .a11y{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:10px;padding:9px 13px;font-weight:700;font-size:13.5px;color:var(--ink);transition:.18s}
+  .a11y:hover,.a11y[aria-pressed="true"]{border-color:var(--blue);color:var(--blue)}
+  .a11y .s1{font-size:12px}.a11y .s2{font-size:16px}
+  .nav-toggle{display:none;width:44px;height:44px;align-items:center;justify-content:center}
+  .nav-toggle svg{width:26px;height:26px}
+  .nav-drawer{position:fixed;inset:0 0 0 auto;width:min(320px,82vw);background:var(--ink);color:#fff;padding:96px 32px;display:flex;flex-direction:column;gap:6px;transform:translateX(100%);transition:.3s;z-index:330;box-shadow:-20px 0 60px rgba(0,0,0,.4)}
+  .nav-drawer.open{transform:translateX(0)}
+  .nav-drawer a{font-size:18px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+  .nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:.3s;z-index:320}
+  .nav-backdrop.show{opacity:1;pointer-events:auto}
+  @media(min-width:1041px){.nav-drawer,.nav-backdrop{display:none}}
+  @media(max-width:1040px){.menu{display:none}.nav-toggle{display:flex}}
+  @media(max-width:560px){.nav-right .btn span{display:none}.nav-right .btn{padding:13px 15px}.a11y{display:none}}
+
+  /* ============ hero (statement + ribbon) ============ */
+  .hero{position:relative;overflow:hidden;padding-top:clamp(20px,3vw,36px)}
+  .hero::before{content:"";position:absolute;top:-120px;left:-120px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle at center,rgba(26,86,219,.10),transparent 70%);z-index:0}
+  .hero-top{position:relative;z-index:1;display:grid;grid-template-columns:1.08fr .92fr;gap:clamp(40px,5vw,72px);align-items:center;padding-bottom:clamp(40px,5vw,64px)}
+  .hero .badge{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);padding:9px 16px;border-radius:30px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px -16px rgba(21,24,31,.4)}
+  .hero .badge i{color:var(--blue);display:inline-flex}
+  .hero h1{font-size:clamp(42px,6.2vw,86px);font-weight:800;letter-spacing:-.035em;margin:20px 0 0;line-height:.98}
+  .hero h1 .u{color:var(--blue);position:relative;white-space:nowrap;z-index:0}
+  .hero h1 .u::after{content:"";position:absolute;left:-2px;right:-2px;bottom:.04em;height:.32em;background:var(--yellow);border-radius:4px;z-index:-1}
+  .hero .lead{margin:24px 0 30px;font-size:clamp(16px,1.4vw,19px);color:var(--muted);max-width:46ch}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero-art{position:relative}
+  .hero-art::before{content:"";position:absolute;right:-20px;bottom:-20px;width:62%;height:68%;background:var(--yellow);border-radius:28px;z-index:0}
+  .hero-art::after{content:"";position:absolute;left:18px;top:-16px;width:74px;height:74px;border-radius:18px;background:var(--blue);opacity:.12;z-index:0}
+  .hero-art .main{position:relative;z-index:1;border-radius:26px;overflow:hidden;aspect-ratio:4/5;box-shadow:0 40px 80px -44px rgba(21,24,31,.55)}
+  .hero-art .main img{width:100%;height:100%;object-fit:cover}
+  .hero-art .stat{position:absolute;left:-18px;bottom:34px;z-index:2;background:var(--ink);color:#fff;border-radius:18px;padding:18px 22px;box-shadow:0 24px 50px -26px rgba(21,24,31,.6);max-width:210px}
+  .hero-art .stat b{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:34px;line-height:1;display:block;color:var(--yellow)}
+  .hero-art .stat span{font-size:13px;font-weight:600;display:block;margin-top:5px}
+  .hero-art .qt{position:absolute;top:20px;right:-16px;z-index:2;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;max-width:236px;box-shadow:0 18px 40px -22px rgba(21,24,31,.45);display:flex;gap:11px;align-items:center}
+  .hero-art .qt img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0}
+  .hero-art .qt p{font-size:12.5px;font-weight:600;line-height:1.32}
+  .hero-ribbon{position:relative;z-index:1;background:var(--blue);color:#fff;border-radius:24px;padding:clamp(22px,3vw,30px) clamp(20px,3vw,36px);margin-bottom:clamp(20px,3vw,34px)}
+  .hero-ribbon .in{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .hero-ribbon .hs{position:relative;padding-left:22px}
+  .hero-ribbon .hs::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:4px;border-radius:4px;background:var(--yellow)}
+  .hero-ribbon b{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(26px,2.8vw,38px);display:block;line-height:1}
+  .hero-ribbon span{font-size:13.5px;opacity:.86;margin-top:6px;display:block}
+  @media(max-width:900px){.hero-top{grid-template-columns:1fr;gap:36px}.hero-art{max-width:440px}.hero-ribbon .in{grid-template-columns:1fr 1fr;gap:22px}}
+  @media(max-width:480px){.hero-art .qt{display:none}}
+
+  /* ============ mission ============ */
+  .mission .wrap{display:grid;grid-template-columns:1fr 1fr;gap:clamp(36px,5vw,72px);align-items:center}
+  .mission h2{font-size:clamp(32px,4.4vw,54px);margin:14px 0 18px}
+  .mission h2 em{font-style:normal;color:var(--blue)}
+  .mission p{color:var(--muted);font-size:16.5px;margin-bottom:16px}
+  .mission-list{margin:22px 0 30px;display:grid;gap:14px}
+  .mission-list li{display:flex;gap:13px;align-items:flex-start;font-weight:500}
+  .mission-list .ic{flex-shrink:0;width:28px;height:28px;border-radius:9px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .mission-list .ic svg{width:16px;height:16px}
+  .mission-media{position:relative}
+  .mission-media img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:22px}
+  .mission-media .chip{position:absolute;left:-14px;bottom:-14px;background:var(--yellow);color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;border-radius:16px;padding:16px 20px;font-size:15px;box-shadow:0 20px 40px -18px rgba(21,24,31,.4)}
+  @media(max-width:880px){.mission .wrap{grid-template-columns:1fr}.mission-media{max-width:480px}}
+
+  /* ============ programs (what we do) ============ */
+  .progs{background:var(--paper)}
+  .progs .sec-head{max-width:760px}
+  .progs .sec-meta{display:flex;gap:10px 26px;flex-wrap:wrap;margin-top:18px}
+  .progs .sec-meta .m{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14px}
+  .progs .sec-meta .m svg{width:18px;height:18px;color:var(--blue)}
+  .prog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .prog{border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;background:var(--paper);transition:.2s}
+  .prog:hover{transform:translateY(-6px);box-shadow:0 30px 60px -36px rgba(21,24,31,.35)}
+  .prog .top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:24px 24px 0}
+  .prog .ic{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .prog .ic svg{width:24px;height:24px}
+  .prog .kpi{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:22px;line-height:1}
+  .prog .body{padding:18px 24px 24px;display:flex;flex-direction:column;flex:1}
+  .prog h3{font-size:21px;font-weight:800;margin-bottom:8px}
+  .prog p{font-size:14.5px;margin-bottom:18px}
+  .prog .more{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:13.5px;margin-top:auto;color:var(--blue)}
+  .prog .more svg{width:15px;height:15px;transition:transform .18s}
+  .prog:hover .more svg{transform:translateX(4px)}
+  /* photo variant */
+  .prog.is-photo .ph{aspect-ratio:16/10;position:relative;overflow:hidden}
+  .prog.is-photo .ph img{width:100%;height:100%;object-fit:cover}
+  .prog.is-photo .ph .ic{position:absolute;top:18px;left:18px;background:rgba(21,24,31,.5);color:#fff;backdrop-filter:blur(4px)}
+  /* color variants */
+  .prog.is-blue{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .prog.is-blue .ic{background:rgba(255,255,255,.16);color:var(--yellow)}.prog.is-blue p{opacity:.86}.prog.is-blue .kpi{color:var(--yellow)}.prog.is-blue .more{color:var(--yellow)}
+  .prog.is-ink{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .prog.is-ink .ic{background:rgba(255,255,255,.14);color:var(--yellow)}.prog.is-ink p{opacity:.86}.prog.is-ink .kpi{color:var(--yellow)}.prog.is-ink .more{color:var(--yellow)}
+  .prog.is-yellow{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
+  .prog.is-yellow .ic{background:var(--ink);color:var(--yellow)}.prog.is-yellow p{opacity:.82}.prog.is-yellow .more{color:var(--blue)}
+  @media(max-width:900px){.prog-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.prog-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
+
+  /* ============ campaigns (GiftPro) ============ */
+  .camps{background:var(--cream)}
+  .camp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .camp{background:var(--paper);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+  .camp:hover{transform:translateY(-6px);box-shadow:0 30px 60px -36px rgba(21,24,31,.35)}
+  .camp .ph{aspect-ratio:16/10;position:relative;overflow:hidden}.camp .ph img{width:100%;height:100%;object-fit:cover}
+  .camp .ph .pill{position:absolute;top:14px;left:14px;background:var(--blue);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:6px 12px;border-radius:30px}
+  .camp .body{padding:24px;display:flex;flex-direction:column;flex:1}
+  .camp h3{font-size:21px;font-weight:800;margin-bottom:8px}
+  .camp p{font-size:14px;color:var(--muted);margin-bottom:18px}
+  .camp .meter{margin-top:auto}
+  .camp .bar{height:10px;border-radius:30px;background:var(--cream);border:1px solid var(--line);overflow:hidden}.camp .bar i{display:block;height:100%;background:var(--blue);border-radius:30px}
+  .camp .nums{display:flex;justify-content:space-between;align-items:baseline;margin-top:11px}
+  .camp .nums .r{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:18px;color:var(--blue)}
+  .camp .nums .g{font-size:13px;color:var(--muted)}
+  .camp .donate{margin-top:18px;align-self:flex-start}
+  @media(max-width:900px){.camp-grid{grid-template-columns:1fr;max-width:440px;margin:0 auto}}
+
+  /* ============ accessibility pledge band ============ */
+  .pledge{background:var(--ink);color:#fff}
+  .pledge .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(36px,5vw,64px);align-items:center}
+  .pledge h2{font-size:clamp(30px,4vw,48px);margin:14px 0 14px}
+  .pledge h2 em{font-style:normal;color:var(--yellow)}
+  .pledge .lead{opacity:.82;font-size:16.5px;max-width:42ch}
+  .pledge-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .pcard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px}
+  .pcard .ic{width:40px;height:40px;border-radius:11px;background:var(--yellow);color:var(--ink);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+  .pcard .ic svg{width:20px;height:20px}
+  .pcard h4{font-size:17px;margin-bottom:6px}
+  .pcard p{font-size:13.5px;opacity:.78}
+  @media(max-width:880px){.pledge .wrap{grid-template-columns:1fr}}
+  @media(max-width:420px){.pledge-grid{grid-template-columns:1fr}}
+
+  /* ============ voices (testimonials) ============ */
+  .voices-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .voice{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:30px;display:flex;flex-direction:column}
+  .voice .q{font-family:'Plus Jakarta Sans',sans-serif;font-size:40px;line-height:.7;color:var(--yellow)}
+  .voice blockquote{font-family:'Plus Jakarta Sans',sans-serif;font-size:19px;font-weight:600;line-height:1.4;margin:10px 0 22px;flex:1}
+  .voice .by{display:flex;align-items:center;gap:12px;padding-top:18px;border-top:1px solid var(--line)}
+  .voice .by img{width:46px;height:46px;border-radius:50%;object-fit:cover}
+  .voice .by b{font-size:15px}.voice .by span{font-size:13px;color:var(--muted);display:block}
+  @media(max-width:880px){.voices-grid{grid-template-columns:1fr}.voice{max-width:520px;margin:0 auto}}
+
+  /* ============ impact ============ */
+  .impact{position:relative;overflow:hidden;color:#fff}
+  .impact-bg{position:absolute;inset:0;z-index:0}
+  .impact-bg img{width:100%;height:100%;object-fit:cover;opacity:.2}
+  .impact-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(18,62,158,.95),rgba(21,24,31,.85))}
+  .impact .wrap{position:relative;z-index:2;text-align:center}
+  .impact h2{font-size:clamp(30px,4vw,50px);max-width:20ch;margin:14px auto 0}
+  .impact h2 em{font-style:normal;color:var(--yellow)}
+  .impact-row{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:clamp(36px,4vw,52px)}
+  .impact-row b{font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(34px,4vw,52px);font-weight:800;color:var(--yellow);display:block;line-height:1}
+  .impact-row span{font-size:14px;opacity:.85;margin-top:8px;display:block}
+  @media(max-width:680px){.impact-row{grid-template-columns:1fr 1fr;gap:28px}}
+
+  /* ============ get involved (3 tiles) ============ */
+  .involve-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .inv{border-radius:22px;padding:34px 30px;display:flex;flex-direction:column;min-height:280px;position:relative;overflow:hidden}
+  .inv .ic{width:56px;height:56px;border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:auto}
+  .inv .ic svg{width:27px;height:27px}
+  .inv h3{font-size:25px;margin:20px 0 8px}
+  .inv p{font-size:14.5px;margin-bottom:20px}
+  .inv .btn{align-self:flex-start}
+  .inv-blue{background:var(--blue);color:#fff}.inv-blue .ic{background:rgba(255,255,255,.16);color:var(--yellow)}.inv-blue p{opacity:.85}
+  .inv-yellow{background:var(--yellow);color:var(--ink)}.inv-yellow .ic{background:var(--ink);color:var(--yellow)}.inv-yellow p{opacity:.8}
+  .inv-ink{background:var(--ink);color:#fff}.inv-ink .ic{background:rgba(255,255,255,.14);color:var(--yellow)}.inv-ink p{opacity:.82}
+  @media(max-width:880px){.involve-grid{grid-template-columns:1fr;max-width:460px;margin:0 auto}}
+
+  /* ============ team ============ */
+  .team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  .member{text-align:center}
+  .member .ph{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:1;margin-bottom:14px;background:#dde4f0}
+  .member .ph img{width:100%;height:100%;object-fit:cover}
+  .member h4{font-family:'Plus Jakarta Sans',sans-serif;font-size:19px;font-weight:700}
+  .member span{color:var(--blue);font-size:13.5px;font-weight:600}
+  @media(max-width:880px){.team-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:420px){.team-grid{grid-template-columns:1fr;max-width:260px;margin:0 auto}}
+
+  /* ============ footer ============ */
+  .footer{background:var(--ink);color:rgba(255,255,255,.72);padding-top:clamp(56px,7vw,84px)}
+  .footer .top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:36px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.12)}
+  .footer .logo{color:#fff;margin-bottom:16px}
+  .footer p.about{font-size:14.5px;max-width:32ch;margin-bottom:20px}
+  .footer-social{display:flex;gap:12px}
+  .footer-social a{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.08);color:#fff;display:flex;align-items:center;justify-content:center;transition:.2s}
+  .footer-social a:hover{background:var(--blue)}.footer-social svg{width:17px;height:17px}
+  .footer h5{color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;margin-bottom:16px;font-weight:700}
+  .footer-links{display:grid;gap:11px;font-size:14.5px}
+  .footer-links a:hover{color:var(--yellow)}
+  .footer .partners{display:flex;align-items:center;gap:24px;flex-wrap:wrap;padding:26px 0;color:rgba(255,255,255,.6)}
+  .footer .partners .lab{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+  .footer .partners .pl{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+  .footer .partners .pl svg{width:18px;height:18px}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.12);padding:24px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13.5px}
+  .footer-bottom a:hover{color:var(--yellow)}
+  @media(max-width:880px){.footer .top{grid-template-columns:1fr 1fr}}
+  @media(max-width:480px){.footer .top{grid-template-columns:1fr}}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body class="lucide-wrap">
+<a href="#main" class="skip">Skip to content</a>
+<svg width="0" height="0" style="position:absolute;left:-9999px" aria-hidden="true" focusable="false">
+  <symbol id="si-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></symbol>
+  <symbol id="si-ig" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0Zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227a3.81 3.81 0 0 1-.899 1.382 3.744 3.744 0 0 1-1.38.896c-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421a3.716 3.716 0 0 1-1.379-.899 3.644 3.644 0 0 1-.9-1.38c-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03Zm0 3.678a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324ZM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7.846-10.405a1.44 1.44 0 0 1-2.88 0 1.44 1.44 0 0 1 2.88 0Z"/></symbol>
+  <symbol id="si-x" viewBox="0 0 24 24"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></symbol>
+  <symbol id="si-yt" viewBox="0 0 24 24"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/></symbol>
+  <symbol id="si-li" viewBox="0 0 24 24"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></symbol>
+  <symbol id="si-tt" viewBox="0 0 24 24"><path fill="currentColor" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></symbol>
+</svg>
+<!--
+  ============================================================
+  AlonePro · Template: Disability & Special Needs ("Open Doors")
+  *** Creative / non-template build (Tom invited free hand) ***
+  Variant manifest
+    palette : blue + yellow + ink on light  ·  STATIC
+    fonts   : Plus Jakarta Sans (display) + Inter (body)
+    a11y    : skip link · strong focus rings · WORKING "Aa" text-size toggle (zoom)
+    LAYOUT IS RESTRUCTURED (not the fixed 14-section order):
+      header-I        nav + Aa text-size toggle + Donate
+      hero-bento-I    bento mosaic: headline | photo | stat | support | quote  (replaces hero+stats+ways)
+      mission-I       image + text + chip
+      programs-bento-I asymmetric bento of programs (photo + colour tiles, mixed spans)
+      pledge-I        accessibility-pledge band (4 commitment cards)        [niche-unique]
+      voices-I        3 community testimonial cards
+      impact-I        centered figures band on photo
+      involve-I       3 get-involved tiles (Donate / Volunteer / Advocate)  (merges give + CTA)
+      team-I          compact photo grid
+      footer-I        4-col + inline partners strip
+  Dropped vs other homes: separate events / news / give-tier sections — folded or omitted on purpose.
+  ============================================================
+-->
+
+<!-- HEADER -->
+<header class="site-header" id="header" data-variant="header-I">
+  <div class="wrap">
+    <nav class="nav" aria-label="Primary">
+      <a href="#" class="logo"><span class="mark"><i data-lucide="accessibility"></i></span>Open Doors</a>
+      <ul class="menu">
+        <li><a href="#programs">Programs</a></li>
+        <li><a href="#campaigns">Campaigns</a></li>
+        <li><a href="#pledge">Accessibility</a></li>
+        <li><a href="#voices">Voices</a></li>
+        <li><a href="#involve">Get involved</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="a11y" id="textToggle" aria-pressed="false" aria-label="Toggle larger text"><span class="s1">A</span><span class="s2">A</span></button>
+        <a href="#involve" class="btn btn-blue"><i data-lucide="heart"></i><span>Donate</span></a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu"><i data-lucide="menu"></i></button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="nav-backdrop" id="navBackdrop"></div>
+<ul class="nav-drawer" id="navDrawer">
+  <li><a href="#programs">Programs</a></li>
+  <li><a href="#campaigns">Campaigns</a></li>
+  <li><a href="#pledge">Accessibility</a></li>
+  <li><a href="#voices">Voices</a></li>
+  <li><a href="#involve">Get involved</a></li>
+</ul>
+
+<!-- HERO (bento) -->
+<main id="main">
+<section class="hero" data-variant="hero-statement-I">
+  <div class="wrap">
+    <div class="hero-top">
+      <div>
+        <span class="badge"><i data-lucide="sparkles"></i> Built for everyone, on purpose</span>
+        <h1>A world that works for <span class="u">every ability.</span></h1>
+        <p class="lead">Open Doors removes the barriers in everyday places, jobs and attitudes — so people of every ability can live, work and belong on their own terms.</p>
+        <div class="hero-cta">
+          <a href="#involve" class="btn btn-blue"><i data-lucide="heart"></i> Support our work</a>
+          <a href="#programs" class="btn btn-ghost"><i data-lucide="arrow-right"></i> Our programs</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="main"><img src="https://drive.google.com/thumbnail?id=1bND_OAmSCmwb9UU6ezaMU_C3WSV5OCvd&sz=w900" alt="A young person supported by Open Doors"></div>
+        <div class="qt"><img src="https://drive.google.com/thumbnail?id=1kl_pXsC1PEfwB8gXjiVhmBT56chgqdHf&sz=w120" alt=""><p>&ldquo;A place built around how my son experiences the world.&rdquo; — Marta</p></div>
+        <div class="stat"><b>15 yrs</b><span>opening doors for every ability</span></div>
+      </div>
+    </div>
+    <div class="hero-ribbon">
+      <div class="in">
+        <div class="hs"><b>1 in 6</b><span>of us lives with a disability</span></div>
+        <div class="hs"><b>12,000+</b><span>people supported a year</span></div>
+        <div class="hs"><b>90+</b><span>sensory-friendly venues</span></div>
+        <div class="hs"><b>15 yrs</b><span>of opening doors</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION -->
+<section class="section mission" id="mission" data-variant="mission-I">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Who we are</span>
+      <h2>We don't fix people. We fix <em>the barriers</em>.</h2>
+      <p>Disability isn't the problem — inaccessible places, jobs and attitudes are. Open Doors works to remove those barriers, so people of every ability can live, work and belong on their own terms.</p>
+      <ul class="mission-list">
+        <li><span class="ic"><i data-lucide="check"></i></span> Designed with disabled people, never just for them</li>
+        <li><span class="ic"><i data-lucide="check"></i></span> Support across autism, mobility, vision, hearing &amp; more</li>
+        <li><span class="ic"><i data-lucide="check"></i></span> Advocacy that pushes for access as the standard, not a favour</li>
+      </ul>
+      <a href="#pledge" class="btn btn-blue"><i data-lucide="arrow-right"></i> Our accessibility pledge</a>
+    </div>
+    <div class="mission-media">
+      <img src="https://drive.google.com/thumbnail?id=1L_cJW8-gb8fHI6RhLSp1ncnHUOt5rMY8&sz=w900" alt="People of different abilities together">
+      <div class="chip">15 years · every ability</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMS (bento) -->
+<section class="section progs" id="programs" data-variant="programs-bento-I">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">What we do</span>
+      <h2>Programs that open doors.</h2>
+      <p>From a first job to a quiet room, here's how we make everyday places work for everyone.</p>
+      <div class="sec-meta">
+        <span class="m"><i data-lucide="layout-grid"></i> 6 core programs</span>
+        <span class="m"><i data-lucide="users"></i> Co-designed with disabled people</span>
+        <span class="m"><i data-lucide="map-pin"></i> Across 30+ regions</span>
+      </div>
+    </div>
+    <div class="prog-grid">
+      <article class="prog is-photo">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1qaN_kLvyUwpyUnPjpUyfZ_PZDegESsbp&sz=w600" alt=""><div class="ic"><i data-lucide="briefcase"></i></div></div>
+        <div class="body"><h3>Employment program</h3><p>1,400 people placed in inclusive workplaces — with training, coaching and employers who get it.</p><a href="#involve" class="more">Learn more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="prog is-blue">
+        <div class="top"><div class="ic"><i data-lucide="ear"></i></div><span class="kpi">90+</span></div>
+        <div class="body"><h3>Sensory-friendly spaces</h3><p>Quiet hours and calm rooms in 90+ venues, so public places work for everyone.</p><a href="#involve" class="more">Learn more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="prog is-yellow">
+        <div class="top"><div class="ic"><i data-lucide="heart-handshake"></i></div><span class="kpi">5,000</span></div>
+        <div class="body"><h3>Family support &amp; respite</h3><p>Practical breaks and guidance for the parents and carers who never clock off.</p><a href="#involve" class="more">Learn more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="prog is-ink">
+        <div class="top"><div class="ic"><i data-lucide="scale"></i></div><span class="kpi">30 wins</span></div>
+        <div class="body"><h3>Advocacy &amp; rights</h3><p>Campaigning to make access the standard, not a favour — and winning.</p><a href="#involve" class="more">Learn more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="prog is-photo">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1N6qKuD5bI5h3nHhp_ew5wIZkmCR_C-Ew&sz=w600" alt=""><div class="ic"><i data-lucide="home"></i></div></div>
+        <div class="body"><h3>Independent living</h3><p>Skills, assistive tech and homes set up for genuine autonomy and choice.</p><a href="#involve" class="more">Learn more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="prog is-blue">
+        <div class="top"><div class="ic"><i data-lucide="cpu"></i></div><span class="kpi">20k</span></div>
+        <div class="body"><h3>Assistive technology</h3><p>Devices, apps and training that put the right tools in 20,000+ hands.</p><a href="#involve" class="more">Learn more <i data-lucide="arrow-right"></i></a></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- CAMPAIGNS (GiftPro) -->
+<section class="section camps" id="campaigns" data-variant="campaigns-I">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Campaigns</span>
+      <h2>Fund the change, one goal at a time.</h2>
+      <p>Every campaign removes a real barrier — pick the one that matters to you.</p>
+    </div>
+    <div class="camp-grid">
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1qaN_kLvyUwpyUnPjpUyfZ_PZDegESsbp&sz=w600" alt=""><span class="pill">Employment</span></div>
+        <div class="body">
+          <h3>1,000 More Inclusive Jobs</h3>
+          <p>Training, coaching and employer partnerships to place 1,000 more disabled people in work.</p>
+          <div class="meter"><div class="bar"><i style="width:64%"></i></div>
+            <div class="nums"><span class="r">$64,000</span><span class="g">of $100,000 goal</span></div></div>
+          <a href="#involve" class="btn btn-blue donate"><i data-lucide="heart"></i> Donate</a>
+        </div>
+      </article>
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1N6qKuD5bI5h3nHhp_ew5wIZkmCR_C-Ew&sz=w600" alt=""><span class="pill">Sensory</span></div>
+        <div class="body">
+          <h3>50 New Sensory Rooms</h3>
+          <p>Calm, sensory-friendly spaces in schools, clinics and public venues that need them most.</p>
+          <div class="meter"><div class="bar"><i style="width:46%"></i></div>
+            <div class="nums"><span class="r">$23,000</span><span class="g">of $50,000 goal</span></div></div>
+          <a href="#involve" class="btn btn-blue donate"><i data-lucide="heart"></i> Donate</a>
+        </div>
+      </article>
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1L_cJW8-gb8fHI6RhLSp1ncnHUOt5rMY8&sz=w600" alt=""><span class="pill">Family</span></div>
+        <div class="body">
+          <h3>Respite for 500 Families</h3>
+          <p>A year of practical breaks and support for parents and carers who never clock off.</p>
+          <div class="meter"><div class="bar"><i style="width:88%"></i></div>
+            <div class="nums"><span class="r">$35,200</span><span class="g">of $40,000 goal</span></div></div>
+          <a href="#involve" class="btn btn-blue donate"><i data-lucide="heart"></i> Donate</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ACCESSIBILITY PLEDGE -->
+<section class="section pledge" id="pledge" data-variant="pledge-I">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow" style="color:#fff">Our pledge</span>
+      <h2>Accessible <em>by default</em> — not on request.</h2>
+      <p class="lead">Inclusion isn't an add-on. Every program, space and page we make starts from access — and yes, this very website practises it (try the "Aa" button up top).</p>
+    </div>
+    <div class="pledge-grid">
+      <div class="pcard"><div class="ic"><i data-lucide="type"></i></div><h4>Readable by everyone</h4><p>Clear type, strong contrast and a one-tap larger-text mode.</p></div>
+      <div class="pcard"><div class="ic"><i data-lucide="keyboard"></i></div><h4>Keyboard &amp; screen-reader ready</h4><p>Full keyboard nav, skip links and labelled controls.</p></div>
+      <div class="pcard"><div class="ic"><i data-lucide="captions"></i></div><h4>Captions &amp; transcripts</h4><p>Every video captioned; every talk transcribed.</p></div>
+      <div class="pcard"><div class="ic"><i data-lucide="users"></i></div><h4>Designed with, not for</h4><p>Disabled people lead our design and testing.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- VOICES -->
+<section class="section" id="voices" data-variant="voices-I">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow" style="justify-content:center">Voices</span>
+      <h2>The people we work for, in their words.</h2>
+    </div>
+    <div class="voices-grid">
+      <article class="voice">
+        <div class="q">&ldquo;</div>
+        <blockquote>I'd been turned down from 30 jobs. Open Doors didn't change me — they changed the interview. Now I'm employed and thriving.</blockquote>
+        <div class="by"><img src="https://drive.google.com/thumbnail?id=1QT6firkdpdH1TbtGn9yfT-PI4UTIlAyF&sz=w120" alt=""><div><b>Jordan</b><span>Employment program</span></div></div>
+      </article>
+      <article class="voice">
+        <div class="q">&ldquo;</div>
+        <blockquote>The sensory room means my daughter can finally enjoy a day out with us. Small change, whole different life.</blockquote>
+        <div class="by"><img src="https://drive.google.com/thumbnail?id=1yKKafS1H4iimGV6JyljGz7667Witn3gH&sz=w120" alt=""><div><b>Priya</b><span>Parent · sensory spaces</span></div></div>
+      </article>
+      <article class="voice">
+        <div class="q">&ldquo;</div>
+        <blockquote>Their advocacy got a ramp and a lift into my college. I'm the first wheelchair user to graduate from my course.</blockquote>
+        <div class="by"><img src="https://drive.google.com/thumbnail?id=1M_rGimnK6YF-H-RCD99yd6rgV-Hcthj3&sz=w120" alt=""><div><b>Samuel</b><span>Advocacy &amp; rights</span></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT -->
+<section class="section impact" id="impact" data-variant="impact-I">
+  <div class="impact-bg"><img src="https://drive.google.com/thumbnail?id=1AhjPSSUrpzBhHtzAUw6ECRcEJOz7-1nI&sz=w1600" alt=""></div>
+  <div class="wrap">
+    <span class="eyebrow" style="color:var(--yellow);justify-content:center">Our impact</span>
+    <h2>Access opened, <em>lives changed</em>.</h2>
+    <div class="impact-row">
+      <div><b>1,400</b><span>People into inclusive jobs</span></div>
+      <div><b>90+</b><span>Sensory-friendly venues</span></div>
+      <div><b>6,200</b><span>Families supported</span></div>
+      <div><b>120</b><span>Access wins through advocacy</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- GET INVOLVED (3 tiles) -->
+<section class="section" id="involve" data-variant="involve-I">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow" style="justify-content:center">Get involved</span>
+      <h2>Three ways to open a door.</h2>
+      <p>Give, give your time, or use your voice — every one removes a barrier for someone.</p>
+    </div>
+    <div class="involve-grid">
+      <div class="inv inv-blue">
+        <div class="ic"><i data-lucide="heart"></i></div>
+        <h3>Donate</h3>
+        <p>$45 funds a sensory kit. $120 supports a family for a month. Give once or monthly.</p>
+        <a href="#" class="btn btn-yellow"><i data-lucide="heart"></i> Donate now</a>
+      </div>
+      <div class="inv inv-yellow">
+        <div class="ic"><i data-lucide="hand-heart"></i></div>
+        <h3>Volunteer</h3>
+        <p>Mentor, drive, run a sensory hour or share a skill. Training and support provided.</p>
+        <a href="#" class="btn btn-ink"><i data-lucide="arrow-right"></i> Join the team</a>
+      </div>
+      <div class="inv inv-ink">
+        <div class="ic"><i data-lucide="megaphone"></i></div>
+        <h3>Advocate</h3>
+        <p>Back a campaign, ask your employer to pledge, and help make access the default.</p>
+        <a href="#" class="btn btn-yellow"><i data-lucide="arrow-right"></i> Take action</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section" id="team" data-variant="team-I">
+  <div class="wrap">
+    <div class="sec-head center">
+      <span class="eyebrow" style="justify-content:center">Our people</span>
+      <h2>A team that knows, because it lives it.</h2>
+    </div>
+    <div class="team-grid">
+      <article class="member"><div class="ph"><img src="https://drive.google.com/thumbnail?id=18DqbZjrY_3gZ0XPwQvij2k3AAHlg1DtL&sz=w400" alt="Mei Lin"></div><h4>Mei Lin</h4><span>Executive Director</span></article>
+      <article class="member"><div class="ph"><img src="https://drive.google.com/thumbnail?id=1pivpd8P8HglqFWJte11JoQgQXZivv69X&sz=w400" alt="Richard Northcutt"></div><h4>Richard Northcutt</h4><span>Programs Director</span></article>
+      <article class="member"><div class="ph"><img src="https://drive.google.com/thumbnail?id=1nPqv2kY-sBa__8auujG40YBI3PYA_PUm&sz=w400" alt="Aisha Duran"></div><h4>Aisha Duran</h4><span>Head of Advocacy</span></article>
+      <article class="member"><div class="ph"><img src="https://drive.google.com/thumbnail?id=1Md-HSHYPR_gtgwn9dGhvZF7qwTmi8iz_&sz=w400" alt="Sofia Morales"></div><h4>Sofia Morales</h4><span>Inclusion Lead</span></article>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact" data-variant="footer-I">
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <a href="#" class="logo"><span class="mark"><i data-lucide="accessibility"></i></span>Open Doors</a>
+        <p class="about">An inclusion charity removing the barriers that stand between disabled people and the life they choose — at work, at home and in public.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-fb"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-ig"/></svg></a>
+          <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-x"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-li"/></svg></a>
+          <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-tt"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h5>Explore</h5>
+        <div class="footer-links">
+          <a href="#mission">About us</a>
+          <a href="#programs">Programs</a>
+          <a href="#pledge">Accessibility</a>
+          <a href="#voices">Voices</a>
+        </div>
+      </div>
+      <div>
+        <h5>Get involved</h5>
+        <div class="footer-links">
+          <a href="#involve">Donate</a>
+          <a href="#">Volunteer</a>
+          <a href="#">Advocate</a>
+          <a href="#">For employers</a>
+        </div>
+      </div>
+      <div>
+        <h5>Get support</h5>
+        <div class="footer-links">
+          <a href="#">Find a program</a>
+          <a href="#">Helpline</a>
+          <a href="#">Resources</a>
+          <a href="#">Contact us</a>
+        </div>
+      </div>
+    </div>
+    <div class="partners">
+      <span class="lab">Endorsed by</span>
+      <span class="pl"><i data-lucide="shield-check"></i> Disability:IN</span>
+      <span class="pl"><i data-lucide="award"></i> Charity Navigator</span>
+      <span class="pl"><i data-lucide="badge-check"></i> WCAG 2.2 AA</span>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Open Doors. A demo by Beplus · AlonePro.</span>
+      <span style="display:flex;gap:20px;flex-wrap:wrap"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Accessibility statement</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  if(window.lucide) lucide.createIcons();
+
+  const header = document.getElementById('header');
+  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 12);
+  onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+  const drawer = document.getElementById('navDrawer');
+  const backdrop = document.getElementById('navBackdrop');
+  const closeMenu = () => { drawer.classList.remove('open'); backdrop.classList.remove('show'); };
+  document.getElementById('navToggle').addEventListener('click', () => { drawer.classList.add('open'); backdrop.classList.add('show'); });
+  backdrop.addEventListener('click', closeMenu);
+  drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+  // Accessibility: larger-text toggle (real, persists in this session)
+  const tBtn = document.getElementById('textToggle');
+  tBtn.addEventListener('click', () => {
+    const on = document.documentElement.classList.toggle('bigtext');
+    tBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+</script>
+</body>
+</html>

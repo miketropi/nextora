@@ -1,0 +1,262 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/advanced-container",
+  "title": "Advanced Container",
+  "category": "design",
+  "description": "A group-like container with advanced backgrounds including color, image, and video options.",
+  "keywords": [
+    "container",
+    "group",
+    "section",
+    "background",
+    "nextora"
+  ],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": false,
+      "text": true,
+      "link": true
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true
+    },
+    "dimensions": {
+      "minHeight": false
+    },
+    "__experimentalBorder": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true,
+      "__experimentalDefaultControls": {
+        "color": true,
+        "radius": true,
+        "style": true,
+        "width": true
+      }
+    },
+    "shadow": true
+  },
+  "attributes": {
+    "backgroundType": {
+      "type": "string",
+      "default": "color"
+    },
+    "sectionBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "sectionBackgroundFill": {
+      "type": "string",
+      "default": "solid"
+    },
+    "sectionBackgroundGradient": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundImageId": {
+      "type": "number",
+      "default": 0
+    },
+    "backgroundImageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundVideoUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundImageFocalPoint": {
+      "type": "object",
+      "default": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "backgroundImageSize": {
+      "type": "string",
+      "default": "cover"
+    },
+    "backgroundImageCustomSize": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundImageRepeat": {
+      "type": "boolean",
+      "default": false
+    },
+    "overlayColor": {
+      "type": "string",
+      "default": ""
+    },
+    "overlayOpacity": {
+      "type": "number",
+      "default": 0.3
+    },
+    "overlayStyle": {
+      "type": "string",
+      "default": "solid"
+    },
+    "minHeight": {
+      "type": "string",
+      "default": "268px"
+    },
+    "enableParallax": {
+      "type": "boolean",
+      "default": false
+    },
+    "enableBackgroundAnimation": {
+      "type": "boolean",
+      "default": false
+    },
+    "backgroundAnimation": {
+      "type": "string",
+      "default": "ken-burns"
+    },
+    "backgroundAnimationSpeed": {
+      "type": "number",
+      "default": 1.75
+    },
+    "parallaxType": {
+      "type": "string",
+      "default": "gsap"
+    },
+    "parallaxSpeed": {
+      "type": "number",
+      "default": 0.5
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableHoverReveal": {
+      "type": "boolean",
+      "default": false
+    },
+    "hoverRevealImageId": {
+      "type": "number",
+      "default": 0
+    },
+    "hoverRevealImageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "hoverRevealImageFocalPoint": {
+      "type": "object",
+      "default": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    "hoverRevealImageSize": {
+      "type": "string",
+      "default": "cover"
+    },
+    "hoverRevealMaskColor": {
+      "type": "string",
+      "default": ""
+    },
+    "enableAmbientAnimation": {
+      "type": "boolean",
+      "default": false
+    },
+    "ambientAnimationType": {
+      "type": "string",
+      "default": "ambient-icons"
+    },
+    "ambientIcons": {
+      "type": "array",
+      "default": []
+    },
+    "ambientIconSize": {
+      "type": "number",
+      "default": 48
+    },
+    "ambientIconStrokeWidth": {
+      "type": "number",
+      "default": 1.5
+    },
+    "lightRaysOrigin": {
+      "type": "string",
+      "default": "top-center"
+    },
+    "lightRaysColor": {
+      "type": "string",
+      "default": ""
+    },
+    "lightRaysSpeed": {
+      "type": "number",
+      "default": 1
+    },
+    "lightRaysSpread": {
+      "type": "number",
+      "default": 0.5
+    },
+    "lightRaysLength": {
+      "type": "number",
+      "default": 3
+    },
+    "lightRaysPulsating": {
+      "type": "boolean",
+      "default": false
+    },
+    "lightRaysFadeDistance": {
+      "type": "number",
+      "default": 1
+    },
+    "lightRaysSaturation": {
+      "type": "number",
+      "default": 1
+    },
+    "lightRaysFollowMouse": {
+      "type": "boolean",
+      "default": true
+    },
+    "lightRaysMouseInfluence": {
+      "type": "number",
+      "default": 0.1
+    },
+    "lightRaysNoiseAmount": {
+      "type": "number",
+      "default": 0
+    },
+    "lightRaysDistortion": {
+      "type": "number",
+      "default": 0
+    },
+    "ripplesDropRadius": {
+      "type": "number",
+      "default": 20
+    },
+    "ripplesPerturbance": {
+      "type": "number",
+      "default": 0.03
+    },
+    "ripplesResolution": {
+      "type": "number",
+      "default": 256
+    }
+  },
+  "editorScript": "file:./index.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

@@ -16,6 +16,11 @@
 					"name": "Contrast"
 				},
 				{
+					"slug": "paragraph",
+					"color": "#6b6560",
+					"name": "Paragraph"
+				},
+				{
 					"slug": "primary",
 					"color": "#b45309",
 					"name": "Primary"
@@ -29,6 +34,11 @@
 					"slug": "surface",
 					"color": "#f0e9dd",
 					"name": "Surface"
+				},
+				{
+					"slug": "transparent",
+					"color": "transparent",
+					"name": "Transparent"
 				}
 			]
 		}
@@ -36,12 +46,18 @@
 	"styles": {
 		"color": {
 			"background": "var(--wp--preset--color--base)",
-			"text": "var(--wp--preset--color--contrast)"
+			"text": "var(--wp--preset--color--paragraph)"
+		},
+		"typography": {
+			"fontFamily": "var(--wp--preset--font-family--josefin-sans)"
 		},
 		"elements": {
 			"heading": {
 				"color": {
 					"text": "var(--wp--preset--color--contrast)"
+				},
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--noto-serif-display)"
 				}
 			},
 			"link": {
@@ -59,6 +75,16 @@
 						"background": "var(--wp--preset--color--contrast)",
 						"text": "var(--wp--preset--color--base)"
 					}
+				},
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--josefin-sans)"
+				}
+			}
+		},
+		"blocks": {
+			"nextora/header": {
+				"typography": {
+					"fontFamily": "var(--wp--preset--font-family--josefin-sans)"
 				}
 			}
 		}

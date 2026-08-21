@@ -18,6 +18,10 @@ if ( ! function_exists( 'nextora_counters_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
@@ -26,6 +30,22 @@ if ( ! function_exists( 'nextora_counters_resolve_color' ) ) {
 			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
 		}
 		return '';
+	}
+}
+
+if ( ! function_exists( 'nextora_counters_resolve_font_family' ) ) {
+	/**
+	 * Preset slug or custom font-family stack → font-family value.
+	 */
+	function nextora_counters_resolve_font_family( string $raw ): string {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return '';
+		}
+		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
+			return 'var(--wp--preset--font-family--' . sanitize_html_class( $raw ) . ')';
+		}
+		return $raw;
 	}
 }
 
@@ -60,9 +80,9 @@ if ( ! function_exists( 'nextora_counters_format_number' ) ) {
 	 */
 	function nextora_counters_format_number( float $number ): string {
 		if ( abs( $number - round( $number ) ) < 0.00001 ) {
-			return (string) (int) round( $number );
+			return number_format( $number, 0, '.', ',' );
 		}
-		return number_format( $number, 1, '.', '' );
+		return number_format( $number, 1, '.', ',' );
 	}
 }
 
@@ -71,7 +91,7 @@ if ( ! function_exists( 'nextora_counters_format_display' ) ) {
 	 * @param array<string, mixed> $item Counter item.
 	 */
 	function nextora_counters_format_display( array $item ): string {
-		$number = isset( $item['number'] ) ? (float) $item['number'] : 0.0;
+		$number = isset( $item['number'] ) ? abs( (float) $item['number'] ) : 0.0;
 		$prefix = isset( $item['prefix'] ) ? (string) $item['prefix'] : '';
 		$suffix = isset( $item['suffix'] ) ? (string) $item['suffix'] : '';
 		return $prefix . nextora_counters_format_number( $number ) . $suffix;
@@ -87,7 +107,7 @@ foreach ( $raw_items as $item ) {
 	}
 	$items[] = array(
 		'id'     => isset( $item['id'] ) ? (string) $item['id'] : '',
-		'number' => isset( $item['number'] ) ? (float) $item['number'] : 0.0,
+		'number' => isset( $item['number'] ) ? abs( (float) $item['number'] ) : 0.0,
 		'prefix' => isset( $item['prefix'] ) ? (string) $item['prefix'] : '',
 		'suffix' => isset( $item['suffix'] ) ? (string) $item['suffix'] : '',
 		'label'  => isset( $item['label'] ) ? (string) $item['label'] : '',
@@ -109,10 +129,16 @@ if ( array() === $items ) {
 /** @var list<array{id: string, number: float, prefix: string, suffix: string, label: string}> $items */
 $items = array_values( (array) apply_filters( 'nextora_counters_items', $items, $attributes ) );
 
-$columns = isset( $attributes['columns'] ) ? (int) $attributes['columns'] : 3;
-$columns = max( 1, min( 6, $columns ) );
+$columns        = isset( $attributes['columns'] ) ? (int) $attributes['columns'] : 3;
+$columns        = max( 1, min( 6, $columns ) );
+$columns_tablet = isset( $attributes['columnsTablet'] ) ? (int) $attributes['columnsTablet'] : 2;
+$columns_tablet = max( 1, min( 6, $columns_tablet ) );
+$columns_mobile = isset( $attributes['columnsMobile'] ) ? (int) $attributes['columnsMobile'] : 1;
+$columns_mobile = max( 1, min( 4, $columns_mobile ) );
 
 $column_gap = isset( $attributes['columnGap'] ) ? trim( (string) $attributes['columnGap'] ) : '';
+
+$number_label_gap = isset( $attributes['numberLabelGap'] ) ? trim( (string) $attributes['numberLabelGap'] ) : '';
 
 $divider = ! empty( $attributes['divider'] );
 
@@ -142,7 +168,6 @@ if ( ! in_array( $easing, $allowed_easing, true ) ) {
 
 $wrapper_classes = array(
 	'nextora-counters',
-	'nextora-counters--cols-' . $columns,
 	'nextora-counters--align-' . $text_align,
 );
 if ( $divider ) {
@@ -155,9 +180,16 @@ $wrapper_classes = (array) apply_filters(
 	$attributes,
 );
 
-$style_parts = array();
+$style_parts = array(
+	'--nextora-counters-cols-m:' . (string) $columns_mobile,
+	'--nextora-counters-cols-t:' . (string) $columns_tablet,
+	'--nextora-counters-cols-d:' . (string) $columns,
+);
 if ( '' !== $column_gap ) {
 	$style_parts[] = '--nextora-counters-gap:' . esc_attr( $column_gap );
+}
+if ( '' !== $number_label_gap ) {
+	$style_parts[] = '--nextora-counters-number-label-gap:' . esc_attr( $number_label_gap );
 }
 if ( '' !== $divider_color ) {
 	$style_parts[] = '--nextora-counters-divider-color:' . esc_attr( $divider_color );
@@ -191,6 +223,20 @@ if ( '' !== $label_font_size ) {
 	$style_parts[] = '--nextora-counters-label-size:' . esc_attr( $label_font_size );
 }
 
+$number_font_family = nextora_counters_resolve_font_family(
+	isset( $attributes['numberFontFamily'] ) ? (string) $attributes['numberFontFamily'] : '',
+);
+if ( '' !== $number_font_family ) {
+	$style_parts[] = '--nextora-counters-number-font-family:' . esc_attr( $number_font_family );
+}
+
+$label_font_family = nextora_counters_resolve_font_family(
+	isset( $attributes['labelFontFamily'] ) ? (string) $attributes['labelFontFamily'] : '',
+);
+if ( '' !== $label_font_family ) {
+	$style_parts[] = '--nextora-counters-label-font-family:' . esc_attr( $label_font_family );
+}
+
 $inline_style = implode( ';', $style_parts );
 
 $wrapper_extra = array(
@@ -219,6 +265,7 @@ foreach ( $items as $item ) {
 	$suffix  = $item['suffix'];
 	$label   = $item['label'];
 	$display = nextora_counters_format_display( $item );
+	$initial_display = $enable_count_up ? $prefix . '0' . $suffix : $display;
 
 	$items_html .= sprintf(
 		'<div class="nextora-counters__item">
@@ -229,7 +276,7 @@ foreach ( $items as $item ) {
 		esc_attr( $prefix ),
 		esc_attr( $suffix ),
 		esc_attr( $display ),
-		esc_html( $display ),
+		esc_html( $initial_display ),
 		esc_html( $label ),
 	);
 }

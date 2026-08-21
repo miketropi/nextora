@@ -1,0 +1,226 @@
+@import '../advanced-icon/editor.css';
+
+/* Icon color support */
+.editor-styles-wrapper .wp-block-nextora-advanced-button-button .nextora-advanced-button__icon {
+	color: var(--nextora-advanced-button-icon-color, currentColor);
+}
+
+/*
+ * Block list wrapper used to pick up has-*-background-color from legacy
+ * backgroundColor attribute name. Keep colours on the button element only.
+ */
+.editor-styles-wrapper
+	.block-editor-block-list__block.wp-block-nextora-advanced-button-button.has-background,
+.editor-styles-wrapper
+	.block-editor-block-list__block.wp-block-nextora-advanced-button-button[class*='-background-color'] {
+	background: transparent !important;
+}
+
+.editor-styles-wrapper .wp-block-nextora-advanced-button-button.nextora-advanced-button__button {
+	cursor: text;
+}
+
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button-button
+	.nextora-advanced-button__icon-placeholder {
+	display: inline-block;
+	width: var(--nextora-advanced-button-icon-size, 20px);
+	height: var(--nextora-advanced-button-icon-size, 20px);
+	border-radius: 4px;
+	background: color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.editor-styles-wrapper .nextora-advanced-button-click-event__script textarea {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 0.8125rem;
+	line-height: 1.45;
+}
+
+.editor-styles-wrapper .nextora-advanced-button-button-wrap--modal-editor {
+	position: relative;
+	display: inline-block;
+	max-width: 100%;
+	vertical-align: middle;
+}
+
+.editor-styles-wrapper .nextora-advanced-button-modal__edit-link {
+	position: absolute;
+	top: calc(100% + 3px);
+	left: 0;
+	z-index: 1;
+	padding: 0;
+	height: auto;
+	min-height: 0;
+	font-size: 0.6875rem;
+	line-height: 1.2;
+	color: #757575;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	white-space: nowrap;
+}
+
+.editor-styles-wrapper .nextora-advanced-button-modal__edit-link:hover {
+	color: #3858e9;
+}
+
+.editor-styles-wrapper
+	.wp-block-nextora-advanced-button
+	.nextora-advanced-button__buttons:has(
+		.nextora-advanced-button-button-wrap--modal-editor
+	) {
+	padding-bottom: 1.125rem;
+}
+
+/* Collapsed: keep InnerBlocks mounted but hidden */
+.nextora-advanced-button-modal-host:not(.is-open) {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* Open: fixed canvas panel beside native sidebar */
+.nextora-advanced-button-modal-host.is-open {
+	position: fixed;
+	top: 90px;
+	left: 24px;
+	right: 24px;
+	bottom: 24px;
+	z-index: 99990;
+	overflow: auto;
+	padding: 0;
+}
+
+.nextora-advanced-button-builder-overlay {
+	position: fixed;
+	inset: 0;
+	right: 0;
+	z-index: 99980;
+	padding: 0;
+	border: none;
+	background: rgb(0 0 0 / 0.45);
+	cursor: pointer;
+}
+
+.nextora-advanced-button-builder {
+	position: fixed;
+	top: 24px;
+	left: 24px;
+	right: 24px;
+	z-index: 99985;
+	max-width: 100%;
+	background: #fff;
+	border-radius: 8px 8px 0 0;
+	box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+	overflow: hidden;
+}
+
+.nextora-advanced-button-builder__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 16px 20px;
+	border-bottom: 1px solid #dcdcde;
+	background: #fff;
+}
+
+.nextora-advanced-button-builder__title {
+	margin: 0 !important;
+	font-size: 1.125rem;
+	font-weight: 600;
+	line-height: 1.3;
+	color: #1e1e1e;
+}
+
+.nextora-advanced-button-builder__header-actions {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.nextora-advanced-button-modal-host.is-open .nextora-advanced-button-builder__canvas {
+	min-height: 100%;
+	padding: 24px 28px;
+	background: #f0f0f1;
+	border-radius: 0 0 8px 8px;
+	box-shadow: 0 24px 48px rgb(0 0 0 / 0.12);
+}
+
+.nextora-advanced-button-modal-host.is-open .nextora-advanced-button-modal__content {
+	min-height: 200px;
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 24px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+.nextora-advanced-button-modal-host.is-open .nextora-advanced-button-modal__content > *:first-child {
+	margin-top: 0;
+}
+
+.nextora-advanced-button-modal-host.is-open .block-editor-inner-blocks,
+.nextora-advanced-button-modal-host.is-open .block-editor-block-list__layout {
+	width: 100%;
+}
+
+/* Native sidebar stays visible for block settings */
+body.nextora-advanced-button-builder-open .interface-interface-skeleton__sidebar {
+	z-index: 100000 !important;
+}
+
+body.nextora-advanced-button-builder-open .edit-post-layout__metaboxes {
+	display: none;
+}
+
+body.nextora-advanced-button-builder-open .components-popover,
+body.nextora-advanced-button-builder-open .block-editor-block-popover,
+.block-editor-inserter__popover {
+	z-index: 1000010 !important;
+}
+.block-editor-block-inspector__tabs .components-button.is-secondary{
+	margin-bottom: 16px;
+}
+
+/* Toolbar link popover — keep compact; avoid inline LinkControl layout bugs in nested blocks */
+.nextora-advanced-button-link-popover.components-popover {
+	z-index: 1000011;
+}
+
+.nextora-advanced-button-link-popover .components-popover__content {
+	min-width: min(100vw - 2rem, 22rem);
+	padding: 0;
+	border-radius: 8px;
+	box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
+	overflow: hidden;
+}
+
+.nextora-advanced-button-link-popover .nextora-advanced-button-link-control {
+	padding: 12px 14px;
+}
+
+.nextora-advanced-button-link-popover .nextora-advanced-button-link-control .block-editor-link-control__search-item {
+	margin: 0;
+}
+
+.nextora-advanced-button-link-popover .block-editor-link-control__search-item-header {
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.nextora-advanced-button-link-popover .block-editor-link-control__search-item-title {
+	font-size: 0.8125rem;
+	line-height: 1.35;
+	word-break: break-all;
+}
+
+.nextora-advanced-button-link-popover .block-editor-link-control__search-input {
+	margin-top: 0.5rem;
+}

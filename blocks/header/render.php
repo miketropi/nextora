@@ -16,6 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once get_theme_file_path( 'blocks/advanced-icon/lucide.php' );
+
 $attributes = is_array( $attributes ?? null ) ? $attributes : array();
 
 if ( ! function_exists( 'nextora_header_block_sanitize_border_color' ) ) {
@@ -36,14 +38,14 @@ if ( ! function_exists( 'nextora_header_block_sanitize_border_color' ) ) {
 			return 'var(--wp--preset--color--' . strtolower( $preset_m[1] ) . ')';
 		}
 
-		$hex = sanitize_hex_color( $value );
-		if ( is_string( $hex ) && '' !== $hex ) {
-			return $hex;
-		}
-
 		// 8-digit RGBA hex (common from the color picker with alpha).
 		if ( preg_match( '/^#([0-9a-f]{8})$/i', $value ) ) {
 			return strtolower( $value );
+		}
+
+		$hex = sanitize_hex_color( $value );
+		if ( is_string( $hex ) && '' !== $hex ) {
+			return $hex;
 		}
 
 		// Theme palette (CSS variable).
@@ -126,6 +128,406 @@ if ( ! function_exists( 'nextora_header_block_sanitize_inner_max_width' ) ) {
 		}
 
 		return '';
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
+	/**
+	 * Generate inline <style> tag that overrides @media breakpoints to the custom value.
+	 *
+	 * Returns empty string when $bp === 768 (theme default).
+	 *
+	 * @param int $bp Desktop breakpoint in pixels.
+	 */
+	function nextora_header_block_mobile_breakpoint_css( int $bp ): string
+	{
+		if ( 768 === $bp ) {
+			return '';
+		}
+
+		$d  = $bp;         // desktop min-width
+		$m2 = $bp - 0.02;  // mobile max-width (covers logo, inner grid, utilities, portal)
+
+		return '<style id="nextora-header-mobile-bp-' . (int) $bp . '">' . "\n"
+
+			// ================================================================
+			// Desktop: apply custom breakpoint override for layout rules that
+			// style.css normally applies at min-width:768px.
+			// ================================================================
+			. '@media (min-width: ' . $d . 'px) {' . "\n"
+
+			// -- nav source visible -----------------------------------------
+			. '  .nextora-header-block__nav-source{display:flex;}' . "\n"
+
+			// -- menu toggle hidden -----------------------------------------
+			. '  .nextora-header-block__menu-toggle{display:none !important;}' . "\n"
+
+			// -- two-row layout ---------------------------------------------
+			. '  .nextora-header-block--layout-two-row .nextora-header-block__inner{' . "\n"
+			. '    gap:var(--wp--preset--spacing--10,0.85rem);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block__row--nav{display:flex;align-items:center;justify-content:center;}' . "\n"
+			. '  .nextora-header-block--layout-two-row .nextora-header-block__row--nav .nextora-header-block__nav-source{' . "\n"
+			. '    flex:1 1 auto;justify-content:center;width:100%;' . "\n"
+			. '  }' . "\n"
+
+			// -- logo-nav-center layout -------------------------------------
+			. '  .nextora-header-block--layout-logo-nav-center .nextora-header-block__inner{' . "\n"
+			. '    display:grid;align-items:center;' . "\n"
+			. '    column-gap:clamp(var(--wp--preset--spacing--10,1rem),2vw,var(--nextora-gutter,1.5rem));' . "\n"
+			. '    row-gap:var(--wp--preset--spacing--10,0.85rem);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-logo-nav-center .nextora-header-block__logo{' . "\n"
+			. '    grid-column:1;z-index:3;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-logo-nav-center .nextora-header-block__nav-source{' . "\n"
+			. '    grid-column:2;flex:0 1 auto;width:100%;max-width:100%;justify-self:center;justify-content:center;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-logo-nav-center .nextora-header-block__actions{' . "\n"
+			. '    grid-column:3;justify-self:end;' . "\n"
+			. '  }' . "\n"
+
+			// -- nav-start-logo-center layout -------------------------------
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__inner{' . "\n"
+			. '    display:grid;grid-template-columns:3fr 1fr 3fr;grid-template-rows:auto;grid-template-areas:"nav logo actions";' . "\n"
+			. '    align-items:center;' . "\n"
+			. '    column-gap:clamp(var(--wp--preset--spacing--10,1rem),2vw,var(--nextora-gutter,1.5rem));' . "\n"
+			. '    width:100%;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__nav-source{' . "\n"
+			. '    grid-area:nav;justify-self:start;align-self:center;width:fit-content;max-width:100%;min-width:0;' . "\n"
+			. '    justify-content:flex-start;flex:0 1 auto;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__nav-source .nextora-header-block__nav-el{' . "\n"
+			. '    width:auto;max-width:100%;min-width:0;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__logo{' . "\n"
+			. '    grid-area:logo;justify-self:center;align-self:center;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__logo .nextora-header-block__logo-link{' . "\n"
+			. '    justify-content:center;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__actions{' . "\n"
+			. '    grid-area:actions;justify-self:end;align-self:center;width:fit-content;max-width:100%;min-width:0;' . "\n"
+			. '  }' . "\n"
+
+			// -- follow-us drawer (hide on desktop in nav source) ----------
+			. '  .nextora-header-block__follow-us--drawer{display:none !important;}' . "\n"
+
+			// -- portal hidden on desktop (nav-menus.css) -------------------
+			. '  .nextora-primary-nav-portal,' . "\n"
+			. '  .nextora-primary-nav-portal.nextora-primary-nav-portal--open{' . "\n"
+			. '    display:none !important;visibility:hidden;pointer-events:none;' . "\n"
+			. '  }' . "\n"
+
+			// -- submenu accordion toggle hidden on desktop (nav-menus.css) -
+			. '  .nextora-header-menu .nextora-submenu-toggle{display:none !important;}' . "\n"
+
+			. '}' . "\n"
+
+			// ================================================================
+			// Mobile: reset everything that desktop rules (min-width:768px)
+			// in style.css / nav-menus.css would otherwise set. The base
+			// (non-media-query) rules already define the mobile defaults, but
+			// we need !important guards so they override the 768px rules when
+			// the viewport is below the custom breakpoint but above 768px.
+			// ================================================================
+			. '@media (max-width: ' . $m2 . 'px) {' . "\n"
+
+			// -- force mobile nav-source + menu-toggle ----------------------
+			. '  .nextora-header-block__nav-source{display:none !important;}' . "\n"
+			. '  .nextora-header-block__menu-toggle{display:inline-flex !important;}' . "\n"
+
+			// -- inner grid: mobile 2-column --------------------------------
+			. '  .nextora-header-block__inner{grid-template-columns:1fr auto !important;}' . "\n"
+
+			// -- reset logo-nav-center explicit child placements ------------
+			. '  .nextora-header-block--layout-logo-nav-center .nextora-header-block__inner{' . "\n"
+			. '    grid-template-columns:1fr auto !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-logo-nav-center .nextora-header-block__logo{' . "\n"
+			. '    grid-column:auto !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-logo-nav-center .nextora-header-block__nav-source{' . "\n"
+			. '    grid-column:auto !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-logo-nav-center .nextora-header-block__actions{' . "\n"
+			. '    grid-column:auto !important;justify-self:auto !important;' . "\n"
+			. '  }' . "\n"
+
+			// -- reset nav-start-logo-center explicit child placements ------
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__inner{' . "\n"
+			. '    grid-template-columns:1fr auto !important;grid-template-areas:none !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__logo{' . "\n"
+			. '    grid-area:auto !important;justify-self:start !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__logo .nextora-header-block__logo-link{' . "\n"
+			. '    justify-content:start !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__nav-source{' . "\n"
+			. '    grid-area:auto !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__actions{' . "\n"
+			. '    grid-area:auto !important;' . "\n"
+			. '  }' . "\n"
+
+			// -- reset two-row nav row visibility ---------------------------
+			. '  .nextora-header-block__row--nav{display:none !important;}' . "\n"
+
+			// -- logo swap --------------------------------------------------
+			. '  .nextora-header-block__logo-img--desktop{display:none;}' . "\n"
+			. '  .nextora-header-block__logo-img--mobile{' . "\n"
+			. '    display:block;max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px)));' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block__logo-img:not(.nextora-header-block__logo-img--desktop):not(.nextora-header-block__logo-img--mobile){' . "\n"
+			. '    max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px)));' . "\n"
+			. '  }' . "\n"
+
+			// Editor canvas mirror
+			. '  .nextora-header-block--editor .nextora-header-block__logo-img--desktop{display:none;}' . "\n"
+			. '  .nextora-header-block--editor .nextora-header-block__logo-img--mobile{' . "\n"
+			. '    display:block;max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px)));' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--editor .nextora-header-block__logo-img:not(.nextora-header-block__logo-img--desktop):not(.nextora-header-block__logo-img--mobile){' . "\n"
+			. '    max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px)));' . "\n"
+			. '  }' . "\n"
+
+			// -- utility hide rules -----------------------------------------
+			. '  .nextora-header-block__utilities--hide-follow-us-mobile .nextora-header-block__follow-us{display:none !important;}' . "\n"
+			. '  .nextora-header-block__utilities--hide-search-mobile .nextora-header-block__search{display:none !important;}' . "\n"
+			. '  .nextora-header-block__utilities--hide-cart-mobile .nextora-header-block__cart{display:none !important;}' . "\n"
+			. '  .nextora-header-block__utilities--hide-cta-mobile .nextora-header-block__cta-wrap{display:none !important;}' . "\n"
+
+			// -- icon sizes / touch target tweaks ---------------------------
+			. '  .nextora-header-block__utilities .nextora-header-block__cart-link,' . "\n"
+			. '  .nextora-header-block__utilities .nextora-header-block__cart--woo .wc-block-mini-cart__button,' . "\n"
+			. '  .nextora-header-block__utilities .nextora-header-block__account-link,' . "\n"
+			. '  .nextora-header-block__cart--woo .wc-block-mini-cart{width:2rem;height:2rem;}' . "\n"
+			. '  .nextora-header-block__cart--woo .wc-block-mini-cart__icon{width:1.5rem;height:1.5rem;}' . "\n"
+			. '  .nextora-header-block__cart-placeholder{width:2rem;height:2rem;}' . "\n"
+			. '  .nextora-header-block__menu-toggle,' . "\n"
+			. '  .nextora-header-block__search--spotlight button[data-nextora-modal-open]{width:2rem;height:2rem;}' . "\n"
+			. '  .nextora-header-block__search--spotlight button[data-nextora-modal-open] svg{width:20px;height:20px;}' . "\n"
+
+			// -- utilities / actions reflow --------------------------------
+			. '  .nextora-header-block__utilities{column-gap:0.25rem;row-gap:0.25rem;align-items:center;min-width:0;flex-shrink:1;}' . "\n"
+			. '  .nextora-header-block__actions{min-width:0;flex-shrink:1;}' . "\n"
+
+			// -- follow-us toggle tightening ---------------------------------
+			. '  .nextora-header-block__follow-us-toggle{font-size:0.8125rem;padding:0.3rem 0.4rem;}' . "\n"
+			. '  .nextora-header-block__follow-us-panel{border-radius:1rem;}' . "\n"
+
+			// -- simple search ----------------------------------------------
+			. '  .nextora-header-block__search--simple{max-width:none;flex:1 1 8rem;}' . "\n"
+
+			// -- follow-us drawer: force visible inside portal mount ---------
+			// (overrides style.css @media min-width:768px display:none !important)
+			. '  .nextora-primary-nav-portal__mount .nextora-header-block__follow-us--drawer{' . "\n"
+			. '    display:block !important;' . "\n"
+			. '  }' . "\n"
+
+			// ================================================================
+			// Portal mobile rules (from nav-menus.css @media max-width:767.98px)
+			// ================================================================
+
+			. '  .nextora-primary-nav-portal{' . "\n"
+			. '    --nextora-nav-portal-dur:var(--nextora-offcanvas-dur);--nextora-nav-portal-ease:var(--nextora-offcanvas-ease);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal:not([hidden]){' . "\n"
+			. '    display:flex !important;flex-direction:column;align-items:flex-end;justify-content:stretch;' . "\n"
+			. '    min-height:100dvh;visibility:visible;opacity:0;pointer-events:none;' . "\n"
+			. '    transition:opacity var(--nextora-nav-portal-dur) var(--nextora-nav-portal-ease);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal.nextora-primary-nav-portal--open{' . "\n"
+			. '    display:flex !important;visibility:visible !important;' . "\n"
+			. '    opacity:1;pointer-events:auto;' . "\n"
+			. '    transition:opacity var(--nextora-nav-portal-dur) var(--nextora-nav-portal-ease);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--gsap.nextora-primary-nav-portal--open{opacity:1;transition:none;}' . "\n"
+			. '  .nextora-primary-nav-portal--gsap .nextora-primary-nav-portal__backdrop,' . "\n"
+			. '  .nextora-primary-nav-portal--gsap .nextora-primary-nav-portal__panel{transition:none !important;}' . "\n"
+			. '  .nextora-primary-nav-portal__panel{' . "\n"
+			. '    width:90%;max-width:90%;max-height:100dvh;margin:0;padding:0;' . "\n"
+			. '    transform:translate3d(0,-0.5rem,0);transition:transform var(--nextora-nav-portal-dur) var(--nextora-nav-portal-ease);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel{transform:translate3d(0,0,0);}' . "\n"
+			. '  .nextora-primary-nav-portal--gsap .nextora-primary-nav-portal__panel{transform:none;}' . "\n"
+			. '  @media (prefers-reduced-motion:reduce){' . "\n"
+			. '    .nextora-primary-nav-portal:not([hidden]){--nextora-nav-portal-dur:0.01ms;}' . "\n"
+			. '    .nextora-primary-nav-portal__panel{transform:none;transition:none;}' . "\n"
+			. '  }' . "\n"
+
+			// Portal mount + panel mobile
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__mount{flex:1 1 auto;min-height:100%;}' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__mount--follow-us-open,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel--follow-us-open{overflow:visible;}' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__mount--follow-us-open>nav{position:relative;z-index:1;}' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel{' . "\n"
+			. '    padding:4rem 1rem 0;background-color:var(--nextora-nav-mobile-drawer-bg);color:var(--nextora-nav-mobile-drawer-fg);' . "\n"
+			. '    border-block-start:1px solid var(--nextora-nav-mobile-drawer-border);' . "\n"
+			. '    box-shadow:var(--nextora-nav-mobile-drawer-shadow);box-sizing:border-box;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-navigation-from-location--primary{' . "\n"
+			. '    flex-direction:column;align-items:stretch;justify-content:flex-start;row-gap:0;column-gap:0;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu{' . "\n"
+			. '    flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;' . "\n"
+			. '    width:100%;gap:0;padding:0;margin:0;list-style:none;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li>a{' . "\n"
+			. '    padding:var(--wp--preset--spacing--10,1rem) 0;font-size:var(--wp--preset--font-size--base,1rem);' . "\n"
+			. '    font-weight:500;border-radius:0;background:transparent;box-shadow:none;' . "\n"
+			. '    transition:background-color var(--nextora-nav-t,0.18s ease),color var(--nextora-nav-t,0.18s ease);color:inherit;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li>a:hover,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li>a:focus-visible{' . "\n"
+			. '    color:var(--wp--preset--color--primary);background-color:transparent;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.menu-item-has-children{' . "\n"
+			. '    display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--wp--preset--spacing--05,0.5rem);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.menu-item-has-children>a{' . "\n"
+			. '    flex:1 1 auto;min-width:0;border-bottom:none;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .menu-item-has-children>a::after{display:none;}' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle{' . "\n"
+			. '    flex:0 0 auto;display:inline-flex !important;align-items:center;justify-content:center;' . "\n"
+			. '    width:2.5rem;height:2.5rem;margin:0;padding:0;border:none;border-radius:var(--wp--preset--spacing--05,0.375rem);' . "\n"
+			. '    background:transparent;color:inherit;cursor:pointer;transition:background-color var(--nextora-nav-t),transform var(--nextora-nav-t);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle:hover,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle:focus-visible{' . "\n"
+			. '    background:transparent;outline:none;outline-offset:0;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle__icon{' . "\n"
+			. '    display:flex;line-height:0;transition:transform var(--nextora-nav-t);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-submenu-toggle[aria-expanded="true"] .nextora-submenu-toggle__icon{' . "\n"
+			. '    transform:rotate(180deg);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .menu-item-has-children>.sub-menu{' . "\n"
+			. '    flex:1 0 100%;width:100%;box-sizing:border-box;margin:0;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .menu-item-has-children{' . "\n"
+			. '    display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--wp--preset--spacing--05,0.5rem);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .menu-item-has-children>a{' . "\n"
+			. '    flex:1 1 auto;min-width:0;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .menu-item-has-children>.sub-menu{' . "\n"
+			. '    flex:1 0 100%;width:100%;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .menu-item-has-children:not(.nextora-submenu--open)>.sub-menu{' . "\n"
+			. '    display:none !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu li.nextora-submenu--open>.sub-menu{' . "\n"
+			. '    display:block !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu{' . "\n"
+			. '    position:static;display:block;opacity:1;visibility:visible;transform:none;pointer-events:auto;' . "\n"
+			. '    min-width:0;margin:0 0 var(--wp--preset--spacing--10,1rem);padding:0;' . "\n"
+			. '    padding-inline-start:var(--wp--preset--spacing--10,1rem);border:none;border-radius:0;' . "\n"
+			. '    box-shadow:none;background-color:transparent;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .sub-menu{' . "\n"
+			. '    margin-top:0;margin-inline-start:0;padding-inline-start:var(--wp--preset--spacing--10,1rem);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .menu-item-has-children::before{display:none;}' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a{' . "\n"
+			. '    padding:var(--wp--preset--spacing--05,0.5rem) 0;font-size:var(--wp--preset--font-size--small,0.9375rem);' . "\n"
+			. '    width:auto;color:inherit;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:hover,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:focus-visible{' . "\n"
+			. '    color:var(--wp--preset--color--primary);background-color:transparent;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-item>a,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-ancestor>a{' . "\n"
+			. '    color:var(--nextora-nav-panel-active-fg);font-weight:600;background-color:transparent;' . "\n"
+			. '  }' . "\n"
+
+			// ================================================================
+			// Beplus mega menu: accordion inside portal (all viewports).
+			// Mirrors the <768px behavior — no dependency on plugin breakpoints.
+			// ================================================================
+
+			// ha-mega-menu item in portal: flex-wrap row
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu{' . "\n"
+			. '    display:flex !important;flex-wrap:wrap;align-items:center;' . "\n"
+			. '    gap:0 var(--wp--preset--spacing--05,0.5rem);width:100%;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu>a{' . "\n"
+			. '    flex:1 1 auto;min-width:0;border-bottom:none;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu>a::after,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu::before,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu:hover::after,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu:focus-within::after{' . "\n"
+			. '    display:none !important;' . "\n"
+			. '  }' . "\n"
+
+			// Mega panel: force static accordion (undo all beplus position/flyout/off-canvas)
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu>.beplus-vmn-mega-panel{' . "\n"
+			. '    position:static !important;top:auto !important;left:auto !important;right:auto !important;bottom:auto !important;' . "\n"
+			. '    width:100% !important;max-width:none !important;transform:none !important;' . "\n"
+			. '    flex:1 0 100% !important;box-shadow:none !important;border-radius:0 !important;' . "\n"
+			. '    z-index:auto !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .beplus-vmn-mega-panel__inner{' . "\n"
+			. '    padding:0 !important;' . "\n"
+			. '  }' . "\n"
+
+			// Accordion open/close via beplus-vmn--open class
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu:not(.beplus-vmn--open)>.beplus-vmn-mega-panel{' . "\n"
+			. '    display:none !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu.beplus-vmn--open>.beplus-vmn-mega-panel{' . "\n"
+			. '    display:block !important;overflow:visible;opacity:1;visibility:visible;pointer-events:auto;max-height:none;' . "\n"
+			. '  }' . "\n"
+
+			// Toggle button & icon — full beplus styles (needed at all widths
+			// because plugin CSS restricts them to ≤1023px).
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu>.beplus-vmn-toggle{' . "\n"
+			. '    -webkit-appearance:none;appearance:none;flex:0 0 auto;align-self:center;' . "\n"
+			. '    display:inline-flex !important;align-items:center;justify-content:center;' . "\n"
+			. '    width:2.5rem;height:2.5rem;margin:0;margin-inline-start:auto;margin-inline-end:0;' . "\n"
+			. '    padding:0;border:none;border-radius:var(--wp--preset--spacing--05,0.375rem);' . "\n"
+			. '    background:transparent;color:inherit;font:inherit;line-height:1;' . "\n"
+			. '    cursor:pointer;flex-shrink:0;' . "\n"
+			. '    transition:background-color 0.15s ease;' . "\n"
+			. '    --beplus-vmn-toggle-hover-bg:var(--nextora-nav-panel-hover-bg,color-mix(in srgb,currentColor 8%,transparent));' . "\n"
+			. '    --beplus-vmn-toggle-active-bg:var(--nextora-nav-panel-hover-bg,color-mix(in srgb,currentColor 12%,transparent));' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu>.beplus-vmn-toggle:hover,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu>.beplus-vmn-toggle:focus-visible{' . "\n"
+			. '    background-color:var(--beplus-vmn-toggle-hover-bg);' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu>.beplus-vmn-toggle:focus-visible{' . "\n"
+			. '    outline:2px solid var(--wp--preset--color--primary,currentColor);outline-offset:2px;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.has-mega-menu>.beplus-vmn-toggle[aria-expanded="true"]{' . "\n"
+			. '    background-color:var(--beplus-vmn-toggle-active-bg);' . "\n"
+			. '  }' . "\n"
+
+			// Toggle icon
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .beplus-vmn-toggle__icon{' . "\n"
+			. '    display:flex;align-items:center;justify-content:center;' . "\n"
+			. '    width:0.75rem;height:0.75rem;line-height:0;' . "\n"
+			. '    transition:transform 0.2s ease;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .beplus-vmn-toggle__icon svg{' . "\n"
+			. '    display:block;width:100%;height:100%;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .beplus-vmn-toggle[aria-expanded="true"] .beplus-vmn-toggle__icon{' . "\n"
+			. '    transform:rotate(180deg);' . "\n"
+			. '  }' . "\n"
+
+			// Overlay — always hidden in portal (accordion doesn't need it)
+			. '  .beplus-vmn-overlay{display:none !important;}' . "\n"
+
+			. '}' . "\n"
+			. '</style>' . "\n";
 	}
 }
 
@@ -445,14 +847,16 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 	/**
 	 * Follow Us trigger + dropdown panel markup.
 	 *
-	 * @param array<string, mixed> $atts Block attributes.
-	 * @param string               $uid  Unique instance id.
+	 * @param array<string, mixed> $atts    Block attributes.
+	 * @param string               $uid     Unique instance id.
+	 * @param string               $context `utilities` (header bar) or `drawer` (mobile canvas menu).
 	 */
-	function nextora_header_block_render_follow_us( array $atts, string $uid ): string
+	function nextora_header_block_render_follow_us( array $atts, string $uid, string $context = 'utilities' ): string
 	{
 		do_action( 'nextora_header_block_before_follow_us', $atts );
 
-		$panel_id = sanitize_html_class( $uid ) . '-follow-us-panel';
+		$is_drawer  = 'drawer' === $context;
+		$panel_id   = sanitize_html_class( $uid ) . '-follow-us-panel';
 		$label    = isset( $atts['followUsLabel'] ) && is_string( $atts['followUsLabel'] ) ? trim( $atts['followUsLabel'] ) : '';
 		$label    = '' !== $label ? $label : __( 'Follow Us', 'nextora' );
 
@@ -479,9 +883,17 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 
 		$chevron_svg = '<svg class="nextora-header-block__follow-us-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
+		$root_class = 'nextora-header-block__follow-us';
+		if ( $is_drawer ) {
+			$root_class .= ' nextora-header-block__follow-us--drawer';
+		}
+
 		ob_start();
 	?>
-		<div class="nextora-header-block__follow-us" data-nextora-header-follow-us>
+		<div
+			class="<?php echo esc_attr( $root_class ); ?>"
+			data-nextora-header-follow-us
+			<?php echo $is_drawer ? 'data-nextora-header-follow-us-drawer' : ''; ?>>
 			<button
 				type="button"
 				class="nextora-header-block__follow-us-toggle"
@@ -587,6 +999,107 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 		do_action( 'nextora_header_block_after_follow_us', $atts );
 
 		return (string) ob_get_clean();
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_sanitize_css_length' ) ) {
+	/**
+	 * Sanitize a CSS length for padding, radius, etc.
+	 *
+	 * @param string $value Raw attribute value.
+	 */
+	function nextora_header_block_sanitize_css_length( string $value ): string
+	{
+		$value = trim( $value );
+		if ( '' === $value || '0' === $value ) {
+			return '';
+		}
+
+		if ( preg_match( '/^var:preset\|spacing\|([a-z0-9_-]+)$/i', $value, $preset_m ) ) {
+			return 'var(--wp--preset--spacing--' . strtolower( $preset_m[1] ) . ')';
+		}
+
+		if ( preg_match( '/^(\d+\.?\d*)(px|rem|em|%|vw|vh)$/i', $value, $length_m ) ) {
+			return $length_m[1] . strtolower( $length_m[2] );
+		}
+
+		return '';
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_build_cta_inline_style' ) ) {
+	/**
+	 * Optional CTA overrides from block attributes (empty = theme.json defaults).
+	 *
+	 * @param array<string, mixed> $atts Block attributes.
+	 */
+	function nextora_header_block_build_cta_inline_style( array $atts ): string
+	{
+		$declarations = array();
+
+		$padding = isset( $atts['ctaButtonPadding'] ) && is_array( $atts['ctaButtonPadding'] )
+			? $atts['ctaButtonPadding']
+			: array();
+
+		foreach ( array( 'top', 'right', 'bottom', 'left' ) as $side ) {
+			if ( ! isset( $padding[ $side ] ) || ! is_scalar( $padding[ $side ] ) ) {
+				continue;
+			}
+
+			$san = nextora_header_block_sanitize_css_length( (string) $padding[ $side ] );
+			if ( '' !== $san ) {
+				$declarations[] = 'padding-' . $side . ':' . $san;
+			}
+		}
+
+		// Legacy px padding (pre–SpacingSizesControl).
+		if ( array() === $padding || ! array_filter( $padding ) ) {
+			$pad_y = isset( $atts['ctaButtonPaddingVertical'] ) ? (int) $atts['ctaButtonPaddingVertical'] : 0;
+			$pad_x = isset( $atts['ctaButtonPaddingHorizontal'] ) ? (int) $atts['ctaButtonPaddingHorizontal'] : 0;
+
+			if ( $pad_y > 0 ) {
+				$declarations[] = 'padding-top:' . $pad_y . 'px';
+				$declarations[] = 'padding-bottom:' . $pad_y . 'px';
+			}
+
+			if ( $pad_x > 0 ) {
+				$declarations[] = 'padding-left:' . $pad_x . 'px';
+				$declarations[] = 'padding-right:' . $pad_x . 'px';
+			}
+		}
+
+		$radius_raw = $atts['ctaButtonBorderRadius'] ?? null;
+		$corner_map = array(
+			'topLeft'     => 'border-top-left-radius',
+			'topRight'    => 'border-top-right-radius',
+			'bottomLeft'  => 'border-bottom-left-radius',
+			'bottomRight' => 'border-bottom-right-radius',
+		);
+
+		if ( is_string( $radius_raw ) ) {
+			$san_radius = nextora_header_block_sanitize_css_length( $radius_raw );
+			if ( '' !== $san_radius ) {
+				$declarations[] = 'border-radius:' . $san_radius;
+			}
+		} elseif ( is_array( $radius_raw ) ) {
+			foreach ( $corner_map as $corner => $property ) {
+				if ( ! isset( $radius_raw[ $corner ] ) || ! is_scalar( $radius_raw[ $corner ] ) ) {
+					continue;
+				}
+
+				$san_corner = nextora_header_block_sanitize_css_length( (string) $radius_raw[ $corner ] );
+				if ( '' !== $san_corner ) {
+					$declarations[] = $property . ':' . $san_corner;
+				}
+			}
+		} elseif ( isset( $atts['ctaButtonBorderRadius'] ) && is_numeric( $atts['ctaButtonBorderRadius'] ) ) {
+			$legacy_radius = (int) $atts['ctaButtonBorderRadius'];
+			if ( $legacy_radius > 0 ) {
+				$declarations[] = 'border-radius:' . $legacy_radius . 'px';
+			}
+		}
+
+		return implode( ';', $declarations );
 	}
 }
 
@@ -790,12 +1303,18 @@ $render_nav = static function ( array $atts, string $menu_dom_id, string $uid ):
 	$nav_classes = (array) apply_filters( 'nextora_header_block_nav_wrapper_classes', $nav_classes, $atts );
 	$nav_classes = array_filter( array_map( 'trim', $nav_classes ) );
 
+	$nav_inline_style = '';
+	$menu_item_spacing = isset( $atts['menuItemSpacing'] ) && is_string( $atts['menuItemSpacing'] ) ? trim( $atts['menuItemSpacing'] ) : '';
+	if ( '' !== $menu_item_spacing ) {
+		$nav_inline_style = ' style="--nextora-header-menu-item-spacing:var(--wp--preset--spacing--' . sanitize_key( $menu_item_spacing ) . ')"';
+	}
+
 	ob_start();
 ?>
 	<nav
 		class="<?php echo esc_attr( implode( ' ', $nav_classes ) ); ?>"
 		aria-label="<?php echo esc_attr( $aria ); ?>"
-		data-nextora-header-block-nav="<?php echo esc_attr( $uid ); ?>">
+		data-nextora-header-block-nav="<?php echo esc_attr( $uid ); ?>"<?php echo $nav_inline_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 		<?php
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- From wp_nav_menu().
 		echo $nav_html;
@@ -820,7 +1339,8 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 	$show_cart     = ( ! isset( $atts['showMiniCart'] ) || (bool) $atts['showMiniCart'] ) && $woo_on();
 	$show_acct     = ( ! isset( $atts['showMyAccount'] ) || (bool) $atts['showMyAccount'] ) && $woo_on();
 
-	$hide_follow_m = isset( $atts['showFollowUsMobile'] ) && ! (bool) $atts['showFollowUsMobile'];
+	$show_follow_m   = isset( $atts['showFollowUsMobile'] ) && (bool) $atts['showFollowUsMobile'];
+	$hide_follow_m   = $show_follow && ! $show_follow_m;
 	$hide_search_m = isset( $atts['showSearchMobile'] ) && ! (bool) $atts['showSearchMobile'];
 	$hide_cart_m   = isset( $atts['showCartMobile'] ) && ! (bool) $atts['showCartMobile'];
 	$hide_cta_m    = isset( $atts['showCtaButtonMobile'] ) && ! (bool) $atts['showCtaButtonMobile'];
@@ -864,94 +1384,17 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 		<?php endif; ?>
 
 		<?php
-		if ( $show_cart && function_exists( 'wc_get_cart_url' ) ) :
-			$cart     = function_exists( 'WC' ) && isset( WC()->cart ) ? WC()->cart : null;
-			$cart_ok  = $cart instanceof WC_Cart;
-			$rest_ssr = defined( 'REST_REQUEST' ) && REST_REQUEST;
+		if ( $show_cart && function_exists( 'nextora_header_block_render_woo_mini_cart' ) ) :
+			$cart_markup = nextora_header_block_render_woo_mini_cart( $atts );
 
-			// ServerSideRender (block editor) often runs before WooCommerce initializes the cart on the request.
-			if ( ! $cart_ok && $rest_ssr && function_exists( 'wc_load_cart' ) ) {
-				wc_load_cart();
-				$cart    = function_exists( 'WC' ) && isset( WC()->cart ) ? WC()->cart : null;
-				$cart_ok = $cart instanceof WC_Cart;
-			}
-
-			$show_cart_markup = $cart_ok || $rest_ssr;
-
-			if ( $show_cart_markup ) :
-				$cart_count      = $cart_ok ? (int) $cart->get_cart_contents_count() : 0;
-				$drawer_id       = 'nextora-mini-cart-' . preg_replace( '/[^a-zA-Z0-9_-]/', '', $block_uid );
-				$drawer_title_id = $drawer_id . '-title';
-				$cart_title      = apply_filters( 'nextora_header_block_mini_cart_title', __( 'Cart', 'nextora' ), $atts );
-				$cart_title      = is_string( $cart_title ) ? $cart_title : __( 'Cart', 'nextora' );
-
+			if ( '' !== trim( $cart_markup ) ) :
 				do_action( 'nextora_header_block_before_cart', $atts );
-				$cart_aria = function_exists( 'nextora_header_block_mini_cart_aria_label' )
-					? nextora_header_block_mini_cart_aria_label( $cart_count, $atts )
-					: __( 'Open shopping cart', 'nextora' );
 		?>
-				<div class="nextora-header-block__cart">
-					<button
-						type="button"
-						class="nextora-header-block__cart-link nextora-header-block__cart-trigger"
-						data-nextora-modal-open="<?php echo esc_attr( $drawer_id ); ?>"
-						aria-haspopup="dialog"
-						aria-label="<?php echo esc_attr( $cart_aria ); ?>">
-						<span class="nextora-header-block__cart-icon" aria-hidden="true">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M6 7h15l-1.5 9h-12L6 7Zm0 0L5 3H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
-								<circle cx="9" cy="20" r="1.35" fill="currentColor" />
-								<circle cx="18" cy="20" r="1.35" fill="currentColor" />
-							</svg>
-						</span>
-						<?php
-						echo function_exists( 'nextora_header_block_mini_cart_badge_html' )
-							? nextora_header_block_mini_cart_badge_html( $cart_count )
-							: '<span class="nextora-header-block__cart-badge" aria-hidden="true"></span>';
-						?>
-					</button>
-				</div>
-
-				<div
-					id="<?php echo esc_attr( $drawer_id ); ?>"
-					class="nextora-modal nextora-modal--drawer-end nextora-header-block__mini-cart-modal"
-					hidden
-					data-nextora-modal
-					data-nextora-header-mini-cart-portal
-					aria-hidden="true">
-					<div class="nextora-modal__scrim" data-nextora-modal-dismiss tabindex="-1"></div>
-					<div
-						class="nextora-modal__surface"
-						data-nextora-modal-surface
-						role="dialog"
-						aria-modal="true"
-						aria-labelledby="<?php echo esc_attr( $drawer_title_id ); ?>"
-						tabindex="-1">
-						<header class="nextora-modal__header">
-							<h2 id="<?php echo esc_attr( $drawer_title_id ); ?>" class="nextora-modal__title">
-								<?php echo esc_html( $cart_title ); ?>
-							</h2>
-							<button
-								type="button"
-								class="nextora-modal__close"
-								data-nextora-modal-dismiss
-								aria-label="<?php esc_attr_e( 'Close cart', 'nextora' ); ?>">
-								<span class="nextora-modal__close-icon" aria-hidden="true">
-									<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-										<path d="M18 6 6 18M6 6l12 12" />
-									</svg>
-								</span>
-							</button>
-						</header>
-						<div class="nextora-modal__body nextora-header-block__mini-cart-body woocommerce">
-							<?php
-							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce template / core markup.
-							echo '<div class="widget_shopping_cart_content" data-nextora-mini-cart-fragments="1">';
-							woocommerce_mini_cart();
-							echo '</div>';
-							?>
-						</div>
-					</div>
+				<div class="nextora-header-block__cart nextora-header-block__cart--woo">
+					<?php
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- WooCommerce block markup.
+					echo $cart_markup;
+					?>
 				</div>
 		<?php
 				do_action( 'nextora_header_block_after_cart', $atts );
@@ -985,18 +1428,53 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 		if ( $show_cta ) :
 			$cta_text = isset( $atts['ctaButtonText'] ) ? trim( (string) $atts['ctaButtonText'] ) : '';
 			if ( '' !== $cta_text ) :
-				$cta_url   = isset( $atts['ctaButtonUrl'] ) ? trim( (string) $atts['ctaButtonUrl'] ) : '';
-				$cta_url   = '' !== $cta_url ? esc_url( $cta_url ) : '#';
-				$cta_new   = ! empty( $atts['ctaButtonTarget'] );
-				$cta_style = isset( $atts['ctaButtonStyle'] ) && 'outline' === $atts['ctaButtonStyle'] ? 'outline' : 'solid';
-				$cta_class = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style );
+				$cta_url       = isset( $atts['ctaButtonUrl'] ) ? trim( (string) $atts['ctaButtonUrl'] ) : '';
+				$cta_url       = '' !== $cta_url ? esc_url( $cta_url ) : '#';
+				$cta_new       = ! empty( $atts['ctaButtonTarget'] );
+				$cta_style     = isset( $atts['ctaButtonStyle'] ) && 'outline' === $atts['ctaButtonStyle'] ? 'outline' : 'solid';
+				$cta_class     = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style ) . ' wp-element-button';
+				$cta_style_attr = nextora_header_block_build_cta_inline_style( $atts );
+
+				$show_cta_icon  = ! empty( $atts['ctaButtonShowIcon'] );
+				$cta_icon_name  = isset( $atts['ctaButtonIconName'] ) ? sanitize_key( (string) $atts['ctaButtonIconName'] ) : 'arrow-right';
+				$cta_icon_pos   = isset( $atts['ctaButtonIconPosition'] ) && 'left' === $atts['ctaButtonIconPosition'] ? 'left' : 'right';
+				$cta_icon_size  = isset( $atts['ctaButtonIconSize'] ) ? max( 12, (int) $atts['ctaButtonIconSize'] ) : 20;
+				$cta_icon_sw    = isset( $atts['ctaButtonIconStrokeWidth'] ) ? (float) $atts['ctaButtonIconStrokeWidth'] : 2.0;
+
+				$cta_icon_markup = '';
+				if ( $show_cta_icon && '' !== $cta_icon_name ) {
+					$cta_icon_markup = nextora_get_lucide_svg(
+						$cta_icon_name,
+						$cta_icon_size,
+						'currentColor',
+						$cta_icon_sw,
+						'',
+					);
+				}
 		?>
 				<div class="nextora-header-block__cta-wrap">
 					<a
 						class="<?php echo esc_attr( $cta_class ); ?>"
 						href="<?php echo esc_url( $cta_url ); ?>"
-						<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>>
-						<?php echo esc_html( $cta_text ); ?>
+						<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+						<?php echo '' !== $cta_style_attr ? 'style="' . esc_attr( $cta_style_attr ) . '"' : ''; ?>>
+						<?php if ( $show_cta_icon && 'left' === $cta_icon_pos && '' !== $cta_icon_markup ) : ?>
+							<span class="nextora-header-block__cta-icon nextora-header-block__cta-icon--left" aria-hidden="true">
+								<?php
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in nextora_get_lucide_svg().
+								echo $cta_icon_markup;
+								?>
+							</span>
+						<?php endif; ?>
+						<span class="nextora-header-block__cta-text"><?php echo esc_html( $cta_text ); ?></span>
+						<?php if ( $show_cta_icon && 'right' === $cta_icon_pos && '' !== $cta_icon_markup ) : ?>
+							<span class="nextora-header-block__cta-icon nextora-header-block__cta-icon--right" aria-hidden="true">
+								<?php
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in nextora_get_lucide_svg().
+								echo $cta_icon_markup;
+								?>
+							</span>
+						<?php endif; ?>
 					</a>
 				</div>
 		<?php
@@ -1020,6 +1498,11 @@ $portal_root_id = $uid . '-portal-root';
 $portal_panel   = $uid . '-portal-panel';
 $portal_title   = $uid . '-portal-title';
 $menu_dom_id    = 'menu-' . sanitize_html_class( str_replace( 'nextora-hb-', 'hb-', $uid ) );
+
+$mobile_bp = isset( $attributes['mobileBreakpoint'] ) ? (int) $attributes['mobileBreakpoint'] : 768;
+if ( $mobile_bp < 320 ) {
+	$mobile_bp = 768;
+}
 
 $wrapper_classes   = (array) apply_filters( 'nextora_header_block_wrapper_classes', array( 'nextora-header-block' ), $attributes );
 $wrapper_classes   = array_filter( array_map( 'trim', $wrapper_classes ) );
@@ -1075,6 +1558,7 @@ ob_start();
 	data-nextora-nav-portal-dialog-label="<?php echo esc_attr( $dialog_lab ); ?>"
 	data-nextora-nav-open-label="<?php echo esc_attr( $open_label ); ?>"
 	data-nextora-nav-close-label="<?php echo esc_attr( $close_label ); ?>"
+	data-nextora-mobile-breakpoint="<?php echo esc_attr( (string) $mobile_bp ); ?>"
 	aria-expanded="false"
 	aria-controls="<?php echo esc_attr( $portal_panel ); ?>"
 	aria-label="<?php echo esc_attr( $open_label ); ?>">
@@ -1091,6 +1575,14 @@ ob_start();
 	<?php
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- nav HTML from wp_nav_menu walker.
 	echo $nav_markup;
+
+	$show_follow_drawer = ! empty( $attributes['showFollowUs'] )
+		&& ( ! isset( $attributes['showFollowUsMobile'] ) || ! (bool) $attributes['showFollowUsMobile'] );
+
+	if ( $show_follow_drawer && function_exists( 'nextora_header_block_render_follow_us' ) ) :
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in helper.
+		echo nextora_header_block_render_follow_us( $attributes, $uid . '-drawer', 'drawer' );
+	endif;
 	?>
 </div>
 <?php
@@ -1163,4 +1655,10 @@ $header_inner_markup = (string) ob_get_clean();
 	?>
 </div>
 <?php
+// Output custom breakpoint inline style when set to non-default value.
+$breakpoint_css = nextora_header_block_mobile_breakpoint_css( $mobile_bp );
+if ( '' !== $breakpoint_css ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Generated CSS from closed-set int value.
+	echo $breakpoint_css;
+}
 do_action( 'nextora_header_block_after', $attributes );

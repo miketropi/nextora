@@ -77,13 +77,17 @@
       "type": "number",
       "default": 4
     },
+    "menuItemSpacing": {
+      "type": "string",
+      "default": ""
+    },
     "showFollowUs": {
       "type": "boolean",
       "default": false
     },
     "showFollowUsMobile": {
       "type": "boolean",
-      "default": true
+      "default": false
     },
     "followUsLabel": {
       "type": "string",
@@ -178,6 +182,35 @@
       "type": "boolean",
       "default": true
     },
+    "ctaButtonPadding": {
+      "type": "object",
+      "default": {}
+    },
+    "ctaButtonBorderRadius": {
+      "type": "object",
+      "default": {}
+    },
+    "ctaButtonShowIcon": {
+      "type": "boolean",
+      "default": false
+    },
+    "ctaButtonIconName": {
+      "type": "string",
+      "default": "arrow-right"
+    },
+    "ctaButtonIconPosition": {
+      "type": "string",
+      "enum": ["left", "right"],
+      "default": "right"
+    },
+    "ctaButtonIconSize": {
+      "type": "number",
+      "default": 20
+    },
+    "ctaButtonIconStrokeWidth": {
+      "type": "number",
+      "default": 2
+    },
     "stickyHeader": {
       "type": "boolean",
       "default": false
@@ -208,6 +241,10 @@
     "innerMaxWidth": {
       "type": "string",
       "default": ""
+    },
+    "mobileBreakpoint": {
+      "type": "number",
+      "default": 768
     }
   },
   "editorScript": "file:./index.js",

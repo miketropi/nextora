@@ -1,5 +1,36 @@
 import type { TestimonialItem, TrustAvatar } from './types';
 
+function resolveColorValue(raw: string): string {
+	const trimmed = raw.trim();
+	if (trimmed === '') {
+		return '';
+	}
+	if (/^#[0-9a-fA-F]{3,8}$/.test(trimmed)) {
+		return trimmed;
+	}
+	if (/^[a-z0-9-]+$/.test(trimmed)) {
+		return `var(--wp--preset--color--${trimmed})`;
+	}
+	return '';
+}
+
+function resolveFontSizeValue(raw: string): string | undefined {
+	const value = raw.trim();
+	if (!value) {
+		return undefined;
+	}
+	if (/^clamp\(.+\)$/i.test(value) || /^[\d.]+(?:rem|px|em|vw|vh|%)$/i.test(value)) {
+		return value;
+	}
+	if (/^[\d.]+$/.test(value)) {
+		return `${value}px`;
+	}
+	if (/^[a-z][a-z0-9-]*$/.test(value)) {
+		return `var(--wp--preset--font-size--${value})`;
+	}
+	return value;
+}
+
 export function createTestimonialId(): string {
 	if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
 		return crypto.randomUUID();
@@ -66,8 +97,6 @@ export function resolveTrustAvatarUrl(
 
 export function buildSectionStyleVars(attrs: {
 	backgroundColor?: string;
-	paddingTop?: number;
-	paddingBottom?: number;
 	contentMaxWidth?: string;
 	topIconSize?: number;
 	topIconColor?: string;
@@ -76,6 +105,8 @@ export function buildSectionStyleVars(attrs: {
 	arrowColor?: string;
 	arrowBorderColor?: string;
 	quoteColor?: string;
+	quoteFontFamily?: string;
+	quoteFontSize?: string;
 	labelColor?: string;
 	authorColor?: string;
 	authorNameColor?: string;
@@ -85,33 +116,45 @@ export function buildSectionStyleVars(attrs: {
 	trustAvatarOverlap?: number;
 	trustAvatarBorderWidth?: number;
 	trustAvatarBorderColor?: string;
+	cardGap?: number;
 }): Record<string, string> {
 	const vars: Record<string, string> = {
-		'--nextora-testimonial-padding-top': `${attrs.paddingTop ?? 80}px`,
-		'--nextora-testimonial-padding-bottom': `${attrs.paddingBottom ?? 80}px`,
 		'--nextora-testimonial-max-width': attrs.contentMaxWidth || '680px',
 		'--nextora-testimonial-icon-size': `${attrs.topIconSize ?? 20}px`,
 		'--nextora-testimonial-avatar-size': `${attrs.trustAvatarSize ?? 36}px`,
 		'--nextora-testimonial-avatar-overlap': `${attrs.trustAvatarOverlap ?? 10}px`,
 		'--nextora-testimonial-avatar-border': `${attrs.trustAvatarBorderWidth ?? 2.5}px`,
+		'--nextora-testimonial-card-gap': `${attrs.cardGap ?? 22}px`,
 	};
 
-	if (attrs.backgroundColor) vars['--nextora-testimonial-bg'] = attrs.backgroundColor;
-	if (attrs.topIconColor) vars['--nextora-testimonial-icon-color'] = attrs.topIconColor;
-	if (attrs.paginationColor) vars['--nextora-testimonial-dot-color'] = attrs.paginationColor;
+	if (attrs.backgroundColor) vars['--nextora-testimonial-bg'] = resolveColorValue(attrs.backgroundColor);
+	if (attrs.topIconColor) vars['--nextora-testimonial-icon-color'] = resolveColorValue(attrs.topIconColor);
+	if (attrs.paginationColor) vars['--nextora-testimonial-dot-color'] = resolveColorValue(attrs.paginationColor);
 	if (attrs.paginationActiveColor) {
-		vars['--nextora-testimonial-dot-active'] = attrs.paginationActiveColor;
+		vars['--nextora-testimonial-dot-active'] = resolveColorValue(attrs.paginationActiveColor);
 	}
-	if (attrs.arrowColor) vars['--nextora-testimonial-arrow-color'] = attrs.arrowColor;
-	if (attrs.arrowBorderColor) vars['--nextora-testimonial-arrow-border'] = attrs.arrowBorderColor;
-	if (attrs.quoteColor) vars['--nextora-testimonial-quote-color'] = attrs.quoteColor;
-	if (attrs.labelColor) vars['--nextora-testimonial-label-color'] = attrs.labelColor;
-	if (attrs.authorColor) vars['--nextora-testimonial-author-color'] = attrs.authorColor;
-	if (attrs.authorNameColor) vars['--nextora-testimonial-author-name-color'] = attrs.authorNameColor;
-	if (attrs.trustColor) vars['--nextora-testimonial-trust-color'] = attrs.trustColor;
-	if (attrs.starColor) vars['--nextora-testimonial-star-color'] = attrs.starColor;
+	if (attrs.arrowColor) vars['--nextora-testimonial-arrow-color'] = resolveColorValue(attrs.arrowColor);
+	if (attrs.arrowBorderColor) vars['--nextora-testimonial-arrow-border'] = resolveColorValue(attrs.arrowBorderColor);
+	if (attrs.quoteColor) vars['--nextora-testimonial-quote-color'] = resolveColorValue(attrs.quoteColor);
+	if (attrs.quoteFontFamily && attrs.quoteFontFamily.trim() !== '') {
+		const ff = attrs.quoteFontFamily.trim();
+		vars['--nextora-testimonial-quote-font-family'] = /^[a-z0-9-]+$/.test(ff)
+			? `var(--wp--preset--font-family--${ff})`
+			: ff;
+	}
+	if (attrs.quoteFontSize) {
+		const resolvedQuoteSize = resolveFontSizeValue(attrs.quoteFontSize);
+		if (resolvedQuoteSize) {
+			vars['--nextora-testimonial-quote-size'] = resolvedQuoteSize;
+		}
+	}
+	if (attrs.labelColor) vars['--nextora-testimonial-label-color'] = resolveColorValue(attrs.labelColor);
+	if (attrs.authorColor) vars['--nextora-testimonial-author-color'] = resolveColorValue(attrs.authorColor);
+	if (attrs.authorNameColor) vars['--nextora-testimonial-author-name-color'] = resolveColorValue(attrs.authorNameColor);
+	if (attrs.trustColor) vars['--nextora-testimonial-trust-color'] = resolveColorValue(attrs.trustColor);
+	if (attrs.starColor) vars['--nextora-testimonial-star-color'] = resolveColorValue(attrs.starColor);
 	if (attrs.trustAvatarBorderColor) {
-		vars['--nextora-testimonial-avatar-border-color'] = attrs.trustAvatarBorderColor;
+		vars['--nextora-testimonial-avatar-border-color'] = resolveColorValue(attrs.trustAvatarBorderColor);
 	}
 
 	return vars;

@@ -9,6 +9,22 @@
 
 declare( strict_types=1 );
 
+if ( ! function_exists( 'nextora_testimonials_resolve_font_family' ) ) {
+	/**
+	 * Preset slug or custom font-family stack → CSS font-family value.
+	 */
+	function nextora_testimonials_resolve_font_family( string $raw ): string {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			return '';
+		}
+		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
+			return 'var(--wp--preset--font-family--' . sanitize_html_class( $raw ) . ')';
+		}
+		return $raw;
+	}
+}
+
 if ( ! function_exists( 'nextora_testimonials_resolve_color' ) ) {
 	/**
 	 * Preset slug or hex → CSS color value.
@@ -18,6 +34,10 @@ if ( ! function_exists( 'nextora_testimonials_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
@@ -182,26 +202,101 @@ if ( ! function_exists( 'nextora_testimonials_render_media_item' ) ) {
 	}
 }
 
-if ( ! function_exists( 'nextora_testimonials_render_content_slide' ) ) {
+if ( ! function_exists( 'nextora_testimonials_render_avatar' ) ) {
 	/**
+	 * Render a small round avatar for template-02 author section.
+	 *
 	 * @param array<string, mixed> $item Normalized testimonial.
 	 */
-	function nextora_testimonials_render_content_slide( array $item ): string {
+	function nextora_testimonials_render_avatar( array $item ): string {
+		$portrait_id  = (int) $item['portraitId'];
+		$portrait_url = isset( $item['portraitUrl'] ) ? trim( (string) $item['portraitUrl'] ) : '';
+		$name         = (string) $item['authorName'];
+		$alt          = (string) $item['portraitAlt'];
+
+		if ( '' === $alt && $portrait_id > 0 ) {
+			$alt = (string) get_post_meta( $portrait_id, '_wp_attachment_image_alt', true );
+		}
+		if ( '' === $alt && '' !== $name ) {
+			$alt = $name;
+		}
+		if ( '' === $alt ) {
+			$alt = __( 'Testimonial avatar', 'nextora' );
+		}
+
+		if ( $portrait_id > 0 ) {
+			$img = wp_get_attachment_image(
+				$portrait_id,
+				'thumbnail',
+				false,
+				array(
+					'class'    => 'nextora-testimonials__avatar-img',
+					'alt'      => $alt,
+					'loading'  => 'lazy',
+					'decoding' => 'async',
+				),
+			);
+			if ( is_string( $img ) && '' !== $img ) {
+				return '<div class="nextora-testimonials__avatar">' . $img . '</div>';
+			}
+		}
+
+		if ( '' !== $portrait_url ) {
+			$url = esc_url( $portrait_url );
+			if ( '' !== $url ) {
+				return sprintf(
+					'<div class="nextora-testimonials__avatar"><img class="nextora-testimonials__avatar-img" src="%1$s" alt="%2$s" loading="lazy" decoding="async" /></div>',
+					$url,
+					esc_attr( $alt ),
+				);
+			}
+		}
+
+		return '<div class="nextora-testimonials__avatar nextora-testimonials__avatar--placeholder" aria-hidden="true"></div>';
+	}
+}
+
+if ( ! function_exists( 'nextora_testimonials_render_content_slide' ) ) {
+	/**
+	 * @param array<string, mixed> $item     Normalized testimonial.
+	 * @param string               $template Template type.
+	 */
+	function nextora_testimonials_render_content_slide( array $item, string $template = 'default' ): string {
 		$quote = (string) $item['quoteText'];
 		if ( '' === $quote ) {
 			return '';
 		}
 
 		$name     = (string) $item['authorName'];
+		$location = (string) $item['authorLocation'];
 		$meta     = nextora_testimonials_build_author_meta(
 			(string) $item['authorAge'],
-			(string) $item['authorLocation'],
+			$location,
 		);
 
 		$out  = '<div class="swiper-slide nextora-testimonials__slide">';
+
+		if ( 'template-01' === $template || 'template-02' === $template ) {
+			$out .= '<svg class="nextora-testimonials__quote-mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.5 4C6 4 4 6.5 4 10v10h8v-9H7.5C7.5 8 8.3 7 10 7zm9 0C15 4 13 6.5 13 10v10h8v-9h-4.5C16.5 8 17.3 7 19 7z"/></svg>';
+		}
+
 		$out .= '<div class="nextora-testimonials__quote"><p>' . esc_html( $quote ) . '</p></div>';
 
-		if ( '' !== $name || '' !== $meta ) {
+		if ( 'template-02' === $template ) {
+			if ( '' !== $name || '' !== $location ) {
+				$out .= '<footer class="nextora-testimonials__author nextora-testimonials__author--with-avatar">';
+				$out .= nextora_testimonials_render_avatar( $item );
+				$out .= '<div class="nextora-testimonials__author-text">';
+				if ( '' !== $name ) {
+					$out .= '<strong class="nextora-testimonials__author-name">' . esc_html( $name ) . '</strong>';
+				}
+				if ( '' !== $location ) {
+					$out .= '<span class="nextora-testimonials__author-meta">' . esc_html( $location ) . '</span>';
+				}
+				$out .= '</div>';
+				$out .= '</footer>';
+			}
+		} elseif ( '' !== $name || '' !== $meta ) {
 			$out .= '<footer class="nextora-testimonials__author">';
 			if ( '' !== $name ) {
 				$out .= '<strong class="nextora-testimonials__author-name">' . esc_html( $name ) . '</strong>';
@@ -238,6 +333,11 @@ if ( array() === $items ) {
 /** @var list<array<string, mixed>> $items */
 $items = array_values( (array) apply_filters( 'nextora_testimonials_items', $items, $attributes ) );
 
+$template = isset( $attributes['template'] ) ? sanitize_key( (string) $attributes['template'] ) : 'default';
+if ( ! in_array( $template, array( 'default', 'template-01', 'template-02' ), true ) ) {
+	$template = 'default';
+}
+
 $heading_text   = isset( $attributes['headingText'] ) ? trim( wp_strip_all_tags( (string) $attributes['headingText'] ) ) : '';
 $heading_level  = isset( $attributes['headingLevel'] ) ? max( 2, min( 4, (int) $attributes['headingLevel'] ) ) : 4;
 $image_position = isset( $attributes['imagePosition'] ) ? sanitize_key( (string) $attributes['imagePosition'] ) : 'left';
@@ -270,6 +370,7 @@ $dot_color         = nextora_testimonials_resolve_color( isset( $attributes['pag
 $dot_active        = nextora_testimonials_resolve_color( isset( $attributes['paginationActiveColor'] ) ? (string) $attributes['paginationActiveColor'] : '' );
 $heading_font_size = nextora_testimonials_resolve_font_size( isset( $attributes['headingFontSize'] ) ? (string) $attributes['headingFontSize'] : '' );
 $quote_font_size   = nextora_testimonials_resolve_font_size( isset( $attributes['quoteFontSize'] ) ? (string) $attributes['quoteFontSize'] : '' );
+$quote_font_family = nextora_testimonials_resolve_font_family( isset( $attributes['quoteFontFamily'] ) ? (string) $attributes['quoteFontFamily'] : '' );
 
 $enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
 
@@ -312,6 +413,9 @@ if ( '' !== $heading_font_size ) {
 if ( '' !== $quote_font_size ) {
 	$css_vars['--nextora-testimonials-quote-size'] = $quote_font_size;
 }
+if ( '' !== $quote_font_family ) {
+	$css_vars['--nextora-testimonials-quote-font-family'] = $quote_font_family;
+}
 
 $style_parts = array();
 foreach ( $css_vars as $key => $value ) {
@@ -328,6 +432,7 @@ $effect_class = match ( $effect ) {
 $wrapper_classes = array(
 	'nextora-testimonials',
 	'nextora-testimonials--loading',
+	'nextora-testimonials--template-' . $template,
 	'nextora-testimonials--image-' . $image_position,
 	'nextora-testimonials--effect-' . $effect_class,
 );
@@ -362,6 +467,7 @@ $heading_tag = 'h' . (string) $heading_level;
 		data-swiper-opts="<?php echo esc_attr( $opts_string ); ?>"
 	>
 		<div class="nextora-testimonials__layout">
+			<?php if ( 'template-02' !== $template ) : ?>
 			<div class="nextora-testimonials__media">
 				<div class="nextora-testimonials__media-stack">
 					<?php
@@ -372,14 +478,15 @@ $heading_tag = 'h' . (string) $heading_level;
 					?>
 				</div>
 			</div>
+			<?php endif; ?>
 
 			<div class="nextora-testimonials__content">
 				<div class="nextora-testimonials__content-inner">
-					<?php if ( '' !== $heading_text ) : ?>
+					<?php if ( '' !== $heading_text && 'default' === $template ) : ?>
 						<div class="nextora-testimonials__header">
-							<h4 class="nextora-testimonials__heading">
+							<<?php echo $heading_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?> class="nextora-testimonials__heading">
 								<?php echo esc_html( $heading_text ); ?>
-							</h4>
+							</<?php echo $heading_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 						</div>
 					<?php endif; ?>
 
@@ -389,7 +496,7 @@ $heading_tag = 'h' . (string) $heading_level;
 								<?php
 								foreach ( $items as $item ) {
 									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
-									echo nextora_testimonials_render_content_slide( $item );
+									echo nextora_testimonials_render_content_slide( $item, $template );
 								}
 								?>
 							</div>

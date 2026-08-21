@@ -6,13 +6,17 @@
  * @see docs/scroll-animations.md
  */
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import gsap from "gsap";
 
-import { INIT_ATTR, MUTATION_DEBOUNCE_MS, PARALLAX_SELECTOR } from "./constants";
+import { INIT_ATTR, MUTATION_DEBOUNCE_MS, PARALLAX_SELECTOR, SCROLL_REVEAL_TRIGGER_ID, SPECIAL_ANIMATION_CLASS_NAMES } from "./constants";
 import {
 	ensureGsapPlugins,
 	getFadeListGridItems,
 	getInnerFadeTargets,
+	getRevealGen,
 	initElementAnimations,
+	isElementHidden,
+	nextRevealGen,
 	prefersReducedMotion,
 	revealBottomAnchoredTriggers,
 	resolveAnimationClass,
@@ -29,6 +33,20 @@ function refreshScrollTriggers(): void {
 	revealBottomAnchoredTriggers();
 }
 
+/** Force-play any reveal triggers whose element is already past the start point. */
+function forcePlayInViewTriggers(): void {
+	ScrollTrigger.getAll().forEach((st) => {
+		if (st.vars?.id !== SCROLL_REVEAL_TRIGGER_ID) return;
+		const tween = st.animation;
+		if (!tween || st.progress > 0) return;
+		// Element is already past the trigger start — play immediately
+		if (st.start !== undefined && window.scrollY >= st.start) {
+			st.kill(false);
+			tween.play();
+		}
+	});
+}
+
 function collectTargets(root: ParentNode = document): HTMLElement[] {
 	const selector = `${getAnimationSelector()}, ${PARALLAX_SELECTOR}`;
 	const nodes = root.querySelectorAll<HTMLElement>(selector);
@@ -36,13 +54,22 @@ function collectTargets(root: ParentNode = document): HTMLElement[] {
 		if (el.getAttribute(INIT_ATTR) === "1") {
 			return false;
 		}
+
+		// Defer if inside a hidden container (e.g. mega menu)
+		if (isElementHidden(el)) {
+			if (!el.hasAttribute("data-scroll-deferred")) {
+				el.setAttribute("data-scroll-deferred", "1");
+			}
+			return false;
+		}
+
 		return resolveAnimationClass(el) !== null || parseScrollAnimationOptions(el).parallaxSpeed !== null;
 	});
 }
 
 function markPending(el: HTMLElement): void {
 	const animationClass = resolveAnimationClass(el);
-	if (prefersReducedMotion() || animationClass === null) {
+	if (prefersReducedMotion() || animationClass === null || isElementHidden(el)) {
 		return;
 	}
 
@@ -57,6 +84,11 @@ function markPending(el: HTMLElement): void {
 		getInnerFadeTargets(el).forEach((target) => {
 			target.classList.add("nextora-scroll-animation--pending");
 		});
+		return;
+	}
+
+	if ((SPECIAL_ANIMATION_CLASS_NAMES as readonly string[]).includes(animationClass)) {
+		el.classList.add("nextora-scroll-animation--pending");
 		return;
 	}
 
@@ -116,6 +148,76 @@ function observeDynamicContent(): void {
 	});
 }
 
+const DEFERRED_ATTR = "data-scroll-deferred";
+const REPLAY_ATTR = "data-scroll-replay";
+
+function watchDeferredScrollElements(): void {
+	const visibilityState = new WeakMap<HTMLElement, boolean>();
+	let needsThrottle = false;
+
+	const check = (): void => {
+		let hasWork = false;
+
+		// 1) Handle initially-deferred elements (immediate, no throttle)
+		document
+			.querySelectorAll<HTMLElement>(`[${DEFERRED_ATTR}="1"]`)
+			.forEach((el) => {
+				if (!isElementHidden(el)) {
+					el.removeAttribute(DEFERRED_ATTR);
+					el.setAttribute(REPLAY_ATTR, "1");
+					markPending(el);
+					initElementAnimations(el);
+					refreshScrollTriggers();
+					forcePlayInViewTriggers();
+				}
+				hasWork = true;
+			});
+
+		// 2) Toggle replay: reset when hidden, re-init when shown
+		document
+			.querySelectorAll<HTMLElement>(`[${REPLAY_ATTR}="1"]`)
+			.forEach((el) => {
+				const hidden = isElementHidden(el);
+				const wasHidden = visibilityState.get(el);
+
+				if (hidden && !wasHidden) {
+					// Just became hidden — reset
+					gsap.killTweensOf(el);
+					Array.from(el.children).forEach((child) => {
+						if (child instanceof HTMLElement) {
+							gsap.killTweensOf(child);
+							gsap.set(child, { clearProps: "opacity,transform,translate,rotate,scale" });
+							child.classList.remove("nextora-scroll-animation--pending");
+							child.classList.remove("nextora-scroll-animation--ready");
+						}
+					});
+					gsap.set(el, { clearProps: "opacity,transform,translate,rotate,scale" });
+					el.removeAttribute(INIT_ATTR);
+					el.removeAttribute("data-scroll-reveal-gen");
+					el.classList.remove("nextora-scroll-animation--ready");
+					el.classList.add("nextora-scroll-animation--pending");
+				} else if (!hidden && wasHidden) {
+					// Just became visible — force clean re-init
+					el.removeAttribute(INIT_ATTR);
+					markPending(el);
+					initElementAnimations(el);
+					refreshScrollTriggers();
+					forcePlayInViewTriggers();
+				}
+
+				visibilityState.set(el, hidden);
+				hasWork = true;
+			});
+
+		if (needsThrottle || hasWork) {
+			needsThrottle = true;
+			setTimeout(() => requestAnimationFrame(check), 50);
+		}
+	};
+
+	requestAnimationFrame(check);
+}
+
 function configureScrollTrigger(): void {
 	ensureGsapPlugins();
 	ScrollTrigger.config({
@@ -144,6 +246,7 @@ export function initScrollAnimations(): void {
 		configureScrollTrigger();
 		scanScrollAnimations();
 		observeDynamicContent();
+		watchDeferredScrollElements();
 
 		window.addEventListener("load", onWindowLoad, { once: true });
 	};
@@ -155,13 +258,26 @@ export function initScrollAnimations(): void {
 	}
 }
 
-/** Expose preset registration for child themes / small inline scripts. */
+/** Force-play ALL reveal tweens regardless of scroll position. */
+function forcePlayAllRevealTriggers(): void {
+	ScrollTrigger.getAll().forEach((st) => {
+		if (st.vars?.id !== SCROLL_REVEAL_TRIGGER_ID) return;
+		const tween = st.animation;
+		if (!tween || st.progress > 0) return;
+		st.kill(false);
+		tween.play();
+	});
+}
+
+/** Expose preset registration and force-play for child themes / portal reinit. */
 export function attachScrollAnimationGlobals(): void {
 	window.nextoraRegisterScrollAnimation = registerScrollAnimationPreset;
+	window.nextoraForceScrollAnimations = forcePlayAllRevealTriggers;
 }
 
 declare global {
 	interface Window {
 		nextoraRegisterScrollAnimation?: typeof registerScrollAnimationPreset;
+		nextoraForceScrollAnimations?: typeof forcePlayAllRevealTriggers;
 	}
 }

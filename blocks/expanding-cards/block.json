@@ -1,0 +1,95 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/expanding-cards",
+  "title": "Expanding Cards",
+  "category": "design",
+  "description": "Horizontal expanding card gallery with hover grow effect and full-screen detail modal.",
+  "keywords": ["cards", "expanding", "gallery", "hover", "expand", "nextora"],
+  "textdomain": "nextora",
+  "icon": "layout",
+  "supports": {
+    "html": false,
+    "align": ["wide", "full"],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": false,
+      "link": false
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    }
+  },
+  "attributes": {
+    "cards": {
+      "type": "array",
+      "default": [
+        {
+          "id": "1",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": "",
+          "heading": "Discover Adventure",
+          "description": "Explore breathtaking landscapes and unforgettable experiences.",
+          "buttonText": "Start adoption",
+          "buttonUrl": "#"
+        },
+        {
+          "id": "2",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": "",
+          "heading": "Find Your Companion",
+          "description": "Meet your perfect match waiting for a loving home.",
+          "buttonText": "Start adoption",
+          "buttonUrl": "#"
+        },
+        {
+          "id": "3",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": "",
+          "heading": "Make a Difference",
+          "description": "Every adoption changes a life — theirs and yours.",
+          "buttonText": "Start adoption",
+          "buttonUrl": "#"
+        },
+        {
+          "id": "4",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": "",
+          "heading": "Join Our Family",
+          "description": "Become part of a community that truly cares.",
+          "buttonText": "Start adoption",
+          "buttonUrl": "#"
+        }
+      ]
+    },
+    "cardHeight": { "type": "number", "default": 400 },
+    "cardGap": { "type": "number", "default": 10 },
+    "cardBorderRadius": { "type": "number", "default": 12 },
+    "inactiveOverlayOpacity": { "type": "number", "default": 0.7 },
+    "contentPaddingY": { "type": "number", "default": 24 },
+    "contentPaddingX": { "type": "number", "default": 24 },
+    "headingSize": { "type": "string", "default": "medium" },
+    "descriptionSize": { "type": "string", "default": "small" },
+    "buttonSize": { "type": "string", "default": "small" },
+    "headingColor": { "type": "string", "default": "" },
+    "descriptionColor": { "type": "string", "default": "" },
+    "overlayBackgroundColor": { "type": "string", "default": "" },
+    "buttonTextColor": { "type": "string", "default": "" },
+    "buttonBackgroundColor": { "type": "string", "default": "" },
+    "buttonBorderColor": { "type": "string", "default": "" },
+    "enableScrollAnimation": { "type": "boolean", "default": true },
+    "activeCardIndex": { "type": "number", "default": 0 }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "style": "file:./style.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

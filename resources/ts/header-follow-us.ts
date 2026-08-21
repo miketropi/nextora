@@ -81,6 +81,45 @@ function applyPanelLayout(
 	}
 }
 
+function isDrawerFollowUs(root: HTMLElement): boolean {
+	return root.hasAttribute("data-nextora-header-follow-us-drawer");
+}
+
+function isFollowUsPortalClone(root: HTMLElement): boolean {
+	return root.closest("[data-nextora-nav-portal-mount]") !== null;
+}
+
+function shouldBindFollowUsRoot(root: HTMLElement): boolean {
+	if (!isDrawerFollowUs(root)) {
+		return true;
+	}
+
+	// Drawer markup in the hidden nav source is cloned into the portal on open.
+	return isFollowUsPortalClone(root);
+}
+
+export function clearFollowUsBindingState(root: ParentNode): void {
+	if (root instanceof HTMLElement && root.matches(ROOT_SELECTOR)) {
+		delete root.dataset.nextoraHeaderFollowUsBound;
+	}
+
+	root.querySelectorAll<HTMLElement>(ROOT_SELECTOR).forEach((el) => {
+		delete el.dataset.nextoraHeaderFollowUsBound;
+	});
+}
+
+function syncDrawerFollowUsOverlay(root: HTMLElement, open: boolean): void {
+	if (!isDrawerFollowUs(root)) {
+		return;
+	}
+
+	const mount = root.closest("[data-nextora-nav-portal-mount]");
+	const portalPanel = root.closest(".nextora-primary-nav-portal__panel");
+
+	mount?.classList.toggle("nextora-primary-nav-portal__mount--follow-us-open", open);
+	portalPanel?.classList.toggle("nextora-primary-nav-portal__panel--follow-us-open", open);
+}
+
 function closePanel(
 	root: HTMLElement,
 	toggle: HTMLButtonElement,
@@ -91,10 +130,16 @@ function closePanel(
 	document.documentElement.classList.remove("nextora-header-follow-us-open");
 	toggle.setAttribute("aria-expanded", "false");
 	panel.hidden = true;
-	clearPanelPosition(panel);
+
+	if (!isDrawerFollowUs(root)) {
+		clearPanelPosition(panel);
+	}
+
 	if (scrim) {
 		scrim.hidden = true;
 	}
+
+	syncDrawerFollowUsOverlay(root, false);
 }
 
 function openPanel(
@@ -116,13 +161,21 @@ function openPanel(
 	});
 
 	panel.hidden = false;
+
+	if (isDrawerFollowUs(root)) {
+		root.classList.add("nextora-header-block__follow-us--open");
+		toggle.setAttribute("aria-expanded", "true");
+		syncDrawerFollowUsOverlay(root, true);
+		return;
+	}
+
 	applyPanelLayout(root, toggle, panel, scrim);
 	root.classList.add("nextora-header-block__follow-us--open");
 	toggle.setAttribute("aria-expanded", "true");
 }
 
 function bindFollowUsRoot(root: HTMLElement): void {
-	if (root.dataset.nextoraHeaderFollowUsBound === "1") {
+	if (!shouldBindFollowUsRoot(root) || root.dataset.nextoraHeaderFollowUsBound === "1") {
 		return;
 	}
 
@@ -136,7 +189,7 @@ function bindFollowUsRoot(root: HTMLElement): void {
 	root.dataset.nextoraHeaderFollowUsBound = "1";
 
 	const handleReposition = (): void => {
-		if (!root.classList.contains("nextora-header-block__follow-us--open")) {
+		if (!root.classList.contains("nextora-header-block__follow-us--open") || isDrawerFollowUs(root)) {
 			return;
 		}
 		applyPanelLayout(root, toggle, panel, scrim);
@@ -169,13 +222,17 @@ function bindFollowUsRoot(root: HTMLElement): void {
 	});
 
 	window.addEventListener("resize", handleReposition);
-	if (!prefersReducedMotion()) {
+	if (!prefersReducedMotion() && !isDrawerFollowUs(root)) {
 		window.addEventListener("scroll", handleReposition, { passive: true });
 	}
 }
 
+export function bindHeaderFollowUsIn(root: ParentNode = document): void {
+	root.querySelectorAll<HTMLElement>(ROOT_SELECTOR).forEach(bindFollowUsRoot);
+}
+
 export function initHeaderFollowUs(): void {
-	document.querySelectorAll<HTMLElement>(ROOT_SELECTOR).forEach(bindFollowUsRoot);
+	bindHeaderFollowUsIn(document);
 
 	if (document.documentElement.dataset.nextoraHeaderFollowUsDocBound === "1") {
 		return;
@@ -188,7 +245,7 @@ export function initHeaderFollowUs(): void {
 			return;
 		}
 		document.querySelectorAll<HTMLElement>(ROOT_SELECTOR).forEach((root) => {
-			if (root.contains(target)) {
+			if (!shouldBindFollowUsRoot(root) || root.contains(target)) {
 				return;
 			}
 			const toggle = root.querySelector<HTMLButtonElement>(TOGGLE_SELECTOR);

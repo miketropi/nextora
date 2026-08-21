@@ -1,0 +1,63 @@
+/**
+ * Advanced List — editor styles
+ */
+
+/* Item Modal */
+.nextora-advanced-list-modal .components-modal__content {
+  padding: 1.5rem;
+}
+
+.nextora-advanced-list-modal__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.nextora-advanced-list-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nextora-advanced-list-modal__icon-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--wp--preset--color--primary, #ef4444);
+  color: var(--wp--preset--color--base, #ffffff);
+  margin-bottom: 0.5rem;
+}
+
+.nextora-advanced-list-modal__icon-preview .nextora-advanced-list__icon {
+  width: 48px;
+  height: 48px;
+}
+
+.nextora-advanced-list-modal__icon-preview svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nextora-advanced-list-modal__icon-name {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.nextora-advanced-list-modal__icon-name code {
+  padding: 0.125rem 0.375rem;
+  background: #f3f4f6;
+  border-radius: 3px;
+  font-size: 0.875rem;
+}
+
+.nextora-advanced-list-modal__actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}

@@ -24,7 +24,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":136,"sizeSlug":"large","linkDestination":"none","align":"wide","className":"is-style-default animation-fade-in-up","style":{"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"0","left":"0","right":"0"}}}} -->
-<figure class="wp-block-image alignwide size-large is-style-default animation-fade-in-up" style="margin-top:var(--wp--preset--spacing--40);margin-right:0;margin-bottom:0;margin-left:0"><img src="https://pub-0645c3b9d3674132af6b362484df0f3c.r2.dev/alonepro/image-about.jpg" alt="" class="wp-image-136"/></figure>
+<figure class="wp-block-image alignwide size-large is-style-default animation-fade-in-up" style="margin-top:var(--wp--preset--spacing--40);margin-right:0;margin-bottom:0;margin-left:0"><img src="https://pub-0645c3b9d3674132af6b362484df0f3c.r2.dev/alonepro/image-about.jpg" alt="Our team working together to support local communities" class="wp-image-136"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:nextora/counters {"items":[{"id":"1","number":500,"prefix":"","suffix":"+","label":"Children Sponsored"},{"id":"2","number":100,"prefix":"","suffix":"k+","label":"Books \u0026 Supplies Provided"},{"id":"3","number":1000,"prefix":"","suffix":"+","label":"Mentorship Programs"},{"id":"item-1779847955413-0enzmy5","number":200,"prefix":"","suffix":"+","label":"Learning Centers"}],"columns":4,"align":"wide","className":"animation-fade-in-up","style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"},"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"0","right":"0"}}}} /--></div>

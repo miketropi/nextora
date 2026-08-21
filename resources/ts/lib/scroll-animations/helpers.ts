@@ -7,9 +7,12 @@ import {
 	INIT_ATTR,
 	SCROLL_REVEAL_ONCE,
 	SCROLL_REVEAL_TRIGGER_ID,
+	SPECIAL_ANIMATION_CLASS_NAMES,
 } from "./constants";
 import { animationPresets } from "./presets";
 import { parseScrollAnimationOptions } from "./parse-options";
+import { initSpecialScrollAnimation, skipSpecialScrollAnimation } from "./special-animations";
+import { afterInitialLayout, isInInitialRevealViewport } from "./initial-layout";
 import type { AnimationClassName } from "./constants";
 import type { ScrollAnimationOptions } from "./types";
 
@@ -32,6 +35,34 @@ export function prefersReducedMotion(): boolean {
 		!!window.matchMedia &&
 		window.matchMedia("(prefers-reduced-motion: reduce)").matches
 	);
+}
+
+export function isElementHidden(el: HTMLElement): boolean {
+	if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+		return true;
+	}
+	let current: HTMLElement | null = el;
+	while (current) {
+		if (window.getComputedStyle(current).visibility === "hidden") {
+			return true;
+		}
+		current = current.parentElement;
+	}
+	return false;
+}
+
+const REVEAL_GEN_ATTR = "data-scroll-reveal-gen";
+
+export function nextRevealGen(el: HTMLElement): number {
+	const raw = el.getAttribute(REVEAL_GEN_ATTR);
+	const gen = raw ? parseInt(raw, 10) + 1 : 1;
+	el.setAttribute(REVEAL_GEN_ATTR, String(gen));
+	return gen;
+}
+
+export function getRevealGen(el: HTMLElement): number {
+	const raw = el.getAttribute(REVEAL_GEN_ATTR);
+	return raw ? parseInt(raw, 10) : 0;
 }
 
 /**
@@ -59,6 +90,10 @@ export function getInnerFadeTargets(el: HTMLElement): HTMLElement[] {
 	return Array.from(el.children).filter((child): child is HTMLElement => child instanceof HTMLElement);
 }
 
+function isSpecialAnimationClass(className: string): className is (typeof SPECIAL_ANIMATION_CLASS_NAMES)[number] {
+	return (SPECIAL_ANIMATION_CLASS_NAMES as readonly string[]).includes(className);
+}
+
 /** First matching animation utility class on the element. */
 export function resolveAnimationClass(el: HTMLElement): AnimationClassName | null {
 	for (const className of ANIMATION_CLASS_NAMES) {
@@ -71,12 +106,15 @@ export function resolveAnimationClass(el: HTMLElement): AnimationClassName | nul
 }
 
 function markInitialized(el: HTMLElement): void {
+	// Never mark as ready if container is currently hidden (reset in progress)
+	if (isElementHidden(el)) return;
 	el.setAttribute(INIT_ATTR, "1");
 	el.classList.remove("nextora-scroll-animation--pending");
 	el.classList.add("nextora-scroll-animation--ready");
 }
 
 function skipAnimation(el: HTMLElement): void {
+	if (isElementHidden(el)) return;
 	gsap.set(el, { clearProps: "opacity,transform,translate,rotate,scale" });
 	markInitialized(el);
 }
@@ -87,6 +125,7 @@ function buildScrollTweenVars(
 	target?: HTMLElement,
 ): gsap.TweenVars {
 	const node = target ?? trigger;
+	const gen = nextRevealGen(trigger);
 
 	return {
 		delay: options.delay,
@@ -99,6 +138,7 @@ function buildScrollTweenVars(
 			id: SCROLL_REVEAL_TRIGGER_ID,
 		},
 		onComplete: () => {
+			if (getRevealGen(trigger) !== gen) return;
 			gsap.set(node, { clearProps: "opacity,transform,translate,rotate,scale" });
 		},
 	};
@@ -115,6 +155,7 @@ function initFadeListGridAnimation(el: HTMLElement, options: ScrollAnimationOpti
 	const { from, to } = animationPresets["animation-fade-list-grid"]({ distance: options.distance });
 
 	el.classList.remove("nextora-scroll-animation--pending");
+	const gen = nextRevealGen(el);
 
 	items.forEach((item) => {
 		item.classList.add("nextora-scroll-animation--pending");
@@ -122,6 +163,7 @@ function initFadeListGridAnimation(el: HTMLElement, options: ScrollAnimationOpti
 			...to,
 			...buildScrollTweenVars(item, options, item),
 			onComplete: () => {
+				if (getRevealGen(el) !== gen) return;
 				item.classList.remove("nextora-scroll-animation--pending");
 				item.classList.add("nextora-scroll-animation--ready");
 				gsap.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
@@ -143,6 +185,7 @@ function initInnerFadeAnimation(el: HTMLElement, options: ScrollAnimationOptions
 	const { from, to } = animationPresets["animation-inner-fade"]({ distance: options.distance });
 
 	el.classList.remove("nextora-scroll-animation--pending");
+	const gen = nextRevealGen(el);
 
 	targets.forEach((target) => {
 		target.classList.add("nextora-scroll-animation--pending");
@@ -150,6 +193,7 @@ function initInnerFadeAnimation(el: HTMLElement, options: ScrollAnimationOptions
 			...to,
 			...buildScrollTweenVars(target, options, target),
 			onComplete: () => {
+				if (getRevealGen(el) !== gen) return;
 				target.classList.remove("nextora-scroll-animation--pending");
 				target.classList.add("nextora-scroll-animation--ready");
 				gsap.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
@@ -189,6 +233,8 @@ export function initElementAnimations(el: HTMLElement): void {
 				gsap.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
 				target.classList.remove("nextora-scroll-animation--pending");
 			});
+		} else if (animationClass && isSpecialAnimationClass(animationClass)) {
+			skipSpecialScrollAnimation(el, animationClass);
 		}
 		skipAnimation(el);
 		return;
@@ -196,38 +242,69 @@ export function initElementAnimations(el: HTMLElement): void {
 
 	ensureGsapPlugins();
 
+	if (animationClass && isSpecialAnimationClass(animationClass)) {
+		initSpecialScrollAnimation(el, animationClass, markInitialized);
+		return;
+	}
+
 	if (animationClass === "animation-fade-list-grid") {
 		initFadeListGridAnimation(el, options);
 	} else if (animationClass === "animation-inner-fade") {
 		initInnerFadeAnimation(el, options);
-	} else if (animationClass) {
-		const factory = animationPresets[animationClass];
-		if (!factory) {
-			markInitialized(el);
-		} else {
-			const { from, to } = factory({ distance: options.distance });
-			const tweenVars = buildScrollTweenVars(el, options);
+		} else if (animationClass) {
+			const factory = animationPresets[animationClass];
+			if (!factory) {
+				markInitialized(el);
+			} else {
+				const { from, to } = factory({ distance: options.distance });
+				const revealImmediately = isInInitialRevealViewport(el);
 
 			if (options.stagger !== null && el.children.length > 0) {
-				const targets = Array.from(el.children) as HTMLElement[];
+					const targets = Array.from(el.children) as HTMLElement[];
+					const stagger = options.stagger;
 				el.classList.remove("nextora-scroll-animation--pending");
+				const gen = nextRevealGen(el);
 				targets.forEach((child) => child.classList.add("nextora-scroll-animation--pending"));
 				gsap.set(targets, from);
-				gsap.to(targets, {
-					...to,
-					...tweenVars,
-					stagger: options.stagger,
-					onComplete: () => {
-						targets.forEach((child) => {
+					const play = (): void => {
+						const tweenVars = revealImmediately
+							? { delay: options.delay, duration: options.duration, ease: options.ease }
+							: buildScrollTweenVars(el, options);
+						gsap.to(targets, {
+							...to,
+							...tweenVars,
+							stagger,
+							onComplete: () => {
+							if (getRevealGen(el) !== gen) return;
+							targets.forEach((child) => {
 							child.classList.remove("nextora-scroll-animation--pending");
 							child.classList.add("nextora-scroll-animation--ready");
 							gsap.set(child, { clearProps: "opacity,transform,translate,rotate,scale" });
 						});
-					},
-				});
-			} else {
-				gsap.fromTo(el, from, { ...to, ...tweenVars });
-			}
+							},
+						});
+					};
+					if (revealImmediately) {
+						afterInitialLayout(play);
+					} else {
+						play();
+					}
+				} else {
+					if (revealImmediately) {
+						gsap.set(el, from);
+						afterInitialLayout(() => {
+							gsap.to(el, {
+								...to,
+								delay: options.delay,
+								duration: options.duration,
+								ease: options.ease,
+								onComplete: () => gsap.set(el, { clearProps: "opacity,transform,translate,rotate,scale" }),
+							});
+						});
+					} else {
+						gsap.fromTo(el, from, { ...to, ...buildScrollTweenVars(el, options) });
+					}
+				}
 		}
 	}
 

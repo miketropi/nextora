@@ -1,0 +1,103 @@
+/**
+ * Scroll reveal for `nextora/advanced-button` (front end).
+ *
+ * When Animate on scroll is off, opts out of parent theme class-driven animations too.
+ */
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { afterInitialLayout, isInInitialRevealViewport } from '../../resources/ts/lib/scroll-animations/initial-layout';
+
+gsap.registerPlugin( ScrollTrigger );
+
+const BLOCK_SELECTOR = '.wp-block-nextora-advanced-button.nextora-advanced-button';
+const BLOCK_INIT_ATTR = 'data-nextora-advanced-button-scroll-init';
+const GLOBAL_INIT_ATTR = 'data-nextora-scroll-animation-init';
+
+function prefersReducedMotion(): boolean {
+	return (
+		typeof window !== 'undefined' &&
+		window.matchMedia?.( '(prefers-reduced-motion: reduce)' ).matches === true
+	);
+}
+
+function optOutScrollAnimation( root: HTMLElement ): void {
+	root.setAttribute( BLOCK_INIT_ATTR, '1' );
+	root.setAttribute( GLOBAL_INIT_ATTR, '1' );
+	root.classList.remove( 'nextora-scroll-animation--pending' );
+	root.classList.remove( 'nextora-advanced-button--reveal-pending' );
+	root.classList.add( 'nextora-scroll-animation--ready' );
+	root.classList.add( 'nextora-advanced-button--reveal-ready' );
+	gsap.killTweensOf( root );
+	gsap.set( root, { clearProps: 'opacity,transform,translate,rotate,scale' } );
+}
+
+function playReveal( root: HTMLElement, useScrollTrigger: boolean ): void {
+	const vars: gsap.TweenVars = {
+		opacity: 1,
+		y: 0,
+		duration: 0.95,
+		ease: 'power3.out',
+		onComplete: () => {
+			root.classList.remove( 'nextora-advanced-button--reveal-pending' );
+			root.classList.add( 'nextora-advanced-button--reveal-ready' );
+		},
+	};
+
+	if (useScrollTrigger) {
+		vars.scrollTrigger = {
+			trigger: root,
+			start: 'top 88%',
+			once: true,
+		};
+	}
+
+	gsap.fromTo( root, { opacity: 0, y: 28 }, vars );
+}
+
+function initReveal( root: HTMLElement ): void {
+	if ( root.getAttribute( 'data-nextora-scroll-reveal' ) !== '1' ) {
+		optOutScrollAnimation( root );
+		return;
+	}
+
+	if ( root.getAttribute( BLOCK_INIT_ATTR ) === '1' ) {
+		return;
+	}
+
+	if ( prefersReducedMotion() ) {
+		optOutScrollAnimation( root );
+		return;
+	}
+
+	root.setAttribute( BLOCK_INIT_ATTR, '1' );
+	root.classList.add( 'nextora-advanced-button--reveal-pending' );
+
+	if ( isInInitialRevealViewport( root ) ) {
+		afterInitialLayout( () => playReveal( root, false ) );
+		return;
+	}
+
+	playReveal( root, true );
+}
+
+function initAll(): void {
+	document.querySelectorAll< HTMLElement >( BLOCK_SELECTOR ).forEach( initReveal );
+}
+
+if ( document.readyState === 'loading' ) {
+	document.addEventListener( 'DOMContentLoaded', initAll );
+} else {
+	initAll();
+}
+
+window.addEventListener( 'nextora-advanced-button-reinit', () => {
+	initAll();
+
+	document.querySelectorAll< HTMLElement >( BLOCK_SELECTOR ).forEach( ( root ) => {
+		if ( root.closest( '.nextora-primary-nav-portal__mount' ) ) {
+			root.classList.remove( 'nextora-advanced-button--reveal-ready' );
+			root.removeAttribute( BLOCK_INIT_ATTR );
+			optOutScrollAnimation( root );
+		}
+	});
+} );

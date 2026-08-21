@@ -130,7 +130,11 @@ export function resolvePosterUrl(
 		return mediaUrlById.get(post.mediaId);
 	}
 
-	return resolveMediaUrl(post, mediaUrlById);
+	if (post.mediaType === 'image') {
+		return resolveMediaUrl(post, mediaUrlById);
+	}
+
+	return undefined;
 }
 
 export function buildSectionStyleVars(attrs: Partial<InstagramFeedAttributes>): Record<string, string> {
@@ -138,14 +142,9 @@ export function buildSectionStyleVars(attrs: Partial<InstagramFeedAttributes>): 
 		'--nextora-instagram-max-width': attrs.contentMaxWidth || '1200px',
 		'--nextora-instagram-tile-radius': `${attrs.tileBorderRadius ?? 8}px`,
 		'--nextora-instagram-tile-gap': `${attrs.spaceBetween ?? 16}px`,
-		'--nextora-instagram-btn-radius': `${attrs.buttonBorderRadius ?? 50}px`,
 	};
 
 	if (attrs.backgroundColor) vars['--nextora-instagram-bg'] = attrs.backgroundColor;
-	if (attrs.eyebrowColor) vars['--nextora-instagram-eyebrow-color'] = attrs.eyebrowColor;
-	if (attrs.handleColor) vars['--nextora-instagram-handle-color'] = attrs.handleColor;
-	if (attrs.buttonTextColor) vars['--nextora-instagram-btn-text'] = attrs.buttonTextColor;
-	if (attrs.buttonBorderColor) vars['--nextora-instagram-btn-border'] = attrs.buttonBorderColor;
 	if (attrs.tileBackground) vars['--nextora-instagram-tile-bg'] = attrs.tileBackground;
 	if (attrs.tileOverlayColor) vars['--nextora-instagram-tile-overlay'] = attrs.tileOverlayColor;
 	if (attrs.paginationColor) vars['--nextora-instagram-dot-color'] = attrs.paginationColor;
@@ -155,12 +154,4 @@ export function buildSectionStyleVars(attrs: Partial<InstagramFeedAttributes>): 
 	}
 
 	return vars;
-}
-
-export function formatHandle(handle: string): string {
-	const trimmed = handle.trim();
-	if (trimmed === '') {
-		return '@yourbrand';
-	}
-	return trimmed.startsWith('@') ? trimmed : `@${trimmed}`;
 }

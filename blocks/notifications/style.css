@@ -1,0 +1,139 @@
+/**
+ * nextora/notifications — front-end + editor canvas styles.
+ *
+ * Notification banner with type variants (info, success, warning, error).
+ * Horizontal layout: icon | message + link | close button.
+ * Uses var(--wp--preset--*) tokens and --nextora-notif-accent custom property.
+ */
+
+/* ---- Block root ---- */
+.nextora-notif {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid var(--nextora-notif-accent, #2563eb);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ---- Type variants ---- */
+.nextora-notif--info {
+  background: color-mix(in srgb, #2563eb 8%, var(--wp--preset--color--base, #fff));
+  color: var(--wp--preset--color--contrast, #0f172a);
+}
+
+.nextora-notif--success {
+  background: color-mix(in srgb, #16a34a 8%, var(--wp--preset--color--base, #fff));
+  color: var(--wp--preset--color--contrast, #0f172a);
+}
+
+.nextora-notif--warning {
+  background: color-mix(in srgb, #d97706 8%, var(--wp--preset--color--base, #fff));
+  color: var(--wp--preset--color--contrast, #0f172a);
+}
+
+.nextora-notif--error {
+  background: color-mix(in srgb, #dc2626 8%, var(--wp--preset--color--base, #fff));
+  color: var(--wp--preset--color--contrast, #0f172a);
+}
+
+/* ---- Icon ---- */
+.nextora-notif__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nextora-notif-accent, #2563eb);
+  margin-top: 0.125rem;
+}
+
+.nextora-notif__icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+/* ---- Body ---- */
+.nextora-notif__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+}
+
+.nextora-notif__message {
+  margin: 0;
+  font-size: var(--wp--preset--font-size--small, 0.875rem);
+  line-height: 1.5;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.nextora-notif__message p {
+  margin: 0;
+}
+
+/* ---- CTA link ---- */
+.nextora-notif__link {
+  flex-shrink: 0;
+  font-size: var(--wp--preset--font-size--small, 0.875rem);
+  font-weight: 600;
+  color: var(--nextora-notif-accent, #2563eb);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nextora-notif__link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---- Close button ---- */
+.nextora-notif__close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 40%, var(--wp--preset--color--base, #fff));
+  cursor: pointer;
+  margin-top: 0.125rem;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.nextora-notif__close:hover {
+  color: var(--wp--preset--color--contrast, #0f172a);
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.nextora-notif__close:focus-visible {
+  outline: 2px solid var(--wp--preset--color--primary, currentColor);
+  outline-offset: 2px;
+}
+
+.nextora-notif__close svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Mobile: stack body ---- */
+@media (max-width: 480px) {
+  .nextora-notif__body {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}

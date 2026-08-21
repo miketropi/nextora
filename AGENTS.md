@@ -25,6 +25,7 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 | [`docs/scroll-animations.md`](./docs/scroll-animations.md) | Class-driven GSAP scroll reveals (`animation-fade-in-up`, data-* attrs) |
 | [`docs/spotlight-search.md`](./docs/spotlight-search.md) | Spotlight search, REST, `window.nextoraSpotlight` |
 | [`docs/comments-tiptap.md`](./docs/comments-tiptap.md) | Tiptap comment field, KSES, `window.nextoraComments` |
+| [`docs/color-scheme-switcher.md`](./docs/color-scheme-switcher.md) | Color & font scheme switcher, URL params, child-theme presets |
 | [`docs/blocks.md`](./docs/blocks.md) | Theme block standards |
 | [`docs/accessibility.md`](./docs/accessibility.md) | WCAG 2.1 AA patterns, source map, block checklist, QA workflow |
 | [`docs/blocks/`](./docs/blocks/) | Per-block spec docs (Arc Gallery, Team Section, Testimonial Carousel) |
@@ -69,7 +70,7 @@ After changing CSS, TS, or block sources, run **`npm run build`** (or **`npm run
 **base** → **components** → **prose** → **overrides**
 
 - **Base**: `body.css`, `nav-menus.css`, `layout-shell.css`, `search-form.css`, `articles-shell.css`, `comments.css`, `pagination.css`, `entry-column.css`
-- **Components**: `buttons.css`, `form-fields.css`, `form-subscribe.css`, `modal.css`, `spotlight-search.css`, `scroll-animations.css`, `hero-section.css`
+- **Components**: `buttons.css`, `form-fields.css`, `custom-form.css`, `modal.css`, `spotlight-search.css`, `scroll-animations.css`, `hero-section.css`
 - **Prose**: `entry-content.css`
 - **Overrides**: `layout-tweaks.css`
 
@@ -150,3 +151,14 @@ Also:
 
 - Requires at least: **WordPress 6.4**
 - Tested up to: **WordPress 6.9** (`style.css`)
+
+<!-- CODEGRAPH_START -->
+## CodeGraph
+
+In repositories indexed by CodeGraph (a `.codegraph/` directory exists at the repo root), reach for it BEFORE grep/find or reading files when you need to understand or locate code:
+
+- **MCP tool** (when available): `codegraph_explore` answers most code questions in one call — the relevant symbols' verbatim source plus the call paths between them, including dynamic-dispatch hops grep can't follow. Name a file or symbol in the query to read its current line-numbered source. If it's listed but deferred, load it by name via tool search.
+- **Shell** (always works): `codegraph explore "<symbol names or question>"` prints the same output.
+
+If there is no `.codegraph/` directory, skip CodeGraph entirely — indexing is the user's decision.
+<!-- CODEGRAPH_END -->

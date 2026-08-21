@@ -1,3 +1,5 @@
+export {};
+
 /**
  * Count-up animation for `nextora/counters` (front end).
  */
@@ -20,7 +22,17 @@ function prefersReducedMotion(): boolean {
 }
 
 function formatValue(value: number, target: number): string {
-	return Number.isInteger(target) ? String(Math.round(value)) : value.toFixed(1);
+	const rounded = Number.isInteger(target) ? Math.round(value) : value;
+	return rounded.toLocaleString('en-US', {
+		maximumFractionDigits: Number.isInteger(target) ? 0 : 1,
+	});
+}
+
+function setFinalValue(el: HTMLElement): void {
+	const target = Math.abs(parseFloat(el.dataset.nextoraCountersValue ?? '') || 0);
+	const suffix = el.dataset.nextoraCountersSuffix ?? '';
+	const prefix = el.dataset.nextoraCountersPrefix ?? '';
+	el.textContent = prefix + formatValue(target, target) + suffix;
 }
 
 function animateCounter(
@@ -28,11 +40,12 @@ function animateCounter(
 	duration: number,
 	easing: EasingName,
 ): void {
-	const target = parseFloat(el.dataset.nextoraCountersValue ?? '') || 0;
+	const target = Math.abs(parseFloat(el.dataset.nextoraCountersValue ?? '') || 0);
 	const suffix = el.dataset.nextoraCountersSuffix ?? '';
 	const prefix = el.dataset.nextoraCountersPrefix ?? '';
 	const easeFn = EASINGS[easing] ?? EASINGS.easeOutCubic;
 	const start = performance.now();
+	el.textContent = prefix + formatValue(0, target) + suffix;
 
 	const tick = (now: number): void => {
 		const progress = Math.min((now - start) / duration, 1);
@@ -48,6 +61,7 @@ function animateCounter(
 
 function runCountUp(wrapper: HTMLElement): void {
 	if (prefersReducedMotion()) {
+		wrapper.querySelectorAll<HTMLElement>('.nextora-counters__number[data-nextora-counters-value]').forEach(setFinalValue);
 		wrapper.setAttribute('data-nextora-counters-count-init', '1');
 		wrapper.classList.add('nextora-counters--ready');
 		return;
@@ -74,6 +88,7 @@ function initRoot(wrapper: HTMLElement): void {
 	}
 
 	if (prefersReducedMotion()) {
+		wrapper.querySelectorAll<HTMLElement>('.nextora-counters__number[data-nextora-counters-value]').forEach(setFinalValue);
 		wrapper.setAttribute('data-nextora-counters-count-init', '1');
 		wrapper.classList.add('nextora-counters--ready');
 		return;

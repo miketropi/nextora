@@ -93,6 +93,23 @@ function getOpts(root: HTMLElement): SwiperOpts {
 	}
 }
 
+function getGridMinWidth(root: HTMLElement): number {
+	const raw = parseInt(root.getAttribute('data-grid-min-width') || '981', 10);
+	return Number.isFinite(raw) ? raw : 981;
+}
+
+function getLayoutMode(root: HTMLElement): 'carousel' | 'grid' {
+	const mode = root.getAttribute('data-layout-mode');
+	return mode === 'grid' ? 'grid' : 'carousel';
+}
+
+function shouldUseSwiper(root: HTMLElement): boolean {
+	if (getLayoutMode(root) === 'carousel') {
+		return true;
+	}
+	return window.innerWidth < getGridMinWidth(root);
+}
+
 function setRevealReady(section: HTMLElement): void {
 	section.classList.add('nextora-team-section--reveal-ready');
 	section.classList.remove('nextora-team-section--reveal-pending');
@@ -220,144 +237,224 @@ function markSectionReady(section: HTMLElement | null): void {
 	});
 }
 
+const swiperByRoot = new WeakMap<HTMLElement, Swiper>();
+
+function destroySwiper(root: HTMLElement): void {
+	const existing = swiperByRoot.get(root);
+	if (existing) {
+		existing.destroy(true, true);
+		swiperByRoot.delete(root);
+	}
+	delete root.dataset.nextoraTeamSwiperInited;
+	delete root.dataset.nextoraTeamSwiperPending;
+}
+
+function clearSwiperInlineStyles(root: HTMLElement): void {
+	root.querySelectorAll<HTMLElement>('.swiper-slide').forEach((slide) => {
+		slide.style.removeProperty('width');
+		slide.style.removeProperty('height');
+		slide.style.removeProperty('margin-right');
+	});
+	const wrapper = root.querySelector<HTMLElement>('.swiper-wrapper');
+	if (wrapper) {
+		wrapper.style.removeProperty('transform');
+		wrapper.style.removeProperty('width');
+		wrapper.style.removeProperty('transition-duration');
+	}
+}
+
+function setGridMode(root: HTMLElement, active: boolean): void {
+	if (active) {
+		clearSwiperInlineStyles(root);
+	}
+	root.classList.toggle('nextora-team-section__carousel-root--grid-active', active);
+	const section = root.closest<HTMLElement>('.nextora-team-section');
+	if (section) {
+		section.classList.toggle('nextora-team-section--grid-active', active);
+	}
+}
+
+function mountSwiper(root: HTMLElement): void {
+	if (root.dataset.nextoraTeamSwiperInited === '1' || root.dataset.nextoraTeamSwiperPending === '1') {
+		return;
+	}
+
+	const section = root.closest<HTMLElement>('.nextora-team-section');
+	const el = root.querySelector<HTMLElement>('.nextora-team-section__swiper');
+	if (!el) {
+		markSectionReady(section);
+		return;
+	}
+
+	const opts = getOpts(root);
+	const slideCount = el.querySelectorAll('.swiper-slide').length;
+	if (slideCount < 1) {
+		markSectionReady(section);
+		return;
+	}
+
+	setGridMode(root, false);
+
+	const showArrows = opts.showArrows === true;
+	const showPagination = opts.showPagination !== false;
+	const prevEl = root.querySelector<HTMLElement>('.nextora-team-section__arrow--prev');
+	const nextEl = root.querySelector<HTMLElement>('.nextora-team-section__arrow--next');
+	const paginationEl = root.querySelector<HTMLElement>('.nextora-team-section__pagination');
+
+	const baseSpv = roundSpv(
+		typeof opts.slidesPerView === 'number' && !Number.isNaN(opts.slidesPerView)
+			? opts.slidesPerView
+			: 1.2,
+	);
+	const tabletSpv = roundSpv(
+		typeof opts.slidesPerViewTablet === 'number' && !Number.isNaN(opts.slidesPerViewTablet)
+			? opts.slidesPerViewTablet
+			: 2.5,
+	);
+	const desktopSpv = roundSpv(
+		typeof opts.slidesPerViewDesktop === 'number' && !Number.isNaN(opts.slidesPerViewDesktop)
+			? opts.slidesPerViewDesktop
+			: 4,
+	);
+	const gap =
+		typeof opts.spaceBetween === 'number' && !Number.isNaN(opts.spaceBetween)
+			? opts.spaceBetween
+			: 24;
+
+	const cap = (n: number) => Math.max(1, Math.min(roundSpv(n), Math.max(1, slideCount)));
+
+	const gridMin = getGridMinWidth(root);
+	const defaultBreakpoints: Record<number, { slidesPerView: number; spaceBetween: number }> = {
+		768: { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) },
+		[gridMin]: { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) },
+	};
+
+	const wantLoop = Boolean(opts.loop) && slideCount > 1;
+	const anyFractionalSpv =
+		!isEffectivelyInteger(cap(baseSpv)) ||
+		!isEffectivelyInteger(cap(tabletSpv)) ||
+		!isEffectivelyInteger(cap(desktopSpv));
+	const canLoop = wantLoop && slideCount >= 4 && !anyFractionalSpv;
+	const useRewind = wantLoop && !canLoop;
+
+	const reduced = prefersReducedMotion();
+	const pagType =
+		opts.paginationType === 'fraction' || opts.paginationType === 'progressbar'
+			? opts.paginationType
+			: 'bullets';
+
+	root.dataset.nextoraTeamSwiperPending = '1';
+
+	const finishSection = (): void => {
+		delete root.dataset.nextoraTeamSwiperPending;
+		root.dataset.nextoraTeamSwiperInited = '1';
+		markSectionReady(section);
+	};
+
+	const tryMount = (tick = 0): void => {
+		if (el.clientWidth < 2 && tick < 60) {
+			requestAnimationFrame(() => tryMount(tick + 1));
+			return;
+		}
+
+		const swiper = new Swiper(el, {
+			modules: [Navigation, Pagination, Autoplay, Keyboard, A11y, FreeMode],
+			loop: canLoop,
+			rewind: useRewind,
+			speed: typeof opts.speed === 'number' ? opts.speed : 500,
+			spaceBetween: Math.max(0, gap),
+			slidesPerView: cap(baseSpv),
+			watchOverflow: true,
+			observer: true,
+			observeParents: true,
+			resizeObserver: true,
+			updateOnWindowResize: true,
+			breakpointsBase: 'container',
+			freeMode: opts.freeMode === true,
+			grabCursor: opts.grabCursor !== false && !reduced,
+			autoplay:
+				!reduced && opts.autoplay === true
+					? {
+							delay:
+								typeof opts.autoplayDelay === 'number' ? opts.autoplayDelay : 4000,
+							disableOnInteraction: false,
+							pauseOnMouseEnter: opts.pauseOnHover !== false,
+						}
+					: false,
+			keyboard: { enabled: true, onlyInViewport: true },
+			a11y: {
+				enabled: true,
+				prevSlideMessage: 'Previous team member',
+				nextSlideMessage: 'Next team member',
+				paginationBulletMessage: 'Go to slide {{index}}',
+			},
+			breakpoints: normalizeBreakpoints(opts.breakpoints, defaultBreakpoints),
+			...(showArrows && prevEl && nextEl ? { navigation: { nextEl, prevEl } } : {}),
+			...(showPagination && paginationEl
+				? {
+						pagination: {
+							el: paginationEl,
+							clickable: true,
+							type: pagType,
+						},
+					}
+				: {}),
+		});
+
+		swiperByRoot.set(root, swiper);
+
+		const refresh = (): void => {
+			swiper.update();
+			ScrollTrigger.refresh();
+		};
+		requestAnimationFrame(refresh);
+		requestAnimationFrame(() => requestAnimationFrame(refresh));
+		window.setTimeout(refresh, 200);
+		window.setTimeout(finishSection, 220);
+	};
+
+	tryMount();
+}
+
+function ensureCorrectLayout(root: HTMLElement): void {
+	const needSwiper = shouldUseSwiper(root);
+	const hasSwiper = swiperByRoot.has(root);
+
+	if (needSwiper && !hasSwiper) {
+		// Need carousel but don't have it yet - mount
+		mountSwiper(root);
+	} else if (!needSwiper && hasSwiper) {
+		// Don't need carousel but have it - destroy and enable grid
+		destroySwiper(root);
+		setGridMode(root, true);
+		const section = root.closest<HTMLElement>('.nextora-team-section');
+		markSectionReady(section);
+	} else if (!needSwiper && !hasSwiper) {
+		// Grid mode and no swiper - just setup grid
+		setGridMode(root, true);
+		const section = root.closest<HTMLElement>('.nextora-team-section');
+		markSectionReady(section);
+	}
+	// else: needSwiper && hasSwiper - already correct, do nothing
+}
+
 function initSwiperIn(container: Element | Document): void {
 	const roots = container.querySelectorAll<HTMLElement>('.nextora-team-section__carousel-root');
 
 	roots.forEach((root) => {
-		if (root.dataset.nextoraTeamSwiperInited === '1' || root.dataset.nextoraTeamSwiperPending === '1') {
-			return;
-		}
+		ensureCorrectLayout(root);
 
-		const section = root.closest<HTMLElement>('.nextora-team-section');
-		const el = root.querySelector<HTMLElement>('.nextora-team-section__swiper');
-		if (!el) {
-			return;
-		}
-
-		const opts = getOpts(root);
-		const slideCount = el.querySelectorAll('.swiper-slide').length;
-		if (slideCount < 1) {
-			markSectionReady(section);
-			return;
-		}
-
-		const showArrows = opts.showArrows === true;
-		const showPagination = opts.showPagination !== false;
-		const prevEl = root.querySelector<HTMLElement>('.nextora-team-section__arrow--prev');
-		const nextEl = root.querySelector<HTMLElement>('.nextora-team-section__arrow--next');
-		const paginationEl = root.querySelector<HTMLElement>('.nextora-team-section__pagination');
-
-		const baseSpv = roundSpv(
-			typeof opts.slidesPerView === 'number' && !Number.isNaN(opts.slidesPerView)
-				? opts.slidesPerView
-				: 1.2,
-		);
-		const tabletSpv = roundSpv(
-			typeof opts.slidesPerViewTablet === 'number' && !Number.isNaN(opts.slidesPerViewTablet)
-				? opts.slidesPerViewTablet
-				: 2.5,
-		);
-		const desktopSpv = roundSpv(
-			typeof opts.slidesPerViewDesktop === 'number' && !Number.isNaN(opts.slidesPerViewDesktop)
-				? opts.slidesPerViewDesktop
-				: 4,
-		);
-		const gap =
-			typeof opts.spaceBetween === 'number' && !Number.isNaN(opts.spaceBetween)
-				? opts.spaceBetween
-				: 24;
-
-		const cap = (n: number) => Math.max(1, Math.min(roundSpv(n), Math.max(1, slideCount)));
-
-		const defaultBreakpoints: Record<number, { slidesPerView: number; spaceBetween: number }> = {
-			768: { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) },
-			1024: { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) },
+		const mq = window.matchMedia(`(min-width: ${getGridMinWidth(root)}px)`);
+		const onChange = (): void => {
+			ensureCorrectLayout(root);
+			ScrollTrigger.refresh();
 		};
 
-		const wantLoop = Boolean(opts.loop) && slideCount > 1;
-		const anyFractionalSpv =
-			!isEffectivelyInteger(cap(baseSpv)) ||
-			!isEffectivelyInteger(cap(tabletSpv)) ||
-			!isEffectivelyInteger(cap(desktopSpv));
-		const canLoop = wantLoop && slideCount >= 4 && !anyFractionalSpv;
-		const useRewind = wantLoop && !canLoop;
-
-		const reduced = prefersReducedMotion();
-		const pagType =
-			opts.paginationType === 'fraction' || opts.paginationType === 'progressbar'
-				? opts.paginationType
-				: 'bullets';
-
-		root.dataset.nextoraTeamSwiperPending = '1';
-
-		const finishSection = (): void => {
-			delete root.dataset.nextoraTeamSwiperPending;
-			root.dataset.nextoraTeamSwiperInited = '1';
-			markSectionReady(section);
-		};
-
-		const tryMount = (tick = 0): void => {
-			if (el.clientWidth < 2 && tick < 60) {
-				requestAnimationFrame(() => tryMount(tick + 1));
-				return;
-			}
-
-			// eslint-disable-next-line no-new
-			const swiper = new Swiper(el, {
-				modules: [Navigation, Pagination, Autoplay, Keyboard, A11y, FreeMode],
-				loop: canLoop,
-				rewind: useRewind,
-				speed: typeof opts.speed === 'number' ? opts.speed : 500,
-				spaceBetween: Math.max(0, gap),
-				slidesPerView: cap(baseSpv),
-				watchOverflow: true,
-				observer: true,
-				observeParents: true,
-				resizeObserver: true,
-				updateOnWindowResize: true,
-				breakpointsBase: 'container',
-				freeMode: opts.freeMode === true,
-				grabCursor: opts.grabCursor !== false && !reduced,
-				autoplay:
-					!reduced && opts.autoplay === true
-						? {
-								delay:
-									typeof opts.autoplayDelay === 'number' ? opts.autoplayDelay : 4000,
-								disableOnInteraction: false,
-								pauseOnMouseEnter: opts.pauseOnHover !== false,
-							}
-						: false,
-				keyboard: { enabled: true, onlyInViewport: true },
-				a11y: {
-					enabled: true,
-					prevSlideMessage: 'Previous team member',
-					nextSlideMessage: 'Next team member',
-					paginationBulletMessage: 'Go to slide {{index}}',
-				},
-				breakpoints: normalizeBreakpoints(opts.breakpoints, defaultBreakpoints),
-				...(showArrows && prevEl && nextEl ? { navigation: { nextEl, prevEl } } : {}),
-				...(showPagination && paginationEl
-					? {
-							pagination: {
-								el: paginationEl,
-								clickable: true,
-								type: pagType,
-							},
-						}
-					: {}),
-			});
-
-			const refresh = (): void => {
-				swiper.update();
-				ScrollTrigger.refresh();
-			};
-			requestAnimationFrame(refresh);
-			requestAnimationFrame(() => requestAnimationFrame(refresh));
-			window.setTimeout(refresh, 200);
-			window.setTimeout(finishSection, 220);
-		};
-
-		tryMount();
+		if (typeof mq.addEventListener === 'function') {
+			mq.addEventListener('change', onChange);
+		} else if (typeof mq.addListener === 'function') {
+			mq.addListener(onChange);
+		}
 	});
 }
 

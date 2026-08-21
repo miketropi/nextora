@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safe Passage — Refugee Support & Resettlement · AlonePro Demo</title>
+<meta name="description" content="Safe Passage — a refugee support & resettlement charity theme demo. Part of AlonePro by Beplus.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#121110;--ink-2:#0a0908;--ink-3:#1c1a18;--saffron:#F4A82C;--saffron-d:#e2971c;--clay:#E0654A;
+    --sand:#F4EEE4;--sand-2:#EAE2D4;--paper:#fff;--muted:#6E665C;--md:rgba(255,255,255,.64);--line:rgba(18,17,16,.12);--line-d:rgba(255,255,255,.14);--maxw:1280px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--sand);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}a{text-decoration:none;color:inherit}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}ul{list-style:none}
+  a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--saffron);outline-offset:3px;border-radius:4px}
+  h1,h2,h3,h4{font-family:'Archivo',sans-serif;font-weight:900;line-height:.96;letter-spacing:-.02em;text-transform:uppercase}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 clamp(18px,5vw,44px)}
+  .lucide-wrap [data-lucide]{width:1em;height:1em;stroke-width:2}
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:'Archivo',sans-serif;font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--clay)}
+  .eyebrow::before{content:"";width:30px;height:3px;background:var(--saffron)}.eyebrow.c{justify-content:center}.eyebrow.sf{color:var(--saffron)}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-family:'Archivo',sans-serif;font-weight:800;font-size:13.5px;text-transform:uppercase;letter-spacing:.04em;border-radius:50px;padding:15px 28px;transition:.18s;white-space:nowrap}
+  .btn svg{width:17px;height:17px}
+  .btn-saffron{background:var(--saffron);color:var(--ink)}.btn-saffron:hover{background:var(--saffron-d);transform:translateY(-2px)}
+  .btn-ink{background:var(--ink);color:#fff}.btn-ink:hover{background:var(--ink-2);transform:translateY(-2px)}
+  .btn-white{background:#fff;color:var(--ink)}.btn-white:hover{transform:translateY(-2px)}
+  .btn-ghost{border:2px solid var(--ink);color:var(--ink)}.btn-ghost:hover{background:var(--ink);color:#fff}
+  .btn-ghost-w{border:2px solid rgba(255,255,255,.45);color:#fff}.btn-ghost-w:hover{background:rgba(255,255,255,.12);border-color:#fff}
+  .section{padding:clamp(56px,7vw,104px) 0}
+  .on-dark{background:var(--ink);color:#fff}
+  .sec-head{max-width:660px;margin:0 0 clamp(32px,4vw,48px)}
+  .sec-head.center{text-align:center;margin-left:auto;margin-right:auto}
+  .sec-head h2{font-size:clamp(34px,5.4vw,68px);margin:14px 0 0}
+  .sec-head p{color:var(--muted);font-size:16px;margin-top:14px}
+  .on-dark .sec-head p{color:var(--md)}
+  .skip{position:absolute;left:-9999px;top:8px;background:var(--saffron);color:var(--ink);padding:10px 16px;border-radius:8px;z-index:600}.skip:focus{left:12px}
+
+  /* header */
+  .site-header{position:sticky;top:0;z-index:300;background:var(--ink);color:#fff}
+  .pnav{display:flex;align-items:center;justify-content:space-between;gap:24px;height:78px}
+  .logo{display:flex;align-items:center;gap:11px;font-family:'Archivo',sans-serif;font-weight:900;font-size:21px;text-transform:uppercase;letter-spacing:-.01em;color:#fff}
+  .logo .mk{width:40px;height:40px;border-radius:11px;background:var(--saffron);color:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}.logo .mk svg{width:22px;height:22px}
+  .pmenu{display:flex;gap:26px;font-family:'Archivo',sans-serif;font-size:13.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}.pmenu a{color:rgba(255,255,255,.8)}.pmenu a:hover{color:var(--saffron)}
+  .pright{display:flex;align-items:center;gap:14px}
+  .nav-toggle{display:none;width:44px;height:44px;align-items:center;justify-content:center;color:#fff}.nav-toggle svg{width:26px;height:26px}
+  .nav-drawer{position:fixed;inset:0 0 0 auto;width:min(320px,84vw);background:var(--ink-2);color:#fff;padding:90px 30px;display:flex;flex-direction:column;gap:4px;transform:translateX(100%);transition:.3s;z-index:330}
+  .nav-drawer.open{transform:translateX(0)}.nav-drawer a{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700;text-transform:uppercase;padding:13px 0;border-bottom:1px solid var(--line-d);color:#fff}
+  .nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:.3s;z-index:320}.nav-backdrop.show{opacity:1;pointer-events:auto}
+  @media(min-width:1041px){.nav-drawer,.nav-backdrop{display:none}}
+  @media(max-width:1040px){.pmenu{display:none}.nav-toggle{display:flex}}
+  @media(max-width:520px){.pright .btn span{display:none}.pright .btn{padding:13px 16px}}
+
+  /* hero */
+  .hero{position:relative;background:var(--ink);color:#fff;min-height:clamp(500px,72vw,760px);display:flex;align-items:flex-end;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;z-index:0}.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.62}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,17,16,.5) 0%,rgba(18,17,16,.2) 40%,rgba(18,17,16,.92))}
+  .hero .corner{position:absolute;top:0;right:0;z-index:1;background:var(--saffron);color:var(--ink);font-family:'Archivo',sans-serif;font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:.1em;padding:14px 28px;border-bottom-left-radius:18px}
+  .hero .wrap{position:relative;z-index:2;padding-bottom:clamp(44px,6vw,80px);padding-top:80px;width:100%}
+  .hero .tag{font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--saffron)}
+  .hero h1{font-size:clamp(44px,8.4vw,124px);font-weight:900;letter-spacing:-.03em;margin:18px 0 0;max-width:16ch}
+  .hero h1 em{font-style:normal;color:var(--saffron)}
+  .hero p{max-width:52ch;font-size:clamp(15px,1.3vw,18px);color:var(--md);margin:20px 0 28px}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+
+  /* editorial journey list */
+  .jlist .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(34px,5vw,64px);align-items:center}
+  .jrows{border-top:2px solid var(--ink)}
+  .jrow{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(16px,3vw,32px);align-items:center;padding:clamp(20px,3vw,34px) 0;border-bottom:2px solid var(--ink);transition:.18s}
+  .jrow .no{font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;color:var(--clay);letter-spacing:.06em}
+  .jrow h3{font-size:clamp(30px,4.6vw,58px);font-weight:900;transition:.18s}
+  .jrow .sub{font-size:13.5px;color:var(--muted);text-transform:none;max-width:24ch;text-align:right}
+  .jrow .go{width:46px;height:46px;border-radius:50%;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.18s}.jrow .go svg{width:20px;height:20px}
+  .jrow:hover h3{color:var(--clay);transform:translateX(8px)}
+  .jrow:hover .go{background:var(--saffron);border-color:var(--saffron)}
+  .jlist-media{border-radius:14px;overflow:hidden;aspect-ratio:4/5}.jlist-media img{width:100%;height:100%;object-fit:cover}
+  @media(max-width:880px){.jlist .wrap{grid-template-columns:1fr}.jlist-media{max-width:420px}.jrow .sub{display:none}}
+
+  /* dark feature card */
+  .feature{padding:0 0 clamp(56px,7vw,104px)}
+  .feature .card{background:var(--ink);color:#fff;border-radius:20px;padding:clamp(30px,4vw,56px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,4vw,56px)}
+  .feature h2{font-size:clamp(28px,3.6vw,46px);max-width:14ch}
+  .feature h2 em{color:var(--saffron);font-style:normal}
+  .feature .cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .feature h4{font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;letter-spacing:.08em;color:var(--saffron);margin-bottom:14px}
+  .feature ul{display:grid;gap:11px}
+  .feature li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--md)}.feature li svg{width:16px;height:16px;color:var(--saffron);flex-shrink:0;margin-top:3px}
+  @media(max-width:860px){.feature .card{grid-template-columns:1fr}}
+  @media(max-width:440px){.feature .cols{grid-template-columns:1fr}}
+
+  /* join band */
+  .join{background:var(--saffron);color:var(--ink);overflow:hidden}
+  .join .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:0;align-items:center}
+  .join-media{align-self:stretch;background:var(--ink)}.join-media img{width:100%;height:100%;object-fit:cover;min-height:300px}
+  .join-body{padding:clamp(30px,4vw,56px)}
+  .join h2{font-size:clamp(30px,4vw,52px);max-width:16ch}
+  .join p{font-size:15px;margin:14px 0 24px;max-width:44ch}
+  .join form{display:flex;background:var(--ink);border-radius:50px;padding:6px 6px 6px 22px;max-width:440px}
+  .join input{flex:1;background:none;border:none;color:#fff;font-family:inherit;font-size:14.5px}.join input::placeholder{color:rgba(255,255,255,.55)}
+  .join button{flex-shrink:0}
+  @media(max-width:820px){.join .wrap{grid-template-columns:1fr}.join-media{order:-1}.join-media img{min-height:220px}}
+
+  /* icon features */
+  .feats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+  .ft{padding:6px 0}
+  .ft .ic{width:54px;height:54px;border-radius:14px;background:var(--ink);color:var(--saffron);display:flex;align-items:center;justify-content:center;margin-bottom:18px}.ft .ic svg{width:26px;height:26px}
+  .ft h3{font-size:19px;margin-bottom:8px}
+  .ft p{font-size:14px;color:var(--muted)}
+  @media(max-width:860px){.feats-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:460px){.feats-grid{grid-template-columns:1fr}}
+
+  /* wordmark band */
+  .wordband{position:relative;color:#fff;overflow:hidden;text-align:center}
+  .wordband-bg{position:absolute;inset:0;z-index:0}.wordband-bg img{width:100%;height:100%;object-fit:cover}
+  .wordband-bg::after{content:"";position:absolute;inset:0;background:rgba(18,17,16,.6)}
+  .wordband .wrap{position:relative;z-index:2;padding-top:clamp(60px,8vw,120px);padding-bottom:clamp(60px,8vw,120px)}
+  .wordband .badge{display:inline-flex;align-items:center;gap:9px;font-family:'Archivo',sans-serif;font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:rgba(244,168,44,.18);border:1px solid var(--saffron);color:var(--saffron);padding:8px 16px;border-radius:30px;margin-bottom:24px}
+  .wordband h2{font-size:clamp(56px,16vw,220px);font-weight:900;letter-spacing:-.04em;line-height:.85}
+  .wordband h2 em{font-style:normal;color:var(--saffron)}
+  .wordband p{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(14px,1.6vw,20px);letter-spacing:.14em;text-transform:uppercase;margin-top:20px}
+
+  /* campaigns */
+  .camp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .camp{background:var(--paper);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+  .camp:hover{transform:translateY(-6px);box-shadow:0 34px 60px -40px rgba(18,17,16,.45)}
+  .camp .ph{aspect-ratio:16/10;position:relative;overflow:hidden}.camp .ph img{width:100%;height:100%;object-fit:cover}
+  .camp .ph .pill{position:absolute;top:14px;left:14px;background:var(--saffron);color:var(--ink);font-family:'Archivo',sans-serif;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:6px 13px;border-radius:30px}
+  .camp .body{padding:24px;display:flex;flex-direction:column;flex:1}
+  .camp h3{font-size:20px;margin-bottom:8px}
+  .camp p{font-size:14px;color:var(--muted);margin-bottom:18px;text-transform:none}
+  .camp .meter{margin-top:auto}
+  .camp .bar{height:8px;border-radius:30px;background:var(--sand-2);overflow:hidden}.camp .bar i{display:block;height:100%;border-radius:30px;background:var(--clay)}
+  .camp .nums{display:flex;justify-content:space-between;align-items:baseline;margin-top:11px;font-size:13.5px}.camp .nums .r{font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;color:var(--clay)}.camp .nums .g{color:var(--muted)}
+  .camp .donate{margin-top:18px;align-self:flex-start}
+  @media(max-width:880px){.camp-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
+
+  /* impact stats */
+  .impact .wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(34px,5vw,64px);align-items:center}
+  .impact-media{border-radius:16px;overflow:hidden;aspect-ratio:16/12}.impact-media img{width:100%;height:100%;object-fit:cover}
+  .impact h2{font-size:clamp(30px,4vw,52px);margin:14px 0 14px}
+  .impact h2 em{font-style:normal;color:var(--clay)}
+  .impact p{color:var(--muted);font-size:16px;margin-bottom:26px;max-width:44ch}
+  .impact-stats{display:flex;gap:clamp(24px,4vw,48px);flex-wrap:wrap;margin-bottom:28px}
+  .impact-stats b{font-family:'Archivo',sans-serif;font-weight:900;font-size:clamp(38px,5vw,60px);display:block;line-height:1;color:var(--ink)}
+  .impact-stats b small{color:var(--saffron)}
+  .impact-stats span{font-size:13.5px;color:var(--muted);font-weight:600;margin-top:6px;display:block;text-transform:uppercase;letter-spacing:.04em}
+  @media(max-width:860px){.impact .wrap{grid-template-columns:1fr}.impact-media{max-width:480px}}
+  /* yellow variant */
+  .impact-y{background:var(--saffron);color:var(--ink)}
+  .impact-y .eyebrow{color:var(--ink)}.impact-y .eyebrow::before{background:var(--ink)}
+  .impact-y h2 em{color:#fff;-webkit-text-stroke:0}
+  .impact-y p{color:rgba(18,17,16,.72)}
+  .impact-y .impact-stats b{color:var(--ink)}.impact-y .impact-stats b small{color:#fff}
+  .impact-y .impact-stats span{color:rgba(18,17,16,.66)}
+  .impact-y .impact-media{box-shadow:0 30px 60px -36px rgba(18,17,16,.5)}
+  .impact-y .btn-ink:hover{background:#000}
+
+  /* donation form band */
+  .tiers{background:var(--sand);color:var(--ink)}
+  .dform{background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:18px;max-width:620px;margin:0 auto;padding:clamp(28px,4vw,46px);box-shadow:0 34px 70px -44px rgba(18,17,16,.4)}
+  .dform .freq{display:inline-flex;background:var(--sand);border:1px solid var(--line);border-radius:40px;padding:4px;margin-bottom:18px}
+  .dform .freq input{position:absolute;opacity:0;pointer-events:none}
+  .dform .freq label{font-family:'Archivo',sans-serif;font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.03em;padding:9px 22px;border-radius:30px;cursor:pointer;color:var(--muted);transition:.18s}
+  .dform .freq input:checked + label{background:var(--ink);color:#fff}
+  .dform .flabel{font-family:'Archivo',sans-serif;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:10px}
+  .amt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+  .amt-grid input{position:absolute;opacity:0;pointer-events:none}
+  .amt-grid label{display:flex;align-items:center;justify-content:center;background:var(--sand);border:2px solid var(--line);border-radius:10px;padding:15px 6px;font-family:'Archivo',sans-serif;font-weight:900;font-size:18px;cursor:pointer;transition:.18s}
+  .amt-grid label:hover{border-color:var(--saffron)}
+  .amt-grid input:checked + label{border-color:var(--saffron);background:#fff;color:var(--saffron-d)}
+  .amt-custom{position:relative;margin-bottom:20px}
+  .amt-custom span{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-family:'Archivo',sans-serif;font-weight:900;color:var(--muted)}
+  .amt-custom input{width:100%;background:var(--sand);border:1px solid var(--line);border-radius:10px;padding:14px 16px 14px 30px;font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;color:var(--ink)}
+  .donor-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .dfield label{font-family:'Archivo',sans-serif;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:7px}
+  .dfield input{width:100%;background:var(--sand);border:1px solid var(--line);border-radius:10px;padding:13px 16px;font-family:inherit;font-size:14.5px;color:var(--ink)}
+  .dform .btn{margin-top:20px;width:100%;justify-content:center}
+  .dform .secure{display:flex;align-items:center;gap:8px;justify-content:center;font-size:12.5px;color:var(--muted);margin-top:14px}.dform .secure svg{width:15px;height:15px;color:var(--saffron-d)}
+  @media(max-width:440px){.amt-grid{grid-template-columns:1fr 1fr}.donor-grid{grid-template-columns:1fr}}
+
+  /* events */
+  .ev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .ev{background:var(--paper);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+  .ev:hover{transform:translateY(-6px);box-shadow:0 34px 60px -40px rgba(18,17,16,.45)}
+  .ev .ph{position:relative;aspect-ratio:16/10;overflow:hidden}.ev .ph img{width:100%;height:100%;object-fit:cover}
+  .ev .badge{position:absolute;top:14px;left:14px;background:var(--ink);color:#fff;border-radius:12px;padding:9px 13px;text-align:center;line-height:1}
+  .ev .badge .d{font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;display:block}.ev .badge .m{font-size:11px;text-transform:uppercase;color:var(--saffron);font-weight:800}
+  .ev .body{padding:24px;display:flex;flex-direction:column;flex:1}
+  .ev h3{font-size:19px;margin-bottom:12px}
+  .ev .meta{display:grid;gap:8px;font-size:13.5px;color:var(--muted);margin-bottom:18px;text-transform:none}.ev .meta span{display:inline-flex;align-items:center;gap:8px}.ev .meta svg{width:15px;height:15px;color:var(--clay)}
+  .ev .btn{margin-top:auto;align-self:flex-start}
+  @media(max-width:860px){.ev-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
+
+  /* blog */
+  .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .post{background:var(--paper);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:.2s}
+  .post:hover{transform:translateY(-6px);box-shadow:0 34px 60px -40px rgba(18,17,16,.45)}
+  .post .ph{aspect-ratio:16/10;overflow:hidden;position:relative}.post .ph img{width:100%;height:100%;object-fit:cover}
+  .post .cat{position:absolute;top:14px;left:14px;background:var(--saffron);color:var(--ink);font-family:'Archivo',sans-serif;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:6px 12px;border-radius:30px}
+  .post .body{padding:22px;display:flex;flex-direction:column;flex:1}
+  .post .meta{font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:9px}
+  .post h3{font-size:18px;line-height:1.16;margin-bottom:14px}.post:hover h3{color:var(--clay)}
+  .post .more{margin-top:auto;font-family:'Archivo',sans-serif;font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink);display:inline-flex;align-items:center;gap:7px}.post .more svg{width:14px;height:14px;color:var(--clay)}
+  @media(max-width:860px){.blog-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}}
+
+  /* footer */
+  .footer{background:var(--ink-2);color:var(--md);padding-top:clamp(54px,6vw,80px)}
+  .footer .top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.3fr;gap:32px;padding-bottom:42px;border-bottom:1px solid var(--line-d)}
+  .footer .logo{margin-bottom:14px}
+  .footer .tag{font-family:'Archivo',sans-serif;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--saffron);margin-bottom:14px}
+  .footer p.about{font-size:14.5px;max-width:32ch;margin-bottom:18px}
+  .footer-social{display:flex;gap:10px}
+  .footer-social a{width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,.07);color:#fff;display:flex;align-items:center;justify-content:center;transition:.2s}.footer-social a:hover{background:var(--saffron);color:var(--ink)}.footer-social svg{width:17px;height:17px}
+  .footer h5{color:#fff;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:16px}
+  .footer-links{display:grid;gap:11px;font-size:14.5px}.footer-links a:hover{color:var(--saffron)}
+  .fnews .nf{display:flex;background:rgba(255,255,255,.07);border:1px solid var(--line-d);border-radius:50px;padding:5px 5px 5px 18px;margin-top:8px}
+  .fnews input{flex:1;background:none;border:none;color:#fff;font-family:inherit;font-size:14px}.fnews input::placeholder{color:rgba(255,255,255,.5)}
+  .fnews button{width:42px;height:42px;border-radius:50%;background:var(--saffron);color:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}.fnews button svg{width:18px;height:18px}
+  .footer-bottom{padding:22px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13.5px}.footer-bottom a:hover{color:var(--saffron)}
+  @media(max-width:880px){.footer .top{grid-template-columns:1fr 1fr}}
+  @media(max-width:520px){.footer .top{grid-template-columns:1fr}}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body class="lucide-wrap">
+<a href="#main" class="skip">Skip to content</a>
+<svg width="0" height="0" style="position:absolute;left:-9999px" aria-hidden="true" focusable="false">
+  <symbol id="si-fb" viewBox="0 0 24 24"><path fill="currentColor" d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></symbol>
+  <symbol id="si-ig" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0Zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227a3.81 3.81 0 0 1-.899 1.382 3.744 3.744 0 0 1-1.38.896c-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421a3.716 3.716 0 0 1-1.379-.899 3.644 3.644 0 0 1-.9-1.38c-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03Zm0 3.678a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324ZM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm7.846-10.405a1.44 1.44 0 0 1-2.88 0 1.44 1.44 0 0 1 2.88 0Z"/></symbol>
+  <symbol id="si-x" viewBox="0 0 24 24"><path fill="currentColor" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></symbol>
+  <symbol id="si-yt" viewBox="0 0 24 24"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/></symbol>
+  <symbol id="si-li" viewBox="0 0 24 24"><path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></symbol>
+</svg>
+<!--
+  AlonePro · Template: Refugees / Migration ("Safe Passage") · Xrival-layout restyle · humanitarian tone · STATIC
+  near-black + saffron + clay · sand light sections · Archivo (heavy uppercase) + Inter · social sprite
+  Layout (bold editorial per ref): black header · full-bleed hero · editorial journey list · dark feature card ·
+  saffron join band(newsletter) · 4 icon features · WELCOME wordmark band · CAMPAIGNS · impact stats ·
+  donation tiers band(over photo) · EVENTS · blog · black footer.
+  Events + Campaigns kept. Fully static: 0 GSAP, 0 keyframes.
+-->
+
+<!-- HEADER -->
+<header class="site-header" id="header">
+  <div class="wrap">
+    <nav class="pnav" aria-label="Primary">
+      <a href="#" class="logo"><span class="mk"><i data-lucide="life-buoy"></i></span>Safe&nbsp;Passage</a>
+      <ul class="pmenu">
+        <li><a href="#journey">How we help</a></li>
+        <li><a href="#campaigns">Donations</a></li>
+        <li><a href="#events">Events</a></li>
+        <li><a href="#blog">Stories</a></li>
+        <li><a href="#donate">Give</a></li>
+      </ul>
+      <div class="pright">
+        <a href="#campaigns" class="btn btn-saffron"><i data-lucide="heart"></i><span>Donate</span></a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu"><i data-lucide="menu"></i></button>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="nav-backdrop" id="navBackdrop"></div>
+<ul class="nav-drawer" id="navDrawer">
+  <li><a href="#journey">How we help</a></li><li><a href="#campaigns">Donations</a></li><li><a href="#events">Events</a></li><li><a href="#blog">Stories</a></li><li><a href="#donate">Give</a></li>
+</ul>
+
+<main id="main">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"><img src="https://drive.google.com/thumbnail?id=1QCjDKdh1weFKUNYPoMfwwCJzctcIFA5H&sz=w1600" alt="A refugee family on the move"></div>
+  <div class="corner">Stand with refugees</div>
+  <div class="wrap">
+    <div class="tag">Refugee support &amp; resettlement</div>
+    <h1>From fleeing danger to <em>finding home.</em></h1>
+    <p>Safe Passage walks with refugees at every step — from the moment they arrive to the day they rebuild a life with safety, work and belonging.</p>
+    <div class="hero-cta">
+      <a href="#campaigns" class="btn btn-saffron"><i data-lucide="heart"></i> Donate now</a>
+      <a href="#journey" class="btn btn-ghost-w"><i data-lucide="arrow-right"></i> How we help</a>
+    </div>
+  </div>
+</section>
+
+<!-- EDITORIAL JOURNEY LIST -->
+<section class="section jlist" id="journey">
+  <div class="wrap">
+    <div>
+      <div class="sec-head"><span class="eyebrow">How we help</span><h2>We walk the whole journey.</h2></div>
+      <div class="jrows">
+        <a class="jrow" href="#donate"><span class="no">01</span><h3>Reach &amp; rescue</h3><span class="sub">Emergency aid and safe routes for people arriving with nothing.</span><span class="go"><i data-lucide="arrow-up-right"></i></span></a>
+        <a class="jrow" href="#donate"><span class="no">02</span><h3>Shelter</h3><span class="sub">Safe housing, food, clothing and healthcare in the first weeks.</span><span class="go"><i data-lucide="arrow-up-right"></i></span></a>
+        <a class="jrow" href="#donate"><span class="no">03</span><h3>Legal &amp; settle</h3><span class="sub">Asylum casework, language classes and school places.</span><span class="go"><i data-lucide="arrow-up-right"></i></span></a>
+        <a class="jrow" href="#donate"><span class="no">04</span><h3>Work &amp; belong</h3><span class="sub">Job training, mentors and community to stand on their own.</span><span class="go"><i data-lucide="arrow-up-right"></i></span></a>
+      </div>
+    </div>
+    <div class="jlist-media"><img src="https://drive.google.com/thumbnail?id=1RokNOXzWGmjurLG5dYTLiHcuIkR7lsqK&sz=w800" alt="Refugees supported by Safe Passage"></div>
+  </div>
+</section>
+
+<!-- DARK FEATURE CARD -->
+<section class="section feature">
+  <div class="wrap">
+    <div class="card">
+      <div>
+        <span class="eyebrow sf">Our promise</span>
+        <h2 style="margin-top:14px">Aid that lasts <em>longer than the crisis.</em></h2>
+      </div>
+      <div class="cols">
+        <div>
+          <h4>What we provide</h4>
+          <ul>
+            <li><i data-lucide="check"></i> Emergency shelter &amp; essentials</li>
+            <li><i data-lucide="check"></i> Healthcare &amp; trauma support</li>
+            <li><i data-lucide="check"></i> Legal &amp; asylum casework</li>
+            <li><i data-lucide="check"></i> Language &amp; school places</li>
+          </ul>
+        </div>
+        <div>
+          <h4>How you help</h4>
+          <ul>
+            <li><i data-lucide="check"></i> Donate to the response</li>
+            <li><i data-lucide="check"></i> Sponsor a family's first year</li>
+            <li><i data-lucide="check"></i> Volunteer as a welcome buddy</li>
+            <li><i data-lucide="check"></i> Offer work or housing</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JOIN BAND -->
+<section class="join">
+  <div class="wrap">
+    <div class="join-media"><img src="https://drive.google.com/thumbnail?id=1X6gHVg89wBHFF2VExNCgeORtNtWcACYI&sz=w800" alt=""></div>
+    <div class="join-body">
+      <span class="eyebrow" style="color:var(--ink)"><span style="background:var(--ink);width:30px;height:3px;display:inline-block"></span> Join us</span>
+      <h2 style="margin-top:12px">Stand with refugees. Get our monthly update.</h2>
+      <p>Stories from the journey and the most urgent ways to help, straight to your inbox once a month.</p>
+      <form onsubmit="return false">
+        <input type="email" placeholder="Your email address" aria-label="Email address">
+        <button type="submit" class="btn btn-saffron"><i data-lucide="send"></i> Subscribe</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ICON FEATURES -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="eyebrow">Why it matters</span><h2>Built around real needs.</h2></div>
+    <div class="feats-grid">
+      <div class="ft"><div class="ic"><i data-lucide="life-buoy"></i></div><h3>Emergency aid</h3><p>First contact, safe routes and essentials for people arriving with nothing.</p></div>
+      <div class="ft"><div class="ic"><i data-lucide="home"></i></div><h3>Safe shelter</h3><p>Housing, food and healthcare in the critical early weeks of arrival.</p></div>
+      <div class="ft"><div class="ic"><i data-lucide="scale"></i></div><h3>Legal support</h3><p>Asylum casework and rights advice from people who know the system.</p></div>
+      <div class="ft"><div class="ic"><i data-lucide="briefcase"></i></div><h3>Jobs &amp; belonging</h3><p>Training, mentors and community so families can rebuild for good.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORDMARK BAND -->
+<section class="wordband">
+  <div class="wordband-bg"><img src="https://drive.google.com/thumbnail?id=1X090XXnbNiRMI5uvE8VcoiTwDmysFhSG&sz=w1600" alt=""></div>
+  <div class="wrap">
+    <span class="badge"><i data-lucide="life-buoy"></i> Safe Passage · since 2009</span>
+    <h2>Wel<em>come</em></h2>
+    <p>A journey to belonging</p>
+  </div>
+</section>
+
+<!-- CAMPAIGNS -->
+<section class="section" id="campaigns">
+  <div class="wrap">
+    <div class="sec-head center"><span class="eyebrow c">Donations</span><h2>Give to a specific need.</h2></div>
+    <div class="camp-grid">
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1v7sevNw1Kbw8QCrnY7oKPi3ueWsrOxZu&sz=w600" alt=""><span class="pill">Emergency</span></div>
+        <div class="body"><h3>Winter Shelter Appeal</h3><p>Heated shelter, blankets and hot meals for families arriving this winter.</p>
+          <div class="meter"><div class="bar"><i style="width:72%"></i></div><div class="nums"><span class="r">$72,000</span><span class="g">of $100,000</span></div></div>
+          <a href="#donate" class="btn btn-ink donate"><i data-lucide="heart"></i> Donate</a></div>
+      </article>
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1BMGyki07a1V53AFIPhxKzbTrFenIBRW8&sz=w600" alt=""><span class="pill">Education</span></div>
+        <div class="body"><h3>School for 500 Children</h3><p>School places, supplies and language support for refugee children.</p>
+          <div class="meter"><div class="bar"><i style="width:40%"></i></div><div class="nums"><span class="r">$30,000</span><span class="g">of $75,000</span></div></div>
+          <a href="#donate" class="btn btn-ink donate"><i data-lucide="heart"></i> Donate</a></div>
+      </article>
+      <article class="camp">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1X6gHVg89wBHFF2VExNCgeORtNtWcACYI&sz=w600" alt=""><span class="pill">Jobs</span></div>
+        <div class="body"><h3>Back to Work Fund</h3><p>Skills training and job placement for 1,000 newly-arrived adults.</p>
+          <div class="meter"><div class="bar"><i style="width:86%"></i></div><div class="nums"><span class="r">$43,000</span><span class="g">of $50,000</span></div></div>
+          <a href="#donate" class="btn btn-ink donate"><i data-lucide="heart"></i> Donate</a></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT STATS -->
+<section class="section impact impact-y">
+  <div class="wrap">
+    <div class="impact-media"><img src="https://drive.google.com/thumbnail?id=1LyOvTkfIi_BVI4QdzOoOF05zltoadg6d&sz=w800" alt="A welcome centre"></div>
+    <div>
+      <span class="eyebrow">Our impact</span>
+      <h2>Real lives, <em>rebuilt.</em></h2>
+      <p>Every gift is measured in years, not headlines — we stay until families can carry on without us.</p>
+      <div class="impact-stats">
+        <div><b>+86,000</b><span>Refugees supported</span></div>
+        <div><b>+34</b><span>Welcome centres</span></div>
+        <div><b>92<small>%</small></b><span>Thriving after 3 years</span></div>
+      </div>
+      <a href="#donate" class="btn btn-ink"><i data-lucide="arrow-right"></i> Give monthly</a>
+    </div>
+  </div>
+</section>
+
+<!-- DONATION FORM BAND -->
+<section class="section tiers" id="donate">
+  <div class="wrap">
+    <div class="sec-head center"><span class="eyebrow c">Make a gift</span><h2>Stand with a family today.</h2></div>
+    <div class="dform">
+      <form onsubmit="return false">
+        <div class="freq" role="radiogroup" aria-label="Donation frequency">
+          <input type="radio" name="freq" id="f-once" checked><label for="f-once">One-time</label>
+          <input type="radio" name="freq" id="f-month"><label for="f-month">Monthly</label>
+        </div>
+        <span class="flabel">Choose an amount</span>
+        <div class="amt-grid" role="radiogroup" aria-label="Donation amount">
+          <input type="radio" name="amt" id="a25"><label for="a25">$25</label>
+          <input type="radio" name="amt" id="a50" checked><label for="a50">$50</label>
+          <input type="radio" name="amt" id="a100"><label for="a100">$100</label>
+          <input type="radio" name="amt" id="a250"><label for="a250">$250</label>
+        </div>
+        <div class="amt-custom"><span>$</span><input type="number" min="1" placeholder="Other amount" aria-label="Custom amount"></div>
+        <div class="donor-grid">
+          <div class="dfield"><label for="d-nm">Name</label><input id="d-nm" type="text" placeholder="Your name"></div>
+          <div class="dfield"><label for="d-em">E-mail</label><input id="d-em" type="email" placeholder="you@email.com"></div>
+        </div>
+        <button type="submit" class="btn btn-saffron"><i data-lucide="heart"></i> Donate $50</button>
+        <div class="secure"><i data-lucide="shield-check"></i> Secure donation · goes straight to families</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTS -->
+<section class="section" id="events" style="background:var(--sand-2)">
+  <div class="wrap">
+    <div class="sec-head center"><span class="eyebrow c">What's on</span><h2>Come and welcome someone.</h2></div>
+    <div class="ev-grid">
+      <article class="ev">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1mbW-MSHuRBXLIuJOFW8BnJ_IQaDlUZib&sz=w600" alt=""><div class="badge"><span class="d">20</span><span class="m">Jul</span></div></div>
+        <div class="body"><h3>Welcome Day &amp; Community Lunch</h3><div class="meta"><span><i data-lucide="map-pin"></i> Riverside Welcome Centre</span><span><i data-lucide="clock"></i> 11:00 – 15:00</span></div><a href="#" class="btn btn-ghost"><i data-lucide="calendar-plus"></i> Register</a></div>
+      </article>
+      <article class="ev">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1sc2vdmxfPhzGFLbPwkjEzrBSIRaXzAJT&sz=w600" alt=""><div class="badge"><span class="d">14</span><span class="m">Aug</span></div></div>
+        <div class="body"><h3>Volunteer Buddy Training</h3><div class="meta"><span><i data-lucide="video"></i> Online</span><span><i data-lucide="clock"></i> 18:00 – 20:00</span></div><a href="#" class="btn btn-ghost"><i data-lucide="calendar-plus"></i> Register</a></div>
+      </article>
+      <article class="ev">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1LyOvTkfIi_BVI4QdzOoOF05zltoadg6d&sz=w600" alt=""><div class="badge"><span class="d">27</span><span class="m">Sep</span></div></div>
+        <div class="body"><h3>Walk for Welcome &amp; Gala</h3><div class="meta"><span><i data-lucide="map-pin"></i> City Park &amp; Hall</span><span><i data-lucide="ticket"></i> Ticketed</span></div><a href="#" class="btn btn-saffron"><i data-lucide="ticket"></i> Get tickets</a></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="section" id="blog">
+  <div class="wrap">
+    <div class="sec-head center"><span class="eyebrow c">From the blog</span><h2>Stories from the journey.</h2></div>
+    <div class="blog-grid">
+      <article class="post">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1lo5J4c1y6mp3UVOZGqsV9hSOJHcIjz9Q&sz=w600" alt=""><span class="cat">Field story</span></div>
+        <div class="body"><div class="meta">Jun 28, 2026 · 6 min read</div><h3>One year on: how a welcome centre changed a neighbourhood</h3><a href="#" class="more">Read story <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="post">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1KEz6dgOCj9ymLEbCajPaOwDAltWiF_WL&sz=w600" alt=""><span class="cat">Guide</span></div>
+        <div class="body"><div class="meta">Jun 14, 2026 · 4 min read</div><h3>How to be a great welcome buddy: 7 things that really help</h3><a href="#" class="more">Read story <i data-lucide="arrow-right"></i></a></div>
+      </article>
+      <article class="post">
+        <div class="ph"><img src="https://drive.google.com/thumbnail?id=1RokNOXzWGmjurLG5dYTLiHcuIkR7lsqK&sz=w600" alt=""><span class="cat">News</span></div>
+        <div class="body"><div class="meta">May 30, 2026 · 3 min read</div><h3>New jobs partnership opens 500 roles for newly-arrived refugees</h3><a href="#" class="more">Read story <i data-lucide="arrow-right"></i></a></div>
+      </article>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <a href="#" class="logo"><span class="mk"><i data-lucide="life-buoy"></i></span>Safe&nbsp;Passage</a>
+        <div class="tag">Unleash a fresh start</div>
+        <p class="about">We walk with refugees from the moment they arrive to the day they rebuild a life — with safety, dignity and belonging.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-fb"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-ig"/></svg></a>
+          <a href="#" aria-label="X"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-x"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#si-li"/></svg></a>
+        </div>
+      </div>
+      <div><h5>How we help</h5><div class="footer-links"><a href="#journey">Reach &amp; rescue</a><a href="#journey">Shelter</a><a href="#journey">Legal &amp; settle</a><a href="#journey">Work &amp; belong</a></div></div>
+      <div><h5>Get involved</h5><div class="footer-links"><a href="#campaigns">Donations</a><a href="#donate">Donate</a><a href="#events">Events</a><a href="#blog">Stories</a></div></div>
+      <div class="fnews">
+        <h5>Our newsletter</h5>
+        <p class="about" style="margin-bottom:8px">Once a month: stories and ways to help.</p>
+        <form class="nf" onsubmit="return false"><input type="email" placeholder="Email address" aria-label="Email address"><button type="submit" aria-label="Subscribe"><i data-lucide="send"></i></button></form>
+      </div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Safe Passage. A demo by Beplus · AlonePro.</span><span style="display:flex;gap:20px;flex-wrap:wrap"><a href="#">Privacy</a><a href="#">Terms</a></span></div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  if(window.lucide) lucide.createIcons();
+  const drawer=document.getElementById('navDrawer'),backdrop=document.getElementById('navBackdrop');
+  const close=()=>{drawer.classList.remove('open');backdrop.classList.remove('show');};
+  document.getElementById('navToggle').addEventListener('click',()=>{drawer.classList.add('open');backdrop.classList.add('show');});
+  backdrop.addEventListener('click',close);
+  drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));
+</script>
+</body>
+</html>

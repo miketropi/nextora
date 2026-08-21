@@ -1,0 +1,32 @@
+export interface ScrollingImageStripAttributes {
+  imageIds: number[];
+  imageHeight: number;
+  imageHeightUnit: string;
+  imageAspectRatio: string;
+  imageFit: string;
+  imageBorderRadius: number;
+  imageGap: number;
+  enableTilt: boolean;
+  tiltEvenAngle: number;
+  tiltOddAngle: number;
+  direction: string;
+  speed: number;
+  pauseOnHover: boolean;
+  enableFadeMask: boolean;
+  fadeMaskDirection: string;
+  fadeMaskLeft: number;
+  fadeMaskRight: number;
+  fadeMaskColor: string;
+  overlayColor: string;
+  overlayOpacity: number;
+  overlayStyle: string;
+  sectionBackgroundColor: string;
+  paddingVertical: number;
+  sectionMinHeight: string;
+  sectionHeight: string;
+  showBorders: boolean;
+  borderColor: string;
+  borderWidth: number;
+  enableScrollAnimation: boolean;
+  ariaLabel: string;
+}

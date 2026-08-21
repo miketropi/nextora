@@ -1,0 +1,136 @@
+/**
+ * Advanced List — front-end styles
+ */
+
+.wp-block-nextora-advanced-list {
+  /* Colors are optional - set via inline styles from user's color picker */
+  /* --nextora-list-icon-color: currentColor; */
+  /* --nextora-list-icon-bg: transparent; */
+  /* --nextora-list-icon-border: currentColor; */
+  --nextora-list-icon-size: 14px;
+  --nextora-list-icon-circle-size: 32px;
+  --nextora-list-icon-text-gap: 14px;
+  --nextora-list-border-radius: 50%;
+  --nextora-list-stroke-width: 2.5;
+}
+
+/* Framed style - transparent background by default */
+.wp-block-nextora-advanced-list--style-framed:not([style*="--nextora-list-icon-bg"]) {
+  --nextora-list-icon-bg: transparent;
+}
+
+.nextora-advanced-list__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nextora-list-item-gap, 1rem);
+}
+
+.nextora-advanced-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--nextora-list-icon-text-gap);
+  margin: 0 !important;
+}
+
+/* Icon base styles */
+.nextora-advanced-list__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--nextora-list-icon-color, currentColor);
+}
+
+.nextora-advanced-list__icon svg {
+  width: var(--nextora-list-icon-size);
+  height: var(--nextora-list-icon-size);
+  stroke-width: var(--nextora-list-stroke-width);
+  stroke: currentColor;
+  fill: none;
+}
+
+/* Icon style: default (no background) */
+.wp-block-nextora-advanced-list--style-default .nextora-advanced-list__icon {
+  width: auto;
+  height: auto;
+  background: none;
+  border: none;
+}
+
+/* Icon style: stacked (with background) */
+.wp-block-nextora-advanced-list--style-stacked .nextora-advanced-list__icon {
+  width: var(--nextora-list-icon-circle-size);
+  height: var(--nextora-list-icon-circle-size);
+  border-radius: var(--nextora-list-border-radius);
+  background-color: var(--nextora-list-icon-bg);
+}
+
+/* Icon style: framed (with border and background) */
+.wp-block-nextora-advanced-list--style-framed .nextora-advanced-list__icon {
+  width: var(--nextora-list-icon-circle-size);
+  height: var(--nextora-list-icon-circle-size);
+  border-radius: var(--nextora-list-border-radius);
+  background-color: var(--nextora-list-icon-bg);
+  border: 2px solid var(--nextora-list-icon-border);
+  box-sizing: border-box;
+}
+
+/* Additional specificity for framed style */
+.wp-block-nextora-advanced-list--style-framed .nextora-advanced-list__item .nextora-advanced-list__icon {
+  border: 2px solid var(--nextora-list-icon-border);
+}
+
+.nextora-advanced-list__text {
+  flex: 1;
+  line-height: 1.6;
+  padding-top: 0;
+}
+
+/* Scroll animation states */
+.wp-block-nextora-advanced-list.has-scroll-animation .nextora-advanced-list__item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.wp-block-nextora-advanced-list.has-scroll-animation.is-visible .nextora-advanced-list__item {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger animation for items */
+.wp-block-nextora-advanced-list.has-scroll-animation.is-visible .nextora-advanced-list__item:nth-child(1) {
+  transition-delay: 0.1s;
+}
+
+.wp-block-nextora-advanced-list.has-scroll-animation.is-visible .nextora-advanced-list__item:nth-child(2) {
+  transition-delay: 0.2s;
+}
+
+.wp-block-nextora-advanced-list.has-scroll-animation.is-visible .nextora-advanced-list__item:nth-child(3) {
+  transition-delay: 0.3s;
+}
+
+.wp-block-nextora-advanced-list.has-scroll-animation.is-visible .nextora-advanced-list__item:nth-child(4) {
+  transition-delay: 0.4s;
+}
+
+.wp-block-nextora-advanced-list.has-scroll-animation.is-visible .nextora-advanced-list__item:nth-child(5) {
+  transition-delay: 0.5s;
+}
+
+.wp-block-nextora-advanced-list.has-scroll-animation.is-visible .nextora-advanced-list__item:nth-child(n+6) {
+  transition-delay: 0.6s;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .wp-block-nextora-advanced-list.has-scroll-animation .nextora-advanced-list__item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
