@@ -95,3 +95,8 @@ $scrolling_image_strip_editor = __DIR__ . '/scrolling-image-strip/register-edito
 if ( is_readable( $scrolling_image_strip_editor ) ) {
 	require_once $scrolling_image_strip_editor;
 }
+
+$text_reveal_animation_editor = __DIR__ . '/text-reveal-animation/register-editor.php';
+if ( is_readable( $text_reveal_animation_editor ) ) {
+	require_once $text_reveal_animation_editor;
+}

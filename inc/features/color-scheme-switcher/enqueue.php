@@ -55,7 +55,8 @@ add_action(
 				aria-controls="nextora-scheme-popover"
 				aria-label="<?php echo esc_attr_x( 'Open appearance options', 'scheme switcher button', 'nextora' ); ?>"
 			>
-				<svg class="scheme-switcher__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="22" height="22">
+				<span class="scheme-switcher__trigger-label"><?php echo esc_html_x( 'Appearance', 'scheme switcher trigger label', 'nextora' ); ?></span>
+				<svg class="scheme-switcher__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="18" height="18">
 					<path d="M11 17a4 4 0 0 1-8 0V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2Z"/>
 					<path d="M16.7 13H19a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7"/>
 					<path d="M 7 17h.01"/>

@@ -1,0 +1,334 @@
+/**
+ * Text Reveal Animation Block styles
+ * Replicating exact HTML animation: scattered letter reveal, shutter curtain images, expanding center image, and image zoom.
+ */
+
+.wp-block-nextora-text-reveal-animation {
+	position: relative;
+	width: 100%;
+	color: var(--tra-text-color, currentColor);
+	box-sizing: border-box;
+	overflow: hidden;
+	container-type: inline-size;
+}
+
+.nextora-tra__container {
+	width: 100%;
+	max-width: var(--tra-max-width, 100%);
+	margin: 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	font-size: var(--tra-auto-font-size, clamp(1.4rem, 10cqw, 12rem));
+	font-family: var(--nextora-font-heading, inherit);
+	letter-spacing: var(--tra-letter-spacing, normal);
+	line-height: var(--tra-line-height, 1);
+	text-transform: var(--tra-text-transform, uppercase);
+	font-weight: var(--tra-font-weight, 700);
+	box-sizing: border-box;
+}
+
+.nextora-tra--has-heading-font .nextora-tra__container {
+	font-family: var(--nextora-tra-heading-font-family, var(--nextora-font-heading, inherit));
+}
+
+@keyframes nextoraTraDividerExpand {
+	0% {
+		transform: scaleX(0);
+		opacity: 0;
+	}
+
+	100% {
+		transform: scaleX(1);
+		opacity: var(--tra-divider-opacity, 1);
+	}
+}
+
+.nextora-tra__divider {
+	position: relative;
+	z-index: 10;
+	width: var(--tra-divider-text-width, 100%);
+	max-width: 100%;
+	margin-top: calc(clamp(16px, 2.5vw, 32px) + (var(--tra-row-gap, 0px) / 2));
+	margin-bottom: calc(clamp(16px, 2.5vw, 32px) + (var(--tra-row-gap, 0px) / 2));
+	margin-left: auto;
+	margin-right: auto;
+	box-sizing: border-box;
+	border: none;
+	border-top: var(--tra-divider-width, 1px) var(--tra-divider-style, solid) var(--tra-divider-color, rgba(196, 187, 166, 0.3));
+	opacity: 0;
+	transform: scaleX(0);
+	transform-origin: center;
+}
+
+.nextora-tra--revealed .nextora-tra__divider,
+.nextora-tra:not(.nextora-tra--has-animation) .nextora-tra__divider,
+.nextora-tra--editor .nextora-tra__divider {
+	animation: nextoraTraDividerExpand var(--tra-divider-duration, 1.2s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation-delay: var(--tra-divider-delay, 0.4s);
+}
+
+.nextora-tra__row-wrapper {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin: 0;
+	padding: 0;
+}
+
+.nextora-tra__row {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	width: 100%;
+}
+
+.nextora-tra__text {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: nowrap;
+	letter-spacing: var(--tra-letter-spacing, inherit);
+}
+
+/* Character reveal */
+.nextora-tra__char {
+	position: relative;
+	display: inline-block;
+	transform: scaleY(var(--tra-text-scale-y, 1.35));
+	transform-origin: center;
+	letter-spacing: var(--tra-letter-spacing, inherit);
+}
+
+.nextora-tra__char::after {
+	content: '';
+	width: calc(100% + 2px);
+	height: 100%;
+	background: var(--tra-cover-color, var(--tra-bg, #EBE6DC));
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	transform-origin: bottom;
+	transform: scaleY(1);
+	pointer-events: none;
+	z-index: 2;
+}
+
+/* Images & Wrappers */
+.nextora-tra__img-wrap {
+	overflow: hidden;
+	border-radius: var(--tra-img-radius, 0.12em);
+	height: calc(var(--tra-text-scale-y, 1.35) * 0.78em);
+	--tra-calculated-width: calc(var(--tra-img-custom-width, 200) / 200 * 1.05em);
+	width: var(--tra-calculated-width);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 0.12em;
+	position: relative;
+	flex-shrink: 0;
+	/* Fix overflow bug */
+	-webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+}
+
+.nextora-tra__img-wrap.center,
+.nextora-tra__img-wrap--center,
+.nextora-tra__img-wrap--expand {
+	width: 0;
+	transform: scaleX(1);
+}
+
+.nextora-tra__img-wrap.small,
+.nextora-tra__img-wrap--small {
+	--tra-calculated-width: calc(var(--tra-img-custom-width, 100) / 200 * 1.05em);
+	width: var(--tra-calculated-width);
+}
+
+.nextora-tra__img {
+	border-radius: var(--tra-img-radius, 0.12em);
+	object-fit: cover;
+	height: 100%;
+	width: 100%;
+	display: block;
+	transform: scale(1.4);
+}
+
+.nextora-tra__img-placeholder {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #e2dcd0;
+	color: #8c826e;
+}
+
+/* Shutter curtains on side images */
+.nextora-tra__img-wrap:not(.center):not(.nextora-tra__img-wrap--center):not(.nextora-tra__img-wrap--expand)::before {
+	content: '';
+	position: absolute;
+	left: -5px;
+	top: 0;
+	height: 100%;
+	width: calc(50% + 10px);
+	background: var(--tra-cover-color, var(--tra-bg, #EBE6DC));
+	transform-origin: left;
+	transform: scaleX(1);
+	pointer-events: none;
+	z-index: 2;
+}
+
+.nextora-tra__img-wrap:not(.center):not(.nextora-tra__img-wrap--center):not(.nextora-tra__img-wrap--expand)::after {
+	content: '';
+	position: absolute;
+	right: -5px;
+	top: 0;
+	height: 100%;
+	width: calc(50% + 10px);
+	background: var(--tra-cover-color, var(--tra-bg, #EBE6DC));
+	transform-origin: right;
+	transform: scaleX(1);
+	pointer-events: none;
+	z-index: 2;
+}
+
+/* Specific staggered delays replicated from HTML */
+.nextora-tra__img-wrap.i1,
+.nextora-tra__img-wrap--i1 {
+	--img-delay: 0.2s;
+}
+
+.nextora-tra__img-wrap.i2,
+.nextora-tra__img-wrap--i2 {
+	--img-delay: 0.5s;
+}
+
+.nextora-tra__img-wrap.center,
+.nextora-tra__img-wrap--center,
+.nextora-tra__img-wrap--expand {
+	--img-delay: 0.6s;
+}
+
+.nextora-tra__img-wrap.i3,
+.nextora-tra__img-wrap--i3 {
+	--img-delay: 0.3s;
+}
+
+.nextora-tra__img-wrap.i4,
+.nextora-tra__img-wrap--i4 {
+	--img-delay: 0.7s;
+}
+
+/* Keyframe definitions (Identical to HTML source) */
+@keyframes revealCharacter {
+	0% {
+		transform: scaleY(1);
+	}
+
+	100% {
+		transform: scaleY(0);
+	}
+}
+
+@keyframes openCenterImage {
+	0% {
+		width: 0;
+	}
+
+	100% {
+		width: var(--tra-calculated-width, 1.05em);
+	}
+}
+
+@keyframes zoomImage {
+	0% {
+		transform: scale(1.4);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}
+
+@keyframes hideHorizontally {
+	0% {
+		transform: scaleX(1);
+	}
+
+	100% {
+		transform: scaleX(0);
+	}
+}
+
+/* Active Trigger when in view or in editor */
+.nextora-tra.is-revealed .nextora-tra__char::after,
+.nextora-tra--editor .nextora-tra__char::after {
+	animation: revealCharacter var(--tra-reveal-duration, 2.4s) forwards;
+	animation-timing-function: cubic-bezier(0.12, 0.76, 0.09, 0.96);
+	animation-delay: var(--char-delay, 0.7s);
+}
+
+.nextora-tra.is-revealed .nextora-tra__img,
+.nextora-tra--editor .nextora-tra__img {
+	animation: zoomImage 2s ease-out forwards;
+	animation-delay: var(--img-delay, 0.5s);
+}
+
+.nextora-tra.is-revealed .nextora-tra__img-wrap.center,
+.nextora-tra.is-revealed .nextora-tra__img-wrap--center,
+.nextora-tra.is-revealed .nextora-tra__img-wrap--expand,
+.nextora-tra--editor .nextora-tra__img-wrap.center,
+.nextora-tra--editor .nextora-tra__img-wrap--center,
+.nextora-tra--editor .nextora-tra__img-wrap--expand {
+	animation: openCenterImage 0.9s ease forwards;
+	animation-delay: var(--img-delay, 0.6s);
+}
+
+.nextora-tra.is-revealed .nextora-tra__img-wrap:not(.center):not(.nextora-tra__img-wrap--center):not(.nextora-tra__img-wrap--expand)::before,
+.nextora-tra.is-revealed .nextora-tra__img-wrap:not(.center):not(.nextora-tra__img-wrap--center):not(.nextora-tra__img-wrap--expand)::after,
+.nextora-tra--editor .nextora-tra__img-wrap:not(.center):not(.nextora-tra__img-wrap--center):not(.nextora-tra__img-wrap--expand)::before,
+.nextora-tra--editor .nextora-tra__img-wrap:not(.center):not(.nextora-tra__img-wrap--center):not(.nextora-tra__img-wrap--expand)::after {
+	animation: hideHorizontally 1s ease forwards;
+	animation-delay: var(--img-delay, 0.3s);
+}
+
+/* Link wrapper */
+.nextora-tra__link {
+	color: inherit;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+	.nextora-tra__char::after,
+	.nextora-tra__img-wrap::before,
+	.nextora-tra__img-wrap::after {
+		display: none !important;
+	}
+
+	.nextora-tra__img-wrap.center,
+	.nextora-tra__img-wrap--center,
+	.nextora-tra__img-wrap--expand {
+		width: 1.05em !important;
+		animation: none !important;
+	}
+
+	.nextora-tra__img {
+		transform: scale(1) !important;
+		animation: none !important;
+	}
+}
+
+/* Responsive tweaks for mobile */
+@media (max-width: 768px) {
+	.nextora-tra__divider {
+		width: 90%;
+		margin: 12px 5%;
+	}
+}

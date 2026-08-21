@@ -418,6 +418,25 @@
 	 * UI construction
 	 * ------------------------------------------------------------------ */
 
+	function extractPaletteColors( colors ) {
+		if ( ! colors ) {
+			return [];
+		}
+		var preferred = [ 'base', 'contrast', 'primary', 'secondary', 'paragraph', 'surface' ];
+		var list = [];
+		preferred.forEach( function ( key ) {
+			if ( colors[ key ] && colors[ key ] !== 'transparent' && list.indexOf( colors[ key ] ) === -1 && list.length < 6 ) {
+				list.push( colors[ key ] );
+			}
+		} );
+		Object.keys( colors ).forEach( function ( key ) {
+			if ( key !== 'transparent' && colors[ key ] && list.indexOf( colors[ key ] ) === -1 && list.length < 6 ) {
+				list.push( colors[ key ] );
+			}
+		} );
+		return list;
+	}
+
 	function makeSwatch( slug, title, colors ) {
 		var btn = document.createElement( 'button' );
 		btn.type = 'button';
@@ -429,13 +448,12 @@
 		preview.className = 'scheme-switcher__swatch';
 		preview.setAttribute( 'aria-hidden', 'true' );
 
-		[ 'base', 'primary', 'contrast' ].forEach( function ( colorSlug ) {
-			if ( colors && colors[ colorSlug ] ) {
-				var dot = document.createElement( 'span' );
-				dot.className = 'scheme-switcher__dot';
-				dot.style.backgroundColor = colors[ colorSlug ];
-				preview.appendChild( dot );
-			}
+		var dotColors = extractPaletteColors( colors );
+		dotColors.forEach( function ( hex ) {
+			var dot = document.createElement( 'span' );
+			dot.className = 'scheme-switcher__dot';
+			dot.style.backgroundColor = hex;
+			preview.appendChild( dot );
 		} );
 
 		var label = document.createElement( 'span' );
@@ -488,13 +506,12 @@
 		preview.className = 'scheme-switcher__swatch';
 		preview.setAttribute( 'aria-hidden', 'true' );
 
-		[ 'base', 'primary', 'contrast' ].forEach( function ( colorSlug ) {
-			if ( theme.colors && theme.colors[ colorSlug ] ) {
-				var dot = document.createElement( 'span' );
-				dot.className = 'scheme-switcher__dot';
-				dot.style.backgroundColor = theme.colors[ colorSlug ];
-				preview.appendChild( dot );
-			}
+		var dotColors = extractPaletteColors( theme.colors );
+		dotColors.forEach( function ( hex ) {
+			var dot = document.createElement( 'span' );
+			dot.className = 'scheme-switcher__dot';
+			dot.style.backgroundColor = hex;
+			preview.appendChild( dot );
 		} );
 
 		var label = document.createElement( 'span' );

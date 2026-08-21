@@ -408,6 +408,157 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide_overlay' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_team_section_render_template_02' ) ) {
+	/**
+	 * Render Template 02 (Animated Card Stack Deck + Details).
+	 *
+	 * @param list<array<string, mixed>> $members        Array of normalized members.
+	 * @param int                        $radius         Default card radius.
+	 * @param bool                       $autoplay       Whether autoplay is enabled.
+	 * @param int                        $autoplay_delay Autoplay delay ms.
+	 * @param bool                       $loop           Autoplay/navigation loop.
+	 * @param int                        $speed          Transition speed ms.
+	 * @param bool                       $pause_on_hover Pause autoplay on mouse hover.
+	 * @param bool                       $show_arrows    Show navigation arrows.
+	 */
+	function nextora_team_section_render_template_02( array $members, int $radius, bool $autoplay, int $autoplay_delay, bool $loop, int $speed = 500, bool $pause_on_hover = true, bool $show_arrows = true ): string {
+		$count = count( $members );
+		if ( 0 === $count ) {
+			return '';
+		}
+
+		$out = sprintf(
+			'<div class="nextora-team-section__deck-container" data-autoplay="%s" data-autoplay-delay="%d" data-loop="%s" data-speed="%d" data-pause-on-hover="%s">',
+			$autoplay ? '1' : '0',
+			$autoplay_delay,
+			$loop ? '1' : '0',
+			$speed,
+			$pause_on_hover ? '1' : '0',
+		);
+
+		$out .= '<div class="nextora-team-section__deck-grid">';
+
+		// Left Column: Stack of photo cards
+		$out .= '<div class="nextora-team-section__deck-photo-col">';
+		$out .= '<div class="nextora-team-section__deck-photo-stack">';
+
+		foreach ( $members as $idx => $member ) {
+			$is_active = 0 === $idx;
+			$photo_id  = (int) $member['photoId'];
+			$photo_alt = (string) $member['photoAlt'];
+			$card_rad  = (int) $member['cardBorderRadius'] > 0 ? (int) $member['cardBorderRadius'] : $radius;
+
+			$out .= sprintf(
+				'<div class="nextora-team-section__deck-photo-card%s" data-deck-index="%d" style="border-radius:%dpx;">',
+				$is_active ? ' is-active' : '',
+				$idx,
+				$card_rad,
+			);
+
+			if ( $photo_id > 0 ) {
+				$alt = $photo_alt;
+				if ( '' === $alt ) {
+					$alt = (string) get_post_meta( $photo_id, '_wp_attachment_image_alt', true );
+				}
+				$img = wp_get_attachment_image(
+					$photo_id,
+					'full',
+					false,
+					array(
+						'class'    => 'nextora-team-section__deck-photo-img',
+						'alt'      => $alt,
+						'loading'  => $idx === 0 ? 'eager' : 'lazy',
+						'decoding' => 'async',
+						'sizes'    => '(max-width: 767px) 100vw, 50vw',
+					),
+				);
+				if ( is_string( $img ) && '' !== $img ) {
+					$out .= $img;
+				} else {
+					$out .= nextora_team_section_render_member_photo_fallback( $member );
+				}
+			} else {
+				$out .= nextora_team_section_render_member_photo_fallback( $member );
+			}
+
+			$out .= '</div>';
+		}
+
+		$out .= '</div></div>';
+
+		// Right Column: Details Pane + Navigation Arrows
+		$out .= '<div class="nextora-team-section__deck-info-col">';
+		$out .= '<div class="nextora-team-section__deck-info-stack">';
+
+		foreach ( $members as $idx => $member ) {
+			$is_active = 0 === $idx;
+			$name      = (string) $member['name'];
+			$role      = (string) $member['role'];
+			$bio       = (string) $member['bio'];
+			$tags      = (array) $member['tags'];
+			$show_soc  = ! empty( $member['showSocialLinks'] );
+			$social    = is_array( $member['socialLinks'] ) ? $member['socialLinks'] : array();
+
+			$out .= sprintf(
+				'<div class="nextora-team-section__deck-info-pane%s" data-deck-index="%d">',
+				$is_active ? ' is-active' : '',
+				$idx,
+			);
+
+			$out .= '<h3 class="nextora-team-section__deck-name">' . esc_html( $name ) . '</h3>';
+
+			if ( '' !== $role ) {
+				$out .= '<p class="nextora-team-section__deck-role">' . esc_html( $role ) . '</p>';
+			}
+
+			if ( '' !== $bio ) {
+				$out .= '<div class="nextora-team-section__deck-bio">' . esc_html( $bio ) . '</div>';
+			}
+
+			if ( $show_soc && array() !== $social ) {
+				$out .= '<div class="nextora-team-section__deck-social">';
+				foreach ( $social as $link ) {
+					if ( ! is_array( $link ) ) {
+						continue;
+					}
+					$url      = isset( $link['url'] ) ? (string) $link['url'] : '';
+					$platform = isset( $link['platform'] ) ? (string) $link['platform'] : 'website';
+					if ( '' === $url ) {
+						continue;
+					}
+					$label = nextora_team_section_social_platform_label( $platform );
+					$out  .= '<a class="nextora-team-section__deck-social-link" href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr( $label ) . '">';
+					$out  .= '<span>' . esc_html( $label ) . '</span>';
+					$out  .= '</a>';
+				}
+				$out .= '</div>';
+			}
+
+			$out .= '</div>';
+		}
+
+		$out .= '</div>';
+
+		// Nav controls
+		if ( $show_arrows && $count > 1 ) {
+			$out .= '<div class="nextora-team-section__deck-nav">';
+			$out .= '<button type="button" class="nextora-team-section__deck-nav-btn nextora-team-section__deck-nav-btn--prev" aria-label="' . esc_attr__( 'Previous team member', 'nextora' ) . '">';
+			$out .= '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nextora-team-section__deck-nav-icon"><path d="m15 18-6-6 6-6"/></svg>';
+			$out .= '</button>';
+			$out .= '<button type="button" class="nextora-team-section__deck-nav-btn nextora-team-section__deck-nav-btn--next" aria-label="' . esc_attr__( 'Next team member', 'nextora' ) . '">';
+			$out .= '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nextora-team-section__deck-nav-icon"><path d="m9 18 6-6-6-6"/></svg>';
+			$out .= '</button>';
+			$out .= '</div>';
+		}
+
+		$out .= '</div>'; // End right column
+		$out .= '</div>'; // End grid
+		$out .= '</div>'; // End deck container
+
+		return $out;
+	}
+}
+
 $raw_members = isset( $attributes['members'] ) && is_array( $attributes['members'] ) ? $attributes['members'] : array();
 $members     = array();
 
@@ -431,7 +582,7 @@ if ( ! in_array( $layout_mode, array( 'carousel', 'grid' ), true ) ) {
 }
 
 $card_template = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-if ( ! in_array( $card_template, array( 'default', 'overlay-social' ), true ) ) {
+if ( ! in_array( $card_template, array( 'default', 'overlay-social', 'template-02' ), true ) ) {
 	$card_template = 'default';
 }
 
@@ -582,38 +733,42 @@ nextora_team_section_enqueue_view_script();
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<div class="nextora-team-section__inner">
-		<div
-			class="nextora-team-section__carousel-root"
-			data-swiper-opts="<?php echo esc_attr( $opts_string ); ?>"
-			data-layout-mode="<?php echo esc_attr( $layout_mode ); ?>"
-			data-grid-min-width="<?php echo esc_attr( (string) $grid_min_width ); ?>"
-		>
-			<div class="swiper nextora-team-section__swiper">
-				<div class="swiper-wrapper">
-					<?php
-					foreach ( $members as $member ) {
-						if ( 'overlay-social' === $card_template ) {
-							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
-							echo nextora_team_section_render_member_slide_overlay( $member, $card_radius );
-						} else {
-							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
-							echo nextora_team_section_render_member_slide( $member, $card_radius );
+		<?php if ( 'template-02' === $card_template ) : ?>
+			<?php echo nextora_team_section_render_template_02( $members, $card_radius, $autoplay, $autoplay_d, $use_loop, $speed, $pause_hover, $show_arrows ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
+		<?php else : ?>
+			<div
+				class="nextora-team-section__carousel-root"
+				data-swiper-opts="<?php echo esc_attr( $opts_string ); ?>"
+				data-layout-mode="<?php echo esc_attr( $layout_mode ); ?>"
+				data-grid-min-width="<?php echo esc_attr( (string) $grid_min_width ); ?>"
+			>
+				<div class="swiper nextora-team-section__swiper">
+					<div class="swiper-wrapper">
+						<?php
+						foreach ( $members as $member ) {
+							if ( 'overlay-social' === $card_template ) {
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+								echo nextora_team_section_render_member_slide_overlay( $member, $card_radius );
+							} else {
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+								echo nextora_team_section_render_member_slide( $member, $card_radius );
+							}
 						}
-					}
-					?>
+						?>
+					</div>
 				</div>
+				<?php if ( $show_arrows && $slide_count > 1 ) : ?>
+					<button type="button" class="nextora-team-section__arrow nextora-team-section__arrow--prev" aria-label="<?php echo esc_attr__( 'Previous team member', 'nextora' ); ?>">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+					</button>
+					<button type="button" class="nextora-team-section__arrow nextora-team-section__arrow--next" aria-label="<?php echo esc_attr__( 'Next team member', 'nextora' ); ?>">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+					</button>
+				<?php endif; ?>
+				<?php if ( $show_pag && $slide_count > 1 ) : ?>
+					<div class="nextora-team-section__pagination swiper-pagination" aria-hidden="true"></div>
+				<?php endif; ?>
 			</div>
-			<?php if ( $show_arrows && $slide_count > 1 ) : ?>
-				<button type="button" class="nextora-team-section__arrow nextora-team-section__arrow--prev" aria-label="<?php echo esc_attr__( 'Previous team member', 'nextora' ); ?>">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-				</button>
-				<button type="button" class="nextora-team-section__arrow nextora-team-section__arrow--next" aria-label="<?php echo esc_attr__( 'Next team member', 'nextora' ); ?>">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-				</button>
-			<?php endif; ?>
-			<?php if ( $show_pag && $slide_count > 1 ) : ?>
-				<div class="nextora-team-section__pagination swiper-pagination" aria-hidden="true"></div>
-			<?php endif; ?>
-		</div>
+		<?php endif; ?>
 	</div>
 </div>
