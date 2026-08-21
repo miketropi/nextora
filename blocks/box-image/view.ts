@@ -183,12 +183,42 @@ function initScrollReveal(section: HTMLElement): void {
 	}
 
 	const header = section.querySelector<HTMLElement>('.nextora-box-image__header');
-	const carousel = section.querySelector<HTMLElement>('.nextora-box-image__carousel-root');
+	const carousel = section.querySelector<HTMLElement>(
+		'.nextora-box-image__carousel-root, .nextora-box-image__steps-wrapper',
+	);
 	const style = section.getAttribute('data-nextora-scroll-reveal-style') || 'default';
 
 	if (style === 'sequential') {
 		initSequentialReveal(section, header, carousel);
 		return;
+	}
+
+	const isTemplate4 = section.classList.contains('nextora-box-image--template-template4');
+	const maskPath = isTemplate4
+		? section.querySelector<SVGPathElement>('.nextora-box-image__steps-mask-path')
+		: null;
+	const pathEl = isTemplate4
+		? section.querySelector<SVGPathElement>('.nextora-box-image__steps-curve-path')
+		: null;
+	const isPathAvailable = Boolean(
+		(maskPath || pathEl) &&
+			typeof (maskPath || pathEl)?.getTotalLength === 'function' &&
+			window.innerWidth >= 768,
+	);
+	let pathLength = 0;
+	if (isPathAvailable) {
+		try {
+			pathLength = maskPath?.getTotalLength() || pathEl?.getTotalLength() || 0;
+		} catch {
+			pathLength = 0;
+		}
+	}
+
+	if (pathLength > 0 && maskPath) {
+		gsap.set(maskPath, {
+			strokeDasharray: `${pathLength} ${pathLength}`,
+			strokeDashoffset: String(pathLength),
+		});
 	}
 
 	const targets = [header, carousel].filter((el): el is HTMLElement => el !== null);
@@ -206,6 +236,12 @@ function initScrollReveal(section: HTMLElement): void {
 		defaults: { ease: 'power3.out' },
 		onComplete: () => {
 			if (getRevealGen(section) !== gen) return;
+			if (pathEl) {
+				pathEl.removeAttribute('mask');
+			}
+			if (maskPath) {
+				maskPath.style.strokeDashoffset = '0';
+			}
 			clearRevealStyles(targets);
 			setRevealReady(section);
 		},
@@ -216,6 +252,13 @@ function initScrollReveal(section: HTMLElement): void {
 	}
 	if (carousel) {
 		timeline.to(carousel, { opacity: 1, y: 0, duration: 1.05 }, header ? 0.18 : 0);
+	}
+	if (pathLength > 0 && maskPath) {
+		timeline.to(
+			maskPath,
+			{ strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut' },
+			header ? 0.18 : 0,
+		);
 	}
 
 	let played = false;
@@ -235,6 +278,11 @@ function initScrollReveal(section: HTMLElement): void {
 			return;
 		}
 		gsap.killTweensOf(targets);
+		if (pathEl && pathLength > 0) {
+			pathEl.style.strokeDasharray = '';
+			pathEl.style.strokeDashoffset = '';
+			pathEl.style.animation = '';
+		}
 		clearRevealStyles(targets);
 		setRevealReady(section);
 	}, REVEAL_FALLBACK_MS);
@@ -259,59 +307,131 @@ function initSequentialReveal(
 	header: HTMLElement | null,
 	carousel: HTMLElement | null,
 ): void {
+	const isTemplate4 = section.classList.contains('nextora-box-image--template-template4');
+	const maskPath = isTemplate4
+		? section.querySelector<SVGPathElement>('.nextora-box-image__steps-mask-path')
+		: null;
+	const pathEl = isTemplate4
+		? section.querySelector<SVGPathElement>('.nextora-box-image__steps-curve-path')
+		: null;
+
+	const isPathAvailable = Boolean(
+		(maskPath || pathEl) &&
+			typeof (maskPath || pathEl)?.getTotalLength === 'function' &&
+			window.innerWidth >= 768,
+	);
+	let pathLength = 0;
+	if (isPathAvailable) {
+		try {
+			pathLength = maskPath?.getTotalLength() || pathEl?.getTotalLength() || 0;
+		} catch {
+			pathLength = 0;
+		}
+	}
+
+	if (pathLength > 0 && maskPath) {
+		gsap.set(maskPath, {
+			strokeDasharray: `${pathLength} ${pathLength}`,
+			strokeDashoffset: String(pathLength),
+		});
+	}
+
+	const cards = carousel
+		? Array.from(
+				carousel.querySelectorAll<HTMLElement>(
+					'.swiper-slide, .nextora-box-image__step-card-wrap',
+				),
+		  )
+		: [];
+
+	const targets = [header, ...cards].filter((el): el is HTMLElement => el !== null);
+
+	if (targets.length === 0) {
+		setRevealReady(section);
+		return;
+	}
+
+	gsap.set(targets, { opacity: 0, y: 36, force3D: true });
+
 	let played = false;
 	let scheduled = false;
-	let readyCheck = 0;
-
-	const waitForLayout = (callback: () => void): void => {
-		const hasCards = Boolean(carousel?.querySelector('.swiper-slide, .nextora-box-image__card'));
-		if (carousel && (!hasCards || carousel.clientWidth < 2) && readyCheck < 60) {
-			readyCheck += 1;
-			requestAnimationFrame(() => waitForLayout(callback));
-			return;
-		}
-		requestAnimationFrame(() => requestAnimationFrame(callback));
-	};
 
 	const playReveal = (): void => {
 		if (played || section.classList.contains('nextora-box-image--reveal-ready')) {
 			return;
 		}
-		scheduled = true;
-		waitForLayout(() => {
-			if (played || section.classList.contains('nextora-box-image--reveal-ready')) return;
-			played = true;
+		played = true;
 
-		const cards = carousel
-			? Array.from(carousel.querySelectorAll<HTMLElement>('.swiper-slide'))
-			: [];
-
-		const targets = [header, ...cards].filter((el): el is HTMLElement => el !== null);
-
-		if (targets.length === 0) {
-			setRevealReady(section);
-			return;
-		}
-
-		gsap.set(targets, { opacity: 0, y: 40, force3D: true });
 		section.classList.remove('nextora-box-image--reveal-pending');
-
 		const gen = nextRevealGen(section);
 
 		const timeline = gsap.timeline({
-			defaults: { ease: 'power3.out' },
+			defaults: { ease: 'power2.out' },
 			onComplete: () => {
 				if (getRevealGen(section) !== gen) return;
+				if (pathEl) {
+					pathEl.removeAttribute('mask');
+				}
+				if (maskPath) {
+					maskPath.style.strokeDashoffset = '0';
+				}
 				clearRevealStyles(targets);
 				setRevealReady(section);
 			},
 		});
 
+		let curTime = 0;
 		if (header) {
-			timeline.to(header, { opacity: 1, y: 0, duration: 0.85 }, 0);
+			timeline.to(header, { opacity: 1, y: 0, duration: 0.8 }, 0);
+			curTime = 0.2;
 		}
 
-		if (cards.length > 0) {
+		if (isTemplate4 && pathLength > 0 && maskPath && cards.length > 1) {
+			// 1. Reveal first card firmly
+			timeline.to(
+				cards[0],
+				{
+					opacity: 1,
+					y: 0,
+					scale: 1,
+					duration: 0.7,
+					ease: 'back.out(1.15)',
+				},
+				curTime,
+			);
+			curTime += 0.55;
+
+			// 2. Weave dashed line progressively from card to card via mask
+			const totalSegments = cards.length - 1;
+			for (let i = 1; i < cards.length; i++) {
+				const targetOffset = pathLength * (1 - i / totalSegments);
+				// Line weaves towards card i
+				timeline.to(
+					maskPath,
+					{
+						strokeDashoffset: targetOffset,
+						duration: 0.75,
+						ease: 'power1.inOut',
+					},
+					curTime,
+				);
+
+				// Card i reveals and lands firmly, safely covering the line endpoint from above
+				timeline.to(
+					cards[i],
+					{
+						opacity: 1,
+						y: 0,
+						scale: 1,
+						duration: 0.65,
+						ease: 'back.out(1.15)',
+					},
+					curTime + 0.45,
+				);
+
+				curTime += 0.85;
+			}
+		} else if (cards.length > 0) {
 			timeline.to(
 				cards,
 				{
@@ -320,16 +440,15 @@ function initSequentialReveal(
 					duration: 0.75,
 					stagger: { each: 0.14, from: 'start' },
 				},
-				header ? 0.12 : 0,
+				curTime,
 			);
 		}
-		});
 	};
 
 	window.setTimeout(() => {
 		if (scheduled || section.classList.contains('nextora-box-image--reveal-ready')) return;
 		if (!isRevealStartPassed(section)) return;
-		setRevealReady(section);
+		playReveal();
 	}, REVEAL_FALLBACK_MS);
 
 	if (isRevealStartPassed(section)) {

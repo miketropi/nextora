@@ -1005,10 +1005,13 @@
 	width: 0.4375rem;
 	height: 0.4375rem;
 	border-radius: 50%;
-	background: color-mix(
-		in srgb,
-		var(--wp--preset--color--contrast, #2e1a47) 35%,
-		transparent
+	background: var(
+		--nextora-event-dot-color,
+		color-mix(
+			in srgb,
+			currentColor 35%,
+			transparent
+		)
 	);
 	opacity: 1;
 	margin: 0;
@@ -1022,8 +1025,8 @@
 	width: 1.25rem;
 	border-radius: 0.25rem;
 	background: var(
-		--nextora-event-date-month-color,
-		var(--wp--preset--color--primary, #e85d4c)
+		--nextora-event-dot-active,
+		var(--wp--preset--color--primary, currentColor)
 	);
 }
 

@@ -106,6 +106,7 @@ export function normalizeItems(items: BoxImageItem[] | undefined): BoxImageItem[
 		linkColor: typeof raw?.linkColor === 'string' ? raw.linkColor : '',
 		badge: typeof raw?.badge === 'string' ? raw.badge : '',
 		linkWrapCard: raw?.linkWrapCard === true,
+		accentColor: typeof raw?.accentColor === 'string' ? raw.accentColor : '',
 	}));
 }
 

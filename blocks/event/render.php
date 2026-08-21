@@ -254,6 +254,8 @@ $color_keys = array(
 	'registerHoverTextColor'       => '--nextora-event-register-hover-text-color',
 	'registerHoverBackgroundColor' => '--nextora-event-register-hover-bg',
 	'registerHoverBorderColor'     => '--nextora-event-register-hover-border-color',
+	'paginationColor'              => '--nextora-event-dot-color',
+	'paginationActiveColor'        => '--nextora-event-dot-active',
 );
 
 $css_vars = array();

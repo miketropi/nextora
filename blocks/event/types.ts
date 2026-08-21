@@ -35,6 +35,8 @@ export interface EventAttributes {
 	registerHoverTextColor: string;
 	registerHoverBackgroundColor: string;
 	registerHoverBorderColor: string;
+	paginationColor: string;
+	paginationActiveColor: string;
 	enableScrollAnimation: boolean;
 	autoplay: boolean;
 	autoplayDelay: number;
@@ -64,4 +66,6 @@ export type EventColorAttribute = keyof Pick<
 	| 'registerHoverTextColor'
 	| 'registerHoverBackgroundColor'
 	| 'registerHoverBorderColor'
+	| 'paginationColor'
+	| 'paginationActiveColor'
 >;

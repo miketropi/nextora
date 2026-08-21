@@ -162,6 +162,8 @@ export function buildSectionStyleVars(attrs: {
 	registerHoverTextColor?: string;
 	registerHoverBackgroundColor?: string;
 	registerHoverBorderColor?: string;
+	paginationColor?: string;
+	paginationActiveColor?: string;
 }): Record<string, string> {
 	return buildEventColorStyleVars(attrs);
 }

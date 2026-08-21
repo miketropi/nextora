@@ -176,6 +176,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		registerHoverTextColor = '',
 		registerHoverBackgroundColor = '',
 		registerHoverBorderColor = '',
+		paginationColor = '',
+		paginationActiveColor = '',
 		enableScrollAnimation = true,
 		autoplay = true,
 		autoplayDelay = 5000,
@@ -214,6 +216,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			registerHoverTextColor,
 			registerHoverBackgroundColor,
 			registerHoverBorderColor,
+			paginationColor,
+			paginationActiveColor,
 		}) as CSSProperties,
 			...(isTemplate1 ? { '--nextora-event-editor-slides': String(slidesPerView), '--nextora-event-editor-gap': `${spaceBetween}px` } as CSSProperties : {}),
 		},
@@ -299,6 +303,16 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					setThemeColor('registerHoverBorderColor', v),
 				label: __('Register hover border', 'nextora'),
 			},
+			{
+				value: colorValueForPicker(paginationColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('paginationColor', v),
+				label: __('Pagination dot', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(paginationActiveColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('paginationActiveColor', v),
+				label: __('Active pagination', 'nextora'),
+			},
 		],
 		[
 			colorPalette,
@@ -317,6 +331,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			registerHoverTextColor,
 			registerHoverBackgroundColor,
 			registerHoverBorderColor,
+			paginationColor,
+			paginationActiveColor,
 		],
 	);
 
