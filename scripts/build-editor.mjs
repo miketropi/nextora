@@ -23,12 +23,16 @@ function toWpHandle(pkg) {
 const WP_PACKAGES = [
 	'@wordpress/rich-text',
 	'@wordpress/block-editor',
+	'@wordpress/blocks',
 	'@wordpress/components',
 	'@wordpress/element',
 	'@wordpress/i18n',
 	'@wordpress/data',
 	'@wordpress/hooks',
 	'@wordpress/compose',
+	'@wordpress/plugins',
+	'@wordpress/edit-post',
+	'@wordpress/api-fetch',
 ];
 
 const WP_HANDLES = WP_PACKAGES.map(toWpHandle);
