@@ -165,83 +165,85 @@ export function CloudLibraryModal({
 			title={__('Nextora Cloud Template Library', 'nextora')}
 			onRequestClose={onClose}
 			className="nextora-cloud-editor-modal"
-			style={{ maxWidth: '980px', width: '92vw' }}
+			style={{ maxWidth: '920px', width: '92vw', maxHeight: '88vh' }}
 		>
-			<div className="nextora-addon-wrap" style={{ padding: '16px 20px 24px', background: 'none' }}>
-				{/* Theme Selector Tabs */}
-				{isChildTheme && themes.length > 1 && (
-					<div className="nextora-addon-nav" style={{ marginBottom: '20px' }}>
-						{themes.map((t) => (
-							<button
-								key={t.slug}
-								type="button"
-								className={`nextora-addon-nav__item${selectedTheme === t.slug ? ' is-active' : ''}`}
-								onClick={() => setSelectedTheme(t.slug)}
-							>
-								<PaletteIcon className="nextora-addon-nav__icon" />
-								{t.slug === activeTheme
-									? sprintf(
-											/* translators: %s: theme name */
-											__('%s (Active)', 'nextora'),
-											t.name || t.slug,
-										)
-									: sprintf(
-											/* translators: %s: theme name */
-											__('%s (Parent)', 'nextora'),
-											t.name || t.slug,
-										)}
-							</button>
-						))}
-					</div>
-				)}
-
-				{/* Search & Refresh Bar */}
-				<div className="nextora-addon-section-intro" style={{ marginBottom: '16px' }}>
-					<span className="nextora-addon-section-intro__count">
-						{sprintf(
-							/* translators: %d: count */
-							__('%d templates in %s', 'nextora'),
-							templates.length,
-							selectedTheme,
-						)}
-					</span>
-
-					<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
-						<div className="nextora-addon-search">
-							<SearchIcon className="nextora-addon-search__icon" />
-							<input
-								type="text"
-								className="nextora-addon-search__input"
-								placeholder={__('Filter templates\u2026', 'nextora')}
-								value={search}
-								onChange={(e) => setSearch(e.target.value)}
-							/>
+			<div className="nextora-addon-wrap" style={{ background: 'none' }}>
+				<div className="nextora-cloud-modal__toolbar">
+					{/* Theme Selector Tabs */}
+					{isChildTheme && themes.length > 1 && (
+						<div className="nextora-addon-nav" style={{ marginBottom: '14px' }}>
+							{themes.map((t) => (
+								<button
+									key={t.slug}
+									type="button"
+									className={`nextora-addon-nav__item${selectedTheme === t.slug ? ' is-active' : ''}`}
+									onClick={() => setSelectedTheme(t.slug)}
+								>
+									<PaletteIcon className="nextora-addon-nav__icon" />
+									{t.slug === activeTheme
+										? sprintf(
+												/* translators: %s: theme name */
+												__('%s (Active)', 'nextora'),
+												t.name || t.slug,
+											)
+										: sprintf(
+												/* translators: %s: theme name */
+												__('%s (Parent)', 'nextora'),
+												t.name || t.slug,
+											)}
+								</button>
+							))}
 						</div>
+					)}
 
-						<button
-							type="button"
-							className="nextora-cloud-refresh-btn"
-							onClick={() => loadCatalog(true)}
-							title={__('Refresh', 'nextora')}
-						>
-							<RefreshIcon width={14} height={14} />
-						</button>
+					{/* Search & Refresh Bar */}
+					<div className="nextora-addon-section-intro" style={{ marginBottom: '14px' }}>
+						<span className="nextora-addon-section-intro__count">
+							{sprintf(
+								/* translators: %d: count */
+								__('%d templates in %s', 'nextora'),
+								templates.length,
+								selectedTheme,
+							)}
+						</span>
+
+						<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
+							<div className="nextora-addon-search">
+								<SearchIcon className="nextora-addon-search__icon" />
+								<input
+									type="text"
+									className="nextora-addon-search__input"
+									placeholder={__('Filter templates\u2026', 'nextora')}
+									value={search}
+									onChange={(e) => setSearch(e.target.value)}
+								/>
+							</div>
+
+							<button
+								type="button"
+								className="nextora-cloud-refresh-btn"
+								onClick={() => loadCatalog(true)}
+								title={__('Refresh', 'nextora')}
+							>
+								<RefreshIcon width={14} height={14} />
+							</button>
+						</div>
 					</div>
+
+					{error && (
+						<div className="nextora-addon-error" style={{ marginBottom: '12px' }}>
+							<AlertCircleIcon width={16} height={16} className="nextora-addon-error__icon" />
+							<span>{error}</span>
+						</div>
+					)}
+
+					{successMsg && (
+						<div className="nextora-cloud-success-alert" style={{ marginBottom: '12px' }}>
+							<CheckCircleIcon width={16} height={16} />
+							<span>{successMsg}</span>
+						</div>
+					)}
 				</div>
-
-				{error && (
-					<div className="nextora-addon-error" style={{ marginBottom: '16px' }}>
-						<AlertCircleIcon width={16} height={16} className="nextora-addon-error__icon" />
-						<span>{error}</span>
-					</div>
-				)}
-
-				{successMsg && (
-					<div className="nextora-cloud-success-alert" style={{ marginBottom: '16px' }}>
-						<CheckCircleIcon width={16} height={16} />
-						<span>{successMsg}</span>
-					</div>
-				)}
 
 				{loading ? (
 					<div style={{ padding: '60px 0', textAlign: 'center' }}>
@@ -260,48 +262,44 @@ export function CloudLibraryModal({
 						</p>
 					</div>
 				) : (
-					<div
-						className="nextora-addon-grid"
-						style={{ maxHeight: '55vh', overflowY: 'auto', padding: '4px' }}
-					>
+					<div className="nextora-cloud-modal__list">
 						{templates.map((tpl) => (
-							<div key={tpl.id} className="nextora-addon-card">
-								<div className="nextora-cloud-card__preview">
+							<div key={tpl.id} className="nextora-cloud-list-item">
+								<div className="nextora-cloud-list-item__thumb">
 									{tpl.thumbnailUrl ? (
 										<img
 											src={tpl.thumbnailUrl}
 											alt={tpl.title}
-											className="nextora-addon-card__image"
+											className="nextora-cloud-list-item__image"
 											loading="lazy"
 										/>
 									) : (
-										<div className="nextora-addon-card__placeholder">
-											<span>{tpl.title}</span>
-										</div>
+										<span className="nextora-cloud-list-item__placeholder">
+											{tpl.title}
+										</span>
 									)}
 								</div>
 
-								<h3 className="nextora-addon-card__title">
-									{tpl.title}
-								</h3>
-								<p className="nextora-addon-card__desc" style={{ marginBottom: '8px' }}>
-									<code>{tpl.slug}</code>
-								</p>
+								<div className="nextora-cloud-list-item__info">
+									<div className="nextora-cloud-list-item__title-row">
+										<h4 className="nextora-cloud-list-item__title">{tpl.title}</h4>
+										<code className="nextora-cloud-list-item__slug">{tpl.slug}</code>
+									</div>
 
-								<div className="nextora-addon-card__meta">
-									<span className="nextora-addon-card__tag nextora-addon-card__tag--premium">
-										{tpl.category}
-									</span>
-									<span className="nextora-addon-card__status nextora-addon-card__status--active">
-										v{tpl.version}
-									</span>
+									<div className="nextora-cloud-list-item__meta">
+										<span className="nextora-addon-card__tag nextora-addon-card__tag--premium">
+											{tpl.category}
+										</span>
+										<span className="nextora-addon-card__status nextora-addon-card__status--active">
+											v{tpl.version}
+										</span>
+									</div>
 								</div>
 
-								<div style={{ marginTop: '12px' }}>
+								<div className="nextora-cloud-list-item__action">
 									<button
 										type="button"
 										className="nextora-cloud-btn nextora-cloud-btn--primary"
-										style={{ width: '100%' }}
 										disabled={insertingId !== null}
 										onClick={() => handleInsert(tpl)}
 									>
