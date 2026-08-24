@@ -80,6 +80,9 @@ final class TemplateImporter {
 		if ( ! empty( $template_data['theme']['slug'] ) ) {
 			update_post_meta( $post_id, '_nextora_cloud_theme', sanitize_text_field( (string) $template_data['theme']['slug'] ) );
 		}
+		if ( ! empty( $template_data['pageTemplate'] ) && is_string( $template_data['pageTemplate'] ) && 'default' !== $template_data['pageTemplate'] ) {
+			update_post_meta( $post_id, '_wp_page_template', sanitize_text_field( $template_data['pageTemplate'] ) );
+		}
 
 		$edit_url = admin_url( 'post.php?post=' . $post_id . '&action=edit' );
 
