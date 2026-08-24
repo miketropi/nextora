@@ -101,6 +101,8 @@
     "registerHoverTextColor": { "type": "string", "default": "" },
     "registerHoverBackgroundColor": { "type": "string", "default": "" },
     "registerHoverBorderColor": { "type": "string", "default": "" },
+    "paginationColor": { "type": "string", "default": "" },
+    "paginationActiveColor": { "type": "string", "default": "" },
     "enableScrollAnimation": { "type": "boolean", "default": true },
     "autoplay": { "type": "boolean", "default": true },
     "autoplayDelay": { "type": "number", "default": 5000 },

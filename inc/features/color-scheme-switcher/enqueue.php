@@ -64,6 +64,8 @@ add_action(
 				</svg>
 			</button>
 
+			<div class="scheme-switcher__backdrop" data-scheme-backdrop aria-hidden="true"></div>
+
 			<div
 				class="scheme-switcher__popover"
 				id="nextora-scheme-popover"

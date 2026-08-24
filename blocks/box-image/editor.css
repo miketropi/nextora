@@ -488,6 +488,18 @@
 	color: var(--nextora-box-image-bullet-icon-color, var(--wp--preset--color--secondary, var(--wp--preset--color--primary, currentColor)));
 }
 
+/* Steps template (Template 4) — editor preview */
+.nextora-box-image--editor.nextora-box-image--template-template4 .nextora-box-image__steps-wrapper {
+	position: relative;
+	width: 100%;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template4 .nextora-box-image__card--template4:hover,
+.nextora-box-image--editor.nextora-box-image--template-template4 .nextora-box-image__card--template4:focus-within {
+	background: var(--nextora-box-image-item-bg, var(--nextora-box-image-card-bg, var(--wp--preset--color--base, #fff)));
+	color: var(--wp--preset--color--contrast, currentColor);
+}
+
 .nextora-box-image--editor .nextora-box-image__card-link {
 	text-decoration: none;
 	color: inherit;

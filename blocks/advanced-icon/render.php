@@ -37,14 +37,15 @@ $link_url         = isset( $attributes['linkUrl'] ) ? trim( (string) $attributes
 $link_target      = isset( $attributes['linkTarget'] ) ? (string) $attributes['linkTarget'] : '_self';
 $aria_label       = isset( $attributes['ariaLabel'] ) ? trim( (string) $attributes['ariaLabel'] ) : '';
 $icon_color       = isset( $attributes['iconColor'] ) ? (string) $attributes['iconColor'] : '';
-$enable_icon_animation = 'theme' === $source && ! empty( $attributes['enableIconAnimation'] );
+$is_editor        = ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || is_admin();
+$enable_icon_animation = ! $is_editor && 'theme' === $source && ! empty( $attributes['enableIconAnimation'] );
 $icon_animation_trigger = isset( $attributes['iconAnimationTrigger'] ) ? (string) $attributes['iconAnimationTrigger'] : 'hover';
 $icon_animation_loop_pause = isset( $attributes['iconAnimationLoopPause'] ) ? max( 0, min( 3000, (int) $attributes['iconAnimationLoopPause'] ) ) : 600;
 $allowed_icon_animation_triggers = array( 'hover', 'when-visible', 'loop' );
 if ( ! in_array( $icon_animation_trigger, $allowed_icon_animation_triggers, true ) ) {
 	$icon_animation_trigger = 'hover';
 }
-$enable_scroll = nextora_icon_scroll_animation_enabled( $attributes );
+$enable_scroll    = nextora_icon_scroll_animation_enabled( $attributes );
 
 $allowed_align = array( 'left', 'center', 'right' );
 if ( ! in_array( $align, $allowed_align, true ) ) {
@@ -155,10 +156,13 @@ if ( 'framed' === $icon_style && '' !== $border_color ) {
 $wrapper_args = array(
 	'class' => implode( ' ', $wrapper_classes ),
 	'style' => implode( ' ', $inline_styles ),
-	'data-nextora-icon-animation' => $enable_icon_animation ? $icon_animation_trigger : 'off',
-	'data-nextora-icon-animation-state' => $enable_icon_animation ? 'idle' : 'off',
-	'data-nextora-icon-animation-loop-pause' => $enable_icon_animation ? (string) $icon_animation_loop_pause : '0',
 );
+
+if ( $enable_icon_animation ) {
+	$wrapper_args['data-nextora-icon-animation']            = $icon_animation_trigger;
+	$wrapper_args['data-nextora-icon-animation-state']      = 'idle';
+	$wrapper_args['data-nextora-icon-animation-loop-pause'] = (string) $icon_animation_loop_pause;
+}
 
 nextora_icon_enqueue_view_script();
 
@@ -173,3 +177,5 @@ $wrapper = get_block_wrapper_attributes( $wrapper_args );
 <div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<?php echo $icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 </div>
+
+

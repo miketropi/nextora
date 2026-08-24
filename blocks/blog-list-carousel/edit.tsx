@@ -305,6 +305,8 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 			'--nextora-blc-img-col-width': `${imageWidthPercent}%`,
 			'--nextora-blc-img-col-gap': '24px',
 			'--nextora-blc-title-font-size': titleFontSizeCSS,
+			'--nextora-blc-title-clamp': titleLineClamp,
+			'--nextora-blc-excerpt-clamp': excerptLineClamp,
 		} as React.CSSProperties,
 	});
 

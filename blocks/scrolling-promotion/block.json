@@ -13,8 +13,9 @@
     "align": ["wide", "full"],
     "anchor": true,
     "color": {
-      "background": true,
-      "text": true
+      "background": false,
+      "text": false,
+      "link": false
     },
     "spacing": {
       "margin": true
@@ -49,11 +50,27 @@
     },
     "separatorType": {
       "type": "string",
-      "default": "dot"
+      "default": "icon"
     },
     "customSeparator": {
       "type": "string",
       "default": "✦"
+    },
+    "separatorIcon": {
+      "type": "string",
+      "default": "arrow-up-right"
+    },
+    "separatorIconSize": {
+      "type": "number",
+      "default": 16
+    },
+    "separatorBadgeSize": {
+      "type": "number",
+      "default": 36
+    },
+    "separatorIconStrokeWidth": {
+      "type": "number",
+      "default": 2
     },
     "separatorSize": {
       "type": "number",
@@ -63,7 +80,15 @@
       "type": "string",
       "default": ""
     },
+    "separatorBgColor": {
+      "type": "string",
+      "default": ""
+    },
     "fontSize": {
+      "type": "string",
+      "default": "base"
+    },
+    "customFontSize": {
       "type": "number",
       "default": 16
     },
@@ -79,11 +104,27 @@
       "type": "number",
       "default": 0
     },
+    "marqueeTextColor": {
+      "type": "string",
+      "default": ""
+    },
+    "marqueeBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "marqueeBorderColor": {
+      "type": "string",
+      "default": ""
+    },
     "textColor": {
       "type": "string",
       "default": ""
     },
     "backgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "borderColor": {
       "type": "string",
       "default": ""
     },
@@ -102,10 +143,6 @@
     "showBorders": {
       "type": "boolean",
       "default": false
-    },
-    "borderColor": {
-      "type": "string",
-      "default": ""
     },
     "borderWidth": {
       "type": "number",

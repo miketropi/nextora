@@ -21,17 +21,13 @@
 	box-sizing: border-box;
 }
 
-.nextora-box-image__swiper .swiper-slide > .nextora-box-image__card {
+.nextora-box-image__swiper .swiper-slide>.nextora-box-image__card {
 	height: 100%;
 	width: 100%;
 	box-sizing: border-box;
 }
 
-.nextora-box-image__swiper .swiper-slide > .nextora-box-image__card:not(
-		.nextora-box-image__card--template1
-	):not(.nextora-box-image__card--template2):not(
-		.nextora-box-image__card--template3
-	) {
+.nextora-box-image__swiper .swiper-slide>.nextora-box-image__card:not(.nextora-box-image__card--template1):not(.nextora-box-image__card--template2):not(.nextora-box-image__card--template3):not(.nextora-box-image__card--template4) {
 	padding: 0;
 	display: block;
 }
@@ -51,16 +47,14 @@
 }
 
 /* Scroll reveal */
-.nextora-box-image[data-nextora-scroll-reveal='1'].nextora-box-image--reveal-pending:not(
-		.nextora-box-image--reveal-ready
-	)
-	.nextora-box-image__carousel-root {
+.nextora-box-image[data-nextora-scroll-reveal='1'].nextora-box-image--reveal-pending:not(.nextora-box-image--reveal-ready) .nextora-box-image__carousel-root,
+.nextora-box-image[data-nextora-scroll-reveal='1'].nextora-box-image--reveal-pending:not(.nextora-box-image--reveal-ready) .nextora-box-image__steps-wrapper {
 	opacity: 0;
 	transform: translate3d(0, 2rem, 0);
 }
 
-.nextora-box-image[data-nextora-scroll-reveal='1'].nextora-box-image--reveal-ready
-	.nextora-box-image__carousel-root {
+.nextora-box-image[data-nextora-scroll-reveal='1'].nextora-box-image--reveal-ready .nextora-box-image__carousel-root,
+.nextora-box-image[data-nextora-scroll-reveal='1'].nextora-box-image--reveal-ready .nextora-box-image__steps-wrapper {
 	opacity: 1;
 	transform: none;
 }
@@ -119,8 +113,7 @@
 	overflow: hidden;
 	min-height: var(--nextora-box-image-card-min-height, 240px);
 	padding: 0;
-	border: var(--nextora-box-image-card-border-width, 0) solid
-		var(--nextora-box-image-card-border-color, var(--wp--preset--color--contrast, currentColor));
+	border: var(--nextora-box-image-card-border-width, 0) solid var(--nextora-box-image-card-border-color, var(--wp--preset--color--contrast, currentColor));
 	border-radius: var(--nextora-box-image-card-radius, 8px) !important;
 	background: var(--nextora-box-image-card-bg, var(--wp--preset--color--surface, #f4ecdd));
 	color: var(--wp--preset--color--contrast, currentColor);
@@ -168,10 +161,8 @@
 	min-height: 0;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	line-height: 1.5;
-	color: var(
-		--nextora-box-image-card-desc-color,
-		color-mix(in srgb, currentColor 55%, transparent)
-	);
+	color: var(--nextora-box-image-card-desc-color,
+			color-mix(in srgb, currentColor 55%, transparent));
 }
 
 .nextora-box-image__card-link .nextora-box-image__description {
@@ -227,10 +218,8 @@
 	height: 7px;
 	border-radius: 999px;
 	opacity: 1;
-	background: var(
-		--nextora-box-image-dot-color,
-		color-mix(in srgb, currentColor 35%, transparent)
-	);
+	background: var(--nextora-box-image-dot-color,
+			color-mix(in srgb, currentColor 35%, transparent));
 	transition:
 		width 0.25s ease,
 		border-radius 0.25s ease,
@@ -240,10 +229,8 @@
 .nextora-box-image__pagination .swiper-pagination-bullet-active {
 	width: 20px;
 	border-radius: 4px;
-	background: var(
-		--nextora-box-image-dot-active,
-		var(--wp--preset--color--primary, currentColor)
-	);
+	background: var(--nextora-box-image-dot-active,
+			var(--wp--preset--color--primary, currentColor));
 }
 
 /* Arrows */
@@ -774,6 +761,346 @@
 		font-size: 0.8125rem;
 	}
 }
+
+/* Steps template (Template 4) */
+.nextora-box-image--template-template4 .nextora-box-image__card--template4 {
+	display: flex;
+	flex-direction: column;
+	border-radius: var(--nextora-box-image-card-radius, 16px);
+	border-width: var(--nextora-box-image-card-border-width, 1px);
+	border-style: solid;
+	border-color: var(--nextora-box-image-card-border-color, color-mix(in srgb, currentColor 10%, transparent));
+	background: var(--nextora-box-image-item-bg, var(--nextora-box-image-card-bg, var(--wp--preset--color--base, #fff)));
+	overflow: hidden;
+	transition:
+		transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+		box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+		border-color 0.25s ease;
+	position: relative;
+}
+
+/* ==========================================================================
+   Template 4 — How It Works / Steps Zigzag Layout
+   ========================================================================== */
+
+/* ==========================================================================
+   Template 4 — How It Works / Steps Zigzag Layout
+   ========================================================================== */
+
+.nextora-box-image--template-template4 {
+	position: relative;
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__steps-wrapper {
+	position: relative;
+	width: 100%;
+	padding: 40px 16px 60px;
+	box-sizing: border-box;
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__steps-bg-grid {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background-image: linear-gradient(color-mix(in srgb, currentColor 8%, transparent) 1px, transparent 1px);
+	background-size: 100% 32px;
+	margin-top: 4px;
+	z-index: 0;
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__steps-stage {
+	position: relative;
+	width: 100%;
+	max-width: var(--nextora-steps-max-width, 1140px);
+	margin-inline: auto;
+	height: var(--nextora-steps-height, 1130px);
+	z-index: 2;
+}
+
+/* Connecting SVG Curve */
+.nextora-box-image--template-template4 .nextora-box-image__steps-curve {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 0;
+	display: block;
+}
+
+@keyframes nextora-box-image-dash {
+	to {
+		stroke-dashoffset: -140;
+	}
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__steps-curve-path {
+	color: color-mix(in srgb, currentColor 22%, transparent);
+	animation: nextora-box-image-dash 3.5s linear infinite;
+}
+
+/* Step Card Wrap — Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+	.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap {
+		position: absolute;
+		top: var(--nextora-step-top, 0);
+		left: var(--nextora-step-left, auto);
+		right: var(--nextora-step-right, auto);
+		width: 290px;
+		max-width: 290px;
+		transform: rotate(var(--nextora-step-rot, 0deg));
+		transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), z-index 0.35s ease;
+		z-index: 5;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap:hover {
+		transform: rotate(0deg) scale(1.05);
+		z-index: 30;
+	}
+}
+
+/* Step Card Wrap — Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+	.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap {
+		position: absolute;
+		top: var(--nextora-step-top, 0);
+		width: 240px;
+		max-width: 240px;
+		transform: rotate(var(--nextora-step-rot, 0deg));
+		transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), z-index 0.35s ease;
+		z-index: 5;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap[style*="--nextora-step-left"] {
+		left: 1% !important;
+		right: auto !important;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap[style*="--nextora-step-right"] {
+		right: 1% !important;
+		left: auto !important;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap:hover {
+		transform: rotate(0deg) scale(1.05);
+		z-index: 30;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__card-inner {
+		padding: 14px;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__step-number {
+		font-size: 1.85rem;
+		margin-bottom: 8px;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__title {
+		font-size: 1.125rem;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__description {
+		font-size: 0.8125rem;
+		margin-bottom: 12px;
+	}
+}
+
+/* Step Card Wrap — Mobile (< 768px) */
+@media (max-width: 767px) {
+	.nextora-box-image--template-template4 .nextora-box-image__steps-wrapper {
+		padding: 0;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__steps-stage {
+		height: auto !important;
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+		align-items: center;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap {
+		position: relative !important;
+		top: auto !important;
+		left: auto !important;
+		right: auto !important;
+		transform: none !important;
+		width: 100%;
+		max-width: 480px;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap:hover {
+		transform: scale(1.02);
+		z-index: 2;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__steps-curve {
+		display: none;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__card-inner {
+		padding: 14px;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__step-number {
+		font-size: 1.75rem;
+		margin-bottom: 6px;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__title {
+		font-size: 1rem;
+		margin-bottom: 6px;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__description {
+		font-size: 0.8125rem;
+		margin-bottom: 10px;
+	}
+
+	.nextora-box-image--template-template4 .nextora-box-image__link--template4 {
+		font-size: 0.8125rem;
+	}
+}
+
+/* Framed Card Outer Box */
+.nextora-box-image--template-template4 .nextora-box-image__card--template4 {
+	background: var(--nextora-box-image-card-bg, var(--wp--preset--color--base, #fff));
+	padding: 8px;
+	border-radius: var(--nextora-box-image-card-radius, 25px);
+	box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
+	border: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+	box-sizing: border-box;
+	display: block;
+	width: 100%;
+	overflow: hidden;
+	transition: box-shadow 0.3s ease;
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__card--template4:hover {
+	box-shadow: 0px 16px 28px -6px rgba(0, 0, 0, 0.14);
+}
+
+/* Framed Card Inner Box */
+.nextora-box-image--template-template4 .nextora-box-image__card-inner {
+	background: var(--nextora-step-bg, color-mix(in srgb, var(--nextora-step-accent, var(--wp--preset--color--primary, currentColor)) 8%, var(--wp--preset--color--base, #fff)));
+	border: 1px solid var(--nextora-step-border, color-mix(in srgb, var(--nextora-step-accent, var(--wp--preset--color--primary, currentColor)) 25%, transparent));
+	border-radius: 16px;
+	padding: 16px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+/* Image Wrap */
+.nextora-box-image--template-template4 .nextora-box-image__image-wrap {
+	width: 100%;
+	aspect-ratio: var(--nextora-box-image-aspect-ratio, 16/10);
+	border-radius: 10px;
+	overflow: hidden;
+	margin-bottom: 14px;
+	position: relative;
+	flex-shrink: 0;
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__card-image {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: var(--nextora-box-image-fit, cover);
+	transition: transform 0.4s ease;
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap:hover .nextora-box-image__card-image {
+	transform: scale(1.04);
+}
+
+/* Step Number */
+.nextora-box-image--template-template4 .nextora-box-image__step-number {
+	display: inline-block;
+	font-family: var(--nextora-font-heading, sans-serif);
+	font-size: 2.25rem;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	margin-bottom: 10px;
+	color: var(--nextora-step-accent, var(--nextora-box-image-item-link-color, var(--wp--preset--color--primary, currentColor)));
+	user-select: none;
+}
+
+/* Title */
+.nextora-box-image--template-template4 .nextora-box-image__title {
+	margin: 0 0 8px;
+	font-family: var(--nextora-font-heading, inherit);
+	font-size: var(--wp--preset--font-size--base, 1.25rem);
+	font-weight: 600;
+	line-height: 1.25;
+	color: var(--nextora-box-image-item-title-color, var(--nextora-box-image-card-title-color, currentColor));
+}
+
+/* Description */
+.nextora-box-image--template-template4 .nextora-box-image__description {
+	margin: 0 0 14px;
+	font-family: var(--nextora-font-body, inherit);
+	font-size: var(--wp--preset--font-size--small, 0.84375rem);
+	line-height: 1.5;
+	color: var(--nextora-box-image-item-desc-color, var(--nextora-box-image-card-desc-color, color-mix(in srgb, currentColor 60%, transparent)));
+}
+
+/* Link */
+.nextora-box-image--template-template4 .nextora-box-image__link--template4 {
+	margin-top: auto;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-family: var(--nextora-font-body, inherit);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	text-decoration: none;
+	text-transform: none;
+	letter-spacing: normal;
+	color: var(--nextora-step-accent, var(--nextora-box-image-item-link-color, var(--wp--preset--color--contrast, currentColor)));
+	transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__link--template4:hover,
+.nextora-box-image--template-template4 .nextora-box-image__link--template4:focus-visible {
+	color: var(--nextora-box-image-link-hover-color, var(--wp--preset--color--primary, currentColor));
+	gap: 9px;
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__link--template4 .nextora-box-image__link-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: inherit;
+	transition: transform 0.2s ease;
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__link--template4:hover .nextora-box-image__link-icon {
+	transform: translateX(2px);
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__link--template4 .nextora-box-image__link-icon svg {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+/* Template 4 — keep per-item bg on hover */
+.nextora-box-image--template-template4 .nextora-box-image__card:hover,
+.nextora-box-image--template-template4 .nextora-box-image__card:focus-within {
+	background: var(--nextora-box-image-item-bg, var(--nextora-box-image-card-bg, var(--wp--preset--color--base, #fff)));
+	color: var(--wp--preset--color--contrast, currentColor);
+}
+
+.nextora-box-image--template-template4 .nextora-box-image__card:hover .nextora-box-image__description,
+.nextora-box-image--template-template4 .nextora-box-image__card:focus-within .nextora-box-image__description {
+	color: var(--nextora-box-image-item-desc-color, var(--nextora-box-image-card-desc-color, color-mix(in srgb, currentColor 60%, transparent)));
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.nextora-box-image__card {
 		transition: none;
@@ -801,6 +1128,12 @@
 
 .nextora-box-image--no-card-hover.nextora-box-image--template-template3 .nextora-box-image__card:hover,
 .nextora-box-image--no-card-hover.nextora-box-image--template-template3 .nextora-box-image__card:focus-within {
+	background: var(--nextora-box-image-item-bg, var(--nextora-box-image-card-bg, var(--wp--preset--color--base, #fff)));
+	color: var(--wp--preset--color--contrast, currentColor);
+}
+
+.nextora-box-image--no-card-hover.nextora-box-image--template-template4 .nextora-box-image__card:hover,
+.nextora-box-image--no-card-hover.nextora-box-image--template-template4 .nextora-box-image__card:focus-within {
 	background: var(--nextora-box-image-item-bg, var(--nextora-box-image-card-bg, var(--wp--preset--color--base, #fff)));
 	color: var(--wp--preset--color--contrast, currentColor);
 }

@@ -32,6 +32,7 @@
 
 	var trigger = switcher.querySelector( '.scheme-switcher__trigger' );
 	var popover = switcher.querySelector( '.scheme-switcher__popover' );
+	var backdrop = switcher.querySelector( '[data-scheme-backdrop]' );
 	var closeBtn = switcher.querySelector( '.scheme-switcher__close' );
 	var colorList = switcher.querySelector( '[data-scheme-color-list]' );
 	var fontList = switcher.querySelector( '[data-scheme-font-list]' );
@@ -611,6 +612,9 @@
 		popover.classList.add( 'is-open' );
 		popover.setAttribute( 'aria-hidden', 'false' );
 		trigger.setAttribute( 'aria-expanded', 'true' );
+		if ( backdrop ) {
+			backdrop.classList.add( 'is-active' );
+		}
 
 		var focusable = getFocusable();
 		if ( focusable.length ) {
@@ -622,6 +626,9 @@
 		popover.classList.remove( 'is-open' );
 		popover.setAttribute( 'aria-hidden', 'true' );
 		trigger.setAttribute( 'aria-expanded', 'false' );
+		if ( backdrop ) {
+			backdrop.classList.remove( 'is-active' );
+		}
 		trigger.focus();
 	}
 
@@ -735,6 +742,13 @@
 		e.stopPropagation();
 		togglePopover();
 	} );
+
+	if ( backdrop ) {
+		backdrop.addEventListener( 'click', function ( e ) {
+			e.stopPropagation();
+			closePopover();
+		} );
+	}
 
 	if ( closeBtn ) {
 		closeBtn.addEventListener( 'click', closePopover );

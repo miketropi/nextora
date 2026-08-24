@@ -143,6 +143,9 @@
 		"badgeBackgroundColor": { "type": "string", "default": "" },
 		"badgeTextColor": { "type": "string", "default": "" },
 		"bulletIconColor": { "type": "string", "default": "" },
+		"showBackgroundGrid": { "type": "boolean", "default": true },
+		"stepVerticalGap": { "type": "number", "default": 480 },
+		"stepHorizontalGap": { "type": "number", "default": 1140 },
 		"enableScrollAnimation": { "type": "boolean", "default": true },
 		"scrollAnimationStyle": { "type": "string", "default": "default" },
 		"enableCardHover": { "type": "boolean", "default": true }
