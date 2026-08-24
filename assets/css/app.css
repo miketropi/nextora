@@ -282,6 +282,9 @@
   .start {
     inset-inline-start: var(--spacing);
   }
+  .start\! {
+    inset-inline-start: var(--spacing) !important;
+  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -464,6 +467,9 @@
   }
   .inline {
     display: inline;
+  }
+  .inline\! {
+    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -1312,6 +1318,9 @@
   .italic {
     font-style: italic;
   }
+  .italic\! {
+    font-style: italic !important;
+  }
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
@@ -1327,6 +1336,9 @@
   }
   .underline {
     text-decoration-line: underline;
+  }
+  .underline\! {
+    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -4379,10 +4391,11 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   position: fixed;
   top: 50%;
   right: 0;
-  transform: translateY(-50%);
-  z-index: 998;
+  z-index: 9999;
+  pointer-events: none;
 }
 .scheme-switcher__trigger {
+  position: relative;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -4396,6 +4409,8 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   color: var(--wp--preset--color--base, #ffffff);
   cursor: pointer;
   box-shadow: -4px 4px 18px rgba(0, 0, 0, 0.18);
+  transform: translateY(-50%);
+  pointer-events: auto;
   transition: box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease, filter 0.2s ease;
 }
 .scheme-switcher__trigger:hover {
@@ -4423,10 +4438,13 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   height: 18px;
   flex-shrink: 0;
 }
+.scheme-switcher__backdrop {
+  display: none;
+}
 .scheme-switcher__popover {
   position: absolute;
   right: calc(100% + 15px);
-  top: 50%;
+  top: 0;
   width: min(300px, calc(100vw - 4rem));
   display: flex;
   flex-direction: column;
@@ -4442,6 +4460,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   transform: translateY(-50%) translateX(8px) scale(0.97);
   transform-origin: right center;
   transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s;
+  pointer-events: auto;
 }
 .scheme-switcher__popover::after {
   content: '';
@@ -4463,17 +4482,58 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   visibility: visible;
   transform: translateY(-50%) translateX(0) scale(1);
 }
-@media (max-width: 480px) {
+@media (max-width: 767px) {
+  .scheme-switcher {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+  }
+  .scheme-switcher__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    z-index: 9998;
+  }
+  .scheme-switcher__backdrop.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .scheme-switcher__trigger {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    padding: 12px 8px 10px;
+    gap: 8px;
+    z-index: 9997;
+  }
+  .scheme-switcher__trigger-label {
+    font-size: 10px;
+  }
   .scheme-switcher__popover {
     position: fixed;
     right: 12px;
     left: 12px;
     top: auto;
-    bottom: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
     width: auto;
-    max-height: 80dvh;
-    transform: translateY(16px) scale(0.96);
+    max-height: calc(85dvh - env(safe-area-inset-bottom, 0px));
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    transform: translateY(24px) scale(0.96);
     transform-origin: bottom center;
+    z-index: 9999;
   }
   .scheme-switcher__popover::after {
     display: none;

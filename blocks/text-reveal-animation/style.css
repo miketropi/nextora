@@ -22,7 +22,7 @@
 	flex-direction: column;
 	font-size: var(--tra-auto-font-size, clamp(1.4rem, 10cqw, 12rem));
 	font-family: var(--nextora-font-heading, inherit);
-	letter-spacing: var(--tra-letter-spacing, normal);
+	letter-spacing: calc(var(--tra-letter-spacing, 0px) * (1em / 100px));
 	line-height: var(--tra-line-height, 1);
 	text-transform: var(--tra-text-transform, uppercase);
 	font-weight: var(--tra-font-weight, 700);
@@ -91,7 +91,7 @@
 	align-items: center;
 	justify-content: center;
 	flex-wrap: nowrap;
-	letter-spacing: var(--tra-letter-spacing, inherit);
+	letter-spacing: inherit;
 }
 
 /* Character reveal */
@@ -100,7 +100,7 @@
 	display: inline-block;
 	transform: scaleY(var(--tra-text-scale-y, 1.35));
 	transform-origin: center;
-	letter-spacing: var(--tra-letter-spacing, inherit);
+	letter-spacing: inherit;
 }
 
 .nextora-tra__char::after {
@@ -120,14 +120,14 @@
 /* Images & Wrappers */
 .nextora-tra__img-wrap {
 	overflow: hidden;
-	border-radius: var(--tra-img-radius, 0.12em);
+	border-radius: clamp(3px, calc(var(--tra-img-radius, 16px) * (1em / 100px)), var(--tra-img-radius, 16px));
 	height: calc(var(--tra-text-scale-y, 1.35) * 0.78em);
 	--tra-calculated-width: calc(var(--tra-img-custom-width, 200) / 200 * 1.05em);
 	width: var(--tra-calculated-width);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin: 0 0.12em;
+	margin: 0 clamp(4px, 0.18em, 16px);
 	position: relative;
 	flex-shrink: 0;
 	/* Fix overflow bug */
@@ -148,7 +148,7 @@
 }
 
 .nextora-tra__img {
-	border-radius: var(--tra-img-radius, 0.12em);
+	border-radius: clamp(3px, calc(var(--tra-img-radius, 16px) * (1em / 100px)), var(--tra-img-radius, 16px));
 	object-fit: cover;
 	height: 100%;
 	width: 100%;
@@ -327,8 +327,22 @@
 
 /* Responsive tweaks for mobile */
 @media (max-width: 768px) {
+	.nextora-tra__container {
+		letter-spacing: clamp(0.5px, 0.02em, 2px);
+		padding-left: clamp(8px, 2vw, 16px);
+		padding-right: clamp(8px, 2vw, 16px);
+	}
+
+	.nextora-tra__img-wrap,
+	.nextora-tra__img {
+		border-radius: clamp(3px, calc(var(--tra-img-radius, 16px) * (1em / 100px)), 6px);
+	}
+
 	.nextora-tra__divider {
-		width: 90%;
-		margin: 12px 5%;
+		width: var(--tra-divider-text-width, 95%);
+		margin-top: calc(clamp(12px, 3vw, 20px) + (var(--tra-row-gap, 0px) / 2));
+		margin-bottom: calc(clamp(12px, 3vw, 20px) + (var(--tra-row-gap, 0px) / 2));
+		margin-left: auto;
+		margin-right: auto;
 	}
 }

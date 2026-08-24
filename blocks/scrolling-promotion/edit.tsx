@@ -1,5 +1,5 @@
-import { __ } from '@wordpress/i18n';
-import { useEffect, useRef, useState } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import type { CSSProperties } from 'react';
 import {
 	BlockControls,
@@ -23,6 +23,12 @@ import {
 } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 import { IconPicker } from '../advanced-icon/icon-picker';
+import {
+	colorValueForPicker,
+	getMergedPaletteEntries,
+	normalizeColorForStorage,
+	useThemeColorPalette,
+} from '../advanced-icon/color-utils';
 import type {
 	ScrollingPromotionAttributes,
 	ScrollingPromotionItem,
@@ -48,12 +54,25 @@ const directionOptions = [
 ];
 
 const separatorOptions = [
+	{ label: __('Icon (Circle Badge)', 'nextora'), value: 'icon' },
 	{ label: __('Dot', 'nextora'), value: 'dot' },
 	{ label: __('Dash', 'nextora'), value: 'dash' },
 	{ label: __('Pipe', 'nextora'), value: 'pipe' },
 	{ label: __('Star', 'nextora'), value: 'star' },
-	{ label: __('Custom', 'nextora'), value: 'custom' },
+	{ label: __('Custom character', 'nextora'), value: 'custom' },
 	{ label: __('None', 'nextora'), value: 'none' },
+];
+
+const fontSizeOptions = [
+	{ label: __('Theme default (Base)', 'nextora'), value: '' },
+	{ label: __('Small', 'nextora'), value: 'small' },
+	{ label: __('Base', 'nextora'), value: 'base' },
+	{ label: __('Medium', 'nextora'), value: 'medium' },
+	{ label: __('Medium Plus', 'nextora'), value: 'medium-plus' },
+	{ label: __('Large', 'nextora'), value: 'large' },
+	{ label: __('Extra Large', 'nextora'), value: 'x-large' },
+	{ label: __('2XL', 'nextora'), value: 'xx-large' },
+	{ label: __('Custom (px)', 'nextora'), value: 'custom' },
 ];
 
 const itemTypeOptions = [
@@ -117,9 +136,57 @@ export default function ScrollingPromotionEdit({
 }: EditProps) {
 	const [previewAnimating, setPreviewAnimating] = useState(false);
 	const [iconPickerIndex, setIconPickerIndex] = useState<number | null>(null);
+	const [separatorIconPickerOpen, setSeparatorIconPickerOpen] = useState(false);
 	const editorRootRef = useRef<HTMLDivElement>(null);
 	const items = normalizeItems(attributes.items);
 	const imageHeight = attributes.imageHeight ?? 32;
+
+	const colorPalette = useThemeColorPalette();
+	const lookupPalette = useMemo(() => getMergedPaletteEntries(colorPalette), [colorPalette]);
+
+	const {
+		direction = 'left',
+		speed = 30,
+		pauseOnHover = true,
+		separatorType = 'icon',
+		customSeparator = '✦',
+		separatorSize = 6,
+		separatorIcon = 'arrow-up-right',
+		separatorIconSize = 16,
+		separatorBadgeSize = 36,
+		separatorIconStrokeWidth = 2,
+		separatorColor = '',
+		separatorBgColor: rawSepBgColor = '',
+		separatorBackgroundColor = '',
+		fontSize: rawFontSize = 'base',
+		customFontSize = 16,
+		fontWeight = '500',
+		textTransform = 'none',
+		letterSpacing = 0,
+		marqueeTextColor: rawTextColor = '',
+		marqueeBackgroundColor: rawBgColor = '',
+		marqueeBorderColor: rawBorderColor = '',
+		textColor = '',
+		backgroundColor = '',
+		borderColor = '',
+		paddingVertical = 16,
+		itemGap = 40,
+		showBorders = false,
+		borderWidth = 1,
+		ariaLabel = '',
+	} = attributes;
+
+	const effectiveTextColor = rawTextColor || textColor || '';
+	const effectiveBgColor = rawBgColor || backgroundColor || '';
+	const effectiveBorderColor = rawBorderColor || borderColor || '';
+	const effectiveSepBgColor = rawSepBgColor || separatorBackgroundColor || '';
+
+	const isCustomFontSize =
+		rawFontSize === 'custom' ||
+		(typeof rawFontSize === 'number' &&
+			!['small', 'base', 'medium', 'medium-plus', 'large', 'x-large', 'xx-large'].includes(
+				String(rawFontSize),
+			));
 
 	useEffect(() => {
 		if (!previewAnimating) {
@@ -365,51 +432,123 @@ export default function ScrollingPromotionEdit({
 				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
 					<SelectControl
 						label={__('Direction', 'nextora')}
-						value={attributes.direction}
+						value={direction}
 						options={directionOptions}
-						onChange={(direction) =>
-							setAttributes({ direction: direction ?? 'left' })
+						onChange={(dir) =>
+							setAttributes({ direction: dir ?? 'left' })
 						}
 					/>
 					<RangeControl
 						label={__('Speed (seconds per cycle)', 'nextora')}
 						help={__('Higher values scroll more slowly.', 'nextora')}
-						value={attributes.speed}
-						onChange={(speed) => setAttributes({ speed: speed ?? 50 })}
+						value={speed}
+						onChange={(val) => setAttributes({ speed: val ?? 30 })}
 						min={5}
 						max={120}
 					/>
 					<ToggleControl
 						label={__('Pause on hover', 'nextora')}
-						checked={attributes.pauseOnHover !== false}
-						onChange={(pauseOnHover) => setAttributes({ pauseOnHover })}
+						checked={pauseOnHover !== false}
+						onChange={(val) => setAttributes({ pauseOnHover: val })}
 					/>
 				</PanelBody>
 
 				<PanelBody title={__('Separator', 'nextora')} initialOpen={false}>
 					<SelectControl
 						label={__('Type', 'nextora')}
-						value={attributes.separatorType}
+						value={separatorType}
 						options={separatorOptions}
-						onChange={(separatorType) =>
-							setAttributes({ separatorType: separatorType ?? 'dot' })
+						onChange={(type) =>
+							setAttributes({ separatorType: type ?? 'icon' })
 						}
 					/>
-					{attributes.separatorType === 'custom' && (
+					{separatorType === 'icon' && (
+						<div className="nextora-scrolling-promotion__inspector-icon-settings" style={{ marginBottom: '12px' }}>
+							<p className="components-base-control__label" style={{ marginBottom: '6px' }}>
+								{__('Separator icon', 'nextora')}
+							</p>
+							<div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
+								<Button
+									variant="secondary"
+									onClick={() => setSeparatorIconPickerOpen(true)}
+								>
+									{separatorIcon
+										? sprintf(__('Icon: %s', 'nextora'), separatorIcon)
+										: __('Choose icon', 'nextora')}
+								</Button>
+								{separatorIcon !== 'arrow-up-right' ? (
+									<Button
+										variant="link"
+										isDestructive
+										onClick={() =>
+											setAttributes({
+												separatorIcon: 'arrow-up-right',
+												separatorIconSize: 16,
+												separatorBadgeSize: 36,
+											})
+										}
+									>
+										{__('Reset icon', 'nextora')}
+									</Button>
+								) : null}
+							</div>
+							{separatorIconPickerOpen ? (
+								<IconPicker
+									currentIcon={separatorIcon}
+									onSelect={(iconName) => {
+										setAttributes({ separatorIcon: iconName });
+										setSeparatorIconPickerOpen(false);
+									}}
+									onClose={() => setSeparatorIconPickerOpen(false)}
+								/>
+							) : null}
+							<RangeControl
+								label={__('Badge circle size (px)', 'nextora')}
+								value={separatorBadgeSize}
+								onChange={(val) =>
+									setAttributes({ separatorBadgeSize: val ?? 36 })
+								}
+								min={20}
+								max={80}
+								step={2}
+							/>
+							<RangeControl
+								label={__('Icon size (px)', 'nextora')}
+								value={separatorIconSize}
+								onChange={(val) =>
+									setAttributes({ separatorIconSize: val ?? 16 })
+								}
+								min={10}
+								max={48}
+								step={1}
+							/>
+							<RangeControl
+								label={__('Icon stroke width', 'nextora')}
+								value={separatorIconStrokeWidth}
+								onChange={(val) =>
+									setAttributes({ separatorIconStrokeWidth: val ?? 2 })
+								}
+								min={0.5}
+								max={4}
+								step={0.5}
+							/>
+						</div>
+					)}
+					{separatorType === 'custom' && (
 						<TextControl
 							label={__('Custom character', 'nextora')}
-							value={attributes.customSeparator}
-							onChange={(customSeparator) =>
-								setAttributes({ customSeparator: customSeparator ?? '✦' })
+							value={customSeparator}
+							onChange={(custom) =>
+								setAttributes({ customSeparator: custom ?? '✦' })
 							}
 						/>
 					)}
-					{attributes.separatorType !== 'none' && (
+					{separatorType !== 'none' && separatorType !== 'icon' && (
 						<RangeControl
 							label={__('Size (px)', 'nextora')}
-							value={attributes.separatorSize}
-							onChange={(separatorSize) =>
-								setAttributes({ separatorSize: separatorSize ?? 6 })
+							value={separatorSize}
+							onChange={(size) =>
+								setAttributes({ separatorSize: size ?? 6 })
 							}
 							min={4}
 							max={16}
@@ -418,34 +557,66 @@ export default function ScrollingPromotionEdit({
 				</PanelBody>
 
 				<PanelBody title={__('Typography', 'nextora')} initialOpen={false}>
-					<RangeControl
-						label={__('Font size (px)', 'nextora')}
-						value={attributes.fontSize}
-						onChange={(fontSize) => setAttributes({ fontSize: fontSize ?? 16 })}
-						min={12}
-						max={72}
+					<SelectControl
+						label={__('Font size', 'nextora')}
+						value={
+							isCustomFontSize
+								? 'custom'
+								: typeof rawFontSize === 'string' && rawFontSize
+								? rawFontSize
+								: ''
+						}
+						options={fontSizeOptions}
+						onChange={(val) => {
+							if (val === 'custom') {
+								setAttributes({
+									fontSize: 'custom',
+									customFontSize:
+										typeof rawFontSize === 'number'
+											? rawFontSize
+											: customFontSize ?? 16,
+								});
+							} else {
+								setAttributes({ fontSize: val || 'base' });
+							}
+						}}
 					/>
+					{isCustomFontSize && (
+						<RangeControl
+							label={__('Custom font size (px)', 'nextora')}
+							value={
+								typeof rawFontSize === 'number'
+									? rawFontSize
+									: customFontSize ?? 16
+							}
+							onChange={(val) =>
+								setAttributes({ customFontSize: val ?? 16, fontSize: 'custom' })
+							}
+							min={12}
+							max={120}
+						/>
+					)}
 					<SelectControl
 						label={__('Font weight', 'nextora')}
-						value={attributes.fontWeight}
+						value={fontWeight}
 						options={fontWeightOptions}
-						onChange={(fontWeight) =>
-							setAttributes({ fontWeight: fontWeight ?? '500' })
+						onChange={(weight) =>
+							setAttributes({ fontWeight: weight ?? '500' })
 						}
 					/>
 					<SelectControl
 						label={__('Text transform', 'nextora')}
-						value={attributes.textTransform}
+						value={textTransform}
 						options={textTransformOptions}
-						onChange={(textTransform) =>
-							setAttributes({ textTransform: textTransform ?? 'none' })
+						onChange={(transform) =>
+							setAttributes({ textTransform: transform ?? 'none' })
 						}
 					/>
 					<RangeControl
 						label={__('Letter spacing (px)', 'nextora')}
-						value={attributes.letterSpacing}
-						onChange={(letterSpacing) =>
-							setAttributes({ letterSpacing: letterSpacing ?? 0 })
+						value={letterSpacing}
+						onChange={(spacing) =>
+							setAttributes({ letterSpacing: spacing ?? 0 })
 						}
 						min={0}
 						max={10}
@@ -458,26 +629,61 @@ export default function ScrollingPromotionEdit({
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
-							value: attributes.textColor,
-							onChange: (textColor) =>
-								setAttributes({ textColor: textColor ?? '' }),
+							value: colorValueForPicker(effectiveTextColor, colorPalette, lookupPalette),
+							onChange: (color) =>
+								setAttributes({
+									marqueeTextColor: normalizeColorForStorage(color, lookupPalette),
+								}),
 							label: __('Text', 'nextora'),
 						},
 						{
-							value: attributes.backgroundColor,
-							onChange: (backgroundColor) =>
-								setAttributes({ backgroundColor: backgroundColor ?? '' }),
+							value: colorValueForPicker(effectiveBgColor, colorPalette, lookupPalette),
+							onChange: (color) =>
+								setAttributes({
+									marqueeBackgroundColor: normalizeColorForStorage(color, lookupPalette),
+								}),
 							label: __('Background', 'nextora'),
 						},
-						...(attributes.separatorType !== 'none'
+						...(separatorType !== 'none'
 							? [
 									{
-										value: attributes.separatorColor,
-										onChange: (separatorColor: string | undefined) =>
-											setAttributes({ separatorColor: separatorColor ?? '' }),
-										label: __('Separator', 'nextora'),
+										value: colorValueForPicker(
+											separatorColor,
+											colorPalette,
+											lookupPalette,
+										),
+										onChange: (color: string | undefined) =>
+											setAttributes({
+												separatorColor: normalizeColorForStorage(
+													color,
+													lookupPalette,
+												),
+											}),
+										label:
+											separatorType === 'icon'
+												? __('Separator icon color', 'nextora')
+												: __('Separator color', 'nextora'),
 									},
-								]
+									...(separatorType === 'icon'
+										? [
+												{
+													value: colorValueForPicker(
+														effectiveSepBgColor,
+														colorPalette,
+														lookupPalette,
+													),
+													onChange: (color: string | undefined) =>
+														setAttributes({
+															separatorBgColor: normalizeColorForStorage(
+																color,
+																lookupPalette,
+															),
+														}),
+													label: __('Separator badge background', 'nextora'),
+												},
+										  ]
+										: []),
+							  ]
 							: []),
 					]}
 				/>
@@ -485,17 +691,17 @@ export default function ScrollingPromotionEdit({
 				<PanelBody title={__('Layout', 'nextora')} initialOpen={false}>
 					<RangeControl
 						label={__('Vertical padding (px)', 'nextora')}
-						value={attributes.paddingVertical}
-						onChange={(paddingVertical) =>
-							setAttributes({ paddingVertical: paddingVertical ?? 16 })
+						value={paddingVertical}
+						onChange={(val) =>
+							setAttributes({ paddingVertical: val ?? 16 })
 						}
 						min={0}
 						max={60}
 					/>
 					<RangeControl
 						label={__('Item gap (px)', 'nextora')}
-						value={attributes.itemGap}
-						onChange={(itemGap) => setAttributes({ itemGap: itemGap ?? 40 })}
+						value={itemGap}
+						onChange={(val) => setAttributes({ itemGap: val ?? 40 })}
 						min={16}
 						max={120}
 					/>
@@ -512,15 +718,15 @@ export default function ScrollingPromotionEdit({
 					/>
 					<ToggleControl
 						label={__('Show top and bottom borders', 'nextora')}
-						checked={attributes.showBorders}
-						onChange={(showBorders) => setAttributes({ showBorders })}
+						checked={showBorders}
+						onChange={(val) => setAttributes({ showBorders: val })}
 					/>
-					{attributes.showBorders && (
+					{showBorders && (
 						<RangeControl
 							label={__('Border width (px)', 'nextora')}
-							value={attributes.borderWidth}
-							onChange={(borderWidth) =>
-								setAttributes({ borderWidth: borderWidth ?? 1 })
+							value={borderWidth}
+							onChange={(val) =>
+								setAttributes({ borderWidth: val ?? 1 })
 							}
 							min={1}
 							max={3}
@@ -528,15 +734,24 @@ export default function ScrollingPromotionEdit({
 					)}
 				</PanelBody>
 
-				{attributes.showBorders && (
+				{showBorders && (
 					<PanelColorSettings
 						enableAlpha
 						title={__('Border', 'nextora')}
 						colorSettings={[
 							{
-								value: attributes.borderColor,
-								onChange: (borderColor) =>
-									setAttributes({ borderColor: borderColor ?? '' }),
+								value: colorValueForPicker(
+									effectiveBorderColor,
+									colorPalette,
+									lookupPalette,
+								),
+								onChange: (color) =>
+									setAttributes({
+										marqueeBorderColor: normalizeColorForStorage(
+											color,
+											lookupPalette,
+										),
+									}),
 								label: __('Border color', 'nextora'),
 							},
 						]}
@@ -546,8 +761,8 @@ export default function ScrollingPromotionEdit({
 				<PanelBody title={__('Accessibility', 'nextora')} initialOpen={false}>
 					<TextControl
 						label={__('Region label', 'nextora')}
-						value={attributes.ariaLabel}
-						onChange={(ariaLabel) => setAttributes({ ariaLabel: ariaLabel ?? '' })}
+						value={ariaLabel}
+						onChange={(val) => setAttributes({ ariaLabel: val ?? '' })}
 						placeholder={__('Promotional announcements', 'nextora')}
 						help={__(
 							'Describes this strip for screen readers. Leave empty for the default.',

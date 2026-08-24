@@ -66,6 +66,7 @@ export interface BoxImageAttributes {
 	bulletIconColor: string;
 	showBackgroundGrid?: boolean;
 	stepVerticalGap?: number;
+	stepHorizontalGap?: number;
 	enableScrollAnimation: boolean;
 	scrollAnimationStyle: BoxImageScrollAnimationStyle;
 	enableCardHover: boolean;

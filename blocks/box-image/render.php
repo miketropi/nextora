@@ -150,14 +150,14 @@ if ( ! function_exists( 'nextora_box_image_get_template4_position' ) ) {
 			return array(
 				'top'  => ( $k * $step_gap ) . 'px',
 				'side' => 'left',
-				'pos'  => '15%',
+				'pos'  => '2%',
 				'rot'  => '8deg',
 			);
 		}
 		return array(
 			'top'  => ( $k * $step_gap + $r ) . 'px',
 			'side' => 'right',
-			'pos'  => '10%',
+			'pos'  => '2%',
 			'rot'  => '-8deg',
 		);
 	}
@@ -211,17 +211,17 @@ if ( ! function_exists( 'nextora_box_image_get_template4_svg_path' ) ) {
 			$y_curr = $get_y( $i );
 			$y_next = $get_y( $i + 1 );
 			if ( 0 === $i ) {
-				$path = sprintf( 'M 290 %1$d C 500 %1$d, 550 %2$d, 710 %2$d', $y_curr, $y_next );
+				$path = sprintf( 'M 160 %1$d C 420 %1$d, 620 %2$d, 840 %2$d', $y_curr, $y_next );
 			} elseif ( 1 === $i ) {
 				$mid_y = (int) round( ( $y_curr + $y_next ) / 2 );
-				$path .= sprintf( ' C 850 %1$d, 500 %2$d, 290 %3$d', $y_curr, $mid_y, $y_next );
+				$path .= sprintf( ' C 940 %1$d, 500 %2$d, 160 %3$d', $y_curr, $mid_y, $y_next );
 			} else {
 				$is_even = ( 0 === $i % 2 );
 				if ( $is_even ) {
-					$path .= sprintf( ' C 290 %1$d, 550 %2$d, 750 %2$d', $y_curr + 100, $y_next );
+					$path .= sprintf( ' C 80 %1$d, 620 %2$d, 840 %2$d', $y_curr + 100, $y_next );
 				} else {
 					$mid_y = (int) round( ( $y_curr + $y_next ) / 2 );
-					$path .= sprintf( ' C 950 %1$d, 500 %2$d, 290 %3$d', $y_curr, $mid_y, $y_next );
+					$path .= sprintf( ' C 940 %1$d, 500 %2$d, 160 %3$d', $y_curr, $mid_y, $y_next );
 				}
 			}
 		}
@@ -852,6 +852,7 @@ nextora_box_image_enqueue_view_script();
 
 $show_bg_grid = ! isset( $attributes['showBackgroundGrid'] ) || (bool) $attributes['showBackgroundGrid'];
 $step_gap     = isset( $attributes['stepVerticalGap'] ) ? max( 300, min( 700, (int) $attributes['stepVerticalGap'] ) ) : 480;
+$step_h_gap   = isset( $attributes['stepHorizontalGap'] ) ? max( 600, min( 1600, (int) $attributes['stepHorizontalGap'] ) ) : 1140;
 
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
@@ -864,7 +865,7 @@ $step_gap     = isset( $attributes['stepVerticalGap'] ) ? max( 300, min( 700, (i
 			<?php if ( $show_bg_grid ) : ?>
 				<div class="nextora-box-image__steps-bg-grid" aria-hidden="true"></div>
 			<?php endif; ?>
-			<div class="nextora-box-image__steps-stage" style="--nextora-steps-height: <?php echo esc_attr( (string) $t4_height ); ?>px;">
+			<div class="nextora-box-image__steps-stage" style="--nextora-steps-height: <?php echo esc_attr( (string) $t4_height ); ?>px; --nextora-steps-max-width: <?php echo esc_attr( (string) $step_h_gap ); ?>px;">
 				<?php if ( $slide_count > 1 ) :
 					$mask_id = 'nextora-curve-mask-' . wp_unique_id();
 				?>

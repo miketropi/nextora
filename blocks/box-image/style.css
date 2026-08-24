@@ -811,7 +811,7 @@
 .nextora-box-image--template-template4 .nextora-box-image__steps-stage {
 	position: relative;
 	width: 100%;
-	max-width: 1000px;
+	max-width: var(--nextora-steps-max-width, 1140px);
 	margin-inline: auto;
 	height: var(--nextora-steps-height, 1130px);
 	z-index: 2;
@@ -847,8 +847,8 @@
 		top: var(--nextora-step-top, 0);
 		left: var(--nextora-step-left, auto);
 		right: var(--nextora-step-right, auto);
-		width: 280px;
-		max-width: 280px;
+		width: 290px;
+		max-width: 290px;
 		transform: rotate(var(--nextora-step-rot, 0deg));
 		transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), z-index 0.35s ease;
 		z-index: 5;
@@ -873,12 +873,12 @@
 	}
 
 	.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap[style*="--nextora-step-left"] {
-		left: 4% !important;
+		left: 1% !important;
 		right: auto !important;
 	}
 
 	.nextora-box-image--template-template4 .nextora-box-image__step-card-wrap[style*="--nextora-step-right"] {
-		right: 4% !important;
+		right: 1% !important;
 		left: auto !important;
 	}
 

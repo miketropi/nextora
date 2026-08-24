@@ -92,14 +92,14 @@ function getTemplate4Position(index: number, stepGap = 480): { top: string; side
 		return {
 			top: `${k * stepGap}px`,
 			side: 'left',
-			pos: '15%',
+			pos: '2%',
 			rot: '8deg',
 		};
 	}
 	return {
 		top: `${k * stepGap + r}px`,
 		side: 'right',
-		pos: '10%',
+		pos: '2%',
 		rot: '-8deg',
 	};
 }
@@ -150,17 +150,17 @@ function getTemplate4SvgPath(count: number, stepGap = 480): string {
 		const yCurr = getY(i);
 		const yNext = getY(i + 1);
 		if (i === 0) {
-			path = `M 290 ${yCurr} C 500 ${yCurr}, 550 ${yNext}, 710 ${yNext}`;
+			path = `M 160 ${yCurr} C 420 ${yCurr}, 620 ${yNext}, 840 ${yNext}`;
 		} else if (i === 1) {
 			const midY = Math.round((yCurr + yNext) / 2);
-			path += ` C 850 ${yCurr}, 500 ${midY}, 290 ${yNext}`;
+			path += ` C 940 ${yCurr}, 500 ${midY}, 160 ${yNext}`;
 		} else {
 			const isEven = i % 2 === 0;
 			if (isEven) {
-				path += ` C 290 ${yCurr + 100}, 550 ${yNext}, 750 ${yNext}`;
+				path += ` C 80 ${yCurr + 100}, 620 ${yNext}, 840 ${yNext}`;
 			} else {
 				const midY = Math.round((yCurr + yNext) / 2);
-				path += ` C 950 ${yCurr}, 500 ${midY}, 290 ${yNext}`;
+				path += ` C 940 ${yCurr}, 500 ${midY}, 160 ${yNext}`;
 			}
 		}
 	}
@@ -240,6 +240,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 		bulletIconColor = '',
 		showBackgroundGrid = true,
 		stepVerticalGap = 480,
+		stepHorizontalGap = 1140,
 		enableScrollAnimation = true,
 		scrollAnimationStyle = 'default',
 		enableCardHover = true,
@@ -608,6 +609,20 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 								min={340}
 								max={700}
 								step={10}
+							/>
+							<RangeControl
+								label={__('Stage max width (px)', 'nextora')}
+								help={__(
+									'Maximum width of the zigzag stage container, adjusting the horizontal distance between cards.',
+									'nextora',
+								)}
+								value={stepHorizontalGap ?? 1140}
+								onChange={(v) =>
+									setAttributes({ stepHorizontalGap: v ?? 1140 })
+								}
+								min={800}
+								max={1400}
+								step={20}
 							/>
 							<RangeControl
 								label={__('Mobile card gap (px)', 'nextora')}
@@ -1097,6 +1112,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 								className="nextora-box-image__steps-stage"
 								style={{
 									'--nextora-steps-height': `${calculateTemplate4Height(items.length, stepVerticalGap)}px`,
+									'--nextora-steps-max-width': `${stepHorizontalGap ?? 1140}px`,
 								} as CSSProperties}
 							>
 								{items.length > 1 && (
