@@ -134,25 +134,27 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	),
 );
 
-/**
- * @param array<string, mixed> $item
- */
-function nextora_expcards_get_image_url( array $item, string $placeholder_url ): string {
-	$image_id  = isset( $item['imageId'] ) ? (int) $item['imageId'] : 0;
-	$image_url = isset( $item['imageUrl'] ) ? trim( (string) $item['imageUrl'] ) : '';
+if ( ! function_exists( 'nextora_expcards_get_image_url' ) ) {
+	/**
+	 * @param array<string, mixed> $item
+	 */
+	function nextora_expcards_get_image_url( array $item, string $placeholder_url ): string {
+		$image_id  = isset( $item['imageId'] ) ? (int) $item['imageId'] : 0;
+		$image_url = isset( $item['imageUrl'] ) ? trim( (string) $item['imageUrl'] ) : '';
 
-	if ( $image_id > 0 ) {
-		$url = wp_get_attachment_url( $image_id );
-		if ( is_string( $url ) && '' !== $url ) {
-			return $url;
+		if ( $image_id > 0 ) {
+			$url = wp_get_attachment_url( $image_id );
+			if ( is_string( $url ) && '' !== $url ) {
+				return $url;
+			}
 		}
-	}
 
-	if ( '' !== $image_url ) {
-		return $image_url;
-	}
+		if ( '' !== $image_url ) {
+			return $image_url;
+		}
 
-	return $placeholder_url;
+		return $placeholder_url;
+	}
 }
 ?>
 

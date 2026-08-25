@@ -42,22 +42,24 @@ if ( ! in_array( $title_weight, $valid_weights, true ) ) {
 $image_width  = max( 120, min( 600, $image_width ) );
 $image_height = max( 80, min( 400, $image_height ) );
 
-function nextora_thli_resolve_color( string $raw ): string {
-    $raw = trim( $raw );
-    if ( '' === $raw || 'transparent' === $raw ) {
-        return 'transparent';
-    }
-    if ( str_starts_with( $raw, '#' ) ) {
-        if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
-            return $raw;
+if ( ! function_exists( 'nextora_thli_resolve_color' ) ) {
+    function nextora_thli_resolve_color( string $raw ): string {
+        $raw = trim( $raw );
+        if ( '' === $raw || 'transparent' === $raw ) {
+            return 'transparent';
         }
-        return sanitize_hex_color( $raw ) ?: 'transparent';
+        if ( str_starts_with( $raw, '#' ) ) {
+            if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+                return $raw;
+            }
+            return sanitize_hex_color( $raw ) ?: 'transparent';
+        }
+        if ( str_starts_with( $raw, 'var:preset|color|' ) ) {
+            $slug = str_replace( 'var:preset|color|', '', $raw );
+            return 'var(--wp--preset--color--' . sanitize_html_class( $slug ) . ')';
+        }
+        return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
     }
-    if ( str_starts_with( $raw, 'var:preset|color|' ) ) {
-        $slug = str_replace( 'var:preset|color|', '', $raw );
-        return 'var(--wp--preset--color--' . sanitize_html_class( $slug ) . ')';
-    }
-    return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
 }
 
 $title_color            = nextora_thli_resolve_color( $attributes['titleColor'] ?? '' );
@@ -102,86 +104,90 @@ $wrapper_attributes = get_block_wrapper_attributes(
     ),
 );
 
-/**
- * @param array<string, mixed> $item
- */
-function nextora_thli_render_image( array $item, int $width, int $height ): string {
-    $image_id  = isset( $item['imageId'] ) ? (int) $item['imageId'] : 0;
-    $image_url = isset( $item['imageUrl'] ) ? trim( (string) $item['imageUrl'] ) : '';
-    $image_alt = isset( $item['imageAlt'] ) ? trim( (string) $item['imageAlt'] ) : '';
+if ( ! function_exists( 'nextora_thli_render_image' ) ) {
+    /**
+     * @param array<string, mixed> $item
+     */
+    function nextora_thli_render_image( array $item, int $width, int $height ): string {
+        $image_id  = isset( $item['imageId'] ) ? (int) $item['imageId'] : 0;
+        $image_url = isset( $item['imageUrl'] ) ? trim( (string) $item['imageUrl'] ) : '';
+        $image_alt = isset( $item['imageAlt'] ) ? trim( (string) $item['imageAlt'] ) : '';
 
-    $inline_style = sprintf(
-    	'width:%dpx;height:%dpx;object-fit:cover',
-    	$width,
-    	$height,
-    );
-
-    if ( $image_id > 0 ) {
-        $alt = $image_alt;
-        if ( '' === $alt ) {
-            $alt = (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true );
-        }
-
-        $filter = static function ( array $attr ) use ( $inline_style ): array {
-            unset( $attr['width'], $attr['height'] );
-            $attr['style'] = $inline_style;
-            return $attr;
-        };
-        add_filter( 'wp_get_attachment_image_attributes', $filter );
-
-        $html = wp_get_attachment_image(
-        	$image_id,
-        	array( $width, $height ),
-        	false,
-        	array(
-                'class'   => 'nextora-text-list-hover-image__hover-img',
-                'alt'     => $alt,
-            ),
-        );
-
-        remove_filter( 'wp_get_attachment_image_attributes', $filter );
-
-        if ( is_string( $html ) && '' !== $html ) {
-            return $html;
-        }
-    }
-
-    if ( '' === $image_url ) {
-        return '';
-    }
-
-    return sprintf(
-    	'<img class="nextora-text-list-hover-image__hover-img" src="%1$s" alt="%2$s" style="%3$s" />',
-    	esc_url( $image_url ),
-    	esc_attr( $image_alt ),
-    	esc_attr( $inline_style ),
-    );
-}
-
-/**
- * Build all hover image tags as hidden elements. JS will show the correct one on hover.
- *
- * @param array<int, array<string, mixed>> $items
- */
-function nextora_thli_build_images_html( array $items, int $width, int $height ): string {
-    $html = '';
-    foreach ( $items as $index => $item ) {
-        if ( ! is_array( $item ) ) {
-            continue;
-        }
-        $img_html = nextora_thli_render_image( $item, $width, $height );
-        if ( '' === $img_html ) {
-            continue;
-        }
-        $html .= sprintf(
-        	'<img class="nextora-text-list-hover-image__hover-img" data-thli-index="%d" src="%s" alt="" style="width:%dpx;height:%dpx;object-fit:cover" />',
-        	$index,
-        	esc_url( $item['imageUrl'] ?? '' ),
+        $inline_style = sprintf(
+        	'width:%dpx;height:%dpx;object-fit:cover',
         	$width,
         	$height,
         );
+
+        if ( $image_id > 0 ) {
+            $alt = $image_alt;
+            if ( '' === $alt ) {
+                $alt = (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true );
+            }
+
+            $filter = static function ( array $attr ) use ( $inline_style ): array {
+                unset( $attr['width'], $attr['height'] );
+                $attr['style'] = $inline_style;
+                return $attr;
+            };
+            add_filter( 'wp_get_attachment_image_attributes', $filter );
+
+            $html = wp_get_attachment_image(
+            	$image_id,
+            	array( $width, $height ),
+            	false,
+            	array(
+                    'class'   => 'nextora-text-list-hover-image__hover-img',
+                    'alt'     => $alt,
+                ),
+            );
+
+            remove_filter( 'wp_get_attachment_image_attributes', $filter );
+
+            if ( is_string( $html ) && '' !== $html ) {
+                return $html;
+            }
+        }
+
+        if ( '' === $image_url ) {
+            return '';
+        }
+
+        return sprintf(
+        	'<img class="nextora-text-list-hover-image__hover-img" src="%1$s" alt="%2$s" style="%3$s" />',
+        	esc_url( $image_url ),
+        	esc_attr( $image_alt ),
+        	esc_attr( $inline_style ),
+        );
     }
-    return $html;
+}
+
+if ( ! function_exists( 'nextora_thli_build_images_html' ) ) {
+    /**
+     * Build all hover image tags as hidden elements. JS will show the correct one on hover.
+     *
+     * @param array<int, array<string, mixed>> $items
+     */
+    function nextora_thli_build_images_html( array $items, int $width, int $height ): string {
+        $html = '';
+        foreach ( $items as $index => $item ) {
+            if ( ! is_array( $item ) ) {
+                continue;
+            }
+            $img_html = nextora_thli_render_image( $item, $width, $height );
+            if ( '' === $img_html ) {
+                continue;
+            }
+            $html .= sprintf(
+            	'<img class="nextora-text-list-hover-image__hover-img" data-thli-index="%d" src="%s" alt="" style="width:%dpx;height:%dpx;object-fit:cover" />',
+            	$index,
+            	esc_url( $item['imageUrl'] ?? '' ),
+            	$width,
+            	$height,
+            );
+        }
+        return $html;
+    }
 }
 
 // Pre-render images for the hover layer
