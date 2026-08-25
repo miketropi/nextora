@@ -241,6 +241,9 @@
   .visible {
     visibility: visible;
   }
+  .visible\! {
+    visibility: visible !important;
+  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -264,6 +267,9 @@
   .static {
     position: static;
   }
+  .static\! {
+    position: static !important;
+  }
   .sticky {
     position: sticky;
   }
@@ -275,6 +281,9 @@
   }
   .start {
     inset-inline-start: var(--spacing);
+  }
+  .start\! {
+    inset-inline-start: var(--spacing) !important;
   }
   .end {
     inset-inline-end: var(--spacing);
@@ -458,6 +467,9 @@
   }
   .inline {
     display: inline;
+  }
+  .inline\! {
+    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -1306,6 +1318,9 @@
   .italic {
     font-style: italic;
   }
+  .italic\! {
+    font-style: italic !important;
+  }
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
@@ -1321,6 +1336,9 @@
   }
   .underline {
     text-decoration-line: underline;
+  }
+  .underline\! {
+    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -4766,7 +4784,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     transition: none;
   }
 }
-.theme-global-prose, .entry-content.nextora-entry, .editor-styles-wrapper .block-editor-block-list__layout, .entry-content, .wp-block-post-content {
+.theme-global-prose, .entry-content.nextora-entry, body:not(.page-template-page-full-width):not(.page-template-full-width):not([class*="page-template-page-full-width"]):not([class*="page-template-full-width"]):not(.is-page-template-full-width):not(.page-template-page-container):not([class*="page-template-page-container"]) :is(.entry-content, .wp-block-post-content):not(.nextora-singular--page-full-width *):not(.nextora-template--page-full-width *):not(.nextora-content-shell--full-width *):not(.nextora-template--page-container *), body:not(.page-template-page-full-width):not(.page-template-full-width):not([class*="page-template-page-full-width"]):not([class*="page-template-full-width"]):not(.is-page-template-full-width):not(.page-template-page-container):not([class*="page-template-page-container"]) .editor-styles-wrapper:not(:has(.nextora-singular--page-full-width)):not(:has(.nextora-template--page-full-width)):not(:has(.nextora-template--page-container)) .block-editor-block-list__layout {
   & :where(a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button))) {
     text-underline-offset: 0.2em;
     text-decoration-thickness: 1px;

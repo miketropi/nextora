@@ -98,27 +98,6 @@ if ( ! function_exists( 'nextora_team_section_social_platform_label' ) ) {
 	}
 }
 
-if ( ! function_exists( 'nextora_team_section_social_platform_label' ) ) {
-	/**
-	 * Human-readable label for a social platform slug.
-	 */
-	function nextora_team_section_social_platform_label( string $platform ): string {
-		$labels = array(
-			'linkedin'  => __( 'LinkedIn', 'nextora' ),
-			'twitter'   => __( 'Twitter / X', 'nextora' ),
-			'github'    => __( 'GitHub', 'nextora' ),
-			'instagram' => __( 'Instagram', 'nextora' ),
-			'facebook'  => __( 'Facebook', 'nextora' ),
-			'website'   => __( 'Website', 'nextora' ),
-			'email'     => __( 'Email', 'nextora' ),
-		);
-
-		$key = sanitize_key( $platform );
-
-		return isset( $labels[ $key ] ) ? $labels[ $key ] : ucfirst( $key );
-	}
-}
-
 if ( ! function_exists( 'nextora_team_section_normalize_member' ) ) {
 	/**
 	 * @param array<string, mixed> $raw Raw member from attributes.

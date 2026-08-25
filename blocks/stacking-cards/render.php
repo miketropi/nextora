@@ -8,25 +8,27 @@ if ( ! is_array( $cards ) || empty( $cards ) ) {
 	return;
 }
 
-function nextora_sc_color( mixed $value ): string {
-	$raw = trim( (string) $value );
-	if ( '' === $raw ) {
+if ( ! function_exists( 'nextora_sc_color' ) ) {
+	function nextora_sc_color( mixed $value ): string {
+		$raw = trim( (string) $value );
+		if ( '' === $raw ) {
+			return '';
+		}
+		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $match ) ) {
+			return 'var(--wp--preset--color--' . sanitize_html_class( $match[1] ) . ')';
+		}
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+		$hex = sanitize_hex_color( $raw );
+		if ( is_string( $hex ) && '' !== $hex ) {
+			return $hex;
+		}
+		if ( preg_match( '/^[a-z0-9_-]+$/i', $raw ) ) {
+			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
+		}
 		return '';
 	}
-	if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $match ) ) {
-		return 'var(--wp--preset--color--' . sanitize_html_class( $match[1] ) . ')';
-	}
-	if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
-		return $raw;
-	}
-	$hex = sanitize_hex_color( $raw );
-	if ( is_string( $hex ) && '' !== $hex ) {
-		return $hex;
-	}
-	if ( preg_match( '/^[a-z0-9_-]+$/i', $raw ) ) {
-		return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
-	}
-	return '';
 }
 
 $num = static function ( string $key, int $default, int $min, int $max ) use ( $attributes ): int {
