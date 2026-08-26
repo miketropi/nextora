@@ -86,6 +86,18 @@ final class RestController {
 
 		register_rest_route(
 			self::REST_NAMESPACE,
+			'/cloud/categories',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( self::class, 'get_categories' ),
+					'permission_callback' => array( self::class, 'check_permission' ),
+				),
+			),
+		);
+
+		register_rest_route(
+			self::REST_NAMESPACE,
 			'/cloud/template-content',
 			array(
 				array(
@@ -308,6 +320,24 @@ final class RestController {
 	}
 
 	/**
+	 * Handler for GET /nextora/v1/cloud/categories.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public static function get_categories(): WP_REST_Response|WP_Error {
+		$categories = ApiClient::get_categories();
+
+		if ( is_wp_error( $categories ) ) {
+			return $categories;
+		}
+
+		return new WP_REST_Response(
+			$categories,
+			200,
+		);
+	}
+
+	/**
 	 * Handler for GET /nextora/v1/cloud/template-content (for direct Block Editor insertion).
 	 *
 	 * @param WP_REST_Request<array<string, mixed>> $request The REST request.
@@ -317,6 +347,26 @@ final class RestController {
 	public static function get_template_content( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$template_id = (string) $request->get_param( 'template_id' );
 		$version     = (string) $request->get_param( 'version' );
+		$theme       = (string) $request->get_param( 'theme' );
+
+		/**
+		 * Filters whether to allow cloud template content retrieval / import.
+		 *
+		 * @param bool|WP_Error   $can_import Whether import/fetch is allowed.
+		 * @param string          $theme      Theme slug.
+		 * @param WP_REST_Request $request    The REST request.
+		 */
+		$can_import = apply_filters( 'nextora_cloud_templates_can_import', true, $theme, $request );
+		if ( is_wp_error( $can_import ) ) {
+			return $can_import;
+		}
+		if ( false === $can_import ) {
+			return new WP_Error(
+				'rest_forbidden',
+				__( 'Cloud template import is not allowed.', 'nextora' ),
+				array( 'status' => 403 ),
+			);
+		}
 
 		$data = ApiClient::download_version( $template_id, $version );
 
@@ -350,6 +400,26 @@ final class RestController {
 		$template_id = (string) $request->get_param( 'template_id' );
 		$version     = (string) $request->get_param( 'version' );
 		$import_type = (string) ( $request->get_param( 'import_type' ) ?: 'page' );
+		$theme       = (string) $request->get_param( 'theme' );
+
+		/**
+		 * Filters whether to allow cloud template content retrieval / import.
+		 *
+		 * @param bool|WP_Error   $can_import Whether import/fetch is allowed.
+		 * @param string          $theme      Theme slug.
+		 * @param WP_REST_Request $request    The REST request.
+		 */
+		$can_import = apply_filters( 'nextora_cloud_templates_can_import', true, $theme, $request );
+		if ( is_wp_error( $can_import ) ) {
+			return $can_import;
+		}
+		if ( false === $can_import ) {
+			return new WP_Error(
+				'rest_forbidden',
+				__( 'Cloud template import is not allowed.', 'nextora' ),
+				array( 'status' => 403 ),
+			);
+		}
 
 		// Step 1: Download version payload from Nextora Cloud.
 		$download = ApiClient::download_version( $template_id, $version );

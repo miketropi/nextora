@@ -3,6 +3,7 @@ import { parse } from '@wordpress/blocks';
 import { Modal, Spinner } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	AlertCircleIcon,
@@ -15,6 +16,7 @@ import {
 } from '../cloud-templates/components/icons';
 import {
 	CatalogApiResponse,
+	CloudCategoryItem,
 	CloudScriptData,
 	CloudTemplateItem,
 	CloudThemeItem,
@@ -38,6 +40,7 @@ export function CloudLibraryModal({
 	const activeTheme = config?.activeTheme || 'nextora';
 	const [selectedTheme, setSelectedTheme] = useState<string>(activeTheme);
 	const [themes, setThemes] = useState<CloudThemeItem[]>([]);
+	const [categories, setCategories] = useState<CloudCategoryItem[]>([]);
 	const [templates, setTemplates] = useState<CloudTemplateItem[]>([]);
 	const [category, setCategory] = useState<string>('all');
 	const [search, setSearch] = useState<string>('');
@@ -61,6 +64,22 @@ export function CloudLibraryModal({
 			.then((res) => {
 				if (res && Array.isArray(res.data)) {
 					setThemes(res.data);
+				}
+			})
+			.catch(() => {});
+	}, [isOpen, config?.nonce]);
+
+	// Fetch available cloud categories
+	useEffect(() => {
+		if (!isOpen) return;
+
+		apiFetch<{ data: CloudCategoryItem[] }>({
+			path: '/nextora/v1/cloud/categories',
+			headers: { 'X-WP-Nonce': config?.nonce || '' },
+		})
+			.then((res) => {
+				if (res && Array.isArray(res.data)) {
+					setCategories(res.data);
 				}
 			})
 			.catch(() => {});
@@ -112,6 +131,20 @@ export function CloudLibraryModal({
 	}, [isOpen, selectedTheme, category, search]);
 
 	const handleInsert = async (tpl: CloudTemplateItem) => {
+		const canProceed = applyFilters(
+			'nextora.cloudTemplates.canImport',
+			true,
+			{
+				action: 'insert_canvas',
+				template: tpl,
+				theme: selectedTheme,
+			},
+		);
+
+		if (!canProceed) {
+			return;
+		}
+
 		setInsertingId(tpl.id);
 		setError(null);
 		setSuccessMsg(null);
@@ -120,7 +153,7 @@ export function CloudLibraryModal({
 			const res = await apiFetch<TemplateContentApiResponse>({
 				path: `/nextora/v1/cloud/template-content?template_id=${encodeURIComponent(
 					tpl.id,
-				)}&version=${encodeURIComponent(tpl.version)}`,
+				)}&version=${encodeURIComponent(tpl.version)}&theme=${encodeURIComponent(selectedTheme)}`,
 				headers: { 'X-WP-Nonce': config?.nonce || '' },
 			});
 
@@ -197,15 +230,26 @@ export function CloudLibraryModal({
 					)}
 
 					{/* Search & Refresh Bar */}
-					<div className="nextora-addon-section-intro" style={{ marginBottom: '14px' }}>
-						<span className="nextora-addon-section-intro__count">
-							{sprintf(
-								/* translators: %d: count */
-								__('%d templates in %s', 'nextora'),
-								templates.length,
-								selectedTheme,
-							)}
-						</span>
+					<div className="nextora-addon-section-intro" style={{ marginBottom: '14px', gap: '8px', flexWrap: 'wrap' }}>
+						<div className="nextora-cloud-categories" style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+							<button
+								type="button"
+								className={`nextora-cloud-cat-pill${category === 'all' ? ' is-active' : ''}`}
+								onClick={() => setCategory('all')}
+							>
+								{__('All', 'nextora')}
+							</button>
+							{categories.map((cat) => (
+								<button
+									key={cat.slug}
+									type="button"
+									className={`nextora-cloud-cat-pill${category === cat.slug ? ' is-active' : ''}`}
+									onClick={() => setCategory(cat.slug)}
+								>
+									{cat.name}
+								</button>
+							))}
+						</div>
 
 						<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}>
 							<div className="nextora-addon-search">

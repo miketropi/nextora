@@ -4870,7 +4870,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     }
   }
   & :where(kbd) {
-    font-family: var(	--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace	);
+    font-family: var(--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace);
     font-size: 0.85em;
     padding: 0.1em 0.35em;
     border: 1px solid var(--wp--preset--color--paragraph, #64748b);
@@ -4878,7 +4878,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     background: var(--wp--preset--color--surface, #f1f5f9);
   }
   & :where(samp) {
-    font-family: var(	--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace	);
+    font-family: var(--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace);
     font-size: 0.9em;
   }
   & :where(sub, sup) {
@@ -4942,7 +4942,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   }
   & :where(pre) {
     overflow-x: auto;
-    font-family: var(	--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace	);
+    font-family: var(--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace);
     tab-size: 2;
     -webkit-overflow-scrolling: touch;
   }
@@ -4950,7 +4950,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     background-color: var(--wp--preset--color--surface, #f1f5f9);
     padding: 0.15em 0.45em;
     border-radius: 0.25rem;
-    font-family: var(	--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace	);
+    font-family: var(--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace);
     font-size: 0.9em;
     border: 1px solid var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {

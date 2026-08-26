@@ -12,6 +12,7 @@ export default function App(): JSX.Element {
 		selectedTheme,
 		setSelectedTheme,
 		themes,
+		categories,
 		templates,
 		category,
 		setCategory,
@@ -97,6 +98,7 @@ export default function App(): JSX.Element {
 
 			<FilterBar
 				themes={themes}
+				categories={categories}
 				selectedTheme={selectedTheme}
 				onThemeChange={(th) => {
 					setSelectedTheme(th);

@@ -12,6 +12,15 @@ export interface CloudThemeItem {
 	};
 }
 
+export interface CloudCategoryItem {
+	id: string;
+	slug: string;
+	name: string;
+	description?: string | null;
+	sortOrder: number;
+	status: 'ACTIVE' | 'INACTIVE';
+}
+
 export interface CompatibilityInfo {
 	compatible: boolean;
 	message: string;
