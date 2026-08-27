@@ -1,7 +1,9 @@
 import apiFetch from '@wordpress/api-fetch';
 import { useCallback, useEffect, useState } from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
 import {
 	CatalogApiResponse,
+	CloudCategoryItem,
 	CloudScriptData,
 	CloudTemplateItem,
 	CloudThemeItem,
@@ -20,6 +22,7 @@ export function useCloudCatalog() {
 		config?.activeTheme || 'nextora',
 	);
 	const [themes, setThemes] = useState<CloudThemeItem[]>([]);
+	const [categories, setCategories] = useState<CloudCategoryItem[]>([]);
 	const [templates, setTemplates] = useState<CloudTemplateItem[]>([]);
 	const [category, setCategory] = useState<string>('all');
 	const [search, setSearch] = useState<string>('');
@@ -52,6 +55,29 @@ export function useCloudCatalog() {
 			})
 			.catch(() => {
 				// Non-fatal, fallback to default theme list
+			});
+
+		return () => {
+			isMounted = false;
+		};
+	}, [config?.nonce]);
+
+	// Fetch available cloud categories
+	useEffect(() => {
+		let isMounted = true;
+		apiFetch<{ data: CloudCategoryItem[] }>({
+			path: '/nextora/v1/cloud/categories',
+			headers: {
+				'X-WP-Nonce': config?.nonce || '',
+			},
+		})
+			.then((res) => {
+				if (isMounted && res && Array.isArray(res.data)) {
+					setCategories(res.data);
+				}
+			})
+			.catch(() => {
+				// Non-fatal, fallback to default category list
 			});
 
 		return () => {
@@ -116,6 +142,23 @@ export function useCloudCatalog() {
 		item: CloudTemplateItem,
 		importType: 'page' | 'template' = 'page',
 	) => {
+		const actionType =
+			importType === 'page' ? 'import_page' : 'import_fse';
+
+		const canProceed = applyFilters(
+			'nextora.cloudTemplates.canImport',
+			true,
+			{
+				action: actionType,
+				template: item,
+				theme: selectedTheme,
+			},
+		);
+
+		if (!canProceed) {
+			return null;
+		}
+
 		setImportingId(item.id);
 		setImportSuccess(null);
 		setImportError(null);
@@ -130,6 +173,7 @@ export function useCloudCatalog() {
 				data: {
 					template_id: item.id,
 					version: item.version,
+					theme: selectedTheme,
 					import_type: importType,
 				},
 			});
@@ -152,6 +196,7 @@ export function useCloudCatalog() {
 		selectedTheme,
 		setSelectedTheme,
 		themes,
+		categories,
 		templates,
 		category,
 		setCategory,

@@ -21,6 +21,7 @@ const WP_PACKAGES = [
 	'@wordpress/element',
 	'@wordpress/i18n',
 	'@wordpress/api-fetch',
+	'@wordpress/hooks',
 ];
 
 const WP_HANDLES = WP_PACKAGES.map(toWpHandle);

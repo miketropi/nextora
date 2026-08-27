@@ -12,7 +12,7 @@ interface TemplateCardProps {
 	onImport: (
 		template: CloudTemplateItem,
 		importType: 'page' | 'template',
-	) => Promise<ImportApiResponse | undefined>;
+	) => Promise<ImportApiResponse | null | undefined>;
 	isImporting: boolean;
 	importSuccess: ImportApiResponse | null;
 }

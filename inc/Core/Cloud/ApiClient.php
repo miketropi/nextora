@@ -25,6 +25,8 @@ final class ApiClient {
 
 	public const CACHE_TTL_THEMES = 3600; // 1 hour.
 
+	public const CACHE_TTL_CATEGORIES = 3600; // 1 hour.
+
 	/**
 	 * Get the base API URL.
 	 */
@@ -41,6 +43,68 @@ final class ApiClient {
 		$filtered_url = apply_filters( 'nextora_cloud_api_url', $url );
 
 		return is_string( $filtered_url ) ? untrailingslashit( $filtered_url ) : untrailingslashit( $url );
+	}
+
+	/**
+	 * Fetch category listing from the Cloud API.
+	 *
+	 * @param bool $force_refresh Skip transient cache.
+	 *
+	 * @return array<string, mixed>|WP_Error
+	 */
+	public static function get_categories( bool $force_refresh = false ): array|WP_Error {
+		$cache_key = 'nextora_cloud_categories';
+
+		if ( ! $force_refresh ) {
+			$cached = get_transient( $cache_key );
+			if ( is_array( $cached ) ) {
+				return $cached;
+			}
+		}
+
+		$endpoint = self::get_api_url() . '/categories';
+		$response = wp_remote_get(
+			$endpoint,
+			array(
+				'timeout' => 15,
+				'headers' => array(
+					'Accept' => 'application/json',
+				),
+			),
+		);
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$code = wp_remote_retrieve_response_code( $response );
+		$body = wp_remote_retrieve_body( $response );
+
+		if ( $code < 200 || $code >= 300 ) {
+			return new WP_Error(
+				'nextora_cloud_http_error',
+				sprintf(
+					/* translators: %d: HTTP status code */
+					__( 'Cloud API returned HTTP status %d.', 'nextora' ),
+					$code,
+				),
+				array( 'status' => $code ),
+			);
+		}
+
+		/** @var array<string, mixed>|null $data */
+		$data = json_decode( $body, true );
+
+		if ( ! is_array( $data ) || ! isset( $data['data'] ) ) {
+			return new WP_Error(
+				'nextora_cloud_invalid_json',
+				__( 'Invalid JSON response from Nextora Cloud API.', 'nextora' ),
+			);
+		}
+
+		set_transient( $cache_key, $data, self::CACHE_TTL_CATEGORIES );
+
+		return $data;
 	}
 
 	/**
