@@ -89,12 +89,14 @@
 }
 
 /* Pause on hover */
-.nextora-sis:hover .nextora-sis__inner {
-  animation-play-state: paused;
-}
+@media (hover: hover) {
+  .nextora-sis:hover .nextora-sis__inner {
+    animation-play-state: paused;
+  }
 
-.nextora-sis--no-pause-on-hover:hover .nextora-sis__inner {
-  animation-play-state: running;
+  .nextora-sis--no-pause-on-hover:hover .nextora-sis__inner {
+    animation-play-state: running;
+  }
 }
 
 .nextora-sis:focus-within .nextora-sis__inner {
