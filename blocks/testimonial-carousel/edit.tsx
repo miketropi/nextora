@@ -1074,7 +1074,13 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 									{item.quoteText ||
 										__('Write testimonial quote…', 'nextora')}
 								</blockquote>
-								<div className={`nextora-testimonial-carousel__slide-author${templateStyle === 'template-1' ? ' nextora-testimonial-carousel__slide-author--t1' : ''}`}>
+								<div
+									className={`nextora-testimonial-carousel__slide-author${
+										item.showAuthorPhoto && authorPhotoUrl
+											? ' nextora-testimonial-carousel__slide-author--has-photo'
+											: ' nextora-testimonial-carousel__slide-author--no-photo'
+									}${templateStyle === 'template-1' ? ' nextora-testimonial-carousel__slide-author--t1' : ''}`}
+								>
 									{item.showAuthorPhoto && authorPhotoUrl ? (
 										<img
 											src={authorPhotoUrl}
@@ -1085,23 +1091,13 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 									<div className="nextora-testimonial-carousel__slide-author-text">
 										{item.authorName ? (
 											<>
-												{templateStyle !== 'template-1' && '— '}
 												<strong className="nextora-testimonial-carousel__slide-author-name">
 													{item.authorName}
 												</strong>
 												{item.authorRole ? (
-													templateStyle === 'template-1' ? (
-														<span className="nextora-testimonial-carousel__slide-author-role">
-															{item.authorRole}
-														</span>
-													) : (
-														<>
-															{', '}
-															<span className="nextora-testimonial-carousel__slide-author-role">
-																{item.authorRole}
-															</span>
-														</>
-													)
+													<span className="nextora-testimonial-carousel__slide-author-role">
+														{item.authorRole}
+													</span>
 												) : null}
 											</>
 										) : (

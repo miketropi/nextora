@@ -654,7 +654,7 @@ while ( $query->have_posts() ) :
     if ( 'template-4' === $card_template ) {
 		$card_body = $title_html . $meta_html . $excerpt_html . $read_more_html;
 	} elseif ( 'template-1' === $card_template ) {
-        $card_body = $meta_html . $title_html . $read_more_html;
+        $card_body = $meta_html . $title_html . $excerpt_html . $read_more_html;
     } elseif ( 'template-2' === $card_template ) {
         $card_body = $title_html . $meta_html . $excerpt_html . $read_more_html;
     } else {

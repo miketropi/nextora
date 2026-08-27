@@ -58,8 +58,11 @@
 }
 
 .nextora-box-image--editor.nextora-box-image--editor-slider .nextora-box-image__card--editable {
-	flex: 0 0 min(280px, 85vw);
-	max-width: min(280px, 85vw);
+	flex: 0 0 calc((100% - (var(--nextora-box-image-slides-per-view, 3) - 1) * var(--nextora-box-image-gap, 0px)) / var(--nextora-box-image-slides-per-view, 3));
+	width: calc((100% - (var(--nextora-box-image-slides-per-view, 3) - 1) * var(--nextora-box-image-gap, 0px)) / var(--nextora-box-image-slides-per-view, 3));
+	max-width: none;
+	min-width: 260px;
+	box-sizing: border-box;
 	scroll-snap-align: start;
 }
 
@@ -73,18 +76,20 @@
 /* Edit button */
 .nextora-box-image--editor .nextora-box-image__card-edit {
 	position: absolute;
-	top: 0.5rem;
-	right: 0.5rem;
-	z-index: 2;
-	padding: 0.25rem 0.625rem;
-	font-size: 0.6875rem;
+	top: 0.625rem;
+	right: 0.625rem;
+	z-index: 50;
+	padding: 0.35rem 0.75rem;
+	font-size: 0.75rem;
 	font-weight: 600;
 	line-height: 1.3;
 	color: var(--wp--preset--color--contrast, currentColor);
-	background: color-mix(in srgb, var(--wp--preset--color--base, #fff) 92%, transparent);
-	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+	background: color-mix(in srgb, var(--wp--preset--color--base, #fff) 94%, transparent);
+	border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
 	border-radius: 999px;
 	cursor: pointer;
+	pointer-events: auto;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .nextora-box-image--editor .nextora-box-image__card-edit:hover,
@@ -367,18 +372,18 @@
 
 .nextora-box-image--editor.nextora-box-image--template-template2 .nextora-box-image__title {
 	margin: 0 0 6px;
-	font-size: 1.1875rem;
+	font-size: var(--wp--preset--font-size--medium, 1.1875rem);
 	font-weight: 600;
 }
 
 .nextora-box-image--editor.nextora-box-image--template-template2 .nextora-box-image__description {
 	margin: 0 0 12px;
-	font-size: 0.8125rem;
+	font-size: var(--wp--preset--font-size--small, 0.8125rem);
 }
 
 .nextora-box-image--editor.nextora-box-image--template-template2 .nextora-box-image__link--static {
 	margin-top: auto;
-	font-size: 0.84375rem;
+	font-size: var(--wp--preset--font-size--small, 0.84375rem);
 	font-weight: 600;
 	color: var(--wp--preset--color--secondary, var(--wp--preset--color--primary, currentColor));
 	text-transform: none;
@@ -428,7 +433,7 @@
 
 .nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__title {
 	margin: 0 0 8px;
-	font-size: 1.0625rem;
+	font-size: var(--wp--preset--font-size--base, 1.0625rem);
 	font-weight: 600;
 }
 
@@ -469,7 +474,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 0.75rem;
+	font-size: var(--wp--preset--font-size--small, 0.75rem);
 	font-weight: 600;
 	line-height: 1;
 	padding: 0;
@@ -478,7 +483,7 @@
 
 .nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__link--template3 {
 	margin-top: auto;
-	font-size: 0.8125rem;
+	font-size: var(--wp--preset--font-size--small, 0.8125rem);
 	font-weight: 600;
 	text-transform: none;
 	letter-spacing: normal;
@@ -504,4 +509,167 @@
 	text-decoration: none;
 	color: inherit;
 	cursor: pointer;
+}
+
+/* Template 5 — editor preview */
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__inner {
+	max-width: none;
+	width: 100%;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__card--template5 {
+	position: relative;
+	overflow: hidden;
+	min-height: var(--nextora-box-image-card-min-height, 440px);
+	border-radius: var(--nextora-box-image-card-radius, 0px) !important;
+	border: var(--nextora-box-image-card-border-width, 0) solid var(--nextora-box-image-card-border-color, transparent);
+	background: var(--nextora-box-image-item-bg, var(--nextora-box-image-card-bg, #3c322f)) !important;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__image-wrap {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	aspect-ratio: unset;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__card-image {
+	width: 100%;
+	height: 100% !important;
+	object-fit: cover;
+	display: block;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__overlay {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: var(--nextora-box-image-item-bg, var(--nextora-box-image-card-bg, var(--wp--preset--color--contrast, #3c322f)));
+	opacity: 0.7;
+	z-index: 1;
+	pointer-events: none;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__card-body {
+	position: relative;
+	z-index: 10;
+	width: 100%;
+	padding: 40px 30px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: flex-end;
+	gap: 14px;
+	box-sizing: border-box;
+	margin-top: auto;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 52px;
+	height: 52px;
+	color: #ffffff;
+	margin-bottom: 2px;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__icon svg {
+	width: 48px;
+	height: 48px;
+	stroke-width: 1.8;
+	stroke: currentColor;
+	display: block;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__icon img,
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__icon .nextora-box-image__icon-img {
+	max-width: 52px;
+	max-height: 52px;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	display: block;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__badge {
+	display: inline-block;
+	padding: 5px 14px;
+	border-radius: 100px;
+	background: var(--nextora-box-image-badge-bg, var(--wp--preset--color--primary, #feb83d));
+	color: var(--nextora-box-image-badge-text, var(--wp--preset--color--contrast, #3c322f));
+	font-size: var(--wp--preset--font-size--small, 0.75rem);
+	font-weight: 700;
+	line-height: 1.3;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__title {
+	font-family: var(--wp--preset--font-family--heading, "Montserrat Alternates", sans-serif);
+	font-size: var(--wp--preset--font-size--large, clamp(1.5rem, 2.2vw + 0.5rem, 2.5rem));
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--nextora-box-image-item-title-color, var(--nextora-box-image-card-title-color, #ffffff));
+	margin: 0;
+	text-transform: capitalize;
+	word-wrap: break-word;
+	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__description {
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	font-weight: 400;
+	line-height: 1.5;
+	color: var(--nextora-box-image-item-desc-color, var(--nextora-box-image-card-desc-color, #ffffff));
+	opacity: 0.92;
+	margin: 0;
+	text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__link--template5 {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 8px 8px 28px;
+	margin-left: -30px;
+	background: var(--nextora-box-image-item-link-bg, var(--nextora-box-image-link-color, var(--wp--preset--color--primary, #feb83d)));
+	color: var(--nextora-box-image-item-link-color, var(--wp--preset--color--contrast, #3c322f));
+	border-radius: 0 30px 30px 0;
+	font-size: var(--wp--preset--font-size--small, 0.9375rem);
+	font-weight: 700;
+	line-height: 1.3;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-top: 4px;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__link--template5 .nextora-box-image__link-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--wp--preset--color--contrast, #3c322f);
+	color: #ffffff;
+	border-radius: 50%;
+	padding: 8px;
+	width: 18px;
+	height: 18px;
+	box-sizing: initial;
+}
+
+.nextora-box-image--editor.nextora-box-image--template-template5 .nextora-box-image__link--template5 .nextora-box-image__link-icon svg {
+	width: 18px;
+	height: 18px;
+	display: block;
+	stroke-width: 2.5;
 }

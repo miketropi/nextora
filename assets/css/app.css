@@ -4177,6 +4177,10 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   position: relative;
   --nextora-border-opacity: 0;
 }
+.animation-svg-draw:not([data-nextora-scroll-animation-init]) :is(path, line, polyline, polygon, circle, ellipse, rect) {
+  stroke-dasharray: 1.05 3;
+  stroke-dashoffset: 1.3;
+}
 @property --dash-angle {
   syntax: '<angle>';
   initial-value: 0deg;
@@ -4215,6 +4219,10 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
 :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-border-reveal:not([data-nextora-scroll-animation-init]) {
   --nextora-border-opacity: 1;
 }
+:where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-svg-draw:not([data-nextora-scroll-animation-init]) :is(path, line, polyline, polygon, circle, ellipse, rect) {
+  stroke-dasharray: none;
+  stroke-dashoffset: 0;
+}
 @media (prefers-reduced-motion: reduce) {
   .nextora-scroll-animation--pending,	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]),	.animation-text-typewriter:not([data-nextora-scroll-animation-init]),	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li,	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *,	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img,	.animation-image-border-reveal:not([data-nextora-scroll-animation-init]) img {
     opacity: 1;
@@ -4224,6 +4232,12 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   }
   .animation-image-border-reveal:not([data-nextora-scroll-animation-init]) {
     --nextora-border-opacity: 1;
+  }
+  .animation-svg-draw :is(path, line, polyline, polygon, circle, ellipse, rect) {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+    transition: none !important;
   }
 }
 .animation-text-typewriter {
@@ -4870,7 +4884,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     }
   }
   & :where(kbd) {
-    font-family: var(	--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace	);
+    font-family: var(--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace);
     font-size: 0.85em;
     padding: 0.1em 0.35em;
     border: 1px solid var(--wp--preset--color--paragraph, #64748b);
@@ -4878,7 +4892,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     background: var(--wp--preset--color--surface, #f1f5f9);
   }
   & :where(samp) {
-    font-family: var(	--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace	);
+    font-family: var(--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace);
     font-size: 0.9em;
   }
   & :where(sub, sup) {
@@ -4942,7 +4956,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   }
   & :where(pre) {
     overflow-x: auto;
-    font-family: var(	--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace	);
+    font-family: var(--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace);
     tab-size: 2;
     -webkit-overflow-scrolling: touch;
   }
@@ -4950,7 +4964,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     background-color: var(--wp--preset--color--surface, #f1f5f9);
     padding: 0.15em 0.45em;
     border-radius: 0.25rem;
-    font-family: var(	--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace	);
+    font-family: var(--wp--preset--font-family--mono,	ui-monospace,	SFMono-Regular,	Menlo,	Monaco,	Consolas,	"Liberation Mono",	"Courier New",	monospace);
     font-size: 0.9em;
     border: 1px solid var(--wp--preset--color--paragraph, #64748b);
     @supports (color: color-mix(in lab, red, red)) {

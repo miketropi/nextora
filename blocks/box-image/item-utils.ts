@@ -107,6 +107,14 @@ export function normalizeItems(items: BoxImageItem[] | undefined): BoxImageItem[
 		badge: typeof raw?.badge === 'string' ? raw.badge : '',
 		linkWrapCard: raw?.linkWrapCard === true,
 		accentColor: typeof raw?.accentColor === 'string' ? raw.accentColor : '',
+		iconSource: raw?.iconSource === 'upload' ? 'upload' : 'theme',
+		iconName: typeof raw?.iconName === 'string' ? raw.iconName : (typeof raw?.iconPreset === 'string' ? (raw.iconPreset === 'plant' ? 'leaf' : raw.iconPreset) : ''),
+		uploadedIconId: typeof raw?.uploadedIconId === 'number' ? raw.uploadedIconId : (typeof raw?.iconId === 'number' ? raw.iconId : 0),
+		uploadedIconUrl: typeof raw?.uploadedIconUrl === 'string' ? raw.uploadedIconUrl : (typeof raw?.iconUrl === 'string' ? raw.iconUrl : ''),
+		iconType: typeof raw?.iconType === 'string' ? raw.iconType : 'none',
+		iconPreset: typeof raw?.iconPreset === 'string' ? raw.iconPreset : '',
+		iconId: typeof raw?.iconId === 'number' ? raw.iconId : 0,
+		iconUrl: typeof raw?.iconUrl === 'string' ? raw.iconUrl : '',
 	}));
 }
 
@@ -117,6 +125,9 @@ export function buildStyleVars(attrs: {
 	cardBorderWidth?: number;
 	cardBorderRadius?: number;
 	gridColumns?: number;
+	slidesPerView?: number;
+	slidesPerViewTablet?: number;
+	slidesPerViewMobile?: number;
 	imageAspectRatio?: string;
 	imageFit?: string;
 	cardBorderColor?: string;
@@ -165,6 +176,15 @@ export function buildStyleVars(attrs: {
 		vars['--nextora-box-image-card-radius'] = `${attrs.cardBorderRadius}px`;
 	}
 	set('--nextora-box-image-cols', attrs.gridColumns);
+	if (typeof attrs.slidesPerView === 'number' && attrs.slidesPerView > 0) {
+		vars['--nextora-box-image-slides-per-view'] = String(attrs.slidesPerView);
+	}
+	if (typeof attrs.slidesPerViewTablet === 'number' && attrs.slidesPerViewTablet > 0) {
+		vars['--nextora-box-image-slides-per-view-tablet'] = String(attrs.slidesPerViewTablet);
+	}
+	if (typeof attrs.slidesPerViewMobile === 'number' && attrs.slidesPerViewMobile > 0) {
+		vars['--nextora-box-image-slides-per-view-mobile'] = String(attrs.slidesPerViewMobile);
+	}
 	if (attrs.imageAspectRatio) {
 		vars['--nextora-box-image-aspect-ratio'] = attrs.imageAspectRatio;
 	}
