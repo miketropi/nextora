@@ -9,6 +9,11 @@
 
 declare( strict_types=1 );
 
+$lucide_path = dirname( __DIR__ ) . '/advanced-icon/lucide.php';
+if ( file_exists( $lucide_path ) ) {
+	require_once $lucide_path;
+}
+
 if ( ! function_exists( 'nextora_box_image_enqueue_view_script' ) ) {
 	function nextora_box_image_enqueue_view_script(): void {
 		if ( is_admin() ) {
@@ -112,7 +117,58 @@ if ( ! function_exists( 'nextora_box_image_normalize_item' ) ) {
 			'linkColor'       => isset( $raw['linkColor'] ) ? trim( (string) $raw['linkColor'] ) : '',
 			'badge'           => isset( $raw['badge'] ) ? trim( (string) $raw['badge'] ) : '',
 			'linkWrapCard'    => ! empty( $raw['linkWrapCard'] ),
+			'iconSource'      => isset( $raw['iconSource'] ) ? (string) $raw['iconSource'] : ( ( isset( $raw['iconType'] ) && 'custom' === $raw['iconType'] ) ? 'upload' : 'theme' ),
+			'iconName'        => isset( $raw['iconName'] ) ? trim( (string) $raw['iconName'] ) : ( isset( $raw['iconPreset'] ) ? ( 'plant' === $raw['iconPreset'] ? 'leaf' : (string) $raw['iconPreset'] ) : '' ),
+			'uploadedIconId'  => isset( $raw['uploadedIconId'] ) ? (int) $raw['uploadedIconId'] : ( isset( $raw['iconId'] ) ? (int) $raw['iconId'] : 0 ),
+			'uploadedIconUrl' => isset( $raw['uploadedIconUrl'] ) ? trim( (string) $raw['uploadedIconUrl'] ) : ( isset( $raw['iconUrl'] ) ? trim( (string) $raw['iconUrl'] ) : '' ),
+			'iconType'        => isset( $raw['iconType'] ) ? (string) $raw['iconType'] : 'none',
+			'iconPreset'      => isset( $raw['iconPreset'] ) ? (string) $raw['iconPreset'] : '',
+			'iconId'          => isset( $raw['iconId'] ) ? (int) $raw['iconId'] : 0,
+			'iconUrl'         => isset( $raw['iconUrl'] ) ? trim( (string) $raw['iconUrl'] ) : '',
 		);
+	}
+}
+
+if ( ! function_exists( 'nextora_box_image_render_icon' ) ) {
+	/**
+	 * @param array<string, mixed> $item
+	 */
+	function nextora_box_image_render_icon( array $item ): string {
+		$icon_source = isset( $item['iconSource'] ) ? (string) $item['iconSource'] : ( ( isset( $item['iconType'] ) && 'custom' === $item['iconType'] ) ? 'upload' : 'theme' );
+		$icon_name   = isset( $item['iconName'] ) && '' !== trim( (string) $item['iconName'] ) ? trim( (string) $item['iconName'] ) : ( isset( $item['iconPreset'] ) ? ( 'plant' === $item['iconPreset'] ? 'leaf' : (string) $item['iconPreset'] ) : '' );
+		$icon_url    = isset( $item['uploadedIconUrl'] ) && '' !== trim( (string) $item['uploadedIconUrl'] ) ? trim( (string) $item['uploadedIconUrl'] ) : ( isset( $item['iconUrl'] ) ? trim( (string) $item['iconUrl'] ) : '' );
+		$icon_id     = isset( $item['uploadedIconId'] ) && (int) $item['uploadedIconId'] > 0 ? (int) $item['uploadedIconId'] : ( isset( $item['iconId'] ) ? (int) $item['iconId'] : 0 );
+
+		if ( 'upload' === $icon_source ) {
+			if ( $icon_id > 0 ) {
+				$img = wp_get_attachment_image( $icon_id, 'thumbnail', false, array( 'class' => 'nextora-box-image__icon-img' ) );
+				if ( '' !== $img ) {
+					return '<div class="nextora-box-image__icon">' . $img . '</div>';
+				}
+			} elseif ( '' !== $icon_url ) {
+				return '<div class="nextora-box-image__icon"><img src="' . esc_url( $icon_url ) . '" class="nextora-box-image__icon-img" alt="" /></div>';
+			}
+			return '';
+		}
+
+		if ( '' === $icon_name || 'none' === $icon_name ) {
+			return '';
+		}
+
+		if ( function_exists( 'nextora_get_lucide_svg' ) ) {
+			$svg = nextora_get_lucide_svg(
+				$icon_name,
+				48,
+				'currentColor',
+				1.8,
+				'nextora-box-image__icon-svg',
+			);
+			if ( '' !== $svg ) {
+				return '<div class="nextora-box-image__icon">' . $svg . '</div>';
+			}
+		}
+
+		return '';
 	}
 }
 
@@ -438,6 +494,7 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 		$is_template2 = 'template2' === $template;
 		$is_template3 = 'template3' === $template;
 		$is_template4 = 'template4' === $template;
+		$is_template5 = 'template5' === $template;
 
 		$card_vars = array();
 		if ( '' !== $bg_color ) {
@@ -472,7 +529,7 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 
 		$out  = $as_slide ? '<div class="swiper-slide">' : '';
 		if ( $link_wrap ) {
-			$link_class = $is_template1 ? ' nextora-box-image__card--template1' : ( $is_template2 ? ' nextora-box-image__card--template2' : ( $is_template3 ? ' nextora-box-image__card--template3' : ( $is_template4 ? ' nextora-box-image__card--template4' : '' ) ) );
+			$link_class = $is_template1 ? ' nextora-box-image__card--template1' : ( $is_template2 ? ' nextora-box-image__card--template2' : ( $is_template3 ? ' nextora-box-image__card--template3' : ( $is_template4 ? ' nextora-box-image__card--template4' : ( $is_template5 ? ' nextora-box-image__card--template5' : '' ) ) ) );
 			$out .= sprintf(
 				'<a class="nextora-box-image__card nextora-box-image__card-link%1$s" href="%2$s"%3$s%4$s>',
 				$link_class,
@@ -488,8 +545,85 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 			$out .= '<article class="nextora-box-image__card nextora-box-image__card--template3"' . $card_style . '>';
 		} elseif ( $is_template4 ) {
 			$out .= '<article class="nextora-box-image__card nextora-box-image__card--template4"' . $card_style . '>';
+		} elseif ( $is_template5 ) {
+			$out .= '<article class="nextora-box-image__card nextora-box-image__card--template5"' . $card_style . '>';
 		} else {
 			$out .= '<article class="nextora-box-image__card"' . $card_style . '>';
+		}
+
+		if ( $is_template5 ) {
+			$out .= '<div class="nextora-box-image__image-wrap">';
+			if ( '' !== $image_url ) {
+				$url = esc_url( $image_url );
+				if ( '' !== $url ) {
+					$out .= sprintf(
+						'<img class="nextora-box-image__card-image" src="%1$s" alt="" loading="lazy" decoding="async" />',
+						$url,
+					);
+				}
+			} elseif ( $image_id > 0 ) {
+				$out .= wp_get_attachment_image(
+					$image_id,
+					'medium_large',
+					false,
+					array(
+						'class'    => 'nextora-box-image__card-image',
+						'loading'  => 'lazy',
+						'decoding' => 'async',
+						'alt'      => '',
+					),
+				);
+			} else {
+				$out .= sprintf(
+					'<img class="nextora-box-image__card-image" src="%1$s" alt="" loading="lazy" decoding="async" />',
+					esc_url( nextora_box_image_placeholder_url() ),
+				);
+			}
+			$out .= '<div class="nextora-box-image__overlay"></div>';
+			$out .= '</div>';
+
+			$out .= '<div class="nextora-box-image__card-body">';
+			$icon_html = nextora_box_image_render_icon( $item );
+			if ( '' !== $icon_html ) {
+				$out .= $icon_html;
+			}
+
+			if ( '' !== $badge ) {
+				$out .= '<span class="nextora-box-image__badge">' . esc_html( $badge ) . '</span>';
+			}
+
+			if ( '' !== $title ) {
+				$out .= '<h3 class="nextora-box-image__title">' . esc_html( $title ) . '</h3>';
+			}
+
+			if ( '' !== trim( wp_strip_all_tags( $description ) ) ) {
+				$out .= '<p class="nextora-box-image__description">' . esc_html( $description ) . '</p>';
+			}
+
+			if ( ! $link_wrap && $show_link && '' !== $link_label ) {
+				$arrow = '<span class="nextora-box-image__link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
+				if ( '' !== $link_url ) {
+					$out .= sprintf(
+						'<a class="nextora-box-image__link nextora-box-image__link--template5" href="%1$s"%2$s><span class="nextora-box-image__link-text">%3$s</span>%4$s</a>',
+						esc_url( $link_url ),
+						'_blank' === $link_target ? ' target="_blank" rel="noopener noreferrer"' : '',
+						esc_html( $link_label ),
+						$arrow,
+					);
+				} else {
+					$out .= sprintf(
+						'<span class="nextora-box-image__link nextora-box-image__link--template5 nextora-box-image__link--static"><span class="nextora-box-image__link-text">%1$s</span>%2$s</span>',
+						esc_html( $link_label ),
+						$arrow,
+					);
+				}
+			}
+
+			$out .= '</div>';
+			$out .= $link_wrap ? '</a>' : '</article>';
+			$out .= $as_slide ? '</div>' : '';
+
+			return $out;
 		}
 
 		if ( $is_template1 ) {
@@ -701,7 +835,7 @@ if ( ! in_array( $layout_mode, array( 'slider', 'grid' ), true ) ) {
 }
 
 $template = isset( $attributes['template'] ) ? (string) $attributes['template'] : 'default';
-if ( ! in_array( $template, array( 'default', 'template1', 'template2', 'template3', 'template4' ), true ) ) {
+if ( ! in_array( $template, array( 'default', 'template1', 'template2', 'template3', 'template4', 'template5' ), true ) ) {
 	$template = 'default';
 }
 

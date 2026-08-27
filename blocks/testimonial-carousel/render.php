@@ -143,8 +143,8 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 		$out .= '<article class="nextora-testimonial-carousel__slide"' . ( '' !== $slide_style ? ' style="' . esc_attr( $slide_style ) . '"' : '' ) . '>';
 		$out .= nextora_testimonial_carousel_render_stars( $rating );
 		$out .= '<blockquote class="nextora-testimonial-carousel__slide-quote">' . esc_html( $quote ) . '</blockquote>';
-		$out .= '<div class="nextora-testimonial-carousel__slide-author">';
 
+		$photo_markup = '';
 		if ( $show_photo ) {
 			$alt = (string) $item['authorPhotoAlt'];
 			if ( '' === $alt && $photo_id > 0 ) {
@@ -157,7 +157,6 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 				$alt = __( 'Author photo', 'nextora' );
 			}
 
-			$photo_markup = '';
 			if ( $photo_id > 0 ) {
 				$img = wp_get_attachment_image(
 					$photo_id,
@@ -183,23 +182,25 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 					);
 				}
 			}
+		}
 
-			if ( '' !== $photo_markup ) {
-				$out .= $photo_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
-			}
+		$has_photo = '' !== $photo_markup;
+		$author_class = 'nextora-testimonial-carousel__slide-author' . ( $has_photo ? ' nextora-testimonial-carousel__slide-author--has-photo' : ' nextora-testimonial-carousel__slide-author--no-photo' );
+
+		$out .= '<div class="' . esc_attr( $author_class ) . '">';
+		if ( $has_photo ) {
+			$out .= $photo_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
 		}
 
 		if ( '' !== $name || '' !== $role ) {
-			$out .= '<p class="nextora-testimonial-carousel__slide-author-line">';
+			$out .= '<div class="nextora-testimonial-carousel__slide-author-text">';
 			if ( '' !== $name ) {
-				$out .= '— <strong class="nextora-testimonial-carousel__slide-author-name">' . esc_html( $name ) . '</strong>';
-				if ( '' !== $role ) {
-					$out .= ', <span class="nextora-testimonial-carousel__slide-author-role">' . esc_html( $role ) . '</span>';
-				}
-			} elseif ( '' !== $role ) {
+				$out .= '<strong class="nextora-testimonial-carousel__slide-author-name">' . esc_html( $name ) . '</strong>';
+			}
+			if ( '' !== $role ) {
 				$out .= '<span class="nextora-testimonial-carousel__slide-author-role">' . esc_html( $role ) . '</span>';
 			}
-			$out .= '</p>';
+			$out .= '</div>';
 		}
 
 		$out .= '</div></article></div>';
@@ -507,14 +508,14 @@ $css_vars = array(
 	'--nextora-testimonial-bg'                 => '' !== $bg_color ? $bg_color : 'transparent',
 	'--nextora-testimonial-max-width'         => $content_max,
 	'--nextora-testimonial-icon-size'         => $top_icon_size . 'px',
-	'--nextora-testimonial-icon-color'        => '' !== $icon_color ? $icon_color : 'color-mix(in srgb, currentColor 50%, transparent)',
+	'--nextora-testimonial-icon-color'        => '' !== $icon_color ? $icon_color : 'currentColor',
 	'--nextora-testimonial-label-color'       => '' !== $label_color ? $label_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
-	'--nextora-testimonial-quote-color'       => '' !== $quote_color ? $quote_color : 'inherit',
+	'--nextora-testimonial-quote-color'       => '' !== $quote_color ? $quote_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
 	'--nextora-testimonial-quote-font-family' => '' !== $quote_font_family ? $quote_font_family : 'var(--wp--preset--font-family--heading)',
 	'--nextora-testimonial-quote-size'        => '' !== $quote_font_size ? $quote_font_size : 'var(--wp--preset--font-size--base)',
-	'--nextora-testimonial-author-color'      => '' !== $author_color ? $author_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
-	'--nextora-testimonial-author-name-color' => '' !== $author_name_color ? $author_name_color : 'inherit',
-	'--nextora-testimonial-trust-color'       => '' !== $trust_color ? $trust_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
+	'--nextora-testimonial-author-color'      => '' !== $author_color ? $author_color : 'var(--wp--preset--color--paragraph, #525252)',
+	'--nextora-testimonial-author-name-color' => '' !== $author_name_color ? $author_name_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
+	'--nextora-testimonial-trust-color'       => '' !== $trust_color ? $trust_color : 'var(--wp--preset--color--paragraph, #525252)',
 	'--nextora-testimonial-star-color'        => '' !== $star_color ? $star_color : '#F59E0B',
 	'--nextora-testimonial-dot-color'         => '' !== $dot_color ? $dot_color : 'color-mix(in srgb, currentColor 35%, transparent)',
 	'--nextora-testimonial-dot-active'        => '' !== $dot_active ? $dot_active : 'var(--wp--preset--color--primary, currentColor)',

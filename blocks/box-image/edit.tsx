@@ -26,13 +26,33 @@ import {
 	normalizeColorForStorage,
 	useThemeColorPalette,
 } from '../advanced-icon/color-utils';
+import { IconPicker } from '../advanced-icon/icon-picker';
+import BoxImageEditorIcon from './editor-icon';
 import { storedColorToCss } from './icon-catalog';
 import { buildStyleVars, createItemId, normalizeItems } from './item-utils';
-import type { BoxImageAttributes, BoxImageTemplate, BoxImageScrollAnimationStyle } from './types';
+import type { BoxImageAttributes, BoxImageTemplate, BoxImageScrollAnimationStyle, BoxImageItem } from './types';
 
 interface EditProps {
 	attributes: BoxImageAttributes;
 	setAttributes: (attrs: Partial<BoxImageAttributes>) => void;
+}
+
+const ICONS = {
+	pencil: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>',
+	chevronUp: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>',
+	chevronDown: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+	trash: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
+	plus: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+};
+
+function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: string }) {
+	return (
+		<span
+			className={className}
+			dangerouslySetInnerHTML={{ __html: ICONS[name] }}
+			style={{ display: 'inline-flex', alignItems: 'center' }}
+		/>
+	);
 }
 
 const layoutModeOptions = [
@@ -46,11 +66,12 @@ const templateOptions: { label: string; value: BoxImageTemplate }[] = [
 	{ label: __('Template 2', 'nextora'), value: 'template2' },
 	{ label: __('Template 3', 'nextora'), value: 'template3' },
 	{ label: __('Template 4', 'nextora'), value: 'template4' },
+	{ label: __('Template 5', 'nextora'), value: 'template5' },
 ];
 
 const aspectRatioOptions = [
 	{ label: '3:2', value: '3/2' },
-	{ label: '16:9', value: '16/9' },
+	{ label: '16:9', value: '16:9' },
 	{ label: '4:3', value: '4/3' },
 	{ label: '1:1', value: '1/1' },
 	{ label: '2:3', value: '2/3' },
@@ -169,6 +190,7 @@ function getTemplate4SvgPath(count: number, stepGap = 480): string {
 
 export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 	const [editingItemId, setEditingItemId] = useState<string | null>(null);
+	const [iconPickerOpen, setIconPickerOpen] = useState(false);
 	const [panelStates, setPanelStates] = useState<Record<string, boolean>>({
 		items: false,
 		layout: false,
@@ -386,16 +408,56 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 			},
 		];
 
+		const template5Colors = [
+			{
+				value: colorValueForPicker(cardBackgroundColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('cardBackgroundColor', v),
+				label: __('Card background (overlay)', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(cardHoverBackgroundColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('cardHoverBackgroundColor', v),
+				label: __('Hover overlay color', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(cardTitleColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('cardTitleColor', v),
+				label: __('Title color', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(cardDescriptionColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('cardDescriptionColor', v),
+				label: __('Description color', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(linkColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('linkColor', v),
+				label: __('Button background', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(linkHoverColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('linkHoverColor', v),
+				label: __('Button hover background', 'nextora'),
+			},
+			...(layoutMode === 'slider' ? navColors : []),
+		];
+
 		if (template === 'template4') {
 			return template4Colors;
 		}
 
-		return [...cardColors, ...navColors, ...template3Colors];
+		if (template === 'template5') {
+			return template5Colors;
+		}
+
+		return [...cardColors, ...navColors, ...(template === 'template3' ? template3Colors : [])];
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		template,
+		layoutMode,
 		cardBorderColor,
 		cardBackgroundColor,
+		cardHoverBackgroundColor,
 		cardTitleColor,
 		cardDescriptionColor,
 		linkColor,
@@ -437,6 +499,10 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 					linkColor: '',
 					badge: '',
 					linkWrapCard: false,
+					iconType: 'none',
+					iconPreset: '',
+					iconId: 0,
+					iconUrl: '',
 				},
 			],
 		});
@@ -477,45 +543,95 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						)}
 					</p>
 					{items.map((item, index) => (
-						<div key={item.id} className="nextora-box-image__inspector-item">
-							<div className="nextora-box-image__inspector-item-summary">
-								<p className="nextora-box-image__inspector-item-name">
-									{item.title || sprintf(__('Item %d', 'nextora'), index + 1)}
-								</p>
-								{item.description ? (
-									<p className="nextora-box-image__inspector-item-desc">{item.description}</p>
+						<div
+							key={item.id}
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								gap: '6px',
+								marginBottom: '6px',
+								padding: '6px 8px',
+								background: '#f9f9f9',
+								border: '1px solid #ddd',
+								borderRadius: '4px',
+							}}
+						>
+							<div
+								style={{
+									flex: 1,
+									display: 'flex',
+									alignItems: 'center',
+									gap: '8px',
+									overflow: 'hidden',
+									minWidth: 0,
+								}}
+							>
+								{item.imageUrl ? (
+									<img
+										src={item.imageUrl}
+										alt=""
+										style={{
+											width: '32px',
+											height: '24px',
+											objectFit: 'cover',
+											borderRadius: '2px',
+											flexShrink: 0,
+										}}
+									/>
 								) : null}
+								<span
+									style={{
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap',
+										fontSize: '12px',
+										lineHeight: '1.4',
+										fontWeight: 500,
+									}}
+								>
+									{item.title || sprintf(__('Item %d', 'nextora'), index + 1)}
+								</span>
 							</div>
-							<div className="nextora-box-image__inspector-item-actions">
-								<Button variant="primary" onClick={() => setEditingItemId(item.id)}>
-									{__('Edit', 'nextora')}
-								</Button>
-								<Button
-									variant="secondary"
-									disabled={index === 0}
-									onClick={() => moveItem(item.id, -1)}
-								>
-									{__('Up', 'nextora')}
-								</Button>
-								<Button
-									variant="secondary"
-									disabled={index >= items.length - 1}
-									onClick={() => moveItem(item.id, 1)}
-								>
-									{__('Down', 'nextora')}
-								</Button>
-								<Button
-									variant="secondary"
-									isDestructive
-									disabled={items.length <= 1}
-									onClick={() => removeItem(item.id)}
-								>
-									{__('Remove', 'nextora')}
-								</Button>
-							</div>
+							<Button
+								icon={<InlineSvg name="pencil" />}
+								label={__('Edit', 'nextora')}
+								onClick={() => setEditingItemId(item.id)}
+								isSmall
+							/>
+							<Button
+								icon={<InlineSvg name="chevronUp" />}
+								label={__('Move up', 'nextora')}
+								onClick={() => moveItem(item.id, -1)}
+								disabled={index === 0}
+								isSmall
+							/>
+							<Button
+								icon={<InlineSvg name="chevronDown" />}
+								label={__('Move down', 'nextora')}
+								onClick={() => moveItem(item.id, 1)}
+								disabled={index >= items.length - 1}
+								isSmall
+							/>
+							<Button
+								icon={<InlineSvg name="trash" />}
+								label={__('Remove', 'nextora')}
+								onClick={() => removeItem(item.id)}
+								disabled={items.length <= 1}
+								isSmall
+								isDestructive
+							/>
 						</div>
 					))}
-					<Button variant="primary" onClick={addItem}>
+					<Button
+						variant="secondary"
+						onClick={addItem}
+						icon={<InlineSvg name="plus" />}
+						style={{
+							width: '100%',
+							justifyContent: 'center',
+							marginTop: items.length > 0 ? '4px' : '0',
+						}}
+					>
 						{__('Add item', 'nextora')}
 					</Button>
 				</PanelBody>
@@ -544,6 +660,11 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 										'Template 4-style cards with image, automatic step numbering, title, description and action link — ideal for processes or how-it-works.',
 										'nextora',
 									)
+								: template === 'template5'
+								? __(
+										'Template 5-style cards with full background image, dark-to-primary hover overlay, bold heading and slide-in pill button.',
+										'nextora',
+									)
 								: __(
 										'Default card layout.',
 										'nextora',
@@ -552,7 +673,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						value={template}
 						options={templateOptions}
 						onChange={(v: string) => {
-							const tpl = (v === 'template1' ? 'template1' : v === 'template2' ? 'template2' : v === 'template3' ? 'template3' : v === 'template4' ? 'template4' : 'default') as BoxImageTemplate;
+							const tpl = (v === 'template1' ? 'template1' : v === 'template2' ? 'template2' : v === 'template3' ? 'template3' : v === 'template4' ? 'template4' : v === 'template5' ? 'template5' : 'default') as BoxImageTemplate;
 							const patch: Partial<BoxImageAttributes> = { template: tpl };
 							if (tpl === 'template1') {
 								patch.layoutMode = 'grid';
@@ -580,6 +701,14 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 								patch.cardBorderRadius = 16;
 								patch.cardBorderWidth = 1;
 								patch.cardMinHeight = 0;
+							} else if (tpl === 'template5') {
+								patch.layoutMode = 'grid';
+								patch.gridColumns = 3;
+								patch.imageAspectRatio = '4/3';
+								patch.cardBorderRadius = 0;
+								patch.cardBorderWidth = 0;
+								patch.cardMinHeight = 440;
+								patch.spaceBetween = 0;
 							}
 							setAttributes(patch);
 						}}
@@ -857,22 +986,24 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 					)}
 				</PanelBody>
 
-				<PanelBody title={__('Image', 'nextora')} opened={panelStates.image} onToggle={togglePanel('image')}>
-					{template !== 'template2' ? (
+				{template !== 'template4' && template !== 'template5' ? (
+					<PanelBody title={__('Image', 'nextora')} opened={panelStates.image} onToggle={togglePanel('image')}>
+						{template !== 'template2' ? (
+							<SelectControl
+								label={__('Aspect ratio', 'nextora')}
+								value={imageAspectRatio}
+								options={aspectRatioOptions}
+								onChange={(v) => setAttributes({ imageAspectRatio: v as string })}
+							/>
+						) : null}
 						<SelectControl
-							label={__('Aspect ratio', 'nextora')}
-							value={imageAspectRatio}
-							options={aspectRatioOptions}
-							onChange={(v) => setAttributes({ imageAspectRatio: v as string })}
+							label={__('Image fit', 'nextora')}
+							value={imageFit}
+							options={imageFitOptions}
+							onChange={(v) => setAttributes({ imageFit: v as string })}
 						/>
-					) : null}
-					<SelectControl
-						label={__('Image fit', 'nextora')}
-						value={imageFit}
-						options={imageFitOptions}
-						onChange={(v) => setAttributes({ imageFit: v as string })}
-					/>
-				</PanelBody>
+					</PanelBody>
+				) : null}
 
 				<PanelColorSettings
 					enableAlpha
@@ -987,10 +1118,122 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 							</MediaUploadCheck>
 						</div>
 						<div className="nextora-box-image__item-modal-form-fields">
-							{template === 'template1' || template === 'template3' ? (
+							{template === 'template5' ? (
+								<div className="nextora-box-image__item-modal-icon" style={{ marginBottom: 16 }}>
+									<SelectControl
+										label={__('Icon source', 'nextora')}
+										value={editingItem.iconSource === 'upload' ? 'upload' : 'theme'}
+										options={[
+											{ label: __('Theme icon (Lucide)', 'nextora'), value: 'theme' },
+											{ label: __('Custom upload', 'nextora'), value: 'upload' },
+										]}
+										onChange={(v) => {
+											patchItem(editingItem.id, {
+												iconSource: v === 'upload' ? 'upload' : 'theme',
+											});
+										}}
+									/>
+									{editingItem.iconSource !== 'upload' ? (
+										<div>
+											<div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8 }}>
+												{editingItem.iconName ? (
+													<div
+														style={{
+															display: 'inline-flex',
+															alignItems: 'center',
+															justifyContent: 'center',
+															width: 40,
+															height: 40,
+															background: '#3c322f',
+															color: '#fff',
+															borderRadius: 6,
+															padding: 4,
+														}}
+													>
+														<BoxImageEditorIcon item={editingItem} size={28} />
+													</div>
+												) : null}
+												<Button variant="secondary" onClick={() => setIconPickerOpen(true)}>
+													{editingItem.iconName ? __('Change Lucide icon', 'nextora') : __('Choose Lucide icon', 'nextora')}
+												</Button>
+												{editingItem.iconName ? (
+													<Button
+														variant="tertiary"
+														isDestructive
+														onClick={() => patchItem(editingItem.id, { iconName: '' })}
+													>
+														{__('Remove icon', 'nextora')}
+													</Button>
+												) : null}
+											</div>
+											{editingItem.iconName ? (
+												<p style={{ margin: '6px 0 0', fontSize: 12, color: 'color-mix(in srgb, currentColor 65%, transparent)' }}>
+													<code>{editingItem.iconName}</code>
+												</p>
+											) : null}
+											{iconPickerOpen ? (
+												<IconPicker
+													currentIcon={editingItem.iconName || 'leaf'}
+													onSelect={(iconName) => {
+														patchItem(editingItem.id, {
+															iconSource: 'theme',
+															iconName,
+														});
+														setIconPickerOpen(false);
+													}}
+													onClose={() => setIconPickerOpen(false)}
+												/>
+											) : null}
+										</div>
+									) : (
+										<MediaUploadCheck>
+											<MediaUpload
+												onSelect={(media: { id: number; url: string }) =>
+													patchItem(editingItem.id, {
+														iconSource: 'upload',
+														uploadedIconId: typeof media?.id === 'number' ? media.id : 0,
+														uploadedIconUrl: typeof media?.url === 'string' ? media.url : '',
+													})
+												}
+												allowedTypes={['image']}
+												value={editingItem.uploadedIconId || undefined}
+												render={({ open }) => (
+													<div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+														{editingItem.uploadedIconUrl && (
+															<img
+																src={editingItem.uploadedIconUrl}
+																alt=""
+																style={{ width: 36, height: 36, objectFit: 'contain', background: '#3c322f', padding: 4, borderRadius: 4 }}
+															/>
+														)}
+														<Button variant="secondary" size="compact" onClick={open}>
+															{editingItem.uploadedIconUrl ? __('Replace icon', 'nextora') : __('Upload icon', 'nextora')}
+														</Button>
+														{editingItem.uploadedIconUrl && (
+															<Button
+																variant="tertiary"
+																size="compact"
+																isDestructive
+																onClick={() => patchItem(editingItem.id, { uploadedIconId: 0, uploadedIconUrl: '' })}
+															>
+																{__('Remove', 'nextora')}
+															</Button>
+														)}
+													</div>
+												)}
+											/>
+										</MediaUploadCheck>
+									)}
+								</div>
+							) : null}
+							{template === 'template1' || template === 'template3' || template === 'template5' ? (
 							<TextControl
 								label={__('Badge', 'nextora')}
-								help={template === 'template3' ? __('Number displayed on the image (e.g. "01").', 'nextora') : __('Small label overlay on the image (e.g. "Ages 0–2").', 'nextora')}
+								help={
+									template === 'template3'
+										? __('Number displayed on the image (e.g. "01").', 'nextora')
+										: __('Small label overlay on the image (e.g. "Ages 0–2" or "Featured").', 'nextora')
+								}
 								value={editingItem.badge}
 								onChange={(badge) => patchItem(editingItem.id, { badge })}
 							/>
@@ -1200,7 +1443,11 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 												<button
 													type="button"
 													className="nextora-box-image__card-edit"
-													onClick={() => setEditingItemId(item.id)}
+													onClick={(e) => {
+														e.stopPropagation();
+														e.preventDefault();
+														setEditingItemId(item.id);
+													}}
 												>
 													{__('Edit item', 'nextora')}
 												</button>
@@ -1260,7 +1507,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									return (
 									<CardTag
 										key={item.id}
-										className={`nextora-box-image__card${template === 'template1' ? ' nextora-box-image__card--template1' : template === 'template2' ? ' nextora-box-image__card--template2' : template === 'template3' ? ' nextora-box-image__card--template3' : ''} nextora-box-image__card--editable${isWrapLink ? ' nextora-box-image__card-link' : ''}`}
+										className={`nextora-box-image__card${template === 'template1' ? ' nextora-box-image__card--template1' : template === 'template2' ? ' nextora-box-image__card--template2' : template === 'template3' ? ' nextora-box-image__card--template3' : template === 'template5' ? ' nextora-box-image__card--template5' : ''} nextora-box-image__card--editable${isWrapLink ? ' nextora-box-image__card-link' : ''}`}
 										style={
 											(item.backgroundColor || item.titleColor || item.descriptionColor || item.linkColor)
 												? ({
@@ -1276,7 +1523,11 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 										<button
 											type="button"
 											className="nextora-box-image__card-edit"
-											onClick={() => setEditingItemId(item.id)}
+											onClick={(e) => {
+												e.stopPropagation();
+												e.preventDefault();
+												setEditingItemId(item.id);
+											}}
 										>
 											{__('Edit item', 'nextora')}
 										</button>
@@ -1378,6 +1629,43 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 															{item.linkLabel}
 															<span className="nextora-box-image__link-icon" aria-hidden="true">
 																<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+																	<path d="M5 12h14M13 6l6 6-6 6" />
+																</svg>
+															</span>
+														</span>
+													) : null}
+												</div>
+											</>
+										) : template === 'template5' ? (
+											<>
+												<div className="nextora-box-image__image-wrap">
+													<img
+														className="nextora-box-image__card-image"
+														src={resolveEditorImage(item, placeholderUrl)}
+														alt=""
+													/>
+													<div className="nextora-box-image__overlay" />
+												</div>
+												<div className="nextora-box-image__card-body">
+													<BoxImageEditorIcon item={item} />
+													{item.badge ? (
+														<span className="nextora-box-image__badge">
+															{item.badge}
+														</span>
+													) : null}
+													<h3 className="nextora-box-image__title">
+														{item.title || __('Title', 'nextora')}
+													</h3>
+													{item.description ? (
+														<p className="nextora-box-image__description">
+															{item.description}
+														</p>
+													) : null}
+													{!item.linkWrapCard && item.showLink && item.linkLabel ? (
+														<span className="nextora-box-image__link nextora-box-image__link--template5 nextora-box-image__link--static">
+															<span className="nextora-box-image__link-text">{item.linkLabel}</span>
+															<span className="nextora-box-image__link-icon" aria-hidden="true">
+																<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
 																	<path d="M5 12h14M13 6l6 6-6 6" />
 																</svg>
 															</span>

@@ -4177,6 +4177,10 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   position: relative;
   --nextora-border-opacity: 0;
 }
+.animation-svg-draw:not([data-nextora-scroll-animation-init]) :is(path, line, polyline, polygon, circle, ellipse, rect) {
+  stroke-dasharray: 1.05 3;
+  stroke-dashoffset: 1.3;
+}
 @property --dash-angle {
   syntax: '<angle>';
   initial-value: 0deg;
@@ -4215,6 +4219,10 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
 :where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-image-border-reveal:not([data-nextora-scroll-animation-init]) {
   --nextora-border-opacity: 1;
 }
+:where(	.editor-styles-wrapper,	.block-editor-block-preview__content,	.block-editor-inserter__preview-content )	.animation-svg-draw:not([data-nextora-scroll-animation-init]) :is(path, line, polyline, polygon, circle, ellipse, rect) {
+  stroke-dasharray: none;
+  stroke-dashoffset: 0;
+}
 @media (prefers-reduced-motion: reduce) {
   .nextora-scroll-animation--pending,	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]),	.animation-text-typewriter:not([data-nextora-scroll-animation-init]),	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li,	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *,	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img,	.animation-image-border-reveal:not([data-nextora-scroll-animation-init]) img {
     opacity: 1;
@@ -4224,6 +4232,12 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   }
   .animation-image-border-reveal:not([data-nextora-scroll-animation-init]) {
     --nextora-border-opacity: 1;
+  }
+  .animation-svg-draw :is(path, line, polyline, polygon, circle, ellipse, rect) {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+    transition: none !important;
   }
 }
 .animation-text-typewriter {

@@ -20,24 +20,40 @@ function whenImagesReady(root: HTMLElement): Promise<void> {
 		return Promise.resolve();
 	}
 
-	return Promise.all(
-		imgs.map(
-			(img) =>
-				new Promise<void>((resolve) => {
-					if (img.complete) {
-						resolve();
-						return;
-					}
-					const done = (): void => {
-						img.removeEventListener('load', done);
-						img.removeEventListener('error', done);
-						resolve();
-					};
-					img.addEventListener('load', done);
-					img.addEventListener('error', done);
-				}),
-		),
-	).then(() => undefined);
+	imgs.forEach((img) => {
+		if (img.loading === 'lazy') {
+			img.loading = 'eager';
+		}
+	});
+
+	const imagePromises = imgs.map(
+		(img) =>
+			new Promise<void>((resolve) => {
+				if (img.complete && img.naturalWidth > 0) {
+					resolve();
+					return;
+				}
+				if (typeof img.decode === 'function') {
+					img.decode()
+						.then(() => resolve())
+						.catch(() => resolve());
+					return;
+				}
+				const done = (): void => {
+					img.removeEventListener('load', done);
+					img.removeEventListener('error', done);
+					resolve();
+				};
+				img.addEventListener('load', done, { once: true });
+				img.addEventListener('error', done, { once: true });
+			}),
+	);
+
+	const timeoutPromise = new Promise<void>((resolve) => {
+		setTimeout(resolve, 600);
+	});
+
+	return Promise.race([Promise.all(imagePromises).then(() => undefined), timeoutPromise]);
 }
 
 function fillHalf(half: HTMLElement, minWidth: number): void {
@@ -65,7 +81,7 @@ function syncDuplicateHalf(primary: HTMLElement, duplicate: HTMLElement): void {
 }
 
 function syncLoopWidth(inner: HTMLElement, primary: HTMLElement): void {
-	const loopWidth = primary.getBoundingClientRect().width;
+	const loopWidth = primary.offsetWidth || primary.getBoundingClientRect().width;
 
 	if (loopWidth > 0) {
 		inner.style.setProperty(LOOP_WIDTH_PROPERTY, `${loopWidth}px`);

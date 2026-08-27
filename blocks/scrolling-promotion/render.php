@@ -222,7 +222,7 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 				array(
 					'class'    => 'nextora-scrolling-promotion__media',
 					'alt'      => $alt,
-					'loading'  => 'lazy',
+					'loading'  => 'eager',
 					'decoding' => 'async',
 					'style'    => $inline_style,
 				),
@@ -240,7 +240,7 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 		}
 
 		return sprintf(
-			'<img class="nextora-scrolling-promotion__media" src="%1$s" alt="%2$s" style="%3$s" loading="lazy" decoding="async" />',
+			'<img class="nextora-scrolling-promotion__media" src="%1$s" alt="%2$s" style="%3$s" loading="eager" decoding="async" />',
 			esc_url( $image_url ),
 			esc_attr( $image_alt ),
 			esc_attr( $inline_style ),

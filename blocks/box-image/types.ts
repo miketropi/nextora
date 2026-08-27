@@ -1,6 +1,6 @@
 export type BoxImageLayoutMode = 'slider' | 'grid';
 export type BoxImageFit = 'cover' | 'contain' | 'fill' | 'none';
-export type BoxImageTemplate = 'default' | 'template1' | 'template2' | 'template3' | 'template4';
+export type BoxImageTemplate = 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5';
 export type BoxImageScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxImageItem {
@@ -20,6 +20,14 @@ export interface BoxImageItem {
 	badge: string;
 	linkWrapCard: boolean;
 	accentColor?: string;
+	iconSource?: 'theme' | 'upload';
+	iconName?: string;
+	uploadedIconId?: number;
+	uploadedIconUrl?: string;
+	iconType?: 'none' | 'preset' | 'custom';
+	iconPreset?: string;
+	iconId?: number;
+	iconUrl?: string;
 }
 
 export interface BoxImageAttributes {
