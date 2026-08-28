@@ -1,0 +1,184 @@
+/**
+ * nextora/rope-gallery — front-end + editor canvas.
+ * The 3D stage is transparent; the block reserves space via min-height
+ * and lets the rope overhang bleed above via --nextora-rg-overhang (set by JS).
+ */
+
+.wp-block-nextora-rope-gallery {
+	position: relative;
+	z-index: 0;
+	isolation: isolate;
+	box-sizing: border-box;
+}
+
+/* ── WebGL stage ─────────────────────────────────────────────────────────── */
+
+.wp-block-nextora-rope-gallery__canvas {
+	display: block;
+	width: 100%;
+	z-index: 0;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.45s ease;
+}
+
+.nextora-rope-gallery--ready .wp-block-nextora-rope-gallery__canvas {
+	opacity: 1;
+}
+
+/* ── Interaction overlay (drag / wheel / keys) ───────────────────────────── */
+
+.wp-block-nextora-rope-gallery__hit {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 2;
+	pointer-events: auto;
+	touch-action: pan-y;
+	cursor: grab;
+	outline: none;
+}
+
+.wp-block-nextora-rope-gallery__hit.dragging {
+	cursor: grabbing;
+}
+
+.wp-block-nextora-rope-gallery__hit:focus-visible {
+	box-shadow: inset 0 0 0 2px var(--nextora-rg-accent, #20bf49);
+	border-radius: 14px;
+}
+
+/* ── Hint ────────────────────────────────────────────────────────────────── */
+
+.wp-block-nextora-rope-gallery__hint {
+	position: absolute;
+	left: 50%;
+	bottom: 6px;
+	transform: translateX(-50%);
+	margin: 0;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--muted, #6e6e6e);
+	letter-spacing: 0.02em;
+	opacity: 0;
+	transition: opacity 0.5s ease;
+	pointer-events: none;
+	z-index: 3;
+}
+
+.wp-block-nextora-rope-gallery__hint.show {
+	opacity: 1;
+}
+
+/* ── Screen-reader list ──────────────────────────────────────────────────── */
+
+.wp-block-nextora-rope-gallery__sr-list {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ── Static fallback grid (reduced motion / no JS) ───────────────────────── */
+
+.wp-block-nextora-rope-gallery__static {
+	display: none;
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+	gap: var(--wp--preset--spacing--30, 0.75rem);
+	position: relative;
+	z-index: 1;
+}
+
+.wp-block-nextora-rope-gallery__static-card {
+	margin: 0;
+	overflow: hidden;
+	border-radius: 12px;
+	background: var(--wp--preset--color--surface, #ffffff);
+	box-shadow: 0 2px 10px rgba(11, 11, 11, 0.06);
+}
+
+.wp-block-nextora-rope-gallery__static-link {
+	display: block;
+	color: inherit;
+	text-decoration: none;
+}
+
+.wp-block-nextora-rope-gallery__static-media-fallback {
+	display: block;
+	aspect-ratio: 5 / 6;
+	width: 100%;
+	background: linear-gradient(
+		145deg,
+		hsl(var(--nextora-rg-hue, 200) 45% 62%),
+		hsl(calc(var(--nextora-rg-hue, 200) + 40) 50% 40%)
+	);
+}
+
+.wp-block-nextora-rope-gallery__static-card img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 5 / 6;
+	object-fit: cover;
+}
+
+.wp-block-nextora-rope-gallery__static-caption {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: 10px 12px 12px;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.wp-block-nextora-rope-gallery__static-subtitle {
+	font-weight: 400;
+	color: var(--wp--preset--color--muted, #6e6e6e);
+}
+
+/* ── Content area (InnerBlocks) ─────────────────────────────────────────── */
+
+.wp-block-nextora-rope-gallery__content {
+	position: relative;
+	z-index: 1;
+	margin-bottom: 378px;
+}
+
+/* ── Hero overlay ────────────────────────────────────────────────────────── */
+
+.wp-block-nextora-rope-gallery__rope-area {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 0;
+	height: 540px;
+	overflow: hidden;
+}
+
+/* ── Physics off (animationEnabled = false) ──────────────────────────────── */
+
+.nextora-rope-gallery--static-3d .wp-block-nextora-rope-gallery__hit,
+.nextora-rope-gallery--static-3d .wp-block-nextora-rope-gallery__hint {
+	display: none;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-nextora-rope-gallery__rope-area .wp-block-nextora-rope-gallery__canvas,
+	.wp-block-nextora-rope-gallery__hit,
+	.wp-block-nextora-rope-gallery__hint {
+		display: none;
+	}
+
+	.wp-block-nextora-rope-gallery__static {
+		display: grid;
+	}
+}

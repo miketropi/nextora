@@ -1,0 +1,142 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/rope-gallery",
+  "title": "Rope Gallery",
+  "category": "theme",
+  "icon": "slides",
+  "description": "Interactive 3D rope with hanging photo cards. Drag, scroll, or use arrow keys to move along the line.",
+  "keywords": [
+    "gallery",
+    "rope",
+    "cards",
+    "3d",
+    "nextora"
+  ],
+  "textdomain": "nextora",
+  "supports": {
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "anchor": true,
+    "color": {
+      "background": true,
+      "text": false,
+      "link": false
+    },
+    "spacing": {
+      "padding": true,
+      "margin": true
+    }
+  },
+  "attributes": {
+    "items": {
+      "type": "array",
+      "default": [
+        {
+          "id": "1",
+          "title": "Nature",
+          "subtitle": "Landscapes and wildlife",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "id": "2",
+          "title": "Travel",
+          "subtitle": "Cities and distant places",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "id": "3",
+          "title": "Architecture",
+          "subtitle": "Buildings and interiors",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "id": "4",
+          "title": "Food",
+          "subtitle": "Recipes and flavors",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "id": "5",
+          "title": "People",
+          "subtitle": "Portraits and stories",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "id": "6",
+          "title": "Art",
+          "subtitle": "Illustration and color",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "id": "7",
+          "title": "Technology",
+          "subtitle": "Gadgets and interfaces",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        },
+        {
+          "id": "8",
+          "title": "Music",
+          "subtitle": "Instruments and sound",
+          "link": "",
+          "imageId": 0,
+          "imageUrl": "",
+          "imageAlt": ""
+        }
+      ]
+    },
+    "cardCount": {
+      "type": "number",
+      "default": 8
+    },
+    "ropeColor": {
+      "type": "string",
+      "default": "#D2CEC4"
+    },
+    "ropeAccentColor": {
+      "type": "string",
+      "default": "#9C978B"
+    },
+    "accentColor": {
+      "type": "string",
+      "default": "#20BF49"
+    },
+    "animationEnabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "viewScript": "file:./view.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css",
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}
