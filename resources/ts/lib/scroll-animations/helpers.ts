@@ -102,8 +102,19 @@ export function resolveAnimationClass(el: HTMLElement): AnimationClassName | nul
 		}
 	}
 	const custom = Array.from(el.classList).find((name) => name in animationPresets);
-	return (custom as AnimationClassName | undefined) ?? null;
+	if (custom) {
+		return custom as AnimationClassName;
+	}
+
+	// Fallback: If element only has a delay class without explicit animation class, default to animation-fade-in-up
+	const hasDelayClass = Array.from(el.classList).some((name) => /^(?:animation-)?delay-\d+/.test(name));
+	if (hasDelayClass) {
+		return "animation-fade-in-up";
+	}
+
+	return null;
 }
+
 
 function markInitialized(el: HTMLElement): void {
 	// Never mark as ready if container is currently hidden (reset in progress)
