@@ -198,10 +198,28 @@ export function CloudLibraryModal({
 			title={__('Nextora Cloud Template Library', 'nextora')}
 			onRequestClose={onClose}
 			className="nextora-cloud-editor-modal"
-			style={{ maxWidth: '920px', width: '92vw', maxHeight: '88vh' }}
+			style={{
+				maxWidth: '920px',
+				width: '92vw',
+				height: '88vh',
+				maxHeight: '88vh',
+				display: 'flex',
+				flexDirection: 'column',
+			}}
 		>
-			<div className="nextora-addon-wrap" style={{ background: 'none' }}>
-				<div className="nextora-cloud-modal__toolbar">
+			<div
+				className="nextora-addon-wrap"
+				style={{
+					background: 'none',
+					display: 'flex',
+					flexDirection: 'column',
+					flex: '1 1 0%',
+					minHeight: 0,
+					overflow: 'hidden',
+					height: '100%',
+				}}
+			>
+				<div className="nextora-cloud-modal__toolbar" style={{ flexShrink: 0 }}>
 					{/* Theme Selector Tabs */}
 					{isChildTheme && themes.length > 1 && (
 						<div className="nextora-addon-nav" style={{ marginBottom: '14px' }}>
@@ -306,7 +324,14 @@ export function CloudLibraryModal({
 						</p>
 					</div>
 				) : (
-					<div className="nextora-cloud-modal__list">
+					<div
+						className="nextora-cloud-modal__list"
+						style={{
+							overflowY: 'auto',
+							flex: '1 1 0%',
+							minHeight: 0,
+						}}
+					>
 						{templates.map((tpl) => (
 							<div key={tpl.id} className="nextora-cloud-list-item">
 								<div className="nextora-cloud-list-item__thumb">
