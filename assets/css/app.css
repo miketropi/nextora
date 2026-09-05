@@ -241,9 +241,6 @@
   .visible {
     visibility: visible;
   }
-  .visible\! {
-    visibility: visible !important;
-  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -267,9 +264,6 @@
   .static {
     position: static;
   }
-  .static\! {
-    position: static !important;
-  }
   .sticky {
     position: sticky;
   }
@@ -281,9 +275,6 @@
   }
   .start {
     inset-inline-start: var(--spacing);
-  }
-  .start\! {
-    inset-inline-start: var(--spacing) !important;
   }
   .end {
     inset-inline-end: var(--spacing);
@@ -467,9 +458,6 @@
   }
   .inline {
     display: inline;
-  }
-  .inline\! {
-    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -1318,9 +1306,6 @@
   .italic {
     font-style: italic;
   }
-  .italic\! {
-    font-style: italic !important;
-  }
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
@@ -1336,9 +1321,6 @@
   }
   .underline {
     text-decoration-line: underline;
-  }
-  .underline\! {
-    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -2058,7 +2040,7 @@
     max-height: 2.5rem;
     width: auto;
   }
-  .nextora-header-inner > .nextora-header-nav-cluster {
+  .nextora-header-inner>.nextora-header-nav-cluster {
     min-width: 0;
     flex: 1;
     justify-content: flex-end;
@@ -2156,12 +2138,12 @@ footer.wp-block-template-part {
   max-height: 0;
   transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.wp-block-accordion-item:not(.is-open) > .wp-block-accordion-panel {
+.wp-block-accordion-item:not(.is-open)>.wp-block-accordion-panel {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
   transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),	padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.wp-block-accordion-item.is-open > .wp-block-accordion-panel {
+.wp-block-accordion-item.is-open>.wp-block-accordion-panel {
   max-height: 80rem;
 }
 @supports (interpolate-size: allow-keywords) {
@@ -2171,7 +2153,7 @@ footer.wp-block-template-part {
     height: 0;
     transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .wp-block-accordion-item.is-open > .wp-block-accordion-panel {
+  .wp-block-accordion-item.is-open>.wp-block-accordion-panel {
     max-height: none;
     height: auto;
   }
@@ -2195,7 +2177,7 @@ footer.wp-block-template-part {
   border-bottom: 2px solid currentColor;
   transform: rotate(45deg);
 }
-.wp-block-accordion-item.is-open	> .wp-block-accordion-heading	.wp-block-accordion-heading__toggle-icon {
+.wp-block-accordion-item.is-open>.wp-block-accordion-heading .wp-block-accordion-heading__toggle-icon {
   transform: rotate(180deg);
 }
 @media (prefers-reduced-motion: reduce) {
@@ -2214,20 +2196,20 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   width: min(100%, 1200px);
   margin-inline: auto;
 }
-.foodbank-hero > .wp-block-group {
+.foodbank-hero>.wp-block-group {
   box-sizing: border-box;
   flex: 0 0 min(50%, 760px);
   width: auto;
   min-width: 0;
   z-index: 1;
 }
-.foodbank-hero > .nextora-sis {
+.foodbank-hero>.nextora-sis {
   box-sizing: border-box;
   width: 75%;
   min-width: 0;
   margin-left: -25% !important;
 }
-.foodbank-hero > .nextora-sis .nextora-sis__track {
+.foodbank-hero>.nextora-sis .nextora-sis__track {
   max-width: 100%;
 }
 @media (max-width: 900px) {
@@ -2237,12 +2219,12 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     row-gap: clamp(1.75rem, 6vw, 2rem);
     width: 100%;
   }
-  .foodbank-hero > .wp-block-group,	.foodbank-hero > .nextora-sis {
+  .foodbank-hero>.wp-block-group,	.foodbank-hero>.nextora-sis {
     flex: 0 0 auto;
     width: 100%;
     margin-left: 0 !important;
   }
-  .foodbank-hero > .nextora-sis {
+  .foodbank-hero>.nextora-sis {
     order: 2;
   }
 }
@@ -2250,7 +2232,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   .foodbank-hero {
     row-gap: 1.5rem;
   }
-  .foodbank-hero > .wp-block-group {
+  .foodbank-hero>.wp-block-group {
     padding-inline: 0;
   }
 }
@@ -2276,6 +2258,9 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   height: 100% !important;
 }
 .edit-site-layout__canvas .components-button svg[stroke="currentColor"] {
+  fill: transparent;
+}
+.block-editor-block-inspector__tabs .components-button svg[stroke="currentColor"] {
   fill: transparent;
 }
 .nextora-navigation-from-location {

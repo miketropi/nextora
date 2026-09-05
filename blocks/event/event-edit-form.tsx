@@ -20,10 +20,17 @@ export interface EventEditFormProps {
 	event: EventItem;
 	imageUrl?: string;
 	showEditorialFields?: boolean;
+	showDescription?: boolean;
 	onPatch: (patch: Partial<EventItem>) => void;
 }
 
-export default function EventEditForm({ event, imageUrl, showEditorialFields = false, onPatch }: EventEditFormProps) {
+export default function EventEditForm({
+	event,
+	imageUrl,
+	showEditorialFields = false,
+	showDescription = false,
+	onPatch,
+}: EventEditFormProps) {
 	const dateInputValue = eventDateInputValue(event.day, event.month);
 	const timeInputValue = eventTimeInputValue(event.time);
 
@@ -102,7 +109,7 @@ export default function EventEditForm({ event, imageUrl, showEditorialFields = f
 					value={event.title}
 					onChange={(title) => onPatch({ title: title ?? '' })}
 				/>
-				{showEditorialFields ? (
+				{showEditorialFields || showDescription ? (
 					<TextareaControl
 						label={__('Description', 'nextora')}
 						value={event.description}
