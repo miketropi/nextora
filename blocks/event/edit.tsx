@@ -219,7 +219,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			paginationColor,
 			paginationActiveColor,
 		}) as CSSProperties,
-			...(isTemplate1 ? { '--nextora-event-editor-slides': String(slidesPerView), '--nextora-event-editor-gap': `${spaceBetween}px` } as CSSProperties : {}),
+			...(isTemplate1 || isTemplate2 ? { '--nextora-event-editor-slides': String(slidesPerView), '--nextora-event-editor-gap': `${spaceBetween}px` } as CSSProperties : {}),
 		},
 	});
 
@@ -645,6 +645,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							event={editingEvent}
 							imageUrl={resolveImageUrl(editingEvent, mediaUrlById)}
 							showEditorialFields={isTemplate3}
+							showDescription={isTemplate2 || isTemplate3}
 							onPatch={(patch) => patchEvent(editingEvent.id, patch)}
 					/>
 				</Modal>
@@ -737,14 +738,33 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 											</button>
 											<div className="nextora-event__template2-media">
 												{imageUrl ? <img src={imageUrl} alt="" className="nextora-event__thumb-img" /> : null}
-												<div className="nextora-event__template2-date"><b>{event.day || '01'}</b><span>{event.month || __('Jan', 'nextora')}</span></div>
-														{showRegisterButton && event.linkUrl.trim() !== '' ? <span className="nextora-event__template2-register nextora-event__template2-register--static">{registerLabel}<span className="nextora-event__register-icon" aria-hidden="true">→</span></span> : null}
+												<div className="nextora-event__template2-date">
+													<b>{event.day || '01'}</b>
+													<span>{event.month || __('Jan', 'nextora')}</span>
+												</div>
 											</div>
 											<div className="nextora-event__template2-content">
 												<h3 className="nextora-event__template2-title">{event.title || __('Community fundraiser', 'nextora')}</h3>
-												<div className="nextora-event__template2-details">
-													<DetailRow icon="clock">{event.time || __('10:00 AM', 'nextora')}</DetailRow>
-													<DetailRow icon="map-pin">{event.location || __('Main venue', 'nextora')}</DetailRow>
+												{event.description ? <p className="nextora-event__template2-desc">{event.description}</p> : null}
+												<div className="nextora-event__template2-footer">
+													<div className="nextora-event__template2-details">
+														<span className="nextora-event__template2-meta">
+															<DetailIcon type="clock" />
+															<span>{event.time || __('10:00 AM', 'nextora')}</span>
+														</span>
+														<span className="nextora-event__template2-meta">
+															<DetailIcon type="map-pin" />
+															<span>{event.location || __('Main venue', 'nextora')}</span>
+														</span>
+													</div>
+													{showRegisterButton ? (
+														<span className="nextora-event__template2-action" aria-hidden="true">
+															<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																<path d="M5 12h14" />
+																<path d="m12 5 7 7-7 7" />
+															</svg>
+														</span>
+													) : null}
 												</div>
 											</div>
 										</article>

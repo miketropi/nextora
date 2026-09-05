@@ -536,7 +536,7 @@ if ( ! function_exists( 'nextora_event_render_template2_item' ) ) {
 			return '';
 		}
 
-		$image_html = nextora_event_render_image_html( $event['imageId'], $event['imageUrl'], $event['imageAlt'], $title, $placeholder_url );
+		$image_html  = nextora_event_render_image_html( $event['imageId'], $event['imageUrl'], $event['imageAlt'], $title, $placeholder_url );
 		$day         = trim( $event['day'] );
 		$month       = trim( $event['month'] );
 		$label       = trim( $event['registerLabel'] );
@@ -544,35 +544,61 @@ if ( ! function_exists( 'nextora_event_render_template2_item' ) ) {
 		$link_url    = trim( $event['linkUrl'] );
 		$link_target = '_blank' === $event['linkTarget'] ? '_blank' : '_self';
 		$rel         = '_blank' === $link_target ? ' rel="noopener noreferrer"' : '';
+		$description = isset( $event['description'] ) ? trim( (string) $event['description'] ) : '';
 
 		$details = array();
 		if ( '' !== trim( $event['time'] ) ) {
-			$details[] = sprintf( '<span class="nextora-event__template2-meta">%1$s%2$s</span>', nextora_event_detail_icon( 'clock' ), esc_html( $event['time'] ) );
+			$details[] = sprintf( '<span class="nextora-event__template2-meta">%1$s<span>%2$s</span></span>', nextora_event_detail_icon( 'clock' ), esc_html( $event['time'] ) );
 		}
 		if ( '' !== trim( $event['location'] ) ) {
-			$details[] = sprintf( '<span class="nextora-event__template2-meta">%1$s%2$s</span>', nextora_event_detail_icon( 'map-pin' ), esc_html( $event['location'] ) );
+			$details[] = sprintf( '<span class="nextora-event__template2-meta">%1$s<span>%2$s</span></span>', nextora_event_detail_icon( 'map-pin' ), esc_html( $event['location'] ) );
 		}
 
 		$title_html = '' !== $link_url
 			? sprintf( '<a href="%1$s" target="%2$s"%3$s>%4$s</a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, esc_html( $title ) )
 			: esc_html( $title );
 
-		$register_html = '';
-		if ( $show_register && '' !== $link_url ) {
-			$register_html = sprintf( '<a href="%1$s" class="nextora-event__template2-register" target="%2$s"%3$s>%4$s%5$s</a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, esc_html( $label ), nextora_event_register_arrow_icon() );
+		$action_html = '';
+		if ( $show_register ) {
+			$arrow_svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+			if ( '' !== $link_url ) {
+				$action_html = sprintf(
+					'<a href="%1$s" class="nextora-event__template2-action" target="%2$s"%3$s aria-label="%4$s">%5$s</a>',
+					esc_url( $link_url ),
+					esc_attr( $link_target ),
+					$rel,
+					esc_attr( '' !== $label ? $label : $title ),
+					$arrow_svg,
+				);
+			} else {
+				$action_html = sprintf(
+					'<span class="nextora-event__template2-action" aria-hidden="true">%1$s</span>',
+					$arrow_svg,
+				);
+			}
 		}
 
 		$date_html = ( '' !== $day || '' !== $month )
 			? sprintf( '<div class="nextora-event__template2-date"><b>%1$s</b><span>%2$s</span></div>', esc_html( $day ), esc_html( $month ) )
 			: '';
 
+		$desc_html = '' !== $description
+			? sprintf( '<p class="nextora-event__template2-desc">%1$s</p>', esc_html( $description ) )
+			: '';
+
+		$footer_html = sprintf(
+			'<div class="nextora-event__template2-footer"><div class="nextora-event__template2-details">%1$s</div>%2$s</div>',
+			implode( '', $details ),
+			$action_html,
+		);
+
 		return sprintf(
-			'<div class="swiper-slide"><article class="nextora-event__template2-card"><div class="nextora-event__template2-media">%1$s%2$s%3$s</div><div class="nextora-event__template2-content"><h3 class="nextora-event__template2-title">%4$s</h3>%5$s</div></article></div>',
+			'<div class="swiper-slide"><article class="nextora-event__template2-card"><div class="nextora-event__template2-media">%1$s%2$s</div><div class="nextora-event__template2-content"><h3 class="nextora-event__template2-title">%3$s</h3>%4$s%5$s</div></article></div>',
 			$image_html,
 			$date_html,
-			$register_html,
 			$title_html,
-			array() !== $details ? '<div class="nextora-event__template2-details">' . implode( '', $details ) . '</div>' : '',
+			$desc_html,
+			$footer_html,
 		);
 	}
 }
