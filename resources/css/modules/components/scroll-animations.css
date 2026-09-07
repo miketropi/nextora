@@ -5,18 +5,19 @@
  * `prefers-reduced-motion`: elements stay visible; JS skips tweens.
  */
 
-.nextora-scroll-animation--pending,
-[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),
-[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),
-[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),
-[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]),
-.animation-text-typewriter:not([data-nextora-scroll-animation-init]),
-.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li,
-.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *,
-.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img,
-.animation-image-border-reveal:not([data-nextora-scroll-animation-init]) img {
-	opacity: 0;
-}
+	.nextora-scroll-animation--pending,
+	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),
+	[class*="animation-delay-"]:not([data-nextora-scroll-animation-init]),
+	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),
+	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),
+	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]),
+	.animation-text-typewriter:not([data-nextora-scroll-animation-init]),
+	.animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li,
+	.animation-inner-fade:not([data-nextora-scroll-animation-init]) > *,
+	.animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img,
+	.animation-image-border-reveal:not([data-nextora-scroll-animation-init]) img {
+		opacity: 0;
+	}
 
 .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
 	clip-path: inset(0 100% 0 0);
@@ -85,6 +86,12 @@
 	.block-editor-inserter__preview-content
 )
 	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),
+:where(
+	.editor-styles-wrapper,
+	.block-editor-block-preview__content,
+	.block-editor-inserter__preview-content
+)
+	[class*="animation-delay-"]:not([data-nextora-scroll-animation-init]),
 :where(
 	.editor-styles-wrapper,
 	.block-editor-block-preview__content,
@@ -167,6 +174,7 @@
 @media (prefers-reduced-motion: reduce) {
 	.nextora-scroll-animation--pending,
 	[class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]),
+	[class*="animation-delay-"]:not([data-nextora-scroll-animation-init]),
 	[class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]),
 	[class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]),
 	[class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]),

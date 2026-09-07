@@ -19,8 +19,12 @@ function withSpecialDefaults(
 	options: ScrollAnimationOptions,
 	defaults: Partial<ScrollAnimationOptions>,
 ): ScrollAnimationOptions {
+	const hasDelayOverride =
+		el.hasAttribute("data-delay") ||
+		Array.from(el.classList).some((cls) => /^(?:animation-)?delay-\d+/.test(cls));
+
 	return {
-		delay: el.hasAttribute("data-delay") ? options.delay : (defaults.delay ?? options.delay),
+		delay: hasDelayOverride ? options.delay : (defaults.delay ?? options.delay),
 		duration: el.hasAttribute("data-duration") ? options.duration : (defaults.duration ?? options.duration),
 		ease: el.hasAttribute("data-ease") ? options.ease : (defaults.ease ?? options.ease),
 		stagger: el.hasAttribute("data-stagger") ? options.stagger : (defaults.stagger ?? options.stagger),
@@ -28,6 +32,7 @@ function withSpecialDefaults(
 		parallaxSpeed: options.parallaxSpeed,
 	};
 }
+
 
 function buildRevealScrollTrigger(
 	trigger: HTMLElement,

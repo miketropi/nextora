@@ -205,12 +205,34 @@ Add on the same element as the animation class:
 
 | Attribute | Default | Description |
 |-----------|---------|-------------|
-| `data-delay` | `0` | Seconds before tween starts |
+| `data-delay` | `0` | Seconds (or milliseconds if ≥10) before tween starts |
 | `data-duration` | `0.8` | Tween duration (seconds) |
 | `data-ease` | `power3.out` | GSAP ease string |
 | `data-stagger` | — | When set, animates **direct children** with stagger delay (seconds) |
 | `data-distance` | `40` | Pixel offset for fade-in directional presets |
 | `data-parallax-speed` | `0.35` (with `animation-parallax`) | Parallax intensity |
+
+### Delay utility classes (`animation-delay-*` / `delay-*`)
+
+Control the reveal delay directly via Gutenberg's **Advanced → Additional CSS class(es)** sidebar without needing `data-delay`:
+
+| Class | Delay | Timing |
+|-------|-------|--------|
+| `animation-delay-50` / `delay-50` | 50ms | `delay: 0.05s` |
+| `animation-delay-100` / `delay-100` | 100ms | `delay: 0.1s` |
+| `animation-delay-150` / `delay-150` | 150ms | `delay: 0.15s` |
+| `animation-delay-200` / `delay-200` | 200ms | `delay: 0.2s` |
+| `animation-delay-300` / `delay-300` | 300ms | `delay: 0.3s` |
+| `animation-delay-500` / `delay-500` | 500ms | `delay: 0.5s` |
+| `animation-delay-{N}` / `delay-{N}` | {N}ms | Dynamic millisecond support |
+
+Example usage on sibling or layout blocks:
+- Tall image: `animation-fade-in-up` (default delay 0)
+- Small image 1: `animation-fade-in-up animation-delay-100`
+- Small image 2: `animation-fade-in-up animation-delay-200`
+
+If an element has `animation-delay-*` without an explicit animation preset, it automatically defaults to `animation-fade-in-up`.
+
 
 ## Gutenberg usage
 
