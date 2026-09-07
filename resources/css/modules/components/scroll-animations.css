@@ -19,6 +19,21 @@
 		opacity: 0;
 	}
 
+/* Prevent CSS transitions from fighting GSAP transform and opacity tweens */
+[class*="animation-fade-in"],
+[class*="animation-zoom-in"],
+[class*="animation-zoom-out"],
+[class*="animation-text-reveal"],
+.animation-fade-list-grid ul:not(li ul) > li,
+.animation-inner-fade > *,
+.animation-image-clip-reveal img,
+.animation-image-border-reveal img,
+.animation-scroll-reveal,
+.nextora-split-char,
+.nextora-split-word {
+	transition-property: none !important;
+}
+
 .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
 	clip-path: inset(0 100% 0 0);
 }

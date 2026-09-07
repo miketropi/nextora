@@ -290,13 +290,66 @@
 	padding-block: var(--wp--preset--spacing--30, 3rem);
 	border-bottom-color: color-mix(
 		in srgb,
-		var(--wp--preset--color--contrast, #0a0a0a) 12%,
+		var(--nextora-event-card-border-color, var(--wp--preset--color--contrast, #0a0a0a)) 12%,
 		transparent
 	);
 }
 
+@media (min-width: 64rem) {
+.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-media,
+.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-media {
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(odd),
+.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(odd) {
+	grid-template-columns: minmax(7rem, 13%) minmax(0, 1fr) minmax(15rem, 35%);
+}
+
+.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even),
+.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) {
+	grid-template-columns: minmax(15rem, 35%) minmax(0, 1fr) minmax(7rem, 13%);
+}
+
+.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-content,
+.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-content {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame,
+.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame {
+	grid-column: 3;
+	grid-row: 1;
+}
+
+.nextora-event--template3 .nextora-event__template3-register {
+	display: inline-flex;
+	gap: 0.35rem;
+	margin-top: var(--wp--preset--spacing--10, 0.75rem);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 600;
+	color: var(--nextora-event-register-text-color, var(--wp--preset--color--contrast, #0a0a0a));
+	text-decoration: none;
+}
+
+.nextora-event--template3 .nextora-event__template3-register span {
+	transition: transform 0.35s ease;
+}
+
+.nextora-event--template3 .nextora-event__template3-register:hover span {
+	transform: translateX(0.35rem);
+}
+
+.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame,
+.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame {
+	justify-content: flex-end;
+}
+}
+
 .nextora-event--template3 .nextora-event__template3-date {
-	color: var(--wp--preset--color--contrast, #0a0a0a);
+	color: var(--nextora-event-date-day-color, var(--wp--preset--color--contrast, #0a0a0a));
 }
 
 .nextora-event--template3 .nextora-event__template3-date span,
@@ -310,7 +363,7 @@
 
 .nextora-event--template3 .nextora-event__template3-date span,
 .nextora-event--template3 .nextora-event__template3-category {
-	color: var(--wp--preset--color--primary, #7f4d3e);
+	color: var(--nextora-event-date-month-color, var(--wp--preset--color--primary, #7f4d3e));
 }
 
 .nextora-event--template3 .nextora-event__template3-date b {
@@ -322,7 +375,7 @@
 }
 
 .nextora-event--template3 .nextora-event__template3-date small {
-	color: var(--wp--preset--color--paragraph, #525252);
+	color: var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #525252));
 }
 
 .nextora-event--template3 .nextora-event__template3-content {
@@ -343,7 +396,7 @@
 	font-weight: 600;
 	line-height: 1.08;
 	letter-spacing: -0.025em;
-	color: var(--wp--preset--color--contrast, #0a0a0a);
+	color: var(--nextora-event-title-color, var(--wp--preset--color--contrast, #0a0a0a));
 }
 
 .nextora-event--template3 .nextora-event__template3-description {
@@ -352,7 +405,7 @@
 	font-size: var(--wp--preset--font-size--base, 1rem);
 	font-weight: 400;
 	line-height: 1.55;
-	color: var(--wp--preset--color--paragraph, #525252);
+	color: var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #525252));
 }
 
 .nextora-event--template3 .nextora-event__template3-meta {
@@ -361,7 +414,7 @@
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	font-weight: 400;
 	line-height: 1.4;
-	color: var(--wp--preset--color--paragraph, #525252);
+	color: var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #525252));
 }
 
 .nextora-event--template3 .nextora-event__template3-learn-more {
@@ -376,57 +429,6 @@
 .nextora-event--template3 .nextora-event__template3-title a:hover,
 .nextora-event--template3 .nextora-event__template3-learn-more:hover {
 	color: var(--wp--preset--color--primary, #7f4d3e);
-}
-
-@media (max-width: 55rem) {
-	.nextora-event--template3 .nextora-event__template3-item {
-		grid-template-columns: minmax(6rem, 15%) minmax(0, 1fr) minmax(11rem, 30%);
-		column-gap: var(--wp--preset--spacing--20, 1.5rem);
-		padding-block: var(--wp--preset--spacing--20, 1.5rem);
-	}
-
-	.nextora-event--template3 .nextora-event__template3-title {
-		font-size: var(--wp--preset--font-size--medium-plus, 2rem);
-	}
-
-	.nextora-event--template3 .nextora-event__template3-date b {
-		font-size: var(--wp--preset--font-size--x-large, 3.2rem);
-	}
-}
-
-@media (max-width: 42rem) {
-	.nextora-event--template3 .nextora-event__template3-item {
-		gap: var(--wp--preset--spacing--20, 1.5rem);
-		padding-block: var(--wp--preset--spacing--30, 3rem);
-	}
-
-	.nextora-event--template3 .nextora-event__template3-date {
-		gap: var(--wp--preset--spacing--10, 0.75rem);
-	}
-
-	.nextora-event--template3 .nextora-event__template3-date b {
-		margin: 0;
-		font-size: var(--wp--preset--font-size--x-large, 3.2rem);
-	}
-
-	.nextora-event--template3 .nextora-event__template3-date span,
-	.nextora-event--template3 .nextora-event__template3-date small,
-	.nextora-event--template3 .nextora-event__template3-category {
-		font-size: var(--wp--preset--font-size--small, 0.875rem);
-	}
-
-	.nextora-event--template3 .nextora-event__template3-title {
-		max-width: none;
-	}
-
-	.nextora-event--template3 .nextora-event__template3-description {
-		margin-top: var(--wp--preset--spacing--10, 0.75rem);
-	}
-
-	.nextora-event--template3 .nextora-event__template3-meta,
-	.nextora-event--template3 .nextora-event__template3-learn-more {
-		margin-top: var(--wp--preset--spacing--20, 1.5rem);
-	}
 }
 
 /* ========================================================================
@@ -460,8 +462,8 @@
 	min-width: 5.25rem;
 	padding: var(--wp--preset--spacing--20, 1.5rem) var(--wp--preset--spacing--10, 0.75rem);
 	border-radius: 0.5rem;
-	background: var(--wp--preset--color--secondary, #7f4d3e);
-	color: var(--wp--preset--color--base, #fff);
+	background: var(--nextora-event-date-bg, var(--wp--preset--color--secondary, #7f4d3e));
+	color: var(--nextora-event-date-day-color, var(--wp--preset--color--base, #fff));
 }
 
 .nextora-event--template3 .nextora-event__template3-date-frame {
@@ -483,7 +485,7 @@
 
 .nextora-event--template3 .nextora-event__template3-date span {
 	display: block;
-	color: var(--wp--preset--color--base, #fff);
+	color: var(--nextora-event-date-month-color, var(--wp--preset--color--base, #fff));
 }
 
 .nextora-event--template3 .nextora-event__template3-date b {
@@ -498,7 +500,7 @@
 .nextora-event--template3 .nextora-event__template3-date small {
 	display: block;
 	margin: 0;
-	color: var(--wp--preset--color--base, #fff);
+	color: var(--nextora-event-meta-color, var(--wp--preset--color--base, #fff));
 }
 
 .nextora-event--template3 .nextora-event__template3-content {
@@ -508,7 +510,7 @@
 .nextora-event--template3 .nextora-event__template3-category {
 	margin-bottom: var(--wp--preset--spacing--10, 0.75rem);
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	color: var(--wp--preset--color--primary, #7f4d3e);
+	color: var(--nextora-event-date-month-color, var(--wp--preset--color--primary, #7f4d3e));
 }
 
 .nextora-event--template3 .nextora-event__template3-title {
@@ -528,7 +530,7 @@
 }
 
 .nextora-event--template3 .nextora-event__template3-item:hover .nextora-event__template3-title a {
-	color: var(--wp--preset--color--primary, #7f4d3e);
+	color: var(--nextora-event-date-month-color, var(--wp--preset--color--primary, #7f4d3e));
 }
 
 .nextora-event--template3 .nextora-event__template3-description {
@@ -560,7 +562,7 @@
 	width: 1rem;
 	height: 1rem;
 	flex: 0 0 1rem;
-	color: var(--wp--preset--color--primary, #7f4d3e);
+	color: var(--nextora-event-meta-icon-color, var(--nextora-event-meta-color, var(--wp--preset--color--primary, #7f4d3e)));
 }
 
 .nextora-event--template3 .nextora-event__template3-meta .nextora-event__detail-icon svg {
@@ -568,21 +570,35 @@
 	height: 100%;
 }
 
+.nextora-event--template3 .nextora-event__template3-register,
 .nextora-event--template3 .nextora-event__template3-learn-more {
 	display: inline-flex;
+	align-items: center;
 	gap: 0.35rem;
 	margin-top: var(--wp--preset--spacing--10, 0.75rem);
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	font-weight: 600;
-	color: var(--wp--preset--color--contrast, #0a0a0a);
+	color: var(--nextora-event-register-text-color, var(--wp--preset--color--contrast, #0a0a0a));
 	text-decoration: none;
+	transition: color 0.35s ease;
 }
 
+.nextora-event--template3 .nextora-event__template3-register span,
 .nextora-event--template3 .nextora-event__template3-learn-more span {
 	display: inline-block;
 	transition: transform 0.35s ease;
 }
 
+.nextora-event--template3 .nextora-event__template3-register:hover,
+.nextora-event--template3 .nextora-event__template3-learn-more:hover,
+.nextora-event--template3 .nextora-event__template3-item:hover .nextora-event__template3-register,
+.nextora-event--template3 .nextora-event__template3-item:hover .nextora-event__template3-learn-more {
+	color: var(--nextora-event-date-month-color, var(--wp--preset--color--primary, #7f4d3e));
+}
+
+.nextora-event--template3 .nextora-event__template3-register:hover span,
+.nextora-event--template3 .nextora-event__template3-learn-more:hover span,
+.nextora-event--template3 .nextora-event__template3-item:hover .nextora-event__template3-register span,
 .nextora-event--template3 .nextora-event__template3-item:hover .nextora-event__template3-learn-more span {
 	transform: translateX(0.35rem);
 }
@@ -592,7 +608,7 @@
 	min-width: 0;
 	overflow: hidden;
 	border-radius: 0.75rem 2.5rem 0.75rem 2.5rem;
-	background: var(--wp--preset--color--surface, #f4f4f4);
+	background: var(--nextora-event-card-bg, var(--wp--preset--color--surface, #f4f4f4));
 	aspect-ratio: 1.45 / 1;
 }
 
@@ -639,14 +655,33 @@
 	}
 }
 
-@media (max-width: 42rem) {
+@media (max-width: 48rem) {
 	.nextora-event--template3 .nextora-event__template3-item {
 		grid-template-columns: 1fr;
-		gap: var(--wp--preset--spacing--20, 1.5rem);
-		padding-block: var(--wp--preset--spacing--30, 3rem);
+		gap: var(--wp--preset--spacing--20, 1.25rem);
+		padding-block: var(--wp--preset--spacing--20, 2rem);
+	}
+
+	.nextora-event--template3 .nextora-event__template3-media {
+		order: 1;
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		border-radius: 0.75rem 2rem 0.75rem 2rem;
+		margin-bottom: 0.25rem;
+	}
+
+	.nextora-event--template3 .nextora-event__template3-date-frame {
+		order: 2;
+		min-height: 0;
+		width: fit-content;
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
 	}
 
 	.nextora-event--template3 .nextora-event__template3-date {
+		display: flex;
 		flex-direction: row;
 		align-items: baseline;
 		gap: 0.5rem;
@@ -659,58 +694,92 @@
 		color: var(--wp--preset--color--contrast, #0a0a0a);
 	}
 
-	.nextora-event--template3 .nextora-event__template3-date-frame {
-		min-height: 0;
-		width: fit-content;
-		padding: 0;
-		border: 0;
-		border-radius: 0;
-		background: transparent;
-	}
-
 	.nextora-event--template3 .nextora-event__template3-date span {
-		color: var(--wp--preset--color--paragraph, #525252);
-	}
-
-	.nextora-event--template3 .nextora-event__template3-date b {
-		color: var(--wp--preset--color--contrast, #0a0a0a);
-	}
-
-	.nextora-event--template3 .nextora-event__template3-date small {
-		color: var(--wp--preset--color--paragraph, #525252);
+		color: var(--nextora-event-date-month-color, var(--wp--preset--color--primary, #7f4d3e));
+		font-size: var(--wp--preset--font-size--small, 0.875rem);
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
 	}
 
 	.nextora-event--template3 .nextora-event__template3-date b {
 		margin: 0;
-	}
-
-	.nextora-event--template3 .nextora-event__template3-date b {
-		font-size: var(--wp--preset--font-size--x-large, 3.2rem);
+		font-size: clamp(2rem, 6vw, 2.5rem);
+		font-weight: 700;
 		line-height: 1;
+		color: var(--nextora-event-date-day-color, var(--wp--preset--color--contrast, #0a0a0a));
 	}
 
 	.nextora-event--template3 .nextora-event__template3-date small {
+		margin: 0;
 		margin-left: 0;
+		color: var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #525252));
+		font-size: var(--wp--preset--font-size--small, 0.875rem);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
 	}
 
-	.nextora-event--template3 .nextora-event__template3-media {
+	.nextora-event--template3 .nextora-event__template3-content {
 		order: 3;
-		aspect-ratio: 1.6 / 1;
+		width: 100%;
+	}
+
+	.nextora-event--template3 .nextora-event__template3-category {
+		margin: 0 0 var(--wp--preset--spacing--10, 0.5rem) 0;
+		font-size: var(--wp--preset--font-size--small, 0.875rem);
 	}
 
 	.nextora-event--template3 .nextora-event__template3-title {
 		max-width: none;
+		font-size: clamp(1.4rem, 4.5vw, 1.75rem);
+		line-height: 1.2;
 	}
 
-	.nextora-event--template3 .nextora-event__template3-description,
-	.nextora-event--template3 .nextora-event__template3-meta,
-	.nextora-event--template3 .nextora-event__template3-learn-more {
+	.nextora-event--template3 .nextora-event__template3-meta {
 		margin-top: var(--wp--preset--spacing--10, 0.75rem);
+		gap: var(--wp--preset--spacing--10, 0.5rem) var(--wp--preset--spacing--20, 1.25rem);
+	}
+
+	.nextora-event--template3 .nextora-event__template3-description {
+		max-width: none;
+		margin-top: var(--wp--preset--spacing--10, 0.75rem);
+		font-size: var(--wp--preset--font-size--base, 1rem);
+		line-height: 1.55;
+	}
+
+	.nextora-event--template3 .nextora-event__template3-register,
+	.nextora-event--template3 .nextora-event__template3-learn-more {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		margin-top: var(--wp--preset--spacing--20, 1rem);
+		font-size: var(--wp--preset--font-size--small, 0.875rem);
+		font-weight: 600;
+		color: var(--nextora-event-register-text-color, var(--wp--preset--color--contrast, #0a0a0a));
+		text-decoration: none;
+	}
+
+	.nextora-event--template3 .nextora-event__template3-register span,
+	.nextora-event--template3 .nextora-event__template3-learn-more span {
+		display: inline-block;
+		transition: transform 0.35s ease;
+	}
+
+	.nextora-event--template3 .nextora-event__template3-register:hover,
+	.nextora-event--template3 .nextora-event__template3-learn-more:hover {
+		color: var(--nextora-event-date-month-color, var(--wp--preset--color--primary, #7f4d3e));
+	}
+
+	.nextora-event--template3 .nextora-event__template3-register:hover span,
+	.nextora-event--template3 .nextora-event__template3-learn-more:hover span {
+		transform: translateX(0.35rem);
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.nextora-event--template3 .nextora-event__template3-title a,
+	.nextora-event--template3 .nextora-event__template3-register span,
 	.nextora-event--template3 .nextora-event__template3-learn-more span,
 	.nextora-event--template3 .nextora-event__template3-media .nextora-event__thumb-img {
 		transition: none;

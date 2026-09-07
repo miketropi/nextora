@@ -13,7 +13,7 @@
 }
 
 .nextora-testimonials--editor .nextora-testimonials__content--section-preview {
-	background-color: var(--nextora-testimonials-content-bg, var(--wp--preset--color--base, #fff));
+	background-color: var(--nextora-testimonials-content-bg, var(--wp--preset--color--surface));
 	border: 1px dashed color-mix(in srgb, currentColor 20%, transparent);
 }
 
@@ -255,6 +255,10 @@
 }
 
 /* Template 01 editor styles */
+.nextora-testimonials--template-template-01.nextora-testimonials--editor {
+	background-color: var(--nextora-testimonials-content-bg, var(--wp--preset--color--surface));
+}
+
 .nextora-testimonials--template-template-01.nextora-testimonials--editor .nextora-testimonials__editor-section {
 	display: none;
 }

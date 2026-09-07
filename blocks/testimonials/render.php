@@ -398,13 +398,13 @@ $portrait_placeholder_url = get_theme_file_uri( 'assets/images/placeholder/gener
 $css_vars = array(
 	'--nextora-testimonials-portrait-placeholder-image' => 'url(' . esc_url( $portrait_placeholder_url ) . ')',
 	'--nextora-testimonials-image-ratio'                => $image_ratio . '%',
-	'--nextora-testimonials-content-bg'        => '' !== $content_bg ? $content_bg : 'var(--wp--preset--color--base, #fff)',
+	'--nextora-testimonials-content-bg'        => '' !== $content_bg ? $content_bg : 'var(--wp--preset--color--surface)',
 	'--nextora-testimonials-heading-color'     => '' !== $heading_color ? $heading_color : 'inherit',
 	'--nextora-testimonials-quote-color'       => '' !== $quote_color ? $quote_color : 'inherit',
 	'--nextora-testimonials-author-name-color' => '' !== $author_name_color ? $author_name_color : 'inherit',
 	'--nextora-testimonials-author-meta-color' => '' !== $author_meta_color ? $author_meta_color : 'color-mix(in srgb, currentColor 65%, transparent)',
 	'--nextora-testimonials-dot-color'         => '' !== $dot_color ? $dot_color : 'color-mix(in srgb, currentColor 35%, transparent)',
-	'--nextora-testimonials-dot-active'        => '' !== $dot_active ? $dot_active : 'var(--wp--preset--color--contrast, currentColor)',
+	'--nextora-testimonials-dot-active'        => '' !== $dot_active ? $dot_active : 'var(--wp--preset--color--primary, currentColor)',
 );
 
 if ( '' !== $heading_font_size ) {

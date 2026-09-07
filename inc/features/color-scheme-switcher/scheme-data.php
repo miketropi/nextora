@@ -255,7 +255,7 @@ function nextora_get_font_presets( array $fonts ): array {
  * @param string                $file     Absolute path to the JSON file.
  * @param array<string, string> $font_map Font registry slug => family stack.
  *
- * @return array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }|null
+ * @return array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }|null
  */
 function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 	if ( ! is_readable( $file ) ) {
@@ -301,11 +301,19 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 		}
 	}
 
-	$body    = null;
-	$heading = null;
-	$button  = null;
-	$font_slugs = array();
-	$local_font_map = array();
+	$body                       = null;
+	$heading                    = null;
+	$button                     = null;
+	$button_bg                  = null;
+	$button_color               = null;
+	$button_hover_bg            = null;
+	$button_hover_color         = null;
+	$header_button_bg           = null;
+	$header_button_color        = null;
+	$header_button_hover_bg     = null;
+	$header_button_hover_color  = null;
+	$font_slugs                 = array();
+	$local_font_map             = array();
 
 	$file_fonts = $data['settings']['typography']['fontFamilies'] ?? null;
 	if ( is_array( $file_fonts ) && array() !== $file_fonts ) {
@@ -354,6 +362,38 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 				$button = $resolved_button;
 			}
 		}
+
+		$btn_style = $styles['elements']['button'] ?? null;
+		if ( is_array( $btn_style ) ) {
+			if ( isset( $btn_style['color']['background'] ) && is_string( $btn_style['color']['background'] ) ) {
+				$button_bg = $btn_style['color']['background'];
+			}
+			if ( isset( $btn_style['color']['text'] ) && is_string( $btn_style['color']['text'] ) ) {
+				$button_color = $btn_style['color']['text'];
+			}
+			if ( isset( $btn_style[':hover']['color']['background'] ) && is_string( $btn_style[':hover']['color']['background'] ) ) {
+				$button_hover_bg = $btn_style[':hover']['color']['background'];
+			}
+			if ( isset( $btn_style[':hover']['color']['text'] ) && is_string( $btn_style[':hover']['color']['text'] ) ) {
+				$button_hover_color = $btn_style[':hover']['color']['text'];
+			}
+		}
+
+		$hdr_btn_style = $styles['blocks']['nextora/header']['elements']['button'] ?? null;
+		if ( is_array( $hdr_btn_style ) ) {
+			if ( isset( $hdr_btn_style['color']['background'] ) && is_string( $hdr_btn_style['color']['background'] ) ) {
+				$header_button_bg = $hdr_btn_style['color']['background'];
+			}
+			if ( isset( $hdr_btn_style['color']['text'] ) && is_string( $hdr_btn_style['color']['text'] ) ) {
+				$header_button_color = $hdr_btn_style['color']['text'];
+			}
+			if ( isset( $hdr_btn_style[':hover']['color']['background'] ) && is_string( $hdr_btn_style[':hover']['color']['background'] ) ) {
+				$header_button_hover_bg = $hdr_btn_style[':hover']['color']['background'];
+			}
+			if ( isset( $hdr_btn_style[':hover']['color']['text'] ) && is_string( $hdr_btn_style[':hover']['color']['text'] ) ) {
+				$header_button_hover_color = $hdr_btn_style[':hover']['color']['text'];
+			}
+		}
 	}
 
 	if ( is_array( $file_fonts ) && array() !== $file_fonts ) {
@@ -381,6 +421,16 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 		$button = $body;
 	}
 
+	$button_bg          = $button_bg ?? 'var(--wp--preset--color--primary)';
+	$button_color       = $button_color ?? 'var(--wp--preset--color--base)';
+	$button_hover_bg    = $button_hover_bg ?? 'var(--wp--preset--color--secondary)';
+	$button_hover_color = $button_hover_color ?? 'var(--wp--preset--color--base)';
+
+	$header_button_bg          = $header_button_bg ?? $button_bg;
+	$header_button_color       = $header_button_color ?? $button_color;
+	$header_button_hover_bg    = $header_button_hover_bg ?? $button_hover_bg;
+	$header_button_hover_color = $header_button_hover_color ?? $button_hover_color;
+
 	if ( array() === $font_slugs ) {
 		foreach ( $font_map as $font_slug => $font_family ) {
 			if ( $font_family === $body || $font_family === $heading ) {
@@ -394,13 +444,21 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 		: basename( $file, '.json' );
 
 	return array(
-		'title'     => $title,
-		'colors'    => $colors,
-		'gradients' => $gradients,
-		'body'      => $body,
-		'heading'   => $heading,
-		'button'    => $button,
-		'fontSlugs' => array_values( array_unique( $font_slugs ) ),
+		'title'                  => $title,
+		'colors'                 => $colors,
+		'gradients'              => $gradients,
+		'body'                   => $body,
+		'heading'                => $heading,
+		'button'                 => $button,
+		'buttonBg'               => $button_bg,
+		'buttonColor'            => $button_color,
+		'buttonHoverBg'          => $button_hover_bg,
+		'buttonHoverColor'       => $button_hover_color,
+		'headerButtonBg'         => $header_button_bg,
+		'headerButtonColor'      => $header_button_color,
+		'headerButtonHoverBg'    => $header_button_hover_bg,
+		'headerButtonHoverColor' => $header_button_hover_color,
+		'fontSlugs'              => array_values( array_unique( $font_slugs ) ),
 	);
 }
 
@@ -410,7 +468,7 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
  *
  * @param array<string, array{ name: string, family: string }> $fonts Font registry.
  *
- * @return array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }>
+ * @return array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }>
  */
 function nextora_get_themes( array $fonts ): array {
 	$font_map = array();

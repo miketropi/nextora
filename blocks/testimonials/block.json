@@ -4,7 +4,7 @@
   "name": "nextora/testimonials",
   "title": "Testimonials",
   "category": "design",
-  "description": "Split-screen testimonial carousel with portrait photos, section heading, and ring pagination.",
+  "description": "Split-screen testimonial carousel with portrait photos, section heading, and slider pagination.",
   "keywords": ["testimonial", "quote", "reviews", "carousel", "swiper", "nextora"],
   "textdomain": "nextora",
   "icon": "format-quote",
@@ -18,7 +18,8 @@
       "link": true
     },
     "spacing": {
-      "margin": true
+      "margin": true,
+      "padding": true
     }
   },
   "attributes": {
