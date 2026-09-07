@@ -162,6 +162,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		template = 'default',
 		showRegisterButton = true,
 		registerButtonText = __('Register', 'nextora'),
+		template3Alternating = false,
 		cardBackgroundColor = '',
 		cardBorderColor = '',
 		dateBackgroundColor = '',
@@ -345,7 +346,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	};
 
 	const addEvent = (): void => {
-		const newEvent = createDefaultEventItem(registerButtonText || __('Register', 'nextora'), {
+		const newEvent = createDefaultEventItem(__('Register', 'nextora'), {
 			title: __('Community fundraiser', 'nextora'),
 			location: __('Main venue', 'nextora'),
 			price: __('Free', 'nextora'),
@@ -503,15 +504,14 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 						checked={showRegisterButton !== false}
 						onChange={(value: boolean) => setAttributes({ showRegisterButton: value })}
 					/>
-					<TextControl
-						label={__('Default register label', 'nextora')}
-						value={registerButtonText}
-						onChange={(value: string) => setAttributes({ registerButtonText: value })}
-						help={__(
-							'Used when an event does not have its own register label.',
-							'nextora',
-						)}
-					/>
+					{isTemplate3 ? (
+						<ToggleControl
+							label={__('Alternate image and content', 'nextora')}
+							help={__('Place the image left on odd items and right on even items.', 'nextora')}
+							checked={template3Alternating}
+							onChange={(value: boolean) => setAttributes({ template3Alternating: value })}
+						/>
+					) : null}
 				</PanelBody>
 
 				<PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />
@@ -775,8 +775,11 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 						</div>
 						</div>
 					) : isTemplate3 ? (
-						<div className="nextora-event__template3-list" aria-label={__('Events', 'nextora')}>
-							{events.map((event) => (
+						<div className={`nextora-event__template3-list${template3Alternating ? ' nextora-event__template3-list--alternating' : ''}`} aria-label={__('Events', 'nextora')}>
+							{events.map((event) => {
+								const imageUrl = resolveImageUrl(event, mediaUrlById);
+								const registerLabel = event.registerLabel.trim() || __('Register', 'nextora');
+								return (
 								<article key={event.id} className="nextora-event__template3-item nextora-event__template3-item--editable">
 									<button type="button" className="nextora-event__item-edit" onClick={() => openEventEditor(event.id)}>
 										{__('Edit event', 'nextora')}
@@ -787,10 +790,12 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 										<h3 className="nextora-event__template3-title">{event.title || __('Community fundraiser', 'nextora')}</h3>
 										<div className="nextora-event__template3-meta"><DetailRow icon="clock">{event.time || __('Time TBC', 'nextora')}</DetailRow><DetailRow icon="map-pin">{event.location || __('Location TBC', 'nextora')}</DetailRow></div>
 										{event.description ? <p className="nextora-event__template3-description">{event.description}</p> : null}
+										{showRegisterButton ? <span className="nextora-event__template3-register nextora-event__template3-register--static">{registerLabel} <span aria-hidden="true">→</span></span> : null}
 									</div>
-									<div className="nextora-event__template3-media">{resolveImageUrl(event, mediaUrlById) ? <img src={resolveImageUrl(event, mediaUrlById)} alt="" /> : null}</div>
+									<div className="nextora-event__template3-media">{imageUrl ? <img src={imageUrl} alt="" /> : null}</div>
 								</article>
-							))}
+								);
+							})}
 						</div>
 					) : (
 						<ul className="nextora-event__list" aria-label={__('Events', 'nextora')}>

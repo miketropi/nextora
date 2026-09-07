@@ -71,19 +71,40 @@ export function initImageClipReveal(
 	images.forEach((img) => {
 		img.classList.add("nextora-scroll-animation--pending");
 		gsap.set(img, { clipPath: "inset(0 100% 0 0)" });
-		gsap.to(img, {
-			clipPath: "inset(0 0% 0 0)",
-			autoAlpha: 1,
-			duration: resolved.duration,
-			delay: resolved.delay,
-			ease: resolved.ease,
-			scrollTrigger: buildRevealScrollTrigger(img, "top 90%"),
-			onComplete: () => {
-				img.classList.remove("nextora-scroll-animation--pending");
-				img.classList.add("nextora-scroll-animation--ready");
-				gsap.set(img, { clearProps: "clipPath,opacity,visibility" });
-			},
-		});
+		const revealImmediately = isInInitialRevealViewport(img);
+
+		const play = (): void => {
+			gsap.to(img, {
+				clipPath: "inset(0 0% 0 0)",
+				autoAlpha: 1,
+				duration: resolved.duration,
+				delay: resolved.delay,
+				ease: resolved.ease,
+				onComplete: () => {
+					img.classList.remove("nextora-scroll-animation--pending");
+					img.classList.add("nextora-scroll-animation--ready");
+					gsap.set(img, { clearProps: "clipPath,opacity,visibility" });
+				},
+			});
+		};
+
+		if (revealImmediately) {
+			afterInitialLayout(play);
+		} else {
+			gsap.to(img, {
+				clipPath: "inset(0 0% 0 0)",
+				autoAlpha: 1,
+				duration: resolved.duration,
+				delay: resolved.delay,
+				ease: resolved.ease,
+				scrollTrigger: buildRevealScrollTrigger(img, "top 90%"),
+				onComplete: () => {
+					img.classList.remove("nextora-scroll-animation--pending");
+					img.classList.add("nextora-scroll-animation--ready");
+					gsap.set(img, { clearProps: "clipPath,opacity,visibility" });
+				},
+			});
+		}
 	});
 
 	markInitialized(el);
@@ -118,32 +139,60 @@ export function initImageBorderReveal(
 		}
 
 		img.classList.add("nextora-scroll-animation--pending");
+		const revealImmediately = isInInitialRevealViewport(img);
 
-		const st = buildRevealScrollTrigger(img, "top 90%");
+		const play = (): void => {
+			gsap.fromTo(el,
+				{ "--nextora-border-opacity": 0 },
+				{
+					"--nextora-border-opacity": 1,
+					duration: resolved.duration,
+					delay: resolved.delay,
+					ease: resolved.ease,
+				},
+			);
+			gsap.fromTo(img, { autoAlpha: 0 }, {
+				autoAlpha: 1,
+				duration: resolved.duration,
+				delay: resolved.delay,
+				ease: resolved.ease,
+				onComplete: () => {
+					img.classList.remove("nextora-scroll-animation--pending");
+					img.classList.add("nextora-scroll-animation--ready");
+					gsap.set(img, { clearProps: "opacity,visibility" });
+				},
+			});
+		};
 
-		gsap.fromTo(el,
-			{ "--nextora-border-opacity": 0 },
-			{
-				"--nextora-border-opacity": 1,
+		if (revealImmediately) {
+			afterInitialLayout(play);
+		} else {
+			const st = buildRevealScrollTrigger(img, "top 90%");
+
+			gsap.fromTo(el,
+				{ "--nextora-border-opacity": 0 },
+				{
+					"--nextora-border-opacity": 1,
+					duration: resolved.duration,
+					delay: resolved.delay,
+					ease: resolved.ease,
+					scrollTrigger: st,
+				},
+			);
+
+			gsap.fromTo(img, { autoAlpha: 0 }, {
+				autoAlpha: 1,
 				duration: resolved.duration,
 				delay: resolved.delay,
 				ease: resolved.ease,
 				scrollTrigger: st,
-			},
-		);
-
-		gsap.fromTo(img, { autoAlpha: 0 }, {
-			autoAlpha: 1,
-			duration: resolved.duration,
-			delay: resolved.delay,
-			ease: resolved.ease,
-			scrollTrigger: st,
-			onComplete: () => {
-				img.classList.remove("nextora-scroll-animation--pending");
-				img.classList.add("nextora-scroll-animation--ready");
-				gsap.set(img, { clearProps: "opacity,visibility" });
-			},
-		});
+				onComplete: () => {
+					img.classList.remove("nextora-scroll-animation--pending");
+					img.classList.add("nextora-scroll-animation--ready");
+					gsap.set(img, { clearProps: "opacity,visibility" });
+				},
+			});
+		}
 	});
 
 	markInitialized(el);
@@ -154,36 +203,66 @@ function initTextWordReveal(
 	options: ScrollAnimationOptions,
 	markInitialized: MarkInitialized,
 ): void {
+	const revealImmediately = isInInitialRevealViewport(el);
 	const resolved = withSpecialDefaults(el, options, {
 		duration: 1,
-		delay: 0.5,
+		delay: revealImmediately ? 0.2 : 0.5,
 		stagger: 0.05,
 		distance: 20,
 	});
-	revertElementTextSplit(el);
-	const split = splitElementText(el, "words");
-	if (!split.words.length) {
-		markInitialized(el);
-		return;
-	}
 
-	el.classList.remove("nextora-scroll-animation--pending");
+	const setupAndPlay = (): void => {
+		revertElementTextSplit(el);
+		const split = splitElementText(el, "words");
+		if (!split.words.length) {
+			markInitialized(el);
+			return;
+		}
 
-	gsap.from(split.words, {
-		duration: resolved.duration,
-		delay: resolved.delay,
-		x: resolved.distance,
-		autoAlpha: 0,
-		stagger: resolved.stagger ?? 0.05,
-		ease: resolved.ease,
-		scrollTrigger: buildRevealScrollTrigger(el, DEFAULT_SCROLL_START),
-		onComplete: () => {
-			el.classList.add("nextora-scroll-animation--ready");
-			split.words.forEach((word) => {
-				gsap.set(word, { clearProps: "opacity,transform,translate,visibility" });
+		el.classList.remove("nextora-scroll-animation--pending");
+		const initialDelay = el.hasAttribute("data-delay")
+			? resolved.delay
+			: (revealImmediately ? 0.2 : resolved.delay);
+
+		if (revealImmediately) {
+			gsap.from(split.words, {
+				duration: resolved.duration,
+				delay: initialDelay,
+				x: resolved.distance,
+				autoAlpha: 0,
+				stagger: resolved.stagger ?? 0.05,
+				ease: resolved.ease,
+				onComplete: () => {
+					el.classList.add("nextora-scroll-animation--ready");
+					split.words.forEach((word) => {
+						gsap.set(word, { clearProps: "opacity,transform,translate,visibility" });
+					});
+				},
 			});
-		},
-	});
+		} else {
+			gsap.from(split.words, {
+				duration: resolved.duration,
+				delay: resolved.delay,
+				x: resolved.distance,
+				autoAlpha: 0,
+				stagger: resolved.stagger ?? 0.05,
+				ease: resolved.ease,
+				scrollTrigger: buildRevealScrollTrigger(el, DEFAULT_SCROLL_START),
+				onComplete: () => {
+					el.classList.add("nextora-scroll-animation--ready");
+					split.words.forEach((word) => {
+						gsap.set(word, { clearProps: "opacity,transform,translate,visibility" });
+					});
+				},
+			});
+		}
+	};
+
+	if (revealImmediately) {
+		afterInitialLayout(setupAndPlay);
+	} else {
+		setupAndPlay();
+	}
 
 	markInitialized(el);
 }
@@ -193,6 +272,7 @@ function initTextCharReveal(
 	options: ScrollAnimationOptions,
 	markInitialized: MarkInitialized,
 ): void {
+	const revealImmediately = isInInitialRevealViewport(el);
 	const resolved = withSpecialDefaults(el, options, {
 		duration: 1,
 		delay: 0.1,
@@ -200,30 +280,59 @@ function initTextCharReveal(
 		distance: 20,
 		ease: "power2.out",
 	});
-	revertElementTextSplit(el);
-	const split = splitElementText(el, "chars");
-	if (!split.chars.length) {
-		markInitialized(el);
-		return;
-	}
 
-	el.classList.remove("nextora-scroll-animation--pending");
+	const setupAndPlay = (): void => {
+		revertElementTextSplit(el);
+		const split = splitElementText(el, "chars");
+		if (!split.chars.length) {
+			markInitialized(el);
+			return;
+		}
 
-	gsap.from(split.chars, {
-		duration: resolved.duration,
-		delay: resolved.delay,
-		x: resolved.distance,
-		autoAlpha: 0,
-		stagger: resolved.stagger ?? 0.03,
-		ease: resolved.ease,
-		scrollTrigger: buildRevealScrollTrigger(el, DEFAULT_SCROLL_START),
-		onComplete: () => {
-			el.classList.add("nextora-scroll-animation--ready");
-			split.chars.forEach((char) => {
-				gsap.set(char, { clearProps: "opacity,transform,translate,visibility" });
+		el.classList.remove("nextora-scroll-animation--pending");
+		const initialDelay = el.hasAttribute("data-delay")
+			? resolved.delay
+			: (revealImmediately ? 0.15 : resolved.delay);
+
+		if (revealImmediately) {
+			gsap.from(split.chars, {
+				duration: resolved.duration,
+				delay: initialDelay,
+				x: resolved.distance,
+				autoAlpha: 0,
+				stagger: resolved.stagger ?? 0.03,
+				ease: resolved.ease,
+				onComplete: () => {
+					el.classList.add("nextora-scroll-animation--ready");
+					split.chars.forEach((char) => {
+						gsap.set(char, { clearProps: "opacity,transform,translate,visibility" });
+					});
+				},
 			});
-		},
-	});
+		} else {
+			gsap.from(split.chars, {
+				duration: resolved.duration,
+				delay: resolved.delay,
+				x: resolved.distance,
+				autoAlpha: 0,
+				stagger: resolved.stagger ?? 0.03,
+				ease: resolved.ease,
+				scrollTrigger: buildRevealScrollTrigger(el, DEFAULT_SCROLL_START),
+				onComplete: () => {
+					el.classList.add("nextora-scroll-animation--ready");
+					split.chars.forEach((char) => {
+						gsap.set(char, { clearProps: "opacity,transform,translate,visibility" });
+					});
+				},
+			});
+		}
+	};
+
+	if (revealImmediately) {
+		afterInitialLayout(setupAndPlay);
+	} else {
+		setupAndPlay();
+	}
 
 	markInitialized(el);
 }
@@ -251,13 +360,16 @@ function initTextCharRiseReveal(
 	gsap.set(split.chars, { opacity: 0, x: resolved.distance });
 	const revealImmediately = isInInitialRevealViewport(el);
 	const play = (): void => {
+		const initialDelay = el.hasAttribute("data-delay")
+			? resolved.delay
+			: (revealImmediately ? 0.2 : resolved.delay);
 		gsap.to(split.chars, {
 			x: 0,
 			y: 0,
 			rotateX: 0,
 			opacity: 1,
 			duration: resolved.duration,
-			delay: resolved.delay,
+			delay: initialDelay,
 			ease: resolved.ease,
 			stagger: resolved.stagger ?? 0.02,
 			onComplete: () => {

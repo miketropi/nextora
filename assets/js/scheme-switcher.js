@@ -40,6 +40,7 @@
 	var copyBtn = switcher.querySelector( '[data-scheme-copy-link]' );
 	var resetBtn = switcher.querySelector( '[data-scheme-reset]' );
 	var fontFallbackStyle = null;
+	var buttonOverrideStyle = null;
 
 	var state = {
 		theme: null,
@@ -203,6 +204,7 @@
 		}
 
 		clearColorOverrides();
+		clearButtonOverrides();
 
 		Object.keys( preset.colors ).forEach( function ( colorSlug ) {
 			root.style.setProperty(
@@ -222,6 +224,7 @@
 
 	function resetColor() {
 		clearColorOverrides();
+		clearButtonOverrides();
 		state.theme = null;
 		state.color = null;
 		refreshInvalidFontFallbacks();
@@ -270,6 +273,98 @@
 	}
 
 	/* ------------------------------------------------------------------
+	 * Button color application
+	 * ------------------------------------------------------------------ */
+
+	function clearButtonOverrides() {
+		if ( buttonOverrideStyle ) {
+			buttonOverrideStyle.textContent = '';
+		}
+		root.style.removeProperty( '--nextora-button-bg' );
+		root.style.removeProperty( '--nextora-button-color' );
+		root.style.removeProperty( '--nextora-button-hover-bg' );
+		root.style.removeProperty( '--nextora-button-hover-color' );
+		root.style.removeProperty( '--nextora-header-button-bg' );
+		root.style.removeProperty( '--nextora-header-button-color' );
+		root.style.removeProperty( '--nextora-header-button-hover-bg' );
+		root.style.removeProperty( '--nextora-header-button-hover-color' );
+	}
+
+	function applyButtonOverrides( theme ) {
+		clearButtonOverrides();
+
+		if ( ! theme ) {
+			return;
+		}
+
+		if ( theme.buttonBg ) {
+			root.style.setProperty( '--nextora-button-bg', theme.buttonBg );
+		}
+		if ( theme.buttonColor ) {
+			root.style.setProperty( '--nextora-button-color', theme.buttonColor );
+		}
+		if ( theme.buttonHoverBg ) {
+			root.style.setProperty( '--nextora-button-hover-bg', theme.buttonHoverBg );
+		}
+		if ( theme.buttonHoverColor ) {
+			root.style.setProperty( '--nextora-button-hover-color', theme.buttonHoverColor );
+		}
+		if ( theme.headerButtonBg ) {
+			root.style.setProperty( '--nextora-header-button-bg', theme.headerButtonBg );
+		}
+		if ( theme.headerButtonColor ) {
+			root.style.setProperty( '--nextora-header-button-color', theme.headerButtonColor );
+		}
+		if ( theme.headerButtonHoverBg ) {
+			root.style.setProperty( '--nextora-header-button-hover-bg', theme.headerButtonHoverBg );
+		}
+		if ( theme.headerButtonHoverColor ) {
+			root.style.setProperty( '--nextora-header-button-hover-color', theme.headerButtonHoverColor );
+		}
+
+		if ( ! buttonOverrideStyle ) {
+			buttonOverrideStyle = document.createElement( 'style' );
+			buttonOverrideStyle.id = 'nextora-scheme-button-overrides';
+			document.head.appendChild( buttonOverrideStyle );
+		}
+
+		var rules = [];
+		if ( theme.buttonBg || theme.buttonColor ) {
+			var bgProp = theme.buttonBg ? 'background-color: var(--nextora-button-bg);' : '';
+			var colProp = theme.buttonColor ? 'color: var(--nextora-button-color);' : '';
+			rules.push(
+				':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline) > .wp-block-button__link) { ' + bgProp + ' ' + colProp + ' }'
+			);
+		}
+
+		if ( theme.buttonHoverBg || theme.buttonHoverColor ) {
+			var hbgProp = theme.buttonHoverBg ? 'background-color: var(--nextora-button-hover-bg);' : '';
+			var hcolProp = theme.buttonHoverColor ? 'color: var(--nextora-button-hover-color);' : '';
+			rules.push(
+				':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline) > .wp-block-button__link:hover) { ' + hbgProp + ' ' + hcolProp + ' }'
+			);
+		}
+
+		if ( theme.headerButtonBg || theme.headerButtonColor ) {
+			var hdrBg = theme.headerButtonBg ? 'background-color: var(--nextora-header-button-bg);' : '';
+			var hdrCol = theme.headerButtonColor ? 'color: var(--nextora-header-button-color);' : '';
+			rules.push(
+				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline), .nextora-header-block__cta.nextora-header-block__cta--solid) { ' + hdrBg + ' ' + hdrCol + ' }'
+			);
+		}
+
+		if ( theme.headerButtonHoverBg || theme.headerButtonHoverColor ) {
+			var hdrHbg = theme.headerButtonHoverBg ? 'background-color: var(--nextora-header-button-hover-bg);' : '';
+			var hdrHcol = theme.headerButtonHoverColor ? 'color: var(--nextora-header-button-hover-color);' : '';
+			rules.push(
+				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline):hover, .nextora-header-block__cta.nextora-header-block__cta--solid:hover) { ' + hdrHbg + ' ' + hdrHcol + ' }'
+			);
+		}
+
+		buttonOverrideStyle.textContent = rules.join( '\n' );
+	}
+
+	/* ------------------------------------------------------------------
 	 * Theme application (bundled color + font)
 	 * ------------------------------------------------------------------ */
 
@@ -281,6 +376,7 @@
 
 		clearColorOverrides();
 		clearFontOverrides();
+		clearButtonOverrides();
 
 		Object.keys( theme.colors || {} ).forEach( function ( colorSlug ) {
 			root.style.setProperty( '--wp--preset--color--' + colorSlug, theme.colors[ colorSlug ] );
@@ -299,6 +395,8 @@
 			root.style.setProperty( '--nextora-font-button', theme.button );
 		}
 
+		applyButtonOverrides( theme );
+
 		state.theme = slug;
 		state.color = null;
 		state.font = null;
@@ -309,6 +407,7 @@
 	function resetTheme() {
 		clearColorOverrides();
 		clearFontOverrides();
+		clearButtonOverrides();
 		state.theme = null;
 		state.color = null;
 		state.font = null;

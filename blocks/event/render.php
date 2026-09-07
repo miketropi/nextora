@@ -282,6 +282,9 @@ if ( $is_template1 ) {
 		$wrapper_classes[] = 'nextora-event--loading';
 	} elseif ( $is_template3 ) {
 		$wrapper_classes[] = 'nextora-event--template3';
+		if ( ! empty( $attributes['template3Alternating'] ) ) {
+			$wrapper_classes[] = 'nextora-event--template3-alternating';
+		}
 	} elseif ( $enable_scroll ) {
 	$wrapper_classes[] = 'nextora-event--reveal-pending';
 }
@@ -610,7 +613,7 @@ if ( ! function_exists( 'nextora_event_render_template3_item' ) ) {
 	 * @param array<string, mixed> $event           Event data.
 	 * @param string               $placeholder_url Placeholder image URL.
 	 */
-	function nextora_event_render_template3_item( array $event, string $placeholder_url ): string {
+	function nextora_event_render_template3_item( array $event, string $placeholder_url, bool $show_register ): string {
 		$title = trim( $event['title'] );
 		if ( '' === $title ) {
 			return '';
@@ -622,13 +625,15 @@ if ( ! function_exists( 'nextora_event_render_template3_item' ) ) {
 		$title_html  = '' !== $link_url
 			? sprintf( '<a href="%1$s" target="%2$s"%3$s>%4$s</a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, esc_html( $title ) )
 			: esc_html( $title );
-		$learn_more  = '' !== $link_url
-			? sprintf( '<a class="nextora-event__template3-learn-more" href="%1$s" target="%2$s"%3$s>%4$s <span aria-hidden="true">→</span></a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, esc_html__( 'Learn More', 'nextora' ) )
-			: '';
 		$image_html  = nextora_event_render_image_html( $event['imageId'], $event['imageUrl'], $event['imageAlt'], $title, $placeholder_url );
 		$category    = trim( $event['category'] );
 		$description = trim( $event['description'] );
 		$month       = strtoupper( trim( $event['month'] ) );
+		$register_label = trim( $event['registerLabel'] );
+		$register_label = '' !== $register_label ? $register_label : __( 'Register', 'nextora' );
+		$register_html = ! $show_register ? '' : ( '' !== $link_url
+			? sprintf( '<a class="nextora-event__template3-register" href="%1$s" target="%2$s"%3$s>%4$s <span aria-hidden="true">→</span></a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, esc_html( $register_label ) )
+			: '<span class="nextora-event__template3-register nextora-event__template3-register--static">' . esc_html( $register_label ) . ' <span aria-hidden="true">→</span></span>' );
 
 		return sprintf(
 			'<article class="nextora-event__template3-item"><div class="nextora-event__template3-date-frame"><div class="nextora-event__template3-date"><span>%1$s</span><b>%2$s</b><small>%3$s</small></div></div><div class="nextora-event__template3-content">%4$s<h3 class="nextora-event__template3-title">%5$s</h3><div class="nextora-event__template3-meta">%6$s%7$s</div>%8$s%9$s</div><div class="nextora-event__template3-media">%10$s</div></article>',
@@ -640,7 +645,7 @@ if ( ! function_exists( 'nextora_event_render_template3_item' ) ) {
 			'' !== trim( $event['time'] ) ? '<span>' . nextora_event_detail_icon( 'clock' ) . esc_html( $event['time'] ) . '</span>' : '',
 			'' !== trim( $event['location'] ) ? '<span>' . nextora_event_detail_icon( 'map-pin' ) . esc_html( $event['location'] ) . '</span>' : '',
 			'' !== $description ? '<p class="nextora-event__template3-description">' . esc_html( $description ) . '</p>' : '',
-			$learn_more,
+			$register_html,
 			$image_html,
 		);
 	}
@@ -765,7 +770,7 @@ if ( $is_template1 ) {
 	} elseif ( 'template3' === $template ) {
 		$items_html = '';
 		foreach ( $events as $event ) {
-			$items_html .= nextora_event_render_template3_item( $event, $placeholder_url );
+			$items_html .= nextora_event_render_template3_item( $event, $placeholder_url, $show_register );
 		}
 		if ( '' === $items_html ) {
 			return;

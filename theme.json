@@ -935,7 +935,7 @@
 						},
 						"typography": {
 							"fontSize": "var(--wp--preset--font-size--small)",
-							"fontWeight": "300",
+							"fontWeight": "600",
 							"textDecoration": "none",
 							"lineHeight": "1.25"
 						},

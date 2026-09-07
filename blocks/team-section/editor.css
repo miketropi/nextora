@@ -84,11 +84,11 @@
 	gap: var(--nextora-team-space-between, 1.5rem);
 	scroll-snap-type: x proximity;
 	display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    margin-top: 0;
-    -webkit-overflow-scrolling: touch;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	padding-bottom: 0.5rem;
+	margin-top: 0;
+	-webkit-overflow-scrolling: touch;
 }
 
 /* Grid layout editor */
@@ -285,17 +285,17 @@
 
 .nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-name {
 	font-size: var(--wp--preset--font-size--medium, 1.25rem);
-    font-weight: 700;
-    margin: 0 0 .5rem;
-    line-height: 1.2;
+	font-weight: 700;
+	margin: 0 0 .5rem;
+	line-height: 1.2;
 	color: var(--nextora-team-name-color, var(--wp--preset--color--contrast, #0a0a0a));
 }
 
 .nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-role {
-    color: var(--nextora-team-role-color, var(--wp--preset--color--secondary, #FF6B5B));
-    font-size: var(--wp--preset--font-size--small, 1rem);
-    margin: 0 !important;
-    line-height: 1.4;
+	color: var(--nextora-team-role-color, var(--wp--preset--color--secondary, #FF6B5B));
+	font-size: var(--wp--preset--font-size--small, 1rem);
+	margin: 0 !important;
+	line-height: 1.4;
 }
 
 .nextora-team-section--editor.nextora-team-section--template-overlay-social .nextora-team-section__card-tags,
@@ -353,7 +353,7 @@
 
 .nextora-team-section--editor.nextora-team-section--template-template-02 .nextora-team-section__deck-card img {
 	width: 100%;
-	height: 100%;
+	height: 100% !important;
 	object-fit: cover;
 	display: block;
 }

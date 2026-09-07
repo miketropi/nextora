@@ -87,6 +87,7 @@
     },
     "showRegisterButton": { "type": "boolean", "default": true },
     "registerButtonText": { "type": "string", "default": "Register" },
+    "template3Alternating": { "type": "boolean", "default": false },
     "cardBackgroundColor": { "type": "string", "default": "" },
     "cardBorderColor": { "type": "string", "default": "" },
     "dateBackgroundColor": { "type": "string", "default": "" },

@@ -21,6 +21,7 @@ export interface EventAttributes {
 	events: EventItem[];
 	showRegisterButton: boolean;
 	registerButtonText: string;
+	template3Alternating: boolean;
 	cardBackgroundColor: string;
 	cardBorderColor: string;
 	dateBackgroundColor: string;

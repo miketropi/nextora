@@ -434,16 +434,19 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 				enableAlpha
 				title={__('Colors', 'nextora')}
 				colorSettings={[
+					{
+						value: colorValueForPicker(contentBackgroundColor, palette),
+						onChange: (v: string | undefined) =>
+							setAttributes({
+								contentBackgroundColor: normalizeColorForStorage(v, palette),
+							}),
+						label:
+							template === 'default'
+								? __('Content panel background', 'nextora')
+								: __('Background color', 'nextora'),
+					},
 					...(template === 'default'
 						? [
-								{
-									value: colorValueForPicker(contentBackgroundColor, palette),
-									onChange: (v: string | undefined) =>
-										setAttributes({
-											contentBackgroundColor: normalizeColorForStorage(v, palette),
-										}),
-									label: __('Content panel background', 'nextora'),
-								},
 								{
 									value: colorValueForPicker(headingColor, palette),
 									onChange: (v: string | undefined) =>
@@ -472,9 +475,11 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 					},
 					{
 						value: colorValueForPicker(paginationColor, palette),
-						onChange: (v) =>
-							setAttributes({ paginationColor: normalizeColorForStorage(v, palette) }),
-						label: __('Pagination ring color', 'nextora'),
+						onChange: (v: string | undefined) =>
+							setAttributes({
+								paginationColor: normalizeColorForStorage(v, palette),
+							}),
+						label: __('Pagination dot color', 'nextora'),
 					},
 					{
 						value: colorValueForPicker(paginationActiveColor, palette),

@@ -241,6 +241,9 @@
   .visible {
     visibility: visible;
   }
+  .visible\! {
+    visibility: visible !important;
+  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -263,6 +266,9 @@
   }
   .static {
     position: static;
+  }
+  .static\! {
+    position: static !important;
   }
   .sticky {
     position: sticky;
@@ -4151,6 +4157,9 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
 }
 .nextora-scroll-animation--pending, [class*="animation-fade-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-in"]:not([data-nextora-scroll-animation-init]), [class*="animation-zoom-out"]:not([data-nextora-scroll-animation-init]), [class*="animation-text-reveal"]:not([data-nextora-scroll-animation-init]), .animation-text-typewriter:not([data-nextora-scroll-animation-init]), .animation-fade-list-grid:not([data-nextora-scroll-animation-init]) ul:not(li ul) > li, .animation-inner-fade:not([data-nextora-scroll-animation-init]) > *, .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img, .animation-image-border-reveal:not([data-nextora-scroll-animation-init]) img {
   opacity: 0;
+}
+[class*="animation-fade-in"], [class*="animation-zoom-in"], [class*="animation-zoom-out"], [class*="animation-text-reveal"], .animation-fade-list-grid ul:not(li ul) > li, .animation-inner-fade > *, .animation-image-clip-reveal img, .animation-image-border-reveal img, .animation-scroll-reveal, .nextora-split-char, .nextora-split-word {
+  transition-property: none !important;
 }
 .animation-image-clip-reveal:not([data-nextora-scroll-animation-init]) img {
   clip-path: inset(0 100% 0 0);

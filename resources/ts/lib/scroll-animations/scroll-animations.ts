@@ -273,11 +273,13 @@ function forcePlayAllRevealTriggers(): void {
 export function attachScrollAnimationGlobals(): void {
 	window.nextoraRegisterScrollAnimation = registerScrollAnimationPreset;
 	window.nextoraForceScrollAnimations = forcePlayAllRevealTriggers;
+	window.nextoraScanScrollAnimations = scanScrollAnimations;
 }
 
 declare global {
 	interface Window {
 		nextoraRegisterScrollAnimation?: typeof registerScrollAnimationPreset;
 		nextoraForceScrollAnimations?: typeof forcePlayAllRevealTriggers;
+		nextoraScanScrollAnimations?: typeof scanScrollAnimations;
 	}
 }

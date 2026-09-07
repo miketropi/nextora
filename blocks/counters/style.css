@@ -87,6 +87,18 @@
 	border-inline-end: none;
 }
 
+@media (min-width: 400px) and (max-width: 959px) {
+	.nextora-counters--divider .nextora-counters__item:nth-child(2n) {
+		border-inline-end: none;
+	}
+}
+
+@media (min-width: 960px) {
+	.nextora-counters--divider .nextora-counters__item:nth-child(3n) {
+		border-inline-end: none;
+	}
+}
+
 @media (max-width: 768px) {
 	.wp-block-nextora-counters.nextora-counters {
 		column-gap: var(--nextora-counters-gap, var(--wp--preset--spacing--20, 1rem));

@@ -29861,6 +29861,33 @@ ${nextLine.slice(indentLevel + 2)}`;
     splitState.get(element)?.revert();
   }
 
+  // resources/ts/lib/scroll-animations/initial-layout.ts
+  var initialLayoutReady = null;
+  function isInInitialRevealViewport(el) {
+    const rect = el.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 800;
+    return rect.top < viewportHeight * 0.9 && rect.bottom > 0;
+  }
+  function afterInitialLayout(callback) {
+    if (!initialLayoutReady) {
+      initialLayoutReady = (async () => {
+        if (typeof document !== "undefined" && document.fonts?.ready) {
+          try {
+            await Promise.race([
+              document.fonts.ready,
+              new Promise((resolve) => setTimeout(resolve, 250))
+            ]);
+          } catch {
+          }
+        }
+        await new Promise((resolve) => {
+          setTimeout(resolve, 60);
+        });
+      })();
+    }
+    void initialLayoutReady.then(callback);
+  }
+
   // resources/ts/lib/scroll-animations/typewriter-text.ts
   var TYPEWRITER_MOBILE_MAX_WIDTH = 700;
   var TYPEWRITER_DONE_TAIL_MS = 150;
@@ -29945,8 +29972,8 @@ ${nextLine.slice(indentLevel + 2)}`;
   function initTextTypewriter(el, markInitialized2) {
     revertTypewriterText(el);
     const options = parseScrollAnimationOptions(el);
-    const startDelayMs = (el.hasAttribute("data-delay") ? options.delay : 0.35) * 1e3;
-    const charDelayMs = (el.hasAttribute("data-stagger") ? options.stagger ?? 0.055 : 0.055) * 1e3;
+    const startDelayMs = (el.hasAttribute("data-delay") ? options.delay : shouldPlayImmediately(el) ? 0.1 : 0.25) * 1e3;
+    const charDelayMs = (el.hasAttribute("data-stagger") ? options.stagger ?? 0.045 : 0.045) * 1e3;
     const state = prepareTypewriterElement(el);
     if (!state) {
       markInitialized2(el);
@@ -29967,7 +29994,7 @@ ${nextLine.slice(indentLevel + 2)}`;
       onEnter: run4
     });
     if (shouldPlayImmediately(el)) {
-      run4();
+      afterInitialLayout(run4);
     }
     markInitialized2(el);
   }
@@ -29978,34 +30005,6 @@ ${nextLine.slice(indentLevel + 2)}`;
       return;
     }
     revertTypewriterText(el);
-  }
-
-  // resources/ts/lib/scroll-animations/initial-layout.ts
-  var initialLayoutReady = null;
-  function waitForLoad() {
-    if (document.readyState === "complete") {
-      return Promise.resolve();
-    }
-    return new Promise((resolve) => {
-      window.addEventListener("load", () => resolve(), { once: true });
-    });
-  }
-  function isInInitialRevealViewport(el) {
-    const rect = el.getBoundingClientRect();
-    return rect.top < window.innerHeight * 0.9 && rect.bottom > 0;
-  }
-  function afterInitialLayout(callback) {
-    if (!initialLayoutReady) {
-      initialLayoutReady = waitForLoad().then(async () => {
-        if (document.fonts?.ready) {
-          await document.fonts.ready;
-        }
-        await new Promise((resolve) => {
-          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-        });
-      });
-    }
-    void initialLayoutReady.then(callback);
   }
 
   // resources/ts/lib/scroll-animations/special-animations.ts
@@ -30047,19 +30046,38 @@ ${nextLine.slice(indentLevel + 2)}`;
     images.forEach((img) => {
       img.classList.add("nextora-scroll-animation--pending");
       gsapWithCSS.set(img, { clipPath: "inset(0 100% 0 0)" });
-      gsapWithCSS.to(img, {
-        clipPath: "inset(0 0% 0 0)",
-        autoAlpha: 1,
-        duration: resolved.duration,
-        delay: resolved.delay,
-        ease: resolved.ease,
-        scrollTrigger: buildRevealScrollTrigger(img, "top 90%"),
-        onComplete: () => {
-          img.classList.remove("nextora-scroll-animation--pending");
-          img.classList.add("nextora-scroll-animation--ready");
-          gsapWithCSS.set(img, { clearProps: "clipPath,opacity,visibility" });
-        }
-      });
+      const revealImmediately = isInInitialRevealViewport(img);
+      const play = () => {
+        gsapWithCSS.to(img, {
+          clipPath: "inset(0 0% 0 0)",
+          autoAlpha: 1,
+          duration: resolved.duration,
+          delay: resolved.delay,
+          ease: resolved.ease,
+          onComplete: () => {
+            img.classList.remove("nextora-scroll-animation--pending");
+            img.classList.add("nextora-scroll-animation--ready");
+            gsapWithCSS.set(img, { clearProps: "clipPath,opacity,visibility" });
+          }
+        });
+      };
+      if (revealImmediately) {
+        afterInitialLayout(play);
+      } else {
+        gsapWithCSS.to(img, {
+          clipPath: "inset(0 0% 0 0)",
+          autoAlpha: 1,
+          duration: resolved.duration,
+          delay: resolved.delay,
+          ease: resolved.ease,
+          scrollTrigger: buildRevealScrollTrigger(img, "top 90%"),
+          onComplete: () => {
+            img.classList.remove("nextora-scroll-animation--pending");
+            img.classList.add("nextora-scroll-animation--ready");
+            gsapWithCSS.set(img, { clearProps: "clipPath,opacity,visibility" });
+          }
+        });
+      }
     });
     markInitialized2(el);
   }
@@ -30083,65 +30101,120 @@ ${nextLine.slice(indentLevel + 2)}`;
         el.style.borderRadius = br;
       }
       img.classList.add("nextora-scroll-animation--pending");
-      const st = buildRevealScrollTrigger(img, "top 90%");
-      gsapWithCSS.fromTo(
-        el,
-        { "--nextora-border-opacity": 0 },
-        {
-          "--nextora-border-opacity": 1,
+      const revealImmediately = isInInitialRevealViewport(img);
+      const play = () => {
+        gsapWithCSS.fromTo(
+          el,
+          { "--nextora-border-opacity": 0 },
+          {
+            "--nextora-border-opacity": 1,
+            duration: resolved.duration,
+            delay: resolved.delay,
+            ease: resolved.ease
+          }
+        );
+        gsapWithCSS.fromTo(img, { autoAlpha: 0 }, {
+          autoAlpha: 1,
           duration: resolved.duration,
           delay: resolved.delay,
           ease: resolved.ease,
-          scrollTrigger: st
-        }
-      );
-      gsapWithCSS.fromTo(img, { autoAlpha: 0 }, {
-        autoAlpha: 1,
-        duration: resolved.duration,
-        delay: resolved.delay,
-        ease: resolved.ease,
-        scrollTrigger: st,
-        onComplete: () => {
-          img.classList.remove("nextora-scroll-animation--pending");
-          img.classList.add("nextora-scroll-animation--ready");
-          gsapWithCSS.set(img, { clearProps: "opacity,visibility" });
-        }
-      });
-    });
-    markInitialized2(el);
-  }
-  function initTextWordReveal(el, options, markInitialized2) {
-    const resolved = withSpecialDefaults(el, options, {
-      duration: 1,
-      delay: 0.5,
-      stagger: 0.05,
-      distance: 20
-    });
-    revertElementTextSplit(el);
-    const split2 = splitElementText(el, "words");
-    if (!split2.words.length) {
-      markInitialized2(el);
-      return;
-    }
-    el.classList.remove("nextora-scroll-animation--pending");
-    gsapWithCSS.from(split2.words, {
-      duration: resolved.duration,
-      delay: resolved.delay,
-      x: resolved.distance,
-      autoAlpha: 0,
-      stagger: resolved.stagger ?? 0.05,
-      ease: resolved.ease,
-      scrollTrigger: buildRevealScrollTrigger(el, DEFAULT_SCROLL_START),
-      onComplete: () => {
-        el.classList.add("nextora-scroll-animation--ready");
-        split2.words.forEach((word) => {
-          gsapWithCSS.set(word, { clearProps: "opacity,transform,translate,visibility" });
+          onComplete: () => {
+            img.classList.remove("nextora-scroll-animation--pending");
+            img.classList.add("nextora-scroll-animation--ready");
+            gsapWithCSS.set(img, { clearProps: "opacity,visibility" });
+          }
+        });
+      };
+      if (revealImmediately) {
+        afterInitialLayout(play);
+      } else {
+        const st = buildRevealScrollTrigger(img, "top 90%");
+        gsapWithCSS.fromTo(
+          el,
+          { "--nextora-border-opacity": 0 },
+          {
+            "--nextora-border-opacity": 1,
+            duration: resolved.duration,
+            delay: resolved.delay,
+            ease: resolved.ease,
+            scrollTrigger: st
+          }
+        );
+        gsapWithCSS.fromTo(img, { autoAlpha: 0 }, {
+          autoAlpha: 1,
+          duration: resolved.duration,
+          delay: resolved.delay,
+          ease: resolved.ease,
+          scrollTrigger: st,
+          onComplete: () => {
+            img.classList.remove("nextora-scroll-animation--pending");
+            img.classList.add("nextora-scroll-animation--ready");
+            gsapWithCSS.set(img, { clearProps: "opacity,visibility" });
+          }
         });
       }
     });
     markInitialized2(el);
   }
+  function initTextWordReveal(el, options, markInitialized2) {
+    const revealImmediately = isInInitialRevealViewport(el);
+    const resolved = withSpecialDefaults(el, options, {
+      duration: 1,
+      delay: revealImmediately ? 0.2 : 0.5,
+      stagger: 0.05,
+      distance: 20
+    });
+    const setupAndPlay = () => {
+      revertElementTextSplit(el);
+      const split2 = splitElementText(el, "words");
+      if (!split2.words.length) {
+        markInitialized2(el);
+        return;
+      }
+      el.classList.remove("nextora-scroll-animation--pending");
+      const initialDelay = el.hasAttribute("data-delay") ? resolved.delay : revealImmediately ? 0.2 : resolved.delay;
+      if (revealImmediately) {
+        gsapWithCSS.from(split2.words, {
+          duration: resolved.duration,
+          delay: initialDelay,
+          x: resolved.distance,
+          autoAlpha: 0,
+          stagger: resolved.stagger ?? 0.05,
+          ease: resolved.ease,
+          onComplete: () => {
+            el.classList.add("nextora-scroll-animation--ready");
+            split2.words.forEach((word) => {
+              gsapWithCSS.set(word, { clearProps: "opacity,transform,translate,visibility" });
+            });
+          }
+        });
+      } else {
+        gsapWithCSS.from(split2.words, {
+          duration: resolved.duration,
+          delay: resolved.delay,
+          x: resolved.distance,
+          autoAlpha: 0,
+          stagger: resolved.stagger ?? 0.05,
+          ease: resolved.ease,
+          scrollTrigger: buildRevealScrollTrigger(el, DEFAULT_SCROLL_START),
+          onComplete: () => {
+            el.classList.add("nextora-scroll-animation--ready");
+            split2.words.forEach((word) => {
+              gsapWithCSS.set(word, { clearProps: "opacity,transform,translate,visibility" });
+            });
+          }
+        });
+      }
+    };
+    if (revealImmediately) {
+      afterInitialLayout(setupAndPlay);
+    } else {
+      setupAndPlay();
+    }
+    markInitialized2(el);
+  }
   function initTextCharReveal(el, options, markInitialized2) {
+    const revealImmediately = isInInitialRevealViewport(el);
     const resolved = withSpecialDefaults(el, options, {
       duration: 1,
       delay: 0.1,
@@ -30149,28 +30222,53 @@ ${nextLine.slice(indentLevel + 2)}`;
       distance: 20,
       ease: "power2.out"
     });
-    revertElementTextSplit(el);
-    const split2 = splitElementText(el, "chars");
-    if (!split2.chars.length) {
-      markInitialized2(el);
-      return;
-    }
-    el.classList.remove("nextora-scroll-animation--pending");
-    gsapWithCSS.from(split2.chars, {
-      duration: resolved.duration,
-      delay: resolved.delay,
-      x: resolved.distance,
-      autoAlpha: 0,
-      stagger: resolved.stagger ?? 0.03,
-      ease: resolved.ease,
-      scrollTrigger: buildRevealScrollTrigger(el, DEFAULT_SCROLL_START),
-      onComplete: () => {
-        el.classList.add("nextora-scroll-animation--ready");
-        split2.chars.forEach((char) => {
-          gsapWithCSS.set(char, { clearProps: "opacity,transform,translate,visibility" });
+    const setupAndPlay = () => {
+      revertElementTextSplit(el);
+      const split2 = splitElementText(el, "chars");
+      if (!split2.chars.length) {
+        markInitialized2(el);
+        return;
+      }
+      el.classList.remove("nextora-scroll-animation--pending");
+      const initialDelay = el.hasAttribute("data-delay") ? resolved.delay : revealImmediately ? 0.15 : resolved.delay;
+      if (revealImmediately) {
+        gsapWithCSS.from(split2.chars, {
+          duration: resolved.duration,
+          delay: initialDelay,
+          x: resolved.distance,
+          autoAlpha: 0,
+          stagger: resolved.stagger ?? 0.03,
+          ease: resolved.ease,
+          onComplete: () => {
+            el.classList.add("nextora-scroll-animation--ready");
+            split2.chars.forEach((char) => {
+              gsapWithCSS.set(char, { clearProps: "opacity,transform,translate,visibility" });
+            });
+          }
+        });
+      } else {
+        gsapWithCSS.from(split2.chars, {
+          duration: resolved.duration,
+          delay: resolved.delay,
+          x: resolved.distance,
+          autoAlpha: 0,
+          stagger: resolved.stagger ?? 0.03,
+          ease: resolved.ease,
+          scrollTrigger: buildRevealScrollTrigger(el, DEFAULT_SCROLL_START),
+          onComplete: () => {
+            el.classList.add("nextora-scroll-animation--ready");
+            split2.chars.forEach((char) => {
+              gsapWithCSS.set(char, { clearProps: "opacity,transform,translate,visibility" });
+            });
+          }
         });
       }
-    });
+    };
+    if (revealImmediately) {
+      afterInitialLayout(setupAndPlay);
+    } else {
+      setupAndPlay();
+    }
     markInitialized2(el);
   }
   function initTextCharRiseReveal(el, options, markInitialized2) {
@@ -30191,13 +30289,14 @@ ${nextLine.slice(indentLevel + 2)}`;
     gsapWithCSS.set(split2.chars, { opacity: 0, x: resolved.distance });
     const revealImmediately = isInInitialRevealViewport(el);
     const play = () => {
+      const initialDelay = el.hasAttribute("data-delay") ? resolved.delay : revealImmediately ? 0.2 : resolved.delay;
       gsapWithCSS.to(split2.chars, {
         x: 0,
         y: 0,
         rotateX: 0,
         opacity: 1,
         duration: resolved.duration,
-        delay: resolved.delay,
+        delay: initialDelay,
         ease: resolved.ease,
         stagger: resolved.stagger ?? 0.02,
         onComplete: () => {
@@ -30593,9 +30692,12 @@ ${nextLine.slice(indentLevel + 2)}`;
     return raw ? parseInt(raw, 10) : 0;
   }
   function getFadeListGridItems(el) {
-    return Array.from(el.querySelectorAll("ul > li")).filter((li) => {
+    if (el.tagName === "UL" || el.tagName === "OL") {
+      return Array.from(el.children).filter((child) => child.tagName === "LI");
+    }
+    return Array.from(el.querySelectorAll("ul > li, ol > li")).filter((li) => {
       const parentUl = li.parentElement;
-      if (!parentUl || parentUl.tagName !== "UL") {
+      if (!parentUl || parentUl.tagName !== "UL" && parentUl.tagName !== "OL") {
         return false;
       }
       if (parentUl.closest("nav") !== null) {
@@ -30659,19 +30761,44 @@ ${nextLine.slice(indentLevel + 2)}`;
     const { from: from2, to } = animationPresets["animation-fade-list-grid"]({ distance: options.distance });
     el.classList.remove("nextora-scroll-animation--pending");
     const gen = nextRevealGen(el);
-    items.forEach((item) => {
-      item.classList.add("nextora-scroll-animation--pending");
-      gsapWithCSS.fromTo(item, from2, {
-        ...to,
-        ...buildScrollTweenVars(item, options, item),
-        onComplete: () => {
-          if (getRevealGen(el) !== gen) return;
-          item.classList.remove("nextora-scroll-animation--pending");
-          item.classList.add("nextora-scroll-animation--ready");
-          gsapWithCSS.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
-        }
+    const revealImmediately = isInInitialRevealViewport(el);
+    if (revealImmediately) {
+      items.forEach((item) => {
+        item.classList.add("nextora-scroll-animation--pending");
+        gsapWithCSS.set(item, from2);
       });
-    });
+      afterInitialLayout(() => {
+        gsapWithCSS.to(items, {
+          ...to,
+          delay: options.delay,
+          duration: options.duration,
+          ease: options.ease,
+          stagger: options.stagger ?? 0.08,
+          onComplete: () => {
+            if (getRevealGen(el) !== gen) return;
+            items.forEach((item) => {
+              item.classList.remove("nextora-scroll-animation--pending");
+              item.classList.add("nextora-scroll-animation--ready");
+              gsapWithCSS.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
+            });
+          }
+        });
+      });
+    } else {
+      items.forEach((item) => {
+        item.classList.add("nextora-scroll-animation--pending");
+        gsapWithCSS.fromTo(item, from2, {
+          ...to,
+          ...buildScrollTweenVars(item, options, item),
+          onComplete: () => {
+            if (getRevealGen(el) !== gen) return;
+            item.classList.remove("nextora-scroll-animation--pending");
+            item.classList.add("nextora-scroll-animation--ready");
+            gsapWithCSS.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
+          }
+        });
+      });
+    }
     markInitialized(el);
   }
   function initInnerFadeAnimation(el, options) {
@@ -30683,19 +30810,44 @@ ${nextLine.slice(indentLevel + 2)}`;
     const { from: from2, to } = animationPresets["animation-inner-fade"]({ distance: options.distance });
     el.classList.remove("nextora-scroll-animation--pending");
     const gen = nextRevealGen(el);
-    targets.forEach((target) => {
-      target.classList.add("nextora-scroll-animation--pending");
-      gsapWithCSS.fromTo(target, from2, {
-        ...to,
-        ...buildScrollTweenVars(target, options, target),
-        onComplete: () => {
-          if (getRevealGen(el) !== gen) return;
-          target.classList.remove("nextora-scroll-animation--pending");
-          target.classList.add("nextora-scroll-animation--ready");
-          gsapWithCSS.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
-        }
+    const revealImmediately = isInInitialRevealViewport(el);
+    if (revealImmediately) {
+      targets.forEach((target) => {
+        target.classList.add("nextora-scroll-animation--pending");
+        gsapWithCSS.set(target, from2);
       });
-    });
+      afterInitialLayout(() => {
+        gsapWithCSS.to(targets, {
+          ...to,
+          delay: options.delay,
+          duration: options.duration,
+          ease: options.ease,
+          stagger: options.stagger ?? 0.08,
+          onComplete: () => {
+            if (getRevealGen(el) !== gen) return;
+            targets.forEach((target) => {
+              target.classList.remove("nextora-scroll-animation--pending");
+              target.classList.add("nextora-scroll-animation--ready");
+              gsapWithCSS.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
+            });
+          }
+        });
+      });
+    } else {
+      targets.forEach((target) => {
+        target.classList.add("nextora-scroll-animation--pending");
+        gsapWithCSS.fromTo(target, from2, {
+          ...to,
+          ...buildScrollTweenVars(target, options, target),
+          onComplete: () => {
+            if (getRevealGen(el) !== gen) return;
+            target.classList.remove("nextora-scroll-animation--pending");
+            target.classList.add("nextora-scroll-animation--ready");
+            gsapWithCSS.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
+          }
+        });
+      });
+    }
     markInitialized(el);
   }
   function initElementAnimations(el) {
@@ -30774,9 +30926,10 @@ ${nextLine.slice(indentLevel + 2)}`;
           if (revealImmediately) {
             gsapWithCSS.set(el, from2);
             afterInitialLayout(() => {
+              const initialDelay = el.hasAttribute("data-delay") ? options.delay : el.tagName === "P" ? 0.35 : options.delay;
               gsapWithCSS.to(el, {
                 ...to,
-                delay: options.delay,
+                delay: initialDelay,
                 duration: options.duration,
                 ease: options.ease,
                 onComplete: () => gsapWithCSS.set(el, { clearProps: "opacity,transform,translate,rotate,scale" })
@@ -31049,6 +31202,7 @@ ${nextLine.slice(indentLevel + 2)}`;
   function attachScrollAnimationGlobals() {
     window.nextoraRegisterScrollAnimation = registerScrollAnimationPreset;
     window.nextoraForceScrollAnimations = forcePlayAllRevealTriggers;
+    window.nextoraScanScrollAnimations = scanScrollAnimations;
   }
 
   // resources/ts/header-sticky.ts
