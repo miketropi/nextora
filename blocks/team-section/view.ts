@@ -548,7 +548,13 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 			});
 
 			panes.forEach((pane, i) => {
+				pane.classList.remove('is-exiting');
 				pane.classList.toggle('is-active', i === activeIndex);
+				gsap.set(pane, { clearProps: 'all' });
+				const items = pane.querySelectorAll(
+					'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
+				);
+				gsap.set(items, { clearProps: 'all' });
 			});
 		};
 
@@ -565,6 +571,7 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 				restartAutoplay();
 			}
 
+			const prevIndex = activeIndex;
 			activeIndex = targetIndex;
 
 			if (reduced) {
@@ -632,26 +639,87 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 				});
 			});
 
-			// Text Transition - Smooth Direct Fade
+			// Text Transition - Cinematic Cross-Fade & Typography Stagger
+			const currentPane = panes[prevIndex];
+			const nextPane = panes[targetIndex];
+
 			gsap.killTweensOf(panes);
+			panes.forEach((p) => {
+				const items = p.querySelectorAll(
+					'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
+				);
+				gsap.killTweensOf(items);
+			});
+
+			// Outgoing text animation: smooth slide up and fade out
+			if (currentPane && currentPane !== nextPane) {
+				currentPane.classList.add('is-exiting');
+				currentPane.classList.remove('is-active');
+				gsap.to(currentPane, {
+					opacity: 0,
+					y: -10,
+					duration: 0.18,
+					ease: 'power2.in',
+					onComplete: () => {
+						currentPane.classList.remove('is-exiting');
+						gsap.set(currentPane, { clearProps: 'all' });
+					},
+				});
+			}
+
+			// Clean up any other non-active panes
 			panes.forEach((p, i) => {
-				const isCurrent = i === targetIndex;
-				p.classList.toggle('is-active', isCurrent);
-				if (isCurrent) {
+				if (i !== prevIndex && i !== targetIndex) {
+					p.classList.remove('is-active', 'is-exiting');
+					gsap.set(p, { clearProps: 'all' });
+				}
+			});
+
+			// Incoming text animation: starts right as the card reaches apex and drops into front
+			if (nextPane) {
+				nextPane.classList.remove('is-exiting');
+				nextPane.classList.add('is-active');
+
+				const nextItems = Array.from(
+					nextPane.querySelectorAll<HTMLElement>(
+						'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
+					)
+				);
+
+				gsap.set(nextPane, { opacity: 1, y: 0 });
+
+				if (nextItems.length > 0) {
 					gsap.fromTo(
-						p,
-						{ opacity: 0 },
+						nextItems,
+						{
+							opacity: 0,
+							y: 12,
+						},
 						{
 							opacity: 1,
-							duration: 0.22,
-							ease: 'power1.out',
-							clearProps: 'opacity',
+							y: 0,
+							duration: 0.36,
+							stagger: 0.045,
+							delay: 0.12,
+							ease: 'power3.out',
+							clearProps: 'all',
 						}
 					);
 				} else {
-					p.removeAttribute('style');
+					gsap.fromTo(
+						nextPane,
+						{ opacity: 0, y: 12 },
+						{
+							opacity: 1,
+							y: 0,
+							duration: 0.36,
+							delay: 0.12,
+							ease: 'power3.out',
+							clearProps: 'all',
+						}
+					);
 				}
-			});
+			}
 
 			cards.forEach((card, i) => {
 				const isCurrent = i === targetIndex;

@@ -676,12 +676,30 @@
 	min-height: 260px;
 }
 
+.nextora-team-section__deck-info-stack {
+	display: grid;
+	grid-template-columns: 1fr;
+	align-items: start;
+	position: relative;
+}
+
 .nextora-team-section__deck-info-pane {
-	display: none;
+	grid-area: 1 / 1;
+	display: block;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	will-change: transform, opacity;
+}
+
+.nextora-team-section__deck-info-pane.is-active,
+.nextora-team-section__deck-info-pane.is-exiting {
+	visibility: visible;
 }
 
 .nextora-team-section__deck-info-pane.is-active {
-	display: block;
+	opacity: 1;
+	pointer-events: auto;
 }
 
 .nextora-team-section__deck-name {
