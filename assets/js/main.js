@@ -23080,7 +23080,7 @@ ${nextLine.slice(indentLevel + 2)}`;
     animationPresets[className] = factory;
   }
   function getAnimationSelector() {
-    return ANIMATION_CLASS_NAMES.map((className) => `.${className}`).join(", ");
+    return `${ANIMATION_CLASS_NAMES.map((className) => `.${className}`).join(", ")}, [class*="animation-delay-"], [class*="delay-"]`;
   }
 
   // resources/ts/lib/scroll-animations/parse-options.ts
@@ -23100,11 +23100,35 @@ ${nextLine.slice(indentLevel + 2)}`;
     const value = Number.parseFloat(raw);
     return Number.isFinite(value) ? value : null;
   }
+  function resolveDelay(el) {
+    const rawAttr = el.getAttribute("data-delay");
+    if (rawAttr !== null && rawAttr.trim() !== "") {
+      const val = Number.parseFloat(rawAttr);
+      if (Number.isFinite(val)) {
+        if (rawAttr.includes("ms") || val >= 10) {
+          return val / 1e3;
+        }
+        return val;
+      }
+    }
+    for (const cls of el.classList) {
+      const match = cls.match(/^(?:animation-)?delay-(\d+)(ms|s)?$/);
+      if (match) {
+        const amount = Number.parseFloat(match[1]);
+        const unit = match[2];
+        if (unit === "s") {
+          return amount;
+        }
+        return amount >= 10 ? amount / 1e3 : amount;
+      }
+    }
+    return 0;
+  }
   function parseScrollAnimationOptions(el) {
     const parallaxFromAttr = readOptionalNumber(el, "data-parallax-speed");
     const hasParallaxClass = el.classList.contains("animation-parallax");
     return {
-      delay: readNumber(el, "data-delay", 0),
+      delay: resolveDelay(el),
       duration: readNumber(el, "data-duration", DEFAULT_DURATION),
       ease: el.getAttribute("data-ease")?.trim() || DEFAULT_EASE,
       stagger: readOptionalNumber(el, "data-stagger"),
@@ -30009,8 +30033,9 @@ ${nextLine.slice(indentLevel + 2)}`;
 
   // resources/ts/lib/scroll-animations/special-animations.ts
   function withSpecialDefaults(el, options, defaults3) {
+    const hasDelayOverride = el.hasAttribute("data-delay") || Array.from(el.classList).some((cls) => /^(?:animation-)?delay-\d+/.test(cls));
     return {
-      delay: el.hasAttribute("data-delay") ? options.delay : defaults3.delay ?? options.delay,
+      delay: hasDelayOverride ? options.delay : defaults3.delay ?? options.delay,
       duration: el.hasAttribute("data-duration") ? options.duration : defaults3.duration ?? options.duration,
       ease: el.hasAttribute("data-ease") ? options.ease : defaults3.ease ?? options.ease,
       stagger: el.hasAttribute("data-stagger") ? options.stagger : defaults3.stagger ?? options.stagger,
@@ -30720,7 +30745,14 @@ ${nextLine.slice(indentLevel + 2)}`;
       }
     }
     const custom = Array.from(el.classList).find((name) => name in animationPresets);
-    return custom ?? null;
+    if (custom) {
+      return custom;
+    }
+    const hasDelayClass = Array.from(el.classList).some((name) => /^(?:animation-)?delay-\d+/.test(name));
+    if (hasDelayClass) {
+      return "animation-fade-in-up";
+    }
+    return null;
   }
   function markInitialized(el) {
     if (isElementHidden(el)) return;
