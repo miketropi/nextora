@@ -202,7 +202,7 @@ $pad_right  = nextora_sw_resolve_spacing( isset( $spacing_pads['right'] ) ? (str
 $slides_html = '';
 $slide_count = 0;
 
-if ( $block instanceof WP_Block && ! empty( $block->inner_blocks ) && count( $block->inner_blocks ) > 0 ) {
+if ( $block instanceof WP_Block && count( $block->inner_blocks ) > 0 ) {
 	foreach ( $block->inner_blocks as $inner_block ) {
 		if ( ! $inner_block instanceof WP_Block || 'nextora/slide-item' !== $inner_block->name ) {
 			continue;

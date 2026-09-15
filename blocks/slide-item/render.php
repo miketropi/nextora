@@ -220,7 +220,7 @@ if ( ! in_array( $overlay_mode, array( 'color', 'gradient' ), true ) ) {
 }
 
 $inner_html = '';
-if ( $block instanceof WP_Block && ! empty( $block->inner_blocks ) && count( $block->inner_blocks ) > 0 ) {
+if ( $block instanceof WP_Block && count( $block->inner_blocks ) > 0 ) {
 	foreach ( $block->inner_blocks as $inner_block ) {
 		if ( $inner_block instanceof WP_Block ) {
 			$inner_html .= $inner_block->render();

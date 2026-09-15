@@ -159,6 +159,9 @@ if ( ! function_exists( 'nextora_testimonials_get_gutenberg_color_props' ) ) {
 }
 
 if ( ! function_exists( 'nextora_testimonials_get_font_size_props' ) ) {
+	/**
+	 * @return array<string, string>
+	 */
 	function nextora_testimonials_get_font_size_props( string $size ): array {
 		$size = trim( $size );
 		if ( '' === $size ) {
@@ -187,6 +190,9 @@ if ( ! function_exists( 'nextora_testimonials_get_font_size_props' ) ) {
 }
 
 if ( ! function_exists( 'nextora_testimonials_get_font_family_props' ) ) {
+	/**
+	 * @return array<string, string>
+	 */
 	function nextora_testimonials_get_font_family_props( string $family ): array {
 		$family = trim( $family );
 		if ( '' === $family ) {

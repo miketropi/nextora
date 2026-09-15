@@ -97,7 +97,7 @@ $align_map = array(
 $css_cols = $split_to_cols[ $split ] ?? $split_to_cols['50-50'];
 $align    = $align_map[ $v_align ] ?? 'center';
 
-$has_from_inner_blocks = $block instanceof WP_Block && ! empty( $block->inner_blocks ) && count( $block->inner_blocks ) > 0;
+$has_from_inner_blocks = $block instanceof WP_Block && count( $block->inner_blocks ) > 0;
 $has_content_string    = is_string( $content ) && '' !== trim( $content );
 $has_legacy            = ( $legacy_heading !== '' || $legacy_content !== '' );
 $is_legacy             = ( ! $has_from_inner_blocks && ! $has_content_string ) && $has_legacy;

@@ -382,7 +382,7 @@ if ( function_exists( 'tribe_get_events' ) ) {
 		}
 	}
 
-	$queried_posts = call_user_func( 'tribe_get_events', $query_args );
+	$queried_posts = tribe_get_events( $query_args );
 } else {
 	// Fallback standard WP query for tribe_events
 	$query_args = array(
@@ -427,13 +427,13 @@ $default_register = isset( $attributes['registerButtonText'] ) ? (string) $attri
 
 if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 	foreach ( $queried_posts as $item_post ) {
-		$post_id = is_object( $item_post ) ? (int) $item_post->ID : (int) $item_post;
+		$post_id = $item_post instanceof WP_Post ? (int) $item_post->ID : (int) $item_post;
 
 		// Day & Month
 		if ( function_exists( 'tribe_get_start_date' ) ) {
-			$day   = (string) call_user_func( 'tribe_get_start_date', $post_id, false, 'd' );
-			$month = (string) call_user_func( 'tribe_get_start_date', $post_id, false, 'M' );
-			$time  = (string) call_user_func( 'tribe_get_start_date', $post_id, false, 'g:i A' );
+			$day   = (string) tribe_get_start_date( $post_id, false, 'd' );
+			$month = (string) tribe_get_start_date( $post_id, false, 'M' );
+			$time  = (string) tribe_get_start_date( $post_id, false, 'g:i A' );
 		} else {
 			$raw_start = get_post_meta( $post_id, '_EventStartDate', true );
 			if ( is_string( $raw_start ) && '' !== $raw_start ) {
@@ -451,8 +451,8 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 		// Venue / Location
 		$location = '';
 		if ( function_exists( 'tribe_get_venue' ) ) {
-			$venue = (string) call_user_func( 'tribe_get_venue', $post_id );
-			$city  = function_exists( 'tribe_get_city' ) ? (string) call_user_func( 'tribe_get_city', $post_id ) : '';
+			$venue = (string) tribe_get_venue( $post_id );
+			$city  = function_exists( 'tribe_get_city' ) ? (string) tribe_get_city( $post_id ) : '';
 			if ( '' !== $venue && '' !== $city ) {
 				$location = $venue . ', ' . $city;
 			} elseif ( '' !== $venue ) {
@@ -463,7 +463,7 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 		}
 
 		// Price / Cost
-		$price = function_exists( 'tribe_get_cost' ) ? (string) call_user_func( 'tribe_get_cost', $post_id, true ) : '';
+		$price = function_exists( 'tribe_get_cost' ) ? (string) tribe_get_cost( $post_id, true ) : '';
 		if ( '' === $price ) {
 			$raw_cost = get_post_meta( $post_id, '_EventCost', true );
 			$price    = is_string( $raw_cost ) ? $raw_cost : '';
@@ -472,8 +472,9 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 		// Category
 		$category_name = '';
 		$terms         = get_the_terms( $post_id, 'tribe_events_cat' );
-		if ( ! empty( $terms ) && ! is_wp_error( $terms ) && isset( $terms[0]->name ) ) {
-			$category_name = (string) $terms[0]->name;
+		if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+			$first_term    = reset( $terms );
+			$category_name = false !== $first_term ? (string) $first_term->name : '';
 		}
 
 		// Title & Description
@@ -660,6 +661,13 @@ if ( empty( $events ) ) {
 if ( ! function_exists( 'nextora_event_tec_render_card' ) ) {
 	/**
 	 * Render a single event card for template1 slider.
+	 *
+	 * @param array<string, mixed>                 $event             Event data.
+	 * @param array<string, string>                $title_color_props Title color classes/styles.
+	 * @param array<string, string>                $card_props        Card classes/styles.
+	 * @param array<string, string>                $reg_btn_props     Register button classes/styles.
+	 * @param array<string, array<string, string>> $date_props        Date block classes/styles.
+	 * @param array<string, mixed>                 $meta_props        Meta icon/text classes/styles.
 	 */
 	function nextora_event_tec_render_card(
 		array $event,
@@ -820,6 +828,13 @@ if ( ! function_exists( 'nextora_event_tec_render_card' ) ) {
 if ( ! function_exists( 'nextora_event_tec_render_list_item' ) ) {
 	/**
 	 * Render a single event list item for default template.
+	 *
+	 * @param array<string, mixed>                 $event             Event data.
+	 * @param array<string, string>                $title_color_props Title color classes/styles.
+	 * @param array<string, string>                $card_props        Card classes/styles.
+	 * @param array<string, string>                $reg_btn_props     Register button classes/styles.
+	 * @param array<string, array<string, string>> $date_props        Date block classes/styles.
+	 * @param array<string, mixed>                 $meta_props        Meta icon/text classes/styles.
 	 */
 	function nextora_event_tec_render_list_item(
 		array $event,
@@ -973,6 +988,13 @@ if ( ! function_exists( 'nextora_event_tec_render_list_item' ) ) {
 if ( ! function_exists( 'nextora_event_tec_render_template2_item' ) ) {
 	/**
 	 * Render an Awakenur-inspired event card for template2.
+	 *
+	 * @param array<string, mixed>                 $event             Event data.
+	 * @param array<string, string>                $title_color_props Title color classes/styles.
+	 * @param array<string, string>                $card_props        Card classes/styles.
+	 * @param array<string, string>                $reg_btn_props     Register button classes/styles.
+	 * @param array<string, array<string, string>> $date_props        Date block classes/styles.
+	 * @param array<string, mixed>                 $meta_props        Meta icon/text classes/styles.
 	 */
 	function nextora_event_tec_render_template2_item(
 		array $event,
@@ -1098,6 +1120,13 @@ if ( ! function_exists( 'nextora_event_tec_render_template2_item' ) ) {
 if ( ! function_exists( 'nextora_event_tec_render_template3_item' ) ) {
 	/**
 	 * Render an editorial event list item for template3.
+	 *
+	 * @param array<string, mixed>                 $event             Event data.
+	 * @param array<string, string>                $title_color_props Title color classes/styles.
+	 * @param array<string, string>                $card_props        Card classes/styles.
+	 * @param array<string, string>                $reg_btn_props     Register button classes/styles.
+	 * @param array<string, array<string, string>> $date_props        Date block classes/styles.
+	 * @param array<string, mixed>                 $meta_props        Meta icon/text classes/styles.
 	 */
 	function nextora_event_tec_render_template3_item(
 		array $event,

@@ -141,7 +141,7 @@ if ( 'video' === $mode && $video_id ) {
 
 $has_custom_bg = $use_image || $use_video || $use_color_mix;
 
-$has_from_inner     = $block instanceof WP_Block && ! empty( $block->inner_blocks ) && count( $block->inner_blocks ) > 0;
+$has_from_inner     = $block instanceof WP_Block && count( $block->inner_blocks ) > 0;
 $has_content_string = is_string( $content ) && '' !== trim( (string) $content );
 $has_legacy         = ( '' !== $legacy_heading || '' !== $legacy_content );
 $is_legacy          = ( ! $has_from_inner && ! $has_content_string && $has_legacy );
@@ -204,6 +204,7 @@ $style_bits   = array(
 	'--nextora-cta--cols:' . $css_cols,
 	'--nextora-cta--align:' . $align_self,
 );
+$cm = '';
 if ( $use_color_mix ) {
 	$cm = sprintf( 'color-mix(in srgb, %s %d%%, %s)', $mix_a, $mix_ratio, $mix_b );
 	$style_bits[] = '--nextora-cta-color-mix:' . $cm;
