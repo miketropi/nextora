@@ -5,6 +5,7 @@ import {
   useBlockProps,
   InspectorControls,
   PanelColorSettings,
+  RichText,
 } from '@wordpress/block-editor';
 import {
   Button,
@@ -24,6 +25,7 @@ import {
 import { IconPicker } from '../advanced-icon/icon-picker';
 import type { LucideIconNode } from '../advanced-icon/types';
 import { loadIconCatalog } from './icon-catalog';
+import { getGutenbergColorProps } from './color-utils';
 import AdvancedListEditorIcon from './editor-icon';
 import type { AdvancedListAttributes, AdvancedListItem } from './types';
 
@@ -198,61 +200,52 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
     iconStyle = 'stacked',
     strokeWidth = 2.5,
     borderRadius = 50,
-    iconColor = 'base',
-    iconBackgroundColor = 'primary',
-    iconBorderColor = 'primary',
+    iconColor = '',
+    iconBackgroundColor = '',
+    iconBorderColor = '',
     iconTextGap = 14,
     itemGap = 16,
     enableScrollAnimation = true,
   } = attributes;
 
-  useEffect(() => {
-    const needsDefaults: Partial<AdvancedListAttributes> = {};
-
-    if (!attributes.iconColor) {
-      needsDefaults.iconColor = 'base';
-    }
-    if (!attributes.iconBackgroundColor) {
-      needsDefaults.iconBackgroundColor = 'primary';
-    }
-    if (!attributes.iconBorderColor) {
-      needsDefaults.iconBorderColor = 'primary';
-    }
-
-    if (Object.keys(needsDefaults).length > 0) {
-      setAttributes(needsDefaults);
-    }
-  }, []);
-
   const resolveColorForEditor = (colorValue: string): string => {
     if (!colorValue || colorValue === 'transparent') return 'transparent';
-    const entry = lookupPalette.find((p) => p.slug === colorValue);
-    if (entry?.color) return entry.color;
-    if (colorValue.startsWith('#')) return colorValue;
+    if (colorValue.startsWith('var:preset|color|')) {
+      const slug = colorValue.replace('var:preset|color|', '');
+      return `var(--wp--preset--color--${slug})`;
+    }
+    if (colorValue.startsWith('#') || colorValue.startsWith('rgb') || colorValue.startsWith('hsl') || colorValue.startsWith('var(')) {
+      return colorValue;
+    }
     return `var(--wp--preset--color--${colorValue})`;
   };
 
-  const effectiveIconColor = iconColor || (iconStyle === 'default' || iconStyle === 'framed' ? 'primary' : 'base');
-  const effectiveIconBg = iconBackgroundColor || (iconStyle === 'stacked' ? 'primary' : 'transparent');
+  const dynamicStyles: Record<string, string | number> = {
+    '--nextora-list-icon-size': `${iconSize}px`,
+    '--nextora-list-icon-circle-size': `${iconCircleSize}px`,
+    '--nextora-list-icon-text-gap': `${iconTextGap}px`,
+    '--nextora-list-item-gap': `${itemGap}px`,
+    '--nextora-list-border-radius': `${borderRadius}%`,
+    '--nextora-list-stroke-width': strokeWidth,
+  };
 
-  const editorIconColor = resolveColorForEditor(effectiveIconColor) || 'var(--wp--preset--color--base, #000)';
-  const editorIconBg = resolveColorForEditor(effectiveIconBg) || 'transparent';
-  const editorIconBorder = resolveColorForEditor(iconBorderColor) || 'var(--wp--preset--color--primary, #0066cc)';
+  if (iconColor) {
+    dynamicStyles['--nextora-list-icon-color'] = resolveColorForEditor(iconColor);
+  }
+  if (iconBackgroundColor) {
+    dynamicStyles['--nextora-list-icon-bg'] = resolveColorForEditor(iconBackgroundColor);
+  }
+  if (iconBorderColor) {
+    dynamicStyles['--nextora-list-icon-border'] = resolveColorForEditor(iconBorderColor);
+  }
 
   const blockProps = useBlockProps({
     className: `wp-block-nextora-advanced-list--style-${iconStyle}`,
-    style: {
-      '--nextora-list-icon-color': editorIconColor,
-      '--nextora-list-icon-bg': editorIconBg,
-      '--nextora-list-icon-border': editorIconBorder,
-      '--nextora-list-icon-size': `${iconSize}px`,
-      '--nextora-list-icon-circle-size': `${iconCircleSize}px`,
-      '--nextora-list-icon-text-gap': `${iconTextGap}px`,
-      '--nextora-list-item-gap': `${itemGap}px`,
-      '--nextora-list-border-radius': `${borderRadius}%`,
-      '--nextora-list-stroke-width': strokeWidth,
-    } as React.CSSProperties,
+    style: dynamicStyles as React.CSSProperties,
   });
+
+  const iconColorProps = getGutenbergColorProps(iconColor, 'color');
+  const iconBgProps = getGutenbergColorProps(iconBackgroundColor, 'background');
 
   const editingItem = editingItemId ? items.find((item) => item.id === editingItemId) : undefined;
 
@@ -260,6 +253,12 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
     setAttributes({
       [key]: normalizeColorForStorage(value, lookupPalette),
     } as Partial<AdvancedListAttributes>);
+  };
+
+  const updateItemText = (id: string, text: string) => {
+    setAttributes({
+      items: items.map((item) => (item.id === id ? { ...item, text } : item)),
+    });
   };
 
   const addItem = () => {
@@ -487,10 +486,24 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
         <ul className="nextora-advanced-list__items">
           {items.map((item) => (
             <li key={item.id} className="nextora-advanced-list__item" data-item-id={item.id}>
-              <span className={`nextora-advanced-list__icon nextora-advanced-list__icon--${iconStyle}`} aria-hidden="true">
+              <span
+                className={`nextora-advanced-list__icon nextora-advanced-list__icon--${iconStyle} ${iconColorProps.className} ${iconBgProps.className}`.trim()}
+                style={{
+                  ...iconColorProps.style,
+                  ...iconBgProps.style,
+                }}
+                aria-hidden="true"
+              >
                 <AdvancedListEditorIcon iconName={item.iconName} iconSize={iconSize} strokeWidth={strokeWidth} />
               </span>
-              <span className="nextora-advanced-list__text">{item.text || ''}</span>
+              <RichText
+                tagName="span"
+                className="nextora-advanced-list__text"
+                value={item.text || ''}
+                onChange={(text) => updateItemText(item.id, text)}
+                placeholder={__('List item text…', 'nextora')}
+                allowedFormats={['core/bold', 'core/italic', 'core/link']}
+              />
             </li>
           ))}
         </ul>

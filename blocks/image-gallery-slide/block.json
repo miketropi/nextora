@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/image-gallery-slide",
   "title": "Image gallery (slider)",
-  "category": "media",
+  "category": "nextora",
   "description": "A touch-friendly image carousel with Swiper. Pick images in the block; optional autoplay, arrows, and dots.",
   "keywords": [
     "image",

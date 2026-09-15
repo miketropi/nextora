@@ -1,4 +1,11 @@
 .wp-block-nextora-advanced-container,
+.wp-block-nextora-advanced-container *,
+.nextora-advanced-container,
+.nextora-advanced-container * {
+  box-sizing: border-box;
+}
+
+.wp-block-nextora-advanced-container,
 .nextora-advanced-container {
   position: relative;
   overflow: clip;

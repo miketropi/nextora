@@ -13,10 +13,10 @@ if ( ! is_array( $items ) || empty( $items ) ) {
 }
 
 $valid_sizes = array( 'small', 'base', 'medium', 'medium-plus', 'large', 'x-large', 'xx-large' );
-	$title_size  = sanitize_text_field( (string) ( $attributes['titleSize'] ?? 'medium-plus' ) );
-$description_size = sanitize_text_field( (string) ( $attributes['descriptionSize'] ?? 'small' ) );
-	$title_size = in_array( $title_size, $valid_sizes, true ) ? $title_size : 'medium-plus';
-$description_size = in_array( $description_size, $valid_sizes, true ) ? $description_size : 'small';
+$title_size  = sanitize_text_field( (string) ( $attributes['titleSize'] ?? '' ) );
+$description_size = sanitize_text_field( (string) ( $attributes['descriptionSize'] ?? '' ) );
+$title_size = in_array( $title_size, $valid_sizes, true ) ? $title_size : '';
+$description_size = in_array( $description_size, $valid_sizes, true ) ? $description_size : '';
 $autoplay = ! empty( $attributes['autoplay'] );
 $show_view_more = ! isset( $attributes['showViewMore'] ) || ! empty( $attributes['showViewMore'] );
 $show_arrows = ! isset( $attributes['showArrows'] ) || ! empty( $attributes['showArrows'] );
@@ -29,7 +29,19 @@ if ( ! function_exists( 'nextora_vertical_showcase_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if (
+			'transparent' === $raw ||
+			'rgba(0, 0, 0, 0)' === $raw ||
+			'rgba(0,0,0,0)' === $raw ||
+			preg_match( '/^#[0-9a-fA-F]{6}00$/i', $raw ) ||
+			preg_match( '/^#[0-9a-fA-F]{3}0$/i', $raw )
+		) {
+			return 'transparent';
+		}
 		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $matches ) ) {
+			if ( 'transparent' === strtolower( $matches[1] ) ) {
+				return 'transparent';
+			}
 			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $matches[1] ) ) . ')';
 		}
 		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
@@ -40,6 +52,9 @@ if ( ! function_exists( 'nextora_vertical_showcase_resolve_color' ) ) {
 			return $hex;
 		}
 		if ( preg_match( '/^[a-z0-9_-]+$/i', $raw ) ) {
+			if ( 'transparent' === strtolower( $raw ) ) {
+				return 'transparent';
+			}
 			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $raw ) ) . ')';
 		}
 		return '';
@@ -47,10 +62,14 @@ if ( ! function_exists( 'nextora_vertical_showcase_resolve_color' ) ) {
 }
 
 $css_vars = array(
-	'--nextora-vs-title-size: var(--wp--preset--font-size--' . esc_attr( $title_size ) . ')',
-	'--nextora-vs-description-size: var(--wp--preset--font-size--' . esc_attr( $description_size ) . ')',
 	'--nextora-vs-autoplay-duration: ' . $duration . 'ms',
 );
+if ( '' !== $title_size ) {
+	$css_vars[] = '--nextora-vs-title-size: var(--wp--preset--font-size--' . esc_attr( $title_size ) . ')';
+}
+if ( '' !== $description_size ) {
+	$css_vars[] = '--nextora-vs-description-size: var(--wp--preset--font-size--' . esc_attr( $description_size ) . ')';
+}
 $colors = array(
 	'titleColor' => '--nextora-vs-title-color',
 	'inactiveTitleColor' => '--nextora-vs-inactive-title-color',
@@ -92,7 +111,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 					<span class="nextora-vertical-showcase__item-rail" aria-hidden="true"></span>
 					<span class="nextora-vertical-showcase__item-number" aria-hidden="true">/<?php echo esc_html( str_pad( (string) ( (int) $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
 					<span class="nextora-vertical-showcase__item-body">
-						<h4 class="nextora-vertical-showcase__item-title"><?php echo esc_html( $title ); ?></h4>
+						<h4 class="nextora-vertical-showcase__item-title<?php echo '' !== $title_size ? ' has-' . sanitize_html_class( $title_size ) . '-font-size' : ''; ?>"><?php echo esc_html( $title ); ?></h4>
 						<?php
 						$link = esc_url( (string) ( $item['link'] ?? '#' ) );
 						$item_show_view_more = ! isset( $item['showViewMore'] ) || ! empty( $item['showViewMore'] );

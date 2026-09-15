@@ -1,5 +1,81 @@
-import type { BoxImageItem } from './types';
+import type { CSSProperties } from 'react';
+import type { BoxImageItem, BoxImageTemplate, BoxImageAttributes } from './types';
 import { storedColorToCss } from './icon-catalog';
+
+export function getTemplateDefaultAttributes(
+	template: BoxImageTemplate
+): Partial<BoxImageAttributes> {
+	switch (template) {
+		case 'template1':
+			return {
+				layoutMode: 'grid',
+				gridColumns: 3,
+				cardBorderRadius: 28,
+				spaceBetween: 24,
+				cardBackgroundColor: 'var(--wp--preset--color--base, #ffffff)',
+				cardBorderColor: 'var(--wp--preset--color--neutral-light, #e7ebed)',
+				cardBorderWidth: 2,
+				enableCardHover: false,
+				imageAspectRatio: '4/3',
+			};
+		case 'template2':
+			return {
+				layoutMode: 'grid',
+				gridColumns: 4,
+				cardBorderRadius: 24,
+				spaceBetween: 20,
+				cardBackgroundColor: 'var(--wp--preset--color--base, #ffffff)',
+				cardBorderColor: 'var(--wp--preset--color--neutral-light, #e7ebed)',
+				cardBorderWidth: 0,
+				imageAspectRatio: '1/1',
+			};
+		case 'template3':
+			return {
+				layoutMode: 'grid',
+				gridColumns: 4,
+				cardBorderRadius: 20,
+				spaceBetween: 20,
+				cardBackgroundColor: 'var(--wp--preset--color--base, #ffffff)',
+				cardBorderColor: 'var(--wp--preset--color--neutral-light, #e7ebed)',
+				cardBorderWidth: 1,
+				cardMinHeight: 0,
+				bulletIconColor: 'primary',
+				imageAspectRatio: '16/11',
+			};
+		case 'template4':
+			return {
+				stepVerticalGap: 480,
+				stepHorizontalGap: 1140,
+				cardBorderRadius: 16,
+				cardBorderWidth: 1,
+				cardMinHeight: 0,
+				imageAspectRatio: '16/10',
+			};
+		case 'template5':
+			return {
+				layoutMode: 'grid',
+				gridColumns: 4,
+				cardBorderRadius: 0,
+				cardBorderWidth: 0,
+				cardMinHeight: 440,
+				spaceBetween: 0,
+				cardBackgroundColor: 'transparent',
+				imageAspectRatio: '4/3',
+			};
+		default:
+			return {
+				layoutMode: 'slider',
+				gridColumns: 4,
+				cardBorderRadius: 8,
+				cardBorderWidth: 0,
+				cardMinHeight: 240,
+				spaceBetween: 18,
+				imageAspectRatio: '3/2',
+			};
+	}
+}
+
+export { getColorProps, getGutenbergColorProps } from './color-utils';
 
 export const DEFAULT_ITEMS: BoxImageItem[] = [
 	{

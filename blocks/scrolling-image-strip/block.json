@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/scrolling-image-strip",
   "title": "Scrolling Image Strip",
-  "category": "media",
+  "category": "nextora",
   "icon": "images-alt2",
   "description": "A continuous horizontal scrolling image strip with alternating tilt, fade mask, and overlay.",
   "keywords": [

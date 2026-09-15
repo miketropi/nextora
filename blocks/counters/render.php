@@ -9,68 +9,196 @@
 
 declare( strict_types=1 );
 
+if ( ! function_exists( 'nextora_counters_get_color_props' ) ) {
+	/**
+	 * Resolves stored color attribute into standard Gutenberg classes and inline style.
+	 *
+	 * @param string $color Attribute value (slug, preset string, or hex/rgb).
+	 * @param string $type  'color' (for text) or 'background'.
+	 *
+	 * @return array{class: string, style: string, slug: string, value: string}
+	 */
+	function nextora_counters_get_color_props( string $color, string $type = 'color' ): array {
+		$color = trim( $color );
+		if ( '' === $color ) {
+			return array( 'class' => '', 'style' => '', 'slug' => '', 'value' => '' );
+		}
+
+		if (
+			'transparent' === $color ||
+			'rgba(0,0,0,0)' === $color ||
+			'#00000000' === $color
+		) {
+			if ( 'border' === $type ) {
+				return array(
+					'class' => '',
+					'style' => 'border-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-transparent-background-color',
+					'style' => 'background-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-transparent-color',
+				'style' => 'color:transparent;',
+				'slug'  => 'transparent',
+				'value' => 'transparent',
+			);
+		}
+
+		$slug = '';
+		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $color, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^var\(\s*--wp--preset--color--([a-z0-9_-]+)\s*\)$/i', $color, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^[a-z0-9_-]+$/i', $color ) && ! preg_match( '/^[0-9a-f]{3,8}$/i', $color ) ) {
+			$slug = sanitize_html_class( strtolower( $color ) );
+		}
+
+		if ( 'transparent' === $slug ) {
+			if ( 'border' === $type ) {
+				return array(
+					'class' => '',
+					'style' => 'border-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-transparent-background-color',
+					'style' => 'background-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-transparent-color',
+				'style' => 'color:transparent;',
+				'slug'  => 'transparent',
+				'value' => 'transparent',
+			);
+		}
+
+		if ( '' !== $slug ) {
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-' . $slug . '-background-color',
+					'style' => '',
+					'slug'  => $slug,
+					'value' => 'var(--wp--preset--color--' . $slug . ')',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-' . $slug . '-color',
+				'style' => '',
+				'slug'  => $slug,
+				'value' => 'var(--wp--preset--color--' . $slug . ')',
+			);
+		}
+
+		// Custom hex / rgb / hsl
+		if ( 'background' === $type ) {
+			return array(
+				'class' => 'has-background',
+				'style' => 'background-color:' . esc_attr( $color ) . ';',
+				'slug'  => '',
+				'value' => $color,
+			);
+		}
+		return array(
+			'class' => 'has-text-color',
+			'style' => 'color:' . esc_attr( $color ) . ';',
+			'slug'  => '',
+			'value' => $color,
+		);
+	}
+}
+
 if ( ! function_exists( 'nextora_counters_resolve_color' ) ) {
 	/**
-	 * Preset slug or hex → CSS color value.
+	 * Resolves color string to CSS variable or color value.
 	 */
-	function nextora_counters_resolve_color( string $raw ): string {
-		$raw = trim( $raw );
-		if ( '' === $raw ) {
-			return '';
-		}
-		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
-			return $raw;
-		}
-
-		$hex = sanitize_hex_color( $raw );
-		if ( $hex ) {
-			return $hex;
-		}
-		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
-			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
-		}
-		return '';
+	function nextora_counters_resolve_color( string $color ): string {
+		$props = nextora_counters_get_color_props( $color );
+		return $props['value'];
 	}
 }
 
-if ( ! function_exists( 'nextora_counters_resolve_font_family' ) ) {
+if ( ! function_exists( 'nextora_counters_get_font_size_props' ) ) {
 	/**
-	 * Preset slug or custom font-family stack → font-family value.
+	 * Preset slug or custom CSS size → font-size props.
+	 *
+	 * @param string $raw          Font size attribute.
+	 * @param string $default_size Default preset size slug if empty.
+	 *
+	 * @return array{class: string, style: string}
 	 */
-	function nextora_counters_resolve_font_family( string $raw ): string {
+	function nextora_counters_get_font_size_props( string $raw, string $default_size = '' ): array {
 		$raw = trim( $raw );
 		if ( '' === $raw ) {
-			return '';
+			$raw = $default_size;
 		}
-		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
-			return 'var(--wp--preset--font-family--' . sanitize_html_class( $raw ) . ')';
+		if ( '' === $raw ) {
+			return array( 'class' => '', 'style' => '' );
 		}
-		return $raw;
+
+		$slug = '';
+		if ( preg_match( '/^var:preset\|font-size\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^var\(\s*--wp--preset--font-size--([a-z0-9_-]+)\s*\)$/i', $raw, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( ! preg_match( '/^(?:[\d.]+(?:px|rem|em|vw|vh|%)|clamp\(.+\))$/i', $raw ) && ! is_numeric( $raw ) && preg_match( '/^[a-z0-9-]+$/i', $raw ) ) {
+			$slug = sanitize_html_class( strtolower( $raw ) );
+		}
+
+		if ( '' !== $slug ) {
+			return array( 'class' => 'has-' . $slug . '-font-size', 'style' => '' );
+		}
+
+		$size = $raw;
+		if ( is_numeric( $size ) ) {
+			$size .= 'px';
+		}
+		return array( 'class' => '', 'style' => 'font-size:' . esc_attr( $size ) . ';' );
 	}
 }
 
-if ( ! function_exists( 'nextora_counters_resolve_font_size' ) ) {
+if ( ! function_exists( 'nextora_counters_get_font_family_props' ) ) {
 	/**
-	 * Preset slug or custom CSS size → font-size value.
+	 * Preset slug or custom font family → font-family props.
+	 *
+	 * @param string $raw Font family attribute.
+	 *
+	 * @return array{class: string, style: string}
 	 */
-	function nextora_counters_resolve_font_size( string $raw ): string {
+	function nextora_counters_get_font_family_props( string $raw ): array {
 		$raw = trim( $raw );
 		if ( '' === $raw ) {
-			return '';
+			return array( 'class' => '', 'style' => '' );
 		}
-		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
-			return 'var(--wp--preset--font-size--' . sanitize_html_class( $raw ) . ')';
+
+		$slug = '';
+		if ( preg_match( '/^var:preset\|font-family\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^var\(\s*--wp--preset--font-family--([a-z0-9_-]+)\s*\)$/i', $raw, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^[a-z0-9-]+$/i', $raw ) ) {
+			$slug = sanitize_html_class( strtolower( $raw ) );
 		}
-		if ( preg_match( '/^clamp\(.+\)$/i', $raw ) || preg_match( '/^[\d.]+(?:rem|px|em|vw|vh|%)$/i', $raw ) ) {
-			return $raw;
+
+		if ( '' !== $slug ) {
+			return array( 'class' => 'has-' . $slug . '-font-family', 'style' => '' );
 		}
-		if ( preg_match( '/^[\d.]+$/', $raw ) ) {
-			return $raw . 'px';
-		}
-		if ( is_numeric( $raw ) ) {
-			return max( 12, min( 72, (int) $raw ) ) . 'px';
-		}
-		return '';
+
+		return array( 'class' => '', 'style' => 'font-family:' . esc_attr( $raw ) . ';' );
 	}
 }
 
@@ -169,6 +297,9 @@ if ( ! in_array( $easing, $allowed_easing, true ) ) {
 $wrapper_classes = array(
 	'nextora-counters',
 	'nextora-counters--align-' . $text_align,
+	'nextora-counters--cols-d-' . (string) $columns,
+	'nextora-counters--cols-t-' . (string) $columns_tablet,
+	'nextora-counters--cols-m-' . (string) $columns_mobile,
 );
 if ( $divider ) {
 	$wrapper_classes[] = 'nextora-counters--divider';
@@ -194,48 +325,34 @@ if ( '' !== $number_label_gap ) {
 if ( '' !== $divider_color ) {
 	$style_parts[] = '--nextora-counters-divider-color:' . esc_attr( $divider_color );
 }
-
-$number_color = nextora_counters_resolve_color(
-	isset( $attributes['numberColor'] ) ? (string) $attributes['numberColor'] : '',
-);
-if ( '' !== $number_color ) {
-	$style_parts[] = '--nextora-counters-number-color:' . esc_attr( $number_color );
+if ( ! empty( $attributes['numberColor'] ) ) {
+	$num_resolved = nextora_counters_resolve_color( (string) $attributes['numberColor'] );
+	if ( '' !== $num_resolved ) {
+		$style_parts[] = '--nextora-counters-number-color:' . esc_attr( $num_resolved );
+	}
+}
+if ( ! empty( $attributes['labelColor'] ) ) {
+	$lbl_resolved = nextora_counters_resolve_color( (string) $attributes['labelColor'] );
+	if ( '' !== $lbl_resolved ) {
+		$style_parts[] = '--nextora-counters-label-color:' . esc_attr( $lbl_resolved );
+	}
 }
 
-$label_color = nextora_counters_resolve_color(
-	isset( $attributes['labelColor'] ) ? (string) $attributes['labelColor'] : '',
-);
-if ( '' !== $label_color ) {
-	$style_parts[] = '--nextora-counters-label-color:' . esc_attr( $label_color );
-}
+$num_color_props = nextora_counters_get_color_props( (string) ( $attributes['numberColor'] ?? '' ), 'color' );
+$num_size_props  = nextora_counters_get_font_size_props( (string) ( $attributes['numberFontSize'] ?? '' ), '' );
+$num_ff_props    = nextora_counters_get_font_family_props( (string) ( $attributes['numberFontFamily'] ?? '' ) );
 
-$number_font_size = nextora_counters_resolve_font_size(
-	isset( $attributes['numberFontSize'] ) ? (string) $attributes['numberFontSize'] : '',
-);
-if ( '' !== $number_font_size ) {
-	$style_parts[] = '--nextora-counters-number-size:' . esc_attr( $number_font_size );
-}
+$number_classes = trim( 'nextora-counters__number ' . $num_color_props['class'] . ' ' . $num_size_props['class'] . ' ' . $num_ff_props['class'] );
+$number_styles  = trim( $num_color_props['style'] . ' ' . $num_size_props['style'] . ' ' . $num_ff_props['style'] );
+$number_style_attr = '' !== $number_styles ? ' style="' . esc_attr( $number_styles ) . '"' : '';
 
-$label_font_size = nextora_counters_resolve_font_size(
-	isset( $attributes['labelFontSize'] ) ? (string) $attributes['labelFontSize'] : '',
-);
-if ( '' !== $label_font_size ) {
-	$style_parts[] = '--nextora-counters-label-size:' . esc_attr( $label_font_size );
-}
+$label_color_props = nextora_counters_get_color_props( (string) ( $attributes['labelColor'] ?? '' ), 'color' );
+$label_size_props  = nextora_counters_get_font_size_props( (string) ( $attributes['labelFontSize'] ?? '' ), '' );
+$label_ff_props    = nextora_counters_get_font_family_props( (string) ( $attributes['labelFontFamily'] ?? '' ) );
 
-$number_font_family = nextora_counters_resolve_font_family(
-	isset( $attributes['numberFontFamily'] ) ? (string) $attributes['numberFontFamily'] : '',
-);
-if ( '' !== $number_font_family ) {
-	$style_parts[] = '--nextora-counters-number-font-family:' . esc_attr( $number_font_family );
-}
-
-$label_font_family = nextora_counters_resolve_font_family(
-	isset( $attributes['labelFontFamily'] ) ? (string) $attributes['labelFontFamily'] : '',
-);
-if ( '' !== $label_font_family ) {
-	$style_parts[] = '--nextora-counters-label-font-family:' . esc_attr( $label_font_family );
-}
+$label_classes = trim( 'nextora-counters__label ' . $label_color_props['class'] . ' ' . $label_size_props['class'] . ' ' . $label_ff_props['class'] );
+$label_styles  = trim( $label_color_props['style'] . ' ' . $label_size_props['style'] . ' ' . $label_ff_props['style'] );
+$label_style_attr = '' !== $label_styles ? ' style="' . esc_attr( $label_styles ) . '"' : '';
 
 $inline_style = implode( ';', $style_parts );
 
@@ -269,14 +386,18 @@ foreach ( $items as $item ) {
 
 	$items_html .= sprintf(
 		'<div class="nextora-counters__item">
-			<span class="nextora-counters__number" data-nextora-counters-value="%s" data-nextora-counters-prefix="%s" data-nextora-counters-suffix="%s" aria-label="%s">%s</span>
-			<span class="nextora-counters__label">%s</span>
+			<span class="%s"%s data-nextora-counters-value="%s" data-nextora-counters-prefix="%s" data-nextora-counters-suffix="%s" aria-label="%s">%s</span>
+			<span class="%s"%s>%s</span>
 		</div>',
+		esc_attr( $number_classes ),
+		$number_style_attr,
 		esc_attr( (string) $number ),
 		esc_attr( $prefix ),
 		esc_attr( $suffix ),
 		esc_attr( $display ),
 		esc_html( $initial_display ),
+		esc_attr( $label_classes ),
+		$label_style_attr,
 		esc_html( $label ),
 	);
 }

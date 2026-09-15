@@ -17,7 +17,7 @@ function abbrevNumber(num: number): string {
     if (abs >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
     if (abs >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
     if (abs >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
-    return num.toLocaleString('vi-VN');
+    return num.toLocaleString('en-US');
 }
 
 function numberFormatter(value: unknown): string {
@@ -78,7 +78,11 @@ function refreshChartColors(config: any): void {
 
     datasets.forEach((dataset: any) => {
         if (config.type === 'doughnut') {
-            dataset.backgroundColor = Array.from({ length: dataset.data?.length || 1 }, (_, index) => line);
+            if (!Array.isArray(dataset.backgroundColor) || dataset.backgroundColor.length !== (dataset.data?.length || 0)) {
+                const count = dataset.data?.length || 1;
+                const palettePreset = [line, '#039590', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec4899', '#10b981'];
+                dataset.backgroundColor = Array.from({ length: count }, (_, index) => palettePreset[index % palettePreset.length]);
+            }
         } else if (config.type === 'bar') {
             dataset.backgroundColor = line;
             dataset.borderColor = line;

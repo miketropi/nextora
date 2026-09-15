@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/text-list-hover-image",
   "title": "Text List Hover Image",
-  "category": "design",
+  "category": "nextora",
   "description": "A list of text items that reveal a floating image following the cursor on hover.",
   "keywords": [
     "list",
@@ -85,15 +85,15 @@
     },
     "titleSize": {
       "type": "string",
-      "default": "medium"
+      "default": ""
     },
     "descriptionSize": {
       "type": "string",
-      "default": "small"
+      "default": ""
     },
     "yearSize": {
       "type": "string",
-      "default": "small"
+      "default": ""
     },
     "titleWeight": {
       "type": "string",

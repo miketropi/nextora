@@ -55,6 +55,10 @@ if ( ! function_exists( 'nextora_sis_resolve_color' ) ) {
 			return '';
 		}
 
+		if ( 'transparent' === $raw || 'rgba(0,0,0,0)' === $raw || '#00000000' === $raw ) {
+			return 'transparent';
+		}
+
 		if ( ! function_exists( 'nextora_icon_hex_to_preset_slug' ) ) {
 			$lucide = dirname( __DIR__ ) . '/advanced-icon/lucide.php';
 			if ( is_readable( $lucide ) ) {

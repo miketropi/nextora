@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/page-title",
   "title": "Page Title",
-  "category": "theme",
+  "category": "nextora",
   "description": "A themed page title section with optional background, breadcrumbs, and motion.",
   "keywords": [
     "page title",

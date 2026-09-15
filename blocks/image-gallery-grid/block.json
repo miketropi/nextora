@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/image-gallery-grid",
   "title": "Image gallery (grid)",
-  "category": "media",
+  "category": "nextora",
   "description": "A responsive image grid. Choose a layout preset (classic or creative bento, spotlight, editorial) and 3–6 images for the styled layouts.",
   "keywords": [
     "image",

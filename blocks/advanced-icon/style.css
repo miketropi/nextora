@@ -1,3 +1,8 @@
+.wp-block-nextora-advanced-icon,
+.wp-block-nextora-advanced-icon * {
+	box-sizing: border-box;
+}
+
 .wp-block-nextora-advanced-icon.nextora-advanced-icon {
 	display: flex;
 	align-items: flex-start;
@@ -114,7 +119,7 @@
 	width: fit-content;
 	height: fit-content;
 	padding: var(--nextora-advanced-icon-padding, 0.65em);
-	background: var(--nextora-advanced-icon-bg, var(--wp--preset--color--secondary, #f0f0f0));
+	background: var(--nextora-advanced-icon-bg, var(--wp--preset--color--secondary, color-mix(in srgb, currentColor 10%, transparent)));
 	border-radius: var(--nextora-advanced-icon-radius, 8px);
 	line-height: 0;
 }

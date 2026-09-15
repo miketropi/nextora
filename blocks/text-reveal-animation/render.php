@@ -61,11 +61,20 @@ if ( ! function_exists( 'nextora_tra_resolve_color' ) ) {
 			return '';
 		}
 
-		if ( 'transparent' === $raw ) {
+		if (
+			'transparent' === $raw ||
+			'rgba(0, 0, 0, 0)' === $raw ||
+			'rgba(0,0,0,0)' === $raw ||
+			preg_match( '/^#[0-9a-fA-F]{6}00$/i', $raw ) ||
+			preg_match( '/^#[0-9a-fA-F]{3}0$/i', $raw )
+		) {
 			return 'transparent';
 		}
 
 		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
+			if ( 'transparent' === strtolower( $m[1] ) ) {
+				return 'transparent';
+			}
 			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $m[1] ) ) . ')';
 		}
 

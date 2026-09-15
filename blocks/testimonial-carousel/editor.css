@@ -1,3 +1,5 @@
+@import './style.css';
+
 /**
  * Testimonial carousel — editor-only styles.
  */
@@ -178,20 +180,29 @@
 	height: var(--nextora-testimonial-icon-size, 20px);
 }
 
-/* Template 1 editor preview — horizontal slider strip */
+/* Template 1 editor preview — responsive grid layout */
 .nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slides-editor--template-1 {
-	display: flex;
-	flex-direction: row;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
 	gap: var(--nextora-testimonial-card-gap, 22px);
-	overflow-x: auto;
 	padding-bottom: 4px;
-	scrollbar-width: thin;
+}
+
+@media (max-width: 1024px) {
+	.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slides-editor--template-1 {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 640px) {
+	.nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slides-editor--template-1 {
+		grid-template-columns: 1fr;
+	}
 }
 
 .nextora-testimonial-carousel--editor .nextora-testimonial-carousel__slide--t1 {
-	flex: 0 0 auto;
-	min-width: min(320px, 90vw);
-	max-width: min(380px, 90vw);
+	min-width: 0;
+	max-width: 100%;
 	padding: 28px;
 	border-radius: 20px;
 	text-align: left;

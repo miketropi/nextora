@@ -14,6 +14,7 @@ import {
 import type { StackingCardItem, StackingCardsAttributes } from './types';
 
 const SIZES = [
+  ['Theme default', ''],
   ['Small', 'small'], ['Base', 'base'], ['Medium', 'medium'], ['Medium Plus', 'medium-plus'],
   ['Large', 'large'], ['Extra Large', 'x-large'], ['Extra Extra Large', 'xx-large'],
 ].map(([label, value]) => ({ label: __(label, 'nextora'), value }));
@@ -106,8 +107,8 @@ export default function StackingCardsEdit({ attributes, setAttributes }: { attri
     cardRadius: rawAttributes.cardRadius ?? 20, contentPadding: rawAttributes.contentPadding ?? 48, imageWidth: rawAttributes.imageWidth ?? 50,
     contentMaxWidth: rawAttributes.contentMaxWidth ?? '1200px', mobileCardHeight: rawAttributes.mobileCardHeight ?? 460,
     mobileContentPadding: rawAttributes.mobileContentPadding ?? 24, mobileImageHeight: rawAttributes.mobileImageHeight ?? 240,
-    mobileStackOffset: rawAttributes.mobileStackOffset ?? 16, headingSize: rawAttributes.headingSize ?? 'medium-plus',
-    descriptionSize: rawAttributes.descriptionSize ?? 'base', linkSize: rawAttributes.linkSize ?? 'small',
+    mobileStackOffset: rawAttributes.mobileStackOffset ?? 16, headingSize: rawAttributes.headingSize ?? '',
+    descriptionSize: rawAttributes.descriptionSize ?? '', linkSize: rawAttributes.linkSize ?? '',
     headingWeight: rawAttributes.headingWeight ?? '600',
     showLink: rawAttributes.showLink ?? true, openLinksInNewTab: rawAttributes.openLinksInNewTab ?? false,
     imageObjectFit: rawAttributes.imageObjectFit ?? 'cover',
@@ -119,7 +120,11 @@ export default function StackingCardsEdit({ attributes, setAttributes }: { attri
   const set = (key: keyof StackingCardsAttributes, value: unknown) => setAttributes({ [key]: value } as Partial<StackingCardsAttributes>);
   const color = (value: string, fallback: string) => value ? (lookup.find((entry) => entry.slug === value)?.color || (value.startsWith('#') ? value : `var(--wp--preset--color--${value})`)) : fallback;
   const blockProps = useBlockProps({ className: `wp-block-nextora-stacking-cards nextora-stacking-cards--editor${a.enableSticky ? '' : ' nextora-stacking-cards--no-sticky'}`, style: {
-    '--nextora-sc-card-height': `${a.cardHeight}px`, '--nextora-sc-card-gap': `${a.cardGap}px`, '--nextora-sc-stack-offset': `${a.stackOffset}px`, '--nextora-sc-sticky-top-offset': `${a.stickyTopOffset}px`, '--nextora-sc-card-radius': `${a.cardRadius}px`, '--nextora-sc-content-padding': `${a.contentPadding}px`, '--nextora-sc-image-width': `${a.imageWidth}%`, '--nextora-sc-card-bg': color(a.cardBackgroundColor, 'var(--wp--preset--color--surface, #f4f1eb)'), '--nextora-sc-heading-color': color(a.headingColor, 'var(--wp--preset--color--contrast)'), '--nextora-sc-description-color': color(a.descriptionColor, 'var(--wp--preset--color--paragraph)'), '--nextora-sc-link-color': color(a.linkColor, 'var(--wp--preset--color--primary)'), '--nextora-sc-heading-size': `var(--wp--preset--font-size--${a.headingSize})`, '--nextora-sc-description-size': `var(--wp--preset--font-size--${a.descriptionSize})`, '--nextora-sc-link-size': `var(--wp--preset--font-size--${a.linkSize})`, '--nextora-sc-heading-weight': a.headingWeight,
+    '--nextora-sc-card-height': `${a.cardHeight}px`, '--nextora-sc-card-gap': `${a.cardGap}px`, '--nextora-sc-stack-offset': `${a.stackOffset}px`, '--nextora-sc-sticky-top-offset': `${a.stickyTopOffset}px`, '--nextora-sc-card-radius': `${a.cardRadius}px`, '--nextora-sc-content-padding': `${a.contentPadding}px`, '--nextora-sc-image-width': `${a.imageWidth}%`, '--nextora-sc-card-bg': color(a.cardBackgroundColor, 'var(--wp--preset--color--surface, #f4f1eb)'), '--nextora-sc-heading-color': color(a.headingColor, 'var(--wp--preset--color--contrast)'), '--nextora-sc-description-color': color(a.descriptionColor, 'var(--wp--preset--color--paragraph)'), '--nextora-sc-link-color': color(a.linkColor, 'var(--wp--preset--color--primary)'),
+    ...(a.headingSize ? { '--nextora-sc-heading-size': `var(--wp--preset--font-size--${a.headingSize})` } : {}),
+    ...(a.descriptionSize ? { '--nextora-sc-description-size': `var(--wp--preset--font-size--${a.descriptionSize})` } : {}),
+    ...(a.linkSize ? { '--nextora-sc-link-size': `var(--wp--preset--font-size--${a.linkSize})` } : {}),
+    '--nextora-sc-heading-weight': a.headingWeight,
   } as React.CSSProperties });
   const editing = editingId ? cards.find((card) => card.id === editingId) : undefined;
   const changeColor = (key: keyof StackingCardsAttributes, value: string | undefined) => set(key, normalizeColorForStorage(value, lookup));
@@ -142,7 +147,7 @@ export default function StackingCardsEdit({ attributes, setAttributes }: { attri
         <RangeControl label={__('Mobile image height (px)', 'nextora')} value={a.mobileImageHeight} min={140} max={420} step={10} onChange={(v) => set('mobileImageHeight', v ?? 240)} />
         <RangeControl label={__('Mobile stack offset (px)', 'nextora')} value={a.mobileStackOffset} min={0} max={48} step={4} onChange={(v) => set('mobileStackOffset', v ?? 16)} />
       </PanelBody>
-      <PanelBody title={__('Typography', 'nextora')} initialOpen={false}><SelectControl label={__('Heading size', 'nextora')} value={a.headingSize} options={SIZES} onChange={(v) => set('headingSize', v)} /><SelectControl label={__('Description size', 'nextora')} value={a.descriptionSize} options={SIZES.slice(0, 5)} onChange={(v) => set('descriptionSize', v)} /><SelectControl label={__('Link size', 'nextora')} value={a.linkSize} options={SIZES.slice(0, 4)} onChange={(v) => set('linkSize', v)} /><SelectControl label={__('Heading weight', 'nextora')} value={a.headingWeight} options={WEIGHTS} onChange={(v) => set('headingWeight', v)} /></PanelBody>
+      <PanelBody title={__('Typography', 'nextora')} initialOpen={false}><SelectControl label={__('Heading size', 'nextora')} value={a.headingSize} options={SIZES} onChange={(v) => set('headingSize', v)} /><SelectControl label={__('Description size', 'nextora')} value={a.descriptionSize} options={SIZES} onChange={(v) => set('descriptionSize', v)} /><SelectControl label={__('Link size', 'nextora')} value={a.linkSize} options={SIZES} onChange={(v) => set('linkSize', v)} /><SelectControl label={__('Heading weight', 'nextora')} value={a.headingWeight} options={WEIGHTS} onChange={(v) => set('headingWeight', v)} /></PanelBody>
       <PanelBody title={__('Display', 'nextora')} initialOpen={false}><ToggleControl label={__('Show links', 'nextora')} checked={a.showLink} onChange={(v) => set('showLink', v)} /><ToggleControl label={__('Open links in new tab', 'nextora')} checked={a.openLinksInNewTab} onChange={(v) => set('openLinksInNewTab', v)} /><ToggleControl label={__('Enable sticky stacking', 'nextora')} checked={a.enableSticky} onChange={(v) => set('enableSticky', v)} /><SelectControl label={__('Image fit', 'nextora')} value={a.imageObjectFit as 'cover' | 'contain'} options={[{ label: 'Cover', value: 'cover' }, { label: 'Contain', value: 'contain' }]} onChange={(v) => set('imageObjectFit', v as 'cover' | 'contain')} /></PanelBody>
       <PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colors={palette} colorSettings={([['cardBackgroundColor', __('Card background', 'nextora')], ['headingColor', __('Heading', 'nextora')], ['descriptionColor', __('Description', 'nextora')], ['linkColor', __('Link', 'nextora')]] as const).map(([key, label]) => ({ value: colorValueForPicker(a[key] as string, palette, lookup), onChange: (value: string | undefined) => changeColor(key, value), label }))} />
       <PanelBody title={__('Animation', 'nextora')} initialOpen={false}><ToggleControl label={__('Animate on scroll', 'nextora')} checked={a.enableScrollAnimation} onChange={(v) => set('enableScrollAnimation', v)} help={__('Fade or move content in when it enters the viewport. Disabled automatically when the visitor prefers reduced motion.', 'nextora')} /></PanelBody>

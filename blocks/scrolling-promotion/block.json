@@ -3,14 +3,23 @@
   "apiVersion": 3,
   "name": "nextora/scrolling-promotion",
   "title": "Scrolling Promotion",
-  "category": "theme",
+  "category": "nextora",
   "description": "Continuous horizontal scrolling marquee for text, logos, or text with images.",
-  "keywords": ["marquee", "promotion", "announcement", "ticker", "nextora"],
+  "keywords": [
+    "marquee",
+    "promotion",
+    "announcement",
+    "ticker",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "controls-repeat",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": false,

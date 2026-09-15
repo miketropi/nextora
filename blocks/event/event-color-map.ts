@@ -29,12 +29,29 @@ export function resolveEventColorForCss(raw: string): string {
 		return '';
 	}
 
-	if ( trimmed.startsWith( 'var(' ) || trimmed.startsWith( '#' ) ) {
+	if ( trimmed === 'transparent' ) {
+		return 'transparent';
+	}
+
+	if ( trimmed.startsWith( 'var(' ) || trimmed.startsWith( '#' ) || trimmed.startsWith( 'rgb' ) || trimmed.startsWith( 'hsl' ) ) {
 		return trimmed;
 	}
 
+	const presetMatch = trimmed.match( /^var:preset\|color\|([a-z0-9_-]+)$/i );
+	if ( presetMatch ) {
+		const slug = presetMatch[1].toLowerCase();
+		if ( slug === 'transparent' ) {
+			return 'transparent';
+		}
+		return `var(--wp--preset--color--${slug})`;
+	}
+
 	if ( /^[a-z0-9-]+$/i.test( trimmed ) ) {
-		return `var(--wp--preset--color--${trimmed.toLowerCase()})`;
+		const slug = trimmed.toLowerCase();
+		if ( slug === 'transparent' ) {
+			return 'transparent';
+		}
+		return `var(--wp--preset--color--${slug})`;
 	}
 
 	return trimmed;

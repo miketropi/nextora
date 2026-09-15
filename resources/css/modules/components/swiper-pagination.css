@@ -1,0 +1,66 @@
+/**
+ * Global Unified Swiper Pagination Standard
+ * - Consistent 7px round inactive bullets
+ * - Consistent 20px pill active bullet
+ * - Consistent 6px flex gap with margin: 0 !important (removes Swiper's native 4px margin)
+ */
+
+.swiper-pagination-bullets.swiper-pagination-horizontal:not(.swiper-pagination-lock):not(:empty),
+.swiper-horizontal > .swiper-pagination-bullets:not(.swiper-pagination-lock):not(:empty),
+.swiper-pagination:not(.swiper-pagination-fraction):not(.swiper-pagination-progressbar):not(.swiper-pagination-lock):not(:empty) {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 6px !important;
+	line-height: 0 !important;
+}
+
+.swiper-pagination-bullets.swiper-pagination-horizontal .swiper-pagination-bullet,
+.swiper-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet,
+.swiper-pagination:not(.swiper-pagination-fraction):not(.swiper-pagination-progressbar) .swiper-pagination-bullet {
+	margin: 0 !important;
+	width: 7px !important;
+	height: 7px !important;
+	border: none !important;
+	border-radius: 999px !important;
+	opacity: 1 !important;
+	box-sizing: border-box !important;
+	cursor: pointer;
+	transform: none !important;
+	transition: width 0.3s ease, border-radius 0.3s ease, background-color 0.3s ease, opacity 0.3s ease !important;
+}
+
+.swiper-pagination-bullets.swiper-pagination-horizontal .swiper-pagination-bullet-active,
+.swiper-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet-active,
+.swiper-pagination:not(.swiper-pagination-fraction):not(.swiper-pagination-progressbar) .swiper-pagination-bullet-active {
+	width: 20px !important;
+	height: 7px !important;
+	border-radius: 999px !important;
+	opacity: 1 !important;
+	transform: none !important;
+}
+
+/* Hide Swiper Pagination when locked by Swiper (slides <= slidesPerView) or empty */
+.swiper-pagination-lock,
+.swiper-pagination.swiper-pagination-lock,
+.swiper-pagination:empty {
+	display: none !important;
+	margin: 0 !important;
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+	padding: 0 !important;
+	height: 0 !important;
+	min-height: 0 !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}
+
+
+/* Hide Swiper Navigation Arrows when locked */
+.swiper-button-lock,
+.swiper-button-prev.swiper-button-lock,
+.swiper-button-next.swiper-button-lock {
+	display: none !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+}

@@ -2,6 +2,13 @@
  * Counters — front-end + editor canvas.
  */
 
+.wp-block-nextora-counters,
+.wp-block-nextora-counters *,
+.nextora-counters,
+.nextora-counters * {
+	box-sizing: border-box;
+}
+
 .wp-block-nextora-counters.nextora-counters {
 	--nextora-counters-cols-m: 1;
 	--nextora-counters-cols-t: 2;
@@ -11,7 +18,6 @@
 	gap: var(--nextora-counters-gap, var(--wp--preset--spacing--30, 2rem));
 	padding-block: var(--wp--preset--spacing--60, 4rem);
 	padding-inline: var(--wp--preset--spacing--40, 1.5rem);
-	box-sizing: border-box;
 }
 
 @media (min-width: 400px) {
@@ -50,26 +56,20 @@
 
 .nextora-counters__number {
 	display: block;
-	font-family: var(--nextora-counters-number-font-family, inherit);
-	font-size: var(
-		--nextora-counters-number-size,
-		var(--wp--preset--font-size--large)
-	);
 	font-weight: 700;
 	line-height: 1;
 	letter-spacing: -0.03em;
-	color: var(--nextora-counters-number-color, var(--wp--preset--color--contrast, #0a0a0a));
+	color: var(--nextora-counters-number-color, inherit);
+	font-size: var(--nextora-counters-number-size, inherit);
+	font-family: var(--nextora-counters-number-font-family, inherit);
 }
 
 .nextora-counters__label {
 	display: block;
-	font-family: var(--nextora-counters-label-font-family, inherit);
-	font-size: var(
-		--nextora-counters-label-size,
-		var(--wp--preset--font-size--base)
-	);
 	line-height: 1.4;
-	color: var(--nextora-counters-label-color, var(--wp--preset--color--paragraph, #525252));
+	color: var(--nextora-counters-label-color, inherit);
+	font-size: var(--nextora-counters-label-size, inherit);
+	font-family: var(--nextora-counters-label-font-family, inherit);
 }
 .nextora-counters__label:empty {
     display: none;
@@ -87,26 +87,13 @@
 	border-inline-end: none;
 }
 
-@media (min-width: 400px) and (max-width: 959px) {
-	.nextora-counters--divider .nextora-counters__item:nth-child(2n) {
-		border-inline-end: none;
-	}
-}
-
-@media (min-width: 960px) {
-	.nextora-counters--divider .nextora-counters__item:nth-child(3n) {
-		border-inline-end: none;
-	}
-}
-
-@media (max-width: 768px) {
-	.wp-block-nextora-counters.nextora-counters {
-		column-gap: var(--nextora-counters-gap, var(--wp--preset--spacing--20, 1rem));
-	}
-}
-
+/* Small screens (< 400px) */
 @media (max-width: 399px) {
-	.nextora-counters--divider .nextora-counters__item {
+	/* 1 column: horizontal dividers */
+	.nextora-counters--divider.nextora-counters--cols-m-1 .nextora-counters__item,
+	.nextora-counters--divider[style*="--nextora-counters-cols-m:1"] .nextora-counters__item,
+	.nextora-counters--divider[style*="--nextora-counters-cols-m: 1"] .nextora-counters__item,
+	.nextora-counters--divider:not([class*="nextora-counters--cols-m-"]):not([style*="--nextora-counters-cols-m:"]) .nextora-counters__item {
 		border-inline-end: none;
 		border-block-end: 1px solid
 			var(
@@ -116,9 +103,142 @@
 		padding-block-end: var(--wp--preset--spacing--20, 1rem);
 	}
 
-	.nextora-counters--divider .nextora-counters__item:last-child {
+	.nextora-counters--divider.nextora-counters--cols-m-1 .nextora-counters__item:last-child,
+	.nextora-counters--divider[style*="--nextora-counters-cols-m:1"] .nextora-counters__item:last-child,
+	.nextora-counters--divider[style*="--nextora-counters-cols-m: 1"] .nextora-counters__item:last-child,
+	.nextora-counters--divider:not([class*="nextora-counters--cols-m-"]):not([style*="--nextora-counters-cols-m:"]) .nextora-counters__item:last-child {
 		border-block-end: none;
 		padding-block-end: 0;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-m-2 .nextora-counters__item:nth-child(2n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-m:2"] .nextora-counters__item:nth-child(2n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-m: 2"] .nextora-counters__item:nth-child(2n) {
+		border-inline-end: none;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-m-3 .nextora-counters__item:nth-child(3n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-m:3"] .nextora-counters__item:nth-child(3n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-m: 3"] .nextora-counters__item:nth-child(3n) {
+		border-inline-end: none;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-m-4 .nextora-counters__item:nth-child(4n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-m:4"] .nextora-counters__item:nth-child(4n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-m: 4"] .nextora-counters__item:nth-child(4n) {
+		border-inline-end: none;
+	}
+}
+
+/* Medium screens (400px to 959px) */
+@media (min-width: 400px) and (max-width: 959px) {
+	.nextora-counters--divider.nextora-counters--cols-t-1 .nextora-counters__item,
+	.nextora-counters--divider[style*="--nextora-counters-cols-t:1"] .nextora-counters__item,
+	.nextora-counters--divider[style*="--nextora-counters-cols-t: 1"] .nextora-counters__item {
+		border-inline-end: none;
+		border-block-end: 1px solid
+			var(
+				--nextora-counters-divider-color,
+				color-mix(in srgb, currentColor 15%, transparent)
+			);
+		padding-block-end: var(--wp--preset--spacing--20, 1rem);
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-t-1 .nextora-counters__item:last-child,
+	.nextora-counters--divider[style*="--nextora-counters-cols-t:1"] .nextora-counters__item:last-child,
+	.nextora-counters--divider[style*="--nextora-counters-cols-t: 1"] .nextora-counters__item:last-child {
+		border-block-end: none;
+		padding-block-end: 0;
+	}
+
+	.nextora-counters--divider:not([class*="nextora-counters--cols-t-"]):not([style*="--nextora-counters-cols-t:"]) .nextora-counters__item:nth-child(2n),
+	.nextora-counters--divider.nextora-counters--cols-t-2 .nextora-counters__item:nth-child(2n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-t:2"] .nextora-counters__item:nth-child(2n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-t: 2"] .nextora-counters__item:nth-child(2n) {
+		border-inline-end: none;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-t-3 .nextora-counters__item:nth-child(3n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-t:3"] .nextora-counters__item:nth-child(3n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-t: 3"] .nextora-counters__item:nth-child(3n) {
+		border-inline-end: none;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-t-4 .nextora-counters__item:nth-child(4n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-t:4"] .nextora-counters__item:nth-child(4n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-t: 4"] .nextora-counters__item:nth-child(4n) {
+		border-inline-end: none;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-t-5 .nextora-counters__item:nth-child(5n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-t:5"] .nextora-counters__item:nth-child(5n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-t: 5"] .nextora-counters__item:nth-child(5n) {
+		border-inline-end: none;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-t-6 .nextora-counters__item:nth-child(6n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-t:6"] .nextora-counters__item:nth-child(6n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-t: 6"] .nextora-counters__item:nth-child(6n) {
+		border-inline-end: none;
+	}
+}
+
+/* Large screens (960px+) */
+@media (min-width: 960px) {
+	.nextora-counters--divider.nextora-counters--cols-d-1 .nextora-counters__item,
+	.nextora-counters--divider[style*="--nextora-counters-cols-d:1"] .nextora-counters__item,
+	.nextora-counters--divider[style*="--nextora-counters-cols-d: 1"] .nextora-counters__item {
+		border-inline-end: none;
+		border-block-end: 1px solid
+			var(
+				--nextora-counters-divider-color,
+				color-mix(in srgb, currentColor 15%, transparent)
+			);
+		padding-block-end: var(--wp--preset--spacing--20, 1rem);
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-d-1 .nextora-counters__item:last-child,
+	.nextora-counters--divider[style*="--nextora-counters-cols-d:1"] .nextora-counters__item:last-child,
+	.nextora-counters--divider[style*="--nextora-counters-cols-d: 1"] .nextora-counters__item:last-child {
+		border-block-end: none;
+		padding-block-end: 0;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-d-2 .nextora-counters__item:nth-child(2n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-d:2"] .nextora-counters__item:nth-child(2n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-d: 2"] .nextora-counters__item:nth-child(2n) {
+		border-inline-end: none;
+	}
+
+	.nextora-counters--divider:not([class*="nextora-counters--cols-d-"]):not([style*="--nextora-counters-cols-d:"]) .nextora-counters__item:nth-child(3n),
+	.nextora-counters--divider.nextora-counters--cols-d-3 .nextora-counters__item:nth-child(3n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-d:3"] .nextora-counters__item:nth-child(3n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-d: 3"] .nextora-counters__item:nth-child(3n) {
+		border-inline-end: none;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-d-4 .nextora-counters__item:nth-child(4n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-d:4"] .nextora-counters__item:nth-child(4n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-d: 4"] .nextora-counters__item:nth-child(4n) {
+		border-inline-end: none;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-d-5 .nextora-counters__item:nth-child(5n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-d:5"] .nextora-counters__item:nth-child(5n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-d: 5"] .nextora-counters__item:nth-child(5n) {
+		border-inline-end: none;
+	}
+
+	.nextora-counters--divider.nextora-counters--cols-d-6 .nextora-counters__item:nth-child(6n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-d:6"] .nextora-counters__item:nth-child(6n),
+	.nextora-counters--divider[style*="--nextora-counters-cols-d: 6"] .nextora-counters__item:nth-child(6n) {
+		border-inline-end: none;
+	}
+}
+
+@media (max-width: 768px) {
+	.wp-block-nextora-counters.nextora-counters {
+		column-gap: var(--nextora-counters-gap, var(--wp--preset--spacing--20, 1rem));
 	}
 }
 

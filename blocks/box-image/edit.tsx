@@ -8,8 +8,11 @@ import {
 	useBlockProps,
 	MediaUpload,
 	MediaUploadCheck,
+	FontSizePicker,
+	useSetting,
 } from '@wordpress/block-editor';
 import {
+	BaseControl,
 	Button,
 	ColorPalette,
 	Modal,
@@ -29,7 +32,7 @@ import {
 import { IconPicker } from '../advanced-icon/icon-picker';
 import BoxImageEditorIcon from './editor-icon';
 import { storedColorToCss } from './icon-catalog';
-import { buildStyleVars, createItemId, normalizeItems } from './item-utils';
+import { buildStyleVars, createItemId, getColorProps, getTemplateDefaultAttributes, normalizeItems } from './item-utils';
 import type { BoxImageAttributes, BoxImageTemplate, BoxImageScrollAnimationStyle, BoxImageItem } from './types';
 
 interface EditProps {
@@ -148,14 +151,21 @@ function getTemplate4ColorTheme(index: number): {
 			border: 'color-mix(in srgb, var(--wp--preset--color--secondary) 25%, transparent)',
 		},
 		{
+			slug: 'tertiary',
+			theme: __('Tertiary', 'nextora'),
+			accent: 'var(--wp--preset--color--tertiary)',
+			bg: 'color-mix(in srgb, var(--wp--preset--color--tertiary) 8%, var(--wp--preset--color--base, #fff))',
+			border: 'color-mix(in srgb, var(--wp--preset--color--tertiary) 25%, transparent)',
+		},
+		{
 			slug: 'contrast',
 			theme: __('Contrast', 'nextora'),
 			accent: 'var(--wp--preset--color--contrast)',
-			bg: 'color-mix(in srgb, var(--wp--preset--color--contrast) 6%, var(--wp--preset--color--base, #fff))',
-			border: 'color-mix(in srgb, var(--wp--preset--color--contrast) 20%, transparent)',
+			bg: 'color-mix(in srgb, var(--wp--preset--color--contrast) 8%, var(--wp--preset--color--base, #fff))',
+			border: 'color-mix(in srgb, var(--wp--preset--color--contrast) 25%, transparent)',
 		},
 	];
-	return themes[index % 3];
+	return themes[index % themes.length];
 }
 
 function getTemplate4SvgPath(count: number, stepGap = 480): string {
@@ -188,6 +198,32 @@ function getTemplate4SvgPath(count: number, stepGap = 480): string {
 	return path;
 }
 
+function normalizeFontSizeAttribute(
+	value: number | string | undefined,
+	selectedItem?: { slug?: string },
+): string {
+	if (value === undefined || value === '') {
+		return '';
+	}
+	const raw = (selectedItem?.slug || String(value)).trim().toLowerCase();
+	const map: Record<string, string> = {
+		sm: 'small',
+		small: 'small',
+		base: 'base',
+		normal: 'base',
+		md: 'medium',
+		medium: 'medium',
+		'medium-plus': 'medium-plus',
+		lg: 'large',
+		large: 'large',
+		xl: 'x-large',
+		'x-large': 'x-large',
+		'2xl': 'xx-large',
+		'xx-large': 'xx-large',
+	};
+	return map[raw] || raw;
+}
+
 export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 	const [editingItemId, setEditingItemId] = useState<string | null>(null);
 	const [iconPickerOpen, setIconPickerOpen] = useState(false);
@@ -195,6 +231,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 		items: false,
 		layout: false,
 		image: false,
+		typography: false,
 		animation: false,
 	});
 
@@ -209,6 +246,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 
 	const colorPalette = useThemeColorPalette();
 	const lookupPalette = useMemo(() => getMergedPaletteEntries(colorPalette), [colorPalette]);
+	const themeFontSizes = useSetting('typography.fontSizes') || [];
 
 	const placeholderUrl = useMemo(() => {
 		if (typeof window !== 'undefined' && (window as unknown as Record<string, unknown>).nextoraBoxImage) {
@@ -221,22 +259,15 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 	}, []);
 
 	const {
-		layoutMode = 'slider',
 		template = 'default',
-		gridColumns = 4,
 		gridColumnsTablet = 2,
 		gridColumnsMobile = 1,
 		gridMinWidth = 981,
 		disableResponsiveCarousel = false,
-		imageAspectRatio = '3/2',
 		imageFit = 'cover',
-		cardMinHeight = 240,
-		cardBorderWidth = 0,
-		cardBorderRadius = 8,
 		slidesPerView = 4,
 		slidesPerViewTablet = 2,
 		slidesPerViewMobile = 1.15,
-		spaceBetween = 18,
 		speed = 500,
 		loop = false,
 		autoplay = false,
@@ -251,6 +282,8 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 		cardHoverBackgroundColor = '',
 		cardTitleColor = '',
 		cardDescriptionColor = '',
+		titleFontSize = '',
+		descriptionFontSize = '',
 		descriptionHoverColor = '',
 		linkColor = '',
 		linkHoverColor = '',
@@ -268,17 +301,38 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 		enableCardHover = true,
 	} = attributes;
 
+	const templateDefaults = useMemo(() => getTemplateDefaultAttributes(template), [template]);
+
+	// Resolved attributes: explicit user selection takes precedence, fallback to template defaults
+	const layoutMode = (attributes.layoutMode as 'slider' | 'grid' | undefined) || templateDefaults.layoutMode || 'slider';
+	const gridColumns = attributes.gridColumns ?? templateDefaults.gridColumns ?? 4;
+	const cardBorderRadius = attributes.cardBorderRadius ?? templateDefaults.cardBorderRadius ?? 8;
+	const spaceBetween = attributes.spaceBetween ?? templateDefaults.spaceBetween ?? 18;
+	const cardBorderWidth = attributes.cardBorderWidth ?? templateDefaults.cardBorderWidth ?? 0;
+	const cardMinHeight = attributes.cardMinHeight ?? templateDefaults.cardMinHeight ?? 240;
+	const imageAspectRatio = attributes.imageAspectRatio || templateDefaults.imageAspectRatio || '3/2';
+
+	const effectiveCardBg = attributes.cardBackgroundColor || templateDefaults.cardBackgroundColor || '';
+	const effectiveCardBorderColor = attributes.cardBorderColor || templateDefaults.cardBorderColor || '';
+	const effectiveBulletIconColor = attributes.bulletIconColor || templateDefaults.bulletIconColor || '';
+	const effectiveTitleFontSize = normalizeFontSizeAttribute(attributes.titleFontSize || templateDefaults.titleFontSize || '');
+	const effectiveDescFontSize = normalizeFontSizeAttribute(attributes.descriptionFontSize || templateDefaults.descriptionFontSize || '');
+
 	const styleVars = buildStyleVars(
 		{
+			contentMaxWidth: attributes.contentMaxWidth,
 			gapPx: spaceBetween,
 			cardMinHeight,
 			cardBorderWidth,
 			cardBorderRadius,
 			gridColumns,
+			slidesPerView,
+			slidesPerViewTablet,
+			slidesPerViewMobile,
 			imageAspectRatio,
 			imageFit,
-			cardBorderColor: isEmptyColor(cardBorderColor) ? '' : cardBorderColor,
-			cardBackgroundColor: isEmptyColor(cardBackgroundColor) ? '' : cardBackgroundColor,
+			cardBorderColor: isEmptyColor(effectiveCardBorderColor) ? '' : effectiveCardBorderColor,
+			cardBackgroundColor: isEmptyColor(effectiveCardBg) ? '' : effectiveCardBg,
 			cardHoverBackgroundColor: isEmptyColor(cardHoverBackgroundColor)
 				? ''
 				: cardHoverBackgroundColor,
@@ -292,7 +346,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 			arrowColor: isEmptyColor(arrowColor) ? '' : arrowColor,
 			badgeBackgroundColor: isEmptyColor(badgeBackgroundColor) ? '' : badgeBackgroundColor,
 			badgeTextColor: isEmptyColor(badgeTextColor) ? '' : badgeTextColor,
-			bulletIconColor: isEmptyColor(bulletIconColor) ? '' : bulletIconColor,
+			bulletIconColor: isEmptyColor(effectiveBulletIconColor) ? '' : effectiveBulletIconColor,
 		},
 		lookupPalette,
 	);
@@ -303,6 +357,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 			'nextora-box-image--editor',
 			layoutMode === 'slider' ? 'nextora-box-image--editor-slider' : '',
 			`nextora-box-image--layout-${layoutMode}`,
+			layoutMode === 'grid' ? 'nextora-box-image--grid-active' : '',
 			template !== 'default' ? `nextora-box-image--template-${template}` : '',
 			!enableCardHover ? 'nextora-box-image--no-card-hover' : '',
 		]
@@ -674,43 +729,11 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						options={templateOptions}
 						onChange={(v: string) => {
 							const tpl = (v === 'template1' ? 'template1' : v === 'template2' ? 'template2' : v === 'template3' ? 'template3' : v === 'template4' ? 'template4' : v === 'template5' ? 'template5' : 'default') as BoxImageTemplate;
-							const patch: Partial<BoxImageAttributes> = { template: tpl };
-							if (tpl === 'template1') {
-								patch.layoutMode = 'grid';
-								patch.gridColumns = 3;
-								patch.imageAspectRatio = '4/3';
-								patch.cardBorderRadius = 28;
-								patch.cardBorderWidth = 2;
-							} else if (tpl === 'template2') {
-								patch.layoutMode = 'grid';
-								patch.gridColumns = 4;
-								patch.imageAspectRatio = '1/1';
-								patch.cardBorderRadius = 24;
-								patch.cardBorderWidth = 0;
-							} else if (tpl === 'template3') {
-								patch.layoutMode = 'grid';
-								patch.gridColumns = 4;
-								patch.imageAspectRatio = '16/11';
-								patch.cardBorderRadius = 20;
-								patch.cardBorderWidth = 1;
-								patch.cardMinHeight = 0;
-							} else if (tpl === 'template4') {
-								patch.layoutMode = 'grid';
-								patch.gridColumns = 4;
-								patch.imageAspectRatio = '16/10';
-								patch.cardBorderRadius = 16;
-								patch.cardBorderWidth = 1;
-								patch.cardMinHeight = 0;
-							} else if (tpl === 'template5') {
-								patch.layoutMode = 'grid';
-								patch.gridColumns = 3;
-								patch.imageAspectRatio = '4/3';
-								patch.cardBorderRadius = 0;
-								patch.cardBorderWidth = 0;
-								patch.cardMinHeight = 440;
-								patch.spaceBetween = 0;
-							}
-							setAttributes(patch);
+							const defaults = getTemplateDefaultAttributes(tpl);
+							setAttributes({
+								template: tpl,
+								...defaults,
+							});
 						}}
 					/>
 
@@ -1011,6 +1034,41 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 					colors={colorPalette}
 					colorSettings={colorSettings}
 				/>
+
+				<PanelBody title={__('Typography', 'nextora')} opened={panelStates.typography} onToggle={togglePanel('typography')}>
+					<BaseControl
+						label={__('Card title font size', 'nextora')}
+						id="nextora-box-image-title-font-size"
+						help={__('Default inherits global heading size.', 'nextora')}
+					>
+						<FontSizePicker
+							fontSizes={themeFontSizes}
+							value={titleFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									titleFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+					<BaseControl
+						label={__('Card description font size', 'nextora')}
+						id="nextora-box-image-description-font-size"
+						help={__('Default inherits global body size.', 'nextora')}
+					>
+						<FontSizePicker
+							fontSizes={themeFontSizes}
+							value={descriptionFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									descriptionFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+				</PanelBody>
 
 				<PanelBody title={__('Animation', 'nextora')} opened={panelStates.animation} onToggle={togglePanel('animation')}>
 					<ToggleControl
@@ -1402,6 +1460,22 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 										: {};
 									const pos = getTemplate4Position(index, stepVerticalGap);
 									const colorTheme = getTemplate4ColorTheme(index);
+									const itemTitleColor = item.titleColor || cardTitleColor;
+									const itemTitleColorProps = getColorProps(itemTitleColor, 'color');
+									const titleClasses = [
+										'nextora-box-image__title',
+										effectiveTitleFontSize ? `has-${effectiveTitleFontSize}-font-size` : '',
+										itemTitleColorProps.className,
+									].filter(Boolean).join(' ');
+
+									const itemDescColor = item.descriptionColor || cardDescriptionColor;
+									const itemDescColorProps = getColorProps(itemDescColor, 'color');
+									const descClasses = [
+										'nextora-box-image__description',
+										effectiveDescFontSize ? `has-${effectiveDescFontSize}-font-size` : '',
+										itemDescColorProps.className,
+									].filter(Boolean).join(' ');
+
 									const wrapStyle = {
 										'--nextora-step-top': pos.top,
 										[`--nextora-step-${pos.side}`]: pos.pos,
@@ -1462,10 +1536,10 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													<span className="nextora-box-image__step-number" aria-hidden="true">
 														{String(index + 1).padStart(2, '0')}
 													</span>
-													<h3 className="nextora-box-image__title">
+													<h4 className={titleClasses} style={itemTitleColorProps.style}>
 														{item.title || __('Title', 'nextora')}
-													</h3>
-													<p className="nextora-box-image__description">
+													</h4>
+													<p className={descClasses} style={itemDescColorProps.style}>
 														{item.description || __('Description…', 'nextora')}
 													</p>
 													{!item.linkWrapCard && item.showLink && item.linkLabel ? (
@@ -1504,20 +1578,59 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 											}
 										: {};
 
+									const itemTitleColor = item.titleColor || cardTitleColor;
+									const itemTitleColorProps = getColorProps(itemTitleColor, 'color');
+									const titleClasses = [
+										'nextora-box-image__title',
+										effectiveTitleFontSize ? `has-${effectiveTitleFontSize}-font-size` : '',
+										itemTitleColorProps.className,
+									].filter(Boolean).join(' ');
+
+									const itemDescColor = item.descriptionColor || cardDescriptionColor;
+									const itemDescColorProps = getColorProps(itemDescColor, 'color');
+									const descClasses = [
+										'nextora-box-image__description',
+										effectiveDescFontSize ? `has-${effectiveDescFontSize}-font-size` : '',
+										itemDescColorProps.className,
+									].filter(Boolean).join(' ');
+
+									const badgeBg = badgeBackgroundColor || (template === 'template3' ? 'secondary' : (template === 'template5' ? 'primary' : ''));
+									const badgeBgProps = getColorProps(badgeBg, 'background');
+									const badgeTextProps = getColorProps(badgeTextColor, 'color');
+									const badgeClasses = [
+										'nextora-box-image__badge',
+										badgeBgProps.className,
+										badgeTextProps.className,
+									].filter(Boolean).join(' ');
+									const badgeStyle = {
+										...badgeBgProps.style,
+										...badgeTextProps.style,
+									};
+
+									const bulletColorProps = getColorProps(effectiveBulletIconColor || 'primary', 'color');
+
+									const itemBg = item.backgroundColor || '';
+									const cardBgProps = getColorProps(itemBg, 'background');
+									const cardClasses = [
+										'nextora-box-image__card',
+										template === 'template1' ? 'nextora-box-image__card--template1' : template === 'template2' ? 'nextora-box-image__card--template2' : template === 'template3' ? 'nextora-box-image__card--template3' : template === 'template5' ? 'nextora-box-image__card--template5' : '',
+										'nextora-box-image__card--editable',
+										isWrapLink ? 'nextora-box-image__card-link' : '',
+										cardBgProps.className,
+									].filter(Boolean).join(' ');
+
+									const cardStyle = {
+										...cardBgProps.style,
+										...(item.titleColor ? { '--nextora-box-image-item-title-color': storedColorToCss(item.titleColor, lookupPalette) } : {}),
+										...(item.descriptionColor ? { '--nextora-box-image-item-desc-color': storedColorToCss(item.descriptionColor, lookupPalette) } : {}),
+										...(item.linkColor ? { '--nextora-box-image-item-link-color': storedColorToCss(item.linkColor, lookupPalette) } : {}),
+									} as CSSProperties;
+
 									return (
 									<CardTag
 										key={item.id}
-										className={`nextora-box-image__card${template === 'template1' ? ' nextora-box-image__card--template1' : template === 'template2' ? ' nextora-box-image__card--template2' : template === 'template3' ? ' nextora-box-image__card--template3' : template === 'template5' ? ' nextora-box-image__card--template5' : ''} nextora-box-image__card--editable${isWrapLink ? ' nextora-box-image__card-link' : ''}`}
-										style={
-											(item.backgroundColor || item.titleColor || item.descriptionColor || item.linkColor)
-												? ({
-													'--nextora-box-image-item-bg': item.backgroundColor || '',
-													'--nextora-box-image-item-title-color': item.titleColor || '',
-													'--nextora-box-image-item-desc-color': item.descriptionColor || '',
-													'--nextora-box-image-item-link-color': item.linkColor || '',
-												} as CSSProperties)
-												: undefined
-										}
+										className={cardClasses}
+										style={cardStyle}
 										{...wrapLinkProps}
 									>
 										<button
@@ -1540,20 +1653,20 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 														alt=""
 													/>
 													{item.badge ? (
-														<span className="nextora-box-image__badge">
+														<span className={badgeClasses} style={badgeStyle}>
 															{item.badge}
 														</span>
 													) : null}
 												</div>
 												<div className="nextora-box-image__card-body">
-													<h3 className="nextora-box-image__title">
+													<h4 className={titleClasses} style={itemTitleColorProps.style}>
 														{item.title || __('Title', 'nextora')}
-													</h3>
-													<p className="nextora-box-image__description">
+													</h4>
+													<p className={descClasses} style={itemDescColorProps.style}>
 														{item.description || __('Description…', 'nextora')}
 													</p>
 													{!item.linkWrapCard && item.showLink && item.linkLabel ? (
-														<span className="nextora-box-image__link wp-block-button__link nextora-box-image__link--static">
+														<span className="nextora-box-image__link wp-block-button__link wp-element-button nextora-box-image__link--static">
 															{item.linkLabel}
 															<span className="nextora-box-image__link-icon" aria-hidden="true">
 																<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1574,10 +1687,10 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													/>
 												</div>
 												<div className="nextora-box-image__card-body">
-												<h3 className="nextora-box-image__title">
+												<h4 className={titleClasses} style={itemTitleColorProps.style}>
 													{item.title || __('Title', 'nextora')}
-												</h3>
-												<p className="nextora-box-image__description">
+												</h4>
+												<p className={descClasses} style={itemDescColorProps.style}>
 													{item.description || __('Description…', 'nextora')}
 												</p>
 												{!item.linkWrapCard && item.showLink && item.linkLabel ? (
@@ -1601,26 +1714,36 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 														alt=""
 													/>
 													{item.badge ? (
-														<span className="nextora-box-image__badge">
+														<span className={badgeClasses} style={badgeStyle}>
 															{item.badge}
 														</span>
 													) : null}
 												</div>
 												<div className="nextora-box-image__card-body">
-													<h3 className="nextora-box-image__title">
+													<h4 className={titleClasses} style={itemTitleColorProps.style}>
 														{item.title || __('Title', 'nextora')}
-													</h3>
+													</h4>
 													{item.description ? (
 														<ul className="nextora-box-image__bullets">
-															{item.description.split('\n').filter(Boolean).map((bullet, i) => (
+															{item.description.split(/\r\n|\n|\r|\\n/).filter(Boolean).map((bullet, i) => (
 																<li key={i}>
-																	<svg className="nextora-box-image__bullet-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+																	<svg
+																		className={`nextora-box-image__bullet-icon ${bulletColorProps.className}`.trim()}
+																		style={bulletColorProps.style}
+																		viewBox="0 0 24 24"
+																		fill="none"
+																		stroke="currentColor"
+																		strokeWidth="2.5"
+																		aria-hidden="true"
+																	>
+																		<path d="M5 13l4 4L19 7" />
+																	</svg>
 																	<span>{bullet.trim()}</span>
 																</li>
 															))}
 														</ul>
 													) : (
-														<p className="nextora-box-image__description">
+														<p className={descClasses} style={itemDescColorProps.style}>
 															{__('Add bullet points — one per line in the description field.', 'nextora')}
 														</p>
 													)}
@@ -1649,15 +1772,15 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 												<div className="nextora-box-image__card-body">
 													<BoxImageEditorIcon item={item} />
 													{item.badge ? (
-														<span className="nextora-box-image__badge">
+														<span className={badgeClasses} style={badgeStyle}>
 															{item.badge}
 														</span>
 													) : null}
-													<h3 className="nextora-box-image__title">
+													<h4 className={titleClasses} style={itemTitleColorProps.style}>
 														{item.title || __('Title', 'nextora')}
-													</h3>
+													</h4>
 													{item.description ? (
-														<p className="nextora-box-image__description">
+														<p className={descClasses} style={itemDescColorProps.style}>
 															{item.description}
 														</p>
 													) : null}
@@ -1683,10 +1806,10 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													/>
 												</div>
 												<div className="nextora-box-image__card-body">
-												<h3 className="nextora-box-image__title">
+												<h4 className={titleClasses} style={itemTitleColorProps.style}>
 													{item.title || __('Title', 'nextora')}
-												</h3>
-												<p className="nextora-box-image__description">
+												</h4>
+												<p className={descClasses} style={itemDescColorProps.style}>
 													{item.description || __('Description…', 'nextora')}
 												</p>
 												{!item.linkWrapCard && item.showLink && item.linkLabel ? (

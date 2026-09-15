@@ -20,9 +20,9 @@ $card_radius                = absint( $attributes['cardBorderRadius'] ?? 12 );
 $inactive_opacity           = (float) ( $attributes['inactiveOverlayOpacity'] ?? 0.7 );
 $content_padding_y          = absint( $attributes['contentPaddingY'] ?? 24 );
 $content_padding_x          = absint( $attributes['contentPaddingX'] ?? 24 );
-$heading_size               = sanitize_text_field( $attributes['headingSize'] ?? 'medium' );
-$description_size           = sanitize_text_field( $attributes['descriptionSize'] ?? 'small' );
-$button_size                = sanitize_text_field( $attributes['buttonSize'] ?? 'small' );
+$heading_size               = sanitize_text_field( $attributes['headingSize'] ?? '' );
+$description_size           = sanitize_text_field( $attributes['descriptionSize'] ?? '' );
+$button_size                = sanitize_text_field( $attributes['buttonSize'] ?? '' );
 $enable_scroll              = $attributes['enableScrollAnimation'] ?? true;
 $active_card_index          = (int) ( $attributes['activeCardIndex'] ?? 0 );
 $card_gap     = max( 0, min( 30, $card_gap ) );
@@ -32,14 +32,14 @@ $content_padding_y = max( 8, min( 80, $content_padding_y ) );
 $content_padding_x = max( 8, min( 80, $content_padding_x ) );
 
 $valid_font_sizes = array( 'small', 'base', 'medium', 'medium-plus', 'large', 'x-large', 'xx-large' );
-if ( ! in_array( $heading_size, $valid_font_sizes, true ) ) {
-	$heading_size = 'medium';
+if ( '' !== $heading_size && ! in_array( $heading_size, $valid_font_sizes, true ) ) {
+	$heading_size = '';
 }
-if ( ! in_array( $description_size, $valid_font_sizes, true ) ) {
-	$description_size = 'small';
+if ( '' !== $description_size && ! in_array( $description_size, $valid_font_sizes, true ) ) {
+	$description_size = '';
 }
-if ( ! in_array( $button_size, $valid_font_sizes, true ) ) {
-	$button_size = 'small';
+if ( '' !== $button_size && ! in_array( $button_size, $valid_font_sizes, true ) ) {
+	$button_size = '';
 }
 
 if ( ! function_exists( 'nextora_expcards_resolve_color' ) ) {
@@ -48,7 +48,13 @@ if ( ! function_exists( 'nextora_expcards_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
-		if ( 'transparent' === $raw ) {
+		if (
+			'transparent' === $raw ||
+			'rgba(0, 0, 0, 0)' === $raw ||
+			'rgba(0,0,0,0)' === $raw ||
+			preg_match( '/^#[0-9a-fA-F]{6}00$/i', $raw ) ||
+			preg_match( '/^#[0-9a-fA-F]{3}0$/i', $raw )
+		) {
 			return 'transparent';
 		}
 		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
@@ -60,7 +66,13 @@ if ( ! function_exists( 'nextora_expcards_resolve_color' ) ) {
 		}
 		if ( str_starts_with( $raw, 'var:preset|color|' ) ) {
 			$slug = str_replace( 'var:preset|color|', '', $raw );
+			if ( 'transparent' === strtolower( $slug ) ) {
+				return 'transparent';
+			}
 			return 'var(--wp--preset--color--' . sanitize_html_class( $slug ) . ')';
+		}
+		if ( 'transparent' === strtolower( $raw ) ) {
+			return 'transparent';
 		}
 		return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
 	}
@@ -121,9 +133,15 @@ $css_vars[] = '--nextora-ec-radius: ' . $card_radius . 'px';
 $css_vars[] = '--nextora-ec-overlay-opacity: ' . $inactive_opacity;
 $css_vars[] = '--nextora-ec-content-padding-y: ' . $content_padding_y . 'px';
 $css_vars[] = '--nextora-ec-content-padding-x: ' . $content_padding_x . 'px';
-$css_vars[] = '--nextora-ec-heading-size: var(--wp--preset--font-size--' . esc_attr( $heading_size ) . ')';
-$css_vars[] = '--nextora-ec-description-size: var(--wp--preset--font-size--' . esc_attr( $description_size ) . ')';
-$css_vars[] = '--nextora-ec-button-size: var(--wp--preset--font-size--' . esc_attr( $button_size ) . ')';
+if ( '' !== $heading_size ) {
+	$css_vars[] = '--nextora-ec-heading-size: var(--wp--preset--font-size--' . esc_attr( $heading_size ) . ')';
+}
+if ( '' !== $description_size ) {
+	$css_vars[] = '--nextora-ec-description-size: var(--wp--preset--font-size--' . esc_attr( $description_size ) . ')';
+}
+if ( '' !== $button_size ) {
+	$css_vars[] = '--nextora-ec-button-size: var(--wp--preset--font-size--' . esc_attr( $button_size ) . ')';
+}
 
 $css_vars_string = implode( '; ', $css_vars );
 
@@ -185,7 +203,7 @@ if ( ! function_exists( 'nextora_expcards_get_image_url' ) ) {
 				<span class="nextora-expanding-cards__card-overlay" aria-hidden="true"></span>
 				<span class="nextora-expanding-cards__card-content">
 					<?php if ( '' !== $heading ) : ?>
-						<span class="nextora-expanding-cards__card-heading"><?php echo $heading; ?></span>
+						<h4 class="nextora-expanding-cards__card-heading"><?php echo $heading; ?></h4>
 					<?php endif; ?>
 					<?php if ( '' !== $description ) : ?>
 						<span class="nextora-expanding-cards__card-description"><?php echo $description; ?></span>

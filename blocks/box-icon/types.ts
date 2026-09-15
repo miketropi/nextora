@@ -63,6 +63,10 @@ export interface BoxIconAttributes {
 	cardBorderColor: string;
 	cardBackgroundColor: string;
 	cardHoverBackgroundColor: string;
+	titleFontSize?: string;
+	descriptionFontSize?: string;
+	statNumberFontSize?: string;
+	statNumberFontFamily?: string;
 	cardTitleColor: string;
 	cardDescriptionColor: string;
 	descriptionHoverColor: string;
@@ -86,14 +90,4 @@ export interface BoxIconAttributes {
 	showTimelineLine: boolean;
 	showTimelineTime: boolean;
 	timelineAlign: 'left' | 'center' | 'right';
-	showEyebrow: boolean;
-	eyebrowText: string;
-	showSubtitle: boolean;
-	subtitleText: string;
-	showHeading: boolean;
-	headingText: string;
-	headingLevel: number;
-	showDescription: boolean;
-	descriptionText: string;
-	headerAlign: string;
 }

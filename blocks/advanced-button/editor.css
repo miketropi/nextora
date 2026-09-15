@@ -1,3 +1,5 @@
+@import './style.css';
+
 /* Editor preview: scroll reveal JS does not run — keep buttons visible */
 .editor-styles-wrapper
 	.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-reveal='1']:not(

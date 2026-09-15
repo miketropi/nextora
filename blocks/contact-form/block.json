@@ -3,14 +3,22 @@
   "apiVersion": 3,
   "name": "nextora/contact-form",
   "title": "Contact form",
-  "category": "design",
+  "category": "nextora",
   "description": "Get in touch form — emails the site admin and sends a confirmation to the visitor.",
-  "keywords": ["contact", "form", "email", "nextora"],
+  "keywords": [
+    "contact",
+    "form",
+    "email",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "email",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": true,

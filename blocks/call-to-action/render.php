@@ -141,7 +141,7 @@ if ( 'video' === $mode && $video_id ) {
 
 $has_custom_bg = $use_image || $use_video || $use_color_mix;
 
-$has_from_inner     = $block instanceof WP_Block && $block->inner_blocks->count() > 0;
+$has_from_inner     = $block instanceof WP_Block && ! empty( $block->inner_blocks ) && count( $block->inner_blocks ) > 0;
 $has_content_string = is_string( $content ) && '' !== trim( (string) $content );
 $has_legacy         = ( '' !== $legacy_heading || '' !== $legacy_content );
 $is_legacy          = ( ! $has_from_inner && ! $has_content_string && $has_legacy );
@@ -298,7 +298,7 @@ if ( $is_legacy ) {
 			</video>
 		</div>
 	<?php elseif ( $use_color_mix ) : ?>
-		<div class="nextora-cta__bg nextora-cta__bg--color-mix" style="background: var(--nextora-cta-color-mix, transparent);"></div>
+		<div class="nextora-cta__bg nextora-cta__bg--color-mix" style="background: <?php echo esc_attr( $cm ); ?>;"></div>
 	<?php endif; ?>
 	<?php if ( $has_custom_bg && $overlay > 0 ) : ?>
 		<div class="nextora-cta__scrim" aria-hidden="true"></div>

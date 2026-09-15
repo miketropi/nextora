@@ -1,4 +1,4 @@
-import type { TeamMember, TeamSocialLink } from './types';
+import type { TeamMember, TeamSectionAttributes, TeamSocialLink } from './types';
 
 declare global {
 	interface Window {
@@ -77,14 +77,36 @@ export function normalizeMembers(members: TeamMember[] | undefined): TeamMember[
 			bio: typeof raw?.bio === 'string' ? raw.bio : '',
 			bioLineClamp:
 				typeof raw?.bioLineClamp === 'number' ? Math.max(1, Math.min(5, raw.bioLineClamp)) : 3,
+			detail: typeof raw?.detail === 'string' ? raw.detail : '',
 			showSocialLinks: Boolean(raw?.showSocialLinks),
 			socialLinks,
 			cardBorderRadius:
-				typeof raw?.cardBorderRadius === 'number'
+				typeof raw?.cardBorderRadius === 'number' && raw.cardBorderRadius > 0
 					? Math.max(0, Math.min(30, raw.cardBorderRadius))
-					: 16,
+					: 0,
 		};
 	});
+}
+
+export function getTemplateDefaultAttributes(
+	template: string,
+): Partial<TeamSectionAttributes> {
+	if (template === 'template-02') {
+		return {
+			photoAspectRatio: '3/4',
+			cardBorderRadius: 24,
+		};
+	}
+	if (template === 'overlay-social') {
+		return {
+			photoAspectRatio: '3/4',
+			cardBorderRadius: 20,
+		};
+	}
+	return {
+		photoAspectRatio: '3/4',
+		cardBorderRadius: 16,
+	};
 }
 
 export function resolvePhotoUrl(
@@ -107,12 +129,15 @@ export function buildSectionStyleVars(attrs: {
 	tagTextColor?: string;
 	nameColor?: string;
 	roleColor?: string;
+	bioColor?: string;
+	socialColor?: string;
 	cardBorderRadius?: number;
 	gridColumns?: number;
 	gridColumnGap?: number;
 	gridRowGap?: number;
 	photoAspectRatio?: string;
 	spaceBetween?: number;
+	slidesPerView?: number;
 }): Record<string, string> {
 	const vars: Record<string, string> = {
 		'--nextora-team-photo-placeholder': teamPhotoPlaceholderVar(),
@@ -121,6 +146,7 @@ export function buildSectionStyleVars(attrs: {
 		'--nextora-team-space-between': `${attrs.spaceBetween ?? 24}px`,
 		'--nextora-team-grid-column-gap': `${attrs.gridColumnGap ?? 24}px`,
 		'--nextora-team-grid-row-gap': `${attrs.gridRowGap ?? 24}px`,
+		'--nextora-team-slides-per-view': String(attrs.slidesPerView ?? 4),
 	};
 	if (attrs.gridColumns) vars['--nextora-team-grid-columns'] = String(attrs.gridColumns);
 	if (attrs.sectionBackgroundColor) vars['--nextora-team-bg'] = resolveColorValue(attrs.sectionBackgroundColor);
@@ -131,5 +157,7 @@ export function buildSectionStyleVars(attrs: {
 	if (attrs.tagTextColor) vars['--nextora-team-tag-color'] = resolveColorValue(attrs.tagTextColor);
 	if (attrs.nameColor) vars['--nextora-team-name-color'] = resolveColorValue(attrs.nameColor);
 	if (attrs.roleColor) vars['--nextora-team-role-color'] = resolveColorValue(attrs.roleColor);
+	if (attrs.bioColor) vars['--nextora-team-bio-color'] = resolveColorValue(attrs.bioColor);
+	if (attrs.socialColor) vars['--nextora-team-social-color'] = resolveColorValue(attrs.socialColor);
 	return vars;
 }

@@ -3,14 +3,24 @@
   "apiVersion": 3,
   "name": "nextora/expanding-cards",
   "title": "Expanding Cards",
-  "category": "design",
+  "category": "nextora",
   "description": "Horizontal expanding card gallery with hover grow effect and full-screen detail modal.",
-  "keywords": ["cards", "expanding", "gallery", "hover", "expand", "nextora"],
+  "keywords": [
+    "cards",
+    "expanding",
+    "gallery",
+    "hover",
+    "expand",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "layout",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": true,
@@ -69,23 +79,74 @@
         }
       ]
     },
-    "cardHeight": { "type": "number", "default": 400 },
-    "cardGap": { "type": "number", "default": 10 },
-    "cardBorderRadius": { "type": "number", "default": 12 },
-    "inactiveOverlayOpacity": { "type": "number", "default": 0.7 },
-    "contentPaddingY": { "type": "number", "default": 24 },
-    "contentPaddingX": { "type": "number", "default": 24 },
-    "headingSize": { "type": "string", "default": "medium" },
-    "descriptionSize": { "type": "string", "default": "small" },
-    "buttonSize": { "type": "string", "default": "small" },
-    "headingColor": { "type": "string", "default": "" },
-    "descriptionColor": { "type": "string", "default": "" },
-    "overlayBackgroundColor": { "type": "string", "default": "" },
-    "buttonTextColor": { "type": "string", "default": "" },
-    "buttonBackgroundColor": { "type": "string", "default": "" },
-    "buttonBorderColor": { "type": "string", "default": "" },
-    "enableScrollAnimation": { "type": "boolean", "default": true },
-    "activeCardIndex": { "type": "number", "default": 0 }
+    "cardHeight": {
+      "type": "number",
+      "default": 400
+    },
+    "cardGap": {
+      "type": "number",
+      "default": 10
+    },
+    "cardBorderRadius": {
+      "type": "number",
+      "default": 12
+    },
+    "inactiveOverlayOpacity": {
+      "type": "number",
+      "default": 0.7
+    },
+    "contentPaddingY": {
+      "type": "number",
+      "default": 24
+    },
+    "contentPaddingX": {
+      "type": "number",
+      "default": 24
+    },
+    "headingSize": {
+      "type": "string",
+      "default": ""
+    },
+    "descriptionSize": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonSize": {
+      "type": "string",
+      "default": ""
+    },
+    "headingColor": {
+      "type": "string",
+      "default": ""
+    },
+    "descriptionColor": {
+      "type": "string",
+      "default": ""
+    },
+    "overlayBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonTextColor": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonBorderColor": {
+      "type": "string",
+      "default": ""
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    },
+    "activeCardIndex": {
+      "type": "number",
+      "default": 0
+    }
   },
   "editorScript": "file:./index.js",
   "editorStyle": "file:./editor.css",

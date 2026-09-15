@@ -1,7 +1,9 @@
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3';
+
 export interface BlogListCarouselAttributes {
-	cardTemplate: 'default' | 'template-1' | 'template-2' | 'template-4';
-	layoutMode: 'carousel' | 'grid';
-	gridColumns: number;
+	cardTemplate: BlogListCardTemplate;
+	layoutMode?: 'carousel' | 'grid';
+	gridColumns?: number;
 	gridColumnGap: number;
 	gridRowGap: number;
 	gridMinWidth: number;
@@ -26,6 +28,7 @@ export interface BlogListCarouselAttributes {
 	titleFontSize: string;
 	titleLineClamp: number;
 	showExcerpt: boolean;
+	excerptFontSize?: string;
 	excerptLineClamp: number;
 	excerptLength: number;
 	showDate: boolean;
@@ -52,6 +55,7 @@ export interface BlogListCarouselAttributes {
 	cardTitleColor: string;
 	cardExcerptColor: string;
 	cardMetaColor: string;
+	cardMetaIconColor: string;
 	cardBackgroundColor: string;
 	cardBorderColor: string;
 	cardBorderRadius: number;
