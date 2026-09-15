@@ -21,11 +21,14 @@ add_action(
 			return;
 		}
 
+		$switcher_js_path = get_template_directory() . '/assets/js/scheme-switcher.js';
+		$switcher_version = file_exists( $switcher_js_path ) ? (string) filemtime( $switcher_js_path ) : NEXTORA_VERSION;
+
 		wp_enqueue_script(
 			'nextora-scheme-switcher',
 			NEXTORA_URI . '/assets/js/scheme-switcher.js',
 			array(),
-			NEXTORA_VERSION,
+			$switcher_version,
 			array( 'strategy' => 'defer', 'in_footer' => true ),
 		);
 

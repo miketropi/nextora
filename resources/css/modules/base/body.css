@@ -86,6 +86,12 @@ footer.wp-block-template-part {
 	margin-block-start: 0;
 }
 
+/* Links inside headings inherit heading color */
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a,
+.wp-block-heading a {
+	color: inherit;
+}
+
 /* reset font-weight */
 .nextora-font-weight-light {
 	font-weight: 300;

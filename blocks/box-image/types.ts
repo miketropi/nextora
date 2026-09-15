@@ -63,6 +63,8 @@ export interface BoxImageAttributes {
 	cardHoverBackgroundColor: string;
 	cardTitleColor: string;
 	cardDescriptionColor: string;
+	titleFontSize?: string;
+	descriptionFontSize?: string;
 	descriptionHoverColor: string;
 	linkColor: string;
 	linkHoverColor: string;

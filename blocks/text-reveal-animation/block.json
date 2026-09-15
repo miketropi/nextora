@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/text-reveal-animation",
   "title": "Text Reveal Animation",
-  "category": "theme",
+  "category": "nextora",
   "icon": "editor-italic",
   "description": "Large scale typography with staggered letter reveal and animated media shutters.",
   "keywords": [
@@ -228,7 +228,7 @@
     },
     "imageRevealDuration": {
       "type": "number",
-      "default": 1.0
+      "default": 1
     },
     "ariaLabel": {
       "type": "string",

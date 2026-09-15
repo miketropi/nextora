@@ -162,8 +162,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: #e2dcd0;
-	color: #8c826e;
+	background: var(--wp--preset--color--surface, #e2dcd0);
+	color: var(--wp--preset--color--paragraph, #8c826e);
 }
 
 /* Shutter curtains on side images */

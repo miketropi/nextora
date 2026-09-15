@@ -6,9 +6,10 @@
  * CTA: .wp-element-button — theme.json elements.button (solid) or outline override below.
  */
 
+.wp-block-nextora-header.nextora-header-block,
 .nextora-header-block {
 	box-sizing: border-box;
-	font-family: var(--wp--style--font-family, var(--wp--preset--font-family--sans));
+	font-family: inherit;
 	font-size: var(--wp--style--font-size, inherit);
 }
 
@@ -31,7 +32,7 @@
 
 .nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu>li>a {
 	font-family: inherit;
-	font-size: inherit;
+	font-size: var(--nextora-header-menu-item-font-size, inherit);
 	font-weight: var(--wp--style--font-weight, 500);
 }
 
@@ -64,6 +65,7 @@
 
 .nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu .sub-menu a {
 	color: inherit;
+	font-size: var(--nextora-header-submenu-font-size, inherit);
 }
 
 .nextora-header-block .nextora-navigation-from-location--primary .nextora-header-menu .sub-menu a:hover,

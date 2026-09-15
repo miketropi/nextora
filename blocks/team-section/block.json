@@ -3,14 +3,24 @@
   "apiVersion": 3,
   "name": "nextora/team-section",
   "title": "Our Team",
-  "category": "design",
+  "category": "nextora",
   "description": "Team showcase with heading, CTA, and a Swiper carousel of member cards.",
-  "keywords": ["team", "staff", "people", "carousel", "swiper", "nextora"],
+  "keywords": [
+    "team",
+    "staff",
+    "people",
+    "carousel",
+    "swiper",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "groups",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": false,
@@ -23,13 +33,34 @@
     }
   },
   "attributes": {
-    "layoutMode": { "type": "string", "default": "carousel" },
-    "gridColumns": { "type": "number", "default": 4 },
-    "gridMinWidth": { "type": "number", "default": 981 },
-    "gridColumnGap": { "type": "number", "default": 24 },
-    "gridRowGap": { "type": "number", "default": 24 },
-    "cardTemplate": { "type": "string", "default": "default" },
-    "photoAspectRatio": { "type": "string", "default": "3/4" },
+    "layoutMode": {
+      "type": "string",
+      "default": "carousel"
+    },
+    "gridColumns": {
+      "type": "number",
+      "default": 4
+    },
+    "gridMinWidth": {
+      "type": "number",
+      "default": 981
+    },
+    "gridColumnGap": {
+      "type": "number",
+      "default": 24
+    },
+    "gridRowGap": {
+      "type": "number",
+      "default": 24
+    },
+    "cardTemplate": {
+      "type": "string",
+      "default": "default"
+    },
+    "photoAspectRatio": {
+      "type": "string",
+      "default": "3/4"
+    },
     "members": {
       "type": "array",
       "default": [
@@ -40,7 +71,10 @@
           "photoAlt": "",
           "name": "Alex Morgan",
           "role": "Creative Director",
-          "tags": ["Design", "Strategy"],
+          "tags": [
+            "Design",
+            "Strategy"
+          ],
           "bio": "Leads brand and product design with a focus on accessible, human-centered experiences.",
           "bioLineClamp": 3,
           "showSocialLinks": false,
@@ -54,7 +88,10 @@
           "photoAlt": "",
           "name": "Jordan Lee",
           "role": "Head of Engineering",
-          "tags": ["Development", "DevOps"],
+          "tags": [
+            "Development",
+            "DevOps"
+          ],
           "bio": "Builds scalable platforms and mentors engineering teams across the organization.",
           "bioLineClamp": 3,
           "showSocialLinks": false,
@@ -68,7 +105,10 @@
           "photoAlt": "",
           "name": "Sam Rivera",
           "role": "Community Lead",
-          "tags": ["Outreach", "Events"],
+          "tags": [
+            "Outreach",
+            "Events"
+          ],
           "bio": "Connects partners and volunteers to programs that create lasting community impact.",
           "bioLineClamp": 3,
           "showSocialLinks": false,
@@ -82,7 +122,10 @@
           "photoAlt": "",
           "name": "Taylor Kim",
           "role": "Operations Manager",
-          "tags": ["Operations", "Finance"],
+          "tags": [
+            "Operations",
+            "Finance"
+          ],
           "bio": "Keeps programs running smoothly with clear processes and thoughtful resource planning.",
           "bioLineClamp": 3,
           "showSocialLinks": false,
@@ -91,30 +134,114 @@
         }
       ]
     },
-    "slidesPerView": { "type": "number", "default": 4 },
-    "slidesPerViewTablet": { "type": "number", "default": 2.5 },
-    "slidesPerViewMobile": { "type": "number", "default": 1.2 },
-    "spaceBetween": { "type": "number", "default": 24 },
-    "speed": { "type": "number", "default": 500 },
-    "loop": { "type": "boolean", "default": false },
-    "autoplay": { "type": "boolean", "default": false },
-    "autoplayDelay": { "type": "number", "default": 4000 },
-    "pauseOnHover": { "type": "boolean", "default": true },
-    "showPagination": { "type": "boolean", "default": true },
-    "paginationType": { "type": "string", "default": "bullets" },
-    "showArrows": { "type": "boolean", "default": false },
-    "freeMode": { "type": "boolean", "default": false },
-    "grabCursor": { "type": "boolean", "default": true },
-    "sectionBackgroundColor": { "type": "string", "default": "" },
-    "paginationColor": { "type": "string", "default": "" },
-    "paginationActiveColor": { "type": "string", "default": "" },
-    "cardBackgroundColor": { "type": "string", "default": "" },
-    "tagBackgroundColor": { "type": "string", "default": "" },
-    "tagTextColor": { "type": "string", "default": "" },
-    "cardBorderRadius": { "type": "number", "default": 16 },
-    "nameColor": { "type": "string", "default": "" },
-    "roleColor": { "type": "string", "default": "" },
-    "enableScrollAnimation": { "type": "boolean", "default": true }
+    "slidesPerView": {
+      "type": "number",
+      "default": 4
+    },
+    "slidesPerViewTablet": {
+      "type": "number",
+      "default": 2.5
+    },
+    "slidesPerViewMobile": {
+      "type": "number",
+      "default": 1.2
+    },
+    "spaceBetween": {
+      "type": "number",
+      "default": 24
+    },
+    "speed": {
+      "type": "number",
+      "default": 500
+    },
+    "loop": {
+      "type": "boolean",
+      "default": false
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": false
+    },
+    "autoplayDelay": {
+      "type": "number",
+      "default": 4000
+    },
+    "pauseOnHover": {
+      "type": "boolean",
+      "default": true
+    },
+    "showPagination": {
+      "type": "boolean",
+      "default": true
+    },
+    "paginationType": {
+      "type": "string",
+      "default": "bullets"
+    },
+    "showArrows": {
+      "type": "boolean",
+      "default": false
+    },
+    "freeMode": {
+      "type": "boolean",
+      "default": false
+    },
+    "grabCursor": {
+      "type": "boolean",
+      "default": true
+    },
+    "sectionBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationColor": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationActiveColor": {
+      "type": "string",
+      "default": ""
+    },
+    "cardBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "tagBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "tagTextColor": {
+      "type": "string",
+      "default": ""
+    },
+    "cardBorderRadius": {
+      "type": "number",
+      "default": 16
+    },
+    "nameColor": {
+      "type": "string",
+      "default": ""
+    },
+    "roleColor": {
+      "type": "string",
+      "default": ""
+    },
+    "bioColor": {
+      "type": "string",
+      "default": ""
+    },
+    "socialColor": {
+      "type": "string",
+      "default": ""
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    },
+    "enablePopup": {
+      "type": "boolean",
+      "default": false
+    }
   },
   "editorScript": "file:./index.js",
   "editorStyle": "file:./editor.css",

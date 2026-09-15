@@ -256,11 +256,11 @@ if ( ! is_admin() && ! wp_script_is( 'nextora-related-posts-view-script', 'regis
 						<?php endif; ?>
 
 						<div class="nextora-related-posts__body">
-							<h3 class="nextora-related-posts__title">
+							<h4 class="nextora-related-posts__title">
 								<a href="<?php echo esc_url( $post_link ); ?>" class="nextora-related-posts__title-link">
 									<?php echo esc_html( $post_title ); ?>
 								</a>
-							</h3>
+							</h4>
 
 							<?php if ( $show_date ) : ?>
 								<time

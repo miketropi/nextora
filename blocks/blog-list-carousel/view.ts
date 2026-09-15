@@ -270,6 +270,11 @@ function playRevealOnEnter(
 	const playReveal = (): void => {
 		if (played || section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
 		played = true;
+		if (typeof document !== 'undefined' && document.hidden) {
+			clearRevealStyles(targets);
+			setRevealReady(section);
+			return;
+		}
 		timeline.play();
 	};
 
@@ -310,7 +315,7 @@ function initScrollReveal(section: HTMLElement): void {
 	if (section.getAttribute(SCROLL_INIT_ATTR) === '1') return;
 	section.setAttribute(SCROLL_INIT_ATTR, '1');
 
-	if (prefersReducedMotion()) {
+	if (prefersReducedMotion() || (typeof document !== 'undefined' && document.hidden)) {
 		setRevealReady(section);
 		return;
 	}
@@ -709,6 +714,12 @@ function run(): void {
 	initAllScrollReveals(document);
 	watchDeferredElements();
 	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize' });
+	document.addEventListener('visibilitychange', () => {
+		if (!document.hidden) {
+			initAllScrollReveals(document);
+			ScrollTrigger.refresh();
+		}
+	});
 	ScrollTrigger.refresh();
 }
 

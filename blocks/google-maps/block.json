@@ -3,14 +3,22 @@
   "apiVersion": 3,
   "name": "nextora/google-maps",
   "title": "Google Maps",
-  "category": "design",
+  "category": "nextora",
   "description": "Embeds a Google Map via iframe or JavaScript API with full editor controls.",
-  "keywords": ["map", "google", "location", "nextora"],
+  "keywords": [
+    "map",
+    "google",
+    "location",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "location-alt",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "spacing": {
       "margin": true,
@@ -21,7 +29,10 @@
     "mapMode": {
       "type": "string",
       "default": "iframe",
-      "enum": ["iframe", "api"]
+      "enum": [
+        "iframe",
+        "api"
+      ]
     },
     "address": {
       "type": "string",

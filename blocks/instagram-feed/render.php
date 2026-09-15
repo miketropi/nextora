@@ -54,6 +54,9 @@ if ( ! function_exists( 'nextora_instagram_feed_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( 'transparent' === $raw || 'rgba(0,0,0,0)' === $raw || '#00000000' === $raw ) {
+			return 'transparent';
+		}
 		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
 			return $raw;
 		}
@@ -63,7 +66,8 @@ if ( ! function_exists( 'nextora_instagram_feed_resolve_color' ) ) {
 			return $hex;
 		}
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
-			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
+			$slug = sanitize_html_class( strtolower( $raw ) );
+			return 'transparent' === $slug ? 'transparent' : 'var(--wp--preset--color--' . $slug . ')';
 		}
 		return '';
 	}

@@ -34,6 +34,9 @@ if ( ! function_exists( 'nextora_testimonials_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( 'transparent' === $raw || 'rgba(0,0,0,0)' === $raw || '#00000000' === $raw ) {
+			return 'transparent';
+		}
 		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
 			return $raw;
 		}
@@ -43,7 +46,8 @@ if ( ! function_exists( 'nextora_testimonials_resolve_color' ) ) {
 			return $hex;
 		}
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
-			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
+			$slug = sanitize_html_class( strtolower( $raw ) );
+			return 'transparent' === $slug ? 'transparent' : 'var(--wp--preset--color--' . $slug . ')';
 		}
 		return '';
 	}
@@ -71,6 +75,142 @@ if ( ! function_exists( 'nextora_testimonials_resolve_font_size' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_testimonials_get_gutenberg_color_props' ) ) {
+	/**
+	 * Resolve Gutenberg standard color classes and inline styles.
+	 *
+	 * @param string $color Raw color attribute value.
+	 * @param string $type  'text' or 'background'.
+	 *
+	 * @return array{class: string, style: string}
+	 */
+	function nextora_testimonials_get_gutenberg_color_props( string $color, string $type = 'text' ): array {
+		$color = trim( $color );
+		if ( '' === $color || 'inherit' === $color || 'currentColor' === $color ) {
+			return array(
+				'class' => '',
+				'style' => '',
+			);
+		}
+
+		if (
+			'transparent' === $color ||
+			'rgba(0,0,0,0)' === $color ||
+			'#00000000' === $color
+		) {
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-transparent-background-color',
+					'style' => 'background-color:transparent;',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-transparent-color',
+				'style' => 'color:transparent;',
+			);
+		}
+
+		$slug = '';
+		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $color, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^var\(\s*--wp--preset--color--([a-z0-9_-]+)\s*\)$/i', $color, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^[a-z0-9_-]+$/i', $color ) && ! preg_match( '/^[0-9a-f]{3,8}$/i', $color ) ) {
+			$slug = sanitize_html_class( strtolower( $color ) );
+		}
+
+		if ( 'transparent' === $slug ) {
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-transparent-background-color',
+					'style' => 'background-color:transparent;',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-transparent-color',
+				'style' => 'color:transparent;',
+			);
+		}
+
+		if ( '' !== $slug ) {
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-' . $slug . '-background-color',
+					'style' => '',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-' . $slug . '-color',
+				'style' => '',
+			);
+		}
+
+		if ( 'background' === $type ) {
+			return array(
+				'class' => 'has-background',
+				'style' => 'background-color:' . esc_attr( $color ) . ';',
+			);
+		}
+		return array(
+			'class' => 'has-text-color',
+			'style' => 'color:' . esc_attr( $color ) . ';',
+		);
+	}
+}
+
+if ( ! function_exists( 'nextora_testimonials_get_font_size_props' ) ) {
+	/**
+	 * @return array<string, string>
+	 */
+	function nextora_testimonials_get_font_size_props( string $size ): array {
+		$size = trim( $size );
+		if ( '' === $size ) {
+			return array( 'class' => '', 'style' => '' );
+		}
+		if ( preg_match( '/^[a-z0-9-]+$/i', $size ) ) {
+			return array(
+				'class' => 'has-' . sanitize_html_class( strtolower( $size ) ) . '-font-size',
+				'style' => '',
+			);
+		}
+		if ( preg_match( '/^clamp\(.+\)$/i', $size ) || preg_match( '/^[\d.]+(?:rem|px|em|vw|vh|%)$/i', $size ) ) {
+			return array(
+				'class' => '',
+				'style' => 'font-size:' . esc_attr( $size ) . ';',
+			);
+		}
+		if ( preg_match( '/^[\d.]+$/', $size ) ) {
+			return array(
+				'class' => '',
+				'style' => 'font-size:' . esc_attr( $size ) . 'px;',
+			);
+		}
+		return array( 'class' => '', 'style' => '' );
+	}
+}
+
+if ( ! function_exists( 'nextora_testimonials_get_font_family_props' ) ) {
+	/**
+	 * @return array<string, string>
+	 */
+	function nextora_testimonials_get_font_family_props( string $family ): array {
+		$family = trim( $family );
+		if ( '' === $family ) {
+			return array( 'class' => '', 'style' => '' );
+		}
+		if ( preg_match( '/^[a-z0-9-]+$/i', $family ) ) {
+			return array(
+				'class' => 'has-' . sanitize_html_class( strtolower( $family ) ) . '-font-family',
+				'style' => '',
+			);
+		}
+		return array(
+			'class' => '',
+			'style' => 'font-family:' . esc_attr( $family ) . ';',
+		);
+	}
+}
+
 if ( ! function_exists( 'nextora_testimonials_normalize_item' ) ) {
 	/**
 	 * @param array<string, mixed> $raw Raw testimonial.
@@ -93,7 +233,7 @@ if ( ! function_exists( 'nextora_testimonials_normalize_item' ) ) {
 
 if ( ! function_exists( 'nextora_testimonials_build_author_meta' ) ) {
 	/**
-	 * Build " / Age - Location" suffix for attribution line.
+	 * Build " / Age, Location" suffix for attribution line.
 	 */
 	function nextora_testimonials_build_author_meta( string $age, string $location ): string {
 		$parts = array();
@@ -106,7 +246,7 @@ if ( ! function_exists( 'nextora_testimonials_build_author_meta' ) ) {
 		if ( array() === $parts ) {
 			return '';
 		}
-		return '/ ' . implode( ' - ', $parts );
+		return '/ ' . implode( ', ', $parts );
 	}
 }
 
@@ -252,16 +392,17 @@ if ( ! function_exists( 'nextora_testimonials_render_avatar' ) ) {
 			}
 		}
 
-		return '<div class="nextora-testimonials__avatar nextora-testimonials__avatar--placeholder" aria-hidden="true"></div>';
+		return '<div class="nextora-testimonials__avatar nextora-testimonials__avatar--placeholder" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5"/></svg></div>';
 	}
 }
 
 if ( ! function_exists( 'nextora_testimonials_render_content_slide' ) ) {
 	/**
-	 * @param array<string, mixed> $item     Normalized testimonial.
-	 * @param string               $template Template type.
+	 * @param array<string, mixed>  $item          Normalized testimonial.
+	 * @param string                $template      Template type.
+	 * @param array<string, string> $context_props Color and typography classes/styles.
 	 */
-	function nextora_testimonials_render_content_slide( array $item, string $template = 'default' ): string {
+	function nextora_testimonials_render_content_slide( array $item, string $template = 'default', array $context_props = array() ): string {
 		$quote = (string) $item['quoteText'];
 		if ( '' === $quote ) {
 			return '';
@@ -274,13 +415,22 @@ if ( ! function_exists( 'nextora_testimonials_render_content_slide' ) ) {
 			$location,
 		);
 
+		$quote_class = ! empty( $context_props['quote_class'] ) ? ' ' . $context_props['quote_class'] : '';
+		$quote_style = ! empty( $context_props['quote_style'] ) ? ' style="' . esc_attr( $context_props['quote_style'] ) . '"' : '';
+
+		$name_class = ! empty( $context_props['author_name_class'] ) ? ' ' . $context_props['author_name_class'] : '';
+		$name_style = ! empty( $context_props['author_name_style'] ) ? ' style="' . esc_attr( $context_props['author_name_style'] ) . '"' : '';
+
+		$meta_class = ! empty( $context_props['author_meta_class'] ) ? ' ' . $context_props['author_meta_class'] : '';
+		$meta_style = ! empty( $context_props['author_meta_style'] ) ? ' style="' . esc_attr( $context_props['author_meta_style'] ) . '"' : '';
+
 		$out  = '<div class="swiper-slide nextora-testimonials__slide">';
 
 		if ( 'template-01' === $template || 'template-02' === $template ) {
 			$out .= '<svg class="nextora-testimonials__quote-mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9.5 4C6 4 4 6.5 4 10v10h8v-9H7.5C7.5 8 8.3 7 10 7zm9 0C15 4 13 6.5 13 10v10h8v-9h-4.5C16.5 8 17.3 7 19 7z"/></svg>';
 		}
 
-		$out .= '<div class="nextora-testimonials__quote"><p>' . esc_html( $quote ) . '</p></div>';
+		$out .= '<div class="nextora-testimonials__quote' . esc_attr( $quote_class ) . '"' . $quote_style . '><p>' . esc_html( $quote ) . '</p></div>';
 
 		if ( 'template-02' === $template ) {
 			if ( '' !== $name || '' !== $location ) {
@@ -288,10 +438,10 @@ if ( ! function_exists( 'nextora_testimonials_render_content_slide' ) ) {
 				$out .= nextora_testimonials_render_avatar( $item );
 				$out .= '<div class="nextora-testimonials__author-text">';
 				if ( '' !== $name ) {
-					$out .= '<strong class="nextora-testimonials__author-name">' . esc_html( $name ) . '</strong>';
+					$out .= '<strong class="nextora-testimonials__author-name' . esc_attr( $name_class ) . '"' . $name_style . '>' . esc_html( $name ) . '</strong>';
 				}
 				if ( '' !== $location ) {
-					$out .= '<span class="nextora-testimonials__author-meta">' . esc_html( $location ) . '</span>';
+					$out .= '<span class="nextora-testimonials__author-meta' . esc_attr( $meta_class ) . '"' . $meta_style . '>' . esc_html( $location ) . '</span>';
 				}
 				$out .= '</div>';
 				$out .= '</footer>';
@@ -299,10 +449,10 @@ if ( ! function_exists( 'nextora_testimonials_render_content_slide' ) ) {
 		} elseif ( '' !== $name || '' !== $meta ) {
 			$out .= '<footer class="nextora-testimonials__author">';
 			if ( '' !== $name ) {
-				$out .= '<strong class="nextora-testimonials__author-name">' . esc_html( $name ) . '</strong>';
+				$out .= '<strong class="nextora-testimonials__author-name' . esc_attr( $name_class ) . '"' . $name_style . '>' . esc_html( $name ) . '</strong>';
 			}
 			if ( '' !== $meta ) {
-				$out .= '<span class="nextora-testimonials__author-meta">' . esc_html( $meta ) . '</span>';
+				$out .= '<span class="nextora-testimonials__author-meta' . esc_attr( $meta_class ) . '"' . $meta_style . '>' . esc_html( $meta ) . '</span>';
 			}
 			$out .= '</footer>';
 		}
@@ -361,16 +511,36 @@ $pause_hover = ! isset( $attributes['pauseOnHover'] ) || (bool) $attributes['pau
 $show_pag    = ! isset( $attributes['showPagination'] ) || (bool) $attributes['showPagination'];
 $show_arrows = ! empty( $attributes['showArrows'] );
 
-$content_bg = nextora_testimonials_resolve_color( isset( $attributes['contentBackgroundColor'] ) ? (string) $attributes['contentBackgroundColor'] : '' );
-$heading_color     = nextora_testimonials_resolve_color( isset( $attributes['headingColor'] ) ? (string) $attributes['headingColor'] : '' );
-$quote_color       = nextora_testimonials_resolve_color( isset( $attributes['quoteColor'] ) ? (string) $attributes['quoteColor'] : '' );
-$author_name_color = nextora_testimonials_resolve_color( isset( $attributes['authorNameColor'] ) ? (string) $attributes['authorNameColor'] : '' );
-$author_meta_color = nextora_testimonials_resolve_color( isset( $attributes['authorMetaColor'] ) ? (string) $attributes['authorMetaColor'] : '' );
-$dot_color         = nextora_testimonials_resolve_color( isset( $attributes['paginationColor'] ) ? (string) $attributes['paginationColor'] : '' );
-$dot_active        = nextora_testimonials_resolve_color( isset( $attributes['paginationActiveColor'] ) ? (string) $attributes['paginationActiveColor'] : '' );
-$heading_font_size = nextora_testimonials_resolve_font_size( isset( $attributes['headingFontSize'] ) ? (string) $attributes['headingFontSize'] : '' );
-$quote_font_size   = nextora_testimonials_resolve_font_size( isset( $attributes['quoteFontSize'] ) ? (string) $attributes['quoteFontSize'] : '' );
-$quote_font_family = nextora_testimonials_resolve_font_family( isset( $attributes['quoteFontFamily'] ) ? (string) $attributes['quoteFontFamily'] : '' );
+$content_bg_raw        = isset( $attributes['contentBackgroundColor'] ) ? (string) $attributes['contentBackgroundColor'] : '';
+$heading_color_raw     = isset( $attributes['headingColor'] ) ? (string) $attributes['headingColor'] : '';
+$quote_color_raw       = isset( $attributes['quoteColor'] ) ? (string) $attributes['quoteColor'] : '';
+$author_name_color_raw = isset( $attributes['authorNameColor'] ) ? (string) $attributes['authorNameColor'] : '';
+$author_meta_color_raw = isset( $attributes['authorMetaColor'] ) ? (string) $attributes['authorMetaColor'] : '';
+$heading_font_size_raw = isset( $attributes['headingFontSize'] ) ? (string) $attributes['headingFontSize'] : '';
+$quote_font_size_raw   = isset( $attributes['quoteFontSize'] ) ? (string) $attributes['quoteFontSize'] : '';
+$quote_font_family_raw = isset( $attributes['quoteFontFamily'] ) ? (string) $attributes['quoteFontFamily'] : '';
+
+$content_bg_props        = nextora_testimonials_get_gutenberg_color_props( $content_bg_raw, 'background' );
+$heading_color_props     = nextora_testimonials_get_gutenberg_color_props( $heading_color_raw, 'text' );
+$quote_color_props       = nextora_testimonials_get_gutenberg_color_props( $quote_color_raw, 'text' );
+$author_name_color_props = nextora_testimonials_get_gutenberg_color_props( $author_name_color_raw, 'text' );
+$author_meta_color_props = nextora_testimonials_get_gutenberg_color_props( $author_meta_color_raw, 'text' );
+
+$heading_size_props = nextora_testimonials_get_font_size_props( $heading_font_size_raw );
+$quote_size_props   = nextora_testimonials_get_font_size_props( $quote_font_size_raw );
+$quote_family_props = nextora_testimonials_get_font_family_props( $quote_font_family_raw );
+
+$dot_color  = nextora_testimonials_resolve_color( isset( $attributes['paginationColor'] ) ? (string) $attributes['paginationColor'] : '' );
+$dot_active = nextora_testimonials_resolve_color( isset( $attributes['paginationActiveColor'] ) ? (string) $attributes['paginationActiveColor'] : '' );
+
+$context_props = array(
+	'quote_class'       => trim( $quote_color_props['class'] . ' ' . $quote_size_props['class'] . ' ' . $quote_family_props['class'] ),
+	'quote_style'       => trim( $quote_color_props['style'] . ' ' . $quote_size_props['style'] . ' ' . $quote_family_props['style'] ),
+	'author_name_class' => $author_name_color_props['class'],
+	'author_name_style' => $author_name_color_props['style'],
+	'author_meta_class' => $author_meta_color_props['class'],
+	'author_meta_style' => $author_meta_color_props['style'],
+);
 
 $enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
 
@@ -398,24 +568,9 @@ $portrait_placeholder_url = get_theme_file_uri( 'assets/images/placeholder/gener
 $css_vars = array(
 	'--nextora-testimonials-portrait-placeholder-image' => 'url(' . esc_url( $portrait_placeholder_url ) . ')',
 	'--nextora-testimonials-image-ratio'                => $image_ratio . '%',
-	'--nextora-testimonials-content-bg'        => '' !== $content_bg ? $content_bg : 'var(--wp--preset--color--surface)',
-	'--nextora-testimonials-heading-color'     => '' !== $heading_color ? $heading_color : 'inherit',
-	'--nextora-testimonials-quote-color'       => '' !== $quote_color ? $quote_color : 'inherit',
-	'--nextora-testimonials-author-name-color' => '' !== $author_name_color ? $author_name_color : 'inherit',
-	'--nextora-testimonials-author-meta-color' => '' !== $author_meta_color ? $author_meta_color : 'color-mix(in srgb, currentColor 65%, transparent)',
-	'--nextora-testimonials-dot-color'         => '' !== $dot_color ? $dot_color : 'color-mix(in srgb, currentColor 35%, transparent)',
-	'--nextora-testimonials-dot-active'        => '' !== $dot_active ? $dot_active : 'var(--wp--preset--color--primary, currentColor)',
+	'--nextora-testimonials-dot-color'                  => '' !== $dot_color ? $dot_color : 'color-mix(in srgb, currentColor 35%, transparent)',
+	'--nextora-testimonials-dot-active'                 => '' !== $dot_active ? $dot_active : 'var(--wp--preset--color--primary, currentColor)',
 );
-
-if ( '' !== $heading_font_size ) {
-	$css_vars['--nextora-testimonials-heading-size'] = $heading_font_size;
-}
-if ( '' !== $quote_font_size ) {
-	$css_vars['--nextora-testimonials-quote-size'] = $quote_font_size;
-}
-if ( '' !== $quote_font_family ) {
-	$css_vars['--nextora-testimonials-quote-font-family'] = $quote_font_family;
-}
 
 $style_parts = array();
 foreach ( $css_vars as $key => $value ) {
@@ -460,6 +615,12 @@ $wrapper_attributes = (string) apply_filters(
 
 $heading_tag = 'h' . (string) $heading_level;
 
+$heading_classes   = array_filter( array( 'nextora-testimonials__heading', $heading_color_props['class'], $heading_size_props['class'] ) );
+$heading_style_str = trim( $heading_color_props['style'] . ' ' . $heading_size_props['style'] );
+$heading_style_att = '' !== $heading_style_str ? ' style="' . esc_attr( $heading_style_str ) . '"' : '';
+
+$content_classes   = array_filter( array( 'nextora-testimonials__content', $content_bg_props['class'] ) );
+$content_style_att = '' !== $content_bg_props['style'] ? ' style="' . esc_attr( $content_bg_props['style'] ) . '"' : '';
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<div
@@ -480,11 +641,11 @@ $heading_tag = 'h' . (string) $heading_level;
 			</div>
 			<?php endif; ?>
 
-			<div class="nextora-testimonials__content">
+			<div class="<?php echo esc_attr( implode( ' ', $content_classes ) ); ?>"<?php echo $content_style_att; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 				<div class="nextora-testimonials__content-inner">
 					<?php if ( '' !== $heading_text && 'default' === $template ) : ?>
 						<div class="nextora-testimonials__header">
-							<<?php echo $heading_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?> class="nextora-testimonials__heading">
+							<<?php echo $heading_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?> class="<?php echo esc_attr( implode( ' ', $heading_classes ) ); ?>"<?php echo $heading_style_att; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 								<?php echo esc_html( $heading_text ); ?>
 							</<?php echo $heading_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 						</div>
@@ -496,7 +657,7 @@ $heading_tag = 'h' . (string) $heading_level;
 								<?php
 								foreach ( $items as $item ) {
 									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
-									echo nextora_testimonials_render_content_slide( $item, $template );
+									echo nextora_testimonials_render_content_slide( $item, $template, $context_props );
 								}
 								?>
 							</div>

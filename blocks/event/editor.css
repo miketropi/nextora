@@ -56,6 +56,13 @@
 	margin-top: auto;
 }
 
+
+.editor-styles-wrapper .nextora-event--editor .nextora-event__title a,
+.editor-styles-wrapper .nextora-event--editor .nextora-event__template2-title a,
+.editor-styles-wrapper .nextora-event--editor .nextora-event__template3-title a {
+	color: inherit !important;
+}
+
 /* Modal */
 .nextora-event__event-modal .components-modal__frame {
 	max-width: 720px;
@@ -251,7 +258,19 @@
 }
 
 .nextora-event--template3-editor .nextora-event__template3-title {
-	margin: 0;
+	margin: 0 0 1rem 0;
+	line-height: 1.35;
+}
+
+.nextora-event--editor .nextora-event__arrow,
+.nextora-event--editor .nextora-event__template2-action {
+	padding: 0 !important;
+}
+
+.nextora-event--editor .nextora-event__arrow svg,
+.nextora-event--editor .nextora-event__template2-action svg {
+	display: block !important;
+	padding: 0 !important;
 }
 
 .nextora-event--template3-editor .nextora-event__template3-description {

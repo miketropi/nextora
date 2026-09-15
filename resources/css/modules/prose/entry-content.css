@@ -243,7 +243,7 @@ body:not(.page-template-page-full-width):not(.page-template-full-width):not([cla
 		border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 22%, transparent);
 	}
 
-	& :where(img) {
+	& :where(img:not([class*="nextora-"], [class*="alone-"], [class*="nextora-"] *, [class*="alone-"] *, [class*="wp-block-nextora"] *, [class*="wp-block-alone"] *, .not-prose, .not-prose *)) {
 		height: auto;
 		max-width: 100%;
 	}

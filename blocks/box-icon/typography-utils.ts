@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 /**
  * Theme preset slug or custom stack → CSS font-family value.
  */
@@ -23,3 +25,27 @@ export function buildHeadingFontFamilyVar(
 		'--nextora-box-icon-heading-font-family': resolved,
 	};
 }
+
+/**
+ * Standard Gutenberg font-family class or custom inline style.
+ */
+export function getGutenbergFontFamilyProps(raw: string | undefined): {
+	className: string;
+	style: CSSProperties;
+} {
+	const val = (raw ?? '').trim();
+	if (!val) {
+		return { className: '', style: {} };
+	}
+	if (/^[a-z0-9_-]+$/i.test(val)) {
+		return {
+			className: `has-${val.toLowerCase()}-font-family`,
+			style: {},
+		};
+	}
+	return {
+		className: '',
+		style: { fontFamily: val },
+	};
+}
+

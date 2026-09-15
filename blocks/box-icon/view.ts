@@ -507,8 +507,7 @@ function mountSwiper(root: HTMLElement): void {
 			swiperBreakpoints[bp] = { slidesPerView: effectiveDesktopSpv, spaceBetween: Math.max(0, gap) };
 		}
 	} else {
-		const desktopBp = Math.max(gridMin, 1024);
-		swiperBreakpoints[desktopBp] = { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) };
+		swiperBreakpoints[1024] = { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) };
 	}
 
 	const wantLoop = Boolean(opts.loop) && slideCount > 1;

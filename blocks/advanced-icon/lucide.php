@@ -264,8 +264,13 @@ if ( ! function_exists( 'nextora_icon_resolve_color' ) ) {
 			return 'currentColor';
 		}
 
+		if ( 'transparent' === $raw || 'rgba(0,0,0,0)' === $raw || '#00000000' === $raw ) {
+			return 'transparent';
+		}
+
 		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $preset_m ) ) {
-			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $preset_m[1] ) ) . ')';
+			$slug = sanitize_html_class( strtolower( $preset_m[1] ) );
+			return 'transparent' === $slug ? 'transparent' : 'var(--wp--preset--color--' . $slug . ')';
 		}
 
 		if ( preg_match( '/^#([0-9a-f]{8})$/i', $raw ) ) {

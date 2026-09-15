@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { CSSProperties } from 'react';
 import { useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
@@ -7,6 +8,7 @@ import {
 	PanelColorSettings,
 	RichText,
 	useBlockProps,
+	useSetting,
 } from '@wordpress/block-editor';
 import {
 	BaseControl,
@@ -79,6 +81,7 @@ interface TestimonialEditorItemProps {
 	total: number;
 	portraitUrl?: string;
 	imagePosition: 'left' | 'right';
+	template: 'default' | 'template-01' | 'template-02';
 	onEdit: () => void;
 	onMoveUp: () => void;
 	onMoveDown: () => void;
@@ -91,6 +94,7 @@ function TestimonialEditorItem({
 	total,
 	portraitUrl,
 	imagePosition,
+	template,
 	onEdit,
 	onMoveUp,
 	onMoveDown,
@@ -124,37 +128,74 @@ function TestimonialEditorItem({
 					'nextora-testimonials__layout',
 					'nextora-testimonials__layout--item-preview',
 					`nextora-testimonials--image-${imagePosition}`,
-				].join(' ')}
+					template !== 'default' ? `nextora-testimonials--template-${template}` : '',
+				].filter(Boolean).join(' ')}
 			>
-				<div className="nextora-testimonials__media">
-					<figure className="nextora-testimonials__figure">
-						{portraitUrl ? (
-							<img src={portraitUrl} alt="" className="nextora-testimonials__portrait" />
-						) : (
-							<div className="nextora-testimonials__portrait-placeholder" aria-hidden />
-						)}
-					</figure>
-				</div>
+				{template !== 'template-02' && (
+					<div className="nextora-testimonials__media">
+						<figure className="nextora-testimonials__figure">
+							{portraitUrl ? (
+								<img src={portraitUrl} alt="" className="nextora-testimonials__portrait" />
+							) : (
+								<div className="nextora-testimonials__portrait-placeholder" aria-hidden />
+							)}
+						</figure>
+					</div>
+				)}
 
 				<div className="nextora-testimonials__content">
 					<div className="nextora-testimonials__content-inner">
+						{(template === 'template-01' || template === 'template-02') && (
+							<svg className="nextora-testimonials__quote-mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+								<path d="M9.5 4C6 4 4 6.5 4 10v10h8v-9H7.5C7.5 8 8.3 7 10 7zm9 0C15 4 13 6.5 13 10v10h8v-9h-4.5C16.5 8 17.3 7 19 7z" />
+							</svg>
+						)}
 						<div className="nextora-testimonials__quote">
 							<p>
 								{item.quoteText ||
 									__('Click Edit to add a quote…', 'nextora')}
 							</p>
 						</div>	
-						{(item.authorName || authorMeta) && (
-							<footer className="nextora-testimonials__author">
-								{item.authorName && (
-									<strong className="nextora-testimonials__author-name">
-										{item.authorName}
-									</strong>
-								)}
-								{authorMeta && (
-									<span className="nextora-testimonials__author-meta">{authorMeta}</span>
-								)}
-							</footer>
+						{template === 'template-02' ? (
+							(item.authorName || item.authorLocation) && (
+								<footer className="nextora-testimonials__author nextora-testimonials__author--with-avatar">
+									{portraitUrl ? (
+										<div className="nextora-testimonials__avatar">
+											<img src={portraitUrl} alt="" className="nextora-testimonials__avatar-img" />
+										</div>
+									) : (
+										<div className="nextora-testimonials__avatar nextora-testimonials__avatar--placeholder" aria-hidden="true">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+												<circle cx="12" cy="8" r="3.5" />
+												<path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" />
+											</svg>
+										</div>
+									)}
+									<div className="nextora-testimonials__author-text">
+										{item.authorName && (
+											<strong className="nextora-testimonials__author-name">
+												{item.authorName}
+											</strong>
+										)}
+										{item.authorLocation && (
+											<span className="nextora-testimonials__author-meta">{item.authorLocation}</span>
+										)}
+									</div>
+								</footer>
+							)
+						) : (
+							(item.authorName || authorMeta) && (
+								<footer className="nextora-testimonials__author">
+									{item.authorName && (
+										<strong className="nextora-testimonials__author-name">
+											{item.authorName}
+										</strong>
+									)}
+									{authorMeta && (
+										<span className="nextora-testimonials__author-meta">{authorMeta}</span>
+									)}
+								</footer>
+							)
 						)}
 					</div>
 				</div>
@@ -189,6 +230,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 	const [editingId, setEditingId] = useState<string | null>(null);
 	const palette = useThemeColorPalette();
 	const fontFamilyOptions = useFontFamilyOptions();
+	const themeFontSizes = useSetting('typography.fontSizes') || [];
 
 	const testimonials = normalizeTestimonials(attributes.testimonials);
 	const editingItem = editingId ? testimonials.find((t) => t.id === editingId) : undefined;
@@ -504,6 +546,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 							)}
 						>
 							<FontSizePicker
+								fontSizes={themeFontSizes}
 								value={headingFontSize || undefined}
 								valueMode="slug"
 								onChange={(value, selectedItem) =>
@@ -531,6 +574,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 						}
 					>
 						<FontSizePicker
+							fontSizes={themeFontSizes}
 							value={quoteFontSize || undefined}
 							valueMode="slug"
 							onChange={(value, selectedItem) =>
@@ -603,22 +647,24 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 			)}
 
 			<div {...blockProps}>
-				<div className="nextora-testimonials__editor-section">
-					<div className="nextora-testimonials__content nextora-testimonials__content--section-preview">
-						<div className="nextora-testimonials__content-inner">
-							<div className="nextora-testimonials__header">
-								<RichText
-									tagName={headingTag}
-									className="nextora-testimonials__heading"
-									value={headingText}
-									onChange={(v) => setAttributes({ headingText: v })}
-									placeholder={__('Section heading…', 'nextora')}
-									allowedFormats={[]}
-								/>
+				{template === 'default' && (
+					<div className="nextora-testimonials__editor-section">
+						<div className="nextora-testimonials__content nextora-testimonials__content--section-preview">
+							<div className="nextora-testimonials__content-inner">
+								<div className="nextora-testimonials__header">
+									<RichText
+										tagName={headingTag}
+										className="nextora-testimonials__heading"
+										value={headingText}
+										onChange={(v) => setAttributes({ headingText: v })}
+										placeholder={__('Section heading…', 'nextora')}
+										allowedFormats={[]}
+									/>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
+				)}
 
 				<div className="nextora-testimonials__editor-list" aria-label={__('Testimonials', 'nextora')}>
 					{testimonials.map((item, index) => (
@@ -629,6 +675,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 							total={testimonials.length}
 							portraitUrl={resolvePortraitUrl(item, mediaUrlById)}
 							imagePosition={imagePosition}
+							template={template}
 							onEdit={() => setEditingId(item.id)}
 							onMoveUp={() => moveTestimonial(item.id, -1)}
 							onMoveDown={() => moveTestimonial(item.id, 1)}

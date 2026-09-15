@@ -135,7 +135,7 @@ export default function AdvancedButtonButtonEdit( {
 		clickEventId = '',
 		clickEventScript = '',
 		buttonStyle = 'fill',
-		borderRadius = 50,
+		borderRadius,
 		iconPosition = 'left',
 		iconSource = 'theme',
 		iconName = 'arrow-right',
@@ -300,7 +300,9 @@ export default function AdvancedButtonButtonEdit( {
 	const buttonClassName = `wp-block-nextora-advanced-button-button nextora-advanced-button__button wp-element-button nextora-advanced-button-button nextora-advanced-button-button--style-${ buttonStyle } nextora-advanced-button-button--icon-${ iconStyle } nextora-advanced-button-button--hover-${ hoverEffect }${ showIcon ? '' : ' nextora-advanced-button-button--no-icon' }`;
 
 	const buttonStyleVars = {
-		'--nextora-advanced-button-radius': `${ borderRadius }px`,
+		...( typeof borderRadius === 'number'
+			? { borderRadius: `${ borderRadius }px` }
+			: {} ),
 		'--nextora-advanced-button-gap': '0.5rem',
 		'--nextora-advanced-button-icon-size': `${ iconSize }px`,
 		...( hasSurfaceStyle
@@ -734,7 +736,7 @@ export default function AdvancedButtonButtonEdit( {
 						label={ __( 'Button border radius (px)', 'nextora' ) }
 						value={ borderRadius }
 						onChange={ ( value: number | undefined ) =>
-							setAttributes( { borderRadius: value ?? 50 } )
+							setAttributes( { borderRadius: value } )
 						}
 						min={ 0 }
 						max={ 999 }

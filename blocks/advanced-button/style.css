@@ -1,3 +1,8 @@
+.wp-block-nextora-advanced-button,
+.wp-block-nextora-advanced-button * {
+	box-sizing: border-box;
+}
+
 .wp-block-nextora-advanced-button.nextora-advanced-button {
 	display: block;
 	width: 100%;

@@ -66,3 +66,52 @@ if ( ! function_exists( 'wc_get_account_endpoint_url' ) ) {
 		return '';
 	}
 }
+
+if ( ! function_exists( 'tribe_get_events' ) ) {
+	/**
+	 * The Events Calendar plugin (optional) stub.
+	 *
+	 * @param array<string, mixed> $args
+	 *
+	 * @return array<int, WP_Post>
+	 */
+	function tribe_get_events( $args = array() ): array {
+		return array();
+	}
+}
+
+if ( ! function_exists( 'tribe_get_start_date' ) ) {
+	/**
+	 * @param int|WP_Post|null $event
+	 */
+	function tribe_get_start_date( $event = null, bool $display_time = true, string $date_format = 'Y-m-d' ): string {
+		return '';
+	}
+}
+
+if ( ! function_exists( 'tribe_get_venue' ) ) {
+	/**
+	 * @param int|WP_Post|null $event
+	 */
+	function tribe_get_venue( $event = null ): string {
+		return '';
+	}
+}
+
+if ( ! function_exists( 'tribe_get_city' ) ) {
+	/**
+	 * @param int|WP_Post|null $event
+	 */
+	function tribe_get_city( $event = null ): string {
+		return '';
+	}
+}
+
+if ( ! function_exists( 'tribe_get_cost' ) ) {
+	/**
+	 * @param int|WP_Post|null $event
+	 */
+	function tribe_get_cost( $event = null, bool $with_currency_symbol = false ): string {
+		return '';
+	}
+}

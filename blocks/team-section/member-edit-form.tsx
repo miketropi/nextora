@@ -21,6 +21,7 @@ export interface MemberEditFormProps {
 	member: TeamMember;
 	photoUrl?: string;
 	cardTemplate: TeamCardTemplate;
+	enablePopup?: boolean;
 	onPatch: (patch: Partial<TeamMember>) => void;
 }
 
@@ -34,7 +35,7 @@ const socialPlatformOptions = [
 	{ label: __('Email', 'nextora'), value: 'email' },
 ];
 
-export default function MemberEditForm({ member, photoUrl, cardTemplate, onPatch }: MemberEditFormProps) {
+export default function MemberEditForm({ member, photoUrl, cardTemplate, enablePopup, onPatch }: MemberEditFormProps) {
 	const isOverlay = cardTemplate === 'overlay-social';
 	const showTags = cardTemplate === 'default';
 
@@ -142,6 +143,21 @@ export default function MemberEditForm({ member, photoUrl, cardTemplate, onPatch
 						</>
 					)}
 				</div>
+
+				{enablePopup && (
+					<div className="nextora-team-section__member-form-section">
+						<h4 className="nextora-team-section__member-form-section-heading">
+							{__('Popup Detail Info', 'nextora')}
+						</h4>
+						<TextareaControl
+							label={__('Detailed Biography / Story', 'nextora')}
+							value={member.detail ?? ''}
+							onChange={(detail) => onPatch({ detail: detail ?? '' })}
+							help={__('Extended biography, experience, and in-depth details shown in the side popup drawer.', 'nextora')}
+							rows={6}
+						/>
+					</div>
+				)}
 
 				{showTags && (
 					<div className="nextora-team-section__member-form-section">

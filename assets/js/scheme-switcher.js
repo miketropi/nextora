@@ -333,7 +333,7 @@
 			var bgProp = theme.buttonBg ? 'background-color: var(--nextora-button-bg);' : '';
 			var colProp = theme.buttonColor ? 'color: var(--nextora-button-color);' : '';
 			rules.push(
-				':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline) > .wp-block-button__link) { ' + bgProp + ' ' + colProp + ' }'
+				':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline) > .wp-block-button__link) { ' + bgProp + ' ' + colProp + ' }'
 			);
 		}
 
@@ -341,7 +341,7 @@
 			var hbgProp = theme.buttonHoverBg ? 'background-color: var(--nextora-button-hover-bg);' : '';
 			var hcolProp = theme.buttonHoverColor ? 'color: var(--nextora-button-hover-color);' : '';
 			rules.push(
-				':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline) > .wp-block-button__link:hover) { ' + hbgProp + ' ' + hcolProp + ' }'
+				':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline) > .wp-block-button__link:hover) { ' + hbgProp + ' ' + hcolProp + ' }'
 			);
 		}
 

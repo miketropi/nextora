@@ -6,6 +6,7 @@ import {
   MediaUpload,
   MediaUploadCheck,
   URLInput,
+  useSetting,
 	__experimentalSpacingSizesControl as SpacingSizesControl,
   __experimentalBorderRadiusControl as BorderRadiusControl,
 } from '@wordpress/block-editor';
@@ -20,6 +21,8 @@ import {
   Notice,
   Button,
   ColorPalette,
+  BaseControl,
+  FontSizePicker,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
@@ -46,6 +49,19 @@ const FOLLOW_US_SOCIAL_LABELS = {
   x: __('X', 'nextora'),
 };
 
+function normalizeFontSizeAttribute(
+  value: number | string | undefined,
+  selectedItem?: { slug?: string }
+): string {
+  if (value === undefined) {
+    return '';
+  }
+  if (selectedItem?.slug) {
+    return selectedItem.slug;
+  }
+  return String(value);
+}
+
 export default function HeaderEdit({ attributes, setAttributes }) {
   const {
     logoType,
@@ -59,6 +75,8 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     menuLocation,
     menuDepth,
     menuItemSpacing,
+    menuItemFontSize,
+    submenuItemFontSize,
     showFollowUs,
     showFollowUsMobile,
     followUsLabel,
@@ -144,6 +162,8 @@ export default function HeaderEdit({ attributes, setAttributes }) {
         typeof (c.color ?? c.value) === 'string'
     );
   }, [themeColorPaletteRaw]);
+
+  const themeFontSizes = useSetting('typography.fontSizes') || [];
 
   const menuItemSpacingOptions = useMemo(() => [
     { label: __('— Theme default —', 'nextora'), value: '' },
@@ -406,6 +426,38 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             onChange={(v) => setAttributes({ menuItemSpacing: v ?? '' })}
             help={__('Horizontal gap between top-level menu items. Empty uses the theme default.', 'nextora')}
           />
+          <BaseControl
+            label={__('Menu item font size', 'nextora')}
+            id="nextora-header-menu-item-font-size"
+            help={__('Font size for top-level navigation items. Empty uses the header/theme default.', 'nextora')}
+          >
+            <FontSizePicker
+              fontSizes={themeFontSizes}
+              value={menuItemFontSize || undefined}
+              valueMode="slug"
+              onChange={(value, selectedItem) =>
+                setAttributes({
+                  menuItemFontSize: normalizeFontSizeAttribute(value, selectedItem),
+                })
+              }
+            />
+          </BaseControl>
+          <BaseControl
+            label={__('Submenu item font size', 'nextora')}
+            id="nextora-header-submenu-item-font-size"
+            help={__('Font size for dropdown submenu items. Empty uses the theme default.', 'nextora')}
+          >
+            <FontSizePicker
+              fontSizes={themeFontSizes}
+              value={submenuItemFontSize || undefined}
+              valueMode="slug"
+              onChange={(value, selectedItem) =>
+                setAttributes({
+                  submenuItemFontSize: normalizeFontSizeAttribute(value, selectedItem),
+                })
+              }
+            />
+          </BaseControl>
         </PanelBody>
 
         <PanelBody title={__('Icons & utilities', 'nextora')} initialOpen>

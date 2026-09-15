@@ -39,53 +39,195 @@ $enable_scroll_animation = $attributes['enableScrollAnimation'] ?? true;
 // Resolve colors
 require_once get_theme_file_path( 'blocks/advanced-icon/lucide.php' );
 
-$resolved_icon_color = '';
-if ( $icon_color ) {
-	if ( strpos( $icon_color, 'var:' ) === 0 ) {
-		$slug                = str_replace( 'var:preset|color|', '', $icon_color );
-		$resolved_icon_color = "var(--wp--preset--color--{$slug})";
-	} elseif ( strpos( $icon_color, '#' ) === 0 ) {
-		$resolved_icon_color = $icon_color;
-	} else {
-		$resolved_icon_color = "var(--wp--preset--color--{$icon_color})";
+if ( ! function_exists( 'nextora_advanced_list_resolve_color' ) ) {
+	/**
+	 * Resolve color attribute (slug, preset, var, or hex/rgb/hsl) to CSS value.
+	 */
+	function nextora_advanced_list_resolve_color( string $color ): string {
+		$color = trim( $color );
+		if ( '' === $color ) {
+			return '';
+		}
+		if ( 'transparent' === $color ) {
+			return 'transparent';
+		}
+		if ( 0 === strpos( $color, 'var:' ) ) {
+			$slug = str_replace( 'var:preset|color|', '', $color );
+			return "var(--wp--preset--color--{$slug})";
+		}
+		if ( 0 === strpos( $color, 'var(' ) || 0 === strpos( $color, '#' ) || 0 === strpos( $color, 'rgb' ) || 0 === strpos( $color, 'hsl' ) ) {
+			return $color;
+		}
+		return "var(--wp--preset--color--{$color})";
 	}
 }
 
-$resolved_icon_bg_color = '';
-if ( $icon_bg_color ) {
-	if ( 'transparent' === $icon_bg_color ) {
-		$resolved_icon_bg_color = 'transparent';
-	} elseif ( strpos( $icon_bg_color, 'var:' ) === 0 ) {
-		$slug                   = str_replace( 'var:preset|color|', '', $icon_bg_color );
-		$resolved_icon_bg_color = "var(--wp--preset--color--{$slug})";
-	} elseif ( strpos( $icon_bg_color, '#' ) === 0 ) {
-		$resolved_icon_bg_color = $icon_bg_color;
-	} else {
-		$resolved_icon_bg_color = "var(--wp--preset--color--{$icon_bg_color})";
+if ( ! function_exists( 'theme_get_gutenberg_color_props' ) ) {
+	/**
+	 * Resolves a stored color attribute into standard Gutenberg classes and inline style.
+	 *
+	 * @param string $color Attribute value (slug, preset string, or hex/rgb).
+	 * @param string $type  'color' (for text) or 'background'.
+	 *
+	 * @return array{class: string, style: string, slug: string, value: string}
+	 */
+	function theme_get_gutenberg_color_props( string $color, string $type = 'color' ): array {
+		$color = trim( $color );
+		if ( '' === $color ) {
+			return array( 'class' => '', 'style' => '', 'slug' => '', 'value' => '' );
+		}
+
+		if (
+			'transparent' === $color ||
+			'rgba(0,0,0,0)' === $color ||
+			'#00000000' === $color
+		) {
+			if ( 'border' === $type ) {
+				return array(
+					'class' => '',
+					'style' => 'border-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-transparent-background-color',
+					'style' => 'background-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-transparent-color',
+				'style' => 'color:transparent;',
+				'slug'  => 'transparent',
+				'value' => 'transparent',
+			);
+		}
+
+		$slug = '';
+		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $color, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^var\(\s*--wp--preset--color--([a-z0-9_-]+)\s*\)$/i', $color, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^[a-z0-9_-]+$/i', $color ) && ! preg_match( '/^[0-9a-f]{3,8}$/i', $color ) ) {
+			$slug = sanitize_html_class( strtolower( $color ) );
+		}
+
+		if ( 'transparent' === $slug ) {
+			if ( 'border' === $type ) {
+				return array(
+					'class' => '',
+					'style' => 'border-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-transparent-background-color',
+					'style' => 'background-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-transparent-color',
+				'style' => 'color:transparent;',
+				'slug'  => 'transparent',
+				'value' => 'transparent',
+			);
+		}
+
+		if ( '' !== $slug ) {
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-' . $slug . '-background-color',
+					'style' => '',
+					'slug'  => $slug,
+					'value' => 'var(--wp--preset--color--' . $slug . ')',
+				);
+			}
+			if ( 'border' === $type ) {
+				return array(
+					'class' => 'has-border-color has-' . $slug . '-border-color',
+					'style' => '',
+					'slug'  => $slug,
+					'value' => 'var(--wp--preset--color--' . $slug . ')',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-' . $slug . '-color',
+				'style' => '',
+				'slug'  => $slug,
+				'value' => 'var(--wp--preset--color--' . $slug . ')',
+			);
+		}
+
+		// Custom hex / rgb / hsl
+		if ( 'background' === $type ) {
+			return array(
+				'class' => 'has-background',
+				'style' => 'background-color:' . esc_attr( $color ) . ';',
+				'slug'  => '',
+				'value' => $color,
+			);
+		}
+		if ( 'border' === $type ) {
+			return array(
+				'class' => 'has-border-color',
+				'style' => 'border-color:' . esc_attr( $color ) . ';',
+				'slug'  => '',
+				'value' => $color,
+			);
+		}
+		return array(
+			'class' => 'has-text-color',
+			'style' => 'color:' . esc_attr( $color ) . ';',
+			'slug'  => '',
+			'value' => $color,
+		);
 	}
 }
 
-$resolved_icon_border_color = '';
-if ( $icon_border_color ) {
-	if ( strpos( $icon_border_color, 'var:' ) === 0 ) {
-		$slug                       = str_replace( 'var:preset|color|', '', $icon_border_color );
-		$resolved_icon_border_color = "var(--wp--preset--color--{$slug})";
-	} elseif ( strpos( $icon_border_color, '#' ) === 0 ) {
-		$resolved_icon_border_color = $icon_border_color;
-	} else {
-		$resolved_icon_border_color = "var(--wp--preset--color--{$icon_border_color})";
-	}
+$raw_icon_color        = (string) ( $attributes['iconColor'] ?? '' );
+$raw_icon_bg_color     = (string) ( $attributes['iconBackgroundColor'] ?? '' );
+$raw_icon_border_color = (string) ( $attributes['iconBorderColor'] ?? '' );
+
+$icon_color_props = theme_get_gutenberg_color_props( $raw_icon_color, 'color' );
+$icon_bg_props    = theme_get_gutenberg_color_props( $raw_icon_bg_color, 'background' );
+$resolved_icon_border_color = nextora_advanced_list_resolve_color( $raw_icon_border_color );
+
+$icon_classes = array( 'nextora-advanced-list__icon' );
+if ( '' !== $icon_color_props['class'] ) {
+	$icon_classes[] = $icon_color_props['class'];
 }
+if ( '' !== $icon_bg_props['class'] ) {
+	$icon_classes[] = $icon_bg_props['class'];
+}
+
+$icon_inline_styles = array();
+if ( '' !== $icon_color_props['style'] ) {
+	$icon_inline_styles[] = $icon_color_props['style'];
+}
+if ( '' !== $icon_bg_props['style'] ) {
+	$icon_inline_styles[] = $icon_bg_props['style'];
+}
+if ( '' !== $resolved_icon_border_color && 'framed' === $icon_style ) {
+	$icon_inline_styles[] = 'border-color:' . esc_attr( $resolved_icon_border_color ) . ';';
+}
+$icon_style_attr = ! empty( $icon_inline_styles ) ? ' style="' . esc_attr( implode( ' ', $icon_inline_styles ) ) . '"' : '';
 
 // Build CSS variables
 $css_vars = array();
-if ( $resolved_icon_color ) {
-	$css_vars[] = '--nextora-list-icon-color: ' . $resolved_icon_color;
+if ( '' !== $icon_color_props['value'] ) {
+	$css_vars[] = '--nextora-list-icon-color: ' . $icon_color_props['value'];
 }
-if ( $resolved_icon_bg_color ) {
-	$css_vars[] = '--nextora-list-icon-bg: ' . $resolved_icon_bg_color;
+if ( '' !== $icon_bg_props['value'] ) {
+	$css_vars[] = '--nextora-list-icon-bg: ' . $icon_bg_props['value'];
 }
-if ( $resolved_icon_border_color ) {
+if ( '' !== $resolved_icon_border_color ) {
 	$css_vars[] = '--nextora-list-icon-border: ' . $resolved_icon_border_color;
 }
 $css_vars[] = '--nextora-list-icon-size: ' . $icon_size . 'px';
@@ -131,7 +273,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 			$icon_svg = nextora_get_lucide_svg( $icon_name, $icon_size, 'currentColor', $stroke_width, '' );
 			?>
 			<li class="nextora-advanced-list__item" data-item-id="<?php echo esc_attr( $item_id ); ?>">
-				<span class="nextora-advanced-list__icon" aria-hidden="true">
+				<span class="<?php echo esc_attr( implode( ' ', $icon_classes ) ); ?>"<?php echo $icon_style_attr; ?> aria-hidden="true">
 					<?php echo $icon_svg; ?>
 				</span>
 				<span class="nextora-advanced-list__text"><?php echo $item_text; ?></span>

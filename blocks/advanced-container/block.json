@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/advanced-container",
   "title": "Advanced Container",
-  "category": "design",
+  "category": "nextora",
   "description": "A group-like container with advanced backgrounds including color, image, and video options.",
   "keywords": [
     "container",
@@ -21,7 +21,7 @@
     ],
     "anchor": true,
     "color": {
-      "background": false,
+      "background": true,
       "text": true,
       "link": true
     },
@@ -31,7 +31,9 @@
     },
     "typography": {
       "fontSize": true,
-      "lineHeight": true
+      "lineHeight": true,
+      "fontFamily": true,
+      "fontWeight": true
     },
     "dimensions": {
       "minHeight": false

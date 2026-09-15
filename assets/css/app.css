@@ -1890,12 +1890,6 @@
       line-height: var(--tw-leading, var(--text-7xl--line-height));
     }
   }
-  .md\:text-xl {
-    @media (width >= 48rem) {
-      font-size: var(--text-xl);
-      line-height: var(--tw-leading, var(--text-xl--line-height));
-    }
-  }
   .md\:text-\[10px\] {
     @media (width >= 48rem) {
       font-size: 10px;
@@ -2079,6 +2073,9 @@
 }
 footer.wp-block-template-part {
   margin-block-start: 0;
+}
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, .wp-block-heading a {
+  color: inherit;
 }
 .nextora-font-weight-light {
   font-weight: 300;
@@ -4795,6 +4792,48 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
     transition: none;
   }
 }
+.swiper-pagination-bullets.swiper-pagination-horizontal:not(.swiper-pagination-lock):not(:empty), .swiper-horizontal > .swiper-pagination-bullets:not(.swiper-pagination-lock):not(:empty), .swiper-pagination:not(.swiper-pagination-fraction):not(.swiper-pagination-progressbar):not(.swiper-pagination-lock):not(:empty) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  line-height: 0 !important;
+}
+.swiper-pagination-bullets.swiper-pagination-horizontal .swiper-pagination-bullet, .swiper-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet, .swiper-pagination:not(.swiper-pagination-fraction):not(.swiper-pagination-progressbar) .swiper-pagination-bullet {
+  margin: 0 !important;
+  width: 7px !important;
+  height: 7px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  opacity: 1 !important;
+  box-sizing: border-box !important;
+  cursor: pointer;
+  transform: none !important;
+  transition: width 0.3s ease, border-radius 0.3s ease, background-color 0.3s ease, opacity 0.3s ease !important;
+}
+.swiper-pagination-bullets.swiper-pagination-horizontal .swiper-pagination-bullet-active, .swiper-horizontal > .swiper-pagination-bullets .swiper-pagination-bullet-active, .swiper-pagination:not(.swiper-pagination-fraction):not(.swiper-pagination-progressbar) .swiper-pagination-bullet-active {
+  width: 20px !important;
+  height: 7px !important;
+  border-radius: 999px !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+.swiper-pagination-lock, .swiper-pagination.swiper-pagination-lock, .swiper-pagination:empty {
+  display: none !important;
+  margin: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+.swiper-button-lock, .swiper-button-prev.swiper-button-lock, .swiper-button-next.swiper-button-lock {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
 .theme-global-prose, .entry-content.nextora-entry, body:not(.page-template-page-full-width):not(.page-template-full-width):not([class*="page-template-page-full-width"]):not([class*="page-template-full-width"]):not(.is-page-template-full-width):not(.page-template-page-container):not([class*="page-template-page-container"]) :is(.entry-content, .wp-block-post-content):not(.nextora-singular--page-full-width *):not(.nextora-template--page-full-width *):not(.nextora-content-shell--full-width *):not(.nextora-template--page-container *), body:not(.page-template-page-full-width):not(.page-template-full-width):not([class*="page-template-page-full-width"]):not([class*="page-template-full-width"]):not(.is-page-template-full-width):not(.page-template-page-container):not([class*="page-template-page-container"]) .editor-styles-wrapper:not(:has(.nextora-singular--page-full-width)):not(:has(.nextora-template--page-full-width)):not(:has(.nextora-template--page-container)) .block-editor-block-list__layout {
   & :where(a:where(:not(.wp-element-button):not(.wp-block-button__link):not(.elementor-button))) {
     text-underline-offset: 0.2em;
@@ -4968,7 +5007,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
       border: 1px solid color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 22%, transparent);
     }
   }
-  & :where(img) {
+  & :where(img:not([class*="nextora-"], [class*="alone-"], [class*="nextora-"] *, [class*="alone-"] *, [class*="wp-block-nextora"] *, [class*="wp-block-alone"] *, .not-prose, .not-prose *)) {
     height: auto;
     max-width: 100%;
   }

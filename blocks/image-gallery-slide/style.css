@@ -155,7 +155,8 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	gap: 0.25rem;
+	gap: 6px;
+	line-height: 0;
 	padding: 0.75rem 0.5rem 0.25rem;
 }
 
@@ -163,23 +164,28 @@
 	overflow: visible;
 }
 
-/* Swiper renames bullets; keep them tappable for fat fingers. */
 .nextora-ig .swiper-pagination-bullet {
-	width: 0.5rem;
-	height: 0.5rem;
-	opacity: 0.45;
-	transition: opacity 0.2s ease, transform 0.2s ease;
-}
-@media (min-width: 480px) {
-	.nextora-ig .swiper-pagination-bullet {
-		width: 0.4rem;
-		height: 0.4rem;
-	}
+	width: 7px;
+	height: 7px;
+	margin: 0 !important;
+	padding: 0;
+	border: none;
+	border-radius: 999px;
+	opacity: 1;
+	box-sizing: border-box;
+	cursor: pointer;
+	transform: none;
+	background: color-mix(in srgb, currentColor 35%, transparent);
+	transition: width 0.3s ease, border-radius 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
 }
 
 .nextora-ig .swiper-pagination-bullet-active {
+	width: 20px;
+	height: 7px;
+	border-radius: 999px;
 	opacity: 1;
-	transform: scale(1.1);
+	transform: none;
+	background: var(--wp--preset--color--primary, currentColor);
 }
 
 @media (max-width: 480px) {

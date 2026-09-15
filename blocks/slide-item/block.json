@@ -3,11 +3,17 @@
   "apiVersion": 3,
   "name": "nextora/slide-item",
   "title": "Slide item",
-  "category": "design",
+  "category": "nextora",
   "description": "One slide: background, overlay, and inner content blocks.",
-  "keywords": ["slide", "hero", "nextora"],
+  "keywords": [
+    "slide",
+    "hero",
+    "nextora"
+  ],
   "textdomain": "nextora",
-  "parent": ["nextora/slide-wrapper"],
+  "parent": [
+    "nextora/slide-wrapper"
+  ],
   "supports": {
     "html": false,
     "reusable": false,

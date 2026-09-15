@@ -46,7 +46,7 @@ export function buildAuthorMeta(age: string, location: string): string {
 	if (parts.length === 0) {
 		return '';
 	}
-	return `/ ${parts.join(' - ')}`;
+	return `/ ${parts.join(', ')}`;
 }
 
 export function resolveColor(raw: string | undefined): string {

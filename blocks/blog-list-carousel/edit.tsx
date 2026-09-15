@@ -185,6 +185,7 @@ const titleFontSizeOptions = [
 	{ label: __('Small', 'nextora'), value: 'small' },
 	{ label: __('Base', 'nextora'), value: 'base' },
 	{ label: __('Medium', 'nextora'), value: 'medium' },
+	{ label: __('Medium Plus', 'nextora'), value: 'medium-plus' },
 	{ label: __('Large', 'nextora'), value: 'large' },
 	{ label: __('Extra Large', 'nextora'), value: 'x-large' },
 	{ label: __('2XL', 'nextora'), value: 'xx-large' },
@@ -232,6 +233,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		titleFontSize = '',
 		titleLineClamp = 2,
 		showExcerpt = true,
+		excerptFontSize = '',
 		excerptLineClamp = 3,
 		excerptLength = 120,
 		showDate = true,
@@ -258,6 +260,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		cardTitleColor = '',
 		cardExcerptColor = '',
 		cardMetaColor = '',
+		cardMetaIconColor = '',
 		cardBackgroundColor = '',
 		cardBorderColor = '',
 		cardBorderRadius = 0,
@@ -288,15 +291,49 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		setAttributes({ [key]: normalizeColorForStorage(value, lookupPalette) } as Partial<BlogListCarouselAttributes>);
 	};
 
+	const fontSizeAliasMap: Record<string, string> = {
+		sm: 'small',
+		md: 'medium',
+		'medium-plus': 'medium-plus',
+		lg: 'large',
+		xl: 'x-large',
+		'2xl': 'xx-large',
+	};
+	const normalizedTitleSize = titleFontSize ? (fontSizeAliasMap[titleFontSize] ?? titleFontSize) : '';
 	const titleFontSizeCSS =
-		titleFontSize && ['small', 'base', 'medium', 'large', 'x-large', 'xx-large'].includes(titleFontSize)
-			? `var(--wp--preset--font-size--${titleFontSize})`
+		normalizedTitleSize &&
+		[
+			'small',
+			'base',
+			'medium',
+			'medium-plus',
+			'large',
+			'x-large',
+			'xx-large',
+		].includes(normalizedTitleSize)
+			? `var(--wp--preset--font-size--${normalizedTitleSize})`
+			: undefined;
+
+	const normalizedExcerptSize = excerptFontSize ? (fontSizeAliasMap[excerptFontSize] ?? excerptFontSize) : '';
+	const excerptFontSizeCSS =
+		normalizedExcerptSize &&
+		[
+			'small',
+			'base',
+			'medium',
+			'medium-plus',
+			'large',
+			'x-large',
+			'xx-large',
+		].includes(normalizedExcerptSize)
+			? `var(--wp--preset--font-size--${normalizedExcerptSize})`
 			: undefined;
 
 	const blockProps = useBlockProps({
 		className: 'nextora-blog-list-carousel-block--editor',
 		style: {
 			'--nextora-blc-grid-cols': gridColumns,
+			'--nextora-blc-spv': slidesPerView,
 			'--nextora-blc-gap': `${spaceBetween}px`,
 			'--nextora-blc-grid-column-gap': `${gridColumnGap}px`,
 			'--nextora-blc-grid-row-gap': `${gridRowGap}px`,
@@ -305,6 +342,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 			'--nextora-blc-img-col-width': `${imageWidthPercent}%`,
 			'--nextora-blc-img-col-gap': '24px',
 			'--nextora-blc-title-font-size': titleFontSizeCSS,
+			'--nextora-blc-excerpt-font-size': excerptFontSizeCSS,
 			'--nextora-blc-title-clamp': titleLineClamp,
 			'--nextora-blc-excerpt-clamp': excerptLineClamp,
 		} as React.CSSProperties,
@@ -513,6 +551,13 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 					/>
 					{showExcerpt && (
 						<>
+							<SelectControl
+								label={__('Excerpt font size', 'nextora')}
+								value={excerptFontSize}
+								options={titleFontSizeOptions}
+								onChange={(v) => setAttributes({ excerptFontSize: v })}
+								help={__('Overrides the default card excerpt size.', 'nextora')}
+							/>
 							<RangeControl
 								label={__('Excerpt line clamp', 'nextora')}
 								value={excerptLineClamp}
@@ -591,7 +636,6 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						});
 					}}
 				/>
-				{cardTemplate !== 'template-4' && (
 					<SelectControl
 						label={__('Desktop layout', 'nextora')}
 						help={
@@ -611,7 +655,6 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							setAttributes({ layoutMode: v === 'grid' ? 'grid' : 'carousel' })
 						}
 					/>
-				)}
 				{layoutMode === 'grid' ? (
 					<>
 						{cardTemplate !== 'template-2' && (
@@ -719,7 +762,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				</PanelBody>
 
 				{/* ── Autoplay ── */}
-				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && cardTemplate !== 'template-4' && (
+				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && (
 				<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Enable autoplay', 'nextora')}
@@ -747,7 +790,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				)}
 
 				{/* ── Pagination & Arrows ── */}
-				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && cardTemplate !== 'template-4' && (
+				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && (
 				<PanelBody title={__('Pagination & Arrows', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Show pagination dots', 'nextora')}
@@ -798,6 +841,12 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						},
 						...(cardTemplate === 'template-1'
 							? [
+									{
+										value: colorValueForPicker(cardMetaIconColor, colorPalette, lookupPalette),
+										onChange: (v: string | undefined) =>
+											setThemeColor('cardMetaIconColor', v),
+										label: __('Meta icon color', 'nextora'),
+									},
 									{
 										value: colorValueForPicker(cardBorderColor, colorPalette, lookupPalette),
 										onChange: (v: string | undefined) =>

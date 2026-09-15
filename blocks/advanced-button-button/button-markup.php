@@ -39,6 +39,135 @@ if ( ! function_exists( 'nextora_advanced_button_button_color_attr' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_get_gutenberg_color_props' ) ) {
+	/**
+	 * Resolves stored color attribute into standard Gutenberg classes and inline style.
+	 *
+	 * @param string $color Attribute value (slug, preset string, or hex/rgb).
+	 * @param string $type  'color' (for text), 'background', or 'border'.
+	 *
+	 * @return array{class: string, style: string, slug: string, value: string}
+	 */
+	function nextora_get_gutenberg_color_props( string $color, string $type = 'color' ): array {
+		$color = trim( $color );
+		if ( '' === $color ) {
+			return array( 'class' => '', 'style' => '', 'slug' => '', 'value' => '' );
+		}
+
+		if (
+			'transparent' === $color ||
+			'rgba(0,0,0,0)' === $color ||
+			'#00000000' === $color
+		) {
+			if ( 'border' === $type ) {
+				return array(
+					'class' => '',
+					'style' => 'border-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-transparent-background-color',
+					'style' => 'background-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-transparent-color',
+				'style' => 'color:transparent;',
+				'slug'  => 'transparent',
+				'value' => 'transparent',
+			);
+		}
+
+		$slug = '';
+		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $color, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^var\(\s*--wp--preset--color--([a-z0-9_-]+)\s*\)$/i', $color, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^[a-z0-9_-]+$/i', $color ) && ! preg_match( '/^[0-9a-f]{3,8}$/i', $color ) ) {
+			$slug = sanitize_html_class( strtolower( $color ) );
+		}
+
+		if ( 'transparent' === $slug ) {
+			if ( 'border' === $type ) {
+				return array(
+					'class' => '',
+					'style' => 'border-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-transparent-background-color',
+					'style' => 'background-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-transparent-color',
+				'style' => 'color:transparent;',
+				'slug'  => 'transparent',
+				'value' => 'transparent',
+			);
+		}
+
+		if ( '' !== $slug ) {
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-' . $slug . '-background-color',
+					'style' => '',
+					'slug'  => $slug,
+					'value' => 'var(--wp--preset--color--' . $slug . ')',
+				);
+			}
+			if ( 'border' === $type ) {
+				return array(
+					'class' => 'has-border-color has-' . $slug . '-border-color',
+					'style' => '',
+					'slug'  => $slug,
+					'value' => 'var(--wp--preset--color--' . $slug . ')',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-' . $slug . '-color',
+				'style' => '',
+				'slug'  => $slug,
+				'value' => 'var(--wp--preset--color--' . $slug . ')',
+			);
+		}
+
+		// Custom hex / rgb / hsl
+		if ( 'background' === $type ) {
+			return array(
+				'class' => 'has-background',
+				'style' => 'background-color:' . esc_attr( $color ) . ';',
+				'slug'  => '',
+				'value' => $color,
+			);
+		}
+		if ( 'border' === $type ) {
+			return array(
+				'class' => 'has-border-color',
+				'style' => 'border-color:' . esc_attr( $color ) . ';',
+				'slug'  => '',
+				'value' => $color,
+			);
+		}
+		return array(
+			'class' => 'has-text-color',
+			'style' => 'color:' . esc_attr( $color ) . ';',
+			'slug'  => '',
+			'value' => $color,
+		);
+	}
+}
+
 if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 	/**
 	 * Build classes, CSS variables, and inner markup for one button.
@@ -70,7 +199,7 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 		$click_event_id         = isset( $attributes['clickEventId'] ) ? trim( (string) $attributes['clickEventId'] ) : '';
 		$click_event_script     = isset( $attributes['clickEventScript'] ) ? (string) $attributes['clickEventScript'] : '';
 		$button_style           = isset( $attributes['buttonStyle'] ) ? (string) $attributes['buttonStyle'] : 'fill';
-		$border_radius          = isset( $attributes['borderRadius'] ) ? max( 0, (int) $attributes['borderRadius'] ) : 50;
+		$border_radius          = isset( $attributes['borderRadius'] ) && is_numeric( $attributes['borderRadius'] ) ? max( 0, (int) $attributes['borderRadius'] ) : null;
 		$icon_position          = isset( $attributes['iconPosition'] ) ? (string) $attributes['iconPosition'] : 'left';
 		$icon_source            = isset( $attributes['iconSource'] ) ? (string) $attributes['iconSource'] : 'theme';
 		$icon_name              = isset( $attributes['iconName'] ) ? sanitize_key( (string) $attributes['iconName'] ) : 'arrow-right';
@@ -196,32 +325,62 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 		}
 
 		$style_vars = array(
-			sprintf( '--nextora-advanced-button-radius:%dpx;', $border_radius ),
 			'--nextora-advanced-button-gap:0.5rem;',
 			sprintf( '--nextora-advanced-button-icon-size:%dpx;', $icon_size ),
 		);
+
+		if ( null !== $border_radius ) {
+			$style_vars[] = sprintf( 'border-radius:%dpx;', $border_radius );
+		}
 
 		if ( $show_icon && $has_surface ) {
 			$style_vars[] = sprintf( '--nextora-advanced-button-icon-radius:%dpx;', $icon_border_radius );
 		}
 
+		$item_classes = array(
+			'nextora-advanced-button-button',
+			'nextora-advanced-button-button--style-' . sanitize_html_class( $button_style ),
+			'nextora-advanced-button-button--icon-' . sanitize_html_class( $icon_style ),
+			'nextora-advanced-button-button--hover-' . sanitize_html_class( $hover_effect ),
+		);
+
 		if ( '' !== $background_color ) {
-			$resolved_bg = nextora_icon_resolve_color( $background_color );
-			$style_vars[] = sprintf( 'background:%s;', esc_attr( $resolved_bg ) );
-			$style_vars[] = sprintf( '--nextora-advanced-button-bg:%s;', esc_attr( $resolved_bg ) );
+			$bg_props = nextora_get_gutenberg_color_props( $background_color, 'background' );
+			if ( '' !== $bg_props['class'] ) {
+				$item_classes[] = $bg_props['class'];
+			}
+			if ( '' !== $bg_props['style'] ) {
+				$style_vars[] = $bg_props['style'];
+			}
+			if ( '' !== $bg_props['value'] ) {
+				$style_vars[] = sprintf( '--nextora-advanced-button-bg:%s;', esc_attr( $bg_props['value'] ) );
+			}
 		}
 
 		if ( '' !== $text_color ) {
-			$resolved_text = nextora_icon_resolve_color( $text_color );
-			$style_vars[] = sprintf( 'color:%s;', esc_attr( $resolved_text ) );
-			$style_vars[] = sprintf( '--nextora-advanced-button-text:%s;', esc_attr( $resolved_text ) );
+			$text_props = nextora_get_gutenberg_color_props( $text_color, 'color' );
+			if ( '' !== $text_props['class'] ) {
+				$item_classes[] = $text_props['class'];
+			}
+			if ( '' !== $text_props['style'] ) {
+				$style_vars[] = $text_props['style'];
+			}
+			if ( '' !== $text_props['value'] ) {
+				$style_vars[] = sprintf( '--nextora-advanced-button-text:%s;', esc_attr( $text_props['value'] ) );
+			}
 		}
 
 		if ( '' !== $border_color ) {
-			$style_vars[] = sprintf(
-				'--nextora-advanced-button-border:%s;',
-				esc_attr( nextora_icon_resolve_color( $border_color ) ),
-			);
+			$border_props = nextora_get_gutenberg_color_props( $border_color, 'border' );
+			if ( '' !== $border_props['class'] ) {
+				$item_classes[] = $border_props['class'];
+			}
+			if ( '' !== $border_props['style'] ) {
+				$style_vars[] = $border_props['style'];
+			}
+			if ( '' !== $border_props['value'] ) {
+				$style_vars[] = sprintf( '--nextora-advanced-button-border:%s;', esc_attr( $border_props['value'] ) );
+			}
 		}
 
 		if ( $show_icon && 'stacked' === $icon_style && '' !== $icon_background_color ) {
@@ -231,21 +390,21 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 			);
 		}
 
-	if ( $show_icon && 'framed' === $icon_style && '' !== $border_color ) {
-		$style_vars[] = sprintf(
-			'--nextora-advanced-button-icon-border:%s;',
-			esc_attr( nextora_icon_resolve_color( $border_color ) ),
-		);
-	}
+		if ( $show_icon && 'framed' === $icon_style && '' !== $border_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-advanced-button-icon-border:%s;',
+				esc_attr( nextora_icon_resolve_color( $border_color ) ),
+			);
+		}
 
-	if ( $show_icon && '' !== $icon_color ) {
-		$style_vars[] = sprintf(
-			'--nextora-advanced-button-icon-color:%s;',
-			esc_attr( nextora_icon_resolve_color( $icon_color ) ),
-		);
-	}
+		if ( $show_icon && '' !== $icon_color ) {
+			$style_vars[] = sprintf(
+				'--nextora-advanced-button-icon-color:%s;',
+				esc_attr( nextora_icon_resolve_color( $icon_color ) ),
+			);
+		}
 
-	if ( '' !== $hover_background_color ) {
+		if ( '' !== $hover_background_color ) {
 			$style_vars[] = sprintf(
 				'--nextora-advanced-button-hover-bg:%s;',
 				esc_attr( nextora_icon_resolve_color( $hover_background_color ) ),
@@ -272,13 +431,6 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 				esc_attr( nextora_icon_resolve_color( $hover_icon_color ) ),
 			);
 		}
-
-		$item_classes = array(
-			'nextora-advanced-button-button',
-			'nextora-advanced-button-button--style-' . sanitize_html_class( $button_style ),
-			'nextora-advanced-button-button--icon-' . sanitize_html_class( $icon_style ),
-			'nextora-advanced-button-button--hover-' . sanitize_html_class( $hover_effect ),
-		);
 
 		if ( ! $show_icon ) {
 			$item_classes[] = 'nextora-advanced-button-button--no-icon';

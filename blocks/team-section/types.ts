@@ -30,6 +30,7 @@ export interface TeamMember {
 	tags: string[];
 	bio: string;
 	bioLineClamp: number;
+	detail?: string;
 	showSocialLinks: boolean;
 	socialLinks: TeamSocialLink[];
 	cardBorderRadius: number;
@@ -67,7 +68,10 @@ export interface TeamSectionAttributes {
 	cardBorderRadius: number;
 	nameColor: string;
 	roleColor: string;
+	bioColor?: string;
+	socialColor?: string;
 	enableScrollAnimation: boolean;
+	enablePopup?: boolean;
 }
 
 /** Media library types for member photos. */

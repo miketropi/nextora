@@ -47,17 +47,26 @@ $mobile_padding = $num( 'mobileContentPadding', 24, 12, 56 );
 $mobile_image_height = $num( 'mobileImageHeight', 240, 140, 420 );
 $mobile_offset = $num( 'mobileStackOffset', 16, 0, 48 );
 $valid_sizes = array( 'small', 'base', 'medium', 'medium-plus', 'large', 'x-large', 'xx-large' );
-$heading_size = in_array( $attributes['headingSize'] ?? '', $valid_sizes, true ) ? $attributes['headingSize'] : 'medium-plus';
-$description_size = in_array( $attributes['descriptionSize'] ?? '', $valid_sizes, true ) ? $attributes['descriptionSize'] : 'base';
-$link_size = in_array( $attributes['linkSize'] ?? '', $valid_sizes, true ) ? $attributes['linkSize'] : 'small';
+$heading_size = in_array( $attributes['headingSize'] ?? '', $valid_sizes, true ) ? $attributes['headingSize'] : '';
+$description_size = in_array( $attributes['descriptionSize'] ?? '', $valid_sizes, true ) ? $attributes['descriptionSize'] : '';
+$link_size = in_array( $attributes['linkSize'] ?? '', $valid_sizes, true ) ? $attributes['linkSize'] : '';
 $weight = in_array( $attributes['headingWeight'] ?? '', array( '400', '500', '600', '700', '800' ), true ) ? $attributes['headingWeight'] : '600';
 $fit = 'contain' === ( $attributes['imageObjectFit'] ?? 'cover' ) ? 'contain' : 'cover';
 $css = array(
 	'--nextora-sc-card-height:' . $card_height . 'px', '--nextora-sc-card-gap:' . $card_gap . 'px', '--nextora-sc-stack-offset:' . $stack_offset . 'px',
 	'--nextora-sc-card-radius:' . $card_radius . 'px', '--nextora-sc-content-padding:' . $content_padding . 'px', '--nextora-sc-image-width:' . $image_width . '%', '--nextora-sc-sticky-top-offset:' . $sticky_top_offset . 'px',
 	'--nextora-sc-mobile-height:' . $mobile_height . 'px', '--nextora-sc-mobile-padding:' . $mobile_padding . 'px', '--nextora-sc-mobile-image-height:' . $mobile_image_height . 'px', '--nextora-sc-mobile-offset:' . $mobile_offset . 'px',
-	'--nextora-sc-content-max-width:' . esc_attr( sanitize_text_field( $attributes['contentMaxWidth'] ?? '1200px' ) ), '--nextora-sc-heading-size:var(--wp--preset--font-size--' . $heading_size . ')', '--nextora-sc-description-size:var(--wp--preset--font-size--' . $description_size . ')', '--nextora-sc-link-size:var(--wp--preset--font-size--' . $link_size . ')', '--nextora-sc-heading-weight:' . $weight, '--nextora-sc-image-fit:' . $fit,
+	'--nextora-sc-content-max-width:' . esc_attr( sanitize_text_field( $attributes['contentMaxWidth'] ?? '1200px' ) ), '--nextora-sc-heading-weight:' . $weight, '--nextora-sc-image-fit:' . $fit,
 );
+if ( '' !== $heading_size ) {
+	$css[] = '--nextora-sc-heading-size:var(--wp--preset--font-size--' . $heading_size . ')';
+}
+if ( '' !== $description_size ) {
+	$css[] = '--nextora-sc-description-size:var(--wp--preset--font-size--' . $description_size . ')';
+}
+if ( '' !== $link_size ) {
+	$css[] = '--nextora-sc-link-size:var(--wp--preset--font-size--' . $link_size . ')';
+}
 $colors = array( 'cardBackgroundColor' => '--nextora-sc-card-bg', 'headingColor' => '--nextora-sc-heading-color', 'descriptionColor' => '--nextora-sc-description-color', 'linkColor' => '--nextora-sc-link-color' );
 foreach ( $colors as $attribute => $property ) {
 	$resolved = nextora_sc_color( $attributes[ $attribute ] ?? '' );

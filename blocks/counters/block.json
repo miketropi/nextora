@@ -3,14 +3,23 @@
   "apiVersion": 3,
   "name": "nextora/counters",
   "title": "Counters",
-  "category": "design",
+  "category": "nextora",
   "description": "Animated statistics grid with number count-up on scroll.",
-  "keywords": ["stats", "numbers", "counters", "figures", "nextora"],
+  "keywords": [
+    "stats",
+    "numbers",
+    "counters",
+    "figures",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "chart-bar",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": true,
@@ -20,6 +29,12 @@
       "padding": true,
       "margin": true,
       "blockGap": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "fontFamily": true,
+      "fontWeight": true
     }
   },
   "attributes": {

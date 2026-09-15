@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 import {
 	Button,
 	TextControl,
@@ -45,6 +45,18 @@ export default function ItemModalForm({
 	blockIconSurfaceBorderColor,
 	cardTemplate,
 }: ItemModalFormProps) {
+	// Auto-migrate legacy highlights items where number was empty and linkLabel was used as subtitle.
+	useEffect(() => {
+		if (cardTemplate === 'highlights' && !item.number && item.linkLabel) {
+			onPatch({
+				number: item.title,
+				title: item.description,
+				description: item.linkLabel,
+				linkLabel: '',
+			});
+		}
+	}, [cardTemplate, item.number, item.linkLabel, item.title, item.description, onPatch]);
+
 	const [pickerOpen, setPickerOpen] = useState(false);
 	const iconSource = item.iconSource === 'upload' ? 'upload' : 'theme';
 	const colorPalette = useThemeColorPalette();

@@ -3,15 +3,24 @@
   "apiVersion": 3,
   "name": "nextora/header",
   "title": "Site header",
-  "category": "theme",
+  "category": "nextora",
   "description": "Logo, menu, and optional toolbar (search, cart, account). Customize colors and typography in the block sidebar.",
-  "keywords": ["header", "navigation", "logo", "menu", "nextora"],
+  "keywords": [
+    "header",
+    "navigation",
+    "logo",
+    "menu",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "style": "file:./style.css",
   "editorStyle": "file:./editor.css",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "multiple": false,
     "color": {
       "background": true,
@@ -20,7 +29,10 @@
     },
     "spacing": {
       "padding": true,
-      "margin": ["top", "bottom"]
+      "margin": [
+        "top",
+        "bottom"
+      ]
     },
     "typography": {
       "fontSize": true,
@@ -30,7 +42,10 @@
   "attributes": {
     "logoType": {
       "type": "string",
-      "enum": ["image", "text"],
+      "enum": [
+        "image",
+        "text"
+      ],
       "default": "image"
     },
     "logoImageId": {
@@ -81,6 +96,14 @@
       "type": "string",
       "default": ""
     },
+    "menuItemFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "submenuItemFontSize": {
+      "type": "string",
+      "default": ""
+    },
     "showFollowUs": {
       "type": "boolean",
       "default": false
@@ -120,12 +143,36 @@
     "followUsSocials": {
       "type": "array",
       "default": [
-        { "network": "instagram", "url": "", "enabled": true },
-        { "network": "facebook", "url": "", "enabled": true },
-        { "network": "pinterest", "url": "", "enabled": true },
-        { "network": "youtube", "url": "", "enabled": true },
-        { "network": "tiktok", "url": "", "enabled": true },
-        { "network": "x", "url": "", "enabled": true }
+        {
+          "network": "instagram",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "network": "facebook",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "network": "pinterest",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "network": "youtube",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "network": "tiktok",
+          "url": "",
+          "enabled": true
+        },
+        {
+          "network": "x",
+          "url": "",
+          "enabled": true
+        }
       ]
     },
     "showSearch": {
@@ -134,7 +181,10 @@
     },
     "searchMode": {
       "type": "string",
-      "enum": ["spotlight", "simple"],
+      "enum": [
+        "spotlight",
+        "simple"
+      ],
       "default": "spotlight"
     },
     "showMiniCart": {
@@ -175,7 +225,10 @@
     },
     "ctaButtonStyle": {
       "type": "string",
-      "enum": ["solid", "outline"],
+      "enum": [
+        "solid",
+        "outline"
+      ],
       "default": "solid"
     },
     "showCtaButtonMobile": {
@@ -200,7 +253,10 @@
     },
     "ctaButtonIconPosition": {
       "type": "string",
-      "enum": ["left", "right"],
+      "enum": [
+        "left",
+        "right"
+      ],
       "default": "right"
     },
     "ctaButtonIconSize": {
@@ -217,7 +273,10 @@
     },
     "stickyStyle": {
       "type": "string",
-      "enum": ["always", "scroll-up"],
+      "enum": [
+        "always",
+        "scroll-up"
+      ],
       "default": "scroll-up"
     },
     "showBottomBorder": {

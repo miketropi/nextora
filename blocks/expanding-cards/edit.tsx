@@ -26,6 +26,7 @@ import {
 import type { ExpandingCardsAttributes, ExpandingCardItem } from './types';
 
 const FONT_SIZE_OPTIONS = [
+  { label: __('Theme default', 'nextora'), value: '' },
   { label: __('Small', 'nextora'), value: 'small' },
   { label: __('Base', 'nextora'), value: 'base' },
   { label: __('Medium', 'nextora'), value: 'medium' },
@@ -267,9 +268,9 @@ export default function ExpandingCardsEdit({ attributes, setAttributes }: EditPr
     inactiveOverlayOpacity = 0.7,
     contentPaddingY = 24,
     contentPaddingX = 24,
-    headingSize = 'medium',
-    descriptionSize = 'small',
-    buttonSize = 'small',
+    headingSize = '',
+    descriptionSize = '',
+    buttonSize = '',
     headingColor = '',
     descriptionColor = '',
     overlayBackgroundColor = '',
@@ -346,9 +347,9 @@ export default function ExpandingCardsEdit({ attributes, setAttributes }: EditPr
       '--nextora-ec-button-text-color': editorBtnTextColor,
       '--nextora-ec-button-bg-color': editorBtnBgColor,
       '--nextora-ec-button-border-color': editorBtnBorderColor,
-      '--nextora-ec-heading-size': `var(--wp--preset--font-size--${headingSize})`,
-      '--nextora-ec-description-size': `var(--wp--preset--font-size--${descriptionSize})`,
-      '--nextora-ec-button-size': `var(--wp--preset--font-size--${buttonSize})`,
+      ...(headingSize ? { '--nextora-ec-heading-size': `var(--wp--preset--font-size--${headingSize})` } : {}),
+      ...(descriptionSize ? { '--nextora-ec-description-size': `var(--wp--preset--font-size--${descriptionSize})` } : {}),
+      ...(buttonSize ? { '--nextora-ec-button-size': `var(--wp--preset--font-size--${buttonSize})` } : {}),
     } as React.CSSProperties,
   });
 
@@ -516,19 +517,19 @@ export default function ExpandingCardsEdit({ attributes, setAttributes }: EditPr
             label={__('Heading font size', 'nextora')}
             value={headingSize}
             options={FONT_SIZE_OPTIONS}
-            onChange={(v) => setAttributes({ headingSize: v ?? 'medium' })}
+            onChange={(v) => setAttributes({ headingSize: v || '' })}
           />
           <SelectControl
             label={__('Description font size', 'nextora')}
             value={descriptionSize}
             options={FONT_SIZE_OPTIONS}
-            onChange={(v) => setAttributes({ descriptionSize: v ?? 'small' })}
+            onChange={(v) => setAttributes({ descriptionSize: v || '' })}
           />
           <SelectControl
             label={__('Button font size', 'nextora')}
             value={buttonSize}
             options={FONT_SIZE_OPTIONS}
-            onChange={(v) => setAttributes({ buttonSize: v ?? 'small' })}
+            onChange={(v) => setAttributes({ buttonSize: v || '' })}
           />
         </PanelBody>
 

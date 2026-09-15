@@ -26,6 +26,7 @@ import {
 import type { VerticalShowcaseAttributes, VerticalShowcaseItem } from './types';
 
 const FONT_SIZE_OPTIONS = [
+	{ label: __('Theme default', 'nextora'), value: '' },
 	{ label: __('Small', 'nextora'), value: 'small' },
 	{ label: __('Base', 'nextora'), value: 'base' },
 	{ label: __('Medium', 'nextora'), value: 'medium' },
@@ -131,8 +132,8 @@ export default function VerticalShowcaseEdit({ attributes, setAttributes }: {
 	const items = normalizeItems(attributes.items);
 	const palette = useThemeColorPalette();
 	const lookupPalette = getMergedPaletteEntries(palette);
-	const titleSize = attributes.titleSize || 'medium-plus';
-	const descriptionSize = attributes.descriptionSize || 'small';
+	const titleSize = attributes.titleSize || '';
+	const descriptionSize = attributes.descriptionSize || '';
 	const autoplayDuration = attributes.autoplayDuration || 5000;
 	const showViewMoreLinks = attributes.showViewMore !== false;
 
@@ -165,8 +166,8 @@ export default function VerticalShowcaseEdit({ attributes, setAttributes }: {
 	const blockProps = useBlockProps({
 		className: 'wp-block-nextora-vertical-showcase nextora-vertical-showcase--editor',
 		style: {
-			'--nextora-vs-title-size': `var(--wp--preset--font-size--${titleSize})`,
-			'--nextora-vs-description-size': `var(--wp--preset--font-size--${descriptionSize})`,
+			...(titleSize ? { '--nextora-vs-title-size': `var(--wp--preset--font-size--${titleSize})` } : {}),
+			...(descriptionSize ? { '--nextora-vs-description-size': `var(--wp--preset--font-size--${descriptionSize})` } : {}),
 			'--nextora-vs-title-color': titleColor,
 			'--nextora-vs-inactive-title-color': inactiveTitleColor,
 			'--nextora-vs-description-color': descriptionColor,
