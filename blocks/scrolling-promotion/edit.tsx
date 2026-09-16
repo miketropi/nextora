@@ -11,6 +11,7 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
+	ColorPalette,
 	Disabled,
 	PanelBody,
 	PanelRow,
@@ -106,6 +107,7 @@ const EMPTY_ITEM: ScrollingPromotionItem = {
 	imageAlt: '',
 	iconName: '',
 	iconSize: 24,
+	iconColor: '',
 };
 
 function normalizeItemType(raw: unknown): ScrollingPromotionItemType {
@@ -127,6 +129,7 @@ function normalizeItems(items: ScrollingPromotionItem[] | undefined): ScrollingP
 		imageAlt: typeof item?.imageAlt === 'string' ? item.imageAlt : '',
 		iconName: typeof item?.iconName === 'string' ? item.iconName : '',
 		iconSize: typeof item?.iconSize === 'number' ? item.iconSize : 24,
+		iconColor: typeof item?.iconColor === 'string' ? item.iconColor : '',
 	}));
 }
 
@@ -158,6 +161,7 @@ export default function ScrollingPromotionEdit({
 		separatorColor = '',
 		separatorBgColor: rawSepBgColor = '',
 		separatorBackgroundColor = '',
+		iconColor = '',
 		fontSize: rawFontSize = 'base',
 		customFontSize = 16,
 		fontWeight = '500',
@@ -319,7 +323,7 @@ export default function ScrollingPromotionEdit({
 												variant="link"
 												isDestructive
 												onClick={() =>
-													patchItem(index, { iconName: '', iconSize: 24 })
+													patchItem(index, { iconName: '', iconSize: 24, iconColor: '' })
 												}
 											>
 												{__('Remove icon', 'nextora')}
@@ -334,6 +338,23 @@ export default function ScrollingPromotionEdit({
 												}}
 												onClose={() => setIconPickerIndex(null)}
 											/>
+										) : null}
+										{item.iconName ? (
+											<div style={{ marginTop: '8px' }}>
+												<p className="components-base-control__label" style={{ marginBottom: '4px', fontSize: '12px' }}>
+													{__('Icon color', 'nextora')}
+												</p>
+												<ColorPalette
+													colors={colorPalette}
+													value={colorValueForPicker(item.iconColor || '', colorPalette, lookupPalette)}
+													onChange={(c) =>
+														patchItem(index, {
+															iconColor: normalizeColorForStorage(c, lookupPalette),
+														})
+													}
+													clearable
+												/>
+											</div>
 										) : null}
 									</div>
 								)}
@@ -683,6 +704,25 @@ export default function ScrollingPromotionEdit({
 												},
 										  ]
 										: []),
+							  ]
+							: []),
+						...(items.some((item) => item.itemType === 'icon-text')
+							? [
+									{
+										value: colorValueForPicker(
+											iconColor,
+											colorPalette,
+											lookupPalette,
+										),
+										onChange: (color: string | undefined) =>
+											setAttributes({
+												iconColor: normalizeColorForStorage(
+													color,
+													lookupPalette,
+												),
+											}),
+										label: __('Icon color', 'nextora'),
+									},
 							  ]
 							: []),
 					]}

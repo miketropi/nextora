@@ -117,6 +117,7 @@ export function buildSectionStyleVars(attrs: {
 	trustAvatarBorderWidth?: number;
 	trustAvatarBorderColor?: string;
 	cardGap?: number;
+	edgeFadeColor?: string;
 }): Record<string, string> {
 	const vars: Record<string, string> = {
 		'--nextora-testimonial-max-width': attrs.contentMaxWidth || '680px',
@@ -163,6 +164,9 @@ export function buildSectionStyleVars(attrs: {
 	if (attrs.starColor) vars['--nextora-testimonial-star-color'] = resolveColorValue(attrs.starColor);
 	if (attrs.trustAvatarBorderColor) {
 		vars['--nextora-testimonial-avatar-border-color'] = resolveColorValue(attrs.trustAvatarBorderColor);
+	}
+	if (attrs.edgeFadeColor) {
+		vars['--nextora-testimonial-edge-fade-color'] = resolveColorValue(attrs.edgeFadeColor);
 	}
 
 	return vars;

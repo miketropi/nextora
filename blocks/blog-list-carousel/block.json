@@ -298,6 +298,10 @@
     "scrollAnimationStyle": {
       "type": "string",
       "default": "default"
+    },
+    "edgeFadeColor": {
+      "type": "string",
+      "default": ""
     }
   },
   "editorScript": "file:./index.js",

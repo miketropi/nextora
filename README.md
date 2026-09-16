@@ -184,8 +184,6 @@ blocks/blocks.php
 | `nextora/hero-section` | Hero band |
 | `nextora/call-to-action` | CTA band |
 | `nextora/post-grid` | Post grid with pagination |
-| `nextora/image-gallery-grid` | Image grid + scroll reveal |
-| `nextora/image-gallery-slide` | Swiper carousel |
 | `nextora/scrolling-promotion` | CSS-only marquee / promotion bar |
 | `nextora/testimonial-carousel` | Fade testimonial carousel |
 | `nextora/page-title` | Dynamic page/single heading |

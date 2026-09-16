@@ -72,6 +72,7 @@ export interface TeamSectionAttributes {
 	socialColor?: string;
 	enableScrollAnimation: boolean;
 	enablePopup?: boolean;
+	edgeFadeColor?: string;
 }
 
 /** Media library types for member photos. */

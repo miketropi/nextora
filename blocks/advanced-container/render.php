@@ -272,6 +272,32 @@ if ( ! function_exists( 'nextora_ac_resolve_gradient' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_ac_normalize_upload_url' ) ) {
+	/**
+	 * Normalize an external/demo /wp-content/uploads/ URL to local uploads URL if the file exists locally.
+	 */
+	function nextora_ac_normalize_upload_url( string $url ): string {
+		if ( '' === $url || ! str_contains( $url, '/wp-content/uploads/' ) ) {
+			return $url;
+		}
+
+		$uploads = wp_upload_dir();
+		$site_upload_base = (string) $uploads['baseurl'];
+
+		if ( '' !== $site_upload_base && str_starts_with( $url, $site_upload_base ) ) {
+			return $url;
+		}
+
+		$rel_path = substr( $url, strpos( $url, '/wp-content/uploads/' ) + strlen( '/wp-content/uploads/' ) );
+		$local_path = trailingslashit( $uploads['basedir'] ) . ltrim( $rel_path, '/' );
+		if ( file_exists( $local_path ) ) {
+			return trailingslashit( $site_upload_base ) . ltrim( $rel_path, '/' );
+		}
+
+		return $url;
+	}
+}
+
 $background_type = isset( $attributes['backgroundType'] ) ? (string) $attributes['backgroundType'] : 'color';
 $background_type = in_array( $background_type, array( 'color', 'image', 'video' ), true ) ? $background_type : 'color';
 $section_background_fill = nextora_ac_normalize_section_fill(
@@ -291,6 +317,16 @@ if ( 'gradient' === $section_background_fill ) {
 }
 $background_image_id = isset( $attributes['backgroundImageId'] ) ? (int) $attributes['backgroundImageId'] : 0;
 $background_image_url = isset( $attributes['backgroundImageUrl'] ) ? esc_url_raw( trim( (string) $attributes['backgroundImageUrl'] ) ) : '';
+
+if ( $background_image_id > 0 ) {
+	$att_url = wp_get_attachment_image_url( $background_image_id, 'full' );
+	if ( $att_url ) {
+		$background_image_url = $att_url;
+	}
+}
+
+$background_image_url = nextora_ac_normalize_upload_url( $background_image_url );
+
 $background_video_url = isset( $attributes['backgroundVideoUrl'] ) ? esc_url_raw( trim( (string) $attributes['backgroundVideoUrl'] ) ) : '';
 $overlay_color = nextora_ac_resolve_color( isset( $attributes['overlayColor'] ) ? (string) $attributes['overlayColor'] : '' );
 $overlay_opacity = isset( $attributes['overlayOpacity'] ) ? max( 0, min( 1, (float) $attributes['overlayOpacity'] ) ) : 0.3;
@@ -317,6 +353,15 @@ $hover_reveal_image_id = isset( $attributes['hoverRevealImageId'] ) ? (int) $att
 $hover_reveal_image_url = isset( $attributes['hoverRevealImageUrl'] )
 	? esc_url_raw( trim( (string) $attributes['hoverRevealImageUrl'] ) )
 	: '';
+
+if ( $hover_reveal_image_id > 0 ) {
+	$hr_att_url = wp_get_attachment_image_url( $hover_reveal_image_id, 'full' );
+	if ( $hr_att_url ) {
+		$hover_reveal_image_url = $hr_att_url;
+	}
+}
+
+$hover_reveal_image_url = nextora_ac_normalize_upload_url( $hover_reveal_image_url );
 $enable_ambient_animation = ! empty( $attributes['enableAmbientAnimation'] );
 $ambient_animation_type   = isset( $attributes['ambientAnimationType'] ) ? (string) $attributes['ambientAnimationType'] : 'ambient-icons';
 $ambient_icons_raw = isset( $attributes['ambientIcons'] ) && is_array( $attributes['ambientIcons'] ) ? $attributes['ambientIcons'] : array();

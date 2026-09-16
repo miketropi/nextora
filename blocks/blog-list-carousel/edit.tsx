@@ -5,6 +5,7 @@ import {
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
+	ColorPalette,
 	Disabled,
 	PanelBody,
 	RangeControl,
@@ -271,6 +272,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		arrowColor = '',
 		enableScrollAnimation = true,
 		scrollAnimationStyle = 'default',
+		edgeFadeColor = '',
 	} = attributes;
 
 	const cardTemplate = normalizeCardTemplate(cardTemplateRaw);
@@ -329,8 +331,19 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 			? `var(--wp--preset--font-size--${normalizedExcerptSize})`
 			: undefined;
 
+	const isDesktopFractional = (slidesPerView % 1) !== 0;
+	const isTabletFractional = (slidesPerViewTablet % 1) !== 0;
+	const isMobileFractional = (slidesPerViewMobile % 1) !== 0;
+
 	const blockProps = useBlockProps({
-		className: 'nextora-blog-list-carousel-block--editor',
+		className: [
+			'nextora-blog-list-carousel-block--editor',
+			isDesktopFractional ? 'has-edge-fade-desktop' : '',
+			isTabletFractional ? 'has-edge-fade-tablet' : '',
+			isMobileFractional ? 'has-edge-fade-mobile' : '',
+		]
+			.filter(Boolean)
+			.join(' '),
 		style: {
 			'--nextora-blc-grid-cols': gridColumns,
 			'--nextora-blc-spv': slidesPerView,
@@ -345,6 +358,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 			'--nextora-blc-excerpt-font-size': excerptFontSizeCSS,
 			'--nextora-blc-title-clamp': titleLineClamp,
 			'--nextora-blc-excerpt-clamp': excerptLineClamp,
+			'--nextora-blc-edge-fade-color': edgeFadeColor || undefined,
 		} as React.CSSProperties,
 	});
 
@@ -707,26 +721,39 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						<RangeControl
 							label={__('Desktop slides', 'nextora')}
 							value={slidesPerView}
-							onChange={(v) => setAttributes({ slidesPerView: v ?? 3 })}
+							onChange={(v) =>
+								setAttributes({
+									slidesPerView: v !== undefined ? Math.round(v * 100) / 100 : 3,
+								})
+							}
 							min={1}
-							max={5}
+							max={6}
+							step={0.1}
 						/>
 					) : null}
 					<RangeControl
 						label={__('Tablet slides', 'nextora')}
 						value={slidesPerViewTablet}
-						onChange={(v) => setAttributes({ slidesPerViewTablet: v ?? 2 })}
+						onChange={(v) =>
+							setAttributes({
+								slidesPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 2,
+							})
+						}
 						min={1}
 						max={4}
-						step={0.5}
+						step={0.1}
 					/>
 					<RangeControl
 						label={__('Mobile slides', 'nextora')}
 						value={slidesPerViewMobile}
-						onChange={(v) => setAttributes({ slidesPerViewMobile: v ?? 1.15 })}
+						onChange={(v) =>
+							setAttributes({
+								slidesPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 1.15,
+							})
+						}
 						min={1}
-						max={2}
-						step={0.05}
+						max={3}
+						step={0.1}
 					/>
 					<RangeControl
 						label={__('Space between', 'nextora')}
@@ -735,6 +762,20 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						min={0}
 						max={60}
 					/>
+					<div style={{ marginTop: '0.85rem', marginBottom: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(0, 0, 0, 0.08)' }}>
+						<p className="components-base-control__label" style={{ marginBottom: '0.35rem', fontWeight: 600 }}>
+							{__('Edge fade overlay color', 'nextora')}
+						</p>
+						<p className="components-help-text" style={{ marginTop: 0, marginBottom: '0.5rem' }}>
+							{__('Color for the trailing slide fade gradient. Match with your section background color.', 'nextora')}
+						</p>
+						<ColorPalette
+							value={colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette)}
+							onChange={(v: string | undefined) =>
+								setThemeColor('edgeFadeColor', v)
+							}
+						/>
+					</div>
 					<RangeControl
 						label={__('Speed (ms)', 'nextora')}
 						value={speed}
@@ -891,6 +932,12 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 									},
 								]
 							: []),
+						{
+							value: colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette),
+							onChange: (v: string | undefined) =>
+								setThemeColor('edgeFadeColor', v),
+							label: __('Edge fade overlay', 'nextora'),
+						},
 					]}
 				/>
 

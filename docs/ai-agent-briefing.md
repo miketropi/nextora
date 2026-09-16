@@ -259,7 +259,7 @@ Do not add random CSS in templates. Use existing utility classes or block-level 
 | Library | Global | Version | Notes |
 |---------|--------|---------|-------|
 | GSAP + ScrollTrigger | `gsap`, `ScrollTrigger` | 3.x | Scroll animations, mobile nav drawer |
-| Swiper | `Swiper` | 11.x | Carousels (`image-gallery-slide`, `testimonial-carousel`) |
+| Swiper | `Swiper` | 11.x | Carousels (`team-section`, `testimonial-carousel`) |
 | Tiptap | N/A (bundled in `main.ts`) | 2.x | Rich-text comment editor |
 | Lucide | `lucide` | Latest | Icons (used in comment toolbar) |
 
@@ -414,8 +414,6 @@ These theme blocks can be used in templates. Use the exact names and attribute k
 | `nextora/hero-section` | Hero band | Background image/video, overlay, heading, buttons |
 | `nextora/call-to-action` | CTA band | Background, text, buttons, `enableScrollAnimation` |
 | `nextora/post-grid` | Post grid + pagination | Query settings, columns, `enableScrollAnimation` |
-| `nextora/image-gallery-grid` | Image grid + scroll reveal | Images array, layout preset, `enableScrollAnimation` |
-| `nextora/image-gallery-slide` | Swiper carousel | Images array, slides per view, navigation |
 | `nextora/scrolling-promotion` | CSS marquee | Items (text or images), speed, separator |
 | `nextora/testimonial-carousel` | Fade testimonial Swiper | `testimonials[]`, ratings, trust avatars |
 | `nextora/counters` | Animated stat counters | `items[]` with number, prefix, suffix, label |

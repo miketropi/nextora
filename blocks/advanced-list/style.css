@@ -51,7 +51,7 @@
 
 .nextora-advanced-list__item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--nextora-list-icon-text-gap);
   margin: 0 !important;
 }
@@ -76,7 +76,7 @@
 /* Icon style: default (no background) */
 .wp-block-nextora-advanced-list--style-default .nextora-advanced-list__icon {
   width: auto;
-  height: auto;
+  height: 1.6em;
   background: none;
   border: none;
 }
@@ -87,6 +87,7 @@
   height: var(--nextora-list-icon-circle-size);
   border-radius: var(--nextora-list-border-radius);
   background-color: var(--nextora-list-icon-bg);
+  margin-top: max(0px, calc((1.6em - var(--nextora-list-icon-circle-size)) / 2));
 }
 
 /* Icon style: framed (with border and background) */
@@ -97,6 +98,7 @@
   background-color: var(--nextora-list-icon-bg);
   border: 1px solid var(--nextora-list-icon-border);
   box-sizing: border-box;
+  margin-top: max(0px, calc((1.6em - var(--nextora-list-icon-circle-size)) / 2));
 }
 
 /* Additional specificity for framed style */

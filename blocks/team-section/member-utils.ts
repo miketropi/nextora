@@ -138,6 +138,7 @@ export function buildSectionStyleVars(attrs: {
 	photoAspectRatio?: string;
 	spaceBetween?: number;
 	slidesPerView?: number;
+	edgeFadeColor?: string;
 }): Record<string, string> {
 	const vars: Record<string, string> = {
 		'--nextora-team-photo-placeholder': teamPhotoPlaceholderVar(),
@@ -159,5 +160,6 @@ export function buildSectionStyleVars(attrs: {
 	if (attrs.roleColor) vars['--nextora-team-role-color'] = resolveColorValue(attrs.roleColor);
 	if (attrs.bioColor) vars['--nextora-team-bio-color'] = resolveColorValue(attrs.bioColor);
 	if (attrs.socialColor) vars['--nextora-team-social-color'] = resolveColorValue(attrs.socialColor);
+	if (attrs.edgeFadeColor) vars['--nextora-team-edge-fade-color'] = resolveColorValue(attrs.edgeFadeColor);
 	return vars;
 }

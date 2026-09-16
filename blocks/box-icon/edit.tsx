@@ -13,6 +13,7 @@ import {
 import {
 	BaseControl,
 	Button,
+	ColorPalette,
 	Modal,
 	PanelBody,
 	RangeControl,
@@ -133,6 +134,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		pauseOnHover = true,
 		grabCursor = true,
 		freeMode = false,
+		edgeFadeColor = '',
 		cardBorderColor = '',
 		cardBackgroundColor = '',
 		cardHoverBackgroundColor = '',
@@ -262,10 +264,16 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			cardTemplate === 'timeline' && timelineAlign !== 'left'
 				? `nextora-box-icon--timeline-align-${timelineAlign}`
 				: '',
+			(slidesPerView % 1) !== 0 ? 'has-edge-fade-desktop' : '',
+			(slidesPerViewTablet % 1) !== 0 ? 'has-edge-fade-tablet' : '',
+			(slidesPerViewMobile % 1) !== 0 ? 'has-edge-fade-mobile' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
-		style: styleVars as CSSProperties,
+		style: {
+			...(styleVars as CSSProperties),
+			...(edgeFadeColor ? { '--nextora-box-icon-edge-fade-color': edgeFadeColor } : {}),
+		},
 	});
 
 	const setThemeColor = (key: keyof BoxIconAttributes, value: string | undefined): void => {
@@ -311,6 +319,11 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				value: colorValueForPicker(arrowColor, colorPalette, lookupPalette),
 				onChange: (v: string | undefined) => setThemeColor('arrowColor', v),
 				label: __('Arrow color', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('edgeFadeColor', v),
+				label: __('Edge fade color', 'nextora'),
 			},
 		];
 
@@ -746,7 +759,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					onChange={(v) => {
 						const next = v === 'grid' ? 'grid' : 'slider';
 						const patch: Partial<BoxIconAttributes> = { layoutMode: next };
-						if (next === 'grid' && gridMinWidth < 768) {
+						if (next === 'grid' && gridMinWidth < 640) {
 							patch.gridMinWidth = 981;
 						}
 						setAttributes(patch);
@@ -908,28 +921,41 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						<RangeControl
 							label={__('Slides per view (desktop)', 'nextora')}
 							value={slidesPerView}
-							onChange={(v) => setAttributes({ slidesPerView: v ?? 4 })}
+							onChange={(v) => setAttributes({ slidesPerView: v !== undefined ? Math.round(v * 100) / 100 : 4 })}
 							min={1}
 							max={6}
-							step={0.05}
+							step={0.1}
 						/>
 					) : null}
 					<RangeControl
 						label={__('Slides per view (tablet)', 'nextora')}
 						value={slidesPerViewTablet}
-						onChange={(v) => setAttributes({ slidesPerViewTablet: v ?? 2 })}
+						onChange={(v) => setAttributes({ slidesPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 2 })}
 						min={1}
 						max={4}
-						step={0.05}
+						step={0.1}
 					/>
 					<RangeControl
 						label={__('Slides per view (mobile)', 'nextora')}
 						value={slidesPerViewMobile}
-						onChange={(v) => setAttributes({ slidesPerViewMobile: v ?? 1.15 })}
+						onChange={(v) => setAttributes({ slidesPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 1.15 })}
 						min={1}
-						max={2}
-						step={0.05}
+						max={3}
+						step={0.1}
 					/>
+					{((slidesPerView % 1) !== 0 || (slidesPerViewTablet % 1) !== 0 || (slidesPerViewMobile % 1) !== 0) && (
+						<div className="nextora-carousel-inspector-color" style={{ marginTop: '12px', marginBottom: '16px' }}>
+							<p className="nextora-carousel-inspector-color__label" style={{ marginBottom: '8px', fontSize: '11px', fontWeight: 500, textTransform: 'uppercase' }}>
+								{__('Edge fade color', 'nextora')}
+							</p>
+							<ColorPalette
+								colors={colorPalette}
+								value={colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette)}
+								onChange={(c) => setThemeColor('edgeFadeColor', c)}
+								clearable
+							/>
+						</div>
+					)}
 					<RangeControl
 						label={__('Transition speed (ms)', 'nextora')}
 						value={speed}

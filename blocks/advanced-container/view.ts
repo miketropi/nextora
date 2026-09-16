@@ -317,13 +317,13 @@ function initRoot(root: HTMLElement): void {
   }
   root.setAttribute(INIT_ATTR, '1');
 
-  initScrollReveal(root);
-  initParallax(root);
-  initHoverReveal(root);
-  initAmbientIcons(root);
-  initLightRays(root);
-  initRipplesWrapper(root);
-  bindBgImageRefresh(root);
+  try { initScrollReveal(root); } catch {}
+  try { initParallax(root); } catch {}
+  try { initHoverReveal(root); } catch {}
+  try { initAmbientIcons(root); } catch {}
+  try { initLightRays(root); } catch {}
+  try { initRipplesWrapper(root); } catch {}
+  try { bindBgImageRefresh(root); } catch {}
 }
 
 function forceRevealPendingRoots(): void {

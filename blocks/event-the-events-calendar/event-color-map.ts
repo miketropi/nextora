@@ -18,6 +18,7 @@ export const EVENT_COLOR_ATTR_TO_VAR: Record<EventTecColorAttribute, string> = {
 	registerHoverBorderColor: '--nextora-event-register-hover-border-color',
 	paginationColor: '--nextora-event-dot-color',
 	paginationActiveColor: '--nextora-event-dot-active',
+	edgeFadeColor: '--nextora-event-edge-fade-color',
 };
 
 /**

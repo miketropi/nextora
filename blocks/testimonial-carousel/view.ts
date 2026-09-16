@@ -245,7 +245,7 @@ function initSwiperIn(container: Element | Document): void {
 						slidesPerView: opts.itemsPerViewMobile ?? 1,
 						spaceBetween: opts.cardGap ?? 22,
 						breakpoints: {
-							768: {
+							640: {
 								slidesPerView: opts.itemsPerViewTablet ?? 2,
 							},
 							1024: {
@@ -261,6 +261,7 @@ function initSwiperIn(container: Element | Document): void {
 				effect: isTemplate1 ? 'slide' : effect,
 				...(effect === 'fade' && !isTemplate1 ? { fadeEffect: { crossFade: true } } : {}),
 				...slidesPerViewCfg,
+				breakpointsBase: 'window',
 				loop: useLoop,
 				speed: typeof opts.speed === 'number' ? opts.speed : 600,
 				watchOverflow: true,

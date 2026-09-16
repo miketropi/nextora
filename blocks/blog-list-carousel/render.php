@@ -595,6 +595,11 @@ if ( ! in_array( $card_link_behavior, $valid_link_behaviors, true ) ) {
 $spv         = isset( $attributes['slidesPerView'] ) ? round( (float) $attributes['slidesPerView'], 3 ) : 3.0;
 $spv_tablet  = isset( $attributes['slidesPerViewTablet'] ) ? round( (float) $attributes['slidesPerViewTablet'], 3 ) : 2.0;
 $spv_mobile  = isset( $attributes['slidesPerViewMobile'] ) ? round( (float) $attributes['slidesPerViewMobile'], 3 ) : 1.15;
+$is_desktop_fractional = ( fmod( (float) $spv, 1.0 ) != 0.0 );
+$is_tablet_fractional  = ( fmod( (float) $spv_tablet, 1.0 ) != 0.0 );
+$is_mobile_fractional  = ( fmod( (float) $spv_mobile, 1.0 ) != 0.0 );
+$has_any_fractional    = $is_desktop_fractional || $is_tablet_fractional || $is_mobile_fractional;
+$edge_fade_color       = nextora_blc_resolve_color( isset( $attributes['edgeFadeColor'] ) ? (string) $attributes['edgeFadeColor'] : '' );
 $gap         = isset( $attributes['spaceBetween'] ) ? max( 0, (int) $attributes['spaceBetween'] ) : 24;
 $speed_val   = isset( $attributes['speed'] ) ? max( 100, min( 2000, (int) $attributes['speed'] ) ) : 500;
 $loop        = isset( $attributes['loop'] ) && (bool) $attributes['loop'];
@@ -730,6 +735,7 @@ if ( '' !== $card_bg_props['value'] ) {
 if ( '' !== $card_border_color ) {
     $css_vars['--nextora-blc-card-border-color'] = $card_border_color;
 }
+$css_vars['--nextora-blc-edge-fade-color'] = '' !== $edge_fade_color ? $edge_fade_color : 'var(--wp--preset--color--base, #ffffff)';
 
 $style_parts = array();
 foreach ( $css_vars as $key => $value ) {
@@ -755,6 +761,15 @@ if ( 'template-3' === $card_template ) {
 
 if ( $enable_scroll ) {
     $wrapper_classes[] = 'nextora-blog-list-carousel--reveal-pending';
+}
+if ( $is_desktop_fractional ) {
+    $wrapper_classes[] = 'has-edge-fade-desktop';
+}
+if ( $is_tablet_fractional ) {
+    $wrapper_classes[] = 'has-edge-fade-tablet';
+}
+if ( $is_mobile_fractional ) {
+    $wrapper_classes[] = 'has-edge-fade-mobile';
 }
 
 $placeholder_url = nextora_blc_post_placeholder_image_url();
@@ -1033,8 +1048,10 @@ if ( $show_pag && $post_count > 1 ) {
 }
 
 // ── Assemble output ──
+$edge_overlay_html = $has_any_fractional ? '<div class="nextora-blc__edge-overlay" aria-hidden="true"></div>' : '';
+
 $output = sprintf(
-	'<div %s><div class="nextora-blc__inner"><div class="nextora-blc__carousel-root" data-layout-mode="%s" data-grid-min-width="%s" data-grid-columns="%s" data-swiper-opts="%s"><div class="swiper nextora-blc__swiper"><div class="swiper-wrapper">%s</div></div>%s</div>%s</div></div>',
+	'<div %s><div class="nextora-blc__inner"><div class="nextora-blc__carousel-root" data-layout-mode="%s" data-grid-min-width="%s" data-grid-columns="%s" data-swiper-opts="%s"><div class="swiper nextora-blc__swiper"><div class="swiper-wrapper">%s</div></div>%s%s</div>%s</div></div>',
 	$wrapper_attributes,
 	esc_attr( $layout_mode ),
 	esc_attr( (string) $grid_min ),
@@ -1042,6 +1059,7 @@ $output = sprintf(
 	esc_attr( $opts_string ),
 	$cards_html,
 	$arrows_html,
+	$edge_overlay_html,
 	$pagination_html,
 );
 

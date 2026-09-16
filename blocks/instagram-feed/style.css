@@ -474,3 +474,45 @@
 		transform: none;
 	}
 }
+
+/* Edge Fade Overlay for fractional slidesPerView */
+.nextora-instagram-feed__edge-overlay {
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	width: clamp(70px, 12vw, 140px);
+	background: linear-gradient(to right, transparent, var(--nextora-instagram-feed-edge-fade-color, var(--wp--preset--color--base, #ffffff)));
+	pointer-events: none;
+	z-index: 5;
+}
+
+:where([dir="rtl"]) .nextora-instagram-feed__edge-overlay {
+	right: auto;
+	left: 0;
+	background: linear-gradient(to left, transparent, var(--nextora-instagram-feed-edge-fade-color, var(--wp--preset--color--base, #ffffff)));
+}
+
+.nextora-instagram-feed.has-edge-fade-desktop .nextora-instagram-feed__edge-overlay {
+	display: block;
+}
+
+@media (max-width: 1023px) {
+	.nextora-instagram-feed .nextora-instagram-feed__edge-overlay {
+		display: none;
+	}
+	.nextora-instagram-feed.has-edge-fade-tablet .nextora-instagram-feed__edge-overlay {
+		display: block;
+	}
+}
+
+@media (max-width: 639px) {
+	.nextora-instagram-feed .nextora-instagram-feed__edge-overlay {
+		display: none;
+	}
+	.nextora-instagram-feed.has-edge-fade-mobile .nextora-instagram-feed__edge-overlay {
+		display: block;
+	}
+}
+

@@ -481,13 +481,9 @@ function mountSwiper(root: HTMLElement): void {
 			observeParents: true,
 			resizeObserver: true,
 			updateOnWindowResize: true,
-			breakpointsBase: 'container',
+			breakpointsBase: 'window',
 			breakpoints: {
-				480: {
-					slidesPerView: cap(mobileSpv),
-					spaceBetween: Math.max(0, Math.min(12, gap)),
-				},
-				768: {
+				640: {
 					slidesPerView: cap(tabletSpv),
 					spaceBetween: Math.max(0, Math.min(24, gap)),
 				},

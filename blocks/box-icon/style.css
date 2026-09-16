@@ -158,9 +158,7 @@
 .nextora-box-icon--grid-active .nextora-box-icon__pagination,
 .nextora-box-icon--grid-active .nextora-box-icon__arrow,
 .nextora-box-icon__carousel-root--grid-active .nextora-box-icon__pagination,
-.nextora-box-icon__carousel-root--grid-active .nextora-box-icon__arrow,
-.nextora-box-icon [data-layout-mode="grid"] .nextora-box-icon__pagination,
-.nextora-box-icon [data-layout-mode="grid"] .nextora-box-icon__arrow {
+.nextora-box-icon__carousel-root--grid-active .nextora-box-icon__arrow {
 	display: none !important;
 	margin: 0 !important;
 	margin-top: 0 !important;
@@ -170,6 +168,21 @@
 	min-height: 0 !important;
 	visibility: hidden !important;
 	pointer-events: none !important;
+}
+
+@media (min-width: 981px) {
+	.nextora-box-icon [data-layout-mode="grid"] .nextora-box-icon__pagination,
+	.nextora-box-icon [data-layout-mode="grid"] .nextora-box-icon__arrow {
+		display: none !important;
+		margin: 0 !important;
+		margin-top: 0 !important;
+		margin-bottom: 0 !important;
+		padding: 0 !important;
+		height: 0 !important;
+		min-height: 0 !important;
+		visibility: hidden !important;
+		pointer-events: none !important;
+	}
 }
 
 /* Card */
@@ -1121,5 +1134,46 @@
 	.nextora-box-icon--template-template-4 .nextora-box-icon__ways-row:hover .nextora-box-icon__ways-row-icon .nextora-box-icon__icon,
 	.nextora-box-icon--template-template-4 .nextora-box-icon__ways-row:focus-within .nextora-box-icon__ways-row-icon .nextora-box-icon__icon {
 		transform: none;
+	}
+}
+
+/* Edge Fade Overlay for fractional slidesPerView */
+.nextora-box-icon__edge-overlay {
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	width: clamp(70px, 12vw, 140px);
+	background: linear-gradient(to right, transparent, var(--nextora-box-icon-edge-fade-color, var(--wp--preset--color--base, #ffffff)));
+	pointer-events: none;
+	z-index: 5;
+}
+
+:where([dir="rtl"]) .nextora-box-icon__edge-overlay {
+	right: auto;
+	left: 0;
+	background: linear-gradient(to left, transparent, var(--nextora-box-icon-edge-fade-color, var(--wp--preset--color--base, #ffffff)));
+}
+
+.nextora-box-icon.has-edge-fade-desktop .nextora-box-icon__edge-overlay {
+	display: block;
+}
+
+@media (max-width: 1023px) {
+	.nextora-box-icon .nextora-box-icon__edge-overlay {
+		display: none;
+	}
+	.nextora-box-icon.has-edge-fade-tablet .nextora-box-icon__edge-overlay {
+		display: block;
+	}
+}
+
+@media (max-width: 639px) {
+	.nextora-box-icon .nextora-box-icon__edge-overlay {
+		display: none;
+	}
+	.nextora-box-icon.has-edge-fade-mobile .nextora-box-icon__edge-overlay {
+		display: block;
 	}
 }

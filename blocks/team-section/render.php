@@ -872,6 +872,13 @@ $spv_mobile  = round( isset( $attributes['slidesPerViewMobile'] ) ? (float) $att
 $spv_tablet  = round( isset( $attributes['slidesPerViewTablet'] ) ? (float) $attributes['slidesPerViewTablet'] : 2.5, 3 );
 $spv_desktop = round( isset( $attributes['slidesPerView'] ) ? (float) $attributes['slidesPerView'] : 4.0, 3 );
 $space       = isset( $attributes['spaceBetween'] ) ? max( 0, min( 60, (int) $attributes['spaceBetween'] ) ) : 24;
+
+$is_desktop_fractional = ( fmod( (float) $spv_desktop, 1.0 ) != 0.0 );
+$is_tablet_fractional  = ( fmod( (float) $spv_tablet, 1.0 ) != 0.0 );
+$is_mobile_fractional  = ( fmod( (float) $spv_mobile, 1.0 ) != 0.0 );
+$has_any_fractional    = $is_desktop_fractional || $is_tablet_fractional || $is_mobile_fractional;
+
+$edge_fade_c = nextora_team_section_resolve_color( isset( $attributes['edgeFadeColor'] ) ? (string) $attributes['edgeFadeColor'] : '' );
 $speed       = isset( $attributes['speed'] ) ? max( 100, min( 2000, (int) $attributes['speed'] ) ) : 500;
 $loop        = ! empty( $attributes['loop'] );
 $autoplay    = ! empty( $attributes['autoplay'] );
@@ -955,6 +962,7 @@ if ( '' !== $role_c ) {
 if ( '' !== $social_c ) {
 	$css_vars['--nextora-team-social-color'] = $social_c;
 }
+$css_vars['--nextora-team-edge-fade-color'] = '' !== $edge_fade_c ? $edge_fade_c : ( '' !== $bg_props['value'] ? $bg_props['value'] : 'var(--wp--preset--color--base, #ffffff)' );
 
 $style_parts = array();
 if ( '' !== $bg_props['style'] ) {
@@ -979,6 +987,15 @@ if ( $enable_scroll ) {
 }
 if ( $enable_popup ) {
 	$wrapper_classes[] = 'nextora-team-section--popup-enabled';
+}
+if ( $is_desktop_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-desktop';
+}
+if ( $is_tablet_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-tablet';
+}
+if ( $is_mobile_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-mobile';
 }
 
 $wrapper_classes = (array) apply_filters(
@@ -1066,6 +1083,9 @@ nextora_team_section_enqueue_view_script();
 						?>
 					</div>
 				</div>
+				<?php if ( $has_any_fractional ) : ?>
+					<div class="nextora-team-section__edge-overlay" aria-hidden="true"></div>
+				<?php endif; ?>
 				<?php if ( $show_arrows && $slide_count > 1 ) : ?>
 					<button type="button" class="nextora-team-section__arrow nextora-team-section__arrow--prev" aria-label="<?php echo esc_attr__( 'Previous team member', 'nextora' ); ?>">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>

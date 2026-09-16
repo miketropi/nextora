@@ -523,10 +523,15 @@ if ( ! in_array( $template_style, array( 'default', 'template-1' ), true ) ) {
 }
 $is_template_1 = 'template-1' === $template_style;
 
-$items_per_view_desktop = isset( $attributes['itemsPerViewDesktop'] ) ? max( 1, min( 5, (int) $attributes['itemsPerViewDesktop'] ) ) : 3;
-$items_per_view_tablet  = isset( $attributes['itemsPerViewTablet'] ) ? max( 1, min( 4, (int) $attributes['itemsPerViewTablet'] ) ) : 2;
-$items_per_view_mobile  = isset( $attributes['itemsPerViewMobile'] ) ? max( 1, min( 2, (int) $attributes['itemsPerViewMobile'] ) ) : 1;
+$items_per_view_desktop = isset( $attributes['itemsPerViewDesktop'] ) ? (float) $attributes['itemsPerViewDesktop'] : 3.0;
+$items_per_view_tablet  = isset( $attributes['itemsPerViewTablet'] ) ? (float) $attributes['itemsPerViewTablet'] : 2.0;
+$items_per_view_mobile  = isset( $attributes['itemsPerViewMobile'] ) ? (float) $attributes['itemsPerViewMobile'] : 1.0;
 $card_gap               = isset( $attributes['cardGap'] ) ? max( 0, min( 40, (int) $attributes['cardGap'] ) ) : 22;
+
+$is_desktop_fractional = ( fmod( (float) $items_per_view_desktop, 1.0 ) != 0.0 );
+$is_tablet_fractional  = ( fmod( (float) $items_per_view_tablet, 1.0 ) != 0.0 );
+$is_mobile_fractional  = ( fmod( (float) $items_per_view_mobile, 1.0 ) != 0.0 );
+$has_any_fractional    = $is_desktop_fractional || $is_tablet_fractional || $is_mobile_fractional;
 
 $show_top_icon  = ! isset( $attributes['showTopIcon'] ) || (bool) $attributes['showTopIcon'];
 $top_icon_type  = isset( $attributes['topIconType'] ) ? sanitize_key( (string) $attributes['topIconType'] ) : 'sparkle';
@@ -587,6 +592,7 @@ $dot_active        = nextora_testimonial_carousel_resolve_color( isset( $attribu
 $arrow_color       = nextora_testimonial_carousel_resolve_color( isset( $attributes['arrowColor'] ) ? (string) $attributes['arrowColor'] : '' );
 $arrow_border      = nextora_testimonial_carousel_resolve_color( isset( $attributes['arrowBorderColor'] ) ? (string) $attributes['arrowBorderColor'] : '' );
 $avatar_border_c   = nextora_testimonial_carousel_resolve_color( isset( $attributes['trustAvatarBorderColor'] ) ? (string) $attributes['trustAvatarBorderColor'] : '' );
+$edge_fade_color   = nextora_testimonial_carousel_resolve_color( isset( $attributes['edgeFadeColor'] ) ? (string) $attributes['edgeFadeColor'] : '' );
 
 $enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
 
@@ -602,7 +608,7 @@ $swiper_opts = array(
 	'showPagination'  => $show_pag && $slide_count > 1,
 	'showArrows'      => $show_arrows && $slide_count > 1,
 	'speed'           => $speed,
-	'arrowPosition'   => $is_template_1 ? 'below-dots' : $arrow_pos,
+	'arrowPosition'   => $arrow_pos,
 );
 if ( $is_template_1 ) {
 	$swiper_opts['templateStyle']        = 'template-1';
@@ -641,6 +647,7 @@ $css_vars = array(
 	'--nextora-testimonial-avatar-border'     => $avatar_border . 'px',
 	'--nextora-testimonial-avatar-border-color' => '' !== $avatar_border_c ? $avatar_border_c : ( '' !== $bg_color ? $bg_color : 'var(--wp--preset--color--base, #fff)' ),
 	'--nextora-testimonial-card-gap'            => $card_gap . 'px',
+	'--nextora-testimonial-edge-fade-color'     => '' !== $edge_fade_color ? $edge_fade_color : ( '' !== $bg_color ? $bg_color : 'var(--wp--preset--color--base, #ffffff)' ),
 );
 
 if ( '' !== $quote_font_size ) {
@@ -662,6 +669,15 @@ if ( $is_template_1 ) {
 }
 if ( $show_arrows && 'sides' === $arrow_pos ) {
 	$wrapper_classes[] = 'nextora-testimonial-carousel--arrows-sides';
+}
+if ( $is_desktop_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-desktop';
+}
+if ( $is_tablet_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-tablet';
+}
+if ( $is_mobile_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-mobile';
 }
 
 $wrapper_classes = (array) apply_filters(
@@ -776,7 +792,10 @@ $top_label_style   = ! empty( $top_label_props['styles'] ) ? ' style="' . esc_at
 					?>
 				</div>
 			</div>
-			<?php if ( $show_arrows && 'sides' === $arrow_pos && ! $is_template_1 && $slide_count > 1 ) : ?>
+			<?php if ( $has_any_fractional ) : ?>
+				<div class="nextora-testimonial-carousel__edge-overlay" aria-hidden="true"></div>
+			<?php endif; ?>
+			<?php if ( $show_arrows && 'sides' === $arrow_pos && $slide_count > 1 ) : ?>
 				<div class="nextora-testimonial-carousel__arrows nextora-testimonial-carousel__arrows--sides">
 					<button type="button" class="nextora-testimonial-carousel__arrow nextora-testimonial-carousel__arrow--prev" aria-label="<?php echo esc_attr__( 'Previous testimonial', 'nextora' ); ?>">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>

@@ -41,7 +41,8 @@
           "imageUrl": "",
           "imageAlt": "",
           "iconName": "",
-          "iconSize": 24
+          "iconSize": 24,
+          "iconColor": ""
         }
       ]
     },
@@ -90,6 +91,10 @@
       "default": ""
     },
     "separatorBgColor": {
+      "type": "string",
+      "default": ""
+    },
+    "iconColor": {
       "type": "string",
       "default": ""
     },

@@ -23,6 +23,7 @@ import {
   normalizeColorForStorage,
   useThemeColorPalette,
 } from '../advanced-icon/color-utils';
+import { getGutenbergColorProps, getGutenbergFontSizeClass } from './color-utils';
 import type { ExpandingCardsAttributes, ExpandingCardItem } from './types';
 
 const FONT_SIZE_OPTIONS = [
@@ -48,7 +49,7 @@ const ICONS = {
   plus:
     '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
   pawPrint:
-    '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>',
 };
 
 function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: string }) {
@@ -287,13 +288,47 @@ export default function ExpandingCardsEdit({ attributes, setAttributes }: EditPr
     } as Partial<ExpandingCardsAttributes>);
   };
 
-  const resolveColorForEditor = (colorValue: string, fallbackCssVar: string): string => {
-    if (!colorValue) return fallbackCssVar;
-    if (colorValue === 'transparent') return 'transparent';
-    const entry = lookupPalette.find((p) => p.slug === colorValue);
-    if (entry?.color) return entry.color;
-    if (colorValue.startsWith('#')) return colorValue;
-    return `var(--wp--preset--color--${colorValue})`;
+  const headingColorProps = getGutenbergColorProps(headingColor, 'color');
+  const descColorProps = getGutenbergColorProps(descriptionColor, 'color');
+  const overlayColorProps = getGutenbergColorProps(overlayBackgroundColor, 'background');
+  const btnTextColorProps = getGutenbergColorProps(buttonTextColor, 'color');
+  const btnBgColorProps = getGutenbergColorProps(buttonBackgroundColor, 'background');
+  const btnBorderProps = getGutenbergColorProps(buttonBorderColor, 'border');
+
+  const headingFontSizeClass = getGutenbergFontSizeClass(headingSize);
+  const descFontSizeClass = getGutenbergFontSizeClass(descriptionSize);
+  const btnFontSizeClass = getGutenbergFontSizeClass(buttonSize);
+
+  const headingClasses = [
+    'nextora-expanding-cards__card-heading',
+    headingFontSizeClass,
+    headingColorProps.className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const descClasses = [
+    'nextora-expanding-cards__card-description',
+    descFontSizeClass,
+    descColorProps.className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const btnClasses = [
+    'nextora-expanding-cards__card-button',
+    'wp-element-button',
+    btnFontSizeClass,
+    btnTextColorProps.className,
+    btnBgColorProps.className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const btnStyle: React.CSSProperties = {
+    ...btnTextColorProps.style,
+    ...btnBgColorProps.style,
+    ...btnBorderProps.style,
   };
 
   const addCard = () => {
@@ -325,31 +360,21 @@ export default function ExpandingCardsEdit({ attributes, setAttributes }: EditPr
     setAttributes({ cards: newItems });
   };
 
-  const editorOverlayBg = resolveColorForEditor(overlayBackgroundColor, '#000000');
-  const editorHeadingColor = resolveColorForEditor(headingColor, '#ffffff');
-  const editorDescriptionColor = resolveColorForEditor(descriptionColor, 'rgba(255,255,255,0.85)');
-  const editorBtnTextColor = resolveColorForEditor(buttonTextColor, '#ffffff');
-  const editorBtnBgColor = resolveColorForEditor(buttonBackgroundColor, 'transparent');
-  const editorBtnBorderColor = resolveColorForEditor(buttonBorderColor, '#ffffff');
-
   const blockProps = useBlockProps({
-    className: 'wp-block-nextora-expanding-cards nextora-expanding-cards--editor',
+    className: 'wp-block-nextora-expanding-cards--editor',
     style: {
       '--nextora-ec-height': `${cardHeight}px`,
       '--nextora-ec-gap': `${cardGap}px`,
       '--nextora-ec-radius': `${cardBorderRadius}px`,
       '--nextora-ec-overlay-opacity': `${inactiveOverlayOpacity}`,
-      '--nextora-ec-overlay-bg': editorOverlayBg,
       '--nextora-ec-content-padding-y': `${contentPaddingY}px`,
       '--nextora-ec-content-padding-x': `${contentPaddingX}px`,
-      '--nextora-ec-heading-color': editorHeadingColor,
-      '--nextora-ec-description-color': editorDescriptionColor,
-      '--nextora-ec-button-text-color': editorBtnTextColor,
-      '--nextora-ec-button-bg-color': editorBtnBgColor,
-      '--nextora-ec-button-border-color': editorBtnBorderColor,
-      ...(headingSize ? { '--nextora-ec-heading-size': `var(--wp--preset--font-size--${headingSize})` } : {}),
-      ...(descriptionSize ? { '--nextora-ec-description-size': `var(--wp--preset--font-size--${descriptionSize})` } : {}),
-      ...(buttonSize ? { '--nextora-ec-button-size': `var(--wp--preset--font-size--${buttonSize})` } : {}),
+      ...(overlayColorProps.style.backgroundColor ? { '--nextora-ec-overlay-bg': overlayColorProps.style.backgroundColor } : {}),
+      ...(headingColorProps.style.color ? { '--nextora-ec-heading-color': headingColorProps.style.color } : {}),
+      ...(descColorProps.style.color ? { '--nextora-ec-description-color': descColorProps.style.color } : {}),
+      ...(btnTextColorProps.style.color ? { '--nextora-ec-button-text-color': btnTextColorProps.style.color } : {}),
+      ...(btnBgColorProps.style.backgroundColor ? { '--nextora-ec-button-bg-color': btnBgColorProps.style.backgroundColor } : {}),
+      ...(btnBorderProps.style.borderColor ? { '--nextora-ec-button-border-color': btnBorderProps.style.borderColor } : {}),
     } as React.CSSProperties,
   });
 
@@ -607,15 +632,15 @@ export default function ExpandingCardsEdit({ attributes, setAttributes }: EditPr
               )}
               <span className="nextora-expanding-cards__card-overlay" aria-hidden="true" />
               <span className="nextora-expanding-cards__card-content">
-                <span className="nextora-expanding-cards__card-heading">
+                <h4 className={headingClasses} style={headingColorProps.style}>
                   {item.heading || sprintf(__('Card %d', 'nextora'), index + 1)}
-                </span>
+                </h4>
                 {item.description && (
-                  <span className="nextora-expanding-cards__card-description">
+                  <p className={descClasses} style={descColorProps.style}>
                     {item.description}
-                  </span>
+                  </p>
                 )}
-                <span className="nextora-expanding-cards__card-button">
+                <span className={btnClasses} style={btnStyle}>
                   <InlineSvg name="pawPrint" className="nextora-expanding-cards__card-button-icon" />
                   {item.buttonText || __('Start adoption', 'nextora')}
                 </span>

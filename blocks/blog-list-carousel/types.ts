@@ -66,4 +66,5 @@ export interface BlogListCarouselAttributes {
 	arrowColor: string;
 	enableScrollAnimation: boolean;
 	scrollAnimationStyle: 'default' | 'sequential';
+	edgeFadeColor?: string;
 }

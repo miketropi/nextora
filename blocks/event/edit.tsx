@@ -8,6 +8,7 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
+	ColorPalette,
 	Modal,
 	PanelBody,
 	SelectControl,
@@ -44,8 +45,8 @@ function DetailIcon({ type, style, className }: { type: 'map-pin' | 'clock' | 't
 	if (type === 'map-pin') {
 		return (
 			<span className={iconClasses} style={style} aria-hidden="true">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-					<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C10.539 20.193 5 14.993 5 10a7 7 0 1 1 14 0" />
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-map-pin">
+					<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
 					<circle cx="12" cy="10" r="3" />
 				</svg>
 			</span>
@@ -54,16 +55,16 @@ function DetailIcon({ type, style, className }: { type: 'map-pin' | 'clock' | 't
 	if (type === 'clock') {
 		return (
 			<span className={iconClasses} style={style} aria-hidden="true">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock">
 					<circle cx="12" cy="12" r="10" />
-					<path d="M12 6v6l4 2" />
+					<polyline points="12 6 12 12 16 14" />
 				</svg>
 			</span>
 		);
 	}
 	return (
 		<span className={iconClasses} style={style} aria-hidden="true">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-ticket">
 				<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
 				<path d="M13 5v2" />
 				<path d="M13 17v2" />
@@ -195,6 +196,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		spaceBetween = 24,
 		tabletSlides = 2,
 		mobileSlides = 1,
+		edgeFadeColor = '',
 	} = attributes;
 
 	const isTemplate1 = template === 'template1';
@@ -211,6 +213,9 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			isTemplate1 ? 'nextora-event--template1 nextora-event--template1-editor' : '',
 			isTemplate2 ? 'nextora-event--template2 nextora-event--template2-editor' : '',
 			isTemplate3 ? 'nextora-event--template3 nextora-event--template3-editor' : '',
+			(slidesPerView % 1) !== 0 ? 'has-edge-fade-desktop' : '',
+			(tabletSlides % 1) !== 0 ? 'has-edge-fade-tablet' : '',
+			(mobileSlides % 1) !== 0 ? 'has-edge-fade-mobile' : '',
 		].filter(Boolean).join(' '),
 		style: {
 			...buildSectionStyleVars({
@@ -232,6 +237,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				paginationActiveColor,
 			}) as CSSProperties,
 			...(isTemplate1 || isTemplate2 ? { '--nextora-event-editor-slides': String(slidesPerView), '--nextora-event-editor-gap': `${spaceBetween}px` } as CSSProperties : {}),
+			...(edgeFadeColor ? { '--nextora-event-edge-fade-color': edgeFadeColor } as CSSProperties : {}),
 		},
 	});
 
@@ -388,6 +394,11 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				onChange: (v: string | undefined) => setThemeColor('paginationActiveColor', v),
 				label: __('Active pagination', 'nextora'),
 			},
+			{
+				value: colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('edgeFadeColor', v),
+				label: __('Edge fade color', 'nextora'),
+			},
 		],
 		[
 			colorPalette,
@@ -408,6 +419,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			registerHoverBorderColor,
 			paginationColor,
 			paginationActiveColor,
+			edgeFadeColor,
 		],
 	);
 
@@ -642,7 +654,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							label={__('Slides per view', 'nextora')}
 							value={slidesPerView}
 							onChange={(value: number | undefined) =>
-								setAttributes({ slidesPerView: value ?? 3 })
+								setAttributes({ slidesPerView: value !== undefined ? Math.round(value * 100) / 100 : 3 })
 							}
 							min={1}
 							max={6}
@@ -653,7 +665,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							label={__('Tablet slides', 'nextora')}
 							value={tabletSlides}
 							onChange={(value: number | undefined) =>
-								setAttributes({ tabletSlides: value ?? 2 })
+								setAttributes({ tabletSlides: value !== undefined ? Math.round(value * 100) / 100 : 2 })
 							}
 							min={1}
 							max={4}
@@ -663,12 +675,25 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							label={__('Mobile slides', 'nextora')}
 							value={mobileSlides}
 							onChange={(value: number | undefined) =>
-								setAttributes({ mobileSlides: value ?? 1 })
+								setAttributes({ mobileSlides: value !== undefined ? Math.round(value * 100) / 100 : 1 })
 							}
 							min={1}
-							max={2}
+							max={3}
 							step={0.1}
 						/>
+						{((slidesPerView % 1) !== 0 || (tabletSlides % 1) !== 0 || (mobileSlides % 1) !== 0) && (
+							<div className="nextora-carousel-inspector-color" style={{ marginTop: '12px', marginBottom: '16px' }}>
+								<p className="nextora-carousel-inspector-color__label" style={{ marginBottom: '8px', fontSize: '11px', fontWeight: 500, textTransform: 'uppercase' }}>
+									{__('Edge fade color', 'nextora')}
+								</p>
+								<ColorPalette
+									colors={colorPalette}
+									value={colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette)}
+									onChange={(c) => setThemeColor('edgeFadeColor', c)}
+									clearable
+								/>
+							</div>
+						)}
 						<RangeControl
 							label={__('Space between (px)', 'nextora')}
 							value={spaceBetween}
@@ -951,8 +976,12 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 															fill="none"
 															stroke="currentColor"
 															strokeWidth="2"
+															strokeLinecap="round"
+															strokeLinejoin="round"
+															className="lucide lucide-arrow-right"
 														>
-															<path d="M5 12h14M13 6l6 6-6 6" />
+															<path d="M5 12h14" />
+															<path d="m12 5 7 7-7 7" />
 														</svg>
 													</span>
 												</span>

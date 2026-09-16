@@ -99,7 +99,7 @@ function initIn(container: Element | Document) {
         observeParents: true,
         resizeObserver: true,
         updateOnWindowResize: true,
-        breakpointsBase: 'container',
+        breakpointsBase: 'window',
         autoplay:
           !reduced && opts.autoplay === true
             ? {

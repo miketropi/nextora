@@ -8,6 +8,7 @@ export interface ScrollingPromotionItem {
 	imageAlt: string;
 	iconName: string;
 	iconSize: number;
+	iconColor?: string;
 }
 
 export interface ScrollingPromotionAttributes {
@@ -25,6 +26,7 @@ export interface ScrollingPromotionAttributes {
 	separatorColor?: string;
 	separatorBgColor?: string;
 	separatorBackgroundColor?: string;
+	iconColor?: string;
 	fontSize: string | number;
 	customFontSize?: number;
 	fontWeight: string;
