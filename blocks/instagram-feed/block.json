@@ -222,6 +222,10 @@
       "type": "string",
       "default": ""
     },
+    "edgeFadeColor": {
+      "type": "string",
+      "default": ""
+    },
     "enableScrollAnimation": {
       "type": "boolean",
       "default": true

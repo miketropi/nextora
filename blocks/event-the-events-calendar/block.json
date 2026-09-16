@@ -185,6 +185,10 @@
     "mobileSlides": {
       "type": "number",
       "default": 1
+    },
+    "edgeFadeColor": {
+      "type": "string",
+      "default": ""
     }
   },
   "editorScript": "file:./index.js",

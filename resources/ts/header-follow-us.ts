@@ -126,6 +126,7 @@ function closePanel(
 	panel: HTMLElement,
 	scrim: HTMLElement | null,
 ): void {
+	delete root.dataset.nextoraHeaderFollowUsPinned;
 	root.classList.remove("nextora-header-block__follow-us--open", "nextora-header-block__follow-us--stacked");
 	document.documentElement.classList.remove("nextora-header-follow-us-open");
 	toggle.setAttribute("aria-expanded", "false");
@@ -188,6 +189,32 @@ function bindFollowUsRoot(root: HTMLElement): void {
 
 	root.dataset.nextoraHeaderFollowUsBound = "1";
 
+	const getTriggerMode = (): string => {
+		const val = root.getAttribute("data-nextora-header-follow-us-trigger");
+		return val === "click" || val === "hover" ? val : "both";
+	};
+
+	let leaveTimer: number | null = null;
+
+	const clearLeaveTimer = (): void => {
+		if (leaveTimer !== null) {
+			window.clearTimeout(leaveTimer);
+			leaveTimer = null;
+		}
+	};
+
+	const scheduleClose = (delay = 400): void => {
+		clearLeaveTimer();
+		leaveTimer = window.setTimeout(() => {
+			if (
+				root.dataset.nextoraHeaderFollowUsPinned !== "1" &&
+				root.classList.contains("nextora-header-block__follow-us--open")
+			) {
+				closePanel(root, toggle, panel, scrim);
+			}
+		}, delay);
+	};
+
 	const handleReposition = (): void => {
 		if (!root.classList.contains("nextora-header-block__follow-us--open") || isDrawerFollowUs(root)) {
 			return;
@@ -198,13 +225,57 @@ function bindFollowUsRoot(root: HTMLElement): void {
 	toggle.addEventListener("click", (event) => {
 		event.preventDefault();
 		event.stopPropagation();
+		clearLeaveTimer();
 		const isOpen = root.classList.contains("nextora-header-block__follow-us--open");
 		if (isOpen) {
-			closePanel(root, toggle, panel, scrim);
+			if (root.dataset.nextoraHeaderFollowUsPinned === "1") {
+				closePanel(root, toggle, panel, scrim);
+				return;
+			}
+			root.dataset.nextoraHeaderFollowUsPinned = "1";
 			return;
 		}
+		root.dataset.nextoraHeaderFollowUsPinned = "1";
 		openPanel(root, toggle, panel, scrim);
 	});
+
+	const handleMouseEnter = (): void => {
+		if (isDrawerFollowUs(root)) {
+			return;
+		}
+		const mode = getTriggerMode();
+		if (mode === "click") {
+			return;
+		}
+		clearLeaveTimer();
+		if (!root.classList.contains("nextora-header-block__follow-us--open")) {
+			openPanel(root, toggle, panel, scrim);
+		}
+	};
+
+	const handleMouseLeave = (event: MouseEvent): void => {
+		if (isDrawerFollowUs(root)) {
+			return;
+		}
+		const mode = getTriggerMode();
+		if (mode === "click") {
+			return;
+		}
+		if (root.dataset.nextoraHeaderFollowUsPinned === "1") {
+			return;
+		}
+		if (root.classList.contains("nextora-header-block__follow-us--stacked")) {
+			return;
+		}
+		const related = event.relatedTarget;
+		if (related instanceof Node && root.contains(related)) {
+			return;
+		}
+		scheduleClose(400);
+	};
+
+	root.addEventListener("mouseenter", handleMouseEnter);
+	root.addEventListener("mouseleave", handleMouseLeave);
 
 	panel.addEventListener("click", (event) => {
 		event.stopPropagation();
@@ -212,11 +283,13 @@ function bindFollowUsRoot(root: HTMLElement): void {
 
 	scrim?.addEventListener("click", (event) => {
 		event.preventDefault();
+		clearLeaveTimer();
 		closePanel(root, toggle, panel, scrim);
 	});
 
 	toggle.addEventListener("keydown", (event) => {
 		if (event.key === "Escape") {
+			clearLeaveTimer();
 			closePanel(root, toggle, panel, scrim);
 		}
 	});

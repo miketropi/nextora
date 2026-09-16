@@ -60,6 +60,7 @@ export interface BoxIconAttributes {
 	showArrows: boolean;
 	grabCursor: boolean;
 	freeMode: boolean;
+	edgeFadeColor?: string;
 	cardBorderColor: string;
 	cardBackgroundColor: string;
 	cardHoverBackgroundColor: string;

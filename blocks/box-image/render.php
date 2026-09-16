@@ -1218,6 +1218,11 @@ $image_fit   = isset( $attributes['imageFit'] ) ? (string) $attributes['imageFit
 $spv_mobile  = round( isset( $attributes['slidesPerViewMobile'] ) ? (float) $attributes['slidesPerViewMobile'] : 1.15, 3 );
 $spv_tablet  = round( isset( $attributes['slidesPerViewTablet'] ) ? (float) $attributes['slidesPerViewTablet'] : 2.0, 3 );
 $spv_desktop = round( isset( $attributes['slidesPerView'] ) ? (float) $attributes['slidesPerView'] : 4.0, 3 );
+$is_desktop_fractional = ( fmod( (float) $spv_desktop, 1.0 ) > 0.001 );
+$is_tablet_fractional  = ( fmod( (float) $spv_tablet, 1.0 ) > 0.001 );
+$is_mobile_fractional  = ( fmod( (float) $spv_mobile, 1.0 ) > 0.001 );
+$has_any_fractional    = $is_desktop_fractional || $is_tablet_fractional || $is_mobile_fractional;
+$edge_fade_color       = nextora_box_image_resolve_color( isset( $attributes['edgeFadeColor'] ) ? (string) $attributes['edgeFadeColor'] : '' );
 $space       = isset( $attributes['spaceBetween'] ) ? max( 0, min( 60, (int) $attributes['spaceBetween'] ) ) : 18;
 $speed       = isset( $attributes['speed'] ) ? max( 100, min( 2000, (int) $attributes['speed'] ) ) : 500;
 $loop        = ! empty( $attributes['loop'] );
@@ -1303,6 +1308,8 @@ foreach ( $color_keys as $attr_key => $var_name ) {
 	}
 }
 
+$css_vars['--nextora-box-image-edge-fade-color'] = '' !== $edge_fade_color ? $edge_fade_color : 'var(--wp--preset--color--base, #ffffff)';
+
 $style_parts = array();
 foreach ( $css_vars as $key => $value ) {
 	$style_parts[] = $key . ':' . $value;
@@ -1322,6 +1329,15 @@ if ( $enable_scroll ) {
 }
 if ( ! $enable_hover ) {
 	$wrapper_classes[] = 'nextora-box-image--no-card-hover';
+}
+if ( $is_desktop_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-desktop';
+}
+if ( $is_tablet_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-tablet';
+}
+if ( $is_mobile_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-mobile';
 }
 
 $wrapper_classes = (array) apply_filters(
@@ -1424,6 +1440,9 @@ $step_h_gap   = isset( $attributes['stepHorizontalGap'] ) ? max( 600, min( 1600,
 				}
 				?>
 				</div>
+				<?php if ( $has_any_fractional ) : ?>
+					<div class="nextora-box-image__edge-overlay" aria-hidden="true"></div>
+				<?php endif; ?>
 			</div>
 			<?php if ( $show_arrows && $slide_count > 1 ) : ?>
 				<button type="button" class="nextora-box-image__arrow nextora-box-image__arrow--prev" aria-label="<?php echo esc_attr__( 'Previous slide', 'nextora' ); ?>">

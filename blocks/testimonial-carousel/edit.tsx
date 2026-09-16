@@ -15,6 +15,7 @@ import {
 import {
 	BaseControl,
 	Button,
+	ColorPalette,
 	Modal,
 	PanelBody,
 	RangeControl,
@@ -355,7 +356,13 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 		trustColor = '',
 		starColor = '',
 		enableScrollAnimation = true,
+		edgeFadeColor = '',
 	} = attributes;
+
+	const isDesktopFractional = (itemsPerViewDesktop % 1) !== 0;
+	const isTabletFractional = (itemsPerViewTablet % 1) !== 0;
+	const isMobileFractional = (itemsPerViewMobile % 1) !== 0;
+	const hasAnyFractional = isDesktopFractional || isTabletFractional || isMobileFractional;
 
 	const blockProps = useBlockProps({
 		className: [
@@ -363,6 +370,9 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 			'nextora-testimonial-carousel--editor',
 			templateStyle === 'template-1' ? 'nextora-testimonial-carousel--template-1' : '',
 			showArrows && arrowPosition === 'sides' ? 'nextora-testimonial-carousel--arrows-sides' : '',
+			isDesktopFractional ? 'has-edge-fade-desktop' : '',
+			isTabletFractional ? 'has-edge-fade-tablet' : '',
+			isMobileFractional ? 'has-edge-fade-mobile' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
@@ -388,6 +398,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 			trustAvatarBorderWidth,
 			trustAvatarBorderColor,
 			cardGap,
+			edgeFadeColor,
 		}) as CSSProperties,
 	});
 
@@ -719,23 +730,38 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 							<RangeControl
 								label={__('Slides per view — Desktop', 'nextora')}
 								value={itemsPerViewDesktop}
-								onChange={(v) => setAttributes({ itemsPerViewDesktop: v ?? 3 })}
+								onChange={(v) =>
+									setAttributes({
+										itemsPerViewDesktop: v !== undefined ? Math.round(v * 100) / 100 : 3,
+									})
+								}
 								min={1}
-								max={5}
+								max={6}
+								step={0.1}
 							/>
 							<RangeControl
 								label={__('Slides per view — Tablet', 'nextora')}
 								value={itemsPerViewTablet}
-								onChange={(v) => setAttributes({ itemsPerViewTablet: v ?? 2 })}
+								onChange={(v) =>
+									setAttributes({
+										itemsPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 2,
+									})
+								}
 								min={1}
 								max={4}
+								step={0.1}
 							/>
 							<RangeControl
 								label={__('Slides per view — Mobile', 'nextora')}
 								value={itemsPerViewMobile}
-								onChange={(v) => setAttributes({ itemsPerViewMobile: v ?? 1 })}
+								onChange={(v) =>
+									setAttributes({
+										itemsPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 1,
+									})
+								}
 								min={1}
-								max={2}
+								max={3}
+								step={0.1}
 							/>
 							<RangeControl
 								label={__('Gap (px)', 'nextora')}
@@ -744,6 +770,20 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 								min={0}
 								max={40}
 							/>
+							<div style={{ marginTop: '0.85rem', marginBottom: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(0, 0, 0, 0.08)' }}>
+								<p className="components-base-control__label" style={{ marginBottom: '0.35rem', fontWeight: 600 }}>
+									{__('Edge fade overlay color', 'nextora')}
+								</p>
+								<p className="components-help-text" style={{ marginTop: 0, marginBottom: '0.5rem' }}>
+									{__('Color for the trailing slide fade gradient. Match with your section background color.', 'nextora')}
+								</p>
+								<ColorPalette
+									value={colorValueForPicker(edgeFadeColor, palette)}
+									onChange={(v: string | undefined) =>
+										setAttributes({ edgeFadeColor: normalizeColorForStorage(v, palette) })
+									}
+								/>
+							</div>
 						</>
 					)}
 
@@ -757,7 +797,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						checked={showArrows}
 						onChange={(v) => setAttributes({ showArrows: v })}
 					/>
-					{showArrows && templateStyle !== 'template-1' && (
+					{showArrows && (
 						<SelectControl
 							label={__('Arrow position', 'nextora')}
 							value={arrowPosition}
@@ -876,6 +916,12 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 							value: colorValueForPicker(backgroundColor, palette),
 							onChange: (v) => setAttributes({ backgroundColor: normalizeColorForStorage(v, palette) }),
 							label: __('Background', 'nextora'),
+						},
+						{
+							value: colorValueForPicker(edgeFadeColor, palette),
+							onChange: (v: string | undefined) =>
+								setAttributes({ edgeFadeColor: normalizeColorForStorage(v, palette) }),
+							label: __('Edge fade overlay', 'nextora'),
 						},
 						...(templateStyle !== 'template-1'
 							? [
@@ -1147,9 +1193,12 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 							))}
 						</div>
 					)}
+					{hasAnyFractional && (
+						<div className="nextora-testimonial-carousel__edge-overlay" aria-hidden="true" />
+					)}
 					{showArrows && (
 						<div
-							className={`nextora-testimonial-carousel__arrows nextora-testimonial-carousel__arrows--${templateStyle === 'template-1' ? 'below-dots' : arrowPosition}`}
+							className={`nextora-testimonial-carousel__arrows nextora-testimonial-carousel__arrows--${arrowPosition}`}
 						>
 							<span className="nextora-testimonial-carousel__arrow">
 								<ChevronLeftIcon />

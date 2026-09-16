@@ -248,6 +248,10 @@
       "type": "boolean",
       "default": false
     },
+    "edgeFadeColor": {
+      "type": "string",
+      "default": ""
+    },
     "headingFontFamily": {
       "type": "string",
       "default": ""

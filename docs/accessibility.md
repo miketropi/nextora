@@ -179,7 +179,7 @@ Align with [blocks.md](./blocks.md). Every interactive or motion block should sa
 | `nextora/header` | Nav ARIA, drawer portal, Woo mini cart dialog |
 | `nextora/spotlight-search` | Modal + combobox search |
 | `nextora/scrolling-promotion` | `role="region"`, reduced-motion pause |
-| `nextora/image-gallery-slide`, `nextora/team-section`, `nextora/testimonial-carousel`, `nextora/testimonials` | Labeled arrows; Swiper init + reduced motion |
+| `nextora/team-section`, `nextora/testimonial-carousel`, `nextora/testimonials` | Labeled arrows; Swiper init + reduced motion |
 | `nextora/arc-gallery-section` | `role="group"` + `aria-label` on gallery |
 | `nextora/counters`, `nextora/page-title`, `nextora/call-to-action` | Reduced motion in `view.ts` |
 

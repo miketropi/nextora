@@ -79,6 +79,7 @@ export interface TestimonialCarouselAttributes {
 	trustColor: string;
 	starColor: string;
 	enableScrollAnimation: boolean;
+	edgeFadeColor?: string;
 }
 
 /** Media library types for avatars and author photos. */

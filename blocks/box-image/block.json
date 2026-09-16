@@ -212,6 +212,10 @@
       "type": "boolean",
       "default": false
     },
+    "edgeFadeColor": {
+      "type": "string",
+      "default": ""
+    },
     "cardBorderColor": {
       "type": "string",
       "default": ""

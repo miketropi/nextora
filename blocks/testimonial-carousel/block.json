@@ -270,6 +270,10 @@
     "enableScrollAnimation": {
       "type": "boolean",
       "default": true
+    },
+    "edgeFadeColor": {
+      "type": "string",
+      "default": ""
     }
   },
   "editorScript": "file:./index.js",

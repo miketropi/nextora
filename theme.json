@@ -552,12 +552,12 @@
 				},
 				":hover": {
 					"color": {
-						"text": "var(--wp--preset--color--contrast)"
+						"text": "var(--wp--preset--color--primary)"
 					}
 				},
 				":focus": {
 					"color": {
-						"text": "var(--wp--preset--color--contrast)"
+						"text": "var(--wp--preset--color--primary)"
 					}
 				}
 			},

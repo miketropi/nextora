@@ -7,6 +7,7 @@ import {
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
+	ColorPalette,
 	PanelBody,
 	SelectControl,
 	RangeControl,
@@ -66,15 +67,24 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 		showPagination,
 		slidesPerView = 3,
 		spaceBetween = 24,
-		tabletSlides,
-		mobileSlides,
+		tabletSlides = 2,
+		mobileSlides = 1,
+		edgeFadeColor = '',
 	} = attributes;
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isSliderTemplate = template === 'template1' || template === 'template2';
 	const blockProps = useBlockProps({
 		ref: containerRef,
-		className: `nextora-event-tec-editor-wrapper${template === 'template1' ? ' nextora-event--template1-editor' : ''}${template === 'template2' ? ' nextora-event--template2-editor' : ''}${template === 'template3' ? ' nextora-event--template3-editor' : ''}`,
+		className: [
+			'nextora-event-tec-editor-wrapper',
+			template === 'template1' ? 'nextora-event--template1-editor' : '',
+			template === 'template2' ? 'nextora-event--template2-editor' : '',
+			template === 'template3' ? 'nextora-event--template3-editor' : '',
+			(slidesPerView % 1) !== 0 ? 'has-edge-fade-desktop' : '',
+			(tabletSlides % 1) !== 0 ? 'has-edge-fade-tablet' : '',
+			(mobileSlides % 1) !== 0 ? 'has-edge-fade-mobile' : '',
+		].filter(Boolean).join(' '),
 		style: {
 			...(buildEventColorStyleVars({
 				cardBackgroundColor,
@@ -94,6 +104,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				paginationColor,
 				paginationActiveColor,
 			}) as CSSProperties),
+			...(edgeFadeColor ? { '--nextora-event-edge-fade-color': edgeFadeColor } as CSSProperties : {}),
 			...(isSliderTemplate
 				? ({
 						'--nextora-event-editor-slides': String(slidesPerView),
@@ -226,7 +237,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 		attrKey: EventTecColorAttribute,
 		label: string
 	) => ({
-		value: colorValueForPicker(attributes[attrKey], themePalette, lookupPalette),
+		value: colorValueForPicker(attributes[attrKey] || '', themePalette, lookupPalette),
 		onChange: (next: string | undefined) =>
 			setAttributes({
 				[attrKey]: normalizeColorForStorage(next || '', lookupPalette),
@@ -335,27 +346,44 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 						<RangeControl
 							label={__('Slides Per View (Desktop)', 'nextora')}
 							value={slidesPerView}
-							onChange={(val) => setAttributes({ slidesPerView: val ?? 3 })}
+							onChange={(val) => setAttributes({ slidesPerView: val !== undefined ? Math.round(val * 100) / 100 : 3 })}
 							min={1}
 							max={6}
-							step={0.5}
+							step={0.1}
 						/>
 						<RangeControl
 							label={__('Slides Per View (Tablet)', 'nextora')}
 							value={tabletSlides}
-							onChange={(val) => setAttributes({ tabletSlides: val ?? 2 })}
+							onChange={(val) => setAttributes({ tabletSlides: val !== undefined ? Math.round(val * 100) / 100 : 2 })}
 							min={1}
 							max={4}
-							step={0.5}
+							step={0.1}
 						/>
 						<RangeControl
 							label={__('Slides Per View (Mobile)', 'nextora')}
 							value={mobileSlides}
-							onChange={(val) => setAttributes({ mobileSlides: val ?? 1 })}
+							onChange={(val) => setAttributes({ mobileSlides: val !== undefined ? Math.round(val * 100) / 100 : 1 })}
 							min={1}
-							max={2}
-							step={0.5}
+							max={3}
+							step={0.1}
 						/>
+						{((slidesPerView % 1) !== 0 || (tabletSlides % 1) !== 0 || (mobileSlides % 1) !== 0) && (
+							<div className="nextora-carousel-inspector-color" style={{ marginTop: '12px', marginBottom: '16px' }}>
+								<p className="nextora-carousel-inspector-color__label" style={{ marginBottom: '8px', fontSize: '11px', fontWeight: 500, textTransform: 'uppercase' }}>
+									{__('Edge fade color', 'nextora')}
+								</p>
+								<ColorPalette
+									colors={themePalette}
+									value={colorValueForPicker(edgeFadeColor, themePalette, lookupPalette)}
+									onChange={(next: string | undefined) =>
+										setAttributes({
+											edgeFadeColor: normalizeColorForStorage(next || '', lookupPalette),
+										})
+									}
+									clearable
+								/>
+							</div>
+						)}
 						<RangeControl
 							label={__('Space Between Slides (px)', 'nextora')}
 							value={spaceBetween}
@@ -426,6 +454,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 							? [
 									colorProps('paginationColor', __('Pagination dot', 'nextora')),
 									colorProps('paginationActiveColor', __('Pagination dot active', 'nextora')),
+									colorProps('edgeFadeColor', __('Edge fade color', 'nextora')),
 								]
 							: []),
 					]}

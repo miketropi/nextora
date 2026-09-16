@@ -266,9 +266,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 
 if ( ! function_exists( 'nextora_scrolling_promotion_render_item_body' ) ) {
 	/**
-	 * @param array<string, mixed> $item Normalized item row.
+	 * @param array<string, mixed> $item       Normalized item row.
+	 * @param array<string, mixed> $attributes Block attributes.
 	 */
-	function nextora_scrolling_promotion_render_item_body( array $item, int $image_height ): string {
+	function nextora_scrolling_promotion_render_item_body( array $item, int $image_height, array $attributes = array() ): string {
 		$type = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
 		$text = isset( $item['text'] ) ? trim( (string) $item['text'] ) : '';
 		$img  = nextora_scrolling_promotion_render_item_image( $item, $image_height );
@@ -289,7 +290,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_body' ) ) {
 			$icon_html = '';
 
 			if ( '' !== $icon_name && function_exists( 'nextora_get_lucide_svg' ) ) {
-				$icon_html = nextora_get_lucide_svg( $icon_name, $icon_size, 'currentColor', 2, '' );
+				$raw_item_color = ! empty( $item['iconColor'] ) ? (string) $item['iconColor'] : (string) ( $attributes['iconColor'] ?? '' );
+				$resolved_icon_color = nextora_scrolling_promotion_resolve_color( $raw_item_color );
+				$stroke_color = '' !== $resolved_icon_color ? $resolved_icon_color : 'currentColor';
+				$icon_html = nextora_get_lucide_svg( $icon_name, $icon_size, $stroke_color, 2, '' );
 			}
 
 			$inner = '';
@@ -348,7 +352,7 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_items' ) ) {
 			}
 
 			$item_type   = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
-			$body        = nextora_scrolling_promotion_render_item_body( $item, $image_height );
+			$body        = nextora_scrolling_promotion_render_item_body( $item, $image_height, $attributes );
 			$hidden_attr = $aria_hidden ? ' aria-hidden="true"' : '';
 			$item_class  = 'nextora-scrolling-promotion__item nextora-scrolling-promotion__item--' . sanitize_html_class( $item_type );
 
@@ -377,6 +381,7 @@ foreach ( $raw_items as $item ) {
 		'imageAlt' => isset( $item['imageAlt'] ) ? trim( (string) $item['imageAlt'] ) : '',
 		'iconName' => isset( $item['iconName'] ) ? trim( (string) $item['iconName'] ) : '',
 		'iconSize' => isset( $item['iconSize'] ) ? (int) $item['iconSize'] : 24,
+		'iconColor' => isset( $item['iconColor'] ) ? trim( (string) $item['iconColor'] ) : '',
 	);
 	if ( nextora_scrolling_promotion_item_has_content( $normalized ) ) {
 		$items[] = $normalized;
@@ -392,6 +397,7 @@ if ( array() === $items ) {
 		'imageAlt' => '',
 		'iconName' => '',
 		'iconSize' => 24,
+		'iconColor' => '',
 	);
 }
 
@@ -467,6 +473,9 @@ $sep_bg_color = nextora_scrolling_promotion_resolve_color(
 $border_color = nextora_scrolling_promotion_resolve_color(
 	(string) ( $attributes['marqueeBorderColor'] ?? $attributes['borderColor'] ?? '' ),
 );
+$icon_color = nextora_scrolling_promotion_resolve_color(
+	(string) ( $attributes['iconColor'] ?? '' ),
+);
 
 nextora_scrolling_promotion_enqueue_view_script();
 
@@ -495,6 +504,7 @@ $css_vars = array(
 	'--nextora-marquee-sep-icon-size'   => $sep_icon_size . 'px',
 	'--nextora-marquee-sep-color'       => '' !== $sep_color ? $sep_color : 'currentColor',
 	'--nextora-marquee-sep-bg'          => '' !== $sep_bg_color ? $sep_bg_color : 'color-mix(in srgb, currentColor 22%, transparent)',
+	'--nextora-marquee-icon-color'      => '' !== $icon_color ? $icon_color : 'currentColor',
 	'--nextora-marquee-border-color'    => $show_borders
 		? ( '' !== $border_color ? $border_color : 'currentColor' )
 		: 'transparent',

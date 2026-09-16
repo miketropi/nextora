@@ -129,9 +129,47 @@ if ( ! function_exists( 'nextora_sis_normalize_overlay_style' ) ) {
 
 if ( ! function_exists( 'nextora_sis_render_item' ) ) {
 	/**
-	 * @param array<string, mixed> $attrs Block attributes.
+	 * @param array{id?: int, url?: string, alt?: string}|int $item  Image item or attachment ID.
+	 * @param int                                             $index Gallery index.
+	 * @param array<string, mixed>                            $attrs Block attributes.
 	 */
-	function nextora_sis_render_item( int $attachment_id, int $index, array $attrs ): string {
+	function nextora_sis_render_item( $item, int $index, array $attrs ): string {
+		if ( is_numeric( $item ) ) {
+			$item = array(
+				'id'  => absint( $item ),
+				'url' => '',
+				'alt' => '',
+			);
+		}
+
+		if ( ! is_array( $item ) ) {
+			return '';
+		}
+
+		$attachment_id = isset( $item['id'] ) ? absint( $item['id'] ) : 0;
+		$fallback_url  = isset( $item['url'] ) && is_string( $item['url'] ) ? trim( $item['url'] ) : '';
+		$alt_text      = isset( $item['alt'] ) && is_string( $item['alt'] ) ? trim( $item['alt'] ) : '';
+
+		$attachment_exists = ( $attachment_id > 0 && wp_attachment_is_image( $attachment_id ) );
+		$use_attachment    = false;
+
+		if ( $attachment_exists ) {
+			if ( '' !== $fallback_url ) {
+				$site_host     = (string) wp_parse_url( home_url(), PHP_URL_HOST );
+				$fallback_host = (string) wp_parse_url( $fallback_url, PHP_URL_HOST );
+
+				// If fallback URL has a host and it doesn't match current site host,
+				// user explicitly specified an external 3rd-party URL or copied from another site.
+				if ( '' !== $fallback_host && '' !== $site_host && strtolower( $fallback_host ) !== strtolower( $site_host ) ) {
+					$use_attachment = false;
+				} else {
+					$use_attachment = true;
+				}
+			} else {
+				$use_attachment = true;
+			}
+		}
+
 		$img_h            = isset( $attrs['imageHeight'] ) ? (int) $attrs['imageHeight'] : 200;
 		$image_aspect_raw = isset( $attrs['imageAspectRatio'] ) ? (string) $attrs['imageAspectRatio'] : '3/4';
 
@@ -144,53 +182,66 @@ if ( ! function_exists( 'nextora_sis_render_item' ) ) {
 			$aspect_h = 4;
 		}
 
-	$img_w = ( $aspect_h > 0 ) ? (int) round( $img_h * ( $aspect_w / $aspect_h ) ) : $img_h;
+		$img_w = ( $aspect_h > 0 ) ? (int) round( $img_h * ( $aspect_w / $aspect_h ) ) : $img_h;
 
-	$tablet_h = (int) round( $img_h * 0.7 );
-	$tablet_w = ( $aspect_h > 0 ) ? (int) round( $tablet_h * ( $aspect_w / $aspect_h ) ) : $img_h;
+		$tablet_h = (int) round( $img_h * 0.7 );
+		$tablet_w = ( $aspect_h > 0 ) ? (int) round( $tablet_h * ( $aspect_w / $aspect_h ) ) : $img_h;
 
-	$mobile_h = (int) round( $img_h * 0.55 );
-	$mobile_w = ( $aspect_h > 0 ) ? (int) round( $mobile_h * ( $aspect_w / $aspect_h ) ) : $img_h;
+		$mobile_h = (int) round( $img_h * 0.55 );
+		$mobile_w = ( $aspect_h > 0 ) ? (int) round( $mobile_h * ( $aspect_w / $aspect_h ) ) : $img_h;
 
-	// Double the display width in sizes so the browser selects a large-enough
-	// srcset entry. A display frame with aspect-ratio 3/4 at 300×400px needs
-	// an image at least ~400px high. Typical source photos are wider than 3/4
-	// (3:2, 4:3), so the srcset 300w thumbnail (200px high) would be upscaled
-	// 2× vertically. Doubling sizes forces the browser to pick a 600 w+ entry
-	// that provides ≥ 400px natural height, and the image is downscaled
-	// (sharp) instead of upscaled (blurry). Also covers Retina (DPR 2).
-	$sizes = sprintf(
-		'(max-width: 480px) %dpx, (max-width: 768px) %dpx, %dpx',
-		$mobile_w * 2,
-		$tablet_w * 2,
-		$img_w * 2,
-	);
+		$image = '';
 
-		$filter = static function ( array $attr ) use ( $sizes ): array {
-			$attr['sizes'] = $sizes;
-			return $attr;
-		};
-		add_filter( 'wp_get_attachment_image_attributes', $filter, 9999 );
+		if ( $use_attachment ) {
+			// Double the display width in sizes so the browser selects a large-enough
+			// srcset entry. A display frame with aspect-ratio 3/4 at 300×400px needs
+			// an image at least ~400px high. Typical source photos are wider than 3/4
+			// (3:2, 4:3), so the srcset 300w thumbnail (200px high) would be upscaled
+			// 2× vertically. Doubling sizes forces the browser to pick a 600w+ entry
+			// that provides ≥ 400px natural height, and the image is downscaled
+			// (sharp) instead of upscaled (blurry). Also covers Retina (DPR 2).
+			$sizes = sprintf(
+				'(max-width: 480px) %dpx, (max-width: 768px) %dpx, %dpx',
+				$mobile_w * 2,
+				$tablet_w * 2,
+				$img_w * 2,
+			);
 
-		$image = wp_get_attachment_image(
-			$attachment_id,
-			'large',
-			false,
-			array(
-				'class'    => 'nextora-sis__img',
-				'loading'  => 'eager',
-				'decoding' => 'async',
-			),
-		);
+			$filter = static function ( array $attr ) use ( $sizes ): array {
+				$attr['sizes'] = $sizes;
+				return $attr;
+			};
+			add_filter( 'wp_get_attachment_image_attributes', $filter, 9999 );
 
-		remove_filter( 'wp_get_attachment_image_attributes', $filter, 9999 );
+			$image = wp_get_attachment_image(
+				$attachment_id,
+				'large',
+				false,
+				array(
+					'class'    => 'nextora-sis__img',
+					'loading'  => 'eager',
+					'decoding' => 'async',
+				),
+			);
+
+			remove_filter( 'wp_get_attachment_image_attributes', $filter, 9999 );
+		} elseif ( '' !== $fallback_url ) {
+			$clean_url = esc_url( $fallback_url );
+			if ( '' !== $clean_url ) {
+				$image = sprintf(
+					'<img src="%s" alt="%s" class="nextora-sis__img" loading="eager" decoding="async" />',
+					$clean_url,
+					esc_attr( $alt_text ),
+				);
+			}
+		}
 
 		if ( ! is_string( $image ) || '' === $image ) {
 			return '';
 		}
 
-		$enable_tilt = isset( $attrs['enableTilt'] ) && (bool) $attrs['enableTilt'];
-		$is_even     = ( $index % 2 === 0 );
+		$enable_tilt  = isset( $attrs['enableTilt'] ) && (bool) $attrs['enableTilt'];
+		$is_even      = ( $index % 2 === 0 );
 		$rotate_angle = $is_even
 			? ( isset( $attrs['tiltEvenAngle'] ) ? (float) $attrs['tiltEvenAngle'] : -2.0 )
 			: ( isset( $attrs['tiltOddAngle'] ) ? (float) $attrs['tiltOddAngle'] : 5.0 );
@@ -216,15 +267,16 @@ if ( ! function_exists( 'nextora_sis_render_item' ) ) {
 
 if ( ! function_exists( 'nextora_sis_render_half' ) ) {
 	/**
-	 * @param int[]                $ids   Attachment IDs.
-	 * @param array<string, mixed> $attrs Block attributes.
+	 * @param array<int, array{id?: int, url?: string, alt?: string}|int> $items        Image items or IDs.
+	 * @param array<string, mixed>                                        $attrs        Block attributes.
+	 * @param bool                                                        $is_duplicate Duplicate half for seamless loop.
 	 */
-	function nextora_sis_render_half( array $ids, array $attrs, bool $is_duplicate ): string {
-		$out    = '';
-		$index  = 0;
+	function nextora_sis_render_half( array $items, array $attrs, bool $is_duplicate ): string {
+		$out   = '';
+		$index = 0;
 
-		foreach ( $ids as $attachment_id ) {
-			$out .= nextora_sis_render_item( $attachment_id, $index, $attrs );
+		foreach ( $items as $item ) {
+			$out .= nextora_sis_render_item( $item, $index, $attrs );
 			$index++;
 		}
 
@@ -247,18 +299,44 @@ if ( ! function_exists( 'nextora_sis_render_half' ) ) {
 	}
 }
 
-$raw_ids = isset( $attributes['imageIds'] ) && is_array( $attributes['imageIds'] )
-	? array_values( array_filter( array_map( 'absint', $attributes['imageIds'] ) ) )
-	: array();
+$raw_items = array();
 
-$ids = array();
-foreach ( $raw_ids as $id ) {
-	if ( $id && wp_attachment_is_image( $id ) ) {
-		$ids[] = $id;
+if ( ! empty( $attributes['images'] ) && is_array( $attributes['images'] ) ) {
+	foreach ( $attributes['images'] as $item ) {
+		if ( is_array( $item ) ) {
+			$raw_items[] = array(
+				'id'  => isset( $item['id'] ) ? absint( $item['id'] ) : 0,
+				'url' => isset( $item['url'] ) && is_string( $item['url'] ) ? trim( $item['url'] ) : '',
+				'alt' => isset( $item['alt'] ) && is_string( $item['alt'] ) ? trim( $item['alt'] ) : '',
+			);
+		}
 	}
 }
 
-if ( ! $ids ) {
+// Fallback to imageIds if images attribute is missing or empty
+if ( empty( $raw_items ) && ! empty( $attributes['imageIds'] ) && is_array( $attributes['imageIds'] ) ) {
+	foreach ( $attributes['imageIds'] as $id ) {
+		$clean_id = absint( $id );
+		if ( $clean_id > 0 ) {
+			$raw_items[] = array(
+				'id'  => $clean_id,
+				'url' => '',
+				'alt' => '',
+			);
+		}
+	}
+}
+
+$items = array();
+foreach ( $raw_items as $item ) {
+	$id  = $item['id'];
+	$url = $item['url'];
+	if ( ( $id > 0 && wp_attachment_is_image( $id ) ) || '' !== $url ) {
+		$items[] = $item;
+	}
+}
+
+if ( empty( $items ) ) {
 	return;
 }
 
@@ -411,8 +489,8 @@ nextora_sis_enqueue_view_script();
 	aria-label="<?php echo esc_attr( $aria_label ); ?>">
 	<div class="nextora-sis__track"<?php echo $track_inline_style ? ' style="' . esc_attr( $track_inline_style ) . '"' : ''; ?>>
 		<div class="nextora-sis__inner nextora-sis__inner--<?php echo esc_attr( $direction ); ?>">
-			<?php echo nextora_sis_render_half( $ids, $attributes, false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
-			<?php echo nextora_sis_render_half( $ids, $attributes, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
+			<?php echo nextora_sis_render_half( $items, $attributes, false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
+			<?php echo nextora_sis_render_half( $items, $attributes, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 		</div>
 	</div>
 	<?php if ( $overlay_opacity > 0 ) : ?>

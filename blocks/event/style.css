@@ -42,38 +42,35 @@
 
 .nextora-event__item {
 	display: grid;
-	grid-template-columns: 6rem 16.5rem 1fr auto;
+	grid-template-columns: 6.5rem 16.5rem 1fr auto;
 	gap: 1.5rem;
 	align-items: center;
 	padding: 1.125rem 1.375rem;
 	border-radius: 1.125rem;
-	border: 1px solid
-		var(
-			--nextora-event-card-border-color,
-			rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.12)
-		);
+	border: 1px solid var(--nextora-event-card-border-color,
+			rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.12));
 	background: var(--nextora-event-card-bg, var(--wp--preset--color--base, #fff));
 	transition: border-color 0.2s ease;
 }
 
 .nextora-event__item:hover {
-	border-color: var(
-		--nextora-event-card-border-hover-color,
-		color-mix(in srgb, var(--wp--preset--color--contrast, #2e1a47) 22%, transparent)
-	);
+	border-color: var(--nextora-event-card-border-hover-color,
+			color-mix(in srgb, var(--wp--preset--color--contrast, #2e1a47) 22%, transparent));
 }
 
 /* Date badge — content-driven size with min-width on day/month */
 .nextora-event__date {
 	text-align: center;
-	padding: 0.625rem 0.875rem;
+	min-width: 5rem;
+	min-height: 5.75rem;
+	padding: 0.875rem 0.75rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	place-self: center;
 	box-sizing: border-box;
-	border-radius: 0.875rem;
+	border-radius: 1rem;
 	background: var(--nextora-event-date-bg, var(--wp--preset--color--surface, #fbf7f0));
 	flex-shrink: 0;
 }
@@ -83,7 +80,7 @@
 	min-width: 2ch;
 	text-align: center;
 	font-family: var(--wp--preset--font-family--heading, inherit);
-	font-size: 1.5rem;
+	font-size: 1.875rem;
 	line-height: 1;
 	font-weight: 700;
 	font-variant-numeric: tabular-nums;
@@ -94,15 +91,13 @@
 	display: block;
 	min-width: 3ch;
 	text-align: center;
-	margin-top: 0.25rem;
-	font-size: 0.75rem;
-	font-weight: 600;
+	margin-top: 0.375rem;
+	font-size: 0.8125rem;
+	font-weight: 700;
 	text-transform: uppercase;
-	letter-spacing: 0.06em;
-	color: var(
-		--nextora-event-date-month-color,
-		var(--wp--preset--color--primary, #e85d4c)
-	);
+	letter-spacing: 0.08em;
+	color: var(--nextora-event-date-month-color,
+			var(--wp--preset--color--primary, #e85d4c));
 }
 
 /* Thumbnail */
@@ -169,17 +164,20 @@
 .nextora-event__detail-icon {
 	display: inline-flex;
 	flex-shrink: 0;
-	width: 0.9375rem;
-	height: 0.9375rem;
-	color: var(
-		--nextora-event-meta-icon-color,
-		var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #5a5a5a))
-	);
+	width: 1.25rem;
+	height: 1.25rem;
+	color: var(--nextora-event-meta-icon-color,
+			var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #5a5a5a)));
 }
 
 .nextora-event__detail-icon svg {
 	width: 100%;
 	height: 100%;
+	display: block;
+	flex-shrink: 0;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 /* Register CTA - conforms to gutenberg-block-standard Section 5 */
@@ -254,6 +252,11 @@
 .nextora-event__register-icon svg {
 	width: 100%;
 	height: 100%;
+	display: block;
+	flex-shrink: 0;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 .nextora-event__register--static {
@@ -261,10 +264,7 @@
 }
 
 /* Scroll reveal */
-.nextora-event[data-nextora-scroll-reveal='1'].nextora-event--reveal-pending:not(
-		.nextora-event--reveal-ready
-	)
-	.nextora-event__item {
+.nextora-event[data-nextora-scroll-reveal='1'].nextora-event--reveal-pending:not(.nextora-event--reveal-ready) .nextora-event__item {
 	opacity: 0;
 	transform: translate3d(0, 2.75rem, 0);
 }
@@ -275,64 +275,131 @@
 }
 
 .nextora-event__item:not(:has(.nextora-event__thumb)) {
-	grid-template-columns: 6rem 1fr auto;
+	grid-template-columns: 6.5rem 1fr auto;
 }
 
 .nextora-event__item:not(:has(.nextora-event__register)):not(:has(.nextora-event__register--static)) {
-	grid-template-columns: 6rem 16.5rem 1fr;
+	grid-template-columns: 6.5rem 16.5rem 1fr;
 }
 
 .nextora-event__item:not(:has(.nextora-event__thumb)):not(:has(.nextora-event__register)):not(:has(.nextora-event__register--static)) {
-	grid-template-columns: 6rem 1fr;
+	grid-template-columns: 6.5rem 1fr;
 }
 
 @media (max-width: 55rem) {
 	.nextora-event__item {
-		grid-template-columns: auto 6.5rem 1fr;
-		row-gap: 1rem;
-		column-gap: 1.25rem;
+		display: grid;
+		grid-template-columns: auto 1fr;
+		grid-template-areas:
+			"thumb thumb"
+			"date  info"
+			"btn   btn";
+		row-gap: 1.25rem;
+		column-gap: 1.125rem;
+		padding: 1.25rem;
+		align-items: start;
 	}
 
 	.nextora-event__item:not(:has(.nextora-event__thumb)) {
-		grid-template-columns: auto 1fr;
+		grid-template-areas:
+			"date  info"
+			"btn   btn";
+	}
+
+	.nextora-event__item:not(:has(.nextora-event__register)):not(:has(.nextora-event__register--static)) {
+		grid-template-areas:
+			"thumb thumb"
+			"date  info";
+	}
+
+	.nextora-event__item:not(:has(.nextora-event__thumb)):not(:has(.nextora-event__register)):not(:has(.nextora-event__register--static)) {
+		grid-template-areas:
+			"date  info";
 	}
 
 	.nextora-event__thumb {
-		width: 6.5rem;
-		height: 4.5rem;
-		min-height: 4.5rem;
+		grid-area: thumb;
+		width: 100%;
+		min-width: 0;
+		max-width: 100%;
+		height: auto;
+		min-height: 0;
+		aspect-ratio: 16 / 9;
+		max-height: none;
+		border-radius: 0.875rem;
+		overflow: hidden;
 	}
 
-	.nextora-event__register,
+	.nextora-event__thumb-img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		border-radius: inherit;
+	}
+
+	.nextora-event__date {
+		grid-area: date;
+		align-self: start;
+		place-self: start;
+		min-width: 4.75rem;
+		min-height: auto;
+		padding: 0.875rem 0.625rem;
+		border-radius: 0.875rem;
+	}
+
+	.nextora-event__date-day {
+		font-size: 1.75rem;
+		line-height: 1;
+	}
+
+	.nextora-event__date-month {
+		font-size: 0.75rem;
+		margin-top: 0.25rem;
+	}
+
+	.nextora-event__info {
+		grid-area: info;
+		min-width: 0;
+	}
+
+	.nextora-event .nextora-event__title {
+		margin: 0 0 0.5rem 0;
+	}
+
+	.nextora-event__details {
+		row-gap: 0.375rem;
+		column-gap: 0.875rem;
+		font-size: var(--wp--preset--font-size--small, 0.875rem);
+	}
+
+	.nextora-event .nextora-event__register,
 	.nextora-event__register--static {
-		grid-column: 1 / -1;
+		grid-area: btn;
+		width: 100%;
+		box-sizing: border-box;
+		display: flex;
+		align-items: center;
 		justify-content: center;
 	}
 }
 
-@media (max-width: 36rem) {
+@media (max-width: 30rem) {
 	.nextora-event__item {
-		grid-template-columns: auto 1fr;
-		row-gap: 1rem;
-		column-gap: 1rem;
 		padding: 1rem;
+		column-gap: 0.75rem;
+		row-gap: 1rem;
 	}
 
-	.nextora-event__thumb {
-		grid-column: 1 / -1;
-		order: -1;
-		width: 100%;
-		height: auto;
-		min-height: 0;
-		aspect-ratio: 16 / 9;
-		max-height: 12rem;
+	.nextora-event__date {
+		min-width: 4.25rem;
+		padding: 0.75rem 0.5rem;
 	}
 
-	.nextora-event__register,
-	.nextora-event__register--static {
-		grid-column: 1 / -1;
-		justify-content: center;
+	.nextora-event__date-day {
+		font-size: 1.5rem;
 	}
+
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -344,10 +411,7 @@
 		transform: none;
 	}
 
-	.nextora-event[data-nextora-scroll-reveal='1'].nextora-event--reveal-pending:not(
-			.nextora-event--reveal-ready
-		)
-		.nextora-event__item {
+	.nextora-event[data-nextora-scroll-reveal='1'].nextora-event--reveal-pending:not(.nextora-event--reveal-ready) .nextora-event__item {
 		opacity: 1;
 		transform: none;
 	}
@@ -359,62 +423,61 @@
 	column-gap: var(--wp--preset--spacing--30, 3rem);
 	row-gap: var(--wp--preset--spacing--20, 1.5rem);
 	padding-block: var(--wp--preset--spacing--30, 3rem);
-	border-bottom-color: color-mix(
-		in srgb,
-		var(--nextora-event-card-border-color, var(--wp--preset--color--contrast, #0a0a0a)) 12%,
-		transparent
-	);
+	border-bottom-color: color-mix(in srgb,
+			var(--nextora-event-card-border-color, var(--wp--preset--color--contrast, #0a0a0a)) 12%,
+			transparent);
 }
 
 @media (min-width: 64rem) {
-.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-media,
-.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-media {
-	grid-column: 1;
-	grid-row: 1;
-}
 
-.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(odd),
-.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(odd) {
-	grid-template-columns: minmax(7rem, 13%) minmax(0, 1fr) minmax(15rem, 35%);
-}
+	.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-media,
+	.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-media {
+		grid-column: 1;
+		grid-row: 1;
+	}
 
-.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even),
-.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) {
-	grid-template-columns: minmax(15rem, 35%) minmax(0, 1fr) minmax(7rem, 13%);
-}
+	.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(odd),
+	.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(odd) {
+		grid-template-columns: minmax(7rem, 13%) minmax(0, 1fr) minmax(15rem, 35%);
+	}
 
-.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-content,
-.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-content {
-	grid-column: 2;
-	grid-row: 1;
-}
+	.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even),
+	.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) {
+		grid-template-columns: minmax(15rem, 35%) minmax(0, 1fr) minmax(7rem, 13%);
+	}
 
-.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame,
-.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame {
-	grid-column: 3;
-	grid-row: 1;
-}
+	.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-content,
+	.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-content {
+		grid-column: 2;
+		grid-row: 1;
+	}
 
-.nextora-event--template3 .nextora-event__template3-register {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.35rem;
-	margin-top: var(--wp--preset--spacing--10, 0.75rem);
-	text-decoration: none;
-}
+	.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame,
+	.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame {
+		grid-column: 3;
+		grid-row: 1;
+	}
 
-.nextora-event--template3 .nextora-event__template3-register span {
-	transition: transform 0.35s ease;
-}
+	.nextora-event--template3 .nextora-event__template3-register {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		margin-top: var(--wp--preset--spacing--10, 0.75rem);
+		text-decoration: none;
+	}
 
-.nextora-event--template3 .nextora-event__template3-register:hover span {
-	transform: translateX(0.35rem);
-}
+	.nextora-event--template3 .nextora-event__template3-register span {
+		transition: transform 0.35s ease;
+	}
 
-.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame,
-.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame {
-	justify-content: flex-end;
-}
+	.nextora-event--template3 .nextora-event__template3-register:hover span {
+		transform: translateX(0.35rem);
+	}
+
+	.nextora-event--template3-alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame,
+	.nextora-event--template3-editor .nextora-event__template3-list--alternating .nextora-event__template3-item:nth-child(even) .nextora-event__template3-date-frame {
+		justify-content: flex-end;
+	}
 }
 
 .nextora-event--template3 .nextora-event__template3-date {
@@ -639,6 +702,11 @@
 .nextora-event--template3 .nextora-event__template3-meta .nextora-event__detail-icon svg {
 	width: 100%;
 	height: 100%;
+	display: block;
+	flex-shrink: 0;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 .nextora-event--template3 .nextora-event__template3-register,
@@ -671,7 +739,7 @@
 	display: block;
 }
 
-.nextora-event--template3 .nextora-event__template3-register > span:not(.nextora-event__template3-register-icon),
+.nextora-event--template3 .nextora-event__template3-register>span:not(.nextora-event__template3-register-icon),
 .nextora-event--template3 .nextora-event__template3-learn-more span {
 	display: inline-block;
 	transition: transform 0.35s ease;
@@ -685,10 +753,10 @@
 }
 
 .nextora-event--template3 .nextora-event__template3-register:hover .nextora-event__template3-register-icon,
-.nextora-event--template3 .nextora-event__template3-register:hover > span:not(.nextora-event__template3-register-icon),
+.nextora-event--template3 .nextora-event__template3-register:hover>span:not(.nextora-event__template3-register-icon),
 .nextora-event--template3 .nextora-event__template3-learn-more:hover span,
 .nextora-event--template3 .nextora-event__template3-item:hover .nextora-event__template3-register .nextora-event__template3-register-icon,
-.nextora-event--template3 .nextora-event__template3-item:hover .nextora-event__template3-register > span:not(.nextora-event__template3-register-icon),
+.nextora-event--template3 .nextora-event__template3-item:hover .nextora-event__template3-register>span:not(.nextora-event__template3-register-icon),
 .nextora-event--template3 .nextora-event__template3-item:hover .nextora-event__template3-learn-more span {
 	transform: translateX(0.35rem);
 }
@@ -849,7 +917,7 @@
 	}
 
 	.nextora-event--template3 .nextora-event__template3-register .nextora-event__template3-register-icon,
-	.nextora-event--template3 .nextora-event__template3-register > span:not(.nextora-event__template3-register-icon),
+	.nextora-event--template3 .nextora-event__template3-register>span:not(.nextora-event__template3-register-icon),
 	.nextora-event--template3 .nextora-event__template3-learn-more span {
 		display: inline-flex;
 		align-items: center;
@@ -863,13 +931,14 @@
 	}
 
 	.nextora-event--template3 .nextora-event__template3-register:hover .nextora-event__template3-register-icon,
-	.nextora-event--template3 .nextora-event__template3-register:hover > span:not(.nextora-event__template3-register-icon),
+	.nextora-event--template3 .nextora-event__template3-register:hover>span:not(.nextora-event__template3-register-icon),
 	.nextora-event--template3 .nextora-event__template3-learn-more:hover span {
 		transform: translateX(0.35rem);
 	}
 }
 
 @media (prefers-reduced-motion: reduce) {
+
 	.nextora-event--template3 .nextora-event__template3-title a,
 	.nextora-event--template3 .nextora-event__template3-register .nextora-event__template3-register-icon,
 	.nextora-event--template3 .nextora-event__template3-register span,
@@ -900,8 +969,8 @@
 /* === Swiper overrides === */
 .nextora-event__swiper {
 	overflow: hidden;
-    padding: 0.5rem 0 !important;
-    margin: -0.5rem 0;
+	padding: 0.5rem 0 !important;
+	margin: -0.5rem 0;
 }
 
 .nextora-event__swiper .swiper-wrapper {
@@ -920,15 +989,10 @@
 	height: 100%;
 	border-radius: 1.625rem;
 	overflow: hidden;
-	background: var(
-		--nextora-event-card-bg,
-		var(--wp--preset--color--base, #fff)
-	);
-	border: 1px solid
-		var(
-			--nextora-event-card-border-color,
-			rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.12)
-		);
+	background: var(--nextora-event-card-bg,
+			var(--wp--preset--color--base, #fff));
+	border: 1px solid var(--nextora-event-card-border-color,
+			rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.12));
 }
 
 /* Card thumbnail */
@@ -965,13 +1029,10 @@
 	box-sizing: border-box;
 	border-radius: 0.875rem;
 	place-self: unset;
-	background: var(
-		--nextora-event-date-bg,
-		var(--wp--preset--color--base, #fff)
-	);
+	background: var(--nextora-event-date-bg,
+			var(--wp--preset--color--base, #fff));
 	box-shadow:
-		0 0.625rem 1.25rem -0.75rem
-			rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.5);
+		0 0.625rem 1.25rem -0.75rem rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.5);
 }
 
 .nextora-event--template1 .nextora-event__card-thumb .nextora-event__date-day {
@@ -981,10 +1042,8 @@
 	font-size: 1.25rem;
 	line-height: 1;
 	font-variant-numeric: tabular-nums;
-	color: var(
-		--nextora-event-date-day-color,
-		var(--wp--preset--color--primary, #7C4DEF)
-	);
+	color: var(--nextora-event-date-day-color,
+			var(--wp--preset--color--primary, #7C4DEF));
 }
 
 .nextora-event--template1 .nextora-event__card-thumb .nextora-event__date-month {
@@ -995,10 +1054,8 @@
 	font-size: 0.6875rem;
 	font-weight: 800;
 	text-transform: uppercase;
-	color: var(
-		--nextora-event-date-month-color,
-		var(--wp--preset--color--secondary, #FF5DA2)
-	);
+	color: var(--nextora-event-date-month-color,
+			var(--wp--preset--color--secondary, #FF5DA2));
 }
 
 /* Card info */
@@ -1033,18 +1090,19 @@
 	flex-shrink: 0;
 	width: 0.9375rem;
 	height: 0.9375rem;
-	color: var(
-		--nextora-event-meta-icon-color,
-		var(
-			--nextora-event-date-month-color,
-			var(--wp--preset--color--primary, #e85d4c)
-		)
-	);
+	color: var(--nextora-event-meta-icon-color,
+			var(--nextora-event-date-month-color,
+				var(--wp--preset--color--primary, #e85d4c)));
 }
 
 .nextora-event__card .nextora-event__detail-icon svg {
 	width: 100%;
 	height: 100%;
+	display: block;
+	flex-shrink: 0;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 /* Register button in card (template1) - conforms to gutenberg-block-standard Section 5 */
@@ -1095,13 +1153,10 @@
 	width: 2.5rem;
 	height: 2.5rem;
 	border-radius: 50%;
-	border: 1px solid
-		rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.15);
-	background: color-mix(
-		in srgb,
-		var(--wp--preset--color--base, #fff) 95%,
-		transparent
-	);
+	border: 1px solid rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.15);
+	background: color-mix(in srgb,
+			var(--wp--preset--color--base, #fff) 95%,
+			transparent);
 	display: flex !important;
 	align-items: center !important;
 	justify-content: center !important;
@@ -1116,8 +1171,7 @@
 
 .nextora-event__arrow:hover,
 .nextora-event__arrow:focus-visible {
-	box-shadow: 0 0.25rem 0.75rem
-		rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.1);
+	box-shadow: 0 0.25rem 0.75rem rgb(from var(--wp--preset--color--contrast, #2e1a47) r g b / 0.1);
 }
 
 .nextora-event__arrow:focus-visible {
@@ -1176,14 +1230,10 @@
 	padding: 0 !important;
 	border: none !important;
 	border-radius: 999px !important;
-	background: var(
-		--nextora-event-dot-color,
-		color-mix(
-			in srgb,
-			currentColor 35%,
-			transparent
-		)
-	) !important;
+	background: var(--nextora-event-dot-color,
+			color-mix(in srgb,
+				currentColor 35%,
+				transparent)) !important;
 	opacity: 1 !important;
 	box-sizing: border-box !important;
 	cursor: pointer !important;
@@ -1199,10 +1249,8 @@
 	width: 20px !important;
 	height: 7px !important;
 	border-radius: 999px !important;
-	background: var(
-		--nextora-event-dot-active,
-		var(--wp--preset--color--primary, currentColor)
-	) !important;
+	background: var(--nextora-event-dot-active,
+			var(--wp--preset--color--primary, currentColor)) !important;
 	opacity: 1 !important;
 	transform: none !important;
 }
@@ -1250,16 +1298,12 @@
 	height: auto;
 }
 
-.nextora-event--template2[data-nextora-scroll-reveal='1'].nextora-event--reveal-pending:not(
-		.nextora-event--reveal-ready
-	)
-	.nextora-event__template2-card {
+.nextora-event--template2[data-nextora-scroll-reveal='1'].nextora-event--reveal-pending:not(.nextora-event--reveal-ready) .nextora-event__template2-card {
 	opacity: 0;
 	transform: translate3d(0, 2.75rem, 0);
 }
 
-.nextora-event--template2[data-nextora-scroll-reveal='1'].nextora-event--reveal-ready
-	.nextora-event__template2-card {
+.nextora-event--template2[data-nextora-scroll-reveal='1'].nextora-event--reveal-ready .nextora-event__template2-card {
 	opacity: 1;
 	transform: none;
 }
@@ -1426,6 +1470,11 @@
 .nextora-event--template2 .nextora-event__detail .nextora-event__detail-icon svg {
 	width: 100%;
 	height: 100%;
+	display: block;
+	flex-shrink: 0;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
 }
 
 .nextora-event--template2 .nextora-event__template2-action {
@@ -1469,6 +1518,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
 	.nextora-event--template2 .nextora-event__template2-card,
 	.nextora-event--template2 .nextora-event__template2-media .nextora-event__thumb-img,
 	.nextora-event--template2 .nextora-event__template2-action {
@@ -1479,11 +1529,49 @@
 		transform: none;
 	}
 
-	.nextora-event--template2[data-nextora-scroll-reveal='1'].nextora-event--reveal-pending:not(
-			.nextora-event--reveal-ready
-		)
-		.nextora-event__template2-card {
+	.nextora-event--template2[data-nextora-scroll-reveal='1'].nextora-event--reveal-pending:not(.nextora-event--reveal-ready) .nextora-event__template2-card {
 		opacity: 1;
 		transform: none;
+	}
+}
+
+/* Edge Fade Overlay for fractional slidesPerView */
+.nextora-event__edge-overlay {
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	width: clamp(70px, 12vw, 140px);
+	background: linear-gradient(to right, transparent, var(--nextora-event-edge-fade-color, var(--wp--preset--color--base, #ffffff)));
+	pointer-events: none;
+	z-index: 5;
+}
+
+:where([dir="rtl"]) .nextora-event__edge-overlay {
+	right: auto;
+	left: 0;
+	background: linear-gradient(to left, transparent, var(--nextora-event-edge-fade-color, var(--wp--preset--color--base, #ffffff)));
+}
+
+.nextora-event.has-edge-fade-desktop .nextora-event__edge-overlay {
+	display: block;
+}
+
+@media (max-width: 1023px) {
+	.nextora-event .nextora-event__edge-overlay {
+		display: none;
+	}
+	.nextora-event.has-edge-fade-tablet .nextora-event__edge-overlay {
+		display: block;
+	}
+}
+
+@media (max-width: 639px) {
+	.nextora-event .nextora-event__edge-overlay {
+		display: none;
+	}
+	.nextora-event.has-edge-fade-mobile .nextora-event__edge-overlay {
+		display: block;
 	}
 }

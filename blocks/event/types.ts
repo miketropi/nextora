@@ -49,6 +49,7 @@ export interface EventAttributes {
 	spaceBetween: number;
 	tabletSlides: number;
 	mobileSlides: number;
+	edgeFadeColor?: string;
 }
 
 export type EventColorAttribute = keyof Pick<
@@ -69,4 +70,5 @@ export type EventColorAttribute = keyof Pick<
 	| 'registerHoverBorderColor'
 	| 'paginationColor'
 	| 'paginationActiveColor'
+	| 'edgeFadeColor'
 >;

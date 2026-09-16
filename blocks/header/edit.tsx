@@ -82,7 +82,10 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     followUsLabel,
     followUsSupportText,
     followUsEmail,
+    followUsEmailLink,
     followUsPhone,
+    followUsPhoneUrl,
+    followUsTrigger,
     followUsContactButtonText,
     followUsContactButtonUrl,
     followUsContactButtonTarget,
@@ -95,6 +98,8 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     showSearchMobile,
     showCartMobile,
     showCtaButton,
+    enableDonationPopup = false,
+    donationCampaignId = 0,
     ctaButtonText,
     ctaButtonUrl,
     ctaButtonTarget,
@@ -135,6 +140,47 @@ export default function HeaderEdit({ attributes, setAttributes }) {
       ? menus.map((m) => ({ label: m.name || `#${m.id}`, value: m.id }))
       : []),
   ];
+
+  const isGiftFlowActive = useSelect((select) => {
+    if (typeof window !== 'undefined' && window.nextoraIconBlock?.isGiftFlowActive !== undefined) {
+      return !!window.nextoraIconBlock.isGiftFlowActive;
+    }
+    const pt = select(coreStore).getPostType('campaign');
+    return !!pt;
+  }, []);
+
+  const campaigns = useSelect(
+    (select) => {
+      if (!isGiftFlowActive) return [];
+      return (
+        select(coreStore).getEntityRecords('postType', 'campaign', {
+          per_page: 100,
+          status: 'publish',
+        }) ?? []
+      );
+    },
+    [isGiftFlowActive]
+  );
+
+  const campaignOptions = useMemo(() => {
+    const list = Array.isArray(campaigns) ? campaigns : [];
+    return [
+      { label: __('— Select donation campaign —', 'nextora'), value: 0 },
+      ...list.map((c) => {
+        const rawTitle =
+          typeof c?.title === 'object' ? c.title?.rendered || c.title?.raw : c?.title;
+        const cleanTitle = (rawTitle || `#${c.id}`)
+          .replace(/&amp;/g, '&')
+          .replace(/&#8211;/g, '–')
+          .replace(/&#8217;/g, "'")
+          .replace(/&#038;/g, '&');
+        return {
+          label: cleanTitle,
+          value: Number(c.id),
+        };
+      }),
+    ];
+  }, [campaigns]);
 
   const themeColorPaletteRaw = useSelect((select) => {
     try {
@@ -481,6 +527,17 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                   'nextora'
                 )}
               />
+              <SelectControl
+                label={__('Dropdown trigger', 'nextora')}
+                value={followUsTrigger || 'both'}
+                options={[
+                  { label: __('Hover & Click', 'nextora'), value: 'both' },
+                  { label: __('Hover only', 'nextora'), value: 'hover' },
+                  { label: __('Click only', 'nextora'), value: 'click' },
+                ]}
+                onChange={(v) => setAttributes({ followUsTrigger: v })}
+                help={__('Choose whether the dropdown opens on hover, click, or both.', 'nextora')}
+              />
               <TextControl
                 label={__('Trigger label', 'nextora')}
                 value={followUsLabel}
@@ -512,17 +569,30 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                 </div>
               ))}
               <TextControl
-                label={__('Email', 'nextora')}
+                label={__('Email display text', 'nextora')}
                 value={followUsEmail}
                 onChange={(v) => setAttributes({ followUsEmail: v ?? '' })}
-                placeholder="hello@example.com"
-                type="email"
+                placeholder="support@gmail.com"
               />
               <TextControl
-                label={__('Phone', 'nextora')}
+                label={__('Email link target (optional)', 'nextora')}
+                value={followUsEmailLink}
+                onChange={(v) => setAttributes({ followUsEmailLink: v ?? '' })}
+                placeholder="mailto:bearsthemes@gmail.com"
+                help={__('Leave empty to use mailto: with the display email above.', 'nextora')}
+              />
+              <TextControl
+                label={__('Phone display text', 'nextora')}
                 value={followUsPhone}
                 onChange={(v) => setAttributes({ followUsPhone: v ?? '' })}
-                placeholder="+1 (555) 000-0000"
+                placeholder="+1 (234) 567 890"
+              />
+              <TextControl
+                label={__('Phone link target (optional)', 'nextora')}
+                value={followUsPhoneUrl}
+                onChange={(v) => setAttributes({ followUsPhoneUrl: v ?? '' })}
+                placeholder="tel:1234567890"
+                help={__('Leave empty to automatically use tel: with the phone digits.', 'nextora')}
               />
               <TextControl
                 label={__('Contact Us button text', 'nextora')}
@@ -618,22 +688,57 @@ export default function HeaderEdit({ attributes, setAttributes }) {
           />
           {showCtaButton && (
             <>
+              {isGiftFlowActive && (
+                <>
+                  <ToggleControl
+                    label={__('Enable donation popup', 'nextora')}
+                    checked={enableDonationPopup}
+                    onChange={(v) => {
+                      const updates: Record<string, unknown> = { enableDonationPopup: v };
+                      if (v && (!ctaButtonText || ctaButtonText === 'Get started' || ctaButtonText === 'Get Started')) {
+                        updates.ctaButtonText = __('Donation Now', 'nextora');
+                      }
+                      setAttributes(updates);
+                    }}
+                    help={__(
+                      'When enabled, clicking this button triggers the GiftFlow donation popup.',
+                      'nextora',
+                    )}
+                  />
+                  {enableDonationPopup && (
+                    <SelectControl
+                      label={__('Select donation campaign', 'nextora')}
+                      value={donationCampaignId}
+                      options={campaignOptions}
+                      onChange={(v) => setAttributes({ donationCampaignId: Number(v) || 0 })}
+                      help={__(
+                        'Choose which campaign will be loaded in the donation modal.',
+                        'nextora',
+                      )}
+                    />
+                  )}
+                </>
+              )}
               <TextControl
                 label={__('Button text', 'nextora')}
                 value={ctaButtonText}
                 onChange={(v) => setAttributes({ ctaButtonText: v ?? '' })}
-                placeholder={__('Get started', 'nextora')}
+                placeholder={enableDonationPopup ? __('Donation Now', 'nextora') : __('Get started', 'nextora')}
               />
-              <p className="components-base-control__label">{__('Button URL', 'nextora')}</p>
-              <URLInput
-                value={ctaButtonUrl}
-                onChange={(url) => setAttributes({ ctaButtonUrl: url ?? '' })}
-              />
-              <ToggleControl
-                label={__('Open in new tab', 'nextora')}
-                checked={ctaButtonTarget}
-                onChange={(v) => setAttributes({ ctaButtonTarget: v })}
-              />
+              {!enableDonationPopup && (
+                <>
+                  <p className="components-base-control__label">{__('Button URL', 'nextora')}</p>
+                  <URLInput
+                    value={ctaButtonUrl}
+                    onChange={(url) => setAttributes({ ctaButtonUrl: url ?? '' })}
+                  />
+                  <ToggleControl
+                    label={__('Open in new tab', 'nextora')}
+                    checked={ctaButtonTarget}
+                    onChange={(v) => setAttributes({ ctaButtonTarget: v })}
+                  />
+                </>
+              )}
               <SelectControl
                 label={__('Button style', 'nextora')}
                 value={ctaButtonStyle}
@@ -848,11 +953,16 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               followUsLabel,
               followUsSupportText,
               followUsEmail,
+              followUsEmailLink,
               followUsPhone,
+              followUsPhoneUrl,
+              followUsTrigger,
               followUsContactButtonText,
               followUsContactButtonUrl,
               JSON.stringify(followUsSocialRows),
               showCtaButton,
+              enableDonationPopup,
+              donationCampaignId,
               ctaButtonText,
               ctaButtonStyle,
               JSON.stringify(ctaPaddingValues),

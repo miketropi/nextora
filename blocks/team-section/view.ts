@@ -327,7 +327,7 @@ function mountSwiper(root: HTMLElement): void {
 
 	const gridMin = getGridMinWidth(root);
 	const defaultBreakpoints: Record<number, { slidesPerView: number; spaceBetween: number }> = {
-		768: { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) },
+		640: { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) },
 		[gridMin]: { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) },
 	};
 
@@ -371,7 +371,7 @@ function mountSwiper(root: HTMLElement): void {
 			observeParents: true,
 			resizeObserver: true,
 			updateOnWindowResize: true,
-			breakpointsBase: 'container',
+			breakpointsBase: 'window',
 			freeMode: opts.freeMode === true,
 			grabCursor: opts.grabCursor !== false && !reduced,
 			autoplay:

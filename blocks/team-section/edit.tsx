@@ -8,6 +8,7 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
+	ColorPalette,
 	Modal,
 	PanelBody,
 	RadioControl,
@@ -225,7 +226,13 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		socialColor = '',
 		enableScrollAnimation = true,
 		enablePopup = false,
+		edgeFadeColor = '',
 	} = attributes;
+
+	const isDesktopFractional = (slidesPerView % 1) !== 0;
+	const isTabletFractional = (slidesPerViewTablet % 1) !== 0;
+	const isMobileFractional = (slidesPerViewMobile % 1) !== 0;
+	const hasAnyFractional = isDesktopFractional || isTabletFractional || isMobileFractional;
 
 	const templateDefaults = getTemplateDefaultAttributes(cardTemplate);
 	const effectiveCardBorderRadius = cardBorderRadius ?? templateDefaults.cardBorderRadius ?? 16;
@@ -247,6 +254,9 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 			`nextora-team-section--layout-${layoutMode}`,
 			`nextora-team-section--template-${cardTemplate}`,
 			sectionBgProps.className,
+			isDesktopFractional ? 'has-edge-fade-desktop' : '',
+			isTabletFractional ? 'has-edge-fade-tablet' : '',
+			isMobileFractional ? 'has-edge-fade-mobile' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
@@ -269,6 +279,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 				bioColor,
 				socialColor,
 				cardBorderRadius: effectiveCardBorderRadius,
+				edgeFadeColor,
 			}),
 			...sectionBgProps.style,
 		} as CSSProperties,
@@ -516,19 +527,27 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 								<RangeControl
 									label={__('Slides per view (desktop)', 'nextora')}
 									value={slidesPerView}
-									onChange={(v) => setAttributes({ slidesPerView: v ?? 4 })}
+									onChange={(v) =>
+										setAttributes({
+											slidesPerView: v !== undefined ? Math.round(v * 100) / 100 : 4,
+										})
+									}
 									min={1}
 									max={6}
-									step={0.5}
+									step={0.1}
 								/>
 							)}
 							<RangeControl
 								label={__('Slides per view (tablet)', 'nextora')}
 								value={slidesPerViewTablet}
-								onChange={(v) => setAttributes({ slidesPerViewTablet: v ?? 2.5 })}
+								onChange={(v) =>
+									setAttributes({
+										slidesPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 2.5,
+									})
+								}
 								min={1}
 								max={4}
-								step={0.5}
+								step={0.1}
 							/>
 							<RangeControl
 								label={__('Slides per view (mobile)', 'nextora')}
@@ -537,9 +556,13 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 									'nextora',
 								)}
 								value={slidesPerViewMobile}
-								onChange={(v) => setAttributes({ slidesPerViewMobile: v ?? 1.2 })}
+								onChange={(v) =>
+									setAttributes({
+										slidesPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 1.2,
+									})
+								}
 								min={1}
-								max={2}
+								max={3}
 								step={0.1}
 							/>
 							<RangeControl
@@ -554,6 +577,20 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 								min={0}
 								max={60}
 							/>
+							<div style={{ marginTop: '0.85rem', marginBottom: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(0, 0, 0, 0.08)' }}>
+								<p className="components-base-control__label" style={{ marginBottom: '0.35rem', fontWeight: 600 }}>
+									{__('Edge fade overlay color', 'nextora')}
+								</p>
+								<p className="components-help-text" style={{ marginTop: 0, marginBottom: '0.5rem' }}>
+									{__('Color for the trailing slide fade gradient. Match with your section background color.', 'nextora')}
+								</p>
+								<ColorPalette
+									value={colorValueForPicker(edgeFadeColor, palette)}
+									onChange={(v: string | undefined) =>
+										setAttributes({ edgeFadeColor: normalizeColorForStorage(v, palette) })
+									}
+								/>
+							</div>
 						</>
 					)}
 
@@ -650,6 +687,12 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 							value: colorValueForPicker(sectionBackgroundColor, palette),
 							onChange: (v) => setAttributes({ sectionBackgroundColor: normalizeColorForStorage(v, palette) }),
 							label: __('Background', 'nextora'),
+						},
+						{
+							value: colorValueForPicker(edgeFadeColor, palette),
+							onChange: (v: string | undefined) =>
+								setAttributes({ edgeFadeColor: normalizeColorForStorage(v, palette) }),
+							label: __('Edge fade overlay', 'nextora'),
 						},
 						{
 							value: colorValueForPicker(nameColor, palette),
@@ -1002,6 +1045,10 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 									);
 								})}
 							</div>
+
+							{layoutMode === 'carousel' && hasAnyFractional && (
+								<div className="nextora-team-section__edge-overlay" aria-hidden="true" />
+							)}
 
 							{layoutMode === 'carousel' && showArrows && members.length > 1 && (
 								<>

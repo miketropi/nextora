@@ -22,17 +22,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 function nextora_header_search_modal_kses_svg(): array {
 	return array(
 		'svg'    => array(
-			'color'       => true,
-			'style'       => true,
-			'class'       => true,
-			'width'       => true,
-			'height'      => true,
-			'viewbox'     => true,
-			'viewBox'     => true,
-			'fill'        => true,
-			'xmlns'       => true,
-			'aria-hidden' => true,
-			'focusable'   => true,
+			'color'           => true,
+			'style'           => true,
+			'class'           => true,
+			'width'           => true,
+			'height'          => true,
+			'viewbox'         => true,
+			'viewBox'         => true,
+			'fill'            => true,
+			'xmlns'           => true,
+			'aria-hidden'     => true,
+			'focusable'       => true,
+			'stroke'          => true,
+			'stroke-width'    => true,
+			'stroke-linecap'  => true,
+			'stroke-linejoin' => true,
 		),
 		'circle' => array(
 			'cx'            => true,
@@ -84,16 +88,16 @@ function nextora_get_header_search_modal_markup_args(): array {
 		'close_label'             => __( 'Close dialog', 'nextora' ),
 		'form_aria_label'         => __( 'Search this site', 'nextora' ),
 		'wrap_class'              => 'flex shrink-0 items-center',
-		'trigger_class'           => 'inline-flex size-10 items-center justify-center rounded-lg border-0 bg-transparent p-0 text-base text-contrast/85 transition-colors',
+		'trigger_class'           => 'inline-flex size-10 items-center justify-center rounded-lg border-0 bg-transparent p-0 text-base text-contrast/85 transition-colors cursor-pointer',
 		'trigger_icon_wrap_class' => 'flex leading-none',
 		'trigger_icon_color'      => '',
 		'modal_root_class'        => 'nextora-modal',
 		'scrim_class'             => 'nextora-modal__scrim',
 		'surface_class'           => 'nextora-modal__surface nextora-modal__surface--spotlight relative flex flex-col overflow-hidden',
-		'spotlight_body_class'    => 'nextora-modal__body nextora-modal__body--spotlight flex min-h-0 min-w-0 flex-1 flex-col !border-t-0 !px-0 !pb-0 !pt-0 relative',
-		'spotlight_close_wrap_class' => 'nextora-spotlight__close-wrap pointer-events-none absolute end-2 top-2 z-10 sm:end-3 sm:top-3',
-		'spotlight_close_class'   => 'nextora-modal__close nextora-spotlight__close pointer-events-auto inline-flex size-8 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-paragraph/80 transition-colors hover:bg-contrast/[0.055] hover:text-contrast/90 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-primary/35',
-		'close_icon_wrap_class'   => 'nextora-modal__close-icon flex leading-none text-lg',
+		'spotlight_body_class'    => 'nextora-modal__body nextora-modal__body--spotlight flex min-h-0 min-w-0 flex-1 flex-col !border-t-0 !px-0 !pb-0 !pt-0 relative overflow-hidden',
+		'spotlight_close_wrap_class' => 'nextora-spotlight__close-wrap absolute end-4 top-4 z-20',
+		'spotlight_close_class'   => 'nextora-modal__close nextora-spotlight__close inline-flex size-8 shrink-0 items-center justify-center rounded-full border-0 bg-black text-white transition-all hover:opacity-85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary cursor-pointer shadow-sm',
+		'close_icon_wrap_class'   => 'nextora-modal__close-icon flex items-center justify-center leading-none',
 		/* Legacy keys kept for filters that still merge them; spotlight layout uses spotlight_* instead of header. */
 		'header_class'            => 'nextora-modal__header',
 		'title_class'             => 'nextora-modal__title',
@@ -139,7 +143,7 @@ function nextora_header_search_modal_default_icon_svg(): string {
  * Default close icon SVG.
  */
 function nextora_header_search_modal_default_close_icon_svg(): string {
-	return '<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12" /></svg>';
+	return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" /></svg>';
 }
 
 /**
@@ -220,14 +224,14 @@ function nextora_get_header_search_modal_markup( array $args ): string {
 			tabindex="-1"
 		>
 			<div class="<?php echo esc_attr( $args['spotlight_body_class'] ); ?>">
-				<div class="px-2 pb-3 pt-3 sm:px-5 sm:pb-4 sm:pt-5">
+				<div class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-2 pt-3 sm:px-5 sm:pt-5">
 					<?php echo $form_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Theme spotlight / filtered markup.?>
 				</div>
 			</div>
 			<div class="<?php echo esc_attr( $args['spotlight_close_wrap_class'] ); ?>">
 				<button type="button" class="<?php echo esc_attr( $args['spotlight_close_class'] ); ?>" data-nextora-modal-dismiss aria-label="<?php echo esc_attr( $args['close_label'] ); ?>">
 					<span class="<?php echo esc_attr( $args['close_icon_wrap_class'] ); ?>" aria-hidden="true">
-						<?php echo esc_html( '×' ); ?>
+						<?php echo $close_icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_kses() above.?>
 					</span>
 				</button>
 			</div>

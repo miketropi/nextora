@@ -5,8 +5,15 @@
  */
 
 /* ==========================================================================
-   Block wrapper
+   Block wrapper & Box-Sizing
    ========================================================================== */
+
+.wp-block-nextora-expanding-cards,
+.wp-block-nextora-expanding-cards *,
+.wp-block-nextora-expanding-cards *::before,
+.wp-block-nextora-expanding-cards *::after {
+  box-sizing: border-box;
+}
 
 .wp-block-nextora-expanding-cards {
   width: 100%;
@@ -46,6 +53,7 @@
    ========================================================================== */
 
 .nextora-expanding-cards__card {
+  box-sizing: border-box;
   position: relative;
   flex: 1;
   overflow: hidden;
@@ -191,33 +199,43 @@
 }
 
 /* ==========================================================================
-   Heading
+   Heading (Scoped (0, 2, 0) specificity)
+   Inherits font-size, font-weight, line-height from Global Styles h4.
    ========================================================================== */
 
-.nextora-expanding-cards__card-heading {
+.wp-block-nextora-expanding-cards .nextora-expanding-cards__card-heading,
+.nextora-expanding-cards__card .nextora-expanding-cards__card-heading {
   margin: 0;
-  font-size: var(--nextora-ec-heading-size, inherit);
-  font-weight: 700;
-  color: var(--nextora-ec-heading-color, #ffffff);
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* ==========================================================================
-   Description
-   ========================================================================== */
-
-.nextora-expanding-cards__card-description {
-  font-size: var(--nextora-ec-description-size, inherit);
-  color: var(--nextora-ec-description-color, rgba(255, 255, 255, 0.85));
-  line-height: 1.5;
-  text-align: left;
+.wp-block-nextora-expanding-cards .nextora-expanding-cards__card-heading:not(.has-text-color),
+.nextora-expanding-cards__card .nextora-expanding-cards__card-heading:not(.has-text-color) {
+  color: var(--nextora-ec-heading-color, #ffffff);
 }
 
 /* ==========================================================================
-   Card button (outline pill)
+   Description
+   Inherits font-size, line-height, font-family from Global Styles paragraph.
+   ========================================================================== */
+
+.wp-block-nextora-expanding-cards .nextora-expanding-cards__card-description,
+.nextora-expanding-cards__card .nextora-expanding-cards__card-description {
+  margin: 0;
+  text-align: left;
+}
+
+.wp-block-nextora-expanding-cards .nextora-expanding-cards__card-description:not(.has-text-color),
+.nextora-expanding-cards__card .nextora-expanding-cards__card-description:not(.has-text-color) {
+  color: var(--nextora-ec-description-color, rgba(255, 255, 255, 0.85));
+}
+
+/* ==========================================================================
+   Card button (conforms to gutenberg-block-standard Section 5)
+   Padding, font-size, line-height, border-radius inherit from .wp-element-button.
    ========================================================================== */
 
 .nextora-expanding-cards__card-content .nextora-expanding-cards__card-button {
@@ -225,16 +243,24 @@
   align-items: center;
   gap: 0.5rem;
   align-self: flex-start;
-  padding: 0.6rem 1.25rem;
-  border: 1.5px solid var(--nextora-ec-button-border-color, #ffffff);
-  border-radius: 999px;
-  color: var(--nextora-ec-button-text-color, #ffffff);
-  background: var(--nextora-ec-button-bg-color, transparent);
-  font-size: var(--nextora-ec-button-size, inherit);
-  font-weight: 600;
   white-space: nowrap;
-  line-height: 1.4;
-  transition: background 0.3s ease, border-color 0.3s ease;
+  text-decoration: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nextora-expanding-cards__card-content .nextora-expanding-cards__card-button:hover,
+.nextora-expanding-cards__card-content .nextora-expanding-cards__card-button:focus-visible {
+  opacity: 0.95;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   text-decoration: none;
 }
 
@@ -341,15 +367,5 @@
     left: calc(var(--nextora-ec-content-padding-x, 24px) * 0.75);
     right: calc(var(--nextora-ec-content-padding-x, 24px) * 0.75);
     gap: 0.375rem;
-  }
-
-
-  .nextora-expanding-cards__card-description {
-    font-size: var(--nextora-ec-description-size, inherit);
-  }
-
-  .nextora-expanding-cards__card-button {
-    padding: 0.375rem 1rem;
-    font-size: var(--nextora-ec-button-size, inherit);
   }
 }

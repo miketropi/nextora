@@ -6,14 +6,14 @@
 @layer components {
 	.nextora-modal {
 		--nextora-modal-z: 1050;
-		--nextora-modal-scrim: rgb(15 23 42 / 0.55);
+		--nextora-modal-scrim: rgba(0, 0, 0, 0.5);
 		--nextora-modal-surface-bg: var(--wp--preset--color--base, #fafafa);
 		--nextora-modal-surface-fg: var(--wp--preset--color--contrast, #0f172a);
 		--nextora-modal-radius: 0.75rem;
-		--nextora-modal-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.28);
+		--nextora-modal-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 		--nextora-modal-pad: clamp(1rem, 3vw, 1.35rem);
-		--nextora-modal-ease: cubic-bezier(0.22, 1, 0.36, 1);
-		--nextora-modal-dur: 0.28s;
+		--nextora-modal-ease: ease-in-out;
+		--nextora-modal-dur: 0.3s;
 
 		position: fixed;
 		inset: 0;
@@ -44,8 +44,6 @@
 		position: absolute;
 		inset: 0;
 		background: var(--nextora-modal-scrim);
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
 		cursor: pointer;
 	}
 
@@ -230,6 +228,16 @@
 	html.nextora-modal-scroll-lock .nextora-header-block--is-pinned {
 		padding-right: var(--nextora-modal-scrollbar-width, 0px);
 		box-sizing: border-box;
+	}
+
+	@supports (scrollbar-gutter: stable) {
+		html.nextora-modal-scroll-lock {
+			padding-right: 0;
+		}
+
+		html.nextora-modal-scroll-lock .nextora-header-block--is-pinned {
+			padding-right: 0;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {

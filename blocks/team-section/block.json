@@ -241,6 +241,10 @@
     "enablePopup": {
       "type": "boolean",
       "default": false
+    },
+    "edgeFadeColor": {
+      "type": "string",
+      "default": ""
     }
   },
   "editorScript": "file:./index.js",

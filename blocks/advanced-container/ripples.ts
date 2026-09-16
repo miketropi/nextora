@@ -58,6 +58,29 @@ function isDataUri(url: string): boolean {
   return /^data:/.test(url);
 }
 
+function isSameOrigin(url: string): boolean {
+  if (isDataUri(url) || url.startsWith('/') || url.startsWith('./') || url.startsWith('../')) {
+    return true;
+  }
+  try {
+    const parsed = new URL(url, window.location.href);
+    return parsed.origin === window.location.origin;
+  } catch {
+    return false;
+  }
+}
+
+function resolveCandidateUrl(url: string): string {
+  if (typeof window === 'undefined') return url;
+  // If the image points to an uploads directory on a different origin (e.g. demo site or another domain),
+  // try the same-origin uploads path first to avoid cross-origin restrictions.
+  if (url.includes('/wp-content/uploads/') && !isSameOrigin(url)) {
+    const uploadPath = url.substring(url.indexOf('/wp-content/uploads/'));
+    return window.location.origin + uploadPath;
+  }
+  return url;
+}
+
 function createImageData(width: number, height: number): ImageData {
   try {
     return new ImageData(width, height);
@@ -467,25 +490,46 @@ export class Ripples {
       return;
     }
 
-    const img = new Image();
-    img.onload = () => {
-      if (this.destroyed) return;
-      const g = this.gl;
-      function isPow2(x: number): boolean { return (x & (x - 1)) === 0; }
-      const wrap = isPow2(img.width) && isPow2(img.height) ? g.REPEAT : g.CLAMP_TO_EDGE;
-      g.bindTexture(g.TEXTURE_2D, this.backgroundTexture);
-      g.texParameteri(g.TEXTURE_2D, g.TEXTURE_WRAP_S, wrap);
-      g.texParameteri(g.TEXTURE_2D, g.TEXTURE_WRAP_T, wrap);
-      g.texImage2D(g.TEXTURE_2D, 0, g.RGBA, g.RGBA, g.UNSIGNED_BYTE, img);
-      this.backgroundWidth = img.width;
-      this.backgroundHeight = img.height;
-      this.hideCssBackground();
+    const loadImg = (src: string, isFallback = false) => {
+      const img = new Image();
+      img.onload = () => {
+        if (this.destroyed) return;
+        const g = this.gl;
+        function isPow2(x: number): boolean { return (x & (x - 1)) === 0; }
+        const wrap = isPow2(img.width) && isPow2(img.height) ? g.REPEAT : g.CLAMP_TO_EDGE;
+        g.bindTexture(g.TEXTURE_2D, this.backgroundTexture);
+        g.texParameteri(g.TEXTURE_2D, g.TEXTURE_WRAP_S, wrap);
+        g.texParameteri(g.TEXTURE_2D, g.TEXTURE_WRAP_T, wrap);
+        g.texImage2D(g.TEXTURE_2D, 0, g.RGBA, g.RGBA, g.UNSIGNED_BYTE, img);
+        this.backgroundWidth = img.width;
+        this.backgroundHeight = img.height;
+        this.hideCssBackground();
+      };
+      img.onerror = () => {
+        if (!isFallback && src !== this.imageSource && this.imageSource) {
+          // Retry with original source if candidate URL failed
+          loadImg(this.imageSource, true);
+          return;
+        }
+        if (!this.destroyed) {
+          this.setTransparentTexture();
+          console.warn('[Nextora Ripples] Failed to load texture from:', src);
+        }
+      };
+
+      // Same-origin images do NOT need crossOrigin. Setting crossOrigin='anonymous'
+      // on same-origin images causes CORS/cache conflicts in Chromium when the server
+      // does not emit Access-Control-Allow-Origin on cached static files.
+      if (isSameOrigin(src) || isDataUri(src)) {
+        img.crossOrigin = null;
+      } else {
+        img.crossOrigin = 'anonymous';
+      }
+      img.src = src;
     };
-    img.onerror = () => {
-      if (!this.destroyed) this.setTransparentTexture();
-    };
-    img.crossOrigin = isDataUri(this.imageSource) ? null : 'anonymous';
-    img.src = this.imageSource;
+
+    const candidate = resolveCandidateUrl(this.imageSource);
+    loadImg(candidate);
   }
 
   private hideCssBackground(): void {

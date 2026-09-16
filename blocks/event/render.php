@@ -233,6 +233,11 @@ if ( ! function_exists( 'nextora_event_placeholder_image_url' ) ) {
 	}
 }
 
+$lucide_path = dirname( __DIR__ ) . '/advanced-icon/lucide.php';
+if ( file_exists( $lucide_path ) ) {
+	require_once $lucide_path;
+}
+
 if ( ! function_exists( 'nextora_event_detail_icon' ) ) {
 	/**
 	 * Lucide-style detail icons (map-pin, clock, ticket).
@@ -242,12 +247,18 @@ if ( ! function_exists( 'nextora_event_detail_icon' ) ) {
 	 */
 	function nextora_event_detail_icon( string $type, array $icon_props = array() ): string {
 		$svg = '';
-		if ( 'map-pin' === $type ) {
-			$svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C10.539 20.193 5 14.993 5 10a7 7 0 1 1 14 0"/><circle cx="12" cy="10" r="3"/></svg>';
-		} elseif ( 'clock' === $type ) {
-			$svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
-		} else {
-			$svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ticket-icon lucide-ticket"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>';
+		if ( function_exists( 'nextora_get_lucide_svg' ) ) {
+			$svg = nextora_get_lucide_svg( $type, 24, 'currentColor', 2 );
+		}
+
+		if ( '' === $svg ) {
+			if ( 'map-pin' === $type ) {
+				$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin" aria-hidden="true" focusable="false"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>';
+			} elseif ( 'clock' === $type ) {
+				$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+			} else {
+				$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ticket" aria-hidden="true" focusable="false"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>';
+			}
 		}
 
 		$icon_classes = array( 'nextora-event__detail-icon' );
@@ -265,16 +276,30 @@ if ( ! function_exists( 'nextora_event_register_arrow_icon' ) ) {
 	 * Decorative arrow for register links.
 	 */
 	function nextora_event_register_arrow_icon(): string {
-		return '<span class="nextora-event__register-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
+		$svg = '';
+		if ( function_exists( 'nextora_get_lucide_svg' ) ) {
+			$svg = nextora_get_lucide_svg( 'arrow-right', 16, 'currentColor', 2 );
+		}
+		if ( '' === $svg ) {
+			$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+		}
+		return '<span class="nextora-event__register-icon" aria-hidden="true">' . $svg . '</span>';
 	}
 }
 
 if ( ! function_exists( 'nextora_event_calendar_icon' ) ) {
 	/**
-	 * Calendar-plus icon for template1 register button.
+	 * Calendar-days icon for template1 register button.
 	 */
 	function nextora_event_calendar_icon(): string {
-		return '<span class="nextora-event__register-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg></span>';
+		$svg = '';
+		if ( function_exists( 'nextora_get_lucide_svg' ) ) {
+			$svg = nextora_get_lucide_svg( 'calendar-days', 16, 'currentColor', 2 );
+		}
+		if ( '' === $svg ) {
+			$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days" aria-hidden="true" focusable="false"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>';
+		}
+		return '<span class="nextora-event__register-icon" aria-hidden="true">' . $svg . '</span>';
 	}
 }
 
@@ -418,6 +443,18 @@ foreach ( $color_keys as $attr_key => $var_name ) {
 	}
 }
 
+$slides = isset( $attributes['slidesPerView'] ) ? max( 1, min( 6, (float) $attributes['slidesPerView'] ) ) : 3.0;
+$tablet = isset( $attributes['tabletSlides'] ) ? max( 1, min( 4, (float) $attributes['tabletSlides'] ) ) : 2.0;
+$mobile = isset( $attributes['mobileSlides'] ) ? max( 1, min( 3, (float) $attributes['mobileSlides'] ) ) : 1.0;
+
+$is_desktop_fractional = ( fmod( (float) $slides, 1.0 ) > 0.001 );
+$is_tablet_fractional  = ( fmod( (float) $tablet, 1.0 ) > 0.001 );
+$is_mobile_fractional  = ( fmod( (float) $mobile, 1.0 ) > 0.001 );
+$has_any_fractional    = $is_desktop_fractional || $is_tablet_fractional || $is_mobile_fractional;
+
+$edge_fade_color = nextora_event_resolve_color( isset( $attributes['edgeFadeColor'] ) ? (string) $attributes['edgeFadeColor'] : '' );
+$css_vars['--nextora-event-edge-fade-color'] = '' !== $edge_fade_color ? $edge_fade_color : 'var(--wp--preset--color--base, #ffffff)';
+
 $style_parts = array();
 foreach ( $css_vars as $key => $value ) {
 	$style_parts[] = $key . ':' . $value;
@@ -438,6 +475,16 @@ if ( $is_template1 ) {
 		}
 	} elseif ( $enable_scroll ) {
 	$wrapper_classes[] = 'nextora-event--reveal-pending';
+}
+
+if ( $is_desktop_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-desktop';
+}
+if ( $is_tablet_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-tablet';
+}
+if ( $is_mobile_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-mobile';
 }
 
 $wrapper_extra = array(
@@ -1095,10 +1142,10 @@ if ( $is_template1 ) {
 	$speed         = isset( $attributes['speed'] ) ? max( 200, min( 2000, (int) $attributes['speed'] ) ) : 600;
 	$show_arrows   = ! empty( $attributes['showArrows'] );
 	$show_pag      = ! isset( $attributes['showPagination'] ) || (bool) $attributes['showPagination'];
-	$slides        = isset( $attributes['slidesPerView'] ) ? max( 1, min( 6, (float) $attributes['slidesPerView'] ) ) : 3;
+	$slides        = isset( $attributes['slidesPerView'] ) ? max( 1, min( 6, (float) $attributes['slidesPerView'] ) ) : 3.0;
 	$space         = isset( $attributes['spaceBetween'] ) ? max( 0, min( 60, (int) $attributes['spaceBetween'] ) ) : 24;
-	$tablet        = isset( $attributes['tabletSlides'] ) ? max( 1, min( 4, (float) $attributes['tabletSlides'] ) ) : 2;
-	$mobile        = isset( $attributes['mobileSlides'] ) ? max( 1, min( 2, (float) $attributes['mobileSlides'] ) ) : 1;
+	$tablet        = isset( $attributes['tabletSlides'] ) ? max( 1, min( 4, (float) $attributes['tabletSlides'] ) ) : 2.0;
+	$mobile        = isset( $attributes['mobileSlides'] ) ? max( 1, min( 3, (float) $attributes['mobileSlides'] ) ) : 1.0;
 
 	$use_loop = $loop && $slide_count > 1;
 
@@ -1149,18 +1196,22 @@ if ( $is_template1 ) {
 		);
 	}
 
+	$edge_overlay_html = $has_any_fractional ? '<div class="nextora-event__edge-overlay" aria-hidden="true"></div>' : '';
+
 	echo sprintf(
 		'<div %1$s><div class="nextora-event__inner">'
 			. '<div class="nextora-event__carousel-root" data-swiper-opts="%2$s">'
 			. '<div class="swiper nextora-event__swiper"><div class="swiper-wrapper">%3$s</div></div>'
 			. '%4$s'
-			. '</div>'
 			. '%5$s'
+			. '</div>'
+			. '%6$s'
 			. '</div></div>',
 		$wrapper_attributes,
 		esc_attr( $opts_string ),
 		$cards_html,
 		$arrows_html,
+		$edge_overlay_html,
 		$pagination_html,
 	); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 } elseif ( 'template2' === $template ) {
@@ -1182,10 +1233,10 @@ if ( $is_template1 ) {
 		'speed'          => isset( $attributes['speed'] ) ? max( 200, min( 2000, (int) $attributes['speed'] ) ) : 600,
 		'showArrows'     => ! empty( $attributes['showArrows'] ) && $slide_count > 1,
 		'showPagination' => ( ! isset( $attributes['showPagination'] ) || (bool) $attributes['showPagination'] ) && $slide_count > 1,
-		'slidesPerView'  => isset( $attributes['slidesPerView'] ) ? max( 1, min( 6, (float) $attributes['slidesPerView'] ) ) : 3,
+		'slidesPerView'  => isset( $attributes['slidesPerView'] ) ? max( 1, min( 6, (float) $attributes['slidesPerView'] ) ) : 3.0,
 		'spaceBetween'   => isset( $attributes['spaceBetween'] ) ? max( 0, min( 60, (int) $attributes['spaceBetween'] ) ) : 24,
-		'tabletSlides'   => isset( $attributes['tabletSlides'] ) ? max( 1, min( 4, (float) $attributes['tabletSlides'] ) ) : 2,
-		'mobileSlides'   => isset( $attributes['mobileSlides'] ) ? max( 1, min( 2, (float) $attributes['mobileSlides'] ) ) : 1,
+		'tabletSlides'   => isset( $attributes['tabletSlides'] ) ? max( 1, min( 4, (float) $attributes['tabletSlides'] ) ) : 2.0,
+		'mobileSlides'   => isset( $attributes['mobileSlides'] ) ? max( 1, min( 3, (float) $attributes['mobileSlides'] ) ) : 1.0,
 	);
 	$opts_json = wp_json_encode( $swiper_opts );
 	$opts_string = is_string( $opts_json ) ? $opts_json : '{}';
@@ -1193,12 +1244,14 @@ if ( $is_template1 ) {
 	$arrows_html = $swiper_opts['showArrows']
 		? '<button type="button" class="nextora-event__arrow nextora-event__arrow--prev" aria-label="' . esc_attr__( 'Previous events', 'nextora' ) . '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button><button type="button" class="nextora-event__arrow nextora-event__arrow--next" aria-label="' . esc_attr__( 'Next events', 'nextora' ) . '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>'
 		: '';
+	$edge_overlay_html = $has_any_fractional ? '<div class="nextora-event__edge-overlay" aria-hidden="true"></div>' : '';
 	echo sprintf(
-		'<div %1$s><div class="nextora-event__inner"><div class="nextora-event__carousel-root" data-swiper-opts="%2$s"><div class="swiper nextora-event__swiper"><div class="swiper-wrapper">%3$s</div></div>%4$s%5$s</div></div></div>',
+		'<div %1$s><div class="nextora-event__inner"><div class="nextora-event__carousel-root" data-swiper-opts="%2$s"><div class="swiper nextora-event__swiper"><div class="swiper-wrapper">%3$s</div></div>%4$s%5$s%6$s</div></div></div>',
 		$wrapper_attributes,
 		esc_attr( $opts_string ),
 		$items_html,
 		$arrows_html,
+		$edge_overlay_html,
 		$pagination_html,
 	); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 } elseif ( 'template3' === $template ) {

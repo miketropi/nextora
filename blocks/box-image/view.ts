@@ -595,10 +595,10 @@ function mountSwiper(root: HTMLElement): void {
 		isGridMode ? Math.max(cap(tabletSpv), Math.min(gridCols, slideCount)) : cap(desktopSpv);
 
 	const swiperBreakpoints: Record<number, { slidesPerView: number; spaceBetween: number }> = {};
-	swiperBreakpoints[768] = { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) };
+	swiperBreakpoints[640] = { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) };
 
 	if (isGridMode) {
-		if (gridMin > 768) {
+		if (gridMin > 640) {
 			const bp = gridMin - 1;
 			swiperBreakpoints[bp] = { slidesPerView: effectiveDesktopSpv, spaceBetween: Math.max(0, gap) };
 		}

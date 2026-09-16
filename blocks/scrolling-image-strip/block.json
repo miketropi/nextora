@@ -40,6 +40,10 @@
       "type": "array",
       "default": []
     },
+    "images": {
+      "type": "array",
+      "default": []
+    },
     "imageHeight": {
       "type": "number",
       "default": 200

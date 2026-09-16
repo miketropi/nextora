@@ -357,6 +357,8 @@
 }
 
 .nextora-header-block__follow-us-toggle {
+	position: relative;
+	z-index: 2;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -420,6 +422,17 @@
 	box-shadow:
 		0 18px 40px color-mix(in srgb, var(--wp--preset--color--contrast, #000) 14%, transparent),
 		0 2px 8px color-mix(in srgb, var(--wp--preset--color--contrast, #000) 6%, transparent);
+}
+
+/* Hover bridge filling the gap between toggle and dropdown panel */
+.nextora-header-block__follow-us-panel::before {
+	content: "";
+	position: absolute;
+	top: -0.85rem;
+	left: 0;
+	right: 0;
+	height: 0.85rem;
+	pointer-events: auto;
 }
 
 /* Full-width fallback only when JS detects horizontal overflow (--stacked). */
@@ -926,6 +939,7 @@
  */
 .nextora-header-block__search--spotlight button[data-nextora-modal-open] {
 	color: var(--wp--style--color, inherit);
+	cursor: pointer;
 }
 
 .nextora-header-block__search--spotlight button[data-nextora-modal-open]:hover,
@@ -1036,14 +1050,29 @@
 
 .nextora-header-block__cart--woo .wc-block-mini-cart__badge {
 	position: absolute;
-	inset-inline-end: -0.2rem;
-	top: 0.125rem;
-	min-width: 1rem;
-	height: 1rem;
-	font-size: 0.7rem;
-	font-weight: 600;
-	line-height: 1rem;
+	top: -0.15rem;
+	right: -0.35rem;
+	inset-inline-end: -0.35rem;
+	left: auto;
+	bottom: auto;
+	margin: 0;
+	transform: none;
+	z-index: 2;
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 4px;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
 	font-variant-numeric: tabular-nums;
+	border-radius: 9999px;
+	background-color: var(--wp--preset--color--contrast, #0a0a0a) !important;
+	color: var(--wp--preset--color--base, #ffffff) !important;
+	pointer-events: none;
 }
 
 .nextora-header-block__cart--woo .wc-block-mini-cart__amount {
@@ -1080,21 +1109,28 @@ body>.wc-block-components-drawer__screen-overlay {
 
 .nextora-header-block__cart-badge {
 	position: absolute;
-	inset-inline-end: -0.2rem;
-	top: 0.125rem;
-	z-index: 1;
+	top: -0.15rem;
+	right: -0.35rem;
+	inset-inline-end: -0.35rem;
+	left: auto;
+	bottom: auto;
+	margin: 0;
+	transform: none;
+	z-index: 2;
 	box-sizing: border-box;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-width: 1rem;
-	height: 1rem;
-	padding: 0 0.28rem;
-	font-size: 0.7rem;
-	font-weight: 600;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 4px;
+	font-size: 11px;
+	font-weight: 700;
 	line-height: 1;
 	font-variant-numeric: tabular-nums;
-	color: var(--wp--style--color, inherit);
+	border-radius: 9999px;
+	background-color: var(--wp--preset--color--contrast, #0a0a0a);
+	color: var(--wp--preset--color--base, #ffffff);
 	pointer-events: none;
 }
 
@@ -1196,6 +1232,30 @@ button.nextora-header-block__cart-link.nextora-header-block__cart-trigger {
 	font: inherit;
 	cursor: pointer;
 	text-align: inherit;
+}
+
+/* CTA interactive cursor & zero-shift loading state */
+.nextora-header-block__cta,
+.nextora-header-block__cta[role="button"],
+button.nextora-header-block__cta {
+	cursor: pointer;
+}
+
+.nextora-header-block__cta::after,
+.nextora-header-block__cta.is-loading::after,
+.nextora-header-block__cta.alonepro-btn-loading::after,
+.nextora-header-block [data-campaign-id].is-loading::after,
+.nextora-header-block [data-campaign-id].alonepro-btn-loading::after {
+	display: none !important;
+	content: none !important;
+}
+
+.nextora-header-block__cta.is-loading,
+.nextora-header-block__cta.alonepro-btn-loading,
+.nextora-header-block [data-campaign-id].is-loading,
+.nextora-header-block [data-campaign-id].alonepro-btn-loading {
+	opacity: 1 !important;
+	cursor: pointer !important;
 }
 
 /* Match spotlight trigger hit target (modal-markup.php uses size-10) */

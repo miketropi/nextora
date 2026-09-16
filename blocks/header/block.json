@@ -124,9 +124,21 @@
       "type": "string",
       "default": ""
     },
+    "followUsEmailLink": {
+      "type": "string",
+      "default": ""
+    },
     "followUsPhone": {
       "type": "string",
       "default": ""
+    },
+    "followUsPhoneUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "followUsTrigger": {
+      "type": "string",
+      "default": "both"
     },
     "followUsContactButtonText": {
       "type": "string",
@@ -210,6 +222,14 @@
     "showCtaButton": {
       "type": "boolean",
       "default": false
+    },
+    "enableDonationPopup": {
+      "type": "boolean",
+      "default": false
+    },
+    "donationCampaignId": {
+      "type": "number",
+      "default": 0
     },
     "ctaButtonText": {
       "type": "string",
