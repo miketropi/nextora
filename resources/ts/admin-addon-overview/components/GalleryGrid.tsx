@@ -8,6 +8,7 @@ import { Lightbox } from './Lightbox';
 
 interface GalleryGridProps {
 	items: GalleryItem[];
+	title?: string;
 }
 
 function getPreviewUrl(item: GalleryItem): string | null {
@@ -41,14 +42,14 @@ function Thumbnail({ item }: { item: GalleryItem }): JSX.Element {
 	);
 }
 
-export default function GalleryGrid({ items }: GalleryGridProps): JSX.Element {
+export default function GalleryGrid({ items, title }: GalleryGridProps): JSX.Element {
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const activeItem = items.find((i) => i.id === activeId) || null;
 
 	return (
 		<>
 			<div className="nextora-overview-section">
-				<h2 className="nextora-overview-section__title">{__('Showcase', 'nextora')}</h2>
+				<h2 className="nextora-overview-section__title">{title || __('Showcase', 'nextora')}</h2>
 				<div className="nextora-overview-gallery">
 					{items.map((item) => (
 						<button
