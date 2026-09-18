@@ -173,6 +173,7 @@
 }
 
 @media (min-width: 981px) {
+
 	.nextora-team-section--layout-grid .nextora-team-section__pagination,
 	.nextora-team-section--layout-grid .nextora-team-section__arrow {
 		display: none !important;
@@ -607,7 +608,7 @@
 	width: 100%;
 	max-width: 1080px;
 	margin-inline: auto;
-	padding: 1.5rem 0.5rem;
+	padding: 0;
 	box-sizing: border-box;
 }
 
@@ -708,7 +709,7 @@
 }
 
 .nextora-team-section__deck-name {
-	margin: 0 0 1rem 0;
+	margin: 0 0 0.5rem 0;
 }
 
 .nextora-team-section__deck-role {
@@ -1183,11 +1184,9 @@ body.nextora-team-drawer-open {
 	right: 0;
 	bottom: 0;
 	width: var(--nextora-team-edge-fade-width, clamp(60px, 14vw, 150px));
-	background: linear-gradient(
-		to right,
-		rgba(255, 255, 255, 0) 0%,
-		var(--nextora-team-edge-fade-color, var(--nextora-team-bg, var(--wp--preset--color--base, #ffffff))) 100%
-	);
+	background: linear-gradient(to right,
+			rgba(255, 255, 255, 0) 0%,
+			var(--nextora-team-edge-fade-color, var(--nextora-team-bg, var(--wp--preset--color--base, #ffffff))) 100%);
 	pointer-events: none;
 	z-index: 5;
 	transition: opacity 0.3s ease;
@@ -1196,11 +1195,9 @@ body.nextora-team-drawer-open {
 [dir="rtl"] .nextora-team-section__edge-overlay {
 	right: auto;
 	left: 0;
-	background: linear-gradient(
-		to left,
-		rgba(255, 255, 255, 0) 0%,
-		var(--nextora-team-edge-fade-color, var(--nextora-team-bg, var(--wp--preset--color--base, #ffffff))) 100%
-	);
+	background: linear-gradient(to left,
+			rgba(255, 255, 255, 0) 0%,
+			var(--nextora-team-edge-fade-color, var(--nextora-team-bg, var(--wp--preset--color--base, #ffffff))) 100%);
 }
 
 /* Responsive activation matching fractional settings */

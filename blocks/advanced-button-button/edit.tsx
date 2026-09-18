@@ -750,9 +750,11 @@ export default function AdvancedButtonButtonEdit( {
 						onChange={ ( value: number | undefined ) =>
 							setAttributes( { iconSize: value ?? 20 } )
 						}
-						min={ 12 }
-						max={ 48 }
+						min={ 8 }
+						max={ 200 }
 						step={ 1 }
+						allowReset={ true }
+						resetFallbackValue={ 20 }
 					/>
 					) }
 

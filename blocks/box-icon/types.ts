@@ -69,6 +69,7 @@ export interface BoxIconAttributes {
 	statNumberFontSize?: string;
 	statNumberFontFamily?: string;
 	cardTitleColor: string;
+	titleHoverColor?: string;
 	cardDescriptionColor: string;
 	descriptionHoverColor: string;
 	linkColor: string;

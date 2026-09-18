@@ -110,6 +110,14 @@
       "type": "boolean",
       "default": false
     },
+    "titleFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "descriptionFontSize": {
+      "type": "string",
+      "default": ""
+    },
     "cardBackgroundColor": {
       "type": "string",
       "default": ""

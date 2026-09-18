@@ -41,6 +41,14 @@
       "type": "string",
       "default": "left"
     },
+    "columnGap": {
+      "type": "number",
+      "default": 12
+    },
+    "rowGap": {
+      "type": "number",
+      "default": 12
+    },
     "enableScrollAnimation": {
       "type": "boolean",
       "default": true

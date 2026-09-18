@@ -13,7 +13,6 @@ import {
 import {
 	BaseControl,
 	Button,
-	ColorPalette,
 	Modal,
 	PanelBody,
 	RangeControl,
@@ -141,6 +140,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		titleFontSize = '',
 		descriptionFontSize = '',
 		cardTitleColor = '',
+		titleHoverColor = '',
 		cardDescriptionColor = '',
 		descriptionHoverColor = '',
 		linkColor = '',
@@ -222,6 +222,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				? ''
 				: cardHoverBackgroundColor,
 			cardTitleColor: isEmptyColor(cardTitleColor) ? '' : cardTitleColor,
+			titleHoverColor: isEmptyColor(titleHoverColor) ? '' : titleHoverColor,
 			cardDescriptionColor: isEmptyColor(cardDescriptionColor) ? '' : cardDescriptionColor,
 			descriptionHoverColor: isEmptyColor(descriptionHoverColor) ? '' : descriptionHoverColor,
 			linkColor: isEmptyColor(linkColor) ? '' : linkColor,
@@ -480,6 +481,11 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				label: __('Card hover background', 'nextora'),
 			},
 			{
+				value: colorValueForPicker(titleHoverColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('titleHoverColor', v),
+				label: __('Title hover color', 'nextora'),
+			},
+			{
 				value: colorValueForPicker(descriptionHoverColor, colorPalette, lookupPalette),
 				onChange: (v: string | undefined) => setThemeColor('descriptionHoverColor', v),
 				label: __('Description hover color', 'nextora'),
@@ -555,6 +561,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		cardBorderColor,
 		cardBackgroundColor,
 		cardTitleColor,
+		titleHoverColor,
 		cardDescriptionColor,
 		cardHoverBackgroundColor,
 		descriptionHoverColor,
@@ -943,19 +950,6 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						max={3}
 						step={0.1}
 					/>
-					{((slidesPerView % 1) !== 0 || (slidesPerViewTablet % 1) !== 0 || (slidesPerViewMobile % 1) !== 0) && (
-						<div className="nextora-carousel-inspector-color" style={{ marginTop: '12px', marginBottom: '16px' }}>
-							<p className="nextora-carousel-inspector-color__label" style={{ marginBottom: '8px', fontSize: '11px', fontWeight: 500, textTransform: 'uppercase' }}>
-								{__('Edge fade color', 'nextora')}
-							</p>
-							<ColorPalette
-								colors={colorPalette}
-								value={colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette)}
-								onChange={(c) => setThemeColor('edgeFadeColor', c)}
-								clearable
-							/>
-						</div>
-					)}
 					<RangeControl
 						label={__('Transition speed (ms)', 'nextora')}
 						value={speed}

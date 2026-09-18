@@ -2,13 +2,14 @@ import type { CSSProperties } from 'react';
 import { useMemo, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
+	FontSizePicker,
 	InspectorControls,
 	PanelColorSettings,
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
+	BaseControl,
 	Button,
-	ColorPalette,
 	Modal,
 	PanelBody,
 	SelectControl,
@@ -18,6 +19,32 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import type { EventAttributes, EventItem } from './types';
+
+function normalizeFontSizeAttribute(
+	value: number | string | undefined,
+	selectedItem?: { slug?: string },
+): string {
+	if (value === undefined || value === '') {
+		return '';
+	}
+	const raw = (selectedItem?.slug || String(value)).trim().toLowerCase();
+	const map: Record<string, string> = {
+		sm: 'small',
+		small: 'small',
+		base: 'base',
+		normal: 'base',
+		md: 'medium',
+		medium: 'medium',
+		'medium-plus': 'medium-plus',
+		lg: 'large',
+		large: 'large',
+		xl: 'x-large',
+		'x-large': 'x-large',
+		'2xl': 'xx-large',
+		'xx-large': 'xx-large',
+	};
+	return map[raw] || raw;
+}
 import EventEditForm from './event-edit-form';
 import {
 	buildSectionStyleVars,
@@ -169,6 +196,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		showRegisterButton = true,
 		registerButtonText = __('Register', 'nextora'),
 		template3Alternating = false,
+		titleFontSize = '',
+		descriptionFontSize = '',
 		cardBackgroundColor = '',
 		cardBorderColor = '',
 		dateBackgroundColor = '',
@@ -202,6 +231,9 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	const isTemplate1 = template === 'template1';
 	const isTemplate2 = template === 'template2';
 	const isTemplate3 = template === 'template3';
+
+	const normalizedTitleFontSize = normalizeFontSizeAttribute(titleFontSize);
+	const normalizedDescFontSize = normalizeFontSizeAttribute(descriptionFontSize);
 
 	const colorPalette = useThemeColorPalette();
 	const lookupPalette = getMergedPaletteEntries(colorPalette);
@@ -335,7 +367,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			{
 				value: colorValueForPicker(dateAccentColor, colorPalette, lookupPalette),
 				onChange: (v: string | undefined) => setThemeColor('dateAccentColor', v),
-				label: __('Date month label', 'nextora'),
+				label: __('Date label', 'nextora'),
 			},
 			{
 				value: colorValueForPicker(titleColor, colorPalette, lookupPalette),
@@ -602,6 +634,39 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 
 				<PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />
 
+				<PanelBody title={__('Typography', 'nextora')} initialOpen={isTemplate3}>
+					<BaseControl
+						label={__('Card title font size', 'nextora')}
+						id="nextora-event-title-font-size"
+						help={__('Default inherits global heading size.', 'nextora')}
+					>
+						<FontSizePicker
+							value={titleFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									titleFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+					<BaseControl
+						label={__('Card description font size', 'nextora')}
+						id="nextora-event-description-font-size"
+						help={__('Default inherits global body size.', 'nextora')}
+					>
+						<FontSizePicker
+							value={descriptionFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									descriptionFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+				</PanelBody>
+
 				{!isTemplate1 && !isTemplate2 && !isTemplate3 ? (
 					<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
 						<ToggleControl
@@ -681,19 +746,6 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							max={3}
 							step={0.1}
 						/>
-						{((slidesPerView % 1) !== 0 || (tabletSlides % 1) !== 0 || (mobileSlides % 1) !== 0) && (
-							<div className="nextora-carousel-inspector-color" style={{ marginTop: '12px', marginBottom: '16px' }}>
-								<p className="nextora-carousel-inspector-color__label" style={{ marginBottom: '8px', fontSize: '11px', fontWeight: 500, textTransform: 'uppercase' }}>
-									{__('Edge fade color', 'nextora')}
-								</p>
-								<ColorPalette
-									colors={colorPalette}
-									value={colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette)}
-									onChange={(c) => setThemeColor('edgeFadeColor', c)}
-									clearable
-								/>
-							</div>
-						)}
 						<RangeControl
 							label={__('Space between (px)', 'nextora')}
 							value={spaceBetween}
@@ -800,7 +852,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 												</div>
 
 												<div className="nextora-event__card-info">
-													<h4 className={['nextora-event__title', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>
+													<h4 className={['nextora-event__title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>
 														{event.title || __('Community fundraiser', 'nextora')}
 													</h4>
 													<div className={['nextora-event__details', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}>
@@ -843,8 +895,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 												</div>
 											</div>
 											<div className="nextora-event__template2-content">
-												<h4 className={['nextora-event__template2-title', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>{event.title || __('Community fundraiser', 'nextora')}</h4>
-												{event.description ? <p className="nextora-event__template2-desc">{event.description}</p> : null}
+												<h4 className={['nextora-event__template2-title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>{event.title || __('Community fundraiser', 'nextora')}</h4>
+												{event.description ? <p className={['nextora-event__template2-desc', normalizedDescFontSize ? `has-${normalizedDescFontSize}-font-size` : ''].filter(Boolean).join(' ')}>{event.description}</p> : null}
 												<div className="nextora-event__template2-footer">
 													<div className={['nextora-event__template2-details', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}>
 														<span className="nextora-event__template2-meta">
@@ -883,14 +935,14 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 									<button type="button" className="nextora-event__item-edit" onClick={() => openEventEditor(event.id)}>
 										{__('Edit event', 'nextora')}
 									</button>
-									<div className="nextora-event__template3-date-frame"><div className={['nextora-event__template3-date', dateBgProps.className].filter(Boolean).join(' ')} style={dateBgProps.style}><span className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{event.month || __('Jan', 'nextora')}</span><b className={dateDayProps.className || undefined} style={dateDayProps.style}>{event.day || '01'}</b><small>{__('Day', 'nextora')}</small></div></div>
+									<div className="nextora-event__template3-date-frame"><div className={['nextora-event__template3-date', dateBgProps.className].filter(Boolean).join(' ')} style={dateBgProps.style}><span className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{event.month || __('Jan', 'nextora')}</span><b className={dateDayProps.className || undefined} style={dateDayProps.style}>{event.day || '01'}</b><small className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{__('Day', 'nextora')}</small></div></div>
 									<div className="nextora-event__template3-content">
 										<div className="nextora-event__template3-category">{event.category || __('Upcoming event', 'nextora')}</div>
-										<h4 className={['nextora-event__template3-title', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>{event.title || __('Community fundraiser', 'nextora')}</h4>
+										<h4 className={['nextora-event__template3-title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>{event.title || __('Community fundraiser', 'nextora')}</h4>
 										<div className={['nextora-event__template3-meta', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}><DetailRow icon="clock" iconStyle={metaIconProps.style}>{event.time || __('Time TBC', 'nextora')}</DetailRow><DetailRow icon="map-pin" iconStyle={metaIconProps.style}>{event.location || __('Location TBC', 'nextora')}</DetailRow></div>
-										{event.description ? <p className="nextora-event__template3-description">{event.description}</p> : null}
+										{event.description ? <p className={['nextora-event__template3-description', normalizedDescFontSize ? `has-${normalizedDescFontSize}-font-size` : ''].filter(Boolean).join(' ')}>{event.description}</p> : null}
 										{showRegisterButton ? (
-											<span className={['nextora-event__template3-register', 'nextora-event__template3-register--static', 'wp-element-button', regBgProps.className, regTextProps.className].filter(Boolean).join(' ')} style={regBtnStyle}>
+											<span className={['nextora-event__template3-register', 'nextora-event__template3-register--static', regBgProps.className, regTextProps.className].filter(Boolean).join(' ')} style={regBtnStyle}>
 												{registerLabel}
 												<span className="nextora-event__template3-register-icon" aria-hidden="true">
 													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right" aria-hidden="true" focusable="false">
@@ -954,7 +1006,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 											</div>
 
 											<div className="nextora-event__info">
-												<h4 className={['nextora-event__title', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>
+												<h4 className={['nextora-event__title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>
 													{event.title || __('Community fundraiser', 'nextora')}
 												</h4>
 												<div className={['nextora-event__details', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}>

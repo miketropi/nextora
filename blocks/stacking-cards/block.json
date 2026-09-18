@@ -145,7 +145,7 @@
     },
     "headingWeight": {
       "type": "string",
-      "default": "600"
+      "default": ""
     },
     "showLink": {
       "type": "boolean",

@@ -958,19 +958,6 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 								max={3}
 								step={0.1}
 							/>
-							{((slidesPerView % 1) !== 0 || (slidesPerViewTablet % 1) !== 0 || (slidesPerViewMobile % 1) !== 0) && (
-								<div className="nextora-carousel-inspector-color" style={{ marginTop: '12px', marginBottom: '16px' }}>
-									<p className="nextora-carousel-inspector-color__label" style={{ marginBottom: '8px', fontSize: '11px', fontWeight: 500, textTransform: 'uppercase' }}>
-										{__('Edge fade color', 'nextora')}
-									</p>
-									<ColorPalette
-										colors={colorPalette}
-										value={colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette)}
-										onChange={(c) => setThemeColor('edgeFadeColor', c)}
-										clearable
-									/>
-								</div>
-							)}
 							<RangeControl
 								label={__('Transition speed (ms)', 'nextora')}
 								value={speed}

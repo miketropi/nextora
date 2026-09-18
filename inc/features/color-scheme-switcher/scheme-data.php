@@ -255,7 +255,7 @@ function nextora_get_font_presets( array $fonts ): array {
  * @param string                $file     Absolute path to the JSON file.
  * @param array<string, string> $font_map Font registry slug => family stack.
  *
- * @return array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }|null
+ * @return array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonTextTransform: ?string, buttonFontWeight: ?string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }|null
  */
 function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 	if ( ! is_readable( $file ) ) {
@@ -304,6 +304,8 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 	$body                       = null;
 	$heading                    = null;
 	$button                     = null;
+	$button_text_transform      = null;
+	$button_font_weight         = null;
 	$button_bg                  = null;
 	$button_color               = null;
 	$button_hover_bg            = null;
@@ -376,6 +378,12 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 			}
 			if ( isset( $btn_style[':hover']['color']['text'] ) && is_string( $btn_style[':hover']['color']['text'] ) ) {
 				$button_hover_color = $btn_style[':hover']['color']['text'];
+			}
+			if ( isset( $btn_style['typography']['textTransform'] ) && is_string( $btn_style['typography']['textTransform'] ) && '' !== $btn_style['typography']['textTransform'] ) {
+				$button_text_transform = sanitize_text_field( $btn_style['typography']['textTransform'] );
+			}
+			if ( isset( $btn_style['typography']['fontWeight'] ) && ( is_string( $btn_style['typography']['fontWeight'] ) || is_numeric( $btn_style['typography']['fontWeight'] ) ) && '' !== (string) $btn_style['typography']['fontWeight'] ) {
+				$button_font_weight = (string) $btn_style['typography']['fontWeight'];
 			}
 		}
 
@@ -450,6 +458,8 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 		'body'                   => $body,
 		'heading'                => $heading,
 		'button'                 => $button,
+		'buttonTextTransform'    => $button_text_transform,
+		'buttonFontWeight'       => $button_font_weight,
 		'buttonBg'               => $button_bg,
 		'buttonColor'            => $button_color,
 		'buttonHoverBg'          => $button_hover_bg,
@@ -468,7 +478,7 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
  *
  * @param array<string, array{ name: string, family: string }> $fonts Font registry.
  *
- * @return array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }>
+ * @return array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonTextTransform: ?string, buttonFontWeight: ?string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }>
  */
 function nextora_get_themes( array $fonts ): array {
 	$font_map = array();
@@ -609,7 +619,7 @@ function nextora_get_switcher_config(): array {
  * @return array{
  *   colorPresets: array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string> }>,
  *   fontPresets: array<string, array{ title: string, body: string, heading: string }>,
- *   themes: array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }>,
+ *   themes: array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonTextTransform: ?string, buttonFontWeight: ?string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }>,
  *   fonts: array<string, array{ name: string, family: string }>,
  *   config: array{
  *     initial: array{ theme: string, color: string, font: string },
@@ -695,7 +705,7 @@ function nextora_get_switcher_payload(): array {
 	$theme_rules = $config['presets']['themes'];
 
 	if ( null !== $theme_rules ) {
-		/** @var array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }> $filtered_themes */
+		/** @var array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonTextTransform: ?string, buttonFontWeight: ?string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }> $filtered_themes */
 		$filtered_themes = array();
 
 		foreach ( $theme_rules as $rule ) {

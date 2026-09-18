@@ -510,7 +510,7 @@
 }
 
 .nextora-event--template3 .nextora-event__template3-date small {
-	color: var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #525252));
+	color: var(--nextora-event-date-month-color, var(--wp--preset--color--primary, #7f4d3e));
 }
 
 .nextora-event--template3 .nextora-event__template3-content {
@@ -525,18 +525,19 @@
 }
 
 .nextora-event--template3 .nextora-event__template3-title {
-	max-width: 18ch;
 	margin: 0 0 1rem 0;
-	letter-spacing: -0.025em;
 }
 
 .nextora-event--template3 .nextora-event__template3-description {
 	max-width: 42ch;
 	margin: var(--wp--preset--spacing--20, 1.5rem) 0 0;
-	font-size: var(--wp--preset--font-size--base, 1rem);
 	font-weight: 400;
 	line-height: 1.55;
 	color: var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #525252));
+}
+
+.nextora-event--template3 .nextora-event__template3-description:not([class*="-font-size"]) {
+	font-size: var(--wp--preset--font-size--base, 1rem);
 }
 
 .nextora-event--template3 .nextora-event__template3-meta {
@@ -640,7 +641,7 @@
 	min-width: 3ch;
 	text-align: center;
 	margin: 0;
-	color: var(--nextora-event-meta-color, var(--wp--preset--color--base, #fff));
+	color: var(--nextora-event-date-month-color, var(--wp--preset--color--base, #fff));
 }
 
 .nextora-event--template3 .nextora-event__template3-content {
@@ -654,10 +655,7 @@
 }
 
 .nextora-event--template3 .nextora-event__template3-title {
-	max-width: 24ch;
 	margin: 0;
-	letter-spacing: -0.025em;
-	color: var(--wp--preset--color--contrast, #0a0a0a);
 }
 
 .nextora-event--template3 .nextora-event__template3-title a {
@@ -672,9 +670,12 @@
 .nextora-event--template3 .nextora-event__template3-description {
 	max-width: 46ch;
 	margin-top: var(--wp--preset--spacing--10, 0.75rem);
-	font-size: var(--wp--preset--font-size--base, 1rem);
 	line-height: 1.55;
 	color: var(--wp--preset--color--paragraph, #525252);
+}
+
+.nextora-event--template3 .nextora-event__template3-description:not([class*="-font-size"]) {
+	font-size: var(--wp--preset--font-size--base, 1rem);
 }
 
 .nextora-event--template3 .nextora-event__template3-meta {
@@ -718,6 +719,8 @@
 	align-items: center;
 	gap: 0.4rem;
 	margin-top: var(--wp--preset--spacing--10, 0.75rem);
+	padding: 0;
+	background: transparent;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	font-weight: 600;
 	color: var(--nextora-event-register-text-color, var(--wp--preset--color--contrast, #0a0a0a));
@@ -828,27 +831,42 @@
 		margin-bottom: 0.25rem;
 	}
 
-	.nextora-event--template3 .nextora-event__template3-date-frame {
+	.nextora-event--template3 .nextora-event__template3-date-frame,
+	.nextora-event--template3 .nextora-event__template3-date-frame.has-background,
+	.nextora-event--template3 .nextora-event__template3-date-frame[class*="-background-color"],
+	.editor-styles-wrapper .nextora-event--template3 .nextora-event__template3-date-frame,
+	.editor-styles-wrapper .nextora-event--template3 .nextora-event__template3-date-frame.has-background,
+	.editor-styles-wrapper .nextora-event--template3 .nextora-event__template3-date-frame[class*="-background-color"] {
 		order: 2;
 		min-height: 0;
 		width: fit-content;
-		padding: 0;
-		border: 0;
-		border-radius: 0;
-		background: transparent;
+		padding: 0 !important;
+		border: 0 !important;
+		border-radius: 0 !important;
+		background: transparent !important;
+		background-color: transparent !important;
+		background-image: none !important;
 	}
 
-	.nextora-event--template3 .nextora-event__template3-date {
+	.nextora-event--template3 .nextora-event__template3-date,
+	.nextora-event--template3 .nextora-event__template3-date.has-background,
+	.nextora-event--template3 .nextora-event__template3-date[class*="-background-color"],
+	.editor-styles-wrapper .nextora-event--template3 .nextora-event__template3-date,
+	.editor-styles-wrapper .nextora-event--template3 .nextora-event__template3-date.has-background,
+	.editor-styles-wrapper .nextora-event--template3 .nextora-event__template3-date[class*="-background-color"] {
 		display: flex;
 		flex-direction: row;
 		align-items: baseline;
 		gap: 0.5rem;
 		min-height: 0;
 		min-width: 0;
-		padding: 0;
-		border: 0;
-		border-radius: 0;
-		background: transparent;
+		padding: 0 !important;
+		border: 0 !important;
+		border-radius: 0 !important;
+		background: transparent !important;
+		background-color: transparent !important;
+		background-image: none !important;
+		box-shadow: none !important;
 		color: var(--wp--preset--color--contrast, #0a0a0a);
 	}
 
@@ -874,7 +892,7 @@
 		min-width: auto;
 		margin: 0;
 		margin-left: 0;
-		color: var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #525252));
+		color: var(--nextora-event-date-month-color, var(--wp--preset--color--primary, #7f4d3e));
 		font-size: var(--wp--preset--font-size--small, 0.875rem);
 		font-weight: 600;
 		letter-spacing: 0.08em;
@@ -903,8 +921,11 @@
 	.nextora-event--template3 .nextora-event__template3-description {
 		max-width: none;
 		margin-top: var(--wp--preset--spacing--10, 0.75rem);
-		font-size: var(--wp--preset--font-size--base, 1rem);
 		line-height: 1.55;
+	}
+
+	.nextora-event--template3 .nextora-event__template3-description:not([class*="-font-size"]) {
+		font-size: var(--wp--preset--font-size--base, 1rem);
 	}
 
 	.nextora-event--template3 .nextora-event__template3-register,
@@ -1419,13 +1440,16 @@
 
 .nextora-event--template2 .nextora-event__template2-desc {
 	margin: 0 0 1.25rem 0;
-	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	line-height: 1.55;
 	color: var(--nextora-event-meta-color, var(--wp--preset--color--paragraph, #525252));
 	display: -webkit-box;
 	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
+}
+
+.nextora-event--template2 .nextora-event__template2-desc:not([class*="-font-size"]) {
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
 }
 
 .nextora-event--template2 .nextora-event__template2-footer {
@@ -1565,6 +1589,7 @@
 	.nextora-event .nextora-event__edge-overlay {
 		display: none;
 	}
+
 	.nextora-event.has-edge-fade-tablet .nextora-event__edge-overlay {
 		display: block;
 	}
@@ -1574,6 +1599,7 @@
 	.nextora-event .nextora-event__edge-overlay {
 		display: none;
 	}
+
 	.nextora-event.has-edge-fade-mobile .nextora-event__edge-overlay {
 		display: block;
 	}

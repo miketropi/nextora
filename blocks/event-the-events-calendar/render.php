@@ -97,6 +97,41 @@ if ( ! function_exists( 'nextora_event_tec_resolve_color' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_event_tec_normalize_font_size' ) ) {
+	/**
+	 * Normalize font size attribute or slug into a sanitized WordPress preset class slug.
+	 */
+	function nextora_event_tec_normalize_font_size( string $size ): string {
+		$size = trim( $size );
+		if ( '' === $size ) {
+			return '';
+		}
+		if ( preg_match( '/^var:preset\|font-size\|([a-z0-9_-]+)$/i', $size, $m ) ) {
+			return sanitize_html_class( strtolower( $m[1] ) );
+		}
+		$raw = strtolower( $size );
+		$map = array(
+			'sm'          => 'small',
+			'small'       => 'small',
+			'base'        => 'base',
+			'normal'      => 'base',
+			'md'          => 'medium',
+			'medium'      => 'medium',
+			'medium-plus' => 'medium-plus',
+			'lg'          => 'large',
+			'large'       => 'large',
+			'xl'          => 'x-large',
+			'x-large'     => 'x-large',
+			'2xl'         => 'xx-large',
+			'xx-large'    => 'xx-large',
+		);
+		if ( isset( $map[ $raw ] ) ) {
+			return $map[ $raw ];
+		}
+		return sanitize_html_class( $raw );
+	}
+}
+
 if ( ! function_exists( 'nextora_event_tec_get_color_props' ) ) {
 	/**
 	 * Resolves a stored color attribute into standard Gutenberg classes and inline style.
@@ -652,6 +687,11 @@ $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 $title_color_raw   = isset( $attributes['titleColor'] ) ? (string) $attributes['titleColor'] : '';
 $title_color_props = nextora_event_tec_get_color_props( $title_color_raw, 'color' );
 
+$title_font_size_raw       = isset( $attributes['titleFontSize'] ) ? (string) $attributes['titleFontSize'] : '';
+$title_font_size           = nextora_event_tec_normalize_font_size( $title_font_size_raw );
+$description_font_size_raw = isset( $attributes['descriptionFontSize'] ) ? (string) $attributes['descriptionFontSize'] : '';
+$description_font_size     = nextora_event_tec_normalize_font_size( $description_font_size_raw );
+
 $card_bg_raw     = isset( $attributes['cardBackgroundColor'] ) ? (string) $attributes['cardBackgroundColor'] : '';
 $card_border_raw = isset( $attributes['cardBorderColor'] ) ? (string) $attributes['cardBorderColor'] : '';
 $card_bg_props     = nextora_event_tec_get_color_props( $card_bg_raw, 'background' );
@@ -726,6 +766,7 @@ if ( ! function_exists( 'nextora_event_tec_render_card' ) ) {
 		array $reg_btn_props = array(),
 		array $date_props = array(),
 		array $meta_props = array(),
+		string $title_font_size = '',
 	): string {
 		$title = trim( $event['title'] );
 		if ( '' === $title ) {
@@ -813,7 +854,7 @@ if ( ! function_exists( 'nextora_event_tec_render_card' ) ) {
 					'<span class="%1$s nextora-event__register-card--static"%2$s>%3$s%4$s</span>',
 					$reg_class_attr,
 					$reg_style_attr,
-					nextora_event_calendar_icon(),
+					nextora_event_tec_calendar_icon(),
 					esc_html( $label ),
 				);
 			}
@@ -853,6 +894,9 @@ if ( ! function_exists( 'nextora_event_tec_render_card' ) ) {
 		$card_style_attr = ! empty( $card_props['style'] ) ? ' style="' . esc_attr( $card_props['style'] ) . '"' : '';
 
 		$title_classes = array( 'nextora-event__title' );
+		if ( '' !== $title_font_size ) {
+			$title_classes[] = 'has-' . sanitize_html_class( $title_font_size ) . '-font-size';
+		}
 		if ( ! empty( $title_color_props['class'] ) ) {
 			$title_classes[] = $title_color_props['class'];
 		}
@@ -893,6 +937,7 @@ if ( ! function_exists( 'nextora_event_tec_render_list_item' ) ) {
 		array $reg_btn_props = array(),
 		array $date_props = array(),
 		array $meta_props = array(),
+		string $title_font_size = '',
 	): string {
 		$title = trim( $event['title'] );
 		if ( '' === $title ) {
@@ -993,6 +1038,9 @@ if ( ! function_exists( 'nextora_event_tec_render_list_item' ) ) {
 		$item_style_attr = ! empty( $card_props['style'] ) ? ' style="' . esc_attr( $card_props['style'] ) . '"' : '';
 
 		$title_classes = array( 'nextora-event__title' );
+		if ( '' !== $title_font_size ) {
+			$title_classes[] = 'has-' . sanitize_html_class( $title_font_size ) . '-font-size';
+		}
 		if ( ! empty( $title_color_props['class'] ) ) {
 			$title_classes[] = $title_color_props['class'];
 		}
@@ -1053,6 +1101,8 @@ if ( ! function_exists( 'nextora_event_tec_render_template2_item' ) ) {
 		array $reg_btn_props = array(),
 		array $date_props = array(),
 		array $meta_props = array(),
+		string $title_font_size = '',
+		string $description_font_size = '',
 	): string {
 		$title = trim( $event['title'] );
 		if ( '' === $title ) {
@@ -1082,6 +1132,9 @@ if ( ! function_exists( 'nextora_event_tec_render_template2_item' ) ) {
 		}
 
 		$title_classes = array( 'nextora-event__template2-title' );
+		if ( '' !== $title_font_size ) {
+			$title_classes[] = 'has-' . sanitize_html_class( $title_font_size ) . '-font-size';
+		}
 		if ( ! empty( $title_color_props['class'] ) ) {
 			$title_classes[] = $title_color_props['class'];
 		}
@@ -1133,8 +1186,14 @@ if ( ! function_exists( 'nextora_event_tec_render_template2_item' ) ) {
 			? sprintf( '<div class="nextora-event__template2-date%1$s"%2$s><b%3$s%4$s>%5$s</b><span%6$s%7$s>%8$s</span></div>', $date_bg_class, $date_bg_style, $date_day_class, $date_day_style, esc_html( $day ), $date_month_class, $date_month_style, esc_html( $month ) )
 			: '';
 
+		$desc_classes = array( 'nextora-event__template2-desc' );
+		if ( '' !== $description_font_size ) {
+			$desc_classes[] = 'has-' . sanitize_html_class( $description_font_size ) . '-font-size';
+		}
+		$desc_class_attr = esc_attr( implode( ' ', $desc_classes ) );
+
 		$desc_html = '' !== $description
-			? sprintf( '<p class="nextora-event__template2-desc">%1$s</p>', esc_html( $description ) )
+			? sprintf( '<p class="%1$s">%2$s</p>', $desc_class_attr, esc_html( $description ) )
 			: '';
 
 		$footer_html = sprintf(
@@ -1184,6 +1243,8 @@ if ( ! function_exists( 'nextora_event_tec_render_template3_item' ) ) {
 		array $reg_btn_props = array(),
 		array $date_props = array(),
 		array $meta_props = array(),
+		string $title_font_size = '',
+		string $description_font_size = '',
 	): string {
 		$title = trim( $event['title'] );
 		if ( '' === $title ) {
@@ -1205,7 +1266,7 @@ if ( ! function_exists( 'nextora_event_tec_render_template3_item' ) ) {
 		$arrow_svg      = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true" focusable="false"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
 		$register_icon  = '<span class="nextora-event__template3-register-icon" aria-hidden="true">' . $arrow_svg . '</span>';
 
-		$reg_classes = array( 'nextora-event__template3-register', 'wp-element-button' );
+		$reg_classes = array( 'nextora-event__template3-register' );
 		if ( ! empty( $reg_btn_props['class'] ) ) {
 			$reg_classes = array_merge( $reg_classes, explode( ' ', trim( $reg_btn_props['class'] ) ) );
 		}
@@ -1223,10 +1284,19 @@ if ( ! function_exists( 'nextora_event_tec_render_template3_item' ) ) {
 		$item_style_attr = ! empty( $card_props['style'] ) ? ' style="' . esc_attr( $card_props['style'] ) . '"' : '';
 
 		$title_classes = array( 'nextora-event__template3-title' );
+		if ( '' !== $title_font_size ) {
+			$title_classes[] = 'has-' . sanitize_html_class( $title_font_size ) . '-font-size';
+		}
 		if ( ! empty( $title_color_props['class'] ) ) {
 			$title_classes[] = $title_color_props['class'];
 		}
 		$title_style_attr = ! empty( $title_color_props['style'] ) ? ' style="' . esc_attr( $title_color_props['style'] ) . '"' : '';
+
+		$desc_classes = array( 'nextora-event__template3-description' );
+		if ( '' !== $description_font_size ) {
+			$desc_classes[] = 'has-' . sanitize_html_class( $description_font_size ) . '-font-size';
+		}
+		$desc_class_attr = esc_attr( implode( ' ', $desc_classes ) );
 
 		$date_bg_class    = ! empty( $date_props['bg']['class'] ) ? ' ' . $date_props['bg']['class'] : '';
 		$date_bg_style    = ! empty( $date_props['bg']['style'] ) ? ' style="' . esc_attr( $date_props['bg']['style'] ) . '"' : '';
@@ -1236,7 +1306,7 @@ if ( ! function_exists( 'nextora_event_tec_render_template3_item' ) ) {
 		$date_month_style = ! empty( $date_props['month']['style'] ) ? ' style="' . esc_attr( $date_props['month']['style'] ) . '"' : '';
 
 		$date_badge_html = sprintf(
-			'<div class="nextora-event__template3-date-frame"><div class="nextora-event__template3-date%1$s"%2$s><span%3$s%4$s>%5$s</span><b%6$s%7$s>%8$s</b><small>%9$s</small></div></div>',
+			'<div class="nextora-event__template3-date-frame"><div class="nextora-event__template3-date%1$s"%2$s><span%3$s%4$s>%5$s</span><b%6$s%7$s>%8$s</b><small%3$s%4$s>%9$s</small></div></div>',
 			$date_bg_class,
 			$date_bg_style,
 			$date_month_class,
@@ -1270,7 +1340,7 @@ if ( ! function_exists( 'nextora_event_tec_render_template3_item' ) ) {
 			$title_html,
 			$meta_time,
 			$meta_location,
-			'' !== $description ? '<p class="nextora-event__template3-description">' . esc_html( $description ) . '</p>' : '',
+			'' !== $description ? sprintf( '<p class="%1$s">%2$s</p>', $desc_class_attr, esc_html( $description ) ) : '',
 			$register_html,
 			$image_html,
 		);
@@ -1312,7 +1382,7 @@ if ( $is_template1 ) {
 
 	$cards_html = '';
 	foreach ( $events as $event ) {
-		$card = nextora_event_tec_render_card( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props );
+		$card = nextora_event_tec_render_card( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props, $title_font_size );
 		if ( '' !== $card ) {
 			$cards_html .= $card;
 		}
@@ -1362,7 +1432,7 @@ if ( $is_template1 ) {
 } elseif ( 'template2' === $template ) {
 	$items_html = '';
 	foreach ( $events as $event ) {
-		$item = nextora_event_tec_render_template2_item( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props );
+		$item = nextora_event_tec_render_template2_item( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props, $title_font_size, $description_font_size );
 		if ( '' !== $item ) {
 			$items_html .= $item;
 		}
@@ -1402,7 +1472,7 @@ if ( $is_template1 ) {
 } elseif ( 'template3' === $template ) {
 	$items_html = '';
 	foreach ( $events as $event ) {
-		$items_html .= nextora_event_tec_render_template3_item( $event, $placeholder_url, $show_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props );
+		$items_html .= nextora_event_tec_render_template3_item( $event, $placeholder_url, $show_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props, $title_font_size, $description_font_size );
 	}
 	if ( '' === $items_html ) {
 		return;
@@ -1417,7 +1487,7 @@ if ( $is_template1 ) {
 	$items_html = '';
 
 	foreach ( $events as $event ) {
-		$item = nextora_event_tec_render_list_item( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props );
+		$item = nextora_event_tec_render_list_item( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props, $title_font_size );
 		if ( '' !== $item ) {
 			$items_html .= $item;
 		}

@@ -60,6 +60,8 @@ if ( ! function_exists( 'nextora_advanced_button_strip_inner_wrapper' ) ) {
 }
 
 $button_align  = isset( $attributes['buttonAlign'] ) ? (string) $attributes['buttonAlign'] : 'left';
+$column_gap    = isset( $attributes['columnGap'] ) ? max( 0, (int) $attributes['columnGap'] ) : 12;
+$row_gap       = isset( $attributes['rowGap'] ) ? max( 0, (int) $attributes['rowGap'] ) : 12;
 $enable_scroll = nextora_icon_scroll_animation_enabled( $attributes );
 
 $allowed_align = array( 'left', 'center', 'right' );
@@ -105,9 +107,15 @@ if ( $enable_scroll ) {
 }
 
 $wrapper = get_block_wrapper_attributes( $wrapper_args );
+
+$buttons_style = sprintf(
+	'--nextora-advanced-button-col-gap: %dpx; --nextora-advanced-button-row-gap: %dpx;',
+	$column_gap,
+	$row_gap,
+);
 ?>
 <div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
-	<div class="nextora-advanced-button__buttons">
+	<div class="nextora-advanced-button__buttons" style="<?php echo esc_attr( $buttons_style ); ?>">
 		<?php echo $buttons_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 	</div>
 </div>

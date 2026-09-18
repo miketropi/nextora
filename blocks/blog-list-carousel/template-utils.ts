@@ -26,6 +26,23 @@ export function normalizeCardTemplate(value: string | undefined): BlogListCardTe
 }
 
 /**
+ * Reset all color settings to nothing selected (empty string).
+ */
+export const RESET_COLOR_ATTRIBUTES: Partial<BlogListCarouselAttributes> = {
+	cardTitleColor: '',
+	cardExcerptColor: '',
+	cardMetaColor: '',
+	cardMetaIconColor: '',
+	cardBackgroundColor: '',
+	cardBorderColor: '',
+	readMoreLinkColor: '',
+	paginationColor: '',
+	paginationActiveColor: '',
+	arrowColor: '',
+	edgeFadeColor: '',
+};
+
+/**
  * Suggested settings when a card template is first selected.
  */
 export function getTemplateDefaultAttributes(
@@ -100,9 +117,6 @@ export function getTemplateDefaultAttributes(
 			cardBorderRadius: 16,
 			cardPadding: 0,
 			titleFontSize: 'medium-plus',
-			cardTitleColor: 'base',
-			cardMetaColor: 'base',
-			cardExcerptColor: 'base',
 			showExcerpt: true,
 			showReadMore: false,
 			cardLinkBehavior: 'full-card',

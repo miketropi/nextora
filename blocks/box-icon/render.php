@@ -911,6 +911,7 @@ $opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 		'cardBorderColor'              => '--nextora-box-icon-card-border-color',
 		'cardBackgroundColor'          => '--nextora-box-icon-card-bg',
 		'cardHoverBackgroundColor'     => '--nextora-box-icon-card-hover-bg',
+		'titleHoverColor'              => '--nextora-box-icon-title-hover-color',
 		'descriptionHoverColor'        => '--nextora-box-icon-card-desc-hover-color',
 		'linkColor'                    => '--nextora-box-icon-link-color',
 		'linkHoverColor'               => '--nextora-box-icon-link-hover-color',

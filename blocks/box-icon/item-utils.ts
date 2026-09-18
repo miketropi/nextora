@@ -117,6 +117,7 @@ export function buildStyleVars(attrs: {
 	cardBackgroundColor?: string;
 	cardHoverBackgroundColor?: string;
 	cardTitleColor?: string;
+	titleHoverColor?: string;
 	cardDescriptionColor?: string;
 	descriptionHoverColor?: string;
 	linkColor?: string;
@@ -176,6 +177,7 @@ export function buildStyleVars(attrs: {
 	setColor('--nextora-box-icon-card-border-color', attrs.cardBorderColor);
 	setColor('--nextora-box-icon-card-bg', attrs.cardBackgroundColor);
 	setColor('--nextora-box-icon-card-hover-bg', attrs.cardHoverBackgroundColor);
+	setColor('--nextora-box-icon-title-hover-color', attrs.titleHoverColor);
 	setColor('--nextora-box-icon-card-desc-hover-color', attrs.descriptionHoverColor);
 	setColor('--nextora-box-icon-link-color', attrs.linkColor);
 	setColor('--nextora-box-icon-link-hover-color', attrs.linkHoverColor);

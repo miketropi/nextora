@@ -99,7 +99,12 @@ footer.wp-block-template-part {
 }
 
 /* Links inside headings inherit heading color */
-h1 a, h2 a, h3 a, h4 a, h5 a, h6 a,
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a,
+h6 a,
 .wp-block-heading a {
 	color: inherit;
 }
@@ -263,7 +268,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
 
 .foodbank-hero>.wp-block-group {
 	box-sizing: border-box;
-	flex: 0 0 min(50%, 760px);
+	flex: 0 0 min(51%, 760px);
 	width: auto;
 	min-width: 0;
 	z-index: 1;

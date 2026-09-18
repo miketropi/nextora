@@ -8,7 +8,6 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
-	ColorPalette,
 	Modal,
 	PanelBody,
 	RadioControl,
@@ -577,20 +576,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 								min={0}
 								max={60}
 							/>
-							<div style={{ marginTop: '0.85rem', marginBottom: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(0, 0, 0, 0.08)' }}>
-								<p className="components-base-control__label" style={{ marginBottom: '0.35rem', fontWeight: 600 }}>
-									{__('Edge fade overlay color', 'nextora')}
-								</p>
-								<p className="components-help-text" style={{ marginTop: 0, marginBottom: '0.5rem' }}>
-									{__('Color for the trailing slide fade gradient. Match with your section background color.', 'nextora')}
-								</p>
-								<ColorPalette
-									value={colorValueForPicker(edgeFadeColor, palette)}
-									onChange={(v: string | undefined) =>
-										setAttributes({ edgeFadeColor: normalizeColorForStorage(v, palette) })
-									}
-								/>
-							</div>
 						</>
 					)}
 

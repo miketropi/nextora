@@ -288,6 +288,8 @@
 		root.style.removeProperty( '--nextora-header-button-color' );
 		root.style.removeProperty( '--nextora-header-button-hover-bg' );
 		root.style.removeProperty( '--nextora-header-button-hover-color' );
+		root.style.removeProperty( '--nextora-button-text-transform' );
+		root.style.removeProperty( '--nextora-button-font-weight' );
 	}
 
 	function applyButtonOverrides( theme ) {
@@ -320,6 +322,12 @@
 		}
 		if ( theme.headerButtonHoverColor ) {
 			root.style.setProperty( '--nextora-header-button-hover-color', theme.headerButtonHoverColor );
+		}
+		if ( theme.buttonTextTransform ) {
+			root.style.setProperty( '--nextora-button-text-transform', theme.buttonTextTransform );
+		}
+		if ( theme.buttonFontWeight ) {
+			root.style.setProperty( '--nextora-button-font-weight', theme.buttonFontWeight );
 		}
 
 		if ( ! buttonOverrideStyle ) {
@@ -358,6 +366,19 @@
 			var hdrHcol = theme.headerButtonHoverColor ? 'color: var(--nextora-header-button-hover-color);' : '';
 			rules.push(
 				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline):hover, .nextora-header-block__cta.nextora-header-block__cta--solid:hover) { ' + hdrHbg + ' ' + hdrHcol + ' }'
+			);
+		}
+
+		if ( theme.buttonTextTransform || theme.buttonFontWeight ) {
+			var typoProps = [];
+			if ( theme.buttonTextTransform ) {
+				typoProps.push( 'text-transform: var(--nextora-button-text-transform);' );
+			}
+			if ( theme.buttonFontWeight ) {
+				typoProps.push( 'font-weight: var(--nextora-button-font-weight);' );
+			}
+			rules.push(
+				':root:root :where(.wp-element-button, .wp-block-button__link, .nextora-header-block__cta, .alonepro-btn, .alonepro-alone-donation-box__btn, a.elementor-button, button.elementor-button) { ' + typoProps.join( ' ' ) + ' }'
 			);
 		}
 
@@ -434,6 +455,7 @@
 		}
 
 		// One-time migration from the legacy single color key.
+		var hasLegacy = false;
 		if ( ! prefs ) {
 			var legacy = null;
 			try {
@@ -441,6 +463,7 @@
 			} catch ( e ) {}
 
 			if ( legacy ) {
+				hasLegacy = true;
 				prefs = { color: legacy, font: null };
 				try {
 					localStorage.removeItem( LEGACY_STORAGE_KEY );
@@ -448,7 +471,10 @@
 			}
 		}
 
-		return prefs && typeof prefs === 'object' ? prefs : {};
+		return {
+			hasSaved: stored !== null || hasLegacy,
+			prefs: prefs && typeof prefs === 'object' ? prefs : {},
+		};
 	}
 
 	function save() {
@@ -462,17 +488,22 @@
 	}
 
 	function bootstrap() {
-		var prefs = readStorage();
+		var storageData = readStorage();
+		var prefs = storageData.prefs;
+		var hasSavedChoice = storageData.hasSaved;
 		var params = new URLSearchParams( window.location.search );
 		var urlTheme = params.get( 'theme' );
 		var urlColor = params.get( 'color' );
 		var urlFont = params.get( 'font' );
 
-		var theme = urlTheme && THEMES[ urlTheme ]
-			? urlTheme
-			: ( prefs.theme && THEMES[ prefs.theme ]
-				? prefs.theme
-				: ( INITIAL.theme && THEMES[ INITIAL.theme ] ? INITIAL.theme : null ) );
+		var theme = null;
+		if ( urlTheme && THEMES[ urlTheme ] ) {
+			theme = urlTheme;
+		} else if ( hasSavedChoice ) {
+			theme = prefs.theme && THEMES[ prefs.theme ] ? prefs.theme : null;
+		} else if ( INITIAL.theme && THEMES[ INITIAL.theme ] ) {
+			theme = INITIAL.theme;
+		}
 
 		var appliedFromUrl = Boolean(
 			( urlTheme && THEMES[ urlTheme ] ) ||
@@ -484,17 +515,23 @@
 			applyTheme( theme );
 		} else {
 			// URL wins over storage; storage wins over config initial; initial wins over theme default.
-			var color = urlColor && COLOR_PRESETS[ urlColor ]
-				? urlColor
-				: ( prefs.color && COLOR_PRESETS[ prefs.color ]
-					? prefs.color
-					: ( INITIAL.color && COLOR_PRESETS[ INITIAL.color ] ? INITIAL.color : null ) );
+			var color = null;
+			if ( urlColor && COLOR_PRESETS[ urlColor ] ) {
+				color = urlColor;
+			} else if ( hasSavedChoice ) {
+				color = prefs.color && COLOR_PRESETS[ prefs.color ] ? prefs.color : null;
+			} else if ( INITIAL.color && COLOR_PRESETS[ INITIAL.color ] ) {
+				color = INITIAL.color;
+			}
 
-			var font = urlFont && FONT_PRESETS[ urlFont ]
-				? urlFont
-				: ( prefs.font && FONT_PRESETS[ prefs.font ]
-					? prefs.font
-					: ( INITIAL.font && FONT_PRESETS[ INITIAL.font ] ? INITIAL.font : null ) );
+			var font = null;
+			if ( urlFont && FONT_PRESETS[ urlFont ] ) {
+				font = urlFont;
+			} else if ( hasSavedChoice ) {
+				font = prefs.font && FONT_PRESETS[ prefs.font ] ? prefs.font : null;
+			} else if ( INITIAL.font && FONT_PRESETS[ INITIAL.font ] ) {
+				font = INITIAL.font;
+			}
 
 			if ( color ) {
 				applyColor( color );

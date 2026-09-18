@@ -279,9 +279,6 @@
   .start {
     inset-inline-start: var(--spacing);
   }
-  .start\! {
-    inset-inline-start: var(--spacing) !important;
-  }
   .end {
     inset-inline-end: var(--spacing);
   }
@@ -464,9 +461,6 @@
   }
   .inline {
     display: inline;
-  }
-  .inline\! {
-    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -1312,9 +1306,6 @@
   .italic {
     font-style: italic;
   }
-  .italic\! {
-    font-style: italic !important;
-  }
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
@@ -1330,9 +1321,6 @@
   }
   .underline {
     text-decoration-line: underline;
-  }
-  .underline\! {
-    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -2184,7 +2172,7 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
 }
 .foodbank-hero>.wp-block-group {
   box-sizing: border-box;
-  flex: 0 0 min(50%, 760px);
+  flex: 0 0 min(51%, 760px);
   width: auto;
   min-width: 0;
   z-index: 1;
