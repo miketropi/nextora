@@ -5,7 +5,6 @@ import {
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
-	ColorPalette,
 	Disabled,
 	PanelBody,
 	RangeControl,
@@ -25,6 +24,7 @@ import {
 } from '../advanced-icon/color-utils';
 import {
 	BLOG_LIST_TEMPLATE_OPTIONS,
+	RESET_COLOR_ATTRIBUTES,
 	getTemplateDefaultAttributes,
 	normalizeCardTemplate,
 } from './template-utils';
@@ -646,6 +646,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						}
 						setAttributes({
 							cardTemplate: next,
+							...RESET_COLOR_ATTRIBUTES,
 							...getTemplateDefaultAttributes(next),
 						});
 					}}
@@ -762,20 +763,6 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						min={0}
 						max={60}
 					/>
-					<div style={{ marginTop: '0.85rem', marginBottom: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(0, 0, 0, 0.08)' }}>
-						<p className="components-base-control__label" style={{ marginBottom: '0.35rem', fontWeight: 600 }}>
-							{__('Edge fade overlay color', 'nextora')}
-						</p>
-						<p className="components-help-text" style={{ marginTop: 0, marginBottom: '0.5rem' }}>
-							{__('Color for the trailing slide fade gradient. Match with your section background color.', 'nextora')}
-						</p>
-						<ColorPalette
-							value={colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette)}
-							onChange={(v: string | undefined) =>
-								setThemeColor('edgeFadeColor', v)
-							}
-						/>
-					</div>
 					<RangeControl
 						label={__('Speed (ms)', 'nextora')}
 						value={speed}

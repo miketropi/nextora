@@ -8,7 +8,6 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
-	ColorPalette,
 	Modal,
 	PanelBody,
 	RangeControl,
@@ -283,18 +282,6 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 						max={4}
 						step={0.1}
 					/>
-					{((slidesPerView % 1) !== 0 || (slidesPerViewTablet % 1) !== 0 || (slidesPerViewMobile % 1) !== 0) && (
-						<div className="nextora-carousel-inspector-color" style={{ marginTop: '12px', marginBottom: '16px' }}>
-							<p className="nextora-carousel-inspector-color__label" style={{ marginBottom: '8px', fontSize: '11px', fontWeight: 500, textTransform: 'uppercase' }}>
-								{__('Edge fade color', 'nextora')}
-							</p>
-							<ColorPalette
-								value={edgeFadeColor}
-								onChange={(v) => setAttributes({ edgeFadeColor: v ?? '' })}
-								clearable
-							/>
-						</div>
-					)}
 					<RangeControl
 						label={__('Space between (px)', 'nextora')}
 						value={spaceBetween}

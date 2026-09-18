@@ -288,6 +288,10 @@
       "type": "string",
       "default": ""
     },
+    "titleHoverColor": {
+      "type": "string",
+      "default": ""
+    },
     "cardDescriptionColor": {
       "type": "string",
       "default": ""

@@ -2,12 +2,13 @@ import type { CSSProperties } from 'react';
 import { useEffect, useMemo, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import {
+	FontSizePicker,
 	InspectorControls,
 	PanelColorSettings,
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
-	ColorPalette,
+	BaseControl,
 	PanelBody,
 	SelectControl,
 	RangeControl,
@@ -24,6 +25,32 @@ import {
 	useThemeColorPalette,
 } from '../advanced-icon/color-utils';
 import { buildEventColorStyleVars } from './event-color-map';
+
+function normalizeFontSizeAttribute(
+	value: number | string | undefined,
+	selectedItem?: { slug?: string },
+): string {
+	if (value === undefined || value === '') {
+		return '';
+	}
+	const raw = (selectedItem?.slug || String(value)).trim().toLowerCase();
+	const map: Record<string, string> = {
+		sm: 'small',
+		small: 'small',
+		base: 'base',
+		normal: 'base',
+		md: 'medium',
+		medium: 'medium',
+		'medium-plus': 'medium-plus',
+		lg: 'large',
+		large: 'large',
+		xl: 'x-large',
+		'x-large': 'x-large',
+		'2xl': 'xx-large',
+		'xx-large': 'xx-large',
+	};
+	return map[raw] || raw;
+}
 
 interface EditProps {
 	attributes: EventTecAttributes;
@@ -48,6 +75,8 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 		dateDayColor,
 		dateAccentColor,
 		titleColor,
+		titleFontSize = '',
+		descriptionFontSize = '',
 		metaColor,
 		metaIconColor,
 		registerBackgroundColor,
@@ -367,23 +396,6 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 							max={3}
 							step={0.1}
 						/>
-						{((slidesPerView % 1) !== 0 || (tabletSlides % 1) !== 0 || (mobileSlides % 1) !== 0) && (
-							<div className="nextora-carousel-inspector-color" style={{ marginTop: '12px', marginBottom: '16px' }}>
-								<p className="nextora-carousel-inspector-color__label" style={{ marginBottom: '8px', fontSize: '11px', fontWeight: 500, textTransform: 'uppercase' }}>
-									{__('Edge fade color', 'nextora')}
-								</p>
-								<ColorPalette
-									colors={themePalette}
-									value={colorValueForPicker(edgeFadeColor, themePalette, lookupPalette)}
-									onChange={(next: string | undefined) =>
-										setAttributes({
-											edgeFadeColor: normalizeColorForStorage(next || '', lookupPalette),
-										})
-									}
-									clearable
-								/>
-							</div>
-						)}
 						<RangeControl
 							label={__('Space Between Slides (px)', 'nextora')}
 							value={spaceBetween}
@@ -440,7 +452,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 						colorProps('cardBorderColor', __('Card border', 'nextora')),
 						colorProps('dateBackgroundColor', __('Date badge background', 'nextora')),
 						colorProps('dateDayColor', __('Date day text', 'nextora')),
-						colorProps('dateAccentColor', __('Date month text', 'nextora')),
+						colorProps('dateAccentColor', __('Date label', 'nextora')),
 						colorProps('titleColor', __('Event title', 'nextora')),
 						colorProps('metaColor', __('Details meta text', 'nextora')),
 						colorProps('metaIconColor', __('Details icon color', 'nextora')),
@@ -459,6 +471,40 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 							: []),
 					]}
 				/>
+
+				{/* ── Typography Settings ── */}
+				<PanelBody title={__('Typography', 'nextora')} initialOpen={template === 'template3'}>
+					<BaseControl
+						label={__('Card title font size', 'nextora')}
+						id="nextora-event-tec-title-font-size"
+						help={__('Default inherits global heading size.', 'nextora')}
+					>
+						<FontSizePicker
+							value={titleFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									titleFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+					<BaseControl
+						label={__('Card description font size', 'nextora')}
+						id="nextora-event-tec-description-font-size"
+						help={__('Default inherits global body size.', 'nextora')}
+					>
+						<FontSizePicker
+							value={descriptionFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									descriptionFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+				</PanelBody>
 
 				{/* ── Animation Settings ── */}
 				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>

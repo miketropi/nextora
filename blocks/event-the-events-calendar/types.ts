@@ -15,6 +15,8 @@ export interface EventTecAttributes {
 	dateDayColor: string;
 	dateAccentColor: string;
 	titleColor: string;
+	titleFontSize?: string;
+	descriptionFontSize?: string;
 	metaColor: string;
 	metaIconColor: string;
 	registerBackgroundColor: string;

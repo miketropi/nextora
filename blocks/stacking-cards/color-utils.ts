@@ -1,8 +1,31 @@
 import type { CSSProperties } from 'react';
 
 /**
- * Resolves stored color attribute into standard Gutenberg classes and inline style.
- * Adheres to Section 2.C & 2.E of gutenberg-block-standard.
+ * Normalizes font size name to standard theme font size slug.
+ */
+export function normalizeFontSize(size: string | undefined): string {
+	if (!size) return '';
+	const trimmed = size.trim().toLowerCase();
+	const map: Record<string, string> = {
+		sm: 'small',
+		small: 'small',
+		base: 'base',
+		normal: 'base',
+		md: 'medium',
+		medium: 'medium',
+		'medium-plus': 'medium-plus',
+		lg: 'large',
+		large: 'large',
+		xl: 'x-large',
+		'x-large': 'x-large',
+		'2xl': 'xx-large',
+		'xx-large': 'xx-large',
+	};
+	return map[trimmed] || trimmed;
+}
+
+/**
+ * Resolves stored color attribute into standard Gutenberg classes and inline styles.
  */
 export function getGutenbergColorProps(
 	color: string | undefined,
@@ -17,7 +40,7 @@ export function getGutenbergColorProps(
 		return { className: '', style: {} };
 	}
 
-	// 1. Transparent keyword or zero-alpha custom color
+	// 1. Transparent keyword or zero-alpha
 	if (
 		trimmed === 'transparent' ||
 		trimmed === 'rgba(0, 0, 0, 0)' ||
@@ -100,75 +123,6 @@ export function getGutenbergColorProps(
 				: `has-text-color has-${slug}-color`,
 		style: {},
 	};
-}
-
-/**
- * Normalizes font-size shorthand string to standard Gutenberg has-[slug]-font-size class.
- */
-export function getGutenbergFontSizeClass(size: string | undefined): string {
-	if (!size) {
-		return '';
-	}
-	const map: Record<string, string> = {
-		sm: 'small',
-		small: 'small',
-		base: 'base',
-		normal: 'base',
-		md: 'medium',
-		medium: 'medium',
-		'medium-plus': 'medium-plus',
-		lg: 'large',
-		large: 'large',
-		xl: 'x-large',
-		'x-large': 'x-large',
-		'2xl': 'xx-large',
-		'xx-large': 'xx-large',
-	};
-	const normalized = map[size.toLowerCase()] || size.toLowerCase();
-	return `has-${normalized}-font-size`;
-}
-
-/**
- * Resolves a color attribute into a valid CSS expression for CSS variables.
- */
-export function resolveColorToCSSValue(color: string | undefined): string {
-	if (!color) {
-		return '';
-	}
-	const trimmed = color.trim();
-	if (
-		trimmed === 'transparent' ||
-		trimmed === 'rgba(0, 0, 0, 0)' ||
-		trimmed === 'rgba(0,0,0,0)' ||
-		/^#[0-9a-f]{6}00$/i.test(trimmed) ||
-		/^#[0-9a-f]{3}0$/i.test(trimmed)
-	) {
-		return 'transparent';
-	}
-	if (
-		/^#([A-Fa-f0-9]{3,8})$/.test(trimmed) ||
-		trimmed.startsWith('rgb') ||
-		trimmed.startsWith('hsl') ||
-		trimmed.startsWith('color-mix')
-	) {
-		return trimmed;
-	}
-	let slug = '';
-	const varMatch = trimmed.match(/^var\(--wp--preset--color--([a-z0-9-]+)/);
-	if (varMatch) {
-		slug = varMatch[1].toLowerCase();
-	} else {
-		const presetMatch = trimmed.match(/^var:preset\|color\|([a-z0-9_-]+)/i);
-		if (presetMatch) {
-			slug = presetMatch[1].toLowerCase();
-		} else {
-			slug = trimmed.toLowerCase();
-		}
-	}
-	if (slug === 'transparent') {
-		return 'transparent';
-	}
-	return `var(--wp--preset--color--${slug})`;
 }
 
 export { getGutenbergColorProps as getColorProps };

@@ -22,6 +22,8 @@ export interface EventAttributes {
 	showRegisterButton: boolean;
 	registerButtonText: string;
 	template3Alternating: boolean;
+	titleFontSize?: string;
+	descriptionFontSize?: string;
 	cardBackgroundColor: string;
 	cardBorderColor: string;
 	dateBackgroundColor: string;

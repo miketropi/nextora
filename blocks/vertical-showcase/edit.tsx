@@ -23,6 +23,11 @@ import {
 	normalizeColorForStorage,
 	useThemeColorPalette,
 } from '../advanced-icon/color-utils';
+import {
+	getGutenbergColorProps,
+	getGutenbergFontSizeClass,
+	resolveColorToCSSValue,
+} from './color-utils';
 import type { VerticalShowcaseAttributes, VerticalShowcaseItem } from './types';
 
 const FONT_SIZE_OPTIONS = [
@@ -140,17 +145,28 @@ export default function VerticalShowcaseEdit({ attributes, setAttributes }: {
 	const setColor = (key: keyof VerticalShowcaseAttributes, value: string | undefined) => {
 		setAttributes({ [key]: normalizeColorForStorage(value, lookupPalette) } as Partial<VerticalShowcaseAttributes>);
 	};
-	const editorColor = (value: string, fallback: string) => {
-		if (!value) return fallback;
-		const entry = lookupPalette.find((candidate) => candidate.slug === value);
-		return entry?.color || (value.startsWith('#') ? value : `var(--wp--preset--color--${value})`);
+
+	const blockStyle: Record<string, string> = {
+		'--nextora-vs-autoplay-duration': `${autoplayDuration}ms`,
 	};
-	const titleColor = editorColor(attributes.titleColor, 'var(--wp--preset--color--contrast)');
-	const descriptionColor = editorColor(attributes.descriptionColor, 'var(--wp--preset--color--paragraph)');
-	const numberColor = editorColor(attributes.numberColor, 'var(--wp--preset--color--paragraph)');
-	const indicatorColor = editorColor(attributes.activeIndicatorColor, 'var(--wp--preset--color--primary)');
-	const inactiveTitleColor = editorColor(attributes.inactiveTitleColor, 'var(--wp--preset--color--paragraph)');
-	const buttonColor = editorColor(attributes.buttonColor, 'var(--wp--preset--color--contrast)');
+	if (attributes.titleColor) {
+		const val = resolveColorToCSSValue(attributes.titleColor);
+		if (val) blockStyle['--nextora-vs-title-color'] = val;
+	}
+	if (attributes.inactiveTitleColor) {
+		const val = resolveColorToCSSValue(attributes.inactiveTitleColor);
+		if (val) blockStyle['--nextora-vs-inactive-title-color'] = val;
+	}
+	if (attributes.activeIndicatorColor) {
+		const val = resolveColorToCSSValue(attributes.activeIndicatorColor);
+		if (val) blockStyle['--nextora-vs-active-indicator'] = val;
+	}
+
+	const descColorProps = getGutenbergColorProps(attributes.descriptionColor, 'color');
+	const numberColorProps = getGutenbergColorProps(attributes.numberColor, 'color');
+	const buttonColorProps = getGutenbergColorProps(attributes.buttonColor, 'color');
+	const titleFontSizeClass = getGutenbergFontSizeClass(titleSize);
+	const descFontSizeClass = getGutenbergFontSizeClass(descriptionSize);
 
 	const addItem = () => setAttributes({ items: [...items, { ...EMPTY_ITEM, id: createItemId(), title: __('New item', 'nextora') }] });
 	const updateItem = (updated: VerticalShowcaseItem) => setAttributes({ items: items.map((item) => item.id === updated.id ? updated : item) });
@@ -165,17 +181,7 @@ export default function VerticalShowcaseEdit({ attributes, setAttributes }: {
 
 	const blockProps = useBlockProps({
 		className: 'wp-block-nextora-vertical-showcase nextora-vertical-showcase--editor',
-		style: {
-			...(titleSize ? { '--nextora-vs-title-size': `var(--wp--preset--font-size--${titleSize})` } : {}),
-			...(descriptionSize ? { '--nextora-vs-description-size': `var(--wp--preset--font-size--${descriptionSize})` } : {}),
-			'--nextora-vs-title-color': titleColor,
-			'--nextora-vs-inactive-title-color': inactiveTitleColor,
-			'--nextora-vs-description-color': descriptionColor,
-			'--nextora-vs-number-color': numberColor,
-			'--nextora-vs-active-indicator': indicatorColor,
-			'--nextora-vs-button-color': buttonColor,
-			'--nextora-vs-autoplay-duration': `${autoplayDuration}ms`,
-		} as React.CSSProperties,
+		style: blockStyle as React.CSSProperties,
 	});
 
 	const editingItem = editingItemId ? items.find((item) => item.id === editingItemId) : undefined;
@@ -217,17 +223,116 @@ export default function VerticalShowcaseEdit({ attributes, setAttributes }: {
 				<ToggleControl label={__('Animate on scroll', 'nextora')} checked={attributes.enableScrollAnimation} onChange={(enableScrollAnimation) => setAttributes({ enableScrollAnimation })} help={__('Fade or move content in when it enters the viewport. Disabled automatically when the visitor prefers reduced motion.', 'nextora')} />
 			</PanelBody>
 		</InspectorControls>
-		<div {...blockProps}><div className="nextora-vertical-showcase__grid"><div className="nextora-vertical-showcase__list">
-			{items.map((item, index) => {
-				const showItemLink = showViewMoreLinks && item.showViewMore !== false;
-				const hasDetails = Boolean(item.description || showItemLink);
-				return <button type="button" className={`nextora-vertical-showcase__item ${index === activeItemIndex ? 'nextora-vertical-showcase__item--active' : ''}`} key={item.id} onClick={() => setActiveIndex(index)} aria-pressed={index === activeItemIndex}>
-						<span className="nextora-vertical-showcase__item-number">/{String(index + 1).padStart(2, '0')}</span><span className="nextora-vertical-showcase__item-body"><h4 className="nextora-vertical-showcase__item-title">{item.title || __('Untitled', 'nextora')}</h4>{hasDetails && <span className="nextora-vertical-showcase__item-details" aria-hidden={index === activeItemIndex ? 'false' : 'true'}>{index === activeItemIndex && item.description && <span className="nextora-vertical-showcase__item-description">{item.description}</span>}{index === activeItemIndex && showItemLink && <span className="nextora-vertical-showcase__view-more" aria-label={item.link || '#'}>{item.viewMoreText || __('View More', 'nextora')}</span>}</span>}</span>
-				</button>;
-			})}
-		</div><div className="nextora-vertical-showcase__gallery"><div className="nextora-vertical-showcase__frame">
-			{items.map((item, index) => item.imageUrl && <div className={`nextora-vertical-showcase__image-layer ${index === activeItemIndex ? 'nextora-vertical-showcase__image-layer--active' : ''}`} key={item.id}><img src={item.imageUrl} alt={item.imageAlt || item.title} className="nextora-vertical-showcase__image" /></div>)}
-		</div></div></div></div>
+		<div {...blockProps}>
+			<div className="nextora-vertical-showcase__grid">
+				<div className="nextora-vertical-showcase__list" role="tablist">
+					{items.map((item, index) => {
+						const showItemLink = showViewMoreLinks && item.showViewMore !== false;
+						const hasDetails = Boolean(item.description || showItemLink);
+						const isActive = index === activeItemIndex;
+						return (
+							<button
+								type="button"
+								className={`nextora-vertical-showcase__item ${isActive ? 'nextora-vertical-showcase__item--active' : ''}`}
+								key={item.id}
+								onClick={() => setActiveIndex(index)}
+								aria-pressed={isActive}
+							>
+								<span className="nextora-vertical-showcase__item-rail" aria-hidden="true" />
+								<span
+									className={`nextora-vertical-showcase__item-number ${numberColorProps.className}`.trim()}
+									style={numberColorProps.style}
+									aria-hidden="true"
+								>
+									/{String(index + 1).padStart(2, '0')}
+								</span>
+								<span className="nextora-vertical-showcase__item-body">
+									<h4 className={`nextora-vertical-showcase__item-title ${titleFontSizeClass}`.trim()}>
+										{item.title || __('Untitled', 'nextora')}
+									</h4>
+									{hasDetails && (
+										<span
+											className="nextora-vertical-showcase__item-details"
+											aria-hidden={isActive ? 'false' : 'true'}
+										>
+											{isActive && item.description && (
+												<span
+													className={`nextora-vertical-showcase__item-description ${descFontSizeClass} ${descColorProps.className}`.trim()}
+													style={descColorProps.style}
+												>
+													{item.description}
+												</span>
+											)}
+											{isActive && showItemLink && (
+												<span
+													className={`nextora-vertical-showcase__view-more ${buttonColorProps.className}`.trim()}
+													style={buttonColorProps.style}
+													aria-label={item.link || '#'}
+												>
+													{item.viewMoreText || __('View More', 'nextora')}
+													<svg aria-hidden="true" viewBox="0 0 24 24">
+														<path d="M7 17 17 7M7 7h10v10" />
+													</svg>
+												</span>
+											)}
+										</span>
+									)}
+								</span>
+							</button>
+						);
+					})}
+				</div>
+				<div className="nextora-vertical-showcase__gallery">
+					<div className="nextora-vertical-showcase__frame">
+						{items.map((item, index) =>
+							item.imageUrl ? (
+								<div
+									className={`nextora-vertical-showcase__image-layer ${index === activeItemIndex ? 'nextora-vertical-showcase__image-layer--active' : ''}`}
+									key={item.id}
+								>
+									<img
+										src={item.imageUrl}
+										alt={item.imageAlt || item.title}
+										className="nextora-vertical-showcase__image"
+									/>
+								</div>
+							) : null
+						)}
+						<div className="nextora-vertical-showcase__image-gradient" aria-hidden="true" />
+						{attributes.showArrows !== false && (
+							<div className="nextora-vertical-showcase__controls">
+								<button
+									type="button"
+									className="nextora-vertical-showcase__arrow nextora-vertical-showcase__arrow--prev"
+									aria-label={__('Previous showcase item', 'nextora')}
+									onClick={(e) => {
+										e.stopPropagation();
+										setActiveIndex((prev) => (prev > 0 ? prev - 1 : items.length - 1));
+									}}
+								>
+									<svg aria-hidden="true" viewBox="0 0 24 24">
+										<path d="m15 18-6-6 6-6" />
+									</svg>
+								</button>
+								<button
+									type="button"
+									className="nextora-vertical-showcase__arrow nextora-vertical-showcase__arrow--next"
+									aria-label={__('Next showcase item', 'nextora')}
+									onClick={(e) => {
+										e.stopPropagation();
+										setActiveIndex((prev) => (prev < items.length - 1 ? prev + 1 : 0));
+									}}
+								>
+									<svg aria-hidden="true" viewBox="0 0 24 24">
+										<path d="m9 18 6-6-6-6" />
+									</svg>
+								</button>
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+		</div>
 		{editingItem && <ItemModal item={editingItem} onSave={updateItem} onClose={() => setEditingItemId(null)} />}
 	</>;
 }

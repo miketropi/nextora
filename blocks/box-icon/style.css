@@ -286,6 +286,12 @@
 /* Title & description */
 .nextora-box-icon__title {
 	margin: 1.5rem 0 1.15rem;
+	transition: color 0.2s ease;
+}
+
+.nextora-box-icon--template-default .nextora-box-icon__card:hover .nextora-box-icon__title,
+.nextora-box-icon--template-default .nextora-box-icon__card:focus-within .nextora-box-icon__title {
+	color: var(--nextora-box-icon-title-hover-color, currentColor);
 }
 
 .nextora-box-icon__description {
@@ -780,6 +786,11 @@
 .nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:focus-within {
 	background: var(--nextora-box-icon-card-bg, transparent);
 	color: var(--wp--preset--color--contrast, currentColor);
+}
+
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:hover .nextora-box-icon__title,
+.nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:focus-within .nextora-box-icon__title {
+	color: currentColor;
 }
 
 .nextora-box-icon--no-card-hover.nextora-box-icon--template-default .nextora-box-icon__card:hover .nextora-box-icon__description,
