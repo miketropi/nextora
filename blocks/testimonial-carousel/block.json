@@ -3,14 +3,24 @@
   "apiVersion": 3,
   "name": "nextora/testimonial-carousel",
   "title": "Testimonial Carousel",
-  "category": "design",
+  "category": "nextora",
   "description": "Minimalist centered testimonial carousel with fade transitions, trust counter, and avatar stack.",
-  "keywords": ["testimonial", "quote", "reviews", "carousel", "swiper", "nextora"],
+  "keywords": [
+    "testimonial",
+    "quote",
+    "reviews",
+    "carousel",
+    "swiper",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "format-quote",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": true,
@@ -20,14 +30,35 @@
     "spacing": {
       "margin": true,
       "padding": true
+    },
+    "typography": {
+      "fontSize": true,
+      "lineHeight": true,
+      "fontFamily": true,
+      "fontWeight": true
     }
   },
   "attributes": {
-    "templateStyle": { "type": "string", "default": "default" },
-    "itemsPerViewDesktop": { "type": "number", "default": 3 },
-    "itemsPerViewTablet": { "type": "number", "default": 2 },
-    "itemsPerViewMobile": { "type": "number", "default": 1 },
-    "cardGap": { "type": "number", "default": 22 },
+    "templateStyle": {
+      "type": "string",
+      "default": "default"
+    },
+    "itemsPerViewDesktop": {
+      "type": "number",
+      "default": 3
+    },
+    "itemsPerViewTablet": {
+      "type": "number",
+      "default": 2
+    },
+    "itemsPerViewMobile": {
+      "type": "number",
+      "default": 1
+    },
+    "cardGap": {
+      "type": "number",
+      "default": 22
+    },
     "testimonials": {
       "type": "array",
       "default": [
@@ -72,46 +103,178 @@
         }
       ]
     },
-    "showTopIcon": { "type": "boolean", "default": true },
-    "topIconType": { "type": "string", "default": "sparkle" },
-    "customIconSvg": { "type": "string", "default": "" },
-    "topIconSize": { "type": "number", "default": 20 },
-    "topIconColor": { "type": "string", "default": "" },
-    "showTopLabel": { "type": "boolean", "default": true },
-    "topLabelText": { "type": "string", "default": "Testimonials" },
-    "effect": { "type": "string", "default": "fade" },
-    "speed": { "type": "number", "default": 600 },
-    "autoplay": { "type": "boolean", "default": true },
-    "autoplayDelay": { "type": "number", "default": 6000 },
-    "pauseOnHover": { "type": "boolean", "default": true },
-    "loop": { "type": "boolean", "default": true },
-    "showPagination": { "type": "boolean", "default": true },
-    "showArrows": { "type": "boolean", "default": false },
-    "arrowPosition": { "type": "string", "default": "below-dots" },
-    "showTrustIndicator": { "type": "boolean", "default": true },
-    "trustText": { "type": "string", "default": "3500+ people trust us" },
-    "trustAvatars": { "type": "array", "default": [] },
-    "trustAvatarSize": { "type": "number", "default": 36 },
-    "trustAvatarOverlap": { "type": "number", "default": 10 },
-    "trustAvatarBorderWidth": { "type": "number", "default": 2.5 },
-    "trustAvatarBorderColor": { "type": "string", "default": "" },
-    "trustAvatarFallback": { "type": "string", "default": "initials" },
-    "trustPosition": { "type": "string", "default": "below-quote" },
-    "backgroundColor": { "type": "string", "default": "" },
-    "contentMaxWidth": { "type": "string", "default": "680px" },
-    "paddingTop": { "type": "number", "default": 80 },
-    "paddingBottom": { "type": "number", "default": 80 },
-    "paginationColor": { "type": "string", "default": "" },
-    "paginationActiveColor": { "type": "string", "default": "" },
-    "arrowColor": { "type": "string", "default": "" },
-    "arrowBorderColor": { "type": "string", "default": "" },
-    "quoteColor": { "type": "string", "default": "" },
-    "labelColor": { "type": "string", "default": "" },
-    "authorColor": { "type": "string", "default": "" },
-    "authorNameColor": { "type": "string", "default": "" },
-    "trustColor": { "type": "string", "default": "" },
-    "starColor": { "type": "string", "default": "" },
-    "enableScrollAnimation": { "type": "boolean", "default": true }
+    "showTopIcon": {
+      "type": "boolean",
+      "default": true
+    },
+    "topIconType": {
+      "type": "string",
+      "default": "sparkle"
+    },
+    "customIconSvg": {
+      "type": "string",
+      "default": ""
+    },
+    "topIconSize": {
+      "type": "number",
+      "default": 20
+    },
+    "topIconColor": {
+      "type": "string",
+      "default": ""
+    },
+    "showTopLabel": {
+      "type": "boolean",
+      "default": true
+    },
+    "topLabelText": {
+      "type": "string",
+      "default": "Testimonials"
+    },
+    "effect": {
+      "type": "string",
+      "default": "fade"
+    },
+    "speed": {
+      "type": "number",
+      "default": 600
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": true
+    },
+    "autoplayDelay": {
+      "type": "number",
+      "default": 6000
+    },
+    "pauseOnHover": {
+      "type": "boolean",
+      "default": true
+    },
+    "loop": {
+      "type": "boolean",
+      "default": true
+    },
+    "showPagination": {
+      "type": "boolean",
+      "default": true
+    },
+    "showArrows": {
+      "type": "boolean",
+      "default": false
+    },
+    "arrowPosition": {
+      "type": "string",
+      "default": "below-dots"
+    },
+    "showTrustIndicator": {
+      "type": "boolean",
+      "default": true
+    },
+    "trustText": {
+      "type": "string",
+      "default": "3500+ people trust us"
+    },
+    "trustAvatars": {
+      "type": "array",
+      "default": []
+    },
+    "trustAvatarSize": {
+      "type": "number",
+      "default": 36
+    },
+    "trustAvatarOverlap": {
+      "type": "number",
+      "default": 10
+    },
+    "trustAvatarBorderWidth": {
+      "type": "number",
+      "default": 2.5
+    },
+    "trustAvatarBorderColor": {
+      "type": "string",
+      "default": ""
+    },
+    "trustAvatarFallback": {
+      "type": "string",
+      "default": "initials"
+    },
+    "trustPosition": {
+      "type": "string",
+      "default": "below-quote"
+    },
+    "backgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "contentMaxWidth": {
+      "type": "string",
+      "default": "680px"
+    },
+    "paddingTop": {
+      "type": "number",
+      "default": 80
+    },
+    "paddingBottom": {
+      "type": "number",
+      "default": 80
+    },
+    "paginationColor": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationActiveColor": {
+      "type": "string",
+      "default": ""
+    },
+    "arrowColor": {
+      "type": "string",
+      "default": ""
+    },
+    "arrowBorderColor": {
+      "type": "string",
+      "default": ""
+    },
+    "quoteColor": {
+      "type": "string",
+      "default": ""
+    },
+    "quoteFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "quoteFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "labelColor": {
+      "type": "string",
+      "default": ""
+    },
+    "authorColor": {
+      "type": "string",
+      "default": ""
+    },
+    "authorNameColor": {
+      "type": "string",
+      "default": ""
+    },
+    "trustColor": {
+      "type": "string",
+      "default": ""
+    },
+    "starColor": {
+      "type": "string",
+      "default": ""
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    },
+    "edgeFadeColor": {
+      "type": "string",
+      "default": ""
+    }
   },
   "editorScript": "file:./index.js",
   "editorStyle": "file:./editor.css",

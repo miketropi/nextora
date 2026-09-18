@@ -1,6 +1,6 @@
 import type { BlogListCarouselAttributes } from './types';
 
-export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3';
 
 export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	value: BlogListCardTemplate;
@@ -9,6 +9,7 @@ export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	{ value: 'default', labelKey: 'Default' },
 	{ value: 'template-1', labelKey: 'Template 1' },
 	{ value: 'template-2', labelKey: 'Template 2' },
+	{ value: 'template-3', labelKey: 'Template 3' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BlogListCardTemplate {
@@ -18,8 +19,28 @@ export function normalizeCardTemplate(value: string | undefined): BlogListCardTe
 	if ( value === 'template-2' ) {
 		return 'template-2';
 	}
+	if ( value === 'template-3' ) {
+		return 'template-3';
+	}
 	return 'default';
 }
+
+/**
+ * Reset all color settings to nothing selected (empty string).
+ */
+export const RESET_COLOR_ATTRIBUTES: Partial<BlogListCarouselAttributes> = {
+	cardTitleColor: '',
+	cardExcerptColor: '',
+	cardMetaColor: '',
+	cardMetaIconColor: '',
+	cardBackgroundColor: '',
+	cardBorderColor: '',
+	readMoreLinkColor: '',
+	paginationColor: '',
+	paginationActiveColor: '',
+	arrowColor: '',
+	edgeFadeColor: '',
+};
 
 /**
  * Suggested settings when a card template is first selected.
@@ -72,12 +93,39 @@ export function getTemplateDefaultAttributes(
 			showReadMore: true,
 			readMoreText: 'Read More',
 			cardLinkBehavior: 'title-only',
-			titleFontSize: 'md',
+			titleFontSize: 'medium',
 			showPagination: false,
 			showArrows: false,
 			showDate: true,
 			showCategory: true,
 			dateFormat: 'M j, Y',
+		};
+	}
+
+	if (template === 'template-3') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 3,
+			gridColumnGap: 24,
+			gridRowGap: 24,
+			spaceBetween: 24,
+			slidesPerView: 3,
+			slidesPerViewTablet: 2,
+			slidesPerViewMobile: 1,
+			imageAspectRatio: '16-10',
+			imageBorderRadius: 16,
+			cardBorderRadius: 16,
+			cardPadding: 0,
+			titleFontSize: 'medium-plus',
+			showExcerpt: true,
+			showReadMore: false,
+			cardLinkBehavior: 'full-card',
+			showPagination: false,
+			showArrows: false,
+			showDate: true,
+			showCategory: true,
+			showAuthor: false,
+			excerptLineClamp: 3,
 		};
 	}
 

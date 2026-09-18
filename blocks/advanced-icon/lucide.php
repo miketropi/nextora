@@ -264,8 +264,22 @@ if ( ! function_exists( 'nextora_icon_resolve_color' ) ) {
 			return 'currentColor';
 		}
 
+		if ( 'transparent' === $raw || 'rgba(0,0,0,0)' === $raw || '#00000000' === $raw ) {
+			return 'transparent';
+		}
+
 		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $preset_m ) ) {
-			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $preset_m[1] ) ) . ')';
+			$slug = sanitize_html_class( strtolower( $preset_m[1] ) );
+			return 'transparent' === $slug ? 'transparent' : 'var(--wp--preset--color--' . $slug . ')';
+		}
+
+		if ( preg_match( '/^#([0-9a-f]{8})$/i', $raw ) ) {
+			$preset_slug = nextora_icon_hex_to_preset_slug( $raw );
+			if ( '' !== $preset_slug ) {
+				return 'var(--wp--preset--color--' . sanitize_html_class( $preset_slug ) . ')';
+			}
+
+			return strtolower( $raw );
 		}
 
 		$hex = sanitize_hex_color( $raw );
@@ -276,15 +290,6 @@ if ( ! function_exists( 'nextora_icon_resolve_color' ) ) {
 			}
 
 			return $hex;
-		}
-
-		if ( preg_match( '/^#([0-9a-f]{8})$/i', $raw ) ) {
-			$preset_slug = nextora_icon_hex_to_preset_slug( $raw );
-			if ( '' !== $preset_slug ) {
-				return 'var(--wp--preset--color--' . sanitize_html_class( $preset_slug ) . ')';
-			}
-
-			return strtolower( $raw );
 		}
 
 		if ( preg_match( '/^var\(\s*--wp--preset--color--[a-z0-9_-]+\s*\)$/i', $raw ) ) {
@@ -309,9 +314,11 @@ if ( ! function_exists( 'nextora_build_svg_nodes' ) ) {
 	/**
 	 * Recursively build SVG child nodes from lucide icon-nodes format.
 	 *
-	 * @param array<int, mixed> $nodes Node list.
+	 * @param array<int, mixed> $nodes        Node list.
+	 * @param bool              $animate      Whether to add stroke draw animation attributes.
+	 * @param int               $stroke_index Stroke counter reference for stagger delays.
 	 */
-	function nextora_build_svg_nodes( array $nodes ): string {
+	function nextora_build_svg_nodes( array $nodes, bool $animate = false, int &$stroke_index = 0 ): string {
 		$html = '';
 
 		foreach ( $nodes as $node ) {
@@ -327,8 +334,8 @@ if ( ! function_exists( 'nextora_build_svg_nodes' ) ) {
 				continue;
 			}
 
-			$tag_esc    = tag_escape( $tag );
-			$attr_str   = '';
+			$tag_esc  = tag_escape( $tag );
+			$attr_str = '';
 			foreach ( $attrs as $key => $val ) {
 				if ( ! is_string( $key ) || ( ! is_string( $val ) && ! is_numeric( $val ) ) ) {
 					continue;
@@ -336,7 +343,12 @@ if ( ! function_exists( 'nextora_build_svg_nodes' ) ) {
 				$attr_str .= ' ' . esc_attr( $key ) . '="' . esc_attr( (string) $val ) . '"';
 			}
 
-			$inner = ! empty( $children ) ? nextora_build_svg_nodes( $children ) : '';
+			if ( $animate ) {
+				$attr_str .= ' pathLength="1" class="nextora-icon-stroke" style="--stroke-index:' . esc_attr( (string) $stroke_index ) . ';"';
+				$stroke_index++;
+			}
+
+			$inner = ! empty( $children ) ? nextora_build_svg_nodes( $children, $animate, $stroke_index ) : '';
 
 			$html .= "<{$tag_esc}{$attr_str}>{$inner}</{$tag_esc}>";
 		}
@@ -354,6 +366,7 @@ if ( ! function_exists( 'nextora_get_lucide_svg' ) ) {
 	 * @param string $color        CSS color value or currentColor.
 	 * @param float  $stroke_width SVG stroke-width attribute value.
 	 * @param string $aria_label   Accessible label (empty = decorative).
+	 * @param bool   $animate      Add stroke drawing animation attributes.
 	 */
 	function nextora_get_lucide_svg(
 		string $icon_name,
@@ -361,6 +374,7 @@ if ( ! function_exists( 'nextora_get_lucide_svg' ) ) {
 		string $color = 'currentColor',
 		float $stroke_width = 2,
 		string $aria_label = '',
+		bool $animate = false,
 	): string {
 		static $icon_data = null;
 
@@ -396,22 +410,32 @@ if ( ! function_exists( 'nextora_get_lucide_svg' ) ) {
 		$color_attr = esc_attr( $color );
 		$sw_attr    = esc_attr( (string) $stroke_width );
 		$class      = 'lucide lucide-' . esc_attr( $icon_name );
+		if ( $animate ) {
+			$class .= ' animated-lucide-icon';
+		}
 
 		$aria = '' !== $aria_label
 			? 'role="img" aria-label="' . esc_attr( $aria_label ) . '"'
 			: 'aria-hidden="true" focusable="false"';
 
-		$inner = nextora_build_svg_nodes( $nodes );
+		$stroke_index = 0;
+		$inner        = nextora_build_svg_nodes( $nodes, $animate, $stroke_index );
+
+		$svg_styles = '';
+		if ( $animate ) {
+			$svg_styles = ' style="--stroke-total:' . esc_attr( (string) $stroke_index ) . ';"';
+		}
 
 		return sprintf(
 			'<svg xmlns="http://www.w3.org/2000/svg" width="%1$s" height="%1$s" viewBox="0 0 24 24"'
 			. ' fill="none" stroke="%2$s" stroke-width="%3$s"'
 			. ' stroke-linecap="round" stroke-linejoin="round"'
-			. ' class="%4$s" %5$s>%6$s</svg>',
+			. ' class="%4$s"%5$s %6$s>%7$s</svg>',
 			$size_attr,
 			$color_attr,
 			$sw_attr,
 			$class,
+			$svg_styles,
 			$aria,
 			$inner,
 		);

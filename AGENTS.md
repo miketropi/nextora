@@ -25,6 +25,7 @@ Use this file when changing code under `wp-content/themes/nextora/`. **Deeper fe
 | [`docs/scroll-animations.md`](./docs/scroll-animations.md) | Class-driven GSAP scroll reveals (`animation-fade-in-up`, data-* attrs) |
 | [`docs/spotlight-search.md`](./docs/spotlight-search.md) | Spotlight search, REST, `window.nextoraSpotlight` |
 | [`docs/comments-tiptap.md`](./docs/comments-tiptap.md) | Tiptap comment field, KSES, `window.nextoraComments` |
+| [`docs/color-scheme-switcher.md`](./docs/color-scheme-switcher.md) | Color & font scheme switcher, URL params, child-theme presets |
 | [`docs/blocks.md`](./docs/blocks.md) | Theme block standards |
 | [`docs/accessibility.md`](./docs/accessibility.md) | WCAG 2.1 AA patterns, source map, block checklist, QA workflow |
 | [`docs/blocks/`](./docs/blocks/) | Per-block spec docs (Arc Gallery, Team Section, Testimonial Carousel) |
@@ -56,7 +57,7 @@ After changing CSS, TS, or block sources, run **`npm run build`** (or **`npm run
 - **Registration**: `blocks/blocks.php` — globs `blocks/*/block.json`, requires built `index.js` + `index.asset.php`.
 - **Build**: `scripts/build-blocks.mjs` — `@wordpress/*` → `window.wp.*`.
 - **Scaffold**: `npm run gen -- --name=slug --ns=nextora`
-- **Examples**: `blocks/header/`, `blocks/spotlight-search/`, `blocks/hero-section/`, `blocks/post-grid/`, `blocks/image-gallery-grid/`, `blocks/image-gallery-slide/`, `blocks/call-to-action/`, `blocks/scrolling-promotion/`, `blocks/testimonial-carousel/`, `blocks/page-title/`
+- **Examples**: `blocks/header/`, `blocks/spotlight-search/`, `blocks/hero-section/`, `blocks/post-grid/`, `blocks/call-to-action/`, `blocks/scrolling-promotion/`, `blocks/testimonial-carousel/`, `blocks/page-title/`
 
 ### Default template parts
 

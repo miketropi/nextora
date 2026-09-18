@@ -1,7 +1,11 @@
 /**
  * Scrolling promotion — fill marquee loop on the front end when content is narrower than the track.
  */
-import { initScrollingPromotionMarquee, prefersReducedMotion } from './marquee-loop';
+import {
+	fillScrollingPromotionMarquee,
+	initScrollingPromotionMarquee,
+	prefersReducedMotion,
+} from './marquee-loop';
 
 const ROOT_SELECTOR =
 	'.nextora-scrolling-promotion:not([data-nextora-marquee-ready])';
@@ -13,16 +17,23 @@ function observeResize(root: HTMLElement): void {
 	}
 
 	let frame = 0;
-	const observer = new ResizeObserver(() => {
+	let lastWidth = Math.round(track.getBoundingClientRect().width);
+
+	const observer = new ResizeObserver((entries) => {
 		if (prefersReducedMotion()) {
 			return;
 		}
-		cancelAnimationFrame(frame);
-		frame = requestAnimationFrame(() => {
-			delete root.dataset.nextoraMarqueeReady;
-			root.classList.remove('nextora-scrolling-promotion--ready');
-			void initScrollingPromotionMarquee(root);
-		});
+		for (const entry of entries) {
+			const newWidth = Math.round(entry.contentRect.width);
+			if (newWidth === lastWidth || newWidth === 0) {
+				continue;
+			}
+			lastWidth = newWidth;
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(() => {
+				fillScrollingPromotionMarquee(root);
+			});
+		}
 	});
 
 	observer.observe(track);

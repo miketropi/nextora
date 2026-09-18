@@ -172,8 +172,10 @@
 /* Carousel navigation */
 .nextora-instagram-feed__pagination {
 	display: flex;
+	align-items: center;
 	justify-content: center;
-	gap: 0.375rem;
+	gap: 6px;
+	line-height: 0;
 	margin-top: var(--wp--preset--spacing--40);
 	position: relative !important;
 }
@@ -181,18 +183,25 @@
 .nextora-instagram-feed__pagination .swiper-pagination-bullet {
 	width: 7px;
 	height: 7px;
-	border-radius: 50%;
+	margin: 0 !important;
+	padding: 0;
+	border: none;
+	border-radius: 999px;
 	background: var(
 		--nextora-instagram-dot-color,
 		color-mix(in srgb, currentColor 35%, transparent)
 	);
 	opacity: 1;
-	transition: all 0.3s ease;
+	box-sizing: border-box;
+	cursor: pointer;
+	transform: none;
+	transition: width 0.3s ease, border-radius 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
 }
 
 .nextora-instagram-feed__pagination .swiper-pagination-bullet-active {
 	width: 20px;
-	border-radius: 4px;
+	height: 7px;
+	border-radius: 999px;
 	background: var(
 		--nextora-instagram-dot-active,
 		var(--wp--preset--color--primary, currentColor)
@@ -465,3 +474,45 @@
 		transform: none;
 	}
 }
+
+/* Edge Fade Overlay for fractional slidesPerView */
+.nextora-instagram-feed__edge-overlay {
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	width: clamp(70px, 12vw, 140px);
+	background: linear-gradient(to right, transparent, var(--nextora-instagram-feed-edge-fade-color, var(--wp--preset--color--base, #ffffff)));
+	pointer-events: none;
+	z-index: 5;
+}
+
+:where([dir="rtl"]) .nextora-instagram-feed__edge-overlay {
+	right: auto;
+	left: 0;
+	background: linear-gradient(to left, transparent, var(--nextora-instagram-feed-edge-fade-color, var(--wp--preset--color--base, #ffffff)));
+}
+
+.nextora-instagram-feed.has-edge-fade-desktop .nextora-instagram-feed__edge-overlay {
+	display: block;
+}
+
+@media (max-width: 1023px) {
+	.nextora-instagram-feed .nextora-instagram-feed__edge-overlay {
+		display: none;
+	}
+	.nextora-instagram-feed.has-edge-fade-tablet .nextora-instagram-feed__edge-overlay {
+		display: block;
+	}
+}
+
+@media (max-width: 639px) {
+	.nextora-instagram-feed .nextora-instagram-feed__edge-overlay {
+		display: none;
+	}
+	.nextora-instagram-feed.has-edge-fade-mobile .nextora-instagram-feed__edge-overlay {
+		display: block;
+	}
+}
+

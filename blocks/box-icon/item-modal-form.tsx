@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 import {
 	Button,
 	TextControl,
@@ -45,6 +45,18 @@ export default function ItemModalForm({
 	blockIconSurfaceBorderColor,
 	cardTemplate,
 }: ItemModalFormProps) {
+	// Auto-migrate legacy highlights items where number was empty and linkLabel was used as subtitle.
+	useEffect(() => {
+		if (cardTemplate === 'highlights' && !item.number && item.linkLabel) {
+			onPatch({
+				number: item.title,
+				title: item.description,
+				description: item.linkLabel,
+				linkLabel: '',
+			});
+		}
+	}, [cardTemplate, item.number, item.linkLabel, item.title, item.description, onPatch]);
+
 	const [pickerOpen, setPickerOpen] = useState(false);
 	const iconSource = item.iconSource === 'upload' ? 'upload' : 'theme';
 	const colorPalette = useThemeColorPalette();
@@ -141,6 +153,7 @@ export default function ItemModalForm({
 				)}
 				{cardTemplate === 'default' || cardTemplate === 'minimal' ? (
 					<PanelColorSettings
+						enableAlpha
 						title={__('Icon colors', 'nextora')}
 						colors={colorPalette}
 						colorSettings={[
@@ -163,6 +176,7 @@ export default function ItemModalForm({
 				) : null}
 				{cardTemplate === 'highlights' ? (
 					<PanelColorSettings
+						enableAlpha
 						title={__('Accent color', 'nextora')}
 						colors={colorPalette}
 						colorSettings={[
@@ -180,14 +194,14 @@ export default function ItemModalForm({
 			</div>
 
 			<div className="nextora-box-icon__item-modal-form-fields">
-				{cardTemplate === 'highlights' ? (
+				{cardTemplate === 'highlights' || cardTemplate === 'timeline' || cardTemplate === 'template-4' ? (
 					<div className="nextora-box-icon__item-modal-form-group">
 						<p className="nextora-box-icon__item-modal-form-heading">{__('Number', 'nextora')}</p>
 						<TextControl
-							label={__('Stat number', 'nextora')}
+							label={cardTemplate === 'timeline' ? __('Time label', 'nextora') : cardTemplate === 'template-4' ? __('Tag label', 'nextora') : __('Stat number', 'nextora')}
 							value={item.number}
 							onChange={(number) => onPatch({ number: number ?? '' })}
-							help={__('Large number shown above the label (e.g. 1200+).', 'nextora')}
+							help={cardTemplate === 'timeline' ? __('Time marker shown above the phase title (e.g. T + 0H).', 'nextora') : cardTemplate === 'template-4' ? __('Label shown in the row tag (e.g. ADOPT). Shown as "01 · ADOPT".', 'nextora') : __('Large number shown above the label (e.g. 1200+).', 'nextora')}
 						/>
 					</div>
 				) : null}
@@ -208,7 +222,7 @@ export default function ItemModalForm({
 				</div>
 
 				<div className="nextora-box-icon__item-modal-form-group">
-					{cardTemplate !== 'highlights' ? (
+					{cardTemplate !== 'highlights' && cardTemplate !== 'timeline' ? (
 						<>
 							<p className="nextora-box-icon__item-modal-form-heading">{__('Link', 'nextora')}</p>
 							<ToggleControl

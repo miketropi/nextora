@@ -2,9 +2,9 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "nextora/blog-list-carousel",
-  "title": "Blog List Carousel",
-  "category": "design",
-  "description": "A dynamic blog post carousel that pulls posts from WordPress and displays them in a Swiper.js card slider.",
+  "title": "Blog Posts",
+  "category": "nextora",
+  "description": "Display blog posts in a carousel, grid, or list layout with customizable query and card settings.",
   "keywords": [
     "blog",
     "posts",
@@ -17,7 +17,10 @@
   "icon": "list-view",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": true,
@@ -39,12 +42,10 @@
       "default": "default"
     },
     "layoutMode": {
-      "type": "string",
-      "default": "carousel"
+      "type": "string"
     },
     "gridColumns": {
-      "type": "number",
-      "default": 3
+      "type": "number"
     },
     "gridColumnGap": {
       "type": "number",
@@ -142,6 +143,10 @@
       "type": "boolean",
       "default": true
     },
+    "excerptFontSize": {
+      "type": "string",
+      "default": ""
+    },
     "excerptLineClamp": {
       "type": "number",
       "default": 3
@@ -172,7 +177,7 @@
     },
     "readMoreText": {
       "type": "string",
-      "default": "Read More \u2192"
+      "default": "Read More →"
     },
     "readMoreColor": {
       "type": "string",
@@ -250,6 +255,10 @@
       "type": "string",
       "default": ""
     },
+    "cardMetaIconColor": {
+      "type": "string",
+      "default": ""
+    },
     "cardBackgroundColor": {
       "type": "string",
       "default": ""
@@ -289,6 +298,10 @@
     "scrollAnimationStyle": {
       "type": "string",
       "default": "default"
+    },
+    "edgeFadeColor": {
+      "type": "string",
+      "default": ""
     }
   },
   "editorScript": "file:./index.js",

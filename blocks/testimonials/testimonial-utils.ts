@@ -46,7 +46,24 @@ export function buildAuthorMeta(age: string, location: string): string {
 	if (parts.length === 0) {
 		return '';
 	}
-	return `/ ${parts.join(' - ')}`;
+	return `/ ${parts.join(', ')}`;
+}
+
+export function resolveColor(raw: string | undefined): string {
+	if (!raw) {
+		return '';
+	}
+	const value = raw.trim();
+	if (!value) {
+		return '';
+	}
+	if (value.startsWith('#') || value.startsWith('rgb') || value.startsWith('hsl') || value.startsWith('var(')) {
+		return value;
+	}
+	if (/^[a-z0-9-]+$/i.test(value)) {
+		return `var(--wp--preset--color--${value.toLowerCase()})`;
+	}
+	return value;
 }
 
 export function buildSectionStyleVars(attrs: Partial<TestimonialsAttributes>): Record<string, string> {
@@ -55,25 +72,25 @@ export function buildSectionStyleVars(attrs: Partial<TestimonialsAttributes>): R
 		'--nextora-testimonials-image-ratio': `${ratio}%`,
 	};
 	if (attrs.contentBackgroundColor) {
-		vars['--nextora-testimonials-content-bg'] = attrs.contentBackgroundColor;
+		vars['--nextora-testimonials-content-bg'] = resolveColor(attrs.contentBackgroundColor);
 	}
 	if (attrs.headingColor) {
-		vars['--nextora-testimonials-heading-color'] = attrs.headingColor;
+		vars['--nextora-testimonials-heading-color'] = resolveColor(attrs.headingColor);
 	}
 	if (attrs.quoteColor) {
-		vars['--nextora-testimonials-quote-color'] = attrs.quoteColor;
+		vars['--nextora-testimonials-quote-color'] = resolveColor(attrs.quoteColor);
 	}
 	if (attrs.authorNameColor) {
-		vars['--nextora-testimonials-author-name-color'] = attrs.authorNameColor;
+		vars['--nextora-testimonials-author-name-color'] = resolveColor(attrs.authorNameColor);
 	}
 	if (attrs.authorMetaColor) {
-		vars['--nextora-testimonials-author-meta-color'] = attrs.authorMetaColor;
+		vars['--nextora-testimonials-author-meta-color'] = resolveColor(attrs.authorMetaColor);
 	}
 	if (attrs.paginationColor) {
-		vars['--nextora-testimonials-dot-color'] = attrs.paginationColor;
+		vars['--nextora-testimonials-dot-color'] = resolveColor(attrs.paginationColor);
 	}
 	if (attrs.paginationActiveColor) {
-		vars['--nextora-testimonials-dot-active'] = attrs.paginationActiveColor;
+		vars['--nextora-testimonials-dot-active'] = resolveColor(attrs.paginationActiveColor);
 	}
 
 	return vars;

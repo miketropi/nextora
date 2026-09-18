@@ -1,15 +1,17 @@
 import type { BoxIconAttributes } from './types';
 
-export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4';
 
 export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	value: BoxIconCardTemplate;
 	labelKey: string;
 }[] = [
 	{ value: 'default', labelKey: 'Default' },
-	{ value: 'ways', labelKey: 'Ways' },
 	{ value: 'minimal', labelKey: 'Minimal' },
-	{ value: 'highlights', labelKey: 'Highlights Stats' },
+	{ value: 'ways', labelKey: 'Template 01' },
+	{ value: 'highlights', labelKey: 'Template 02' },
+	{ value: 'timeline', labelKey: 'Template 03' },
+	{ value: 'template-4', labelKey: 'Template 04' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BoxIconCardTemplate {
@@ -21,6 +23,12 @@ export function normalizeCardTemplate(value: string | undefined): BoxIconCardTem
 	}
 	if (value === 'highlights') {
 		return 'highlights';
+	}
+	if (value === 'timeline') {
+		return 'timeline';
+	}
+	if (value === 'template-4') {
+		return 'template-4';
 	}
 	return 'default';
 }
@@ -69,12 +77,6 @@ export function getTemplateDefaultAttributes(
 			iconStyle: 'stacked',
 			showPagination: true,
 			showArrows: false,
-			cardPadding: {
-				top: '16px',
-				right: '22px',
-				bottom: '16px',
-				left: '22px',
-			},
 		};
 	}
 
@@ -96,12 +98,48 @@ export function getTemplateDefaultAttributes(
 			iconStyle: 'stacked',
 			showPagination: false,
 			showArrows: false,
-			cardPadding: {
-				top: '30px',
-				right: '24px',
-				bottom: '30px',
-				left: '24px',
-			},
+		};
+	}
+
+	if (template === 'timeline') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 4,
+			gridMinWidth: 761,
+			spaceBetween: 0,
+			slidesPerView: 4,
+			slidesPerViewTablet: 2,
+			slidesPerViewMobile: 1.15,
+			cardBorderWidth: 0,
+			cardBorderRadius: 0,
+			cardMinHeight: 0,
+			iconCircleSize: 44,
+			iconSize: 20,
+			iconCircleRadius: 50,
+			iconStyle: 'framed',
+			showPagination: false,
+			showArrows: false,
+		};
+	}
+
+	if (template === 'template-4') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 1,
+			disableResponsiveCarousel: true,
+			spaceBetween: 0,
+			slidesPerView: 1.15,
+			slidesPerViewTablet: 1,
+			slidesPerViewMobile: 1,
+			cardBorderWidth: 0,
+			cardBorderRadius: 0,
+			cardMinHeight: 0,
+			iconCircleSize: 68,
+			iconSize: 32,
+			iconCircleRadius: 29,
+			iconStyle: 'stacked',
+			showPagination: false,
+			showArrows: false,
 		};
 	}
 

@@ -1,4 +1,11 @@
 .wp-block-nextora-advanced-container,
+.wp-block-nextora-advanced-container *,
+.nextora-advanced-container,
+.nextora-advanced-container * {
+  box-sizing: border-box;
+}
+
+.wp-block-nextora-advanced-container,
 .nextora-advanced-container {
   position: relative;
   overflow: clip;
@@ -17,10 +24,6 @@
   max-width: 100%;
 }
 
-.wp-block-nextora-advanced-container:not(.nextora-advanced-container--fill-gradient):not([class*="-gradient-background"]),
-.nextora-advanced-container:not(.nextora-advanced-container--fill-gradient):not([class*="-gradient-background"]) {
-  background: var(--wp--preset--color--surface, #f4f4f4);
-}
 
 .nextora-advanced-container--fill-gradient {
   background: var(--nextora-ac-section-bg);
@@ -30,7 +33,7 @@
   isolation: isolate;
 }
 
-.nextora-advanced-container--hover-reveal:not(.nextora-advanced-container--fill-gradient):not([class*="-gradient-background"]) {
+.nextora-advanced-container--hover-reveal:not(.nextora-advanced-container--fill-gradient):not([class*="-gradient-background"]):not([data-nextora-has-section-background]) {
   background: transparent;
 }
 
@@ -353,6 +356,19 @@
 
 @media (prefers-reduced-motion: reduce) {
   .nextora-advanced-container__ambient-icons {
+    display: none;
+  }
+}
+
+/* Ripples */
+.nextora-advanced-container--ripples {
+  --nextora-ac-ripples-resolution: 512;
+  --nextora-ac-ripples-drop-radius: 35px;
+  --nextora-ac-ripples-perturbance: 0.12;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nextora-advanced-container--ripples canvas {
     display: none;
   }
 }

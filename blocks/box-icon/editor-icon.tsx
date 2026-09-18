@@ -86,11 +86,9 @@ export default function BoxIconEditorIcon({
 			iconStyleVars['--nextora-box-icon-icon-surface-bg'] = surfaceBgVar;
 		}
 
-		if (iconStyle === 'framed') {
-			const surfaceBorderVar = cssVarIfSet(iconSurfaceBorderColor, lookupPalette);
-			if (surfaceBorderVar) {
-				iconStyleVars['--nextora-box-icon-icon-surface-border'] = surfaceBorderVar;
-			}
+		const surfaceBorderVar = cssVarIfSet(iconSurfaceBorderColor, lookupPalette);
+		if (surfaceBorderVar) {
+			iconStyleVars['--nextora-box-icon-icon-surface-border'] = surfaceBorderVar;
 		}
 	}
 

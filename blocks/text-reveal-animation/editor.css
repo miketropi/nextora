@@ -1,0 +1,192 @@
+/**
+ * Editor styles for nextora/text-reveal-animation
+ */
+
+.nextora-tra-admin-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 8px;
+}
+
+.nextora-tra-admin-row-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 10px;
+	background: #f7f7f7;
+	border: 1px solid #e0e0e0;
+	border-radius: 6px;
+	gap: 8px;
+}
+
+.nextora-tra-admin-row-item__info {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	overflow: hidden;
+	min-width: 0;
+}
+
+.nextora-tra-admin-row-item__info strong {
+	font-size: 13px;
+	color: #1e1e1e;
+}
+
+.nextora-tra-admin-row-item__preview {
+	font-size: 11px;
+	color: #757575;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.nextora-tra-admin-row-item__actions {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	flex-shrink: 0;
+}
+
+/* Modal styles */
+.nextora-tra-modal {
+	max-width: 580px !important;
+}
+
+.nextora-tra-modal__body {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 10px 0;
+}
+
+.nextora-tra-modal__row-settings {
+	padding-bottom: 12px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.nextora-tra-modal__elements-list {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	max-height: 200px;
+	overflow-y: auto;
+	padding: 2px;
+}
+
+.nextora-tra-modal__element-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 12px;
+	background: #fafafa;
+	border: 1px solid #e0e0e0;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.nextora-tra-modal__element-item:hover {
+	border-color: #999;
+	background: #f0f0f0;
+}
+
+.nextora-tra-modal__element-item.is-active {
+	border-color: #007cba;
+	background: #edf6fd;
+	box-shadow: 0 0 0 1px #007cba;
+}
+
+.nextora-tra-modal__element-info {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	overflow: hidden;
+}
+
+.nextora-tra-modal__element-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 2px 6px;
+	border-radius: 4px;
+	background: #e8e8e8;
+	font-size: 11px;
+	font-weight: 500;
+	color: #333;
+}
+
+.nextora-tra-modal__element-title {
+	font-size: 13px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 260px;
+}
+
+.nextora-tra-modal__element-actions {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.nextora-tra-modal__element-editor {
+	margin-top: 14px;
+	padding: 14px;
+	background: #f9f9f9;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+}
+
+.nextora-tra-modal__media-dropzone {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 20px;
+	background: #fff;
+	border: 2px dashed #cbd5e1;
+	border-radius: 6px;
+	cursor: pointer;
+	color: #64748b;
+	transition: all 0.2s ease;
+}
+
+.nextora-tra-modal__media-dropzone:hover {
+	border-color: #3b82f6;
+	color: #3b82f6;
+	background: #f8fafc;
+}
+
+.nextora-tra-modal__media-preview-wrap {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px;
+	background: #fff;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+}
+
+.nextora-tra-modal__media-preview {
+	width: 60px;
+	height: 48px;
+	object-fit: cover;
+	border-radius: 4px;
+}
+
+.nextora-tra-modal__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 16px;
+	padding-top: 12px;
+	border-top: 1px solid #e5e5e5;
+}
+
+/* Editor canvas preview overrides */
+.nextora-tra--editor {
+	position: relative;
+	width: 100%;
+}

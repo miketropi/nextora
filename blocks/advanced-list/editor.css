@@ -2,6 +2,8 @@
  * Advanced List — editor styles
  */
 
+@import './style.css';
+
 /* Item Modal */
 .nextora-advanced-list-modal .components-modal__content {
   padding: 1.5rem;

@@ -18,12 +18,28 @@ if ( ! function_exists( 'nextora_contact_form_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( 'transparent' === $raw || 'rgba(0,0,0,0)' === $raw || '#00000000' === $raw ) {
+			return 'transparent';
+		}
+		if ( preg_match( '/^#[0-9a-fA-F]{3,8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
 		}
-		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
-			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
+
+		$slug = $raw;
+		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
+			$slug = strtolower( $m[1] );
+		} elseif ( preg_match( '/^var\(\s*--wp--preset--color--([a-z0-9_-]+)\s*\)$/i', $raw, $m ) ) {
+			$slug = strtolower( $m[1] );
+		}
+
+		if ( preg_match( '/^[a-z0-9-]+$/', $slug ) ) {
+			$s = sanitize_html_class( $slug );
+			return 'transparent' === $s ? 'transparent' : 'var(--wp--preset--color--' . $s . ')';
 		}
 
 		return '';
@@ -380,7 +396,7 @@ if ( $rich_text_message && ! is_admin() ) {
 			<?php endif; ?>
 		</div>
 
-		<button type="submit" class="nextora-contact-form__submit">
+		<button type="submit" class="nextora-contact-form__submit wp-element-button">
 			<?php echo esc_html( $button_label ); ?>
 		</button>
 	</form>

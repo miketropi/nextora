@@ -226,6 +226,7 @@ export default function SlideItemEdit({ attributes, setAttributes }) {
 
           {backgroundType === 'color' && (
             <PanelColorSettings
+              enableAlpha
               title={__('Background color', 'nextora')}
               colorSettings={[
                 {
@@ -251,6 +252,7 @@ export default function SlideItemEdit({ attributes, setAttributes }) {
           {overlayMode === 'color' && (
             <>
               <PanelColorSettings
+                enableAlpha
                 title={__('Overlay color', 'nextora')}
                 colorSettings={[
                   {

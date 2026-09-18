@@ -7,8 +7,8 @@
 import gsap from "gsap";
 import { bindHeaderFollowUsIn, clearFollowUsBindingState } from "./header-follow-us";
 
-function getDesktopMediaQuery(): string {
-	const toggle = document.querySelector<HTMLButtonElement>("[data-nextora-nav-toggle]");
+function getDesktopMediaQuery(btn?: HTMLButtonElement | null): string {
+	const toggle = btn ?? document.querySelector<HTMLButtonElement>("[data-nextora-nav-toggle]");
 	if (toggle?.dataset.nextoraMobileBreakpoint) {
 		const bp = parseInt(toggle.dataset.nextoraMobileBreakpoint, 10);
 		if (bp >= 320) {
@@ -18,7 +18,6 @@ function getDesktopMediaQuery(): string {
 	return "(min-width: 768px)";
 }
 
-const DESKTOP_MQ = getDesktopMediaQuery();
 /** Must match `--nextora-offcanvas-dur` in `resources/css/app.css` (seconds). */
 const OFFCANVAS_DUR_S = 0.4;
 /** Fallback if GSAP path fails; slightly longer than `OFFCANVAS_DUR_S` for paint/rounding. */
@@ -372,6 +371,7 @@ function revealPortalElements(): void {
 		".animation-fade-list-grid",
 		".animation-image-clip-reveal",
 		".animation-image-border-reveal",
+		".animation-svg-draw",
 		".nextora-scroll-animation--pending",
 		".nextora-scroll-animation--ready",
 	];
@@ -477,8 +477,6 @@ function bindPortalDismissOnce(
 }
 
 export function initHeaderNavigation(): void {
-	const mq = window.matchMedia(DESKTOP_MQ);
-
 	document.querySelectorAll<HTMLButtonElement>("[data-nextora-nav-toggle]").forEach((btn) => {
 		const sourceSel = btn.dataset.nextoraNavCloneSource?.trim();
 		if (!sourceSel) {
@@ -489,6 +487,8 @@ export function initHeaderNavigation(): void {
 		if (!sourcePanel?.hasAttribute("data-nextora-nav-source-panel")) {
 			return;
 		}
+
+		const mq = window.matchMedia(getDesktopMediaQuery(btn));
 
 		const labels = readToggleLabels(btn);
 

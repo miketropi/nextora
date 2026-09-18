@@ -113,13 +113,11 @@ export function buildStyleVars(attrs: {
 	gridColumns?: number;
 	iconCircleSize?: number;
 	iconSize?: number;
-	eyebrowColor?: string;
-	headingColor?: string;
-	descriptionColor?: string;
 	cardBorderColor?: string;
 	cardBackgroundColor?: string;
 	cardHoverBackgroundColor?: string;
 	cardTitleColor?: string;
+	titleHoverColor?: string;
 	cardDescriptionColor?: string;
 	descriptionHoverColor?: string;
 	linkColor?: string;
@@ -131,6 +129,7 @@ export function buildStyleVars(attrs: {
 	highlightAccentColor2?: string;
 	highlightAccentColor3?: string;
 	highlightAccentColor4?: string;
+	protocolTimelineColor?: string;
 	paginationColor?: string;
 	paginationActiveColor?: string;
 	arrowColor?: string;
@@ -164,7 +163,7 @@ export function buildStyleVars(attrs: {
 	if (typeof attrs.gapPx === 'number' && attrs.gapPx >= 0) {
 		vars['--nextora-box-icon-gap'] = `${attrs.gapPx}px`;
 	}
-	set('--nextora-box-icon-card-min-height', attrs.cardMinHeight ? `${attrs.cardMinHeight}px` : '');
+	set('--nextora-box-icon-card-min-height', typeof attrs.cardMinHeight === 'number' && attrs.cardMinHeight >= 0 ? `${attrs.cardMinHeight}px` : '');
 	Object.assign(vars, cardPaddingToStyleVars(attrs.cardPadding));
 	if (typeof attrs.cardBorderWidth === 'number' && attrs.cardBorderWidth >= 0) {
 		vars['--nextora-box-icon-card-border-width'] = `${attrs.cardBorderWidth}px`;
@@ -175,14 +174,10 @@ export function buildStyleVars(attrs: {
 	set('--nextora-box-icon-cols', attrs.gridColumns);
 	set('--nextora-box-icon-icon-circle-size', attrs.iconCircleSize ? `${attrs.iconCircleSize}px` : '');
 	set('--nextora-box-icon-icon-size', attrs.iconSize ? `${attrs.iconSize}px` : '');
-	set('--nextora-box-icon-eyebrow-color', attrs.eyebrowColor);
-	set('--nextora-box-icon-heading-color', attrs.headingColor);
-	set('--nextora-box-icon-description-color', attrs.descriptionColor);
 	setColor('--nextora-box-icon-card-border-color', attrs.cardBorderColor);
 	setColor('--nextora-box-icon-card-bg', attrs.cardBackgroundColor);
 	setColor('--nextora-box-icon-card-hover-bg', attrs.cardHoverBackgroundColor);
-	setColor('--nextora-box-icon-card-title-color', attrs.cardTitleColor);
-	setColor('--nextora-box-icon-card-desc-color', attrs.cardDescriptionColor);
+	setColor('--nextora-box-icon-title-hover-color', attrs.titleHoverColor);
 	setColor('--nextora-box-icon-card-desc-hover-color', attrs.descriptionHoverColor);
 	setColor('--nextora-box-icon-link-color', attrs.linkColor);
 	setColor('--nextora-box-icon-link-hover-color', attrs.linkHoverColor);
@@ -193,6 +188,7 @@ export function buildStyleVars(attrs: {
 	setColor('--nextora-box-icon-highlight-accent-2', attrs.highlightAccentColor2);
 	setColor('--nextora-box-icon-highlight-accent-3', attrs.highlightAccentColor3);
 	setColor('--nextora-box-icon-highlight-accent-4', attrs.highlightAccentColor4);
+	setColor('--nextora-box-icon-timeline-line-color', attrs.protocolTimelineColor);
 	setColor('--nextora-box-icon-dot-color', attrs.paginationColor);
 	setColor('--nextora-box-icon-dot-active', attrs.paginationActiveColor);
 	setColor('--nextora-box-icon-arrow-color', attrs.arrowColor);

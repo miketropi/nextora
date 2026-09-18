@@ -20,6 +20,7 @@ interface LucideSvgPreviewProps {
 	size?: number;
 	color?: string;
 	strokeWidth?: number;
+	className?: string;
 }
 
 export function LucideSvgPreview( {
@@ -27,6 +28,7 @@ export function LucideSvgPreview( {
 	size = 24,
 	color = 'currentColor',
 	strokeWidth = 2,
+	className,
 }: LucideSvgPreviewProps ) {
 	return createElement(
 		'svg',
@@ -40,6 +42,7 @@ export function LucideSvgPreview( {
 			strokeWidth,
 			strokeLinecap: 'round',
 			strokeLinejoin: 'round',
+			className,
 			'aria-hidden': true,
 			focusable: false,
 		},

@@ -128,8 +128,8 @@ $strength  = isset( $attributes['parallaxStrength'] ) ? max( 0, min( 100, (int) 
 
 $raw_a = isset( $attributes['colorMixA'] ) ? (string) $attributes['colorMixA'] : '';
 $raw_b = isset( $attributes['colorMixB'] ) ? (string) $attributes['colorMixB'] : '';
-$mix_a = $raw_a && sanitize_hex_color( $raw_a ) ? sanitize_hex_color( $raw_a ) : '#1d4ed8';
-$mix_b = $raw_b && sanitize_hex_color( $raw_b ) ? sanitize_hex_color( $raw_b ) : '#0f172a';
+$mix_a = $raw_a && ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw_a ) || sanitize_hex_color( $raw_a ) ) ? $raw_a : '#1d4ed8';
+$mix_b = $raw_b && ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw_b ) || sanitize_hex_color( $raw_b ) ) ? $raw_b : '#0f172a';
 
 $use_image     = ( 'image' === $mode && $image_id && wp_attachment_is_image( $image_id ) );
 $use_video     = false;
@@ -141,7 +141,7 @@ if ( 'video' === $mode && $video_id ) {
 
 $has_custom_bg = $use_image || $use_video || $use_color_mix;
 
-$has_from_inner     = $block instanceof WP_Block && $block->inner_blocks->count() > 0;
+$has_from_inner     = $block instanceof WP_Block && count( $block->inner_blocks ) > 0;
 $has_content_string = is_string( $content ) && '' !== trim( (string) $content );
 $has_legacy         = ( '' !== $legacy_heading || '' !== $legacy_content );
 $is_legacy          = ( ! $has_from_inner && ! $has_content_string && $has_legacy );
@@ -204,6 +204,7 @@ $style_bits   = array(
 	'--nextora-cta--cols:' . $css_cols,
 	'--nextora-cta--align:' . $align_self,
 );
+$cm = '';
 if ( $use_color_mix ) {
 	$cm = sprintf( 'color-mix(in srgb, %s %d%%, %s)', $mix_a, $mix_ratio, $mix_b );
 	$style_bits[] = '--nextora-cta-color-mix:' . $cm;
@@ -298,7 +299,7 @@ if ( $is_legacy ) {
 			</video>
 		</div>
 	<?php elseif ( $use_color_mix ) : ?>
-		<div class="nextora-cta__bg nextora-cta__bg--color-mix" style="background: var(--nextora-cta-color-mix, transparent);"></div>
+		<div class="nextora-cta__bg nextora-cta__bg--color-mix" style="background: <?php echo esc_attr( $cm ); ?>;"></div>
 	<?php endif; ?>
 	<?php if ( $has_custom_bg && $overlay > 0 ) : ?>
 		<div class="nextora-cta__scrim" aria-hidden="true"></div>

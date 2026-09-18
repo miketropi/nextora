@@ -3,10 +3,14 @@
 /**
  * Color scheme switcher — bootstrap.
  *
- * Guest-facing color scheme switcher. When the constant
- * NEXTORA_COLOR_SCHEME_SWITCHER is strictly `true`, visitors can
- * switch between color presets defined in styles/color-scheme/*.json
- * entirely client-side via JS. No PHP CSS generation.
+ * Guest-facing appearance switcher. When the constant
+ * NEXTORA_COLOR_SCHEME_SWITCHER is strictly `true`, visitors can switch
+ * between color presets and font presets entirely client-side via JS
+ * (popover UI), persist their choice (localStorage), and share it via URL
+ * query params (?color=…&font=…). No PHP CSS generation.
+ *
+ * Presets are read from both parent and child theme so the feature works
+ * under a child theme.
  *
  * @package Nextora
  */

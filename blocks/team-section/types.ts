@@ -1,6 +1,6 @@
 export type TeamLayoutMode = 'carousel' | 'grid';
 
-export type TeamCardTemplate = 'default' | 'overlay-social';
+export type TeamCardTemplate = 'default' | 'overlay-social' | 'template-02';
 
 export type TeamPhotoAspectRatio = '3/4' | '4/3' | '1/1' | '16/9';
 
@@ -30,6 +30,7 @@ export interface TeamMember {
 	tags: string[];
 	bio: string;
 	bioLineClamp: number;
+	detail?: string;
 	showSocialLinks: boolean;
 	socialLinks: TeamSocialLink[];
 	cardBorderRadius: number;
@@ -58,14 +59,20 @@ export interface TeamSectionAttributes {
 	showArrows: boolean;
 	freeMode: boolean;
 	grabCursor: boolean;
-	backgroundColor: string;
+	sectionBackgroundColor: string;
 	paginationColor: string;
 	paginationActiveColor: string;
 	cardBackgroundColor: string;
 	tagBackgroundColor: string;
 	tagTextColor: string;
 	cardBorderRadius: number;
+	nameColor: string;
+	roleColor: string;
+	bioColor?: string;
+	socialColor?: string;
 	enableScrollAnimation: boolean;
+	enablePopup?: boolean;
+	edgeFadeColor?: string;
 }
 
 /** Media library types for member photos. */

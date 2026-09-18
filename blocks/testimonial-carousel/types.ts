@@ -71,12 +71,15 @@ export interface TestimonialCarouselAttributes {
 	arrowColor: string;
 	arrowBorderColor: string;
 	quoteColor: string;
+	quoteFontFamily: string;
+	quoteFontSize: string;
 	labelColor: string;
 	authorColor: string;
 	authorNameColor: string;
 	trustColor: string;
 	starColor: string;
 	enableScrollAnimation: boolean;
+	edgeFadeColor?: string;
 }
 
 /** Media library types for avatars and author photos. */

@@ -4,6 +4,13 @@
  * `overflow: hidden` keeps parallax/background media inside; the block’s
  * “Corner radius” control sets `border-radius` on this root (editor + front).
  */
+.wp-block-nextora-call-to-action,
+.wp-block-nextora-call-to-action *,
+.nextora-cta,
+.nextora-cta * {
+  box-sizing: border-box;
+}
+
 .wp-block-nextora-call-to-action.nextora-cta,
 .nextora-cta {
   position: relative;
@@ -14,7 +21,6 @@
   overflow: hidden;
   isolation: isolate;
   width: 100%;
-  box-sizing: border-box;
 }
 
 /* Background stack */
@@ -63,7 +69,7 @@
   z-index: 1;
   inset: 0;
   margin: 0;
-  background: #000;
+  background: var(--wp--preset--color--contrast, #000);
   pointer-events: none;
   opacity: calc(var(--nextora-cta-scrim, 0) * 0.01);
 }

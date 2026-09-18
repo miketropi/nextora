@@ -4,6 +4,8 @@ export type IconAlign = 'left' | 'center' | 'right';
 
 export type IconStyle = 'default' | 'stacked' | 'framed';
 
+export type IconAnimationTrigger = 'hover' | 'when-visible' | 'loop';
+
 export type LucideIconNode = [
 	string,
 	Record< string, string | number >,
@@ -31,6 +33,7 @@ export interface IconAttributes extends Record< string, unknown > {
 	borderRadius: number;
 	surfacePadding: number;
 	surfaceBackgroundColor: string;
+	surfaceGradient: string;
 	surfaceBorderColor: string;
 	/** @deprecated Legacy alias — migrated to surfaceBackgroundColor. */
 	backgroundColor?: string;
@@ -40,6 +43,9 @@ export interface IconAttributes extends Record< string, unknown > {
 	linkTarget: IconLinkTarget;
 	ariaLabel: string;
 	enableScrollAnimation: boolean;
+	enableIconAnimation: boolean;
+	iconAnimationTrigger: IconAnimationTrigger;
+	iconAnimationLoopPause: number;
 	textColor?: string;
 }
 

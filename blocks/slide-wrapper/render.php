@@ -65,6 +65,20 @@ if ( ! function_exists( 'nextora_sw_resolve_color' ) ) {
 			return '';
 		}
 
+		if (
+			'transparent' === $raw ||
+			'rgba(0, 0, 0, 0)' === $raw ||
+			'rgba(0,0,0,0)' === $raw ||
+			preg_match( '/^#[0-9a-fA-F]{6}00$/i', $raw ) ||
+			preg_match( '/^#[0-9a-fA-F]{3}0$/i', $raw )
+		) {
+			return 'transparent';
+		}
+
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
@@ -75,6 +89,9 @@ if ( ! function_exists( 'nextora_sw_resolve_color' ) ) {
 		}
 
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
+			if ( 'transparent' === strtolower( $raw ) ) {
+				return 'transparent';
+			}
 			return 'var(--wp--preset--color--' . sanitize_title( $raw ) . ')';
 		}
 
@@ -185,7 +202,7 @@ $pad_right  = nextora_sw_resolve_spacing( isset( $spacing_pads['right'] ) ? (str
 $slides_html = '';
 $slide_count = 0;
 
-if ( $block instanceof WP_Block && $block->inner_blocks->count() > 0 ) {
+if ( $block instanceof WP_Block && count( $block->inner_blocks ) > 0 ) {
 	foreach ( $block->inner_blocks as $inner_block ) {
 		if ( ! $inner_block instanceof WP_Block || 'nextora/slide-item' !== $inner_block->name ) {
 			continue;

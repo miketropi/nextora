@@ -1,16 +1,29 @@
 /**
- * Color scheme switcher — floating bubble UI.
+ * Color & font scheme switcher — floating popover UI.
  *
- * Reads window.NEXTORA_SCHEMES (injected server-side), renders scheme
- * options in a popup panel, overrides --wp--preset--color--* as inline
- * styles on <html>, persists via localStorage.
+ * Reads `window.NEXTORA_THEME_OPTIONS` (injected server-side), renders color
+ * swatches and font presets in a popover, overrides
+ * `--wp--preset--color--*` (colors) and `--nextora-font-body/heading`
+ * (fonts) as inline styles on `<html>`, persists to localStorage, and
+ * supports `?theme=<slug>&color=<slug>&font=<slug>` URL params.
  */
 ( function () {
 	'use strict';
 
-	var schemes = window.NEXTORA_SCHEMES || {};
+	var OPTIONS = window.NEXTORA_THEME_OPTIONS || {};
+	var COLOR_PRESETS = OPTIONS.colorPresets || {};
+	var GRADIENT_PRESETS = {};
+	var FONT_PRESETS = OPTIONS.fontPresets || {};
+	var THEMES = OPTIONS.themes || {};
+	var FONTS = OPTIONS.fonts || {};
+	var CONFIG = OPTIONS.config || {};
+	var INITIAL = CONFIG.initial || {};
+	var SECTIONS = CONFIG.sections || {};
+
+	var STORAGE_KEY = 'nextora-scheme-preferences';
+	var LEGACY_STORAGE_KEY = 'nextora-color-scheme';
+
 	var root = document.documentElement;
-	var STORAGE_KEY = 'nextora-color-scheme';
 
 	var switcher = document.querySelector( '[data-nextora-scheme-switcher]' );
 	if ( ! switcher ) {
@@ -18,169 +31,942 @@
 	}
 
 	var trigger = switcher.querySelector( '.scheme-switcher__trigger' );
-	var panel   = switcher.querySelector( '.scheme-switcher__panel' );
+	var popover = switcher.querySelector( '.scheme-switcher__popover' );
+	var backdrop = switcher.querySelector( '[data-scheme-backdrop]' );
+	var closeBtn = switcher.querySelector( '.scheme-switcher__close' );
+	var colorList = switcher.querySelector( '[data-scheme-color-list]' );
+	var fontList = switcher.querySelector( '[data-scheme-font-list]' );
+	var themeList = switcher.querySelector( '[data-scheme-theme-list]' );
+	var copyBtn = switcher.querySelector( '[data-scheme-copy-link]' );
+	var resetBtn = switcher.querySelector( '[data-scheme-reset]' );
+	var fontFallbackStyle = null;
+	var buttonOverrideStyle = null;
 
-	/**
-	 * Build the scheme option buttons inside the panel.
-	 * "Default" is always first; each scheme from NEXTORA_SCHEMES follows.
-	 */
-	function buildPanel() {
-		var frag = document.createDocumentFragment();
+	var state = {
+		theme: null,
+		color: null,
+		font: null,
+	};
 
-		// "Default" reset option.
-		var defaultBtn = document.createElement( 'button' );
-		defaultBtn.type = 'button';
-		defaultBtn.dataset.scheme = 'default';
-		defaultBtn.textContent = 'Default';
-
-		frag.appendChild( defaultBtn );
-
-		// Named schemes.
-		Object.keys( schemes ).forEach( function ( slug ) {
-			var btn = document.createElement( 'button' );
-			btn.type = 'button';
-			btn.dataset.scheme = slug;
-			btn.textContent = schemes[ slug ].title;
-			frag.appendChild( btn );
+	Object.keys( COLOR_PRESETS ).forEach( function ( slug ) {
+		Object.keys( COLOR_PRESETS[ slug ].gradients || {} ).forEach( function ( gradientSlug ) {
+			GRADIENT_PRESETS[ gradientSlug ] = COLOR_PRESETS[ slug ].gradients[ gradientSlug ];
 		} );
+	} );
 
-		panel.appendChild( frag );
+	function notifySchemeChange() {
+		window.dispatchEvent( new CustomEvent( 'nextora:schemechange' ) );
 	}
 
-	buildPanel();
+	/* ------------------------------------------------------------------
+	 * Block font fallbacks
+	 * ------------------------------------------------------------------ */
 
-	/**
-	 * Apply a named scheme: override CSS vars on <html> and persist.
-	 *
-	 * @param {string} slug
-	 * @return {boolean}
-	 */
-	function applyScheme( slug ) {
-		var scheme = schemes[ slug ];
-		if ( ! scheme ) {
-			return false;
+	function clearInvalidFontFallbacks() {
+		if ( fontFallbackStyle ) {
+			fontFallbackStyle.textContent = '';
 		}
-		clearInlineVars();
-		Object.keys( scheme.colors ).forEach( function ( colorSlug ) {
-			root.style.setProperty(
-				'--wp--preset--color--' + colorSlug,
-				scheme.colors[ colorSlug ]
+
+		document.querySelectorAll( '[data-nextora-invalid-fonts]' ).forEach( function ( element ) {
+			element.removeAttribute( 'data-nextora-invalid-fonts' );
+		} );
+	}
+
+	function refreshInvalidFontFallbacks() {
+		clearInvalidFontFallbacks();
+
+		if ( ! state.theme || ! THEMES[ state.theme ] || ! Array.isArray( THEMES[ state.theme ].fontSlugs ) ) {
+			notifySchemeChange();
+			return;
+		}
+
+		if ( ! fontFallbackStyle ) {
+			fontFallbackStyle = document.createElement( 'style' );
+			fontFallbackStyle.id = 'nextora-scheme-font-fallbacks';
+			document.head.appendChild( fontFallbackStyle );
+		}
+
+		var availableFonts = {};
+		THEMES[ state.theme ].fontSlugs.forEach( function ( slug ) {
+			availableFonts[ slug ] = true;
+		} );
+
+		var knownFontSlugs = {};
+		Object.keys( FONTS ).forEach( function ( slug ) {
+			knownFontSlugs[ slug ] = true;
+		} );
+		Object.keys( THEMES ).forEach( function ( themeSlug ) {
+			( THEMES[ themeSlug ].fontSlugs || [] ).forEach( function ( slug ) {
+				knownFontSlugs[ slug ] = true;
+			} );
+		} );
+
+		// Include font classes already saved in blocks, even when their font
+		// only exists in a variation that is not part of the current registry.
+		var fontClassSuffix = '-font-family';
+		document.querySelectorAll( '[class]' ).forEach( function ( element ) {
+			element.classList.forEach( function ( className ) {
+				if ( className.indexOf( 'has-' ) === 0 && className.slice( -fontClassSuffix.length ) === fontClassSuffix ) {
+					knownFontSlugs[ className.slice( 4, -fontClassSuffix.length ) ] = true;
+				}
+			} );
+		} );
+
+		var bodySelectors = [];
+		var headingSelectors = [];
+		var customPropertySelectors = {};
+		Object.keys( knownFontSlugs ).forEach( function ( slug ) {
+			if ( availableFonts[ slug ] ) {
+				return;
+			}
+
+			var selector = '.has-' + slug + '-font-family';
+			bodySelectors.push( selector );
+			headingSelectors.push( 'h1' + selector );
+			headingSelectors.push( 'h2' + selector );
+			headingSelectors.push( 'h3' + selector );
+			headingSelectors.push( 'h4' + selector );
+			headingSelectors.push( 'h5' + selector );
+			headingSelectors.push( 'h6' + selector );
+		} );
+
+		// Block attributes can store a preset font in an inline CSS variable
+		// instead of a .has-*-font-family class (for example testimonials).
+		document.querySelectorAll( '[style]' ).forEach( function ( element ) {
+			var style = element.getAttribute( 'style' ) || '';
+			var invalidSlugs = [];
+			var match;
+			var presetPattern = /(--[a-z0-9-]+font-family)\s*:[^;]*?var\(--wp--preset--font-family--([a-z0-9-]+)\)/gi;
+
+			while ( ( match = presetPattern.exec( style ) ) !== null ) {
+				var property = match[ 1 ];
+				var slug = match[ 2 ];
+				if ( ! availableFonts[ slug ] ) {
+					invalidSlugs.push( slug );
+					if ( ! customPropertySelectors[ property ] ) {
+						customPropertySelectors[ property ] = [];
+					}
+					var selector = '[data-nextora-invalid-fonts~="' + slug + '"]';
+					if ( customPropertySelectors[ property ].indexOf( selector ) === -1 ) {
+						customPropertySelectors[ property ].push( selector );
+					}
+				}
+			}
+
+			invalidSlugs = invalidSlugs.filter( function ( slug, index, slugs ) {
+				return slugs.indexOf( slug ) === index;
+			} );
+
+			if ( ! invalidSlugs.length ) {
+				return;
+			}
+
+			element.setAttribute( 'data-nextora-invalid-fonts', invalidSlugs.join( ' ' ) );
+		} );
+
+		var rules = [];
+		if ( bodySelectors.length ) {
+			rules.push( bodySelectors.join( ',\n' ) + ' { font-family: var(--nextora-font-body) !important; }' );
+		}
+		if ( headingSelectors.length ) {
+			rules.push( headingSelectors.join( ',\n' ) + ' { font-family: var(--nextora-font-heading) !important; }' );
+		}
+		Object.keys( customPropertySelectors ).forEach( function ( property ) {
+			var selectors = customPropertySelectors[ property ].join( ',\n' );
+			rules.push(
+				selectors + ' { ' + property + ': var(--nextora-font-body) !important; }'
 			);
 		} );
-		try {
-			localStorage.setItem( STORAGE_KEY, slug );
-		} catch ( e ) { /* storage unavailable — still works for this view */ }
-		updatePressedState( slug );
-		return true;
+
+		fontFallbackStyle.textContent = rules.join( '\n' );
+		notifySchemeChange();
 	}
 
-	/** Remove ALL inline colour overrides from <html>. */
-	function clearInlineVars() {
-		Object.keys( schemes ).forEach( function ( slug ) {
-			Object.keys( schemes[ slug ].colors ).forEach( function ( colorSlug ) {
+	/* ------------------------------------------------------------------
+	 * Color application
+	 * ------------------------------------------------------------------ */
+
+	function clearColorOverrides() {
+		Object.keys( COLOR_PRESETS ).forEach( function ( slug ) {
+			Object.keys( COLOR_PRESETS[ slug ].colors || {} ).forEach( function ( colorSlug ) {
 				root.style.removeProperty( '--wp--preset--color--' + colorSlug );
 			} );
 		} );
-	}
-
-	/** Reset to theme defaults: remove overrides + stored choice. */
-	function resetScheme() {
-		clearInlineVars();
-		try {
-			localStorage.removeItem( STORAGE_KEY );
-		} catch ( e ) {}
-		updatePressedState( 'default' );
-	}
-
-	/**
-	 * Mark the active scheme button in the panel.
-	 *
-	 * @param {string} activeSlug
-	 */
-	function updatePressedState( activeSlug ) {
-		panel.querySelectorAll( '[data-scheme]' ).forEach( function ( el ) {
-			el.setAttribute(
-				'aria-pressed',
-				el.dataset.scheme === activeSlug ? 'true' : 'false'
-			);
+		Object.keys( GRADIENT_PRESETS ).forEach( function ( gradientSlug ) {
+			root.style.removeProperty( '--wp--preset--gradient--' + gradientSlug );
 		} );
 	}
 
-	// ------------------------------------------------------------------
-	//  Panel open / close
-	// ------------------------------------------------------------------
+	function applyColor( slug ) {
+		var preset = COLOR_PRESETS[ slug ];
+		if ( ! preset ) {
+			return false;
+		}
 
-	function openPanel() {
-		panel.classList.add( 'is-open' );
-		trigger.setAttribute( 'aria-expanded', 'true' );
+		clearColorOverrides();
+		clearButtonOverrides();
+
+		Object.keys( preset.colors ).forEach( function ( colorSlug ) {
+			root.style.setProperty(
+				'--wp--preset--color--' + colorSlug,
+				preset.colors[ colorSlug ]
+			);
+		} );
+		Object.keys( preset.gradients || {} ).forEach( function ( gradientSlug ) {
+			root.style.setProperty( '--wp--preset--gradient--' + gradientSlug, preset.gradients[ gradientSlug ] );
+		} );
+
+		state.theme = null;
+		state.color = slug;
+		refreshInvalidFontFallbacks();
+		return true;
 	}
 
-	function closePanel() {
-		panel.classList.remove( 'is-open' );
-		trigger.setAttribute( 'aria-expanded', 'false' );
+	function resetColor() {
+		clearColorOverrides();
+		clearButtonOverrides();
+		state.theme = null;
+		state.color = null;
+		refreshInvalidFontFallbacks();
 	}
 
-	function togglePanel() {
-		if ( panel.classList.contains( 'is-open' ) ) {
-			closePanel();
+	/* ------------------------------------------------------------------
+	 * Font application
+	 * ------------------------------------------------------------------ */
+
+	function clearFontOverrides() {
+		root.style.removeProperty( '--nextora-font-body' );
+		root.style.removeProperty( '--nextora-font-heading' );
+		root.style.removeProperty( '--nextora-font-button' );
+	}
+
+	function applyFont( slug ) {
+		var preset = FONT_PRESETS[ slug ];
+		if ( ! preset ) {
+			return false;
+		}
+
+		clearFontOverrides();
+
+		var body = FONTS[ preset.body ];
+		var heading = FONTS[ preset.heading ] || body;
+
+		if ( body ) {
+			root.style.setProperty( '--nextora-font-body', body.family );
+		}
+		if ( heading ) {
+			root.style.setProperty( '--nextora-font-heading', heading.family );
+		}
+		root.style.setProperty( '--nextora-font-button', heading ? heading.family : body.family );
+
+		state.theme = null;
+		state.font = slug;
+		refreshInvalidFontFallbacks();
+		return true;
+	}
+
+	function resetFont() {
+		clearFontOverrides();
+		state.theme = null;
+		state.font = null;
+		refreshInvalidFontFallbacks();
+	}
+
+	/* ------------------------------------------------------------------
+	 * Button color application
+	 * ------------------------------------------------------------------ */
+
+	function clearButtonOverrides() {
+		if ( buttonOverrideStyle ) {
+			buttonOverrideStyle.textContent = '';
+		}
+		root.style.removeProperty( '--nextora-button-bg' );
+		root.style.removeProperty( '--nextora-button-color' );
+		root.style.removeProperty( '--nextora-button-hover-bg' );
+		root.style.removeProperty( '--nextora-button-hover-color' );
+		root.style.removeProperty( '--nextora-header-button-bg' );
+		root.style.removeProperty( '--nextora-header-button-color' );
+		root.style.removeProperty( '--nextora-header-button-hover-bg' );
+		root.style.removeProperty( '--nextora-header-button-hover-color' );
+		root.style.removeProperty( '--nextora-button-text-transform' );
+		root.style.removeProperty( '--nextora-button-font-weight' );
+	}
+
+	function applyButtonOverrides( theme ) {
+		clearButtonOverrides();
+
+		if ( ! theme ) {
+			return;
+		}
+
+		if ( theme.buttonBg ) {
+			root.style.setProperty( '--nextora-button-bg', theme.buttonBg );
+		}
+		if ( theme.buttonColor ) {
+			root.style.setProperty( '--nextora-button-color', theme.buttonColor );
+		}
+		if ( theme.buttonHoverBg ) {
+			root.style.setProperty( '--nextora-button-hover-bg', theme.buttonHoverBg );
+		}
+		if ( theme.buttonHoverColor ) {
+			root.style.setProperty( '--nextora-button-hover-color', theme.buttonHoverColor );
+		}
+		if ( theme.headerButtonBg ) {
+			root.style.setProperty( '--nextora-header-button-bg', theme.headerButtonBg );
+		}
+		if ( theme.headerButtonColor ) {
+			root.style.setProperty( '--nextora-header-button-color', theme.headerButtonColor );
+		}
+		if ( theme.headerButtonHoverBg ) {
+			root.style.setProperty( '--nextora-header-button-hover-bg', theme.headerButtonHoverBg );
+		}
+		if ( theme.headerButtonHoverColor ) {
+			root.style.setProperty( '--nextora-header-button-hover-color', theme.headerButtonHoverColor );
+		}
+		if ( theme.buttonTextTransform ) {
+			root.style.setProperty( '--nextora-button-text-transform', theme.buttonTextTransform );
+		}
+		if ( theme.buttonFontWeight ) {
+			root.style.setProperty( '--nextora-button-font-weight', theme.buttonFontWeight );
+		}
+
+		if ( ! buttonOverrideStyle ) {
+			buttonOverrideStyle = document.createElement( 'style' );
+			buttonOverrideStyle.id = 'nextora-scheme-button-overrides';
+			document.head.appendChild( buttonOverrideStyle );
+		}
+
+		var rules = [];
+		if ( theme.buttonBg || theme.buttonColor ) {
+			var bgProp = theme.buttonBg ? 'background-color: var(--nextora-button-bg);' : '';
+			var colProp = theme.buttonColor ? 'color: var(--nextora-button-color);' : '';
+			rules.push(
+				':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline) > .wp-block-button__link) { ' + bgProp + ' ' + colProp + ' }'
+			);
+		}
+
+		if ( theme.buttonHoverBg || theme.buttonHoverColor ) {
+			var hbgProp = theme.buttonHoverBg ? 'background-color: var(--nextora-button-hover-bg);' : '';
+			var hcolProp = theme.buttonHoverColor ? 'color: var(--nextora-button-hover-color);' : '';
+			rules.push(
+				':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline) > .wp-block-button__link:hover) { ' + hbgProp + ' ' + hcolProp + ' }'
+			);
+		}
+
+		if ( theme.headerButtonBg || theme.headerButtonColor ) {
+			var hdrBg = theme.headerButtonBg ? 'background-color: var(--nextora-header-button-bg);' : '';
+			var hdrCol = theme.headerButtonColor ? 'color: var(--nextora-header-button-color);' : '';
+			rules.push(
+				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline), .nextora-header-block__cta.nextora-header-block__cta--solid) { ' + hdrBg + ' ' + hdrCol + ' }'
+			);
+		}
+
+		if ( theme.headerButtonHoverBg || theme.headerButtonHoverColor ) {
+			var hdrHbg = theme.headerButtonHoverBg ? 'background-color: var(--nextora-header-button-hover-bg);' : '';
+			var hdrHcol = theme.headerButtonHoverColor ? 'color: var(--nextora-header-button-hover-color);' : '';
+			rules.push(
+				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline):hover, .nextora-header-block__cta.nextora-header-block__cta--solid:hover) { ' + hdrHbg + ' ' + hdrHcol + ' }'
+			);
+		}
+
+		if ( theme.buttonTextTransform || theme.buttonFontWeight ) {
+			var typoProps = [];
+			if ( theme.buttonTextTransform ) {
+				typoProps.push( 'text-transform: var(--nextora-button-text-transform);' );
+			}
+			if ( theme.buttonFontWeight ) {
+				typoProps.push( 'font-weight: var(--nextora-button-font-weight);' );
+			}
+			rules.push(
+				':root:root :where(.wp-element-button, .wp-block-button__link, .nextora-header-block__cta, .alonepro-btn, .alonepro-alone-donation-box__btn, a.elementor-button, button.elementor-button) { ' + typoProps.join( ' ' ) + ' }'
+			);
+		}
+
+		buttonOverrideStyle.textContent = rules.join( '\n' );
+	}
+
+	/* ------------------------------------------------------------------
+	 * Theme application (bundled color + font)
+	 * ------------------------------------------------------------------ */
+
+	function applyTheme( slug ) {
+		var theme = THEMES[ slug ];
+		if ( ! theme ) {
+			return false;
+		}
+
+		clearColorOverrides();
+		clearFontOverrides();
+		clearButtonOverrides();
+
+		Object.keys( theme.colors || {} ).forEach( function ( colorSlug ) {
+			root.style.setProperty( '--wp--preset--color--' + colorSlug, theme.colors[ colorSlug ] );
+		} );
+		Object.keys( theme.gradients || {} ).forEach( function ( gradientSlug ) {
+			root.style.setProperty( '--wp--preset--gradient--' + gradientSlug, theme.gradients[ gradientSlug ] );
+		} );
+
+		if ( theme.body ) {
+			root.style.setProperty( '--nextora-font-body', theme.body );
+		}
+		if ( theme.heading ) {
+			root.style.setProperty( '--nextora-font-heading', theme.heading );
+		}
+		if ( theme.button ) {
+			root.style.setProperty( '--nextora-font-button', theme.button );
+		}
+
+		applyButtonOverrides( theme );
+
+		state.theme = slug;
+		state.color = null;
+		state.font = null;
+		refreshInvalidFontFallbacks();
+		return true;
+	}
+
+	function resetTheme() {
+		clearColorOverrides();
+		clearFontOverrides();
+		clearButtonOverrides();
+		state.theme = null;
+		state.color = null;
+		state.font = null;
+		refreshInvalidFontFallbacks();
+	}
+
+	/* ------------------------------------------------------------------
+	 * Persistence (localStorage + URL params)
+	 * ------------------------------------------------------------------ */
+
+	function readStorage() {
+		var stored = null;
+		try {
+			stored = localStorage.getItem( STORAGE_KEY );
+		} catch ( e ) {}
+
+		var prefs = null;
+		if ( stored ) {
+			try {
+				prefs = JSON.parse( stored );
+			} catch ( e ) {
+				prefs = null;
+			}
+		}
+
+		// One-time migration from the legacy single color key.
+		var hasLegacy = false;
+		if ( ! prefs ) {
+			var legacy = null;
+			try {
+				legacy = localStorage.getItem( LEGACY_STORAGE_KEY );
+			} catch ( e ) {}
+
+			if ( legacy ) {
+				hasLegacy = true;
+				prefs = { color: legacy, font: null };
+				try {
+					localStorage.removeItem( LEGACY_STORAGE_KEY );
+				} catch ( e ) {}
+			}
+		}
+
+		return {
+			hasSaved: stored !== null || hasLegacy,
+			prefs: prefs && typeof prefs === 'object' ? prefs : {},
+		};
+	}
+
+	function save() {
+		try {
+			localStorage.setItem(
+				STORAGE_KEY,
+				JSON.stringify( { v: 3, theme: state.theme, color: state.color, font: state.font } )
+			);
+			localStorage.removeItem( LEGACY_STORAGE_KEY );
+		} catch ( e ) { /* storage unavailable — still works for this view */ }
+	}
+
+	function bootstrap() {
+		var storageData = readStorage();
+		var prefs = storageData.prefs;
+		var hasSavedChoice = storageData.hasSaved;
+		var params = new URLSearchParams( window.location.search );
+		var urlTheme = params.get( 'theme' );
+		var urlColor = params.get( 'color' );
+		var urlFont = params.get( 'font' );
+
+		var theme = null;
+		if ( urlTheme && THEMES[ urlTheme ] ) {
+			theme = urlTheme;
+		} else if ( hasSavedChoice ) {
+			theme = prefs.theme && THEMES[ prefs.theme ] ? prefs.theme : null;
+		} else if ( INITIAL.theme && THEMES[ INITIAL.theme ] ) {
+			theme = INITIAL.theme;
+		}
+
+		var appliedFromUrl = Boolean(
+			( urlTheme && THEMES[ urlTheme ] ) ||
+			( urlColor && COLOR_PRESETS[ urlColor ] ) ||
+			( urlFont && FONT_PRESETS[ urlFont ] )
+		);
+
+		if ( theme ) {
+			applyTheme( theme );
 		} else {
-			openPanel();
+			// URL wins over storage; storage wins over config initial; initial wins over theme default.
+			var color = null;
+			if ( urlColor && COLOR_PRESETS[ urlColor ] ) {
+				color = urlColor;
+			} else if ( hasSavedChoice ) {
+				color = prefs.color && COLOR_PRESETS[ prefs.color ] ? prefs.color : null;
+			} else if ( INITIAL.color && COLOR_PRESETS[ INITIAL.color ] ) {
+				color = INITIAL.color;
+			}
+
+			var font = null;
+			if ( urlFont && FONT_PRESETS[ urlFont ] ) {
+				font = urlFont;
+			} else if ( hasSavedChoice ) {
+				font = prefs.font && FONT_PRESETS[ prefs.font ] ? prefs.font : null;
+			} else if ( INITIAL.font && FONT_PRESETS[ INITIAL.font ] ) {
+				font = INITIAL.font;
+			}
+
+			if ( color ) {
+				applyColor( color );
+			}
+			if ( font ) {
+				applyFont( font );
+			}
+		}
+
+		// Persist only when the URL carried a valid choice (shared links); a
+		// config `initial` fallback must not be saved as a user choice.
+		if ( appliedFromUrl ) {
+			save();
+		}
+
+		refreshInvalidFontFallbacks();
+		updateUI();
+	}
+
+	/* ------------------------------------------------------------------
+	 * UI construction
+	 * ------------------------------------------------------------------ */
+
+	function extractPaletteColors( colors ) {
+		if ( ! colors ) {
+			return [];
+		}
+		var preferred = [ 'base', 'contrast', 'primary', 'secondary', 'paragraph', 'surface' ];
+		var list = [];
+		preferred.forEach( function ( key ) {
+			if ( colors[ key ] && colors[ key ] !== 'transparent' && list.indexOf( colors[ key ] ) === -1 && list.length < 6 ) {
+				list.push( colors[ key ] );
+			}
+		} );
+		Object.keys( colors ).forEach( function ( key ) {
+			if ( key !== 'transparent' && colors[ key ] && list.indexOf( colors[ key ] ) === -1 && list.length < 6 ) {
+				list.push( colors[ key ] );
+			}
+		} );
+		return list;
+	}
+
+	function makeSwatch( slug, title, colors ) {
+		var btn = document.createElement( 'button' );
+		btn.type = 'button';
+		btn.className = 'scheme-switcher__option';
+		btn.dataset.schemeColor = slug;
+		btn.setAttribute( 'aria-pressed', 'false' );
+
+		var preview = document.createElement( 'span' );
+		preview.className = 'scheme-switcher__swatch';
+		preview.setAttribute( 'aria-hidden', 'true' );
+
+		var dotColors = extractPaletteColors( colors );
+		dotColors.forEach( function ( hex ) {
+			var dot = document.createElement( 'span' );
+			dot.className = 'scheme-switcher__dot';
+			dot.style.backgroundColor = hex;
+			preview.appendChild( dot );
+		} );
+
+		var label = document.createElement( 'span' );
+		label.className = 'scheme-switcher__label';
+		label.textContent = title;
+
+		btn.appendChild( preview );
+		btn.appendChild( label );
+		return btn;
+	}
+
+	function makeFontOption( slug, preset ) {
+		var btn = document.createElement( 'button' );
+		btn.type = 'button';
+		btn.className = 'scheme-switcher__option';
+		btn.dataset.schemeFont = slug;
+		btn.setAttribute( 'aria-pressed', 'false' );
+
+		var body = FONTS[ preset.body ];
+		if ( body ) {
+			btn.style.fontFamily = body.family;
+		}
+
+		var preview = document.createElement( 'span' );
+		preview.className = 'scheme-switcher__font-preview';
+		preview.setAttribute( 'aria-hidden', 'true' );
+		preview.textContent = 'Aa';
+
+		var label = document.createElement( 'span' );
+		label.className = 'scheme-switcher__label';
+		label.textContent = preset.title;
+
+		btn.appendChild( preview );
+		btn.appendChild( label );
+		return btn;
+	}
+
+	function makeThemeOption( slug, theme ) {
+		var btn = document.createElement( 'button' );
+		btn.type = 'button';
+		btn.className = 'scheme-switcher__option';
+		btn.dataset.schemeTheme = slug;
+		btn.setAttribute( 'aria-pressed', 'false' );
+
+		if ( theme.body ) {
+			btn.style.fontFamily = theme.body;
+		}
+
+		var preview = document.createElement( 'span' );
+		preview.className = 'scheme-switcher__swatch';
+		preview.setAttribute( 'aria-hidden', 'true' );
+
+		var dotColors = extractPaletteColors( theme.colors );
+		dotColors.forEach( function ( hex ) {
+			var dot = document.createElement( 'span' );
+			dot.className = 'scheme-switcher__dot';
+			dot.style.backgroundColor = hex;
+			preview.appendChild( dot );
+		} );
+
+		var label = document.createElement( 'span' );
+		label.className = 'scheme-switcher__label';
+		label.textContent = theme.title;
+
+		btn.appendChild( preview );
+		btn.appendChild( label );
+		return btn;
+	}
+
+	function buildUI() {
+		var themeFrag = document.createDocumentFragment();
+		if ( ! ( SECTIONS.themes && SECTIONS.themes.showDefault === false ) ) {
+			themeFrag.appendChild( makeThemeOption( 'default', { title: 'Default', colors: null, body: null } ) );
+		}
+		Object.keys( THEMES ).forEach( function ( slug ) {
+			themeFrag.appendChild( makeThemeOption( slug, THEMES[ slug ] ) );
+		} );
+		themeList.appendChild( themeFrag );
+
+		var colorFrag = document.createDocumentFragment();
+		if ( ! ( SECTIONS.colors && SECTIONS.colors.showDefault === false ) ) {
+			colorFrag.appendChild( makeSwatch( 'default', 'Default', null ) );
+		}
+		Object.keys( COLOR_PRESETS ).forEach( function ( slug ) {
+			colorFrag.appendChild( makeSwatch( slug, COLOR_PRESETS[ slug ].title, COLOR_PRESETS[ slug ].colors ) );
+		} );
+		colorList.appendChild( colorFrag );
+
+		var fontFrag = document.createDocumentFragment();
+		if ( ! ( SECTIONS.fonts && SECTIONS.fonts.showDefault === false ) ) {
+			fontFrag.appendChild( makeFontOption( 'default', { title: 'Default', body: 'sans', heading: 'sans' } ) );
+		}
+		Object.keys( FONT_PRESETS ).forEach( function ( slug ) {
+			fontFrag.appendChild( makeFontOption( slug, FONT_PRESETS[ slug ] ) );
+		} );
+		fontList.appendChild( fontFrag );
+	}
+
+	function applySectionVisibility() {
+		if ( ( SECTIONS.themes && SECTIONS.themes.enabled === false ) || ! Object.keys( THEMES ).length ) {
+			var themeSection = themeList.closest( '[data-scheme-section]' );
+			if ( themeSection ) {
+				themeSection.remove();
+			}
+		}
+
+		if ( SECTIONS.colors && SECTIONS.colors.enabled === false ) {
+			var colorSection = colorList.closest( '[data-scheme-section]' );
+			if ( colorSection ) {
+				colorSection.remove();
+			}
+		}
+
+		if ( SECTIONS.fonts && SECTIONS.fonts.enabled === false ) {
+			var fontSection = fontList.closest( '[data-scheme-section]' );
+			if ( fontSection ) {
+				fontSection.remove();
+			}
 		}
 	}
 
-	// ------------------------------------------------------------------
-	//  Bootstrap — restore saved choice, signal active state
-	// ------------------------------------------------------------------
+	function updateUI() {
+		themeList.querySelectorAll( '[data-scheme-theme]' ).forEach( function ( el ) {
+			var slug = el.dataset.schemeTheme;
+			var active = slug === 'default' ? ! state.theme : slug === state.theme;
+			el.setAttribute( 'aria-pressed', active ? 'true' : 'false' );
+		} );
 
-	var saved = null;
-	try {
-		saved = localStorage.getItem( STORAGE_KEY );
-	} catch ( e ) {}
+		colorList.querySelectorAll( '[data-scheme-color]' ).forEach( function ( el ) {
+			var slug = el.dataset.schemeColor;
+			var active = slug === 'default' ? ! state.color : slug === state.color;
+			el.setAttribute( 'aria-pressed', active ? 'true' : 'false' );
+		} );
 
-	if ( saved && schemes[ saved ] ) {
-		applyScheme( saved );
-	} else {
-		updatePressedState( 'default' );
+		fontList.querySelectorAll( '[data-scheme-font]' ).forEach( function ( el ) {
+			var slug = el.dataset.schemeFont;
+			var active = slug === 'default' ? ! state.font : slug === state.font;
+			el.setAttribute( 'aria-pressed', active ? 'true' : 'false' );
+		} );
+	}
+
+	/* ------------------------------------------------------------------
+	 * Popover open / close + focus management
+	 * ------------------------------------------------------------------ */
+
+	function getFocusable() {
+		return Array.prototype.slice.call(
+			popover.querySelectorAll( 'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])' )
+		).filter( function ( el ) {
+			return el.offsetParent !== null;
+		} );
+	}
+
+	function openPopover() {
+		popover.classList.add( 'is-open' );
+		popover.setAttribute( 'aria-hidden', 'false' );
+		trigger.setAttribute( 'aria-expanded', 'true' );
+		if ( backdrop ) {
+			backdrop.classList.add( 'is-active' );
+		}
+
+		var focusable = getFocusable();
+		if ( focusable.length ) {
+			focusable[ 0 ].focus();
+		}
+	}
+
+	function closePopover() {
+		popover.classList.remove( 'is-open' );
+		popover.setAttribute( 'aria-hidden', 'true' );
+		trigger.setAttribute( 'aria-expanded', 'false' );
+		if ( backdrop ) {
+			backdrop.classList.remove( 'is-active' );
+		}
+		trigger.focus();
+	}
+
+	function togglePopover() {
+		if ( popover.classList.contains( 'is-open' ) ) {
+			closePopover();
+		} else {
+			openPopover();
+		}
+	}
+
+	function trapFocus( e ) {
+		if ( e.key !== 'Tab' || ! popover.classList.contains( 'is-open' ) ) {
+			return;
+		}
+
+		var focusable = getFocusable();
+		if ( ! focusable.length ) {
+			return;
+		}
+
+		var first = focusable[ 0 ];
+		var last = focusable[ focusable.length - 1 ];
+
+		if ( e.shiftKey && document.activeElement === first ) {
+			e.preventDefault();
+			last.focus();
+		} else if ( ! e.shiftKey && document.activeElement === last ) {
+			e.preventDefault();
+			first.focus();
+		}
+	}
+
+	/* ------------------------------------------------------------------
+	 * Share link (copy ?color=…&font=…)
+	 * ------------------------------------------------------------------ */
+
+	function buildShareUrl() {
+		var url = new URL( window.location.href );
+
+		if ( state.theme ) {
+			url.searchParams.set( 'theme', state.theme );
+		} else {
+			url.searchParams.delete( 'theme' );
+		}
+
+		if ( state.color ) {
+			url.searchParams.set( 'color', state.color );
+		} else {
+			url.searchParams.delete( 'color' );
+		}
+
+		if ( state.font ) {
+			url.searchParams.set( 'font', state.font );
+		} else {
+			url.searchParams.delete( 'font' );
+		}
+
+		return url.toString();
+	}
+
+	function flash( label ) {
+		var original = copyBtn.textContent;
+		copyBtn.textContent = label;
+		copyBtn.classList.add( 'is-flashed' );
+		window.setTimeout( function () {
+			copyBtn.textContent = original;
+			copyBtn.classList.remove( 'is-flashed' );
+		}, 1400 );
+	}
+
+	function fallbackCopy( text ) {
+		var ta = document.createElement( 'textarea' );
+		ta.value = text;
+		ta.setAttribute( 'readonly', '' );
+		ta.style.position = 'fixed';
+		ta.style.top = '-9999px';
+		document.body.appendChild( ta );
+		ta.select();
+		try {
+			document.execCommand( 'copy' );
+		} catch ( e ) {}
+		document.body.removeChild( ta );
+	}
+
+	function copyLink() {
+		var url = buildShareUrl();
+		var done = function () {
+			flash( copyBtn.dataset.copiedLabel || 'Copied!' );
+		};
+
+		if ( navigator.clipboard && navigator.clipboard.writeText ) {
+			navigator.clipboard.writeText( url ).then( done ).catch( function () {
+				fallbackCopy( url );
+				done();
+			} );
+		} else {
+			fallbackCopy( url );
+			done();
+		}
+	}
+
+	/* ------------------------------------------------------------------
+	 * Wire up
+	 * ------------------------------------------------------------------ */
+
+	buildUI();
+	applySectionVisibility();
+
+	trigger.addEventListener( 'click', function ( e ) {
+		e.stopPropagation();
+		togglePopover();
+	} );
+
+	if ( backdrop ) {
+		backdrop.addEventListener( 'click', function ( e ) {
+			e.stopPropagation();
+			closePopover();
+		} );
+	}
+
+	if ( closeBtn ) {
+		closeBtn.addEventListener( 'click', closePopover );
+	}
+
+	document.addEventListener( 'click', function ( e ) {
+		if ( popover.classList.contains( 'is-open' ) && ! switcher.contains( e.target ) ) {
+			closePopover();
+		}
+	} );
+
+	document.addEventListener( 'keydown', function ( e ) {
+		if ( e.key === 'Escape' && popover.classList.contains( 'is-open' ) ) {
+			closePopover();
+		}
+		trapFocus( e );
+	} );
+
+	colorList.addEventListener( 'click', function ( e ) {
+		var btn = e.target.closest( '[data-scheme-color]' );
+		if ( ! btn ) {
+			return;
+		}
+
+		var slug = btn.dataset.schemeColor;
+		if ( slug === 'default' ) {
+			resetColor();
+		} else {
+			applyColor( slug );
+		}
+
+		save();
+		updateUI();
+	} );
+
+	themeList.addEventListener( 'click', function ( e ) {
+		var btn = e.target.closest( '[data-scheme-theme]' );
+		if ( ! btn ) {
+			return;
+		}
+
+		var slug = btn.dataset.schemeTheme;
+		if ( slug === 'default' ) {
+			resetTheme();
+		} else {
+			applyTheme( slug );
+		}
+
+		save();
+		updateUI();
+	} );
+
+	fontList.addEventListener( 'click', function ( e ) {
+		var btn = e.target.closest( '[data-scheme-font]' );
+		if ( ! btn ) {
+			return;
+		}
+
+		var slug = btn.dataset.schemeFont;
+		if ( slug === 'default' ) {
+			resetFont();
+		} else {
+			applyFont( slug );
+		}
+
+		save();
+		updateUI();
+	} );
+
+	if ( resetBtn ) {
+		resetBtn.addEventListener( 'click', function () {
+			resetTheme();
+			save();
+			updateUI();
+		} );
+	}
+
+	if ( copyBtn ) {
+		copyBtn.addEventListener( 'click', copyLink );
 	}
 
 	root.classList.add( 'has-scheme-switcher' );
 
-	// ------------------------------------------------------------------
-	//  Event listeners
-	// ------------------------------------------------------------------
-
-	trigger.addEventListener( 'click', function ( e ) {
-		e.stopPropagation();
-		togglePanel();
-	} );
-
-	// Close when clicking outside the switcher.
-	document.addEventListener( 'click', function ( e ) {
-		if ( panel.classList.contains( 'is-open' ) && ! switcher.contains( e.target ) ) {
-			closePanel();
-		}
-	} );
-
-	// Close on Escape, then return focus to trigger.
-	document.addEventListener( 'keydown', function ( e ) {
-		if ( e.key === 'Escape' && panel.classList.contains( 'is-open' ) ) {
-			closePanel();
-			trigger.focus();
-		}
-	} );
-
-	// Scheme selection inside the panel.
-	panel.addEventListener( 'click', function ( e ) {
-		var btn = e.target.closest( '[data-scheme]' );
-		if ( ! btn ) {
-			return;
-		}
-		var slug = btn.dataset.scheme;
-		if ( slug === 'default' ) {
-			resetScheme();
-		} else {
-			applyScheme( slug );
-		}
-		closePanel();
-	} );
+	bootstrap();
 } )();

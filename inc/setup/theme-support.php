@@ -68,3 +68,26 @@ add_filter(
 	},
 	10,
 );
+
+/**
+ * Add template-specific body classes for full-width and container templates.
+ *
+ * @param list<string> $classes Existing body classes.
+ *
+ * @return list<string> Modified body classes.
+ */
+add_filter(
+	'body_class',
+	static function ( array $classes ): array {
+		if ( is_page_template( 'page-full-width' ) || is_page_template( 'page-full-width.html' ) || is_page_template( 'templates/page-full-width.html' ) ) {
+			if ( ! in_array( 'page-template-page-full-width', $classes, true ) ) {
+				$classes[] = 'page-template-page-full-width';
+			}
+			if ( ! in_array( 'is-page-template-full-width', $classes, true ) ) {
+				$classes[] = 'is-page-template-full-width';
+			}
+		}
+
+		return $classes;
+	},
+);

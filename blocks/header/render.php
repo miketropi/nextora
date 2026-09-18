@@ -38,14 +38,14 @@ if ( ! function_exists( 'nextora_header_block_sanitize_border_color' ) ) {
 			return 'var(--wp--preset--color--' . strtolower( $preset_m[1] ) . ')';
 		}
 
-		$hex = sanitize_hex_color( $value );
-		if ( is_string( $hex ) && '' !== $hex ) {
-			return $hex;
-		}
-
 		// 8-digit RGBA hex (common from the color picker with alpha).
 		if ( preg_match( '/^#([0-9a-f]{8})$/i', $value ) ) {
 			return strtolower( $value );
+		}
+
+		$hex = sanitize_hex_color( $value );
+		if ( is_string( $hex ) && '' !== $hex ) {
+			return $hex;
 		}
 
 		// Theme palette (CSS variable).
@@ -102,6 +102,75 @@ if ( ! function_exists( 'nextora_header_block_append_border_color_to_wrapper' ) 
 	}
 }
 
+if ( ! function_exists( 'nextora_header_block_sanitize_font_size' ) ) {
+	/**
+	 * Sanitize a font size attribute for use in CSS variable or inline style.
+	 *
+	 * @param string $value Stored font size (slug, CSS var, or CSS length like 14px / 0.875rem).
+	 *
+	 * @return string CSS value.
+	 */
+	function nextora_header_block_sanitize_font_size( string $value ): string
+	{
+		$value = trim( $value );
+		if ( '' === $value || strlen( $value ) > 80 ) {
+			return '';
+		}
+
+		if ( preg_match( '/[;<>{}]|url\s*\(|expression\s*\(|\\\\/i', $value ) ) {
+			return '';
+		}
+
+		// Gutenberg preset serialized format (var:preset|font-size|small)
+		if ( preg_match( '/^var:preset\|font-size\|([a-z0-9_-]+)$/i', $value, $m ) ) {
+			return 'var(--wp--preset--font-size--' . sanitize_html_class( strtolower( $m[1] ) ) . ')';
+		}
+
+		// CSS variable format (var(--wp--preset--font-size--small))
+		if ( preg_match( '/^var\(\s*--wp--preset--font-size--([a-z0-9_-]+)\s*\)$/i', $value, $m ) ) {
+			return 'var(--wp--preset--font-size--' . sanitize_html_class( strtolower( $m[1] ) ) . ')';
+		}
+
+		// Preset slug (e.g. small, base, medium, medium-plus, large, x-large, xx-large)
+		if ( preg_match( '/^[a-z0-9_-]+$/i', $value ) && ! preg_match( '/\d+(?:px|rem|em|%|vh|vw|pt)$/i', $value ) ) {
+			return 'var(--wp--preset--font-size--' . sanitize_html_class( strtolower( $value ) ) . ')';
+		}
+
+		// Direct CSS length (e.g. 14px, 0.875rem, clamp(...))
+		return esc_attr( $value );
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_append_style_to_wrapper' ) ) {
+	/**
+	 * Append CSS declaration(s) to the wrapper style attribute.
+	 *
+	 * @param string $wrapper_attributes Output from get_block_wrapper_attributes().
+	 * @param string $declarations       CSS declaration string, e.g. "foo:bar;baz:qux".
+	 */
+	function nextora_header_block_append_style_to_wrapper( string $wrapper_attributes, string $declarations ): string
+	{
+		$declarations = trim( $declarations );
+		if ( '' === $declarations ) {
+			return $wrapper_attributes;
+		}
+
+		if ( preg_match( '/\bstyle="([^"]*)"/', $wrapper_attributes, $m ) ) {
+			$existing = html_entity_decode( $m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+			$new_css  = trim( rtrim( $existing, ';' ) ) . ';' . $declarations;
+
+			return (string) preg_replace(
+				'/\bstyle="[^"]*"/',
+				'style="' . esc_attr( $new_css ) . '"',
+				$wrapper_attributes,
+				1,
+			);
+		}
+
+		return trim( $wrapper_attributes ) . ' style="' . esc_attr( $declarations ) . '"';
+	}
+}
+
 if ( ! function_exists( 'nextora_header_block_sanitize_inner_max_width' ) ) {
 	/**
 	 * Sanitize custom max-width for `.nextora-header-block__inner` inline style only.
@@ -121,6 +190,10 @@ if ( ! function_exists( 'nextora_header_block_sanitize_inner_max_width' ) ) {
 
 		if ( preg_match( '/^var\(\s*(--[a-zA-Z0-9][a-zA-Z0-9._-]*)\s*\)$/', $value, $var_m ) ) {
 			return 'var(' . $var_m[1] . ')';
+		}
+
+		if ( preg_match( '/^[0-9]*\.?[0-9]+$/', $value ) ) {
+			return $value . 'px';
 		}
 
 		if ( preg_match( '/^(?:0|[0-9]*\.?[0-9]+)(?:px|rem|em|%|vw|vh|svw|svh|ch|cap)$/i', $value ) ) {
@@ -260,7 +333,10 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			. '    grid-template-columns:1fr auto !important;grid-template-areas:none !important;' . "\n"
 			. '  }' . "\n"
 			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__logo{' . "\n"
-			. '    grid-area:auto !important;' . "\n"
+			. '    grid-area:auto !important;justify-self:start !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__logo .nextora-header-block__logo-link{' . "\n"
+			. '    justify-content:start !important;' . "\n"
 			. '  }' . "\n"
 			. '  .nextora-header-block--layout-nav-start-logo-center .nextora-header-block__nav-source{' . "\n"
 			. '    grid-area:auto !important;' . "\n"
@@ -373,7 +449,7 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			. '    width:100%;gap:0;padding:0;margin:0;list-style:none;' . "\n"
 			. '  }' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li>a{' . "\n"
-			. '    padding:var(--wp--preset--spacing--10,1rem) 0;font-size:var(--wp--preset--font-size--base,1rem);' . "\n"
+			. '    padding:var(--wp--preset--spacing--10,1rem) 0;font-size:var(--nextora-header-menu-item-font-size,var(--wp--preset--font-size--base,1rem));' . "\n"
 			. '    font-weight:500;border-radius:0;background:transparent;box-shadow:none;' . "\n"
 			. '    transition:background-color var(--nextora-nav-t,0.18s ease),color var(--nextora-nav-t,0.18s ease);color:inherit;' . "\n"
 			. '  }' . "\n"
@@ -432,7 +508,7 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			. '  }' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .menu-item-has-children::before{display:none;}' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a{' . "\n"
-			. '    padding:var(--wp--preset--spacing--05,0.5rem) 0;font-size:var(--wp--preset--font-size--small,0.9375rem);' . "\n"
+			. '    padding:var(--wp--preset--spacing--05,0.5rem) 0;font-size:var(--nextora-header-submenu-font-size,var(--wp--preset--font-size--small,0.9375rem));' . "\n"
 			. '    width:auto;color:inherit;' . "\n"
 			. '  }' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:hover,' . "\n"
@@ -860,12 +936,40 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 		$support = isset( $atts['followUsSupportText'] ) && is_string( $atts['followUsSupportText'] ) ? trim( $atts['followUsSupportText'] ) : '';
 		$support = '' !== $support ? $support : __( "We're here to help! Reach out anytime.", 'nextora' );
 
-		$email = isset( $atts['followUsEmail'] ) && is_string( $atts['followUsEmail'] ) ? sanitize_email( trim( $atts['followUsEmail'] ) ) : '';
+		$email = isset( $atts['followUsEmail'] ) && is_string( $atts['followUsEmail'] ) ? trim( $atts['followUsEmail'] ) : '';
+		$email_link = isset( $atts['followUsEmailLink'] ) && is_string( $atts['followUsEmailLink'] ) ? trim( $atts['followUsEmailLink'] ) : '';
+		if ( '' === $email_link ) {
+			if ( 'support@gmail.com' === $email ) {
+				$email_link = 'mailto:bearsthemes@gmail.com';
+			} elseif ( '' !== $email ) {
+				$email_link = 'mailto:' . $email;
+			}
+		} elseif ( ! str_starts_with( $email_link, 'mailto:' ) ) {
+			$email_link = 'mailto:' . $email_link;
+		}
+
 		$phone = isset( $atts['followUsPhone'] ) && is_string( $atts['followUsPhone'] ) ? trim( $atts['followUsPhone'] ) : '';
+		$phone_url = isset( $atts['followUsPhoneUrl'] ) && is_string( $atts['followUsPhoneUrl'] ) ? trim( $atts['followUsPhoneUrl'] ) : '';
+		if ( '' === $phone_url ) {
+			if ( '' !== $phone ) {
+				$phone_digits = preg_replace( '/[^0-9+]/', '', $phone );
+				$phone_url = 'tel:' . ( is_string( $phone_digits ) ? $phone_digits : '' );
+			}
+		} elseif ( ! str_starts_with( $phone_url, 'tel:' ) ) {
+			$phone_url = 'tel:' . $phone_url;
+		}
+
+		$trigger = isset( $atts['followUsTrigger'] ) && is_string( $atts['followUsTrigger'] ) ? trim( $atts['followUsTrigger'] ) : 'both';
+		if ( ! in_array( $trigger, array( 'hover', 'click', 'both' ), true ) ) {
+			$trigger = 'both';
+		}
 
 		$cta_text = isset( $atts['followUsContactButtonText'] ) && is_string( $atts['followUsContactButtonText'] ) ? trim( $atts['followUsContactButtonText'] ) : '';
 		$cta_text = '' !== $cta_text ? $cta_text : __( 'Contact Us', 'nextora' );
 		$cta_url  = isset( $atts['followUsContactButtonUrl'] ) && is_string( $atts['followUsContactButtonUrl'] ) ? trim( $atts['followUsContactButtonUrl'] ) : '';
+		if ( '' === $cta_url || '#' === $cta_url ) {
+			$cta_url = home_url( '/contact-us/' );
+		}
 		$cta_url  = '' !== $cta_url ? esc_url( $cta_url ) : '#';
 		$cta_new  = ! empty( $atts['followUsContactButtonTarget'] );
 
@@ -890,6 +994,7 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 		<div
 			class="<?php echo esc_attr( $root_class ); ?>"
 			data-nextora-header-follow-us
+			data-nextora-header-follow-us-trigger="<?php echo esc_attr( $trigger ); ?>"
 			<?php echo $is_drawer ? 'data-nextora-header-follow-us-drawer' : ''; ?>>
 			<button
 				type="button"
@@ -948,7 +1053,7 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 				<?php if ( '' !== $email || '' !== $phone ) : ?>
 					<div class="nextora-header-block__follow-us-contacts">
 						<?php if ( '' !== $email ) : ?>
-							<a class="nextora-header-block__follow-us-contact" href="<?php echo esc_url( 'mailto:' . $email ); ?>">
+							<a class="nextora-header-block__follow-us-contact" href="<?php echo esc_url( $email_link ); ?>">
 								<span class="nextora-header-block__follow-us-contact-icon" aria-hidden="true">
 									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail-icon lucide-mail">
 										<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
@@ -963,11 +1068,7 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 							</a>
 						<?php endif; ?>
 						<?php if ( '' !== $phone ) : ?>
-							<?php
-							$phone_href = preg_replace( '/[^0-9+]/', '', $phone );
-							$phone_href = is_string( $phone_href ) ? $phone_href : '';
-							?>
-							<a class="nextora-header-block__follow-us-contact" href="<?php echo esc_url( 'tel:' . $phone_href ); ?>">
+							<a class="nextora-header-block__follow-us-contact" href="<?php echo esc_url( $phone_url ); ?>">
 								<span class="nextora-header-block__follow-us-contact-icon" aria-hidden="true">
 									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone-icon lucide-phone">
 										<path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
@@ -1300,11 +1401,22 @@ $render_nav = static function ( array $atts, string $menu_dom_id, string $uid ):
 	$nav_classes = (array) apply_filters( 'nextora_header_block_nav_wrapper_classes', $nav_classes, $atts );
 	$nav_classes = array_filter( array_map( 'trim', $nav_classes ) );
 
-	$nav_inline_style = '';
-	$menu_item_spacing = isset( $atts['menuItemSpacing'] ) && is_string( $atts['menuItemSpacing'] ) ? trim( $atts['menuItemSpacing'] ) : '';
+	$nav_inline_styles   = array();
+	$menu_item_spacing   = isset( $atts['menuItemSpacing'] ) && is_string( $atts['menuItemSpacing'] ) ? trim( $atts['menuItemSpacing'] ) : '';
 	if ( '' !== $menu_item_spacing ) {
-		$nav_inline_style = ' style="--nextora-header-menu-item-spacing:var(--wp--preset--spacing--' . sanitize_key( $menu_item_spacing ) . ')"';
+		$nav_inline_styles[] = '--nextora-header-menu-item-spacing:var(--wp--preset--spacing--' . sanitize_key( $menu_item_spacing ) . ')';
 	}
+	$menu_item_font_size = isset( $atts['menuItemFontSize'] ) && is_string( $atts['menuItemFontSize'] ) ? trim( $atts['menuItemFontSize'] ) : '';
+	$san_item_fs         = nextora_header_block_sanitize_font_size( $menu_item_font_size );
+	if ( '' !== $san_item_fs ) {
+		$nav_inline_styles[] = '--nextora-header-menu-item-font-size:' . $san_item_fs;
+	}
+	$submenu_item_font_size = isset( $atts['submenuItemFontSize'] ) && is_string( $atts['submenuItemFontSize'] ) ? trim( $atts['submenuItemFontSize'] ) : '';
+	$san_sub_fs             = nextora_header_block_sanitize_font_size( $submenu_item_font_size );
+	if ( '' !== $san_sub_fs ) {
+		$nav_inline_styles[] = '--nextora-header-submenu-font-size:' . $san_sub_fs;
+	}
+	$nav_inline_style = ! empty( $nav_inline_styles ) ? ' style="' . esc_attr( implode( ';', $nav_inline_styles ) ) . '"' : '';
 
 	ob_start();
 ?>
@@ -1425,11 +1537,31 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 		if ( $show_cta ) :
 			$cta_text = isset( $atts['ctaButtonText'] ) ? trim( (string) $atts['ctaButtonText'] ) : '';
 			if ( '' !== $cta_text ) :
-				$cta_url       = isset( $atts['ctaButtonUrl'] ) ? trim( (string) $atts['ctaButtonUrl'] ) : '';
-				$cta_url       = '' !== $cta_url ? esc_url( $cta_url ) : '#';
-				$cta_new       = ! empty( $atts['ctaButtonTarget'] );
-				$cta_style     = isset( $atts['ctaButtonStyle'] ) && 'outline' === $atts['ctaButtonStyle'] ? 'outline' : 'solid';
-				$cta_class     = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style ) . ' wp-element-button';
+				$is_giftflow_active = defined( 'GIFTFLOW_VERSION' )
+					|| post_type_exists( 'campaign' )
+					|| function_exists( 'giftflow_prepare_campaign_status_bar_data' );
+				$enable_donation = ! empty( $atts['enableDonationPopup'] ) && $is_giftflow_active;
+				$donation_cid    = ! empty( $atts['donationCampaignId'] ) ? (int) $atts['donationCampaignId'] : 0;
+
+				if ( $enable_donation && 0 === $donation_cid ) {
+					$latest_campaign = get_posts(
+						array(
+							'post_type'      => 'campaign',
+							'posts_per_page' => 1,
+							'post_status'    => 'publish',
+							'fields'         => 'ids',
+						),
+					);
+					if ( ! empty( $latest_campaign ) ) {
+						$donation_cid = (int) $latest_campaign[0];
+					}
+				}
+
+				$cta_url        = isset( $atts['ctaButtonUrl'] ) ? trim( (string) $atts['ctaButtonUrl'] ) : '';
+				$cta_url        = '' !== $cta_url ? esc_url( $cta_url ) : '#';
+				$cta_new        = ! empty( $atts['ctaButtonTarget'] );
+				$cta_style      = isset( $atts['ctaButtonStyle'] ) && 'outline' === $atts['ctaButtonStyle'] ? 'outline' : 'solid';
+				$cta_class      = 'nextora-header-block__cta nextora-header-block__cta--' . sanitize_html_class( $cta_style ) . ' wp-element-button';
 				$cta_style_attr = nextora_header_block_build_cta_inline_style( $atts );
 
 				$show_cta_icon  = ! empty( $atts['ctaButtonShowIcon'] );
@@ -1450,29 +1582,62 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 				}
 		?>
 				<div class="nextora-header-block__cta-wrap">
-					<a
-						class="<?php echo esc_attr( $cta_class ); ?>"
-						href="<?php echo esc_url( $cta_url ); ?>"
-						<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
-						<?php echo '' !== $cta_style_attr ? 'style="' . esc_attr( $cta_style_attr ) . '"' : ''; ?>>
-						<?php if ( $show_cta_icon && 'left' === $cta_icon_pos && '' !== $cta_icon_markup ) : ?>
-							<span class="nextora-header-block__cta-icon nextora-header-block__cta-icon--left" aria-hidden="true">
-								<?php
-								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in nextora_get_lucide_svg().
-								echo $cta_icon_markup;
-								?>
-							</span>
-						<?php endif; ?>
-						<span class="nextora-header-block__cta-text"><?php echo esc_html( $cta_text ); ?></span>
-						<?php if ( $show_cta_icon && 'right' === $cta_icon_pos && '' !== $cta_icon_markup ) : ?>
-							<span class="nextora-header-block__cta-icon nextora-header-block__cta-icon--right" aria-hidden="true">
-								<?php
-								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in nextora_get_lucide_svg().
-								echo $cta_icon_markup;
-								?>
-							</span>
-						<?php endif; ?>
-					</a>
+					<?php if ( $enable_donation && $donation_cid > 0 ) : ?>
+						<?php
+						$campaign_title = get_the_title( $donation_cid );
+						$onclick_attr   = 'if(window.aloneproOpenDonationModal){ window.aloneproOpenDonationModal(this); }else if(window.giftflow && window.giftflow.donationButton_Handle){ window.giftflow.donationButton_Handle(this); }';
+						?>
+						<a
+							href="#"
+							role="button"
+							class="<?php echo esc_attr( $cta_class ); ?>"
+							data-campaign-id="<?php echo esc_attr( (string) $donation_cid ); ?>"
+							data-campaign-title="<?php echo esc_attr( $campaign_title ); ?>"
+							onclick="<?php echo esc_attr( 'event.preventDefault(); ' . $onclick_attr ); ?>"
+							<?php echo '' !== $cta_style_attr ? 'style="' . esc_attr( $cta_style_attr ) . '"' : ''; ?>>
+							<?php if ( $show_cta_icon && 'left' === $cta_icon_pos && '' !== $cta_icon_markup ) : ?>
+								<span class="nextora-header-block__cta-icon nextora-header-block__cta-icon--left" aria-hidden="true">
+									<?php
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in nextora_get_lucide_svg().
+									echo $cta_icon_markup;
+									?>
+								</span>
+							<?php endif; ?>
+							<span class="nextora-header-block__cta-text"><?php echo esc_html( $cta_text ); ?></span>
+							<?php if ( $show_cta_icon && 'right' === $cta_icon_pos && '' !== $cta_icon_markup ) : ?>
+								<span class="nextora-header-block__cta-icon nextora-header-block__cta-icon--right" aria-hidden="true">
+									<?php
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in nextora_get_lucide_svg().
+									echo $cta_icon_markup;
+									?>
+								</span>
+							<?php endif; ?>
+						</a>
+					<?php else : ?>
+						<a
+							class="<?php echo esc_attr( $cta_class ); ?>"
+							href="<?php echo esc_url( $cta_url ); ?>"
+							<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+							<?php echo '' !== $cta_style_attr ? 'style="' . esc_attr( $cta_style_attr ) . '"' : ''; ?>>
+							<?php if ( $show_cta_icon && 'left' === $cta_icon_pos && '' !== $cta_icon_markup ) : ?>
+								<span class="nextora-header-block__cta-icon nextora-header-block__cta-icon--left" aria-hidden="true">
+									<?php
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in nextora_get_lucide_svg().
+									echo $cta_icon_markup;
+									?>
+								</span>
+							<?php endif; ?>
+							<span class="nextora-header-block__cta-text"><?php echo esc_html( $cta_text ); ?></span>
+							<?php if ( $show_cta_icon && 'right' === $cta_icon_pos && '' !== $cta_icon_markup ) : ?>
+								<span class="nextora-header-block__cta-icon nextora-header-block__cta-icon--right" aria-hidden="true">
+									<?php
+									// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in nextora_get_lucide_svg().
+									echo $cta_icon_markup;
+									?>
+								</span>
+							<?php endif; ?>
+						</a>
+					<?php endif; ?>
 				</div>
 		<?php
 			endif;
@@ -1530,6 +1695,18 @@ $raw_border = isset( $attributes['bottomBorderColor'] ) ? (string) $attributes['
 $san_border = nextora_header_block_sanitize_border_color( $raw_border );
 if ( ! empty( $attributes['showBottomBorder'] ) && '' !== $san_border ) {
 	$wrapper_attributes = nextora_header_block_append_border_color_to_wrapper( $wrapper_attributes, $san_border );
+}
+
+$raw_item_fs = isset( $attributes['menuItemFontSize'] ) && is_string( $attributes['menuItemFontSize'] ) ? trim( $attributes['menuItemFontSize'] ) : '';
+$san_item_fs = nextora_header_block_sanitize_font_size( $raw_item_fs );
+if ( '' !== $san_item_fs ) {
+	$wrapper_attributes = nextora_header_block_append_style_to_wrapper( $wrapper_attributes, '--nextora-header-menu-item-font-size:' . $san_item_fs );
+}
+
+$raw_sub_fs = isset( $attributes['submenuItemFontSize'] ) && is_string( $attributes['submenuItemFontSize'] ) ? trim( $attributes['submenuItemFontSize'] ) : '';
+$san_sub_fs = nextora_header_block_sanitize_font_size( $raw_sub_fs );
+if ( '' !== $san_sub_fs ) {
+	$wrapper_attributes = nextora_header_block_append_style_to_wrapper( $wrapper_attributes, '--nextora-header-submenu-font-size:' . $san_sub_fs );
 }
 
 $open_label  = __( 'Open menu', 'nextora' );

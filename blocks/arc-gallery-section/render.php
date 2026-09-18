@@ -18,12 +18,20 @@ if ( ! function_exists( 'nextora_arc_gallery_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( 'transparent' === $raw || 'rgba(0,0,0,0)' === $raw || '#00000000' === $raw ) {
+			return 'transparent';
+		}
+		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
+			return $raw;
+		}
+
 		$hex = sanitize_hex_color( $raw );
 		if ( $hex ) {
 			return $hex;
 		}
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
-			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
+			$slug = sanitize_html_class( strtolower( $raw ) );
+			return 'transparent' === $slug ? 'transparent' : 'var(--wp--preset--color--' . $slug . ')';
 		}
 		return '';
 	}
@@ -275,9 +283,13 @@ $image_border = max( 0, min( 8, $image_border ) );
 $raw_border_color = isset( $attributes['imageBorderColor'] ) ? trim( (string) $attributes['imageBorderColor'] ) : '';
 $image_border_color = nextora_arc_gallery_resolve_color( $raw_border_color );
 if ( '' === $image_border_color && '' !== $raw_border_color ) {
-	$hex = sanitize_hex_color( $raw_border_color );
-	if ( $hex && '#ffffff' !== strtolower( $hex ) ) {
-		$image_border_color = $hex;
+	if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw_border_color ) ) {
+		$image_border_color = $raw_border_color;
+	} else {
+		$hex = sanitize_hex_color( $raw_border_color );
+		if ( $hex && '#ffffff' !== strtolower( $hex ) ) {
+			$image_border_color = $hex;
+		}
 	}
 }
 
@@ -553,15 +565,24 @@ if ( $enable_scroll ) {
 					$primary_url  = '' !== $primary_url ? esc_url( $primary_url ) : '#';
 					$primary_new  = ! empty( $attributes['primaryButtonTarget'] );
 					$primary_style = isset( $attributes['primaryButtonStyle'] ) && 'outline' === $attributes['primaryButtonStyle'] ? 'outline' : 'solid';
-					$btn_class    = 'nextora-arc-gallery__btn nextora-arc-gallery__btn--primary';
+					$btn_classes   = array( 'nextora-arc-gallery__btn', 'nextora-arc-gallery__btn--primary', 'wp-element-button' );
 					if ( 'outline' === $primary_style ) {
-						$btn_class .= ' is-outline';
+						$btn_classes[] = 'is-outline';
 					}
+					$btn_styles = array();
+					if ( '' !== $btn_bg ) {
+						$btn_styles[] = 'background-color:' . $btn_bg;
+					}
+					if ( '' !== $btn_color ) {
+						$btn_styles[] = 'color:' . $btn_color;
+					}
+					$btn_style_attr = ! empty( $btn_styles ) ? ' style="' . esc_attr( implode( ';', $btn_styles ) ) . '"' : '';
 					?>
 					<a
-						class="<?php echo esc_attr( $btn_class ); ?>"
+						class="<?php echo esc_attr( implode( ' ', $btn_classes ) ); ?>"
 						href="<?php echo esc_url( $primary_url ); ?>"
 						<?php echo $primary_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>
+						<?php echo $btn_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 					>
 						<span><?php echo wp_kses_post( $primary_text ); ?></span>
 					</a>

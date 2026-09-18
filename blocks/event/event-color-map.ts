@@ -10,10 +10,15 @@ export const EVENT_COLOR_ATTR_TO_VAR: Record<EventColorAttribute, string> = {
 	titleColor: '--nextora-event-title-color',
 	metaColor: '--nextora-event-meta-color',
 	metaIconColor: '--nextora-event-meta-icon-color',
+	registerBackgroundColor: '--nextora-event-register-bg',
 	registerTextColor: '--nextora-event-register-text-color',
 	registerBorderColor: '--nextora-event-register-border-color',
 	registerHoverTextColor: '--nextora-event-register-hover-text-color',
 	registerHoverBackgroundColor: '--nextora-event-register-hover-bg',
+	registerHoverBorderColor: '--nextora-event-register-hover-border-color',
+	paginationColor: '--nextora-event-dot-color',
+	paginationActiveColor: '--nextora-event-dot-active',
+	edgeFadeColor: '--nextora-event-edge-fade-color',
 };
 
 /**
@@ -25,12 +30,29 @@ export function resolveEventColorForCss(raw: string): string {
 		return '';
 	}
 
-	if ( trimmed.startsWith( 'var(' ) || trimmed.startsWith( '#' ) ) {
+	if ( trimmed === 'transparent' ) {
+		return 'transparent';
+	}
+
+	if ( trimmed.startsWith( 'var(' ) || trimmed.startsWith( '#' ) || trimmed.startsWith( 'rgb' ) || trimmed.startsWith( 'hsl' ) ) {
 		return trimmed;
 	}
 
+	const presetMatch = trimmed.match( /^var:preset\|color\|([a-z0-9_-]+)$/i );
+	if ( presetMatch ) {
+		const slug = presetMatch[1].toLowerCase();
+		if ( slug === 'transparent' ) {
+			return 'transparent';
+		}
+		return `var(--wp--preset--color--${slug})`;
+	}
+
 	if ( /^[a-z0-9-]+$/i.test( trimmed ) ) {
-		return `var(--wp--preset--color--${trimmed.toLowerCase()})`;
+		const slug = trimmed.toLowerCase();
+		if ( slug === 'transparent' ) {
+			return 'transparent';
+		}
+		return `var(--wp--preset--color--${slug})`;
 	}
 
 	return trimmed;

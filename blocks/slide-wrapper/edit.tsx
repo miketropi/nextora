@@ -236,6 +236,7 @@ export default function SlideWrapperEdit({ attributes, setAttributes, clientId }
             {__('Empty uses theme default.', 'nextora')}
           </p>
           <PanelColorSettings
+            enableAlpha
             title={__('Colors', 'nextora')}
             colorSettings={[
               {

@@ -7,6 +7,7 @@ import {
 	useBlockProps,
 } from '@wordpress/block-editor';
 import { PanelBody, SelectControl, TextControl, ToggleControl } from '@wordpress/components';
+import { normalizeColorForStorage, colorValueForPicker, useThemeColorPalette } from './color-utils';
 import type { ContactFormAttributes } from './types';
 
 interface EditProps {
@@ -89,6 +90,7 @@ function InputPlaceholderPreview({
 }
 
 export default function ContactFormEdit({ attributes, setAttributes }: EditProps) {
+	const palette = useThemeColorPalette();
 	const {
 		heading = '',
 		subheading = '',
@@ -211,24 +213,25 @@ export default function ContactFormEdit({ attributes, setAttributes }: EditProps
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
-							value: sectionBackgroundColor,
+							value: colorValueForPicker(sectionBackgroundColor, palette),
 							onChange: (value: string | undefined) =>
-								setAttributes({ sectionBackgroundColor: value ?? '' }),
+								setAttributes({ sectionBackgroundColor: normalizeColorForStorage(value, palette) }),
 							label: __('Section background', 'nextora'),
 						},
 						{
-							value: buttonBackgroundColor,
+							value: colorValueForPicker(buttonBackgroundColor, palette),
 							onChange: (value: string | undefined) =>
-								setAttributes({ buttonBackgroundColor: value ?? '' }),
+								setAttributes({ buttonBackgroundColor: normalizeColorForStorage(value, palette) }),
 							label: __('Button background', 'nextora'),
 						},
 						{
-							value: buttonTextColor,
+							value: colorValueForPicker(buttonTextColor, palette),
 							onChange: (value: string | undefined) =>
-								setAttributes({ buttonTextColor: value ?? '' }),
+								setAttributes({ buttonTextColor: normalizeColorForStorage(value, palette) }),
 							label: __('Button text', 'nextora'),
 						},
 					]}
@@ -417,7 +420,7 @@ export default function ContactFormEdit({ attributes, setAttributes }: EditProps
 						)}
 					</div>
 
-					<div className="nextora-contact-form__submit nextora-contact-form__submit-preview">
+					<div className="nextora-contact-form__submit nextora-contact-form__submit-preview wp-element-button">
 						<RichText
 							tagName="span"
 							className="nextora-contact-form__submit-label"

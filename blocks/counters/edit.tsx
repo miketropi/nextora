@@ -18,7 +18,12 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { buildTypographyStyleVars } from './counters-styles';
+import {
+	buildTypographyStyleVars,
+	getElementTypographyProps,
+	resolveColor,
+} from './counters-styles';
+import { normalizeColorForStorage, colorValueForPicker, useThemeColorPalette } from './color-utils';
 import type { CounterItem, CountersAttributes } from './types';
 
 interface EditProps {
@@ -76,7 +81,9 @@ function normalizeItems(items: CounterItem[] | undefined): CounterItem[] {
 
 	return items.map((item, index) => ({
 		id: typeof item?.id === 'string' && item.id !== '' ? item.id : String(index + 1),
-		number: typeof item?.number === 'number' ? item.number : parseFloat(String(item?.number)) || 0,
+		number: Math.abs(
+			typeof item?.number === 'number' ? item.number : parseFloat(String(item?.number)) || 0,
+		),
 		prefix: typeof item?.prefix === 'string' ? item.prefix : '',
 		suffix: typeof item?.suffix === 'string' ? item.suffix : '',
 		label: typeof item?.label === 'string' ? item.label : '',
@@ -84,7 +91,9 @@ function normalizeItems(items: CounterItem[] | undefined): CounterItem[] {
 }
 
 function formatNumber(value: number): string {
-	return Number.isInteger(value) ? String(value) : value.toFixed(1);
+	return value.toLocaleString('en-US', {
+		maximumFractionDigits: Number.isInteger(value) ? 0 : 1,
+	});
 }
 
 function formatDisplay(item: CounterItem): string {
@@ -170,12 +179,14 @@ function useFontFamilyOptions(): FontFamilyOption[] {
 export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 	const items = normalizeItems(attributes.items);
 	const fontFamilyOptions = useFontFamilyOptions();
+	const palette = useThemeColorPalette();
 
 	const {
 		columns = 3,
 		columnsTablet = 2,
 		columnsMobile = 1,
 		columnGap = '',
+		numberLabelGap = '',
 		divider = false,
 		dividerColor = '',
 		textAlign = 'center',
@@ -203,10 +214,27 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 		labelFontFamily,
 	});
 
+	const numberTypography = getElementTypographyProps({
+		color: numberColor,
+		fontSize: numberFontSize,
+		fontFamily: numberFontFamily,
+	});
+
+	const labelTypography = getElementTypographyProps({
+		color: labelColor,
+		fontSize: labelFontSize,
+		fontFamily: labelFontFamily,
+	});
+
+	const resolvedDividerColor = dividerColor ? resolveColor(dividerColor) || dividerColor : '';
+
 	const blockProps = useBlockProps({
 		className: [
 			'nextora-counters',
 			`nextora-counters--align-${textAlign}`,
+			`nextora-counters--cols-d-${colsDesktop}`,
+			`nextora-counters--cols-t-${colsTablet}`,
+			`nextora-counters--cols-m-${colsMobile}`,
 			divider ? 'nextora-counters--divider' : '',
 		]
 			.filter(Boolean)
@@ -216,7 +244,8 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 			'--nextora-counters-cols-t': String(colsTablet),
 			'--nextora-counters-cols-d': String(colsDesktop),
 			...(columnGap ? { '--nextora-counters-gap': columnGap } : {}),
-			...(dividerColor ? { '--nextora-counters-divider-color': dividerColor } : {}),
+			...(numberLabelGap ? { '--nextora-counters-number-label-gap': numberLabelGap } : {}),
+			...(resolvedDividerColor ? { '--nextora-counters-divider-color': resolvedDividerColor } : {}),
 			...typographyVars,
 		} as CSSProperties,
 	});
@@ -272,10 +301,10 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 									<TextControl
 										label={__('Number', 'nextora')}
 										type="number"
-										value={String(item.number)}
-										onChange={(value) =>
-											updateItem(item.id, 'number', parseFloat(value ?? '') || 0)
-										}
+							value={String(item.number)}
+							onChange={(value) =>
+								updateItem(item.id, 'number', Math.abs(parseFloat(value ?? '') || 0))
+							}
 									/>
 									<TextControl
 										label={__('Suffix', 'nextora')}
@@ -369,6 +398,13 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 						help={__('Leave empty to use the theme default spacing.', 'nextora')}
 						placeholder="2rem"
 					/>
+					<TextControl
+						label={__('Number ↔ label gap', 'nextora')}
+						value={numberLabelGap}
+						onChange={(value) => setAttributes({ numberLabelGap: value ?? '' })}
+						help={__('Leave empty to use the theme default spacing.', 'nextora')}
+						placeholder="0.5rem"
+					/>
 					<ToggleControl
 						label={__('Show dividers', 'nextora')}
 						checked={divider}
@@ -384,11 +420,12 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 
 				{divider && (
 					<PanelColorSettings
+						enableAlpha
 						title={__('Divider', 'nextora')}
 						colorSettings={[
 							{
-								value: dividerColor,
-								onChange: (value) => setAttributes({ dividerColor: value ?? '' }),
+								value: colorValueForPicker(dividerColor, palette),
+								onChange: (value) => setAttributes({ dividerColor: normalizeColorForStorage(value, palette) }),
 								label: __('Divider color', 'nextora'),
 							},
 						]}
@@ -396,16 +433,17 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 				)}
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
-							value: numberColor,
-							onChange: (value) => setAttributes({ numberColor: value ?? '' }),
+							value: colorValueForPicker(numberColor, palette),
+							onChange: (value) => setAttributes({ numberColor: normalizeColorForStorage(value, palette) }),
 							label: __('Number', 'nextora'),
 						},
 						{
-							value: labelColor,
-							onChange: (value) => setAttributes({ labelColor: value ?? '' }),
+							value: colorValueForPicker(labelColor, palette),
+							onChange: (value) => setAttributes({ labelColor: normalizeColorForStorage(value, palette) }),
 							label: __('Label', 'nextora'),
 						},
 					]}
@@ -437,7 +475,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 						label={__('Number font size', 'nextora')}
 						id="nextora-counters-number-font-size"
 						help={__(
-							'Default uses the theme Extra Large preset.',
+							'Default inherits the surrounding typography.',
 							'nextora',
 						)}
 					>
@@ -456,7 +494,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 						label={__('Label font size', 'nextora')}
 						id="nextora-counters-label-font-size"
 						help={__(
-							'Default uses the theme Small preset.',
+							'Default inherits the surrounding typography.',
 							'nextora',
 						)}
 					>
@@ -508,10 +546,23 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 			<div {...blockProps}>
 				{items.map((item) => (
 					<div key={item.id} className="nextora-counters__item">
-						<span className="nextora-counters__number" aria-label={formatDisplay(item)}>
+						<span
+							className={['nextora-counters__number', numberTypography.className]
+								.filter(Boolean)
+								.join(' ')}
+							style={numberTypography.style}
+							aria-label={formatDisplay(item)}
+						>
 							{formatDisplay(item)}
 						</span>
-						<span className="nextora-counters__label">{item.label}</span>
+						<span
+							className={['nextora-counters__label', labelTypography.className]
+								.filter(Boolean)
+								.join(' ')}
+							style={labelTypography.style}
+						>
+							{item.label}
+						</span>
 					</div>
 				))}
 			</div>

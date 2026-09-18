@@ -177,10 +177,25 @@ function initSequentialReveal(
 	carousel: HTMLElement | null,
 ): void {
 	let played = false;
+	let scheduled = false;
+	let readyCheck = 0;
+
+	const waitForLayout = (callback: () => void): void => {
+		const hasCards = Boolean(carousel?.querySelector('.swiper-slide'));
+		if (carousel && (!hasCards || carousel.clientWidth < 2) && readyCheck < 60) {
+			readyCheck += 1;
+			requestAnimationFrame(() => waitForLayout(callback));
+			return;
+		}
+		requestAnimationFrame(() => requestAnimationFrame(callback));
+	};
 
 	const playReveal = (): void => {
 		if (played || section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
-		played = true;
+		scheduled = true;
+		waitForLayout(() => {
+			if (played || section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
+			played = true;
 
 		const cards = carousel
 			? Array.from(carousel.querySelectorAll<HTMLElement>('.swiper-slide'))
@@ -194,7 +209,7 @@ function initSequentialReveal(
 		}
 
 		gsap.set(targets, { opacity: 0, y: 40, force3D: true });
-		gsap.set(carousel, { opacity: 1, y: 0 });
+		section.classList.remove('nextora-blog-list-carousel--reveal-pending');
 
 		const gen = nextRevealGen(section);
 		const timeline = gsap.timeline({
@@ -202,9 +217,6 @@ function initSequentialReveal(
 			onComplete: () => {
 				if (getRevealGen(section) !== gen) return;
 				clearRevealStyles(targets);
-				if (carousel) {
-					gsap.set(carousel, { clearProps: 'opacity,transform,translate' });
-				}
 				setRevealReady(section);
 			},
 		});
@@ -225,10 +237,11 @@ function initSequentialReveal(
 				header ? 0.12 : 0,
 			);
 		}
+		});
 	};
 
 	window.setTimeout(() => {
-		if (section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
+		if (scheduled || section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
 		if (!isRevealStartPassed(section)) return;
 		setRevealReady(section);
 	}, REVEAL_FALLBACK_MS);
@@ -257,6 +270,11 @@ function playRevealOnEnter(
 	const playReveal = (): void => {
 		if (played || section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
 		played = true;
+		if (typeof document !== 'undefined' && document.hidden) {
+			clearRevealStyles(targets);
+			setRevealReady(section);
+			return;
+		}
 		timeline.play();
 	};
 
@@ -297,7 +315,7 @@ function initScrollReveal(section: HTMLElement): void {
 	if (section.getAttribute(SCROLL_INIT_ATTR) === '1') return;
 	section.setAttribute(SCROLL_INIT_ATTR, '1');
 
-	if (prefersReducedMotion()) {
+	if (prefersReducedMotion() || (typeof document !== 'undefined' && document.hidden)) {
 		setRevealReady(section);
 		return;
 	}
@@ -463,13 +481,9 @@ function mountSwiper(root: HTMLElement): void {
 			observeParents: true,
 			resizeObserver: true,
 			updateOnWindowResize: true,
-			breakpointsBase: 'container',
+			breakpointsBase: 'window',
 			breakpoints: {
-				480: {
-					slidesPerView: cap(mobileSpv),
-					spaceBetween: Math.max(0, Math.min(12, gap)),
-				},
-				768: {
+				640: {
 					slidesPerView: cap(tabletSpv),
 					spaceBetween: Math.max(0, Math.min(24, gap)),
 				},
@@ -696,6 +710,12 @@ function run(): void {
 	initAllScrollReveals(document);
 	watchDeferredElements();
 	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize' });
+	document.addEventListener('visibilitychange', () => {
+		if (!document.hidden) {
+			initAllScrollReveals(document);
+			ScrollTrigger.refresh();
+		}
+	});
 	ScrollTrigger.refresh();
 }
 

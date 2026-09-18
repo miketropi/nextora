@@ -8,7 +8,7 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import type { TeamMember } from './types';
+import type { TeamMember, TeamCardTemplate } from './types';
 import { TEAM_SECTION_MEDIA_TYPES } from './types';
 
 interface WPMedia {
@@ -20,6 +20,8 @@ interface WPMedia {
 export interface MemberEditFormProps {
 	member: TeamMember;
 	photoUrl?: string;
+	cardTemplate: TeamCardTemplate;
+	enablePopup?: boolean;
 	onPatch: (patch: Partial<TeamMember>) => void;
 }
 
@@ -33,7 +35,10 @@ const socialPlatformOptions = [
 	{ label: __('Email', 'nextora'), value: 'email' },
 ];
 
-export default function MemberEditForm({ member, photoUrl, onPatch }: MemberEditFormProps) {
+export default function MemberEditForm({ member, photoUrl, cardTemplate, enablePopup, onPatch }: MemberEditFormProps) {
+	const isOverlay = cardTemplate === 'overlay-social';
+	const showTags = cardTemplate === 'default';
+
 	return (
 		<div className="nextora-team-section__member-form">
 			<div className="nextora-team-section__member-form-photo">
@@ -79,7 +84,12 @@ export default function MemberEditForm({ member, photoUrl, onPatch }: MemberEdit
 										<Button
 											variant="link"
 											isDestructive
-											onClick={() => onPatch({ photoId: 0, photoAlt: '' })}
+											onClick={() =>
+												onPatch({
+													photoId: 0,
+													photoAlt: '',
+												})
+											}
 										>
 											{__('Remove photo', 'nextora')}
 										</Button>
@@ -113,66 +123,89 @@ export default function MemberEditForm({ member, photoUrl, onPatch }: MemberEdit
 						value={member.role}
 						onChange={(role) => onPatch({ role: role ?? '' })}
 					/>
-					<TextareaControl
-						label={__('Bio', 'nextora')}
-						value={member.bio}
-						onChange={(bio) => onPatch({ bio: bio ?? '' })}
-						help={__('Short description shown on the member card.', 'nextora')}
-					/>
-					<RangeControl
-						label={__('Bio line clamp', 'nextora')}
-						value={member.bioLineClamp}
-						onChange={(bioLineClamp) => onPatch({ bioLineClamp: bioLineClamp ?? 3 })}
-						min={1}
-						max={5}
-					/>
-				</div>
-
-				<div className="nextora-team-section__member-form-section">
-					<div className="nextora-team-section__member-form-section-header">
-						<h4 className="nextora-team-section__member-form-section-heading">
-							{__('Tags', 'nextora')}
-						</h4>
-						<Button
-							variant="secondary"
-							size="compact"
-							onClick={() => onPatch({ tags: [...member.tags, ''] })}
-						>
-							{__('Add tag', 'nextora')}
-						</Button>
-					</div>
-					{member.tags.length > 0 && (
-						<div className="nextora-team-section__member-form-items">
-							{member.tags.map((tag, tagIndex) => (
-								<div
-									key={`${member.id}-tag-${tagIndex}`}
-									className="nextora-team-section__member-form-row"
-								>
-									<TextControl
-										label={__('Tag', 'nextora')}
-										value={tag}
-										onChange={(v) => {
-											const tags = [...member.tags];
-											tags[tagIndex] = v ?? '';
-											onPatch({ tags });
-										}}
-									/>
-									<Button
-										variant="secondary"
-										size="compact"
-										isDestructive
-										onClick={() => {
-											const tags = member.tags.filter((_, i) => i !== tagIndex);
-											onPatch({ tags });
-										}}
-									>
-										{__('Remove', 'nextora')}
-									</Button>
-								</div>
-							))}
-						</div>
+					{!isOverlay && (
+						<>
+							<TextareaControl
+								label={__('Bio', 'nextora')}
+								value={member.bio}
+								onChange={(bio) => onPatch({ bio: bio ?? '' })}
+								help={__('Short description shown on the member card.', 'nextora')}
+							/>
+							{cardTemplate !== 'template-02' && (
+								<RangeControl
+									label={__('Bio line clamp', 'nextora')}
+									value={member.bioLineClamp}
+									onChange={(bioLineClamp) => onPatch({ bioLineClamp: bioLineClamp ?? 3 })}
+									min={1}
+									max={5}
+								/>
+							)}
+						</>
 					)}
 				</div>
+
+				{enablePopup && (
+					<div className="nextora-team-section__member-form-section">
+						<h4 className="nextora-team-section__member-form-section-heading">
+							{__('Popup Detail Info', 'nextora')}
+						</h4>
+						<TextareaControl
+							label={__('Detailed Biography / Story', 'nextora')}
+							value={member.detail ?? ''}
+							onChange={(detail) => onPatch({ detail: detail ?? '' })}
+							help={__('Extended biography, experience, and in-depth details shown in the side popup drawer.', 'nextora')}
+							rows={6}
+						/>
+					</div>
+				)}
+
+				{showTags && (
+					<div className="nextora-team-section__member-form-section">
+						<div className="nextora-team-section__member-form-section-header">
+							<h4 className="nextora-team-section__member-form-section-heading">
+								{__('Tags', 'nextora')}
+							</h4>
+							<Button
+								variant="secondary"
+								size="compact"
+								onClick={() => onPatch({ tags: [...member.tags, ''] })}
+							>
+								{__('Add tag', 'nextora')}
+							</Button>
+						</div>
+						{member.tags.length > 0 && (
+							<div className="nextora-team-section__member-form-items">
+								{member.tags.map((tag, tagIndex) => (
+									<div
+										key={`${member.id}-tag-${tagIndex}`}
+										className="nextora-team-section__member-form-row"
+									>
+										<TextControl
+											label={__('Tag', 'nextora')}
+											value={tag}
+											onChange={(v) => {
+												const tags = [...member.tags];
+												tags[tagIndex] = v ?? '';
+												onPatch({ tags });
+											}}
+										/>
+										<Button
+											variant="secondary"
+											size="compact"
+											isDestructive
+											onClick={() => {
+												const tags = member.tags.filter((_, i) => i !== tagIndex);
+												onPatch({ tags });
+											}}
+										>
+											{__('Remove', 'nextora')}
+										</Button>
+									</div>
+								))}
+							</div>
+						)}
+					</div>
+				)}
 
 				<div className="nextora-team-section__member-form-section">
 					<ToggleControl

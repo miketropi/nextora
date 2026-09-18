@@ -1,3 +1,5 @@
+@import './style.css';
+
 .nextora-icon-picker-modal.components-modal__frame {
 	width: min(96vw, 1120px);
 	max-width: 1120px;

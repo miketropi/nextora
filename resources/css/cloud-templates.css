@@ -1,0 +1,546 @@
+@import './admin-addon.css';
+
+/* ===== Nextora Cloud Templates Extension Styles ===== */
+
+.nextora-cloud-wrap {
+	max-width: 100%;
+}
+
+.nextora-cloud-header__top {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+
+.nextora-cloud-header__badges {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.nextora-cloud-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	font-weight: 500;
+	padding: 5px 12px;
+	background: var(--nx-bg-subtle);
+	border: 1px solid var(--nx-border);
+	border-radius: 20px;
+	color: var(--nx-text-secondary);
+}
+
+.nextora-cloud-badge--version {
+	background: var(--nx-accent-bg);
+	border-color: rgba(0, 255, 182, 0.3);
+	color: var(--nx-accent-darker);
+	font-weight: 600;
+}
+
+/* Category pills */
+.nextora-cloud-categories {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.nextora-cloud-cat-pill {
+	display: inline-flex;
+	align-items: center;
+	padding: 6px 14px;
+	font-size: 12.5px;
+	font-weight: 500;
+	color: var(--nx-text-secondary);
+	background: var(--nx-bg-subtle);
+	border: 1px solid transparent;
+	border-radius: 20px;
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.nextora-cloud-cat-pill:hover {
+	background: var(--nx-border-light);
+	color: var(--nx-text);
+}
+
+.nextora-cloud-cat-pill.is-active {
+	background: var(--nx-text);
+	color: #ffffff;
+	font-weight: 600;
+}
+
+.nextora-cloud-search-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-left: auto;
+}
+
+.nextora-cloud-refresh-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	background: var(--nx-bg-subtle);
+	border: 1px solid transparent;
+	border-radius: 8px;
+	cursor: pointer;
+	color: var(--nx-text-secondary);
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nextora-cloud-refresh-btn:hover {
+	background: var(--nx-border-light);
+	color: var(--nx-text);
+}
+
+.nextora-cloud-count-bar {
+	margin-bottom: 20px;
+}
+
+/* Template Card */
+.nextora-cloud-card {
+	display: flex;
+	flex-direction: column;
+}
+
+.nextora-cloud-card__preview {
+	position: relative;
+	width: 100%;
+	height: 160px;
+	border-radius: 7px;
+	overflow: hidden;
+	margin-bottom: 16px;
+	background: var(--nx-bg-subtle);
+}
+
+.nextora-cloud-card__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+	margin-bottom: 0;
+	transition: transform 0.25s ease;
+}
+
+.nextora-cloud-card:hover .nextora-cloud-card__image {
+	transform: scale(1.02);
+}
+
+.nextora-cloud-card__placeholder {
+	width: 100%;
+	height: 100%;
+	margin-bottom: 0;
+	color: var(--nx-text-muted);
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.nextora-cloud-card__badges {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	right: 8px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	pointer-events: none;
+}
+
+.nextora-cloud-card__type {
+	font-size: 9.5px;
+	font-weight: 700;
+	text-transform: uppercase;
+	padding: 2px 7px;
+	border-radius: 4px;
+	background: rgba(29, 35, 39, 0.85);
+	color: #ffffff;
+	letter-spacing: 0.04em;
+	backdrop-filter: blur(4px);
+}
+
+.nextora-cloud-card__compat {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 10px;
+	font-weight: 600;
+	padding: 2px 8px;
+	border-radius: 4px;
+	backdrop-filter: blur(4px);
+}
+
+.nextora-cloud-card__compat.is-compatible {
+	background: var(--nx-accent-bg);
+	color: var(--nx-accent-darker);
+	border: 1px solid rgba(0, 255, 182, 0.4);
+}
+
+.nextora-cloud-card__compat.is-incompatible {
+	background: var(--nx-error-bg);
+	color: var(--nx-error-text);
+	border: 1px solid var(--nx-error-border);
+}
+
+.nextora-cloud-card__title {
+	margin-bottom: 4px;
+}
+
+.nextora-cloud-card__slug {
+	margin-bottom: 12px;
+}
+
+.nextora-cloud-card__slug code {
+	font-size: 11.5px;
+	color: var(--nx-text-tertiary);
+	background: var(--nx-bg-subtle);
+	padding: 2px 6px;
+	border-radius: 4px;
+}
+
+.nextora-cloud-card__footer {
+	margin-top: auto;
+	padding-top: 12px;
+	border-top: 1px solid var(--nx-border-light);
+}
+
+.nextora-cloud-card__btn-group {
+	display: flex;
+	gap: 8px;
+}
+
+.nextora-cloud-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 8px 14px;
+	font-size: 12.5px;
+	font-weight: 600;
+	border-radius: 7px;
+	cursor: pointer;
+	border: none;
+	transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.nextora-cloud-btn--primary {
+	flex-grow: 1;
+	background: var(--nx-accent);
+	color: var(--nx-text);
+}
+
+.nextora-cloud-btn--primary:hover {
+	background: #00e6a4;
+}
+
+.nextora-cloud-btn--secondary {
+	background: var(--nx-bg-subtle);
+	color: var(--nx-text-secondary);
+	border: 1px solid var(--nx-border);
+}
+
+.nextora-cloud-btn--secondary:hover {
+	background: var(--nx-border-light);
+	color: var(--nx-text);
+}
+
+.nextora-cloud-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.nextora-cloud-card__success {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.nextora-cloud-card__success-text {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(--nx-accent-darker);
+}
+
+/* Success & Error alerts */
+.nextora-cloud-success-alert {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 18px;
+	background: var(--nx-accent-bg);
+	border: 1px solid rgba(0, 255, 182, 0.4);
+	border-radius: 8px;
+	color: var(--nx-accent-darker);
+	font-size: 13px;
+	margin-bottom: 20px;
+}
+
+.nextora-cloud-success-alert__link {
+	margin-left: auto;
+	font-weight: 600;
+	color: var(--nx-accent-darker);
+	text-decoration: none;
+}
+
+.nextora-cloud-success-alert__link:hover {
+	text-decoration: underline;
+}
+
+.nextora-cloud-alert__retry,
+.nextora-cloud-alert__dismiss {
+	margin-left: auto;
+	background: none;
+	border: none;
+	font-size: 12px;
+	font-weight: 600;
+	color: inherit;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+/* Pagination */
+.nextora-cloud-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 36px;
+	padding-top: 24px;
+	border-top: 1px solid var(--nx-border-light);
+}
+
+.nextora-cloud-page-btn {
+	padding: 6px 14px;
+	font-size: 12.5px;
+	font-weight: 500;
+	background: var(--nx-bg-subtle);
+	border: 1px solid var(--nx-border);
+	border-radius: 6px;
+	color: var(--nx-text);
+	cursor: pointer;
+}
+
+.nextora-cloud-page-btn:hover:not(:disabled) {
+	background: var(--nx-border-light);
+}
+
+.nextora-cloud-page-btn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+/* ===== Editor Modal Specific Styling (List Layout) ===== */
+.nextora-cloud-editor-modal {
+	--nx-accent: #00ffb6;
+	--nx-accent-dark: #008055;
+	--nx-accent-darker: #006644;
+	--nx-accent-bg: #e6fff6;
+	--nx-text: #1d2327;
+	--nx-text-secondary: #646970;
+	--nx-text-tertiary: #787c82;
+	--nx-text-muted: #9499a0;
+	--nx-border: #e8eaed;
+	--nx-border-light: #f0f0f1;
+	--nx-border-hover: #c3c4c7;
+	--nx-bg-page: #ffffff;
+	--nx-bg-subtle: #f6f7f8;
+	--nx-bg-footer: #f0f0f0;
+	--nx-error-bg: #fef2f2;
+	--nx-error-border: #fecaca;
+	--nx-error-text: #991b1b;
+	--nx-shimmer-1: #ececec;
+	--nx-shimmer-2: #f5f5f5;
+	flex-direction: column;
+}
+.nextora-cloud-editor-modal.components-modal__frame {
+	display: flex !important;
+	flex-direction: column !important;
+	max-height: 88vh !important;
+	height: 88vh !important;
+}
+
+.nextora-cloud-editor-modal .components-modal__content {
+	padding: 0 !important;
+	margin-top: 60px !important;
+	overflow: hidden !important;
+	display: flex !important;
+	flex-direction: column !important;
+	flex: 1 1 0% !important;
+	min-height: 0 !important;
+	max-height: none !important;
+	height: auto !important;
+}
+
+.nextora-cloud-editor-modal .components-modal__children-container {
+	display: flex !important;
+	flex-direction: column !important;
+	flex: 1 1 0% !important;
+	min-height: 0 !important;
+	overflow: hidden !important;
+	height: 100% !important;
+}
+
+.nextora-cloud-editor-modal .nextora-addon-wrap {
+	padding: 16px 24px 20px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	flex: 1 1 0% !important;
+	min-height: 0 !important;
+	overflow: hidden !important;
+	height: 100% !important;
+}
+
+/* Fallback in case Modal structure varies across WP versions */
+.nextora-cloud-editor-modal [class*="children-container"] {
+	display: flex !important;
+	flex-direction: column !important;
+	flex: 1 1 0% !important;
+	min-height: 0 !important;
+	overflow: hidden !important;
+}
+
+.nextora-cloud-editor-modal .components-modal__header {
+	position: absolute !important;
+	top: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	width: 100% !important;
+	height: 60px !important;
+	padding: 16px 24px !important;
+	box-sizing: border-box !important;
+	border-bottom: 1px solid var(--nx-border) !important;
+	background: #ffffff !important;
+	z-index: 10 !important;
+}
+
+.nextora-cloud-editor-modal .components-modal__header .components-modal__header-heading {
+	font-size: 18px !important;
+	font-weight: 600 !important;
+	color: var(--nx-text) !important;
+}
+
+.nextora-cloud-editor-modal .components-modal__header .components-button {
+	position: absolute !important;
+	top: 14px !important;
+	right: 14px !important;
+}
+/* Modal header/toolbar fixed at top */
+.nextora-cloud-editor-modal .nextora-cloud-modal__toolbar {
+	flex-shrink: 0;
+}
+
+/* Single scrollable list body container */
+.nextora-cloud-modal__list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	overflow-y: auto;
+	flex: 1;
+	min-height: 0;
+	padding-right: 4px;
+	margin-top: 4px;
+}
+
+/* Clean list item design */
+.nextora-cloud-list-item {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	padding: 12px 16px;
+	background: var(--nx-bg-page);
+	border: 1px solid var(--nx-border);
+	border-radius: 9px;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.nextora-cloud-list-item:hover {
+	border-color: var(--nx-accent);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.nextora-cloud-list-item__thumb {
+	width: 100px;
+	height: 64px;
+	flex-shrink: 0;
+	border-radius: 6px;
+	overflow: hidden;
+	background: var(--nx-bg-subtle);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.nextora-cloud-list-item__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: top;
+	display: block;
+}
+
+.nextora-cloud-list-item__placeholder {
+	font-size: 11px;
+	color: var(--nx-text-muted);
+	font-weight: 500;
+	text-align: center;
+	padding: 4px;
+}
+
+.nextora-cloud-list-item__info {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.nextora-cloud-list-item__title-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.nextora-cloud-list-item__title {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--nx-text);
+	margin: 0;
+	line-height: 1.3;
+}
+
+.nextora-cloud-list-item__slug {
+	font-size: 11.5px;
+	color: var(--nx-text-tertiary);
+	background: var(--nx-bg-subtle);
+	padding: 1px 6px;
+	border-radius: 4px;
+	display: inline-block;
+}
+
+.nextora-cloud-list-item__meta {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.nextora-cloud-list-item__action {
+	flex-shrink: 0;
+	margin-left: auto;
+}
+
+.nextora-cloud-list-item__action .nextora-cloud-btn {
+	padding: 7px 14px;
+	font-size: 12px;
+	min-width: 150px;
+}
+

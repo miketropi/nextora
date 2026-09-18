@@ -73,7 +73,8 @@ export function registerScrollAnimationPreset(
 	animationPresets[className as PresetAnimationClassName] = factory;
 }
 
-/** CSS selector for all animation utility classes (presets + special handlers). */
+/** CSS selector for all animation utility classes (presets + special handlers + delay utilities). */
 export function getAnimationSelector(): string {
-	return ANIMATION_CLASS_NAMES.map((className) => `.${className}`).join(", ");
+	return `${ANIMATION_CLASS_NAMES.map((className) => `.${className}`).join(", ")}, [class*="animation-delay-"], [class*="delay-"]`;
 }
+

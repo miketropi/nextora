@@ -2,11 +2,13 @@ import type { CSSProperties } from 'react';
 import { useMemo, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
+	FontSizePicker,
 	InspectorControls,
 	PanelColorSettings,
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
+	BaseControl,
 	Button,
 	Modal,
 	PanelBody,
@@ -17,6 +19,32 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import type { EventAttributes, EventItem } from './types';
+
+function normalizeFontSizeAttribute(
+	value: number | string | undefined,
+	selectedItem?: { slug?: string },
+): string {
+	if (value === undefined || value === '') {
+		return '';
+	}
+	const raw = (selectedItem?.slug || String(value)).trim().toLowerCase();
+	const map: Record<string, string> = {
+		sm: 'small',
+		small: 'small',
+		base: 'base',
+		normal: 'base',
+		md: 'medium',
+		medium: 'medium',
+		'medium-plus': 'medium-plus',
+		lg: 'large',
+		large: 'large',
+		xl: 'x-large',
+		'x-large': 'x-large',
+		'2xl': 'xx-large',
+		'xx-large': 'xx-large',
+	};
+	return map[raw] || raw;
+}
 import EventEditForm from './event-edit-form';
 import {
 	buildSectionStyleVars,
@@ -32,17 +60,20 @@ import {
 } from '../advanced-icon/color-utils';
 import type { EventColorAttribute } from './types';
 
+import { getGutenbergColorProps } from './color-utils';
+
 interface EditProps {
 	attributes: EventAttributes;
 	setAttributes: (attrs: Partial<EventAttributes>) => void;
 }
 
-function DetailIcon({ type }: { type: 'map-pin' | 'clock' | 'ticket' }): JSX.Element {
+function DetailIcon({ type, style, className }: { type: 'map-pin' | 'clock' | 'ticket'; style?: CSSProperties; className?: string }): JSX.Element {
+	const iconClasses = ['nextora-event__detail-icon', className].filter(Boolean).join(' ');
 	if (type === 'map-pin') {
 		return (
-			<span className="nextora-event__detail-icon" aria-hidden="true">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-					<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C10.539 20.193 5 14.993 5 10a7 7 0 1 1 14 0" />
+			<span className={iconClasses} style={style} aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-map-pin">
+					<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
 					<circle cx="12" cy="10" r="3" />
 				</svg>
 			</span>
@@ -50,23 +81,46 @@ function DetailIcon({ type }: { type: 'map-pin' | 'clock' | 'ticket' }): JSX.Ele
 	}
 	if (type === 'clock') {
 		return (
-			<span className="nextora-event__detail-icon" aria-hidden="true">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+			<span className={iconClasses} style={style} aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock">
 					<circle cx="12" cy="12" r="10" />
-					<path d="M12 6v6l4 2" />
+					<polyline points="12 6 12 12 16 14" />
 				</svg>
 			</span>
 		);
 	}
 	return (
-		<span className="nextora-event__detail-icon" aria-hidden="true">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+		<span className={iconClasses} style={style} aria-hidden="true">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-ticket">
 				<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
 				<path d="M13 5v2" />
 				<path d="M13 17v2" />
 				<path d="M13 11v2" />
 			</svg>
 		</span>
+	);
+}
+
+const ICONS = {
+	pencil:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>',
+	chevronUp:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>',
+	chevronDown:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+	trash:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
+	plus:
+		'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+};
+
+function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: string }): JSX.Element {
+	return (
+		<span
+			className={className}
+			dangerouslySetInnerHTML={{ __html: ICONS[name] }}
+			style={{ display: 'inline-flex', alignItems: 'center' }}
+		/>
 	);
 }
 
@@ -91,9 +145,11 @@ function CalendarIcon(): JSX.Element {
 
 function DetailRow({
 	icon,
+	iconStyle,
 	children,
 }: {
 	icon: 'map-pin' | 'clock' | 'ticket';
+	iconStyle?: CSSProperties;
 	children: string;
 }): JSX.Element | null {
 	if (!children) {
@@ -101,7 +157,7 @@ function DetailRow({
 	}
 	return (
 		<span className="nextora-event__detail">
-			<DetailIcon type={icon} />
+			<DetailIcon type={icon} style={iconStyle} />
 			{children}
 		</span>
 	);
@@ -139,6 +195,9 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		template = 'default',
 		showRegisterButton = true,
 		registerButtonText = __('Register', 'nextora'),
+		template3Alternating = false,
+		titleFontSize = '',
+		descriptionFontSize = '',
 		cardBackgroundColor = '',
 		cardBorderColor = '',
 		dateBackgroundColor = '',
@@ -147,10 +206,14 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		titleColor = '',
 		metaColor = '',
 		metaIconColor = '',
+		registerBackgroundColor = '',
 		registerTextColor = '',
 		registerBorderColor = '',
 		registerHoverTextColor = '',
 		registerHoverBackgroundColor = '',
+		registerHoverBorderColor = '',
+		paginationColor = '',
+		paginationActiveColor = '',
 		enableScrollAnimation = true,
 		autoplay = true,
 		autoplayDelay = 5000,
@@ -162,33 +225,116 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		spaceBetween = 24,
 		tabletSlides = 2,
 		mobileSlides = 1,
+		edgeFadeColor = '',
 	} = attributes;
 
 	const isTemplate1 = template === 'template1';
+	const isTemplate2 = template === 'template2';
+	const isTemplate3 = template === 'template3';
+
+	const normalizedTitleFontSize = normalizeFontSizeAttribute(titleFontSize);
+	const normalizedDescFontSize = normalizeFontSizeAttribute(descriptionFontSize);
 
 	const colorPalette = useThemeColorPalette();
 	const lookupPalette = getMergedPaletteEntries(colorPalette);
 
 	const blockProps = useBlockProps({
-		className: `nextora-event nextora-event--editor${isTemplate1 ? ' nextora-event--template1 nextora-event--template1-editor' : ''}`,
+		className: [
+			'nextora-event',
+			'nextora-event--editor',
+			isTemplate1 ? 'nextora-event--template1 nextora-event--template1-editor' : '',
+			isTemplate2 ? 'nextora-event--template2 nextora-event--template2-editor' : '',
+			isTemplate3 ? 'nextora-event--template3 nextora-event--template3-editor' : '',
+			(slidesPerView % 1) !== 0 ? 'has-edge-fade-desktop' : '',
+			(tabletSlides % 1) !== 0 ? 'has-edge-fade-tablet' : '',
+			(mobileSlides % 1) !== 0 ? 'has-edge-fade-mobile' : '',
+		].filter(Boolean).join(' '),
 		style: {
 			...buildSectionStyleVars({
-			cardBackgroundColor,
-			cardBorderColor,
-			dateBackgroundColor,
-			dateDayColor,
-			dateAccentColor,
-			titleColor,
-			metaColor,
-			metaIconColor,
-			registerTextColor,
-			registerBorderColor,
-			registerHoverTextColor,
-			registerHoverBackgroundColor,
-		}) as CSSProperties,
-			...(isTemplate1 ? { '--nextora-event-editor-slides': String(slidesPerView), '--nextora-event-editor-gap': `${spaceBetween}px` } as CSSProperties : {}),
+				cardBackgroundColor,
+				cardBorderColor,
+				dateBackgroundColor,
+				dateDayColor,
+				dateAccentColor,
+				titleColor,
+				metaColor,
+				metaIconColor,
+				registerBackgroundColor,
+				registerTextColor,
+				registerBorderColor,
+				registerHoverTextColor,
+				registerHoverBackgroundColor,
+				registerHoverBorderColor,
+				paginationColor,
+				paginationActiveColor,
+			}) as CSSProperties,
+			...(isTemplate1 || isTemplate2 ? { '--nextora-event-editor-slides': String(slidesPerView), '--nextora-event-editor-gap': `${spaceBetween}px` } as CSSProperties : {}),
+			...(edgeFadeColor ? { '--nextora-event-edge-fade-color': edgeFadeColor } as CSSProperties : {}),
 		},
 	});
+
+	const titleColorProps = useMemo(
+		() => getGutenbergColorProps(titleColor, 'color'),
+		[titleColor],
+	);
+	const cardBgProps = useMemo(
+		() => getGutenbergColorProps(cardBackgroundColor, 'background'),
+		[cardBackgroundColor],
+	);
+	const cardBorderProps = useMemo(
+		() => getGutenbergColorProps(cardBorderColor, 'border'),
+		[cardBorderColor],
+	);
+	const cardStyle: CSSProperties = useMemo(
+		() => ({
+			...cardBgProps.style,
+			...cardBorderProps.style,
+		}),
+		[cardBgProps.style, cardBorderProps.style],
+	);
+
+	const dateBgProps = useMemo(
+		() => getGutenbergColorProps(dateBackgroundColor, 'background'),
+		[dateBackgroundColor],
+	);
+	const dateDayProps = useMemo(
+		() => getGutenbergColorProps(dateDayColor, 'color'),
+		[dateDayColor],
+	);
+	const dateMonthProps = useMemo(
+		() => getGutenbergColorProps(dateAccentColor, 'color'),
+		[dateAccentColor],
+	);
+
+	const metaColorProps = useMemo(
+		() => getGutenbergColorProps(metaColor, 'color'),
+		[metaColor],
+	);
+	const metaIconProps = useMemo(
+		() => getGutenbergColorProps(metaIconColor, 'color'),
+		[metaIconColor],
+	);
+
+	const regBgProps = useMemo(
+		() => getGutenbergColorProps(registerBackgroundColor, 'background'),
+		[registerBackgroundColor],
+	);
+	const regTextProps = useMemo(
+		() => getGutenbergColorProps(registerTextColor, 'color'),
+		[registerTextColor],
+	);
+	const regBorderProps = useMemo(
+		() => getGutenbergColorProps(registerBorderColor, 'border'),
+		[registerBorderColor],
+	);
+	const regBtnStyle: CSSProperties = useMemo(
+		() => ({
+			...regBgProps.style,
+			...regTextProps.style,
+			...regBorderProps.style,
+		}),
+		[regBgProps.style, regTextProps.style, regBorderProps.style],
+	);
 
 	const setThemeColor = (key: EventColorAttribute, value: string | undefined): void => {
 		setAttributes({
@@ -221,7 +367,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			{
 				value: colorValueForPicker(dateAccentColor, colorPalette, lookupPalette),
 				onChange: (v: string | undefined) => setThemeColor('dateAccentColor', v),
-				label: __('Date month label', 'nextora'),
+				label: __('Date label', 'nextora'),
 			},
 			{
 				value: colorValueForPicker(titleColor, colorPalette, lookupPalette),
@@ -237,6 +383,11 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				value: colorValueForPicker(metaIconColor, colorPalette, lookupPalette),
 				onChange: (v: string | undefined) => setThemeColor('metaIconColor', v),
 				label: __('Details icons', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(registerBackgroundColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('registerBackgroundColor', v),
+				label: __('Register background', 'nextora'),
 			},
 			{
 				value: colorValueForPicker(registerTextColor, colorPalette, lookupPalette),
@@ -259,6 +410,27 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					setThemeColor('registerHoverBackgroundColor', v),
 				label: __('Register hover background', 'nextora'),
 			},
+			{
+				value: colorValueForPicker(registerHoverBorderColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) =>
+					setThemeColor('registerHoverBorderColor', v),
+				label: __('Register hover border', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(paginationColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('paginationColor', v),
+				label: __('Pagination dot', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(paginationActiveColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('paginationActiveColor', v),
+				label: __('Active pagination', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('edgeFadeColor', v),
+				label: __('Edge fade color', 'nextora'),
+			},
 		],
 		[
 			colorPalette,
@@ -271,10 +443,15 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 			titleColor,
 			metaColor,
 			metaIconColor,
+			registerBackgroundColor,
 			registerTextColor,
 			registerBorderColor,
 			registerHoverTextColor,
 			registerHoverBackgroundColor,
+			registerHoverBorderColor,
+			paginationColor,
+			paginationActiveColor,
+			edgeFadeColor,
 		],
 	);
 
@@ -287,7 +464,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	};
 
 	const addEvent = (): void => {
-		const newEvent = createDefaultEventItem(registerButtonText || __('Register', 'nextora'), {
+		const newEvent = createDefaultEventItem(__('Register', 'nextora'), {
 			title: __('Community fundraiser', 'nextora'),
 			location: __('Main venue', 'nextora'),
 			price: __('Free', 'nextora'),
@@ -329,62 +506,112 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				<PanelBody title={__('Template', 'nextora')} initialOpen>
 					<SelectControl
 						label={__('Layout template', 'nextora')}
-						value={template as 'default' | 'template1'}
+						value={template as 'default' | 'template1' | 'template2' | 'template3'}
 						options={[
 							{ label: __('Default — List', 'nextora'), value: 'default' as const },
 							{ label: __('Template 1 — Slider', 'nextora'), value: 'template1' as const },
+							{ label: __('Template 2 — Event cards', 'nextora'), value: 'template2' as const },
+							{ label: __('Template 3 — Editorial list', 'nextora'), value: 'template3' as const },
 						]}
 						onChange={(value: string) => setAttributes({ template: value })}
 					/>
 				</PanelBody>
 
 				<PanelBody title={__('Events', 'nextora')} initialOpen>
-					<p className="nextora-event__inspector-events-help">
-						{__(
-							'Click Edit on a card in the canvas, or use the buttons below. Full settings open in a dialog.',
-							'nextora',
-						)}
-					</p>
-					{events.map((event, index) => (
-						<div key={event.id} className="nextora-event__inspector-item">
-							<div className="nextora-event__inspector-item-summary">
-								<p className="nextora-event__inspector-item-title">
-									{event.title || sprintf(__('Event %d', 'nextora'), index + 1)}
-								</p>
-								{event.location ? (
-									<p className="nextora-event__inspector-item-meta">{event.location}</p>
-								) : null}
-							</div>
-							<div className="nextora-event__inspector-item-actions">
-								<Button variant="primary" onClick={() => openEventEditor(event.id)}>
-									{__('Edit', 'nextora')}
-								</Button>
+					{events.length === 0 && (
+						<p className="components-base-control__help" style={{ marginBottom: '8px' }}>
+							{__('No events yet. Click "Add event" to create one.', 'nextora')}
+						</p>
+					)}
+					{events.map((event, index) => {
+						const imageUrl = resolveImageUrl(event, mediaUrlById);
+						return (
+							<div
+								key={event.id}
+								style={{
+									display: 'flex',
+									alignItems: 'center',
+									gap: '6px',
+									marginBottom: '6px',
+									padding: '6px 8px',
+									background: '#f9f9f9',
+									border: '1px solid #ddd',
+									borderRadius: '4px',
+								}}
+							>
+								<div
+									style={{
+										flex: 1,
+										display: 'flex',
+										alignItems: 'center',
+										gap: '8px',
+										overflow: 'hidden',
+										minWidth: 0,
+									}}
+								>
+									{imageUrl ? (
+										<img
+											src={imageUrl}
+											alt=""
+											style={{
+												width: '32px',
+												height: '24px',
+												objectFit: 'cover',
+												borderRadius: '2px',
+												flexShrink: 0,
+											}}
+										/>
+									) : null}
+									<span
+										style={{
+											overflow: 'hidden',
+											textOverflow: 'ellipsis',
+											whiteSpace: 'nowrap',
+											fontSize: '12px',
+											lineHeight: '1.4',
+											fontWeight: 500,
+										}}
+									>
+										{event.title || sprintf(__('Event %d', 'nextora'), index + 1)}
+									</span>
+								</div>
 								<Button
-									variant="secondary"
-									disabled={index === 0}
+									icon={<InlineSvg name="pencil" />}
+									label={__('Edit', 'nextora')}
+									onClick={() => openEventEditor(event.id)}
+									isSmall
+								/>
+								<Button
+									icon={<InlineSvg name="chevronUp" />}
+									label={__('Move up', 'nextora')}
 									onClick={() => moveEvent(event.id, -1)}
-								>
-									{__('Up', 'nextora')}
-								</Button>
+									disabled={index === 0}
+									isSmall
+								/>
 								<Button
-									variant="secondary"
-									disabled={index >= events.length - 1}
+									icon={<InlineSvg name="chevronDown" />}
+									label={__('Move down', 'nextora')}
 									onClick={() => moveEvent(event.id, 1)}
-								>
-									{__('Down', 'nextora')}
-								</Button>
+									disabled={index >= events.length - 1}
+									isSmall
+								/>
 								<Button
-									variant="secondary"
-									isDestructive
-									disabled={events.length <= 1}
+									icon={<InlineSvg name="trash" />}
+									label={__('Remove', 'nextora')}
 									onClick={() => removeEvent(event.id)}
-								>
-									{__('Remove', 'nextora')}
-								</Button>
+									disabled={events.length <= 1}
+									isSmall
+									isDestructive
+								/>
 							</div>
-						</div>
-					))}
-					<Button variant="primary" onClick={addEvent}>
+						);
+					})}
+					<Button
+						variant="secondary"
+						onClick={addEvent}
+						icon={<InlineSvg name="plus" />}
+						style={{ width: '100%', justifyContent: 'center', marginTop: events.length > 0 ? '4px' : '0' }}
+					>
 						{__('Add event', 'nextora')}
 					</Button>
 				</PanelBody>
@@ -395,20 +622,52 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 						checked={showRegisterButton !== false}
 						onChange={(value: boolean) => setAttributes({ showRegisterButton: value })}
 					/>
-					<TextControl
-						label={__('Default register label', 'nextora')}
-						value={registerButtonText}
-						onChange={(value: string) => setAttributes({ registerButtonText: value })}
-						help={__(
-							'Used when an event does not have its own register label.',
-							'nextora',
-						)}
-					/>
+					{isTemplate3 ? (
+						<ToggleControl
+							label={__('Alternate image and content', 'nextora')}
+							help={__('Place the image left on odd items and right on even items.', 'nextora')}
+							checked={template3Alternating}
+							onChange={(value: boolean) => setAttributes({ template3Alternating: value })}
+						/>
+					) : null}
 				</PanelBody>
 
-				<PanelColorSettings title={__('Colors', 'nextora')} colorSettings={colorSettings} />
+				<PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />
 
-				{!isTemplate1 ? (
+				<PanelBody title={__('Typography', 'nextora')} initialOpen={isTemplate3}>
+					<BaseControl
+						label={__('Card title font size', 'nextora')}
+						id="nextora-event-title-font-size"
+						help={__('Default inherits global heading size.', 'nextora')}
+					>
+						<FontSizePicker
+							value={titleFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									titleFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+					<BaseControl
+						label={__('Card description font size', 'nextora')}
+						id="nextora-event-description-font-size"
+						help={__('Default inherits global body size.', 'nextora')}
+					>
+						<FontSizePicker
+							value={descriptionFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									descriptionFontSize: normalizeFontSizeAttribute(value, selectedItem),
+								})
+							}
+						/>
+					</BaseControl>
+				</PanelBody>
+
+				{!isTemplate1 && !isTemplate2 && !isTemplate3 ? (
 					<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
 						<ToggleControl
 							label={__('Animate on scroll', 'nextora')}
@@ -422,7 +681,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					</PanelBody>
 				) : null}
 
-				{isTemplate1 ? (
+				{isTemplate1 || isTemplate2 ? (
 					<PanelBody title={__('Slider', 'nextora')} initialOpen={false}>
 						<ToggleControl
 							label={__('Autoplay', 'nextora')}
@@ -460,7 +719,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							label={__('Slides per view', 'nextora')}
 							value={slidesPerView}
 							onChange={(value: number | undefined) =>
-								setAttributes({ slidesPerView: value ?? 3 })
+								setAttributes({ slidesPerView: value !== undefined ? Math.round(value * 100) / 100 : 3 })
 							}
 							min={1}
 							max={6}
@@ -471,7 +730,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							label={__('Tablet slides', 'nextora')}
 							value={tabletSlides}
 							onChange={(value: number | undefined) =>
-								setAttributes({ tabletSlides: value ?? 2 })
+								setAttributes({ tabletSlides: value !== undefined ? Math.round(value * 100) / 100 : 2 })
 							}
 							min={1}
 							max={4}
@@ -481,10 +740,10 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							label={__('Mobile slides', 'nextora')}
 							value={mobileSlides}
 							onChange={(value: number | undefined) =>
-								setAttributes({ mobileSlides: value ?? 1 })
+								setAttributes({ mobileSlides: value !== undefined ? Math.round(value * 100) / 100 : 1 })
 							}
 							min={1}
-							max={2}
+							max={3}
 							step={0.1}
 						/>
 						<RangeControl
@@ -533,10 +792,12 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 						</div>
 					}
 				>
-					<EventEditForm
-						event={editingEvent}
-						imageUrl={resolveImageUrl(editingEvent, mediaUrlById)}
-						onPatch={(patch) => patchEvent(editingEvent.id, patch)}
+						<EventEditForm
+							event={editingEvent}
+							imageUrl={resolveImageUrl(editingEvent, mediaUrlById)}
+							showEditorialFields={isTemplate3}
+							showDescription={isTemplate2 || isTemplate3}
+							onPatch={(patch) => patchEvent(editingEvent.id, patch)}
 					/>
 				</Modal>
 			) : null}
@@ -564,7 +825,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 
 									return (
 										<div key={event.id} className="swiper-slide">
-											<article className="nextora-event__card nextora-event__card--editable">
+											<article className={['nextora-event__card', 'nextora-event__card--editable', cardBgProps.className].filter(Boolean).join(' ')} style={cardStyle}>
 												<button
 													type="button"
 													className="nextora-event__item-edit"
@@ -574,9 +835,9 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 												</button>
 
 												<div className="nextora-event__card-thumb">
-													<div className="nextora-event__date">
-														<b className="nextora-event__date-day">{displayDay}</b>
-														<span className="nextora-event__date-month">{displayMonth}</span>
+													<div className={['nextora-event__date', dateBgProps.className].filter(Boolean).join(' ')} style={dateBgProps.style}>
+														<b className={['nextora-event__date-day', dateDayProps.className].filter(Boolean).join(' ')} style={dateDayProps.style}>{displayDay}</b>
+														<span className={['nextora-event__date-month', dateMonthProps.className].filter(Boolean).join(' ')} style={dateMonthProps.style}>{displayMonth}</span>
 													</div>
 													{imageUrl ? (
 														<img
@@ -591,17 +852,17 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 												</div>
 
 												<div className="nextora-event__card-info">
-													<h3 className="nextora-event__title">
+													<h4 className={['nextora-event__title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>
 														{event.title || __('Community fundraiser', 'nextora')}
-													</h3>
-													<div className="nextora-event__details">
-														<DetailRow icon="map-pin">{displayLocation}</DetailRow>
-														<DetailRow icon="clock">{displayTime}</DetailRow>
-														<DetailRow icon="ticket">{displayPrice}</DetailRow>
+													</h4>
+													<div className={['nextora-event__details', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}>
+														<DetailRow icon="map-pin" iconStyle={metaIconProps.style}>{displayLocation}</DetailRow>
+														<DetailRow icon="clock" iconStyle={metaIconProps.style}>{displayTime}</DetailRow>
+														<DetailRow icon="ticket" iconStyle={metaIconProps.style}>{displayPrice}</DetailRow>
 													</div>
 
 													{showRegisterButton ? (
-														<span className="nextora-event__register-card nextora-event__register-card--static">
+														<span className={['nextora-event__register-card', 'nextora-event__register-card--static', 'wp-element-button', regBgProps.className, regTextProps.className].filter(Boolean).join(' ')} style={regBtnStyle}>
 															<CalendarIcon />
 															{registerLabel}
 														</span>
@@ -612,6 +873,90 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 									);
 								})}
 							</div>
+						</div>
+					) : isTemplate2 ? (
+						<div className="nextora-event__carousel-root">
+						<div className="swiper nextora-event__swiper">
+						<div className="swiper-wrapper">
+							{events.map((event) => {
+								const imageUrl = resolveImageUrl(event, mediaUrlById);
+								const registerLabel = event.registerLabel.trim() || registerButtonText || __('Register', 'nextora');
+								return (
+									<div key={event.id} className="swiper-slide">
+										<article className={['nextora-event__template2-card', 'nextora-event__template2-card--editable', cardBgProps.className].filter(Boolean).join(' ')} style={cardStyle}>
+											<button type="button" className="nextora-event__item-edit" onClick={() => openEventEditor(event.id)}>
+												{__('Edit event', 'nextora')}
+											</button>
+											<div className="nextora-event__template2-media">
+												{imageUrl ? <img src={imageUrl} alt="" className="nextora-event__thumb-img" /> : null}
+												<div className={['nextora-event__template2-date', dateBgProps.className].filter(Boolean).join(' ')} style={dateBgProps.style}>
+													<b className={dateDayProps.className || undefined} style={dateDayProps.style}>{event.day || '01'}</b>
+													<span className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{event.month || __('Jan', 'nextora')}</span>
+												</div>
+											</div>
+											<div className="nextora-event__template2-content">
+												<h4 className={['nextora-event__template2-title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>{event.title || __('Community fundraiser', 'nextora')}</h4>
+												{event.description ? <p className={['nextora-event__template2-desc', normalizedDescFontSize ? `has-${normalizedDescFontSize}-font-size` : ''].filter(Boolean).join(' ')}>{event.description}</p> : null}
+												<div className="nextora-event__template2-footer">
+													<div className={['nextora-event__template2-details', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}>
+														<span className="nextora-event__template2-meta">
+															<DetailIcon type="clock" style={metaIconProps.style} />
+															<span>{event.time || __('10:00 AM', 'nextora')}</span>
+														</span>
+														<span className="nextora-event__template2-meta">
+															<DetailIcon type="map-pin" style={metaIconProps.style} />
+															<span>{event.location || __('Main venue', 'nextora')}</span>
+														</span>
+													</div>
+													{showRegisterButton ? (
+														<span className={['nextora-event__template2-action', 'wp-element-button', regBgProps.className, regTextProps.className].filter(Boolean).join(' ')} style={regBtnStyle} aria-hidden="true">
+															<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+																<path d="M5 12h14" />
+																<path d="m12 5 7 7-7 7" />
+															</svg>
+														</span>
+													) : null}
+												</div>
+											</div>
+										</article>
+									</div>
+								);
+							})}
+						</div>
+						</div>
+						</div>
+					) : isTemplate3 ? (
+						<div className={['nextora-event__template3-list', template3Alternating ? 'nextora-event__template3-list--alternating' : ''].filter(Boolean).join(' ')} aria-label={__('Events', 'nextora')}>
+							{events.map((event) => {
+								const imageUrl = resolveImageUrl(event, mediaUrlById);
+								const registerLabel = event.registerLabel.trim() || __('Register', 'nextora');
+								return (
+								<article key={event.id} className={['nextora-event__template3-item', 'nextora-event__template3-item--editable', cardBgProps.className].filter(Boolean).join(' ')} style={cardStyle}>
+									<button type="button" className="nextora-event__item-edit" onClick={() => openEventEditor(event.id)}>
+										{__('Edit event', 'nextora')}
+									</button>
+									<div className="nextora-event__template3-date-frame"><div className={['nextora-event__template3-date', dateBgProps.className].filter(Boolean).join(' ')} style={dateBgProps.style}><span className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{event.month || __('Jan', 'nextora')}</span><b className={dateDayProps.className || undefined} style={dateDayProps.style}>{event.day || '01'}</b><small className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{__('Day', 'nextora')}</small></div></div>
+									<div className="nextora-event__template3-content">
+										<div className="nextora-event__template3-category">{event.category || __('Upcoming event', 'nextora')}</div>
+										<h4 className={['nextora-event__template3-title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>{event.title || __('Community fundraiser', 'nextora')}</h4>
+										<div className={['nextora-event__template3-meta', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}><DetailRow icon="clock" iconStyle={metaIconProps.style}>{event.time || __('Time TBC', 'nextora')}</DetailRow><DetailRow icon="map-pin" iconStyle={metaIconProps.style}>{event.location || __('Location TBC', 'nextora')}</DetailRow></div>
+										{event.description ? <p className={['nextora-event__template3-description', normalizedDescFontSize ? `has-${normalizedDescFontSize}-font-size` : ''].filter(Boolean).join(' ')}>{event.description}</p> : null}
+										{showRegisterButton ? (
+											<span className={['nextora-event__template3-register', 'nextora-event__template3-register--static', regBgProps.className, regTextProps.className].filter(Boolean).join(' ')} style={regBtnStyle}>
+												{registerLabel}
+												<span className="nextora-event__template3-register-icon" aria-hidden="true">
+													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right" aria-hidden="true" focusable="false">
+														<path d="M5 12h14" />
+														<path d="m12 5 7 7-7 7" />
+													</svg>
+												</span>
+											</span>
+										) : null}
+									</div>
+									<div className="nextora-event__template3-media">{imageUrl ? <img src={imageUrl} alt="" /> : null}</div>
+								</article>
+								);
+							})}
 						</div>
 					) : (
 						<ul className="nextora-event__list" aria-label={__('Events', 'nextora')}>
@@ -633,7 +978,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 
 								return (
 									<li key={event.id} className="nextora-event__item-wrap">
-										<article className="nextora-event__item nextora-event__item--editable">
+										<article className={['nextora-event__item', 'nextora-event__item--editable', cardBgProps.className].filter(Boolean).join(' ')} style={cardStyle}>
 											<button
 												type="button"
 												className="nextora-event__item-edit"
@@ -642,9 +987,9 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 												{__('Edit event', 'nextora')}
 											</button>
 
-											<div className="nextora-event__date">
-												<b className="nextora-event__date-day">{displayDay}</b>
-												<span className="nextora-event__date-month">{displayMonth}</span>
+											<div className={['nextora-event__date', dateBgProps.className].filter(Boolean).join(' ')} style={dateBgProps.style}>
+												<b className={['nextora-event__date-day', dateDayProps.className].filter(Boolean).join(' ')} style={dateDayProps.style}>{displayDay}</b>
+												<span className={['nextora-event__date-month', dateMonthProps.className].filter(Boolean).join(' ')} style={dateMonthProps.style}>{displayMonth}</span>
 											</div>
 
 											<div className="nextora-event__thumb">
@@ -661,18 +1006,18 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 											</div>
 
 											<div className="nextora-event__info">
-												<h3 className="nextora-event__title">
+												<h4 className={['nextora-event__title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>
 													{event.title || __('Community fundraiser', 'nextora')}
-												</h3>
-												<div className="nextora-event__details">
-													<DetailRow icon="map-pin">{displayLocation}</DetailRow>
-													<DetailRow icon="clock">{displayTime}</DetailRow>
-													<DetailRow icon="ticket">{displayPrice}</DetailRow>
+												</h4>
+												<div className={['nextora-event__details', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}>
+													<DetailRow icon="map-pin" iconStyle={metaIconProps.style}>{displayLocation}</DetailRow>
+													<DetailRow icon="clock" iconStyle={metaIconProps.style}>{displayTime}</DetailRow>
+													<DetailRow icon="ticket" iconStyle={metaIconProps.style}>{displayPrice}</DetailRow>
 												</div>
 											</div>
 
 											{showRegisterButton ? (
-												<span className="nextora-event__register nextora-event__register--static">
+												<span className={['nextora-event__register', 'nextora-event__register--static', 'wp-element-button', regBgProps.className, regTextProps.className].filter(Boolean).join(' ')} style={regBtnStyle}>
 													{registerLabel}
 													<span
 														className="nextora-event__register-icon"
@@ -683,8 +1028,12 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 															fill="none"
 															stroke="currentColor"
 															strokeWidth="2"
+															strokeLinecap="round"
+															strokeLinejoin="round"
+															className="lucide lucide-arrow-right"
 														>
-															<path d="M5 12h14M13 6l6 6-6 6" />
+															<path d="M5 12h14" />
+															<path d="m12 5 7 7-7 7" />
 														</svg>
 													</span>
 												</span>

@@ -12,6 +12,7 @@ import {
 import { animationPresets } from "./presets";
 import { parseScrollAnimationOptions } from "./parse-options";
 import { initSpecialScrollAnimation, skipSpecialScrollAnimation } from "./special-animations";
+import { afterInitialLayout, isInInitialRevealViewport } from "./initial-layout";
 import type { AnimationClassName } from "./constants";
 import type { ScrollAnimationOptions } from "./types";
 
@@ -69,9 +70,13 @@ export function getRevealGen(el: HTMLElement): number {
  * is not inside another `li` (excludes category/tag sub-lists in post cards).
  */
 export function getFadeListGridItems(el: HTMLElement): HTMLElement[] {
-	return Array.from(el.querySelectorAll<HTMLElement>("ul > li")).filter((li) => {
+	if (el.tagName === "UL" || el.tagName === "OL") {
+		return Array.from(el.children).filter((child): child is HTMLElement => child.tagName === "LI");
+	}
+
+	return Array.from(el.querySelectorAll<HTMLElement>("ul > li, ol > li")).filter((li) => {
 		const parentUl = li.parentElement;
-		if (!parentUl || parentUl.tagName !== "UL") {
+		if (!parentUl || (parentUl.tagName !== "UL" && parentUl.tagName !== "OL")) {
 			return false;
 		}
 
@@ -101,8 +106,19 @@ export function resolveAnimationClass(el: HTMLElement): AnimationClassName | nul
 		}
 	}
 	const custom = Array.from(el.classList).find((name) => name in animationPresets);
-	return (custom as AnimationClassName | undefined) ?? null;
+	if (custom) {
+		return custom as AnimationClassName;
+	}
+
+	// Fallback: If element only has a delay class without explicit animation class, default to animation-fade-in-up
+	const hasDelayClass = Array.from(el.classList).some((name) => /^(?:animation-)?delay-\d+/.test(name));
+	if (hasDelayClass) {
+		return "animation-fade-in-up";
+	}
+
+	return null;
 }
+
 
 function markInitialized(el: HTMLElement): void {
 	// Never mark as ready if container is currently hidden (reset in progress)
@@ -155,20 +171,45 @@ function initFadeListGridAnimation(el: HTMLElement, options: ScrollAnimationOpti
 
 	el.classList.remove("nextora-scroll-animation--pending");
 	const gen = nextRevealGen(el);
+	const revealImmediately = isInInitialRevealViewport(el);
 
-	items.forEach((item) => {
-		item.classList.add("nextora-scroll-animation--pending");
-		gsap.fromTo(item, from, {
-			...to,
-			...buildScrollTweenVars(item, options, item),
-			onComplete: () => {
-				if (getRevealGen(el) !== gen) return;
-				item.classList.remove("nextora-scroll-animation--pending");
-				item.classList.add("nextora-scroll-animation--ready");
-				gsap.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
-			},
+	if (revealImmediately) {
+		items.forEach((item) => {
+			item.classList.add("nextora-scroll-animation--pending");
+			gsap.set(item, from);
 		});
-	});
+		afterInitialLayout(() => {
+			gsap.to(items, {
+				...to,
+				delay: options.delay,
+				duration: options.duration,
+				ease: options.ease,
+				stagger: options.stagger ?? 0.08,
+				onComplete: () => {
+					if (getRevealGen(el) !== gen) return;
+					items.forEach((item) => {
+						item.classList.remove("nextora-scroll-animation--pending");
+						item.classList.add("nextora-scroll-animation--ready");
+						gsap.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
+					});
+				},
+			});
+		});
+	} else {
+		items.forEach((item) => {
+			item.classList.add("nextora-scroll-animation--pending");
+			gsap.fromTo(item, from, {
+				...to,
+				...buildScrollTweenVars(item, options, item),
+				onComplete: () => {
+					if (getRevealGen(el) !== gen) return;
+					item.classList.remove("nextora-scroll-animation--pending");
+					item.classList.add("nextora-scroll-animation--ready");
+					gsap.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
+				},
+			});
+		});
+	}
 
 	markInitialized(el);
 }
@@ -185,20 +226,45 @@ function initInnerFadeAnimation(el: HTMLElement, options: ScrollAnimationOptions
 
 	el.classList.remove("nextora-scroll-animation--pending");
 	const gen = nextRevealGen(el);
+	const revealImmediately = isInInitialRevealViewport(el);
 
-	targets.forEach((target) => {
-		target.classList.add("nextora-scroll-animation--pending");
-		gsap.fromTo(target, from, {
-			...to,
-			...buildScrollTweenVars(target, options, target),
-			onComplete: () => {
-				if (getRevealGen(el) !== gen) return;
-				target.classList.remove("nextora-scroll-animation--pending");
-				target.classList.add("nextora-scroll-animation--ready");
-				gsap.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
-			},
+	if (revealImmediately) {
+		targets.forEach((target) => {
+			target.classList.add("nextora-scroll-animation--pending");
+			gsap.set(target, from);
 		});
-	});
+		afterInitialLayout(() => {
+			gsap.to(targets, {
+				...to,
+				delay: options.delay,
+				duration: options.duration,
+				ease: options.ease,
+				stagger: options.stagger ?? 0.08,
+				onComplete: () => {
+					if (getRevealGen(el) !== gen) return;
+					targets.forEach((target) => {
+						target.classList.remove("nextora-scroll-animation--pending");
+						target.classList.add("nextora-scroll-animation--ready");
+						gsap.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
+					});
+				},
+			});
+		});
+	} else {
+		targets.forEach((target) => {
+			target.classList.add("nextora-scroll-animation--pending");
+			gsap.fromTo(target, from, {
+				...to,
+				...buildScrollTweenVars(target, options, target),
+				onComplete: () => {
+					if (getRevealGen(el) !== gen) return;
+					target.classList.remove("nextora-scroll-animation--pending");
+					target.classList.add("nextora-scroll-animation--ready");
+					gsap.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
+				},
+			});
+		});
+	}
 
 	markInitialized(el);
 }
@@ -250,36 +316,63 @@ export function initElementAnimations(el: HTMLElement): void {
 		initFadeListGridAnimation(el, options);
 	} else if (animationClass === "animation-inner-fade") {
 		initInnerFadeAnimation(el, options);
-	} else if (animationClass) {
-		const factory = animationPresets[animationClass];
-		if (!factory) {
-			markInitialized(el);
-		} else {
-			const { from, to } = factory({ distance: options.distance });
-			const tweenVars = buildScrollTweenVars(el, options);
+		} else if (animationClass) {
+			const factory = animationPresets[animationClass];
+			if (!factory) {
+				markInitialized(el);
+			} else {
+				const { from, to } = factory({ distance: options.distance });
+				const revealImmediately = isInInitialRevealViewport(el);
 
 			if (options.stagger !== null && el.children.length > 0) {
-				const targets = Array.from(el.children) as HTMLElement[];
+					const targets = Array.from(el.children) as HTMLElement[];
+					const stagger = options.stagger;
 				el.classList.remove("nextora-scroll-animation--pending");
 				const gen = nextRevealGen(el);
 				targets.forEach((child) => child.classList.add("nextora-scroll-animation--pending"));
 				gsap.set(targets, from);
-				gsap.to(targets, {
-					...to,
-					...tweenVars,
-					stagger: options.stagger,
-					onComplete: () => {
-						if (getRevealGen(el) !== gen) return;
-						targets.forEach((child) => {
+					const play = (): void => {
+						const tweenVars = revealImmediately
+							? { delay: options.delay, duration: options.duration, ease: options.ease }
+							: buildScrollTweenVars(el, options);
+						gsap.to(targets, {
+							...to,
+							...tweenVars,
+							stagger,
+							onComplete: () => {
+							if (getRevealGen(el) !== gen) return;
+							targets.forEach((child) => {
 							child.classList.remove("nextora-scroll-animation--pending");
 							child.classList.add("nextora-scroll-animation--ready");
 							gsap.set(child, { clearProps: "opacity,transform,translate,rotate,scale" });
 						});
-					},
-				});
-			} else {
-				gsap.fromTo(el, from, { ...to, ...tweenVars });
-			}
+							},
+						});
+					};
+					if (revealImmediately) {
+						afterInitialLayout(play);
+					} else {
+						play();
+					}
+				} else {
+					if (revealImmediately) {
+						gsap.set(el, from);
+						afterInitialLayout(() => {
+							const initialDelay = el.hasAttribute("data-delay")
+								? options.delay
+								: (el.tagName === "P" ? 0.35 : options.delay);
+							gsap.to(el, {
+								...to,
+								delay: initialDelay,
+								duration: options.duration,
+								ease: options.ease,
+								onComplete: () => gsap.set(el, { clearProps: "opacity,transform,translate,rotate,scale" }),
+							});
+						});
+					} else {
+						gsap.fromTo(el, from, { ...to, ...buildScrollTweenVars(el, options) });
+					}
+				}
 		}
 	}
 

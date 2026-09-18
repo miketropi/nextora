@@ -1,4 +1,4 @@
-export type ScrollingPromotionItemType = 'text' | 'image' | 'text-image';
+export type ScrollingPromotionItemType = 'text' | 'image' | 'text-image' | 'icon-text';
 
 export interface ScrollingPromotionItem {
 	itemType: ScrollingPromotionItemType;
@@ -6,6 +6,9 @@ export interface ScrollingPromotionItem {
 	imageId: number;
 	imageUrl: string;
 	imageAlt: string;
+	iconName: string;
+	iconSize: number;
+	iconColor?: string;
 }
 
 export interface ScrollingPromotionAttributes {
@@ -15,19 +18,30 @@ export interface ScrollingPromotionAttributes {
 	pauseOnHover: boolean;
 	separatorType: string;
 	customSeparator: string;
+	separatorIcon?: string;
+	separatorIconSize?: number;
+	separatorBadgeSize?: number;
+	separatorIconStrokeWidth?: number;
 	separatorSize: number;
-	separatorColor: string;
-	fontSize: number;
+	separatorColor?: string;
+	separatorBgColor?: string;
+	separatorBackgroundColor?: string;
+	iconColor?: string;
+	fontSize: string | number;
+	customFontSize?: number;
 	fontWeight: string;
 	textTransform: string;
 	letterSpacing: number;
-	textColor: string;
-	backgroundColor: string;
+	marqueeTextColor?: string;
+	marqueeBackgroundColor?: string;
+	marqueeBorderColor?: string;
+	textColor?: string;
+	backgroundColor?: string;
+	borderColor?: string;
 	paddingVertical: number;
 	itemGap: number;
 	imageHeight: number;
 	showBorders: boolean;
-	borderColor: string;
 	borderWidth: number;
 	ariaLabel: string;
 }

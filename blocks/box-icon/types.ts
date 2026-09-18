@@ -1,7 +1,7 @@
 export type BoxIconLayoutMode = 'slider' | 'grid';
 export type BoxIconIconSource = 'theme' | 'upload';
 export type BoxIconIconStyle = 'default' | 'stacked' | 'framed';
-export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4';
 export type BoxIconScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxIconItem {
@@ -60,10 +60,16 @@ export interface BoxIconAttributes {
 	showArrows: boolean;
 	grabCursor: boolean;
 	freeMode: boolean;
+	edgeFadeColor?: string;
 	cardBorderColor: string;
 	cardBackgroundColor: string;
 	cardHoverBackgroundColor: string;
+	titleFontSize?: string;
+	descriptionFontSize?: string;
+	statNumberFontSize?: string;
+	statNumberFontFamily?: string;
 	cardTitleColor: string;
+	titleHoverColor?: string;
 	cardDescriptionColor: string;
 	descriptionHoverColor: string;
 	linkColor: string;
@@ -82,4 +88,8 @@ export interface BoxIconAttributes {
 	highlightAccentColor2: string;
 	highlightAccentColor3: string;
 	highlightAccentColor4: string;
+	protocolTimelineColor: string;
+	showTimelineLine: boolean;
+	showTimelineTime: boolean;
+	timelineAlign: 'left' | 'center' | 'right';
 }

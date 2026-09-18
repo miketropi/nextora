@@ -20,35 +20,19 @@
 }
 
 /* Layout: grid */
-.nextora-box-image--editor.nextora-box-image--layout-grid .nextora-box-image__cards {
+.nextora-box-image--editor.nextora-box-image--layout-grid .nextora-box-image__cards,
+.nextora-box-image--editor.nextora-box-image--grid-active .nextora-box-image__cards {
 	display: grid;
 	grid-template-columns: repeat(var(--nextora-box-image-cols, 4), minmax(0, 1fr));
+	gap: var(--nextora-box-image-gap, 18px);
 	flex-wrap: unset;
 	overflow-x: visible;
 	scroll-snap-type: none;
 }
 
-/* Card editor overrides — inherit from __card, only add editor essentials */
+/* Card editor essentials */
 .nextora-box-image--editor .nextora-box-image__card--editable {
 	position: relative;
-}
-
-.nextora-box-image--editor .nextora-box-image__card--editable .nextora-box-image__title {
-	margin: 0 0 10px;
-	font-size: var(--wp--preset--font-size--base, 1.4375rem);
-	color: var(--nextora-box-image-card-title-color, currentColor);
-}
-
-.nextora-box-image--editor .nextora-box-image__card--editable .nextora-box-image__description {
-	margin: 0 0 16px;
-	flex: 1 1 auto;
-	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	line-height: 1.5;
-	color: var(--nextora-box-image-card-desc-color, color-mix(in srgb, currentColor 55%, transparent));
-}
-
-.nextora-box-image--editor .nextora-box-image__card--editable .nextora-box-image__card-body {
-	padding: 20px;
 }
 
 .nextora-box-image--editor .nextora-box-image__card--editable,
@@ -58,12 +42,16 @@
 }
 
 .nextora-box-image--editor.nextora-box-image--editor-slider .nextora-box-image__card--editable {
-	flex: 0 0 min(280px, 85vw);
-	max-width: min(280px, 85vw);
+	flex: 0 0 calc((100% - (var(--nextora-box-image-slides-per-view, 3) - 1) * var(--nextora-box-image-gap, 0px)) / var(--nextora-box-image-slides-per-view, 3));
+	width: calc((100% - (var(--nextora-box-image-slides-per-view, 3) - 1) * var(--nextora-box-image-gap, 0px)) / var(--nextora-box-image-slides-per-view, 3));
+	max-width: none;
+	min-width: 260px;
+	box-sizing: border-box;
 	scroll-snap-align: start;
 }
 
-.nextora-box-image--editor.nextora-box-image--layout-grid .nextora-box-image__card--editable {
+.nextora-box-image--editor.nextora-box-image--layout-grid .nextora-box-image__card--editable,
+.nextora-box-image--editor.nextora-box-image--grid-active .nextora-box-image__card--editable {
 	flex: unset;
 	max-width: none;
 	width: auto;
@@ -73,18 +61,20 @@
 /* Edit button */
 .nextora-box-image--editor .nextora-box-image__card-edit {
 	position: absolute;
-	top: 0.5rem;
-	right: 0.5rem;
-	z-index: 2;
-	padding: 0.25rem 0.625rem;
-	font-size: 0.6875rem;
+	top: 0.625rem;
+	right: 0.625rem;
+	z-index: 50;
+	padding: 0.35rem 0.75rem;
+	font-size: 0.75rem;
 	font-weight: 600;
 	line-height: 1.3;
 	color: var(--wp--preset--color--contrast, currentColor);
-	background: color-mix(in srgb, var(--wp--preset--color--base, #fff) 92%, transparent);
-	border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+	background: color-mix(in srgb, var(--wp--preset--color--base, #fff) 94%, transparent);
+	border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
 	border-radius: 999px;
 	cursor: pointer;
+	pointer-events: auto;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .nextora-box-image--editor .nextora-box-image__card-edit:hover,
@@ -92,6 +82,17 @@
 	background: var(--wp--preset--color--base, #fff);
 	outline: 2px solid var(--wp-admin-theme-color, #3858e9);
 	outline-offset: 1px;
+}
+
+/* Static links inside editor: prevent navigation click */
+.nextora-box-image--editor .nextora-box-image__link--static {
+	pointer-events: none;
+}
+
+.nextora-box-image--editor .nextora-box-image__card-link {
+	text-decoration: none;
+	color: inherit;
+	cursor: pointer;
 }
 
 /* Inspector panel */
@@ -230,67 +231,6 @@
 	border-radius: 4px;
 }
 
-/* Image wrap in editor cards */
-.nextora-box-image--editor .nextora-box-image__card--editable .nextora-box-image__image-wrap {
-	position: relative;
-	width: 100%;
-	aspect-ratio: var(--nextora-box-image-aspect-ratio, 3/2);
-	overflow: hidden;
-	flex-shrink: 0;
-}
-
-.nextora-box-image--editor .nextora-box-image__card--editable .nextora-box-image__card-image {
-	display: block;
-	width: 100%;
-	height: 100%;
-	object-fit: var(--nextora-box-image-fit, cover);
-}
-
-/* Programs template — editor preview */
-.nextora-box-image--editor.nextora-box-image--template-template1.nextora-box-image--layout-grid .nextora-box-image__cards {
-	display: grid;
-	grid-template-columns: repeat(var(--nextora-box-image-cols, 3), minmax(0, 1fr));
-	flex-wrap: unset;
-	overflow-x: visible;
-	scroll-snap-type: none;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template1:not(.nextora-box-image--layout-grid) .nextora-box-image__cards {
-	display: flex;
-	flex-wrap: nowrap;
-	gap: var(--nextora-box-image-gap, 18px);
-	overflow-x: auto;
-	padding-bottom: 0.5rem;
-	scroll-snap-type: x proximity;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template1:not(.nextora-box-image--layout-grid) .nextora-box-image__card--editable {
-	flex: 0 0 min(300px, 80vw);
-	max-width: min(300px, 80vw);
-	scroll-snap-align: start;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template1.nextora-box-image--layout-grid .nextora-box-image__card--editable {
-	flex: unset;
-	max-width: none;
-	width: auto;
-	scroll-snap-align: unset;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template1 .nextora-box-image__card--template1:hover,
-.nextora-box-image--editor.nextora-box-image--template-template1 .nextora-box-image__card--template1:focus-within {
-	background: var(--nextora-box-image-item-bg, var(--nextora-box-image-card-bg, var(--wp--preset--color--surface, #f4ecdd)));
-	color: var(--wp--preset--color--contrast, currentColor);
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template1 .nextora-box-image__card--template1:hover .nextora-box-image__description,
-.nextora-box-image--editor.nextora-box-image--template-template1 .nextora-box-image__card--template1:focus-within .nextora-box-image__description {
-	color: var(--nextora-box-image-item-desc-color, var(--nextora-box-image-card-desc-color, color-mix(in srgb, currentColor 55%, transparent)));
-}
-
-
-
-
 /* Item modal color pickers */
 .nextora-box-image__item-modal-colors {
 	margin-top: 16px;
@@ -311,185 +251,8 @@
 	color: color-mix(in srgb, currentColor 68%, transparent);
 }
 
-/* Play template — editor preview */
-.nextora-box-image--editor.nextora-box-image--template-template2.nextora-box-image--layout-grid .nextora-box-image__cards {
-	display: grid;
-	grid-template-columns: repeat(var(--nextora-box-image-cols, 4), minmax(0, 1fr));
-	flex-wrap: unset;
-	overflow-x: visible;
-	scroll-snap-type: none;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template2:not(.nextora-box-image--layout-grid) .nextora-box-image__cards {
-	display: flex;
-	flex-wrap: nowrap;
-	gap: var(--nextora-box-image-gap, 18px);
-	overflow-x: auto;
-	padding-bottom: 0.5rem;
-	scroll-snap-type: x proximity;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template2:not(.nextora-box-image--layout-grid) .nextora-box-image__card--editable {
-	flex: 0 0 min(260px, 80vw);
-	max-width: min(260px, 80vw);
-	scroll-snap-align: start;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template2.nextora-box-image--layout-grid .nextora-box-image__card--editable {
-	flex: unset;
-	max-width: none;
-	width: auto;
-	scroll-snap-align: unset;
-	align-items: center;
-	text-align: center;
-	padding: 24px;
-	border-radius: var(--nextora-box-image-card-radius, 24px);
-	border-width: 0;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template2 .nextora-box-image__image-wrap {
-	width: 96px;
-	height: 96px;
-	aspect-ratio: auto;
-	border-radius: 50%;
-	overflow: hidden;
-	margin: 0 auto 16px;
-	border: 4px solid var(--wp--preset--color--secondary, var(--wp--preset--color--primary, currentColor));
-	flex-shrink: 0;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template2 .nextora-box-image__card-image {
-	border-radius: 50%;
+/* Template 4 (Steps) editor stage */
+.nextora-box-image--editor.nextora-box-image--template-template4 .nextora-box-image__steps-wrapper {
+	position: relative;
 	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template2 .nextora-box-image__title {
-	margin: 0 0 6px;
-	font-size: 1.1875rem;
-	font-weight: 600;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template2 .nextora-box-image__description {
-	margin: 0 0 12px;
-	font-size: 0.8125rem;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template2 .nextora-box-image__link--static {
-	margin-top: auto;
-	font-size: 0.84375rem;
-	font-weight: 600;
-	color: var(--wp--preset--color--secondary, var(--wp--preset--color--primary, currentColor));
-	text-transform: none;
-	letter-spacing: normal;
-}
-
-/* Services template — editor preview */
-.nextora-box-image--editor.nextora-box-image--template-template3.nextora-box-image--layout-grid .nextora-box-image__cards {
-	display: grid;
-	grid-template-columns: repeat(var(--nextora-box-image-cols, 4), minmax(0, 1fr));
-	flex-wrap: unset;
-	overflow-x: visible;
-	scroll-snap-type: none;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3:not(.nextora-box-image--layout-grid) .nextora-box-image__cards {
-	display: flex;
-	flex-wrap: nowrap;
-	gap: var(--nextora-box-image-gap, 18px);
-	overflow-x: auto;
-	padding-bottom: 0.5rem;
-	scroll-snap-type: x proximity;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3:not(.nextora-box-image--layout-grid) .nextora-box-image__card--editable {
-	flex: 0 0 min(280px, 80vw);
-	max-width: min(280px, 80vw);
-	scroll-snap-align: start;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3.nextora-box-image--layout-grid .nextora-box-image__card--editable {
-	flex: unset;
-	max-width: none;
-	width: auto;
-	scroll-snap-align: unset;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__card--template3:hover,
-.nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__card--template3:focus-within {
-	background: var(--nextora-box-image-item-bg, var(--nextora-box-image-card-bg, var(--wp--preset--color--base, #fff)));
-	color: var(--wp--preset--color--contrast, currentColor);
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__card-body {
-	padding: 16px;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__title {
-	margin: 0 0 8px;
-	font-size: 1.0625rem;
-	font-weight: 600;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__bullets {
-	list-style: none;
-	margin: 0 0 12px;
-	padding: 0;
-	display: grid;
-	gap: 6px;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__bullets li {
-	display: flex;
-	gap: 7px;
-	align-items: flex-start;
-	margin: 0;
-	font-size: var(--wp--preset--font-size--small, 0.75rem);
-	color: var(--nextora-box-image-item-desc-color, var(--nextora-box-image-card-desc-color, color-mix(in srgb, currentColor 55%, transparent)));
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__bullet-icon {
-	width: 0.875rem;
-	height: 0.875rem;
-	flex-shrink: 0;
-	margin-top: 2px;
-	color: var(--nextora-box-image-bullet-icon-color, var(--wp--preset--color--secondary, var(--wp--preset--color--primary, currentColor)));
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__badge {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	width: 28px;
-	height: 28px;
-	border-radius: 50%;
-	background: var(--nextora-box-image-badge-bg, var(--wp--preset--color--secondary, var(--wp--preset--color--primary, currentColor)));
-	color: var(--nextora-box-image-badge-text, var(--wp--preset--color--base, #fff));
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 0.75rem;
-	font-weight: 600;
-	line-height: 1;
-	padding: 0;
-	box-shadow: none;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__link--template3 {
-	margin-top: auto;
-	font-size: 0.8125rem;
-	font-weight: 600;
-	text-transform: none;
-	letter-spacing: normal;
-}
-
-.nextora-box-image--editor.nextora-box-image--template-template3 .nextora-box-image__link--template3 .nextora-box-image__link-icon {
-	color: var(--nextora-box-image-bullet-icon-color, var(--wp--preset--color--secondary, var(--wp--preset--color--primary, currentColor)));
-}
-
-.nextora-box-image--editor .nextora-box-image__card-link {
-	text-decoration: none;
-	color: inherit;
-	cursor: pointer;
 }

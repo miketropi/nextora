@@ -1,3 +1,8 @@
+.wp-block-nextora-advanced-button,
+.wp-block-nextora-advanced-button * {
+	box-sizing: border-box;
+}
+
 .wp-block-nextora-advanced-button.nextora-advanced-button {
 	display: block;
 	width: 100%;
@@ -7,8 +12,17 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 0.75rem;
+	column-gap: var(--nextora-advanced-button-col-gap, 0.75rem);
+	row-gap: var(--nextora-advanced-button-row-gap, 0.75rem);
+	gap: var(--nextora-advanced-button-row-gap, 0.75rem) var(--nextora-advanced-button-col-gap, 0.75rem);
 	width: 100%;
+}
+
+/* Hide animated buttons before the view script initializes them to prevent FOUC. */
+.wp-block-nextora-advanced-button.nextora-advanced-button[data-nextora-scroll-reveal='1']:not(
+		[data-nextora-advanced-button-scroll-init='1']
+	) {
+	opacity: 0;
 }
 
 .wp-block-nextora-advanced-button.nextora-advanced-button--align-left .nextora-advanced-button__buttons,

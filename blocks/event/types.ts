@@ -2,7 +2,9 @@ export interface EventItem {
 	id: string;
 	day: string;
 	month: string;
+	category: string;
 	title: string;
+	description: string;
 	location: string;
 	time: string;
 	price: string;
@@ -19,6 +21,9 @@ export interface EventAttributes {
 	events: EventItem[];
 	showRegisterButton: boolean;
 	registerButtonText: string;
+	template3Alternating: boolean;
+	titleFontSize?: string;
+	descriptionFontSize?: string;
 	cardBackgroundColor: string;
 	cardBorderColor: string;
 	dateBackgroundColor: string;
@@ -27,10 +32,14 @@ export interface EventAttributes {
 	titleColor: string;
 	metaColor: string;
 	metaIconColor: string;
+	registerBackgroundColor: string;
 	registerTextColor: string;
 	registerBorderColor: string;
 	registerHoverTextColor: string;
 	registerHoverBackgroundColor: string;
+	registerHoverBorderColor: string;
+	paginationColor: string;
+	paginationActiveColor: string;
 	enableScrollAnimation: boolean;
 	autoplay: boolean;
 	autoplayDelay: number;
@@ -42,6 +51,7 @@ export interface EventAttributes {
 	spaceBetween: number;
 	tabletSlides: number;
 	mobileSlides: number;
+	edgeFadeColor?: string;
 }
 
 export type EventColorAttribute = keyof Pick<
@@ -54,8 +64,13 @@ export type EventColorAttribute = keyof Pick<
 	| 'titleColor'
 	| 'metaColor'
 	| 'metaIconColor'
+	| 'registerBackgroundColor'
 	| 'registerTextColor'
 	| 'registerBorderColor'
 	| 'registerHoverTextColor'
 	| 'registerHoverBackgroundColor'
+	| 'registerHoverBorderColor'
+	| 'paginationColor'
+	| 'paginationActiveColor'
+	| 'edgeFadeColor'
 >;

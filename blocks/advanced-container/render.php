@@ -61,6 +61,10 @@ if ( ! function_exists( 'nextora_ac_resolve_color' ) ) {
 			return '';
 		}
 
+		if ( 'transparent' === $raw || 'rgba(0,0,0,0)' === $raw || '#00000000' === $raw ) {
+			return 'transparent';
+		}
+
 		if ( ! function_exists( 'nextora_icon_hex_to_preset_slug' ) ) {
 			$lucide = dirname( __DIR__ ) . '/advanced-icon/lucide.php';
 			if ( is_readable( $lucide ) ) {
@@ -70,6 +74,17 @@ if ( ! function_exists( 'nextora_ac_resolve_color' ) ) {
 
 		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $preset_m ) ) {
 			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $preset_m[1] ) ) . ')';
+		}
+
+		if ( preg_match( '/^#([0-9a-f]{8})$/i', $raw ) ) {
+			if ( function_exists( 'nextora_icon_hex_to_preset_slug' ) ) {
+				$preset_slug = nextora_icon_hex_to_preset_slug( $raw );
+				if ( '' !== $preset_slug ) {
+					return 'var(--wp--preset--color--' . sanitize_html_class( $preset_slug ) . ')';
+				}
+			}
+
+			return strtolower( $raw );
 		}
 
 		$hex = sanitize_hex_color( $raw );
@@ -82,17 +97,6 @@ if ( ! function_exists( 'nextora_ac_resolve_color' ) ) {
 			}
 
 			return $hex;
-		}
-
-		if ( preg_match( '/^#([0-9a-f]{8})$/i', $raw ) ) {
-			if ( function_exists( 'nextora_icon_hex_to_preset_slug' ) ) {
-				$preset_slug = nextora_icon_hex_to_preset_slug( $raw );
-				if ( '' !== $preset_slug ) {
-					return 'var(--wp--preset--color--' . sanitize_html_class( $preset_slug ) . ')';
-				}
-			}
-
-			return strtolower( $raw );
 		}
 
 		if ( strlen( $raw ) < 220 && preg_match( '/^var\(\s*--wp--preset--color--[a-z0-9_-]+\s*\)$/i', $raw ) ) {
@@ -268,6 +272,32 @@ if ( ! function_exists( 'nextora_ac_resolve_gradient' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_ac_normalize_upload_url' ) ) {
+	/**
+	 * Normalize an external/demo /wp-content/uploads/ URL to local uploads URL if the file exists locally.
+	 */
+	function nextora_ac_normalize_upload_url( string $url ): string {
+		if ( '' === $url || ! str_contains( $url, '/wp-content/uploads/' ) ) {
+			return $url;
+		}
+
+		$uploads = wp_upload_dir();
+		$site_upload_base = (string) $uploads['baseurl'];
+
+		if ( '' !== $site_upload_base && str_starts_with( $url, $site_upload_base ) ) {
+			return $url;
+		}
+
+		$rel_path = substr( $url, strpos( $url, '/wp-content/uploads/' ) + strlen( '/wp-content/uploads/' ) );
+		$local_path = trailingslashit( $uploads['basedir'] ) . ltrim( $rel_path, '/' );
+		if ( file_exists( $local_path ) ) {
+			return trailingslashit( $site_upload_base ) . ltrim( $rel_path, '/' );
+		}
+
+		return $url;
+	}
+}
+
 $background_type = isset( $attributes['backgroundType'] ) ? (string) $attributes['backgroundType'] : 'color';
 $background_type = in_array( $background_type, array( 'color', 'image', 'video' ), true ) ? $background_type : 'color';
 $section_background_fill = nextora_ac_normalize_section_fill(
@@ -287,6 +317,16 @@ if ( 'gradient' === $section_background_fill ) {
 }
 $background_image_id = isset( $attributes['backgroundImageId'] ) ? (int) $attributes['backgroundImageId'] : 0;
 $background_image_url = isset( $attributes['backgroundImageUrl'] ) ? esc_url_raw( trim( (string) $attributes['backgroundImageUrl'] ) ) : '';
+
+if ( $background_image_id > 0 ) {
+	$att_url = wp_get_attachment_image_url( $background_image_id, 'full' );
+	if ( $att_url ) {
+		$background_image_url = $att_url;
+	}
+}
+
+$background_image_url = nextora_ac_normalize_upload_url( $background_image_url );
+
 $background_video_url = isset( $attributes['backgroundVideoUrl'] ) ? esc_url_raw( trim( (string) $attributes['backgroundVideoUrl'] ) ) : '';
 $overlay_color = nextora_ac_resolve_color( isset( $attributes['overlayColor'] ) ? (string) $attributes['overlayColor'] : '' );
 $overlay_opacity = isset( $attributes['overlayOpacity'] ) ? max( 0, min( 1, (float) $attributes['overlayOpacity'] ) ) : 0.3;
@@ -313,6 +353,15 @@ $hover_reveal_image_id = isset( $attributes['hoverRevealImageId'] ) ? (int) $att
 $hover_reveal_image_url = isset( $attributes['hoverRevealImageUrl'] )
 	? esc_url_raw( trim( (string) $attributes['hoverRevealImageUrl'] ) )
 	: '';
+
+if ( $hover_reveal_image_id > 0 ) {
+	$hr_att_url = wp_get_attachment_image_url( $hover_reveal_image_id, 'full' );
+	if ( $hr_att_url ) {
+		$hover_reveal_image_url = $hr_att_url;
+	}
+}
+
+$hover_reveal_image_url = nextora_ac_normalize_upload_url( $hover_reveal_image_url );
 $enable_ambient_animation = ! empty( $attributes['enableAmbientAnimation'] );
 $ambient_animation_type   = isset( $attributes['ambientAnimationType'] ) ? (string) $attributes['ambientAnimationType'] : 'ambient-icons';
 $ambient_icons_raw = isset( $attributes['ambientIcons'] ) && is_array( $attributes['ambientIcons'] ) ? $attributes['ambientIcons'] : array();
@@ -342,6 +391,9 @@ $light_rays_follow_mouse   = ! array_key_exists( 'lightRaysFollowMouse', $attrib
 $light_rays_mouse_influence = isset( $attributes['lightRaysMouseInfluence'] ) ? max( 0, min( 1, (float) $attributes['lightRaysMouseInfluence'] ) ) : 0.3;
 $light_rays_noise_amount   = isset( $attributes['lightRaysNoiseAmount'] ) ? max( 0, min( 1, (float) $attributes['lightRaysNoiseAmount'] ) ) : 0.05;
 $light_rays_distortion     = isset( $attributes['lightRaysDistortion'] ) ? max( 0, min( 1, (float) $attributes['lightRaysDistortion'] ) ) : 0.05;
+$ripples_drop_radius       = isset( $attributes['ripplesDropRadius'] ) ? max( 5, min( 120, (int) $attributes['ripplesDropRadius'] ) ) : 20;
+$ripples_perturbance       = isset( $attributes['ripplesPerturbance'] ) ? max( 0.005, min( 0.15, (float) $attributes['ripplesPerturbance'] ) ) : 0.03;
+$ripples_resolution        = isset( $attributes['ripplesResolution'] ) ? max( 64, min( 1024, (int) $attributes['ripplesResolution'] ) ) : 256;
 
 if ( $background_image_id > 0 && '' === $background_image_url ) {
 	$resolved_image = wp_get_attachment_image_url( $background_image_id, 'full' );
@@ -428,6 +480,10 @@ if ( 'color' === $background_type && ! $use_hover_reveal ) {
 	}
 }
 
+if ( 'color' === $background_type && $use_hover_reveal && '' !== $section_background_color ) {
+	$style_bits[] = 'background-color:' . $section_background_color;
+}
+
 if ( $use_overlay && 'diagonal' === $overlay_style ) {
 	$classes[]  = 'nextora-advanced-container--overlay-diagonal';
 	$style_bits[] = 'background-color:' . ( '' !== $overlay_color ? $overlay_color : 'var(--wp--preset--color--contrast, #0f172a)' );
@@ -483,11 +539,17 @@ if ( $enable_ambient_animation && 'ambient-icons' === $ambient_animation_type ) 
 if ( $enable_ambient_animation && 'light-rays' === $ambient_animation_type ) {
 	$classes[] = 'nextora-advanced-container--light-rays';
 }
+if ( $enable_ambient_animation && 'ripples' === $ambient_animation_type ) {
+	$classes[] = 'nextora-advanced-container--ripples';
+}
 
 $wrapper_args = array(
 	'class' => implode( ' ', $classes ),
 	'style' => implode( ';', $style_bits ),
 );
+if ( '' !== $section_background_color ) {
+	$wrapper_args['data-nextora-has-section-background'] = '1';
+}
 if ( $enable_scroll ) {
 	$wrapper_args['data-nextora-scroll-reveal'] = '1';
 }
@@ -527,6 +589,16 @@ if ( $enable_ambient_animation && 'light-rays' === $ambient_animation_type ) {
 			'mouseInfluence' => $light_rays_mouse_influence,
 			'noiseAmount'    => $light_rays_noise_amount,
 			'distortion'     => $light_rays_distortion,
+		),
+	);
+}
+if ( $enable_ambient_animation && 'ripples' === $ambient_animation_type ) {
+	$wrapper_args['data-nextora-ac-ripples'] = (string) wp_json_encode(
+		array(
+			'dropRadius'  => $ripples_drop_radius,
+			'perturbance' => $ripples_perturbance,
+			'resolution'  => $ripples_resolution,
+			'interactive' => true,
 		),
 	);
 }

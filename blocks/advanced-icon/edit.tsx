@@ -16,17 +16,21 @@ import {
 	SelectControl,
 	Button,
 	Notice,
-	ToggleControl,
+		ToggleControl,
 } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 import ServerSideRender from '@wordpress/server-side-render';
 import { IconPicker } from './icon-picker';
 import {
 	colorValueForPicker,
 	getMergedPaletteEntries,
+	gradientValueForPicker,
 	normalizeColorForStorage,
+	normalizeGradientForStorage,
 	useThemeColorPalette,
 } from './color-utils';
-import type { IconAttributes, IconAlign, IconLinkTarget, IconSource, IconStyle } from './types';
+import type { GradientPreset } from './color-utils';
+import type { IconAttributes, IconAlign, IconAnimationTrigger, IconLinkTarget, IconSource, IconStyle } from './types';
 
 export default function IconEdit( {
 	attributes,
@@ -45,6 +49,7 @@ export default function IconEdit( {
 		borderRadius = 8,
 		surfacePadding = 16,
 		surfaceBackgroundColor = '',
+		surfaceGradient = '',
 		surfaceBorderColor = '',
 		backgroundColor: legacyBackgroundColor = '',
 		borderColor: legacyBorderColor = '',
@@ -52,10 +57,32 @@ export default function IconEdit( {
 		linkTarget = '_self',
 		ariaLabel = '',
 		enableScrollAnimation = true,
+		enableIconAnimation = false,
+		iconAnimationTrigger = 'hover',
+		iconAnimationLoopPause = 600,
 	} = attributes;
 
 	const [ pickerOpen, setPickerOpen ] = useState( false );
 	const colorPalette = useThemeColorPalette();
+	const themeGradients = useSelect(
+		( select ): GradientPreset[] => {
+			try {
+				const settings =
+					(
+						select( 'core/block-editor' ) as {
+							getSettings?: () => { gradients?: GradientPreset[] };
+						}
+					).getSettings?.() ?? {};
+				if ( Array.isArray( settings.gradients ) && settings.gradients.length ) {
+					return settings.gradients;
+				}
+			} catch {
+				/* getSettings unavailable */
+			}
+			return [];
+		},
+		[],
+	);
 	const lookupPalette = useMemo(
 		() => getMergedPaletteEntries( colorPalette ),
 		[ colorPalette ],
@@ -154,6 +181,29 @@ export default function IconEdit( {
 			? { 'data-nextora-scroll-reveal': '1' }
 			: { 'data-nextora-scroll-animation-init': '1' } ),
 	} );
+
+	/*
+     * Strip spacing classes/styles from the outer wrapper — ServerSideRender
+	 * already applies them on the inner wrapper via render.php.
+	 */
+	if ( typeof blockProps.className === 'string' ) {
+		blockProps.className = blockProps.className
+			.split( /\s+/ )
+			.filter( ( c: string ) => ! /^has-(margin|padding)-/.test( c ) )
+			.join( ' ' )
+			.trim();
+	}
+
+	if ( blockProps.style && typeof blockProps.style === 'object' ) {
+		const spacingProps = new Set( [ 'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft' ] );
+		const filtered: Record< string, string > = {};
+		for ( const [ key, value ] of Object.entries( blockProps.style as Record< string, string > ) ) {
+			if ( ! spacingProps.has( key ) ) {
+				filtered[ key ] = value;
+			}
+		}
+		blockProps.style = filtered;
+	}
 
 	const hasSurfaceStyle = iconStyle === 'stacked' || iconStyle === 'framed';
 
@@ -300,50 +350,60 @@ export default function IconEdit( {
 					iconStyle === 'framed' ) && (
 					<PanelColorSettings
 						title={ __( 'Colors', 'nextora' ) }
-						colorSettings={ [
-							...( iconSource === 'theme'
-								? [
-										{
-											value: colorValueForPicker(
-												iconColor,
-												colorPalette,
-												lookupPalette,
-											),
-											onChange: ( value: string | undefined ) =>
-												setThemeColor( 'iconColor', value ),
-											label: __( 'Icon color', 'nextora' ),
-										},
-									]
-								: [] ),
-							...( iconStyle === 'stacked'
-								? [
-										{
-											value: colorValueForPicker(
-												resolvedSurfaceBackgroundColor,
-												colorPalette,
-												lookupPalette,
-											),
-											onChange: ( value: string | undefined ) =>
-												setThemeColor( 'surfaceBackgroundColor', value ),
-											label: __( 'Background color', 'nextora' ),
-										},
-									]
-								: [] ),
-							...( iconStyle === 'framed'
-								? [
-										{
-											value: colorValueForPicker(
-												resolvedSurfaceBorderColor,
-												colorPalette,
-												lookupPalette,
-											),
-											onChange: ( value: string | undefined ) =>
-												setThemeColor( 'surfaceBorderColor', value ),
-											label: __( 'Border color', 'nextora' ),
-										},
-									]
-								: [] ),
-						] }
+						enableAlpha
+						gradients={ themeGradients }
+						disableCustomGradients={ false }
+						colorSettings={
+							[
+								...( iconSource === 'theme'
+									? [
+											{
+												value: colorValueForPicker(
+													iconColor,
+													colorPalette,
+													lookupPalette,
+												),
+												onChange: ( value: string | undefined ) =>
+													setThemeColor( 'iconColor', value ),
+												label: __( 'Icon color', 'nextora' ),
+											},
+										]
+									: [] ),
+								...( iconStyle === 'stacked'
+									? [
+											{
+												value: colorValueForPicker(
+													resolvedSurfaceBackgroundColor,
+													colorPalette,
+													lookupPalette,
+												),
+												onChange: ( value: string | undefined ) =>
+													setThemeColor( 'surfaceBackgroundColor', value ),
+												label: __( 'Background color', 'nextora' ),
+												gradientValue: gradientValueForPicker( surfaceGradient, themeGradients ),
+											onGradientChange: ( value: string | undefined ) =>
+												setAttributes( {
+													surfaceGradient: normalizeGradientForStorage( value, themeGradients ),
+												} ),
+											},
+										]
+									: [] ),
+								...( iconStyle === 'framed'
+									? [
+											{
+												value: colorValueForPicker(
+													resolvedSurfaceBorderColor,
+													colorPalette,
+													lookupPalette,
+												),
+												onChange: ( value: string | undefined ) =>
+													setThemeColor( 'surfaceBorderColor', value ),
+												label: __( 'Border color', 'nextora' ),
+											},
+										]
+									: [] ),
+							] as any[]
+						}
 					/>
 				) }
 
@@ -399,6 +459,44 @@ export default function IconEdit( {
 				</PanelBody>
 
 				<PanelBody title={ __( 'Animation', 'nextora' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Enable Lucide icon animation', 'nextora' ) }
+						help={ __(
+							'Enables the selected Lucide icon animation. Choose whether it responds to hover, appears once when visible, or loops while visible. Uploaded icons are not animated.',
+							'nextora'
+						) }
+						checked={ iconSource === 'theme' && enableIconAnimation }
+						disabled={ iconSource !== 'theme' }
+						onChange={ ( value: boolean ) =>
+							setAttributes( { enableIconAnimation: value } )
+						}
+					/>
+					{ iconSource === 'theme' && enableIconAnimation && (
+						<SelectControl
+							label={ __( 'Animation trigger', 'nextora' ) }
+							value={ iconAnimationTrigger }
+							options={ [
+								{ label: __( 'On hover and keyboard focus', 'nextora' ), value: 'hover' },
+								{ label: __( 'Once when visible', 'nextora' ), value: 'when-visible' },
+								{ label: __( 'Loop while visible (slow)', 'nextora' ), value: 'loop' },
+							] }
+							onChange={ ( value: string ) =>
+								setAttributes( { iconAnimationTrigger: value as IconAnimationTrigger } )
+							}
+							help={ __( 'Automatic modes are disabled when reduced motion is preferred.', 'nextora' ) }
+						/>
+					) }
+					{ iconSource === 'theme' && enableIconAnimation && iconAnimationTrigger === 'loop' && (
+						<RangeControl
+							label={ __( 'Pause between loop cycles (ms)', 'nextora' ) }
+							value={ iconAnimationLoopPause }
+							onChange={ ( value: number | undefined ) => setAttributes( { iconAnimationLoopPause: value ?? 600 } ) }
+							min={ 0 }
+							max={ 3000 }
+							step={ 100 }
+							help={ __( 'Wait time after one animation finishes before it starts again.', 'nextora' ) }
+						/>
+					) }
 					<ToggleControl
 						label={ __( 'Animate on scroll', 'nextora' ) }
 						help={ __(

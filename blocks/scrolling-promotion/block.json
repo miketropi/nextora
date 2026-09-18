@@ -3,18 +3,28 @@
   "apiVersion": 3,
   "name": "nextora/scrolling-promotion",
   "title": "Scrolling Promotion",
-  "category": "theme",
+  "category": "nextora",
   "description": "Continuous horizontal scrolling marquee for text, logos, or text with images.",
-  "keywords": ["marquee", "promotion", "announcement", "ticker", "nextora"],
+  "keywords": [
+    "marquee",
+    "promotion",
+    "announcement",
+    "ticker",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "controls-repeat",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
-      "background": true,
-      "text": true
+      "background": false,
+      "text": false,
+      "link": false
     },
     "spacing": {
       "margin": true
@@ -29,7 +39,10 @@
           "text": "Your promotion here",
           "imageId": 0,
           "imageUrl": "",
-          "imageAlt": ""
+          "imageAlt": "",
+          "iconName": "",
+          "iconSize": 24,
+          "iconColor": ""
         }
       ]
     },
@@ -47,11 +60,27 @@
     },
     "separatorType": {
       "type": "string",
-      "default": "dot"
+      "default": "icon"
     },
     "customSeparator": {
       "type": "string",
       "default": "✦"
+    },
+    "separatorIcon": {
+      "type": "string",
+      "default": "arrow-up-right"
+    },
+    "separatorIconSize": {
+      "type": "number",
+      "default": 16
+    },
+    "separatorBadgeSize": {
+      "type": "number",
+      "default": 36
+    },
+    "separatorIconStrokeWidth": {
+      "type": "number",
+      "default": 2
     },
     "separatorSize": {
       "type": "number",
@@ -61,7 +90,19 @@
       "type": "string",
       "default": ""
     },
+    "separatorBgColor": {
+      "type": "string",
+      "default": ""
+    },
+    "iconColor": {
+      "type": "string",
+      "default": ""
+    },
     "fontSize": {
+      "type": "string",
+      "default": "base"
+    },
+    "customFontSize": {
       "type": "number",
       "default": 16
     },
@@ -77,11 +118,27 @@
       "type": "number",
       "default": 0
     },
+    "marqueeTextColor": {
+      "type": "string",
+      "default": ""
+    },
+    "marqueeBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "marqueeBorderColor": {
+      "type": "string",
+      "default": ""
+    },
     "textColor": {
       "type": "string",
       "default": ""
     },
     "backgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "borderColor": {
       "type": "string",
       "default": ""
     },
@@ -100,10 +157,6 @@
     "showBorders": {
       "type": "boolean",
       "default": false
-    },
-    "borderColor": {
-      "type": "string",
-      "default": ""
     },
     "borderWidth": {
       "type": "number",

@@ -94,6 +94,7 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 		paginationColor = '',
 		paginationActiveColor = '',
 		lightboxSidebarBackground = '',
+		edgeFadeColor = '',
 		enableScrollAnimation = true,
 	} = attributes;
 
@@ -110,8 +111,17 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 	});
 
 	const blockProps = useBlockProps({
-		className: 'nextora-instagram-feed nextora-instagram-feed--editor',
-		style: styleVars as CSSProperties,
+		className: [
+			'nextora-instagram-feed',
+			'nextora-instagram-feed--editor',
+			(slidesPerView % 1) !== 0 ? 'has-edge-fade-desktop' : '',
+			(slidesPerViewTablet % 1) !== 0 ? 'has-edge-fade-tablet' : '',
+			(slidesPerViewMobile % 1) !== 0 ? 'has-edge-fade-mobile' : '',
+		].filter(Boolean).join(' '),
+		style: {
+			...(styleVars as CSSProperties),
+			...(edgeFadeColor ? { '--nextora-instagram-feed-edge-fade-color': edgeFadeColor } : {}),
+		},
 	});
 
 	const setPosts = (next: InstagramPost[]): void => {
@@ -251,26 +261,26 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 					<RangeControl
 						label={__('Slides per view (desktop)', 'nextora')}
 						value={slidesPerView}
-						onChange={(v) => setAttributes({ slidesPerView: v ?? 5 })}
+						onChange={(v) => setAttributes({ slidesPerView: v !== undefined ? Math.round(v * 100) / 100 : 5 })}
 						min={1}
-						max={6}
-						step={0.5}
+						max={8}
+						step={0.1}
 					/>
 					<RangeControl
 						label={__('Slides per view (tablet)', 'nextora')}
 						value={slidesPerViewTablet}
-						onChange={(v) => setAttributes({ slidesPerViewTablet: v ?? 3 })}
+						onChange={(v) => setAttributes({ slidesPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 3 })}
 						min={1}
-						max={4}
-						step={0.5}
+						max={6}
+						step={0.1}
 					/>
 					<RangeControl
 						label={__('Slides per view (mobile)', 'nextora')}
 						value={slidesPerViewMobile}
-						onChange={(v) => setAttributes({ slidesPerViewMobile: v ?? 2.15 })}
+						onChange={(v) => setAttributes({ slidesPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 2.15 })}
 						min={1}
-						max={3}
-						step={0.05}
+						max={4}
+						step={0.1}
 					/>
 					<RangeControl
 						label={__('Space between (px)', 'nextora')}
@@ -384,6 +394,7 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
 						{
@@ -410,6 +421,11 @@ export default function InstagramFeedEdit({ attributes, setAttributes }: EditPro
 							value: lightboxSidebarBackground,
 							onChange: (v) => setAttributes({ lightboxSidebarBackground: v ?? '' }),
 							label: __('Lightbox sidebar', 'nextora'),
+						},
+						{
+							value: edgeFadeColor,
+							onChange: (v) => setAttributes({ edgeFadeColor: v ?? '' }),
+							label: __('Edge fade color', 'nextora'),
 						},
 					]}
 				/>

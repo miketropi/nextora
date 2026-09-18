@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/table-of-contents",
   "title": "Table of Contents",
-  "category": "theme",
+  "category": "nextora",
   "description": "Auto-generated table of contents from post headings with scroll-spy and smooth-scroll navigation.",
   "keywords": [
     "table of contents",
@@ -17,7 +17,10 @@
   "style": "file:./style.css",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "color": {
       "background": true,
       "text": true,

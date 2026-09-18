@@ -14,51 +14,6 @@
 	padding: 0;
 }
 
-.nextora-event__inspector-events-help {
-	margin: 0 0 12px;
-	font-size: 12px;
-	line-height: 1.45;
-	color: color-mix(in srgb, currentColor 65%, transparent);
-}
-
-.nextora-event__inspector-item {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	padding-bottom: 12px;
-	margin-bottom: 12px;
-	border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
-}
-
-.nextora-event__inspector-item:last-of-type {
-	border-bottom: none;
-	margin-bottom: 0;
-}
-
-.nextora-event__inspector-item-summary {
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-}
-
-.nextora-event__inspector-item-title {
-	margin: 0;
-	font-size: 13px;
-	font-weight: 600;
-}
-
-.nextora-event__inspector-item-meta {
-	margin: 0;
-	font-size: 12px;
-	color: color-mix(in srgb, currentColor 60%, transparent);
-}
-
-.nextora-event__inspector-item-actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
-}
-
 /* Editor card — edit control floats above register column */
 .nextora-event--editor .nextora-event__item--editable {
 	position: relative;
@@ -99,6 +54,13 @@
 
 .nextora-event--template1-editor .nextora-event__card .nextora-event__register {
 	margin-top: auto;
+}
+
+
+.editor-styles-wrapper .nextora-event--editor .nextora-event__title a,
+.editor-styles-wrapper .nextora-event--editor .nextora-event__template2-title a,
+.editor-styles-wrapper .nextora-event--editor .nextora-event__template3-title a {
+	color: inherit !important;
 }
 
 /* Modal */
@@ -240,15 +202,18 @@
    Template 1 — Editor preview (scrollable carousel)
    ======================================================================== */
 
-.nextora-event--template1-editor .nextora-event__inner {
+.nextora-event--template1-editor .nextora-event__inner,
+.nextora-event--template2-editor .nextora-event__inner {
 	padding: 0;
 }
 
-.nextora-event--template1-editor .nextora-event__swiper {
+.nextora-event--template1-editor .nextora-event__swiper,
+.nextora-event--template2-editor .nextora-event__swiper {
 	overflow: visible;
 }
 
-.nextora-event--template1-editor .swiper-wrapper {
+.nextora-event--template1-editor .swiper-wrapper,
+.nextora-event--template2-editor .swiper-wrapper {
 	display: flex !important;
 	flex-direction: row !important;
 	transform: none !important;
@@ -260,24 +225,72 @@
 	padding-bottom: 0.5rem;
 }
 
-.nextora-event--template1-editor .swiper-slide {
+.nextora-event--template1-editor .swiper-slide,
+.nextora-event--template2-editor .swiper-slide {
 	flex-shrink: 0;
 	scroll-snap-align: start;
 	width: calc((100% - (var(--nextora-event-editor-gap, 24px) * (var(--nextora-event-editor-slides, 3) - 1))) / var(--nextora-event-editor-slides, 3));
 }
 
-.nextora-event--template1-editor .nextora-event__card:hover {
+.nextora-event--template1-editor .nextora-event__card:hover,
+.nextora-event--template2-editor .nextora-event__template2-card:hover {
 	transform: none;
 	box-shadow: none;
 }
 
-.nextora-event--template1-editor .nextora-event--loading .nextora-event__card {
+.nextora-event--template1-editor .nextora-event--loading .nextora-event__card,
+.nextora-event--template2-editor .nextora-event--loading .nextora-event__template2-card {
 	opacity: 1;
 }
 
-.nextora-event--template1-editor .nextora-event__card-thumb .nextora-event__thumb-img {
+.nextora-event--template1-editor .nextora-event__card-thumb .nextora-event__thumb-img,
+.nextora-event--template2-editor .nextora-event__template2-media .nextora-event__thumb-img {
 	width: 100% !important;
 	height: 100% !important;
+	max-width: none;
+	object-fit: cover;
+}
+
+/* Template 3 editor preview uses the same hierarchy as the frontend without
+ * inheriting card/list editor rules from the other templates. */
+.nextora-event--template3-editor .nextora-event__template3-item {
+	position: relative;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-title {
+	margin: 0 0 1rem 0;
+	line-height: 1.35;
+}
+
+.nextora-event--editor .nextora-event__arrow,
+.nextora-event--editor .nextora-event__template2-action {
+	padding: 0 !important;
+}
+
+.nextora-event--editor .nextora-event__arrow svg,
+.nextora-event--editor .nextora-event__template2-action svg {
+	display: block !important;
+	padding: 0 !important;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-description {
+	margin-bottom: 0;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-meta {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-media {
+	overflow: hidden;
+}
+
+.nextora-event--template3-editor .nextora-event__template3-media img,
+.nextora-event--template3-editor .nextora-event__template3-media .nextora-event__thumb-img {
+	display: block;
+	width: 100%;
+	height: 100%;
 	max-width: none;
 	object-fit: cover;
 }

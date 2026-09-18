@@ -29,6 +29,7 @@ $surface_padding  = isset( $attributes['surfacePadding'] ) ? max( 0, (int) $attr
 $background_color = isset( $attributes['surfaceBackgroundColor'] )
 	? (string) $attributes['surfaceBackgroundColor']
 	: ( isset( $attributes['backgroundColor'] ) ? (string) $attributes['backgroundColor'] : '' );
+$surface_gradient  = isset( $attributes['surfaceGradient'] ) ? trim( (string) $attributes['surfaceGradient'] ) : '';
 $border_color     = isset( $attributes['surfaceBorderColor'] )
 	? (string) $attributes['surfaceBorderColor']
 	: ( isset( $attributes['borderColor'] ) ? (string) $attributes['borderColor'] : '' );
@@ -36,7 +37,15 @@ $link_url         = isset( $attributes['linkUrl'] ) ? trim( (string) $attributes
 $link_target      = isset( $attributes['linkTarget'] ) ? (string) $attributes['linkTarget'] : '_self';
 $aria_label       = isset( $attributes['ariaLabel'] ) ? trim( (string) $attributes['ariaLabel'] ) : '';
 $icon_color       = isset( $attributes['iconColor'] ) ? (string) $attributes['iconColor'] : '';
-$enable_scroll = nextora_icon_scroll_animation_enabled( $attributes );
+$is_editor        = ( defined( 'REST_REQUEST' ) && REST_REQUEST ) || is_admin();
+$enable_icon_animation = ! $is_editor && 'theme' === $source && ! empty( $attributes['enableIconAnimation'] );
+$icon_animation_trigger = isset( $attributes['iconAnimationTrigger'] ) ? (string) $attributes['iconAnimationTrigger'] : 'hover';
+$icon_animation_loop_pause = isset( $attributes['iconAnimationLoopPause'] ) ? max( 0, min( 3000, (int) $attributes['iconAnimationLoopPause'] ) ) : 600;
+$allowed_icon_animation_triggers = array( 'hover', 'when-visible', 'loop' );
+if ( ! in_array( $icon_animation_trigger, $allowed_icon_animation_triggers, true ) ) {
+	$icon_animation_trigger = 'hover';
+}
+$enable_scroll    = nextora_icon_scroll_animation_enabled( $attributes );
 
 $allowed_align = array( 'left', 'center', 'right' );
 if ( ! in_array( $align, $allowed_align, true ) ) {
@@ -64,7 +73,7 @@ if ( 'upload' === $source && '' !== $upload_url ) {
 	);
 } elseif ( 'theme' === $source ) {
 	$svg_aria = '' !== $link_url ? '' : $aria_label;
-	$icon_markup = nextora_get_lucide_svg( $icon_name, $size, $color, $stroke_w, $svg_aria );
+	$icon_markup = nextora_get_lucide_svg( $icon_name, $size, $color, $stroke_w, $svg_aria, $enable_icon_animation );
 }
 
 if ( '' === $icon_markup ) {
@@ -113,7 +122,17 @@ if ( $has_surface ) {
 }
 
 if ( 'stacked' === $icon_style ) {
-	if ( '' !== $background_color ) {
+	if ( '' !== $surface_gradient ) {
+		$wrapper_classes[] = 'nextora-advanced-icon--bg-gradient';
+		$gradient_value    = $surface_gradient;
+		if ( preg_match( '/^[a-z0-9-]+$/i', $surface_gradient ) ) {
+			$gradient_value = 'var(--wp--preset--gradient--' . sanitize_html_class( $surface_gradient ) . ')';
+		}
+		$inline_styles[] = sprintf(
+			'--nextora-advanced-icon-bg-gradient:%s;',
+			esc_attr( $gradient_value ),
+		);
+	} elseif ( '' !== $background_color ) {
 		$inline_styles[] = sprintf(
 			'--nextora-advanced-icon-bg:%s;',
 			esc_attr( nextora_icon_resolve_color( $background_color ) ),
@@ -139,6 +158,12 @@ $wrapper_args = array(
 	'style' => implode( ' ', $inline_styles ),
 );
 
+if ( $enable_icon_animation ) {
+	$wrapper_args['data-nextora-icon-animation']            = $icon_animation_trigger;
+	$wrapper_args['data-nextora-icon-animation-state']      = 'idle';
+	$wrapper_args['data-nextora-icon-animation-loop-pause'] = (string) $icon_animation_loop_pause;
+}
+
 nextora_icon_enqueue_view_script();
 
 if ( $enable_scroll ) {
@@ -152,3 +177,5 @@ $wrapper = get_block_wrapper_attributes( $wrapper_args );
 <div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<?php echo $icon_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 </div>
+
+

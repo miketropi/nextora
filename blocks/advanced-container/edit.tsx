@@ -96,6 +96,9 @@ type Attributes = {
   lightRaysMouseInfluence: number;
   lightRaysNoiseAmount: number;
   lightRaysDistortion: number;
+  ripplesDropRadius: number;
+  ripplesPerturbance: number;
+  ripplesResolution: number;
 };
 
 type ColorAttributeKey = 'sectionBackgroundColor' | 'overlayColor' | 'lightRaysColor';
@@ -205,6 +208,9 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
     lightRaysMouseInfluence,
     lightRaysNoiseAmount,
     lightRaysDistortion,
+    ripplesDropRadius,
+    ripplesPerturbance,
+    ripplesResolution,
   } = attributes;
 
   const colorPalette = useThemeColorPalette();
@@ -393,6 +399,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
       hasHoverReveal ? 'nextora-advanced-container--hover-reveal' : '',
       hasHoverReveal && normalizedSectionFill === 'gradient' ? 'nextora-advanced-container--hover-reveal-gradient' : '',
       enableAmbientAnimation && ambientAnimationType === 'ambient-icons' ? 'nextora-advanced-container--ambient-icons' : '',
+      enableAmbientAnimation && ambientAnimationType === 'ripples' ? 'nextora-advanced-container--ripples' : '',
       showOverlay && overlayModifier === 'diagonal' ? 'nextora-advanced-container--overlay-diagonal' : '',
       bgAnimationClass,
     ]
@@ -925,6 +932,10 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
                     label: __('Light Rays', 'nextora'),
                     value: 'light-rays' as string,
                   },
+                  {
+                    label: __('Ripples', 'nextora'),
+                    value: 'ripples' as string,
+                  },
                 ]}
                 onChange={(value) => setAttributes({ ambientAnimationType: value || 'ambient-icons' })}
               />
@@ -1064,6 +1075,37 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
                     max={0.3}
                     step={0.01}
                     onChange={(value) => setAttributes({ lightRaysDistortion: value ?? 0.05 })}
+                  />
+                </>
+              ) : null}
+              {ambientAnimationType === 'ripples' ? (
+                <>
+                  <RangeControl
+                    label={__('Resolution', 'nextora')}
+                    value={ripplesResolution}
+                    min={128}
+                    max={512}
+                    step={64}
+                    help={__('Higher = finer ripples but more GPU work.\n128 works well for small sections, 256–512 for hero areas.', 'nextora')}
+                    onChange={(value) => setAttributes({ ripplesResolution: value ?? 256 })}
+                  />
+                  <RangeControl
+                    label={__('Drop radius', 'nextora')}
+                    value={ripplesDropRadius}
+                    min={10}
+                    max={60}
+                    step={1}
+                    help={__('Size of each ripple in pixels.\n15–30 is the sweet spot.', 'nextora')}
+                    onChange={(value) => setAttributes({ ripplesDropRadius: value ?? 20 })}
+                  />
+                  <RangeControl
+                    label={__('Distortion', 'nextora')}
+                    value={ripplesPerturbance}
+                    min={0.01}
+                    max={0.08}
+                    step={0.01}
+                    help={__('Amount of wave distortion.\n0.02–0.04 looks natural. Higher = more warped.', 'nextora')}
+                    onChange={(value) => setAttributes({ ripplesPerturbance: value ?? 0.03 })}
                   />
                 </>
               ) : null}

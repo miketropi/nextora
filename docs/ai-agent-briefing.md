@@ -178,17 +178,32 @@ Every color in templates must reference these presets — **never hard-code hex 
 
 ### 4.1 Utility animation classes
 
-Add these classes to blocks for GSAP-powered scroll reveals (no extra JS needed — `assets/js/main.js` handles them):
+Add these built-in classes to blocks for scroll animations (no extra JS needed —
+`assets/js/main.js` handles them). The first 17 are GSAP-powered; parallax and
+the video-button ripple are separate utilities. There are 19 built-in classes in
+total.
 
 | Class | Effect |
 |-------|--------|
-| `animation-fade-in-up` | Fade in + translateY(30px→0) |
-| `animation-fade-in-right` | Fade in + translateX(-30px→0) |
-| `animation-fade-in-left` | Fade in + translateX(30px→0) |
+| `animation-fade-in` | Fade in |
+| `animation-fade-in-up` | Fade in + translateY(40px→0) |
+| `animation-fade-in-down` | Fade in + translateY(-40px→0) |
+| `animation-fade-in-right` | Fade in + translateX(40px→0) |
+| `animation-fade-in-left` | Fade in + translateX(-40px→0) |
 | `animation-zoom-in` | Scale 0.95→1 + fade in |
 | `animation-zoom-out` | Scale 1.05→1 + fade in |
 | `animation-inner-fade` | Fades direct children in (staggered) |
 | `animation-fade-list-grid` | Fades `<li>` children of `<ul>` in (staggered) |
+| `animation-image-clip-reveal` | Wipes images in with `clip-path` |
+| `animation-image-border-reveal` | Reveals images with an animated border |
+| `animation-text-reveal-words` | Staggers heading words into view |
+| `animation-text-reveal-chars` | Staggers heading characters into view |
+| `animation-text-reveal-chars-rise` | Raises heading characters with perspective |
+| `animation-text-reveal-chars-scrub` | Scrubs heading characters into view |
+| `animation-text-typewriter` | Types text character by character |
+| `animation-scroll-reveal` | Scrubs rotation, opacity, and optional blur |
+| `animation-parallax` | Scrubs vertical parallax while scrolling |
+| `animation-video-button-ripple` | CSS-only concentric play-button ripple |
 
 **Usage:**
 ```html
@@ -244,7 +259,7 @@ Do not add random CSS in templates. Use existing utility classes or block-level 
 | Library | Global | Version | Notes |
 |---------|--------|---------|-------|
 | GSAP + ScrollTrigger | `gsap`, `ScrollTrigger` | 3.x | Scroll animations, mobile nav drawer |
-| Swiper | `Swiper` | 11.x | Carousels (`image-gallery-slide`, `testimonial-carousel`) |
+| Swiper | `Swiper` | 11.x | Carousels (`team-section`, `testimonial-carousel`) |
 | Tiptap | N/A (bundled in `main.ts`) | 2.x | Rich-text comment editor |
 | Lucide | `lucide` | Latest | Icons (used in comment toolbar) |
 
@@ -399,8 +414,6 @@ These theme blocks can be used in templates. Use the exact names and attribute k
 | `nextora/hero-section` | Hero band | Background image/video, overlay, heading, buttons |
 | `nextora/call-to-action` | CTA band | Background, text, buttons, `enableScrollAnimation` |
 | `nextora/post-grid` | Post grid + pagination | Query settings, columns, `enableScrollAnimation` |
-| `nextora/image-gallery-grid` | Image grid + scroll reveal | Images array, layout preset, `enableScrollAnimation` |
-| `nextora/image-gallery-slide` | Swiper carousel | Images array, slides per view, navigation |
 | `nextora/scrolling-promotion` | CSS marquee | Items (text or images), speed, separator |
 | `nextora/testimonial-carousel` | Fade testimonial Swiper | `testimonials[]`, ratings, trust avatars |
 | `nextora/counters` | Animated stat counters | `items[]` with number, prefix, suffix, label |

@@ -6,9 +6,12 @@ import {
 	InspectorControls,
 	PanelColorSettings,
 	useBlockProps,
+	FontSizePicker,
+	useSetting,
 	__experimentalSpacingSizesControl as SpacingSizesControl,
 } from '@wordpress/block-editor';
 import {
+	BaseControl,
 	Button,
 	Modal,
 	PanelBody,
@@ -27,6 +30,7 @@ import BoxIconEditorIcon from './editor-icon';
 import { storedColorToCss } from './icon-catalog';
 import { buildStyleVars, createItemId, normalizeItems } from './item-utils';
 import { normalizeCardPadding } from './spacing-utils';
+import { getGutenbergColorProps } from './color-utils';
 import {
 	BOX_CONTENT_TEMPLATE_OPTIONS,
 	formatCardGhostIndex,
@@ -34,6 +38,7 @@ import {
 	normalizeCardTemplate,
 } from './template-utils';
 import { useFontFamilyOptions } from './font-family-utils';
+import { getGutenbergFontFamilyProps } from './typography-utils';
 import type { BoxIconAttributes, BoxIconIconStyle, BoxIconScrollAnimationStyle } from './types';
 
 interface EditProps {
@@ -54,6 +59,19 @@ const layoutModeOptions = [
 
 function isEmptyColor(value: string | undefined): boolean {
 	return !value || value === 'currentColor';
+}
+
+function normalizeFontSizeAttribute(
+	value: number | string | undefined,
+	selectedItem?: { slug?: string },
+): string {
+	if (value === undefined) {
+		return '';
+	}
+	if (selectedItem?.slug) {
+		return selectedItem.slug;
+	}
+	return String(value);
 }
 
 export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
@@ -79,41 +97,50 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 	const colorPalette = useThemeColorPalette();
 	const lookupPalette = useMemo(() => getMergedPaletteEntries(colorPalette), [colorPalette]);
 	const fontFamilyOptions = useFontFamilyOptions();
+	const themeFontSizes = useSetting('typography.fontSizes') || [];
+
+	const cardTemplateRaw = attributes.cardTemplate || 'default';
+	const cardTemplate = cardTemplateRaw === 'ways-row' ? 'template-4' : cardTemplateRaw;
+	const templateDefaults = getTemplateDefaultAttributes(cardTemplate);
+
+	const layoutMode = (attributes.layoutMode as 'slider' | 'grid' | undefined) || templateDefaults.layoutMode || 'slider';
+	const gridColumns = attributes.gridColumns ?? templateDefaults.gridColumns ?? 4;
+	const gridColumnsTablet = attributes.gridColumnsTablet ?? templateDefaults.gridColumnsTablet ?? 2;
+	const gridColumnsMobile = attributes.gridColumnsMobile ?? templateDefaults.gridColumnsMobile ?? 1;
+	const gridMinWidth = attributes.gridMinWidth ?? templateDefaults.gridMinWidth ?? 981;
+	const disableResponsiveCarousel = attributes.disableResponsiveCarousel ?? templateDefaults.disableResponsiveCarousel ?? false;
+	const cardMinHeight = attributes.cardMinHeight ?? templateDefaults.cardMinHeight ?? 240;
+	const cardBorderWidth = attributes.cardBorderWidth ?? templateDefaults.cardBorderWidth ?? 2;
+	const cardBorderRadius = attributes.cardBorderRadius ?? templateDefaults.cardBorderRadius ?? 8;
+	const spaceBetween = attributes.spaceBetween ?? templateDefaults.spaceBetween ?? 18;
+	const iconSize = attributes.iconSize ?? templateDefaults.iconSize ?? 25;
+	const iconCircleSize = attributes.iconCircleSize ?? templateDefaults.iconCircleSize ?? 54;
+	const iconCircleRadius = attributes.iconCircleRadius ?? templateDefaults.iconCircleRadius ?? 50;
+	const iconStyle = attributes.iconStyle || templateDefaults.iconStyle || 'stacked';
+	const slidesPerView = attributes.slidesPerView ?? templateDefaults.slidesPerView ?? 4;
+	const slidesPerViewTablet = attributes.slidesPerViewTablet ?? templateDefaults.slidesPerViewTablet ?? 2;
+	const slidesPerViewMobile = attributes.slidesPerViewMobile ?? templateDefaults.slidesPerViewMobile ?? 1.15;
+	const showPagination = attributes.showPagination ?? templateDefaults.showPagination ?? true;
+	const showArrows = attributes.showArrows ?? templateDefaults.showArrows ?? false;
 
 	const {
-		cardTemplate: cardTemplateRaw = 'default',
-		layoutMode = 'slider',
-		gridColumns = 4,
-		gridColumnsTablet = 2,
-		gridColumnsMobile = 1,
-		gridMinWidth = 981,
-		disableResponsiveCarousel = false,
-		cardMinHeight = 240,
 		cardPadding = {},
-		cardBorderWidth = 2,
-		cardBorderRadius = 8,
-		iconSize = 25,
 		strokeWidth = 2,
-		iconCircleSize = 54,
-		iconCircleRadius = 50,
-		iconStyle = 'stacked',
-		slidesPerView = 4,
-		slidesPerViewTablet = 2,
-		slidesPerViewMobile = 1.15,
-		spaceBetween = 18,
 		speed = 500,
 		loop = false,
 		autoplay = false,
 		autoplayDelay = 4000,
 		pauseOnHover = true,
-		showPagination = true,
-		showArrows = false,
 		grabCursor = true,
 		freeMode = false,
+		edgeFadeColor = '',
 		cardBorderColor = '',
 		cardBackgroundColor = '',
 		cardHoverBackgroundColor = '',
+		titleFontSize = '',
+		descriptionFontSize = '',
 		cardTitleColor = '',
+		titleHoverColor = '',
 		cardDescriptionColor = '',
 		descriptionHoverColor = '',
 		linkColor = '',
@@ -125,6 +152,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		highlightAccentColor2 = '',
 		highlightAccentColor3 = '',
 		highlightAccentColor4 = '',
+		protocolTimelineColor = '',
 		paginationColor = '',
 		paginationActiveColor = '',
 		arrowColor = '',
@@ -137,9 +165,36 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		enableScrollAnimation = true,
 		scrollAnimationStyle = 'default',
 		enableCardHover = true,
+		showTimelineLine = true,
+		showTimelineTime = true,
+		timelineAlign = 'left',
+		contentMaxWidth = '',
 	} = attributes;
 
-	const cardTemplate = normalizeCardTemplate(cardTemplateRaw);
+	const effectiveTitleFontSize = titleFontSize || '';
+	const effectiveDescFontSize = descriptionFontSize || '';
+	const effectiveStatNumFontSize = (attributes as { statNumberFontSize?: string }).statNumberFontSize || 'large';
+	const statNumberFontFamily = (attributes as { statNumberFontFamily?: string }).statNumberFontFamily || '';
+
+	const titleColorProps = getGutenbergColorProps(cardTitleColor, 'color');
+	const descColorProps = getGutenbergColorProps(cardDescriptionColor, 'color');
+	const statNumFontProps = getGutenbergFontFamilyProps(statNumberFontFamily);
+
+	const titleClasses = [
+		'nextora-box-icon__title',
+		effectiveTitleFontSize ? `has-${effectiveTitleFontSize}-font-size` : '',
+		titleColorProps.className,
+	]
+		.filter(Boolean)
+		.join(' ');
+
+	const descriptionClasses = [
+		'nextora-box-icon__description',
+		effectiveDescFontSize ? `has-${effectiveDescFontSize}-font-size` : '',
+		descColorProps.className,
+	]
+		.filter(Boolean)
+		.join(' ');
 	const templateOptions = BOX_CONTENT_TEMPLATE_OPTIONS.map((option) => ({
 		label: __(option.labelKey, 'nextora'),
 		value: option.value,
@@ -152,6 +207,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 
 	const styleVars = buildStyleVars(
 		{
+			contentMaxWidth,
 			gapPx: spaceBetween,
 			cardMinHeight,
 			cardPadding,
@@ -160,15 +216,13 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			gridColumns,
 			iconCircleSize,
 			iconSize,
-			eyebrowColor: '',
-			headingColor: '',
-			descriptionColor: '',
 			cardBorderColor: isEmptyColor(cardBorderColor) ? '' : cardBorderColor,
 			cardBackgroundColor: isEmptyColor(cardBackgroundColor) ? '' : cardBackgroundColor,
 			cardHoverBackgroundColor: isEmptyColor(cardHoverBackgroundColor)
 				? ''
 				: cardHoverBackgroundColor,
 			cardTitleColor: isEmptyColor(cardTitleColor) ? '' : cardTitleColor,
+			titleHoverColor: isEmptyColor(titleHoverColor) ? '' : titleHoverColor,
 			cardDescriptionColor: isEmptyColor(cardDescriptionColor) ? '' : cardDescriptionColor,
 			descriptionHoverColor: isEmptyColor(descriptionHoverColor) ? '' : descriptionHoverColor,
 			linkColor: isEmptyColor(linkColor) ? '' : linkColor,
@@ -180,6 +234,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			highlightAccentColor2: isEmptyColor(highlightAccentColor2) ? '' : highlightAccentColor2,
 			highlightAccentColor3: isEmptyColor(highlightAccentColor3) ? '' : highlightAccentColor3,
 			highlightAccentColor4: isEmptyColor(highlightAccentColor4) ? '' : highlightAccentColor4,
+			protocolTimelineColor: isEmptyColor(protocolTimelineColor) ? '' : protocolTimelineColor,
 			paginationColor: isEmptyColor(paginationColor) ? '' : paginationColor,
 			paginationActiveColor: isEmptyColor(paginationActiveColor) ? '' : paginationActiveColor,
 			arrowColor: isEmptyColor(arrowColor) ? '' : arrowColor,
@@ -206,10 +261,20 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			`nextora-box-icon--template-${cardTemplate}`,
 			headingFontFamily.trim() !== '' ? 'nextora-box-icon--has-heading-font' : '',
 			!enableCardHover ? 'nextora-box-icon--no-card-hover' : '',
+			cardTemplate === 'timeline' && !showTimelineLine ? 'nextora-box-icon__timeline-grid--no-line' : '',
+			cardTemplate === 'timeline' && timelineAlign !== 'left'
+				? `nextora-box-icon--timeline-align-${timelineAlign}`
+				: '',
+			(slidesPerView % 1) !== 0 ? 'has-edge-fade-desktop' : '',
+			(slidesPerViewTablet % 1) !== 0 ? 'has-edge-fade-tablet' : '',
+			(slidesPerViewMobile % 1) !== 0 ? 'has-edge-fade-mobile' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
-		style: styleVars as CSSProperties,
+		style: {
+			...(styleVars as CSSProperties),
+			...(edgeFadeColor ? { '--nextora-box-icon-edge-fade-color': edgeFadeColor } : {}),
+		},
 	});
 
 	const setThemeColor = (key: keyof BoxIconAttributes, value: string | undefined): void => {
@@ -256,6 +321,11 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				onChange: (v: string | undefined) => setThemeColor('arrowColor', v),
 				label: __('Arrow color', 'nextora'),
 			},
+			{
+				value: colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('edgeFadeColor', v),
+				label: __('Edge fade color', 'nextora'),
+			},
 		];
 
 		if (cardTemplate === 'ways') {
@@ -290,9 +360,99 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			];
 		}
 
+		if (cardTemplate === 'template-4') {
+			return [
+				{
+					value: colorValueForPicker(waysAccentColor1, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('waysAccentColor1', v),
+					label: __('Accent color (rows 1, 4, 7…)', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(waysAccentColor2, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('waysAccentColor2', v),
+					label: __('Accent color (rows 2, 5, 8…)', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(waysAccentColor3, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('waysAccentColor3', v),
+					label: __('Accent color (rows 3, 6, 9…)', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(cardBorderColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardBorderColor', v),
+					label: __('Divider color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(cardTitleColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardTitleColor', v),
+					label: __('Title color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(cardDescriptionColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardDescriptionColor', v),
+					label: __('Description color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(iconColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('iconColor', v),
+					label: __('Icon color', 'nextora'),
+				},
+			];
+		}
+
 		if (cardTemplate === 'highlights') {
 			return [
+				{
+					value: colorValueForPicker(cardTitleColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardTitleColor', v),
+					label: __('Card title color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(cardDescriptionColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardDescriptionColor', v),
+					label: __('Card description color', 'nextora'),
+				},
 				...navColors,
+			];
+		}
+
+		if (cardTemplate === 'timeline') {
+			return [
+				{
+					value: colorValueForPicker(iconColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('iconColor', v),
+					label: __('Icon & time color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(iconSurfaceBackgroundColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('iconSurfaceBackgroundColor', v),
+					label: __('Dot background', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(iconSurfaceBorderColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('iconSurfaceBorderColor', v),
+					label: __('Dot border color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(protocolTimelineColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('protocolTimelineColor', v),
+					label: __('Connector line', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(cardBackgroundColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardBackgroundColor', v),
+					label: __('Card background', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(cardTitleColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardTitleColor', v),
+					label: __('Title color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(cardDescriptionColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardDescriptionColor', v),
+					label: __('Description color', 'nextora'),
+				},
 			];
 		}
 
@@ -319,6 +479,11 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				value: colorValueForPicker(cardHoverBackgroundColor, colorPalette, lookupPalette),
 				onChange: (v: string | undefined) => setThemeColor('cardHoverBackgroundColor', v),
 				label: __('Card hover background', 'nextora'),
+			},
+			{
+				value: colorValueForPicker(titleHoverColor, colorPalette, lookupPalette),
+				onChange: (v: string | undefined) => setThemeColor('titleHoverColor', v),
+				label: __('Title hover color', 'nextora'),
 			},
 			{
 				value: colorValueForPicker(descriptionHoverColor, colorPalette, lookupPalette),
@@ -396,6 +561,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		cardBorderColor,
 		cardBackgroundColor,
 		cardTitleColor,
+		titleHoverColor,
 		cardDescriptionColor,
 		cardHoverBackgroundColor,
 		descriptionHoverColor,
@@ -408,6 +574,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		highlightAccentColor2,
 		highlightAccentColor3,
 		highlightAccentColor4,
+		protocolTimelineColor,
 		iconColor,
 		iconSurfaceBackgroundColor,
 		iconSurfaceBorderColor,
@@ -478,53 +645,88 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={__('Items', 'nextora')} opened={panelStates.items} onToggle={togglePanel('items')}>
-					<p className="nextora-box-icon__inspector-items-help">
-						{__(
-							'Click Edit on a card in the canvas, or use the buttons below. Full settings open in a dialog.',
-							'nextora',
-						)}
-					</p>
+				<PanelBody title={__('Items List', 'nextora')} opened={panelStates.items} onToggle={togglePanel('items')}>
+					{items.length === 0 ? (
+						<p className="nextora-box-icon__inspector-items-help">
+							{__(
+								'No items yet. Click "Add item" to create one.',
+								'nextora',
+							)}
+						</p>
+					) : null}
 					{items.map((item, index) => (
-						<div key={item.id} className="nextora-box-icon__inspector-item">
-							<div className="nextora-box-icon__inspector-item-summary">
-								<p className="nextora-box-icon__inspector-item-name">
-									{item.title || sprintf(__('Item %d', 'nextora'), index + 1)}
-								</p>
-								{item.description ? (
-									<p className="nextora-box-icon__inspector-item-desc">{item.description}</p>
-								) : null}
-							</div>
-							<div className="nextora-box-icon__inspector-item-actions">
-								<Button variant="primary" onClick={() => setEditingItemId(item.id)}>
-									{__('Edit', 'nextora')}
-								</Button>
-								<Button
-									variant="secondary"
-									disabled={index === 0}
-									onClick={() => moveItem(item.id, -1)}
-								>
-									{__('Up', 'nextora')}
-								</Button>
-								<Button
-									variant="secondary"
-									disabled={index >= items.length - 1}
-									onClick={() => moveItem(item.id, 1)}
-								>
-									{__('Down', 'nextora')}
-								</Button>
-								<Button
-									variant="secondary"
-									isDestructive
-									disabled={items.length <= 1}
-									onClick={() => removeItem(item.id)}
-								>
-									{__('Remove', 'nextora')}
-								</Button>
-							</div>
+						<div
+							key={item.id}
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								gap: '6px',
+								marginBottom: '6px',
+								padding: '6px 8px',
+								background: '#f9f9f9',
+								border: '1px solid #ddd',
+								borderRadius: '4px',
+							}}
+						>
+							<span
+								style={{
+									flex: 1,
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap',
+									fontSize: '12px',
+									lineHeight: '1.4',
+									fontWeight: 500,
+								}}
+							>
+								{item.title || sprintf(__('Item %d', 'nextora'), index + 1)}
+							</span>
+							<Button
+								icon={
+									<span style={{ display: 'inline-flex', alignItems: 'center' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></span>
+								}
+								label={__('Edit', 'nextora')}
+								onClick={() => setEditingItemId(item.id)}
+								isSmall
+							/>
+							<Button
+								icon={
+									<span style={{ display: 'inline-flex', alignItems: 'center' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg></span>
+								}
+								label={__('Move up', 'nextora')}
+								onClick={() => moveItem(item.id, -1)}
+								disabled={index === 0}
+								isSmall
+							/>
+							<Button
+								icon={
+									<span style={{ display: 'inline-flex', alignItems: 'center' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+								}
+								label={__('Move down', 'nextora')}
+								onClick={() => moveItem(item.id, 1)}
+								disabled={index >= items.length - 1}
+								isSmall
+							/>
+							<Button
+								icon={
+									<span style={{ display: 'inline-flex', alignItems: 'center' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></span>
+								}
+								label={__('Remove', 'nextora')}
+								onClick={() => removeItem(item.id)}
+								disabled={items.length <= 1}
+								isSmall
+								isDestructive
+							/>
 						</div>
 					))}
-					<Button variant="primary" onClick={addItem}>
+					<Button
+						variant="secondary"
+						onClick={addItem}
+						icon={
+							<span style={{ display: 'inline-flex', alignItems: 'center' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></span>
+						}
+						style={{ width: '100%', justifyContent: 'center', marginTop: items.length > 0 ? '4px' : '0' }}
+					>
 						{__('Add item', 'nextora')}
 					</Button>
 				</PanelBody>
@@ -545,7 +747,8 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 							});
 						}}
 					/>
-				<SelectControl
+				{cardTemplate !== 'timeline' && cardTemplate !== 'template-4' ? (
+					<SelectControl
 					label={__('Desktop layout', 'nextora')}
 					help={
 						layoutMode === 'grid'
@@ -563,14 +766,15 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					onChange={(v) => {
 						const next = v === 'grid' ? 'grid' : 'slider';
 						const patch: Partial<BoxIconAttributes> = { layoutMode: next };
-						if (next === 'grid' && gridMinWidth < 768) {
+						if (next === 'grid' && gridMinWidth < 640) {
 							patch.gridMinWidth = 981;
 						}
 						setAttributes(patch);
 					}}
 				/>
+				) : null}
 
-					{layoutMode === 'grid' ? (
+				{layoutMode === 'grid' && cardTemplate !== 'template-4' ? (
 						<>
 							<RangeControl
 								label={__('Grid columns', 'nextora')}
@@ -579,6 +783,33 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 								min={1}
 								max={6}
 							/>
+							{cardTemplate === 'timeline' && (
+							<ToggleControl
+								label={__('Show connector line', 'nextora')}
+								checked={showTimelineLine}
+								onChange={(v) => setAttributes({ showTimelineLine: v })}
+							/>
+							)}
+							{cardTemplate === 'timeline' && (
+							<ToggleControl
+								label={__('Show time label', 'nextora')}
+								checked={showTimelineTime}
+								onChange={(v) => setAttributes({ showTimelineTime: v })}
+							/>
+							)}
+							{cardTemplate === 'timeline' && (
+							<SelectControl
+								label={__('Content alignment', 'nextora')}
+								value={timelineAlign}
+								options={[
+									{ label: __('Left', 'nextora'), value: 'left' },
+									{ label: __('Center', 'nextora'), value: 'center' },
+									{ label: __('Right', 'nextora'), value: 'right' },
+								]}
+								onChange={(v) => setAttributes({ timelineAlign: v as 'left' | 'center' | 'right' })}
+							/>
+							)}
+							{cardTemplate !== 'timeline' && (
 							<RangeControl
 								label={__('Grid min width (px)', 'nextora')}
 								help={__(
@@ -590,6 +821,9 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 								min={480}
 								max={1200}
 							/>
+							)}
+							{cardTemplate !== 'timeline' && (
+							<>
 							<ToggleControl
 								label={__('Keep grid on mobile', 'nextora')}
 								help={__(
@@ -626,18 +860,24 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 									/>
 								</>
 							) : null}
+							</>
+							)}
 						</>
 					) : null}
 
-					<p className="nextora-box-icon__inspector-subheading">{__('Cards', 'nextora')}</p>
-					<RangeControl
-						label={__('Gap between cards (px)', 'nextora')}
-						value={spaceBetween}
-						onChange={(v) => setAttributes({ spaceBetween: v ?? 18 })}
-						min={0}
-						max={60}
-					/>
-					{cardTemplate !== 'minimal' ? (
+					{cardTemplate !== 'template-4' ? (
+						<>
+						<p className="nextora-box-icon__inspector-subheading">{__('Cards', 'nextora')}</p>
+						<RangeControl
+							label={__('Gap between cards (px)', 'nextora')}
+							value={spaceBetween}
+							onChange={(v) => setAttributes({ spaceBetween: v ?? 18 })}
+							min={0}
+							max={60}
+						/>
+						</>
+					) : null}
+					{cardTemplate !== 'minimal' && cardTemplate !== 'timeline' && cardTemplate !== 'template-4' ? (
 						<RangeControl
 							label={__('Card min height (px)', 'nextora')}
 							value={cardMinHeight}
@@ -646,6 +886,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 							max={400}
 						/>
 					) : null}
+					{cardTemplate !== 'template-4' ? (
 					<SpacingSizesControl
 						label={__('Card padding', 'nextora')}
 						values={cardPaddingValues}
@@ -654,9 +895,10 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 								cardPadding: next && typeof next === 'object' ? next : {},
 							})
 						}
-						sides={['horizontal', 'vertical']}
 						minimumCustomValue={0}
 					/>
+					) : null}
+					{cardTemplate !== 'timeline' && cardTemplate !== 'template-4' ? (
 					<RangeControl
 						label={__('Card border width (px)', 'nextora')}
 						value={cardBorderWidth}
@@ -664,15 +906,18 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						min={0}
 						max={4}
 					/>
+					) : null}
+					{cardTemplate !== 'timeline' && cardTemplate !== 'template-4' ? (
 					<RangeControl
 						label={__('Card border radius (px)', 'nextora')}
 						value={cardBorderRadius}
 						onChange={(v) => setAttributes({ cardBorderRadius: v ?? 8 })}
 						min={0}
-						max={24}
+						max={32}
 					/>
+					) : null}
 
-					{layoutMode === 'grid' && disableResponsiveCarousel ? null : (
+					{cardTemplate === 'timeline' || cardTemplate === 'template-4' || (layoutMode === 'grid' && disableResponsiveCarousel) ? null : (
 						<>
 					<p className="nextora-box-icon__inspector-subheading">
 						{layoutMode === 'grid'
@@ -683,27 +928,27 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						<RangeControl
 							label={__('Slides per view (desktop)', 'nextora')}
 							value={slidesPerView}
-							onChange={(v) => setAttributes({ slidesPerView: v ?? 4 })}
+							onChange={(v) => setAttributes({ slidesPerView: v !== undefined ? Math.round(v * 100) / 100 : 4 })}
 							min={1}
 							max={6}
-							step={0.05}
+							step={0.1}
 						/>
 					) : null}
 					<RangeControl
 						label={__('Slides per view (tablet)', 'nextora')}
 						value={slidesPerViewTablet}
-						onChange={(v) => setAttributes({ slidesPerViewTablet: v ?? 2 })}
+						onChange={(v) => setAttributes({ slidesPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 2 })}
 						min={1}
 						max={4}
-						step={0.05}
+						step={0.1}
 					/>
 					<RangeControl
 						label={__('Slides per view (mobile)', 'nextora')}
 						value={slidesPerViewMobile}
-						onChange={(v) => setAttributes({ slidesPerViewMobile: v ?? 1.15 })}
+						onChange={(v) => setAttributes({ slidesPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 1.15 })}
 						min={1}
-						max={2}
-						step={0.05}
+						max={3}
+						step={0.1}
 					/>
 					<RangeControl
 						label={__('Transition speed (ms)', 'nextora')}
@@ -774,6 +1019,13 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 								'nextora',
 							)}
 						</p>
+					) : cardTemplate === 'template-4' ? (
+						<p className="nextora-box-icon__inspector-items-help">
+							{__(
+								'Template 04 uses accent gradient icons beside each row. Adjust sizes below.',
+								'nextora',
+							)}
+						</p>
 					) : cardTemplate === 'minimal' ? (
 						<p className="nextora-box-icon__inspector-items-help">
 							{__(
@@ -783,6 +1035,14 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						</p>
 					) : (
 						<>
+							{cardTemplate === 'timeline' ? (
+								<p className="nextora-box-icon__inspector-items-help">
+									{__(
+										'Timeline uses circle dots connected by a line. Adjust style below.',
+										'nextora',
+									)}
+								</p>
+							) : null}
 							<SelectControl
 								label={__('Theme style', 'nextora')}
 								value={iconStyle}
@@ -820,6 +1080,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						min={32}
 						max={80}
 					/>
+					<div style={{height:1}}></div>
 					<RangeControl
 						label={__('Stroke width', 'nextora')}
 						value={strokeWidth}
@@ -831,12 +1092,79 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				</PanelBody>
 
 				<PanelColorSettings
+					enableAlpha
 					title={__('Colors', 'nextora')}
 					colors={colorPalette}
 					colorSettings={colorSettings}
 				/>
 
 				<PanelBody title={__('Typography', 'nextora')} opened={panelStates.typography} onToggle={togglePanel('typography')}>
+					<BaseControl
+						label={__('Card title font size', 'nextora')}
+						id="nextora-box-icon-title-font-size"
+					>
+						<FontSizePicker
+							fontSizes={themeFontSizes}
+							value={titleFontSize || undefined}
+							valueMode="slug"
+							onChange={(value, selectedItem) =>
+								setAttributes({
+									titleFontSize: normalizeFontSizeAttribute(value, selectedItem) || '',
+								})
+							}
+						/>
+					</BaseControl>
+					{cardTemplate !== 'highlights' ? (
+						<BaseControl
+							label={__('Card description font size', 'nextora')}
+							id="nextora-box-icon-description-font-size"
+						>
+							<FontSizePicker
+								fontSizes={themeFontSizes}
+								value={descriptionFontSize || undefined}
+								valueMode="slug"
+								onChange={(value, selectedItem) =>
+									setAttributes({
+										descriptionFontSize: normalizeFontSizeAttribute(value, selectedItem) || '',
+									})
+								}
+							/>
+						</BaseControl>
+					) : null}
+					{cardTemplate === 'highlights' ? (
+						<>
+							<BaseControl
+								label={__('Stat number font size', 'nextora')}
+								id="nextora-box-icon-stat-number-font-size"
+								help={__('Default uses Large preset for stat numbers.', 'nextora')}
+							>
+								<FontSizePicker
+									fontSizes={themeFontSizes}
+									value={(attributes as { statNumberFontSize?: string }).statNumberFontSize || 'large'}
+									valueMode="slug"
+									onChange={(value, selectedItem) =>
+										setAttributes({
+											statNumberFontSize: normalizeFontSizeAttribute(value, selectedItem) || 'large',
+										} as Partial<BoxIconAttributes>)
+									}
+								/>
+							</BaseControl>
+							<SelectControl
+								label={__('Stat number font', 'nextora')}
+								value={statNumberFontFamily}
+								options={fontFamilyOptions}
+								onChange={(value) =>
+									setAttributes({
+										statNumberFontFamily: value ?? '',
+									} as Partial<BoxIconAttributes>)
+								}
+								help={__(
+									'Font family for stat numbers in Highlights template. Default inherits theme font.',
+									'nextora',
+								)}
+							/>
+						</>
+					) : null}
 					<SelectControl
 						label={__('Heading font', 'nextora')}
 						value={headingFontFamily}
@@ -928,6 +1256,57 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			) : null}
 
 			<div {...blockProps}>
+				{cardTemplate === 'template-4' ? (
+					<div className="nextora-box-icon__ways-rows">
+						<div className="nextora-box-icon__ways-rows-list">
+							{items.map((item, index) => (
+								<article key={item.id} className="nextora-box-icon__ways-row nextora-box-icon__card--editable">
+									<button
+										type="button"
+										className="nextora-box-icon__card-edit"
+										onClick={() => setEditingItemId(item.id)}
+									>
+										{__('Edit item', 'nextora')}
+									</button>
+									<div className="nextora-box-icon__ways-row-icon">
+										<BoxIconEditorIcon
+											iconSource={item.iconSource}
+											iconName={item.iconName}
+											uploadedIconUrl={item.uploadedIconUrl}
+											iconSize={iconSize}
+											strokeWidth={strokeWidth}
+											iconStyle={iconStyle}
+											iconCircleSize={iconCircleSize}
+											iconCircleRadius={iconCircleRadius}
+											iconColor={item.iconColor || iconColor}
+											iconSurfaceBackgroundColor={
+												item.iconSurfaceBackgroundColor || iconSurfaceBackgroundColor
+											}
+											iconSurfaceBorderColor={iconSurfaceBorderColor}
+											lookupPalette={lookupPalette}
+										/>
+									</div>
+									<div className="nextora-box-icon__ways-row-body">
+										<span className="nextora-box-icon__ways-row-tag">
+											{`${String(index + 1).padStart(2, '0')} · ${(item.number || item.title || __('LABEL', 'nextora')).toUpperCase()}`}
+										</span>
+										<h4 className={titleClasses}>
+											{item.title || __('Title', 'nextora')}
+										</h4>
+										<p className={descriptionClasses}>
+											{item.description || __('Description…', 'nextora')}
+										</p>
+									</div>
+									{item.showLink && item.linkLabel && item.linkUrl ? (
+										<span className="nextora-box-icon__ways-row-arrow nextora-box-icon__link--static" aria-hidden="true">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+										</span>
+									) : null}
+								</article>
+							))}
+						</div>
+					</div>
+				) : (
 				<div
 					className="nextora-box-icon__cards"
 					aria-label={__('Box content items', 'nextora')}
@@ -973,48 +1352,94 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						{__('Edit item', 'nextora')}
 					</button>
 					{cardTemplate === 'highlights' ? (
-						(() => {
-							const statNumber = item.number || item.title;
-							const statLabel = item.number ? item.title : item.description;
-							const statSubtitle = item.number ? item.description : item.linkLabel;
-							return (
-								<>
-									<BoxIconEditorIcon
-										iconSource={item.iconSource}
-										iconName={item.iconName}
-										uploadedIconUrl={item.uploadedIconUrl}
-										iconSize={iconSize}
-										strokeWidth={strokeWidth}
-										iconStyle={iconStyle}
-										iconCircleSize={iconCircleSize}
-										iconCircleRadius={iconCircleRadius}
-										iconColor={item.iconColor || iconColor}
-										iconSurfaceBackgroundColor={
-											item.iconSurfaceBackgroundColor || iconSurfaceBackgroundColor
-										}
-										iconSurfaceBorderColor={iconSurfaceBorderColor}
-										lookupPalette={lookupPalette}
-									/>
-									<b className="nextora-box-icon__stat-number">
-										{statNumber || __('1,200+', 'nextora')}
-									</b>
-									<span className="nextora-box-icon__stat-label">
-										{statLabel || __('Stat label', 'nextora')}
-									</span>
-									{statSubtitle ? (
-										<small className="nextora-box-icon__stat-subtitle">
-											{statSubtitle}
-										</small>
-									) : null}
-								</>
-							);
-						})()
+						<>
+							<BoxIconEditorIcon
+								iconSource={item.iconSource}
+								iconName={item.iconName}
+								uploadedIconUrl={item.uploadedIconUrl}
+								iconSize={iconSize}
+								strokeWidth={strokeWidth}
+								iconStyle={iconStyle}
+								iconCircleSize={iconCircleSize}
+								iconCircleRadius={iconCircleRadius}
+								iconColor={item.iconColor || iconColor}
+								iconSurfaceBackgroundColor={
+									item.iconSurfaceBackgroundColor || iconSurfaceBackgroundColor
+								}
+								iconSurfaceBorderColor={iconSurfaceBorderColor}
+								lookupPalette={lookupPalette}
+							/>
+							{(() => {
+								const statNum = item.number || (!item.number && item.linkLabel ? item.title : '');
+								const statTitle = !item.number && item.linkLabel ? item.description : item.title;
+								const statSubtitle = !item.number && item.linkLabel ? item.linkLabel : item.description;
+
+								return (
+									<>
+										{statNum ? (
+											<b
+												className={[
+													'nextora-box-icon__stat-number',
+													`has-${effectiveStatNumFontSize}-font-size`,
+													statNumFontProps.className,
+												]
+													.filter(Boolean)
+													.join(' ')}
+												style={statNumFontProps.style}
+											>
+												{statNum}
+											</b>
+										) : null}
+										{statTitle ? (
+											<h4 className={titleClasses} style={titleColorProps.style}>
+												{statTitle}
+											</h4>
+										) : null}
+										{statSubtitle ? (
+											<small className="nextora-box-icon__stat-subtitle">
+												{statSubtitle}
+											</small>
+										) : null}
+									</>
+								);
+							})()}
+						</>
+					) : cardTemplate === 'timeline' ? (
+						<>
+							<BoxIconEditorIcon
+								iconSource={item.iconSource}
+								iconName={item.iconName}
+								uploadedIconUrl={item.uploadedIconUrl}
+								iconSize={iconSize}
+								strokeWidth={strokeWidth}
+								iconStyle={iconStyle}
+								iconCircleSize={iconCircleSize}
+								iconCircleRadius={iconCircleRadius}
+								iconColor={item.iconColor || iconColor}
+								iconSurfaceBackgroundColor={
+									item.iconSurfaceBackgroundColor || iconSurfaceBackgroundColor
+								}
+								iconSurfaceBorderColor={iconSurfaceBorderColor}
+								lookupPalette={lookupPalette}
+							/>
+							{showTimelineTime ? (
+								<time className="nextora-box-icon__timeline-time">
+									{item.number || __('T + 0H', 'nextora')}
+								</time>
+							) : null}
+							<h4 className={titleClasses} style={titleColorProps.style}>
+								{item.title || __('Title', 'nextora')}
+							</h4>
+							<p className={descriptionClasses} style={descColorProps.style}>
+								{item.description || __('Description…', 'nextora')}
+							</p>
+						</>
 					) : (
 						<>
 							{cardTemplate === 'ways' ? (
-								<h5 className="nextora-box-icon__card-ghost" aria-hidden="true">
+								<span className="nextora-box-icon__card-ghost" aria-hidden="true">
 									{formatCardGhostIndex(index)}
-								</h5>
+								</span>
 							) : null}
 							<BoxIconEditorIcon
 								iconSource={item.iconSource}
@@ -1034,19 +1459,19 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 							/>
 							{cardTemplate === 'minimal' ? (
 								<div className="nextora-box-icon__card-body">
-									<h3 className="nextora-box-icon__title">
+									<h4 className={titleClasses} style={titleColorProps.style}>
 										{item.title || __('Title', 'nextora')}
-									</h3>
-									<p className="nextora-box-icon__description">
+									</h4>
+									<p className={descriptionClasses} style={descColorProps.style}>
 										{item.description || __('Description…', 'nextora')}
 									</p>
 								</div>
 							) : (
 								<>
-									<h3 className="nextora-box-icon__title">
+									<h4 className={titleClasses} style={titleColorProps.style}>
 										{item.title || __('Title', 'nextora')}
-									</h3>
-									<p className="nextora-box-icon__description">
+									</h4>
+									<p className={descriptionClasses} style={descColorProps.style}>
 										{item.description || __('Description…', 'nextora')}
 									</p>
 								</>
@@ -1067,6 +1492,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					);
 					})}
 				</div>
+				)}
 			</div>
 		</>
 	);

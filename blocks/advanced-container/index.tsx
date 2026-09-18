@@ -49,6 +49,9 @@ type Attributes = {
   lightRaysMouseInfluence: number;
   lightRaysNoiseAmount: number;
   lightRaysDistortion: number;
+  ripplesDropRadius: number;
+  ripplesPerturbance: number;
+  ripplesResolution: number;
 };
 
 registerBlockType(metadata as BlockConfiguration<Attributes>, {

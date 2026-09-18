@@ -3,14 +3,24 @@
   "apiVersion": 3,
   "name": "nextora/testimonials",
   "title": "Testimonials",
-  "category": "design",
-  "description": "Split-screen testimonial carousel with portrait photos, section heading, and ring pagination.",
-  "keywords": ["testimonial", "quote", "reviews", "carousel", "swiper", "nextora"],
+  "category": "nextora",
+  "description": "Split-screen testimonial carousel with portrait photos, section heading, and slider pagination.",
+  "keywords": [
+    "testimonial",
+    "quote",
+    "reviews",
+    "carousel",
+    "swiper",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "format-quote",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": true,
@@ -18,7 +28,8 @@
       "link": true
     },
     "spacing": {
-      "margin": true
+      "margin": true,
+      "padding": true
     }
   },
   "attributes": {
@@ -61,29 +72,98 @@
         }
       ]
     },
-    "headingText": { "type": "string", "default": "Real Lives, Lasting Change" },
-    "headingLevel": { "type": "number", "default": 2 },
-    "headingFontSize": { "type": "string", "default": "" },
-    "quoteFontSize": { "type": "string", "default": "" },
-    "quoteFontFamily": { "type": "string", "default": "" },
-    "imagePosition": { "type": "string", "default": "left" },
-    "imageColumnRatio": { "type": "number", "default": 50 },
-    "showPagination": { "type": "boolean", "default": true },
-    "showArrows": { "type": "boolean", "default": false },
-    "contentBackgroundColor": { "type": "string", "default": "" },
-    "effect": { "type": "string", "default": "fade" },
-    "speed": { "type": "number", "default": 600 },
-    "loop": { "type": "boolean", "default": true },
-    "autoplay": { "type": "boolean", "default": true },
-    "autoplayDelay": { "type": "number", "default": 6000 },
-    "pauseOnHover": { "type": "boolean", "default": true },
-    "headingColor": { "type": "string", "default": "" },
-    "quoteColor": { "type": "string", "default": "" },
-    "authorNameColor": { "type": "string", "default": "" },
-    "authorMetaColor": { "type": "string", "default": "" },
-    "paginationColor": { "type": "string", "default": "" },
-    "paginationActiveColor": { "type": "string", "default": "" },
-    "enableScrollAnimation": { "type": "boolean", "default": true }
+    "headingText": {
+      "type": "string",
+      "default": "Real Lives, Lasting Change"
+    },
+    "headingLevel": {
+      "type": "number",
+      "default": 2
+    },
+    "headingFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "quoteFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "quoteFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "imagePosition": {
+      "type": "string",
+      "default": "left"
+    },
+    "imageColumnRatio": {
+      "type": "number",
+      "default": 50
+    },
+    "showPagination": {
+      "type": "boolean",
+      "default": true
+    },
+    "showArrows": {
+      "type": "boolean",
+      "default": false
+    },
+    "contentBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "effect": {
+      "type": "string",
+      "default": "fade"
+    },
+    "speed": {
+      "type": "number",
+      "default": 600
+    },
+    "loop": {
+      "type": "boolean",
+      "default": true
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": true
+    },
+    "autoplayDelay": {
+      "type": "number",
+      "default": 6000
+    },
+    "pauseOnHover": {
+      "type": "boolean",
+      "default": true
+    },
+    "headingColor": {
+      "type": "string",
+      "default": ""
+    },
+    "quoteColor": {
+      "type": "string",
+      "default": ""
+    },
+    "authorNameColor": {
+      "type": "string",
+      "default": ""
+    },
+    "authorMetaColor": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationColor": {
+      "type": "string",
+      "default": ""
+    },
+    "paginationActiveColor": {
+      "type": "string",
+      "default": ""
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    }
   },
   "editorScript": "file:./index.js",
   "editorStyle": "file:./editor.css",

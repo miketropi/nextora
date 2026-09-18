@@ -6,6 +6,12 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 
 ## Animation classes
 
+The built-in utility inventory contains **20 classes**. The first 18 are handled by
+the GSAP scroll-animation scanner; parallax and the video-button ripple are
+additional utilities implemented outside the preset registry. Custom classes
+registered with `window.nextoraRegisterScrollAnimation` are not part of this
+built-in list.
+
 | Class | Effect |
 |-------|--------|
 | `animation-fade-in` | Fade in |
@@ -25,11 +31,22 @@ Source: `resources/ts/lib/scroll-animations/` (bundled in `assets/js/main.js` vi
 | `animation-text-reveal-chars-rise` | Characters rise in with perspective + `back.out` easing |
 | `animation-text-reveal-chars-scrub` | Characters brighten and slide in while scrolling (scrubbed) |
 | `animation-text-typewriter` | Character-by-character typewriter with blinking caret on scroll (inspired by [MiMo Code] hero subtitle) |
+| `animation-scroll-reveal` | Scrubbed container rotation + word opacity + optional blur — container tilts from a start angle to straight as you scroll, words fade/blur in (inspired by React Bits `ScrollReveal`) |
+| `animation-svg-draw` | SVG stroke drawing animation with stagger (identical to Lucide icon animation in `advanced-icon`) |
 | `animation-video-button-ripple` | Expanding concentric ripple for video play buttons (CSS-only, no scroll trigger) |
 
-## Image & text reveal presets
+### Implementation groups
 
-These map from legacy Elementor utility classes (`at-animation-*`) to theme-native names. Add the class on a **Heading**, **Image**, or **Group** block wrapper via **Advanced → Additional CSS class(es)**.
+| Group | Classes |
+|-------|---------|
+| GSAP preset registry | `animation-fade-in`, `animation-fade-in-up`, `animation-fade-in-down`, `animation-fade-in-left`, `animation-fade-in-right`, `animation-zoom-in`, `animation-zoom-out`, `animation-fade-list-grid`, `animation-inner-fade` |
+| GSAP special handlers | `animation-image-clip-reveal`, `animation-image-border-reveal`, `animation-text-reveal-words`, `animation-text-reveal-chars`, `animation-text-reveal-chars-rise`, `animation-text-reveal-chars-scrub`, `animation-text-typewriter`, `animation-scroll-reveal`, `animation-svg-draw` |
+| Parallax utility | `animation-parallax` (also activated by `data-parallax-speed`) |
+| CSS-only utility | `animation-video-button-ripple` |
+
+## Image, text & SVG reveal presets
+
+These map from utility classes to theme-native GSAP reveals. Add the class on a **Heading**, **Image**, **Icon**, or **Group** block wrapper via **Advanced → Additional CSS class(es)**.
 
 | Class | Effect | Default timing |
 |-------|--------|----------------|
@@ -40,6 +57,8 @@ These map from legacy Elementor utility classes (`at-animation-*`) to theme-nati
 | `animation-text-reveal-chars-rise` | 3D-style character rise | `duration: 1`, `stagger: 0.02`, `distance: 50`, `ease: back.out(1.7)` |
 | `animation-text-reveal-chars-scrub` | Scroll-scrubbed character reveal | `duration: 0.7`, `stagger: 0.2`, scrub between `top 92%` → `top 60%` |
 | `animation-text-typewriter` | Typewriter print + caret | `delay: 0.35`, `stagger: 0.055` (seconds per character), trigger `top 85%` |
+| `animation-scroll-reveal` | Scrubbed rotation + word opacity + blur | Scrubbed, `start: "top bottom"` (rotation) / `"top bottom-=30%"` (words), `rotationEnd: "bottom bottom"`, `wordAnimationEnd: "bottom 65%"` |
+| `animation-svg-draw` | SVG stroke drawing with stagger | `duration: 1.4`, `stagger: 0.22`, `ease: power2.out`, trigger `top 85%` |
 
 All presets honor `data-delay`, `data-duration`, `data-ease`, `data-stagger`, and `data-distance` when set on the same element.
 
@@ -95,6 +114,79 @@ Put the class on a **Paragraph** or **Heading** block. Text prints left-to-right
 <!-- /wp:paragraph -->
 ```
 
+### Scroll reveal (headings)
+
+Put the class on a **Heading** block. The container rotates from a starting angle to 0deg as you scroll; words fade in from low opacity and optionally un-blur — all scrubbed to scroll position.
+
+```html
+<!-- wp:heading {"className":"animation-scroll-reveal"} -->
+<h2 class="wp-block-heading animation-scroll-reveal">When does a man die? When he is hit by a bullet? No!</h2>
+<!-- /wp:heading -->
+```
+
+**Data attributes** (all optional, add on the same Heading block):
+
+| Attribute | Default | Description |
+|-----------|---------|-------------|
+| `data-enable-blur` | `"true"` | Set to `"false"` to disable the blur effect |
+| `data-base-opacity` | `0.1` | Initial opacity of words before reveal |
+| `data-base-rotation` | `3` | Starting container rotation in degrees |
+| `data-blur-strength` | `4` | Blur strength in pixels at animation start |
+| `data-rotation-end` | `"bottom bottom"` | ScrollTrigger end point for container rotation |
+| `data-word-animation-end` | `"bottom 65%"` | ScrollTrigger end point for word opacity and blur |
+
+Example with custom values:
+
+```html
+<!-- wp:heading {"className":"animation-scroll-reveal"} -->
+<h2 class="wp-block-heading animation-scroll-reveal" data-base-opacity="0" data-base-rotation="5" data-blur-strength="10">
+  A man dies when he is forgotten!
+</h2>
+<!-- /wp:heading -->
+```
+
+Text is split into words at runtime (no GSAP SplitText plugin required). The animation honours `prefers-reduced-motion: reduce`.
+
+### SVG stroke drawing (`animation-svg-draw`)
+
+Put the class on an **Icon**, **Button**, **Image**, **Group**, or any block containing an `<svg>` (or directly on the `<svg>` element). Each stroke shape (`path`, `line`, `polyline`, `polygon`, `circle`, `ellipse`, `rect`) draws sequentially with staggered cadence when scrolled into view — matching the Lucide icon stroke animation in `nextora/advanced-icon`.
+
+```html
+<!-- wp:group {"className":"animation-svg-draw"} -->
+<div class="wp-block-group animation-svg-draw">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <polyline points="22 4 12 14.01 9 11.01" />
+  </svg>
+</div>
+<!-- /wp:group -->
+```
+
+#### Speed levels
+
+Control the drawing speed using modifier classes or `data-speed`:
+
+| Speed | Modifier class | Attribute | Timing |
+|---|---|---|---|
+| **Normal** (default) | `animation-svg-draw` | `data-speed="normal"` | `duration: 1.4s`, `stagger: 0.22s` |
+| **Slow** | `animation-speed-slow` (or `animation-svg-draw--slow`) | `data-speed="slow"` | `duration: 2.2s`, `stagger: 0.35s` |
+| **Slower** | `animation-speed-slower` (or `animation-svg-draw--slower`) | `data-speed="slower"` | `duration: 3.2s`, `stagger: 0.5s` |
+| **Fast** | `animation-speed-fast` (or `animation-svg-draw--fast`) | `data-speed="fast"` | `duration: 0.7s`, `stagger: 0.12s` |
+
+Example with slow speed:
+```html
+<div class="wp-block-group animation-svg-draw animation-speed-slow">
+  <svg ...>...</svg>
+</div>
+```
+
+Or custom exact timing via data attributes:
+```html
+<div class="wp-block-group animation-svg-draw" data-duration="2.5" data-stagger="0.3" data-delay="0.2">
+  <svg ...>...</svg>
+</div>
+```
+
 **Legacy class mapping**
 
 | Old (Elementor) | New (Nextora) |
@@ -113,12 +205,34 @@ Add on the same element as the animation class:
 
 | Attribute | Default | Description |
 |-----------|---------|-------------|
-| `data-delay` | `0` | Seconds before tween starts |
+| `data-delay` | `0` | Seconds (or milliseconds if ≥10) before tween starts |
 | `data-duration` | `0.8` | Tween duration (seconds) |
 | `data-ease` | `power3.out` | GSAP ease string |
 | `data-stagger` | — | When set, animates **direct children** with stagger delay (seconds) |
 | `data-distance` | `40` | Pixel offset for fade-in directional presets |
 | `data-parallax-speed` | `0.35` (with `animation-parallax`) | Parallax intensity |
+
+### Delay utility classes (`animation-delay-*` / `delay-*`)
+
+Control the reveal delay directly via Gutenberg's **Advanced → Additional CSS class(es)** sidebar without needing `data-delay`:
+
+| Class | Delay | Timing |
+|-------|-------|--------|
+| `animation-delay-50` / `delay-50` | 50ms | `delay: 0.05s` |
+| `animation-delay-100` / `delay-100` | 100ms | `delay: 0.1s` |
+| `animation-delay-150` / `delay-150` | 150ms | `delay: 0.15s` |
+| `animation-delay-200` / `delay-200` | 200ms | `delay: 0.2s` |
+| `animation-delay-300` / `delay-300` | 300ms | `delay: 0.3s` |
+| `animation-delay-500` / `delay-500` | 500ms | `delay: 0.5s` |
+| `animation-delay-{N}` / `delay-{N}` | {N}ms | Dynamic millisecond support |
+
+Example usage on sibling or layout blocks:
+- Tall image: `animation-fade-in-up` (default delay 0)
+- Small image 1: `animation-fade-in-up animation-delay-100`
+- Small image 2: `animation-fade-in-up animation-delay-200`
+
+If an element has `animation-delay-*` without an explicit animation preset, it automatically defaults to `animation-fade-in-up`.
+
 
 ## Gutenberg usage
 

@@ -3,13 +3,22 @@
   "apiVersion": 3,
   "name": "nextora/slide-wrapper",
   "title": "Slide wrapper",
-  "category": "design",
+  "category": "nextora",
   "description": "Carousel wrapper for Slide item blocks with navigation, pagination, and autoplay.",
-  "keywords": ["slider", "carousel", "hero", "slides", "nextora"],
+  "keywords": [
+    "slider",
+    "carousel",
+    "hero",
+    "slides",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "color": {
       "background": true,
       "text": true,

@@ -1,4 +1,4 @@
-import type { TeamMember, TeamSocialLink } from './types';
+import type { TeamMember, TeamSectionAttributes, TeamSocialLink } from './types';
 
 declare global {
 	interface Window {
@@ -12,6 +12,29 @@ function teamPhotoPlaceholderVar(): string {
 	const url =
 		typeof window !== 'undefined' ? window.nextoraTeamSection?.photoPlaceholderUrl : undefined;
 	return url ? `url("${url}")` : 'none';
+}
+
+function resolveColorValue(raw: string): string {
+
+	const value = raw.trim();
+	if (value === '') {
+		return '';
+	}
+
+	if (
+		value.startsWith('#') ||
+		value.startsWith('rgb') ||
+		value.startsWith('hsl') ||
+		value.startsWith('var(')
+	) {
+		return value;
+	}
+
+	if (/^[a-z0-9-]+$/i.test(value)) {
+		return `var(--wp--preset--color--${value})`;
+	}
+
+	return value;
 }
 
 export function createMemberId(): string {
@@ -54,14 +77,36 @@ export function normalizeMembers(members: TeamMember[] | undefined): TeamMember[
 			bio: typeof raw?.bio === 'string' ? raw.bio : '',
 			bioLineClamp:
 				typeof raw?.bioLineClamp === 'number' ? Math.max(1, Math.min(5, raw.bioLineClamp)) : 3,
+			detail: typeof raw?.detail === 'string' ? raw.detail : '',
 			showSocialLinks: Boolean(raw?.showSocialLinks),
 			socialLinks,
 			cardBorderRadius:
-				typeof raw?.cardBorderRadius === 'number'
+				typeof raw?.cardBorderRadius === 'number' && raw.cardBorderRadius > 0
 					? Math.max(0, Math.min(30, raw.cardBorderRadius))
-					: 16,
+					: 0,
 		};
 	});
+}
+
+export function getTemplateDefaultAttributes(
+	template: string,
+): Partial<TeamSectionAttributes> {
+	if (template === 'template-02') {
+		return {
+			photoAspectRatio: '3/4',
+			cardBorderRadius: 24,
+		};
+	}
+	if (template === 'overlay-social') {
+		return {
+			photoAspectRatio: '3/4',
+			cardBorderRadius: 20,
+		};
+	}
+	return {
+		photoAspectRatio: '3/4',
+		cardBorderRadius: 16,
+	};
 }
 
 export function resolvePhotoUrl(
@@ -76,18 +121,24 @@ export function resolvePhotoUrl(
 }
 
 export function buildSectionStyleVars(attrs: {
-	backgroundColor?: string;
+	sectionBackgroundColor?: string;
 	paginationColor?: string;
 	paginationActiveColor?: string;
 	cardBackgroundColor?: string;
 	tagBackgroundColor?: string;
 	tagTextColor?: string;
+	nameColor?: string;
+	roleColor?: string;
+	bioColor?: string;
+	socialColor?: string;
 	cardBorderRadius?: number;
 	gridColumns?: number;
 	gridColumnGap?: number;
 	gridRowGap?: number;
 	photoAspectRatio?: string;
 	spaceBetween?: number;
+	slidesPerView?: number;
+	edgeFadeColor?: string;
 }): Record<string, string> {
 	const vars: Record<string, string> = {
 		'--nextora-team-photo-placeholder': teamPhotoPlaceholderVar(),
@@ -96,13 +147,19 @@ export function buildSectionStyleVars(attrs: {
 		'--nextora-team-space-between': `${attrs.spaceBetween ?? 24}px`,
 		'--nextora-team-grid-column-gap': `${attrs.gridColumnGap ?? 24}px`,
 		'--nextora-team-grid-row-gap': `${attrs.gridRowGap ?? 24}px`,
+		'--nextora-team-slides-per-view': String(attrs.slidesPerView ?? 4),
 	};
 	if (attrs.gridColumns) vars['--nextora-team-grid-columns'] = String(attrs.gridColumns);
-	if (attrs.backgroundColor) vars['--nextora-team-bg'] = attrs.backgroundColor;
-	if (attrs.paginationColor) vars['--nextora-team-dot-color'] = attrs.paginationColor;
-	if (attrs.paginationActiveColor) vars['--nextora-team-dot-active'] = attrs.paginationActiveColor;
-	if (attrs.cardBackgroundColor) vars['--nextora-team-card-bg'] = attrs.cardBackgroundColor;
-	if (attrs.tagBackgroundColor) vars['--nextora-team-tag-bg'] = attrs.tagBackgroundColor;
-	if (attrs.tagTextColor) vars['--nextora-team-tag-color'] = attrs.tagTextColor;
+	if (attrs.sectionBackgroundColor) vars['--nextora-team-bg'] = resolveColorValue(attrs.sectionBackgroundColor);
+	if (attrs.paginationColor) vars['--nextora-team-dot-color'] = resolveColorValue(attrs.paginationColor);
+	if (attrs.paginationActiveColor) vars['--nextora-team-dot-active'] = resolveColorValue(attrs.paginationActiveColor);
+	if (attrs.cardBackgroundColor) vars['--nextora-team-card-bg'] = resolveColorValue(attrs.cardBackgroundColor);
+	if (attrs.tagBackgroundColor) vars['--nextora-team-tag-bg'] = resolveColorValue(attrs.tagBackgroundColor);
+	if (attrs.tagTextColor) vars['--nextora-team-tag-color'] = resolveColorValue(attrs.tagTextColor);
+	if (attrs.nameColor) vars['--nextora-team-name-color'] = resolveColorValue(attrs.nameColor);
+	if (attrs.roleColor) vars['--nextora-team-role-color'] = resolveColorValue(attrs.roleColor);
+	if (attrs.bioColor) vars['--nextora-team-bio-color'] = resolveColorValue(attrs.bioColor);
+	if (attrs.socialColor) vars['--nextora-team-social-color'] = resolveColorValue(attrs.socialColor);
+	if (attrs.edgeFadeColor) vars['--nextora-team-edge-fade-color'] = resolveColorValue(attrs.edgeFadeColor);
 	return vars;
 }

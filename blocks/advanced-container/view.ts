@@ -4,8 +4,9 @@
  * Dynamic blocks often do not auto-enqueue `viewScript`;
  * render.php enqueues this file when needed.
  */
-import { initHoverReveal } from './hover-reveal';
+import { initHoverReveal, refreshAllHoverReveal } from './hover-reveal';
 import { initLightRays } from './light-rays';
+import { initRipples } from './ripples';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -292,18 +293,37 @@ function initAmbientIcons(root: HTMLElement): void {
   });
 }
 
+function initRipplesWrapper(root: HTMLElement): void {
+  if (!root.classList.contains('nextora-advanced-container--ripples')) {
+    return;
+  }
+  if (root.getAttribute(AMBIENT_INIT_ATTR) === 'ripples') {
+    return;
+  }
+  root.setAttribute(AMBIENT_INIT_ATTR, 'ripples');
+
+  if (prefersReducedMotion()) {
+    return;
+  }
+
+  try {
+    initRipples(root);
+  } catch { /* */ }
+}
+
 function initRoot(root: HTMLElement): void {
   if (root.getAttribute(INIT_ATTR) === '1') {
     return;
   }
   root.setAttribute(INIT_ATTR, '1');
 
-  initScrollReveal(root);
-  initParallax(root);
-  initHoverReveal(root);
-  initAmbientIcons(root);
-  initLightRays(root);
-  bindBgImageRefresh(root);
+  try { initScrollReveal(root); } catch {}
+  try { initParallax(root); } catch {}
+  try { initHoverReveal(root); } catch {}
+  try { initAmbientIcons(root); } catch {}
+  try { initLightRays(root); } catch {}
+  try { initRipplesWrapper(root); } catch {}
+  try { bindBgImageRefresh(root); } catch {}
 }
 
 function forceRevealPendingRoots(): void {
@@ -334,6 +354,8 @@ function boot(): void {
   ScrollTrigger.refresh();
   forceRevealPendingRoots();
 }
+
+window.addEventListener('nextora:schemechange', refreshAllHoverReveal);
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', boot, { once: true });

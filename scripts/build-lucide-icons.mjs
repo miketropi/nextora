@@ -1,6 +1,6 @@
 /**
  * build-lucide-icons.mjs
- * Merges lucide-static icon-nodes + tags into assets/data/lucide-icons.json.
+ * Merges Lucide nodes/tags into assets/data/lucide-icons.json.
  */
 
 import fs from 'fs';
@@ -27,3 +27,4 @@ const dest = path.join( __dirname, '../assets/data/lucide-icons.json' );
 fs.mkdirSync( path.dirname( dest ), { recursive: true } );
 fs.writeFileSync( dest, JSON.stringify( output ) );
 console.log( `Built ${ output.length } icons → ${ dest }` );
+
