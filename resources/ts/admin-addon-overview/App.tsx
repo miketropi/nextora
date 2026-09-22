@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { useAddonData } from './hooks/useAddonData';
 import OverviewHeader from './components/Header';
 import FeatureGrid from './components/FeatureGrid';
@@ -37,6 +38,12 @@ export default function App(): JSX.Element {
 			<div className="nextora-overview-content">
 				<FeatureGrid features={data.features} />
 				<GalleryGrid items={data.gallery} />
+				{data.extensionsGallery.length > 0 && (
+					<GalleryGrid
+						title={__('Extensions', 'nextora')}
+						items={data.extensionsGallery}
+					/>
+				)}
 				<OverviewFooter />
 			</div>
 		</div>

@@ -200,6 +200,7 @@ function nextora_get_overview_data(): array {
         'description' => __( 'Notification bar that scrolls across the top of the page with customizable text and links.', 'nextora' ),
       ),
     ),
+		'extensionsGallery' => apply_filters( 'nextora_addon_overview_gallery', array() ),
 	);
 
 	return apply_filters( 'nextora_addon_overview_data', $data );

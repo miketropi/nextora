@@ -23,7 +23,7 @@ function nextora_get_child_themes(): array {
 			'slug'        => 'alonepro',
 			'name'        => 'Alone Pro',
 			'description' => 'A purpose-built child theme for nonprofits and charities. Includes donation features, event pages, and all the essentials for fundraising organizations.',
-			'thumbnail'   => '',
+			'thumbnail'   => 'https://pub-0645c3b9d3674132af6b362484df0f3c.r2.dev/alonepro/7c6e849c-1f25-4827-ae6e-b89c68d4e683.webp',
 			'url'         => 'https://example.com/nextora-shop',
 			'author'      => 'Bearstheme',
 			'isPremium'   => true,
