@@ -14,6 +14,8 @@ export interface EventItem {
 	linkUrl: string;
 	linkTarget: string;
 	registerLabel: string;
+	buttonIcon?: string;
+	registerButtonIcon?: string;
 }
 
 export interface EventAttributes {
@@ -21,6 +23,7 @@ export interface EventAttributes {
 	events: EventItem[];
 	showRegisterButton: boolean;
 	registerButtonText: string;
+	registerButtonIcon?: string;
 	template3Alternating: boolean;
 	titleFontSize?: string;
 	descriptionFontSize?: string;

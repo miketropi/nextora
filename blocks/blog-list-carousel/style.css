@@ -528,7 +528,7 @@ a.nextora-blc__card-cat:focus-visible {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 16px;
+	gap: 4px 16px;
 	margin: 0 0 12px;
 }
 
@@ -565,7 +565,7 @@ a.nextora-blc__card-cat:focus-visible {
 
 .nextora-blog-list-carousel--template-template-1 a.nextora-blc__card-cat:hover,
 .nextora-blog-list-carousel--template-template-1 a.nextora-blc__card-cat:focus-visible {
-	color: var(--wp--preset--color--contrast, currentColor);
+	color: var(--wp--preset--color--primary, currentColor);
 	background: transparent;
 }
 

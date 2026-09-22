@@ -220,6 +220,7 @@ export function buildStyleVars(attrs: {
 	badgeBackgroundColor?: string;
 	badgeTextColor?: string;
 	bulletIconColor?: string;
+	edgeFadeColor?: string;
 }, lookupPalette: { slug: string; color: string }[] = []): Record<string, string> {
 	const vars: Record<string, string> = {};
 
@@ -281,6 +282,7 @@ export function buildStyleVars(attrs: {
 	setColor('--nextora-box-image-badge-bg', attrs.badgeBackgroundColor);
 	setColor('--nextora-box-image-badge-text', attrs.badgeTextColor);
 	setColor('--nextora-box-image-bullet-icon-color', attrs.bulletIconColor);
+	setColor('--nextora-box-image-edge-fade-color', attrs.edgeFadeColor);
 
 	return vars;
 }

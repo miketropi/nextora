@@ -348,9 +348,15 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 			badgeBackgroundColor: isEmptyColor(badgeBackgroundColor) ? '' : badgeBackgroundColor,
 			badgeTextColor: isEmptyColor(badgeTextColor) ? '' : badgeTextColor,
 			bulletIconColor: isEmptyColor(effectiveBulletIconColor) ? '' : effectiveBulletIconColor,
+			edgeFadeColor: isEmptyColor(edgeFadeColor) ? '' : edgeFadeColor,
 		},
 		lookupPalette,
 	);
+
+	const isDesktopFractional = (slidesPerView % 1) !== 0;
+	const isTabletFractional = (slidesPerViewTablet % 1) !== 0;
+	const isMobileFractional = (slidesPerViewMobile % 1) !== 0;
+	const hasAnyFractional = isDesktopFractional || isTabletFractional || isMobileFractional;
 
 	const blockProps = useBlockProps({
 		className: [
@@ -361,16 +367,13 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 			layoutMode === 'grid' ? 'nextora-box-image--grid-active' : '',
 			template !== 'default' ? `nextora-box-image--template-${template}` : '',
 			!enableCardHover ? 'nextora-box-image--no-card-hover' : '',
-			(slidesPerView % 1) !== 0 ? 'has-edge-fade-desktop' : '',
-			(slidesPerViewTablet % 1) !== 0 ? 'has-edge-fade-tablet' : '',
-			(slidesPerViewMobile % 1) !== 0 ? 'has-edge-fade-mobile' : '',
+			isDesktopFractional ? 'has-edge-fade-desktop' : '',
+			isTabletFractional ? 'has-edge-fade-tablet' : '',
+			isMobileFractional ? 'has-edge-fade-mobile' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
-		style: {
-			...(styleVars as CSSProperties),
-			...(edgeFadeColor ? { '--nextora-box-image-edge-fade-color': edgeFadeColor } : {}),
-		},
+		style: styleVars as CSSProperties,
 	});
 
 	const setThemeColor = (key: keyof BoxImageAttributes, value: string | undefined): void => {
@@ -532,6 +535,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 		paginationColor,
 		paginationActiveColor,
 		arrowColor,
+		edgeFadeColor,
 		badgeBackgroundColor,
 		badgeTextColor,
 		bulletIconColor,
@@ -1745,7 +1749,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 																		viewBox="0 0 24 24"
 																		fill="none"
 																		stroke="currentColor"
-																		strokeWidth="2.5"
+																		strokeWidth="1.5"
 																		aria-hidden="true"
 																	>
 																		<path d="M5 13l4 4L19 7" />
@@ -1763,7 +1767,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 														<span className="nextora-box-image__link nextora-box-image__link--template3 nextora-box-image__link--static">
 															{item.linkLabel}
 															<span className="nextora-box-image__link-icon" aria-hidden="true">
-																<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+																<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
 																	<path d="M5 12h14M13 6l6 6-6 6" />
 																</svg>
 															</span>
@@ -1841,6 +1845,9 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 								);
 								})}
 							</div>
+							{hasAnyFractional && (
+								<div className="nextora-box-image__edge-overlay" aria-hidden="true" />
+							)}
 						</div>
 					)}
 				</div>

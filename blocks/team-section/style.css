@@ -275,12 +275,12 @@
 }
 
 .nextora-team-section__card-tag {
-	font-size: var(--wp--preset--font-size--small, 0.75rem);
+	font-size: 13px;
 	padding: 0.2rem 0.75rem;
 	border-radius: 999px;
 	background: var(--nextora-team-tag-bg, color-mix(in srgb, currentColor 8%, transparent));
 	color: var(--nextora-team-tag-color);
-	font-weight: 500;
+	font-weight: 700;
 }
 
 .nextora-team-section__card-bio {
@@ -302,7 +302,7 @@
 }
 
 .nextora-team-section__card-social-link {
-	font-size: var(--wp--preset--font-size--small, 0.75rem);
+	font-size: 12px;
 	font-weight: 400;
 	text-decoration: none;
 	color: var(--nextora-team-social-color, var(--nextora-team-desc-color));
@@ -708,6 +708,10 @@
 	pointer-events: auto;
 }
 
+.nextora-team-section__deck-info-pane.is-active > * {
+	opacity: 1;
+}
+
 .nextora-team-section__deck-name {
 	margin: 0 0 0.5rem 0;
 }
@@ -822,6 +826,23 @@
 .nextora-team-section--popup-enabled .nextora-team-section__card--has-popup {
 	cursor: pointer;
 	position: relative;
+}
+
+/* Template 02 Deck Card Fix: Deck photo cards must always remain absolutely positioned inside the stack */
+.nextora-team-section--popup-enabled .nextora-team-section__deck-photo-card.nextora-team-section__card--has-popup,
+.nextora-team-section__deck-photo-card {
+	position: absolute !important;
+	inset: 0 !important;
+}
+
+.nextora-team-section--popup-enabled .nextora-team-section__deck-name.nextora-team-section__card--has-popup {
+	cursor: pointer;
+	display: inline-block;
+	transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.nextora-team-section--popup-enabled .nextora-team-section__deck-name.nextora-team-section__card--has-popup:hover {
+	opacity: 0.8;
 }
 
 .nextora-team-section--popup-enabled .nextora-team-section__card--has-popup:focus-visible {

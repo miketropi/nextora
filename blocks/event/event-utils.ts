@@ -29,6 +29,7 @@ export const DEFAULT_EVENTS: EventItem[] = [
 		linkUrl: '',
 		linkTarget: '_self',
 		registerLabel: 'Register',
+		buttonIcon: 'calendar-days',
 	},
 	{
 		id: '2',
@@ -46,6 +47,7 @@ export const DEFAULT_EVENTS: EventItem[] = [
 		linkUrl: '',
 		linkTarget: '_self',
 		registerLabel: 'Register',
+		buttonIcon: 'calendar-days',
 	},
 	{
 		id: '3',
@@ -63,6 +65,7 @@ export const DEFAULT_EVENTS: EventItem[] = [
 		linkUrl: '',
 		linkTarget: '_self',
 		registerLabel: 'Register',
+		buttonIcon: 'calendar-days',
 	},
 ];
 
@@ -101,6 +104,7 @@ export function createDefaultEventItem(
 		linkUrl: '',
 		linkTarget: '_self',
 		registerLabel,
+		buttonIcon: 'calendar-days',
 		...overrides,
 	};
 }
@@ -126,6 +130,12 @@ export function normalizeEvents(events: EventItem[] | undefined): EventItem[] {
 		linkUrl: typeof raw?.linkUrl === 'string' ? raw.linkUrl : '',
 		linkTarget: raw?.linkTarget === '_blank' ? '_blank' : '_self',
 		registerLabel: typeof raw?.registerLabel === 'string' ? raw.registerLabel : '',
+		buttonIcon:
+			typeof raw?.buttonIcon === 'string' && raw.buttonIcon !== ''
+				? raw.buttonIcon
+				: typeof raw?.registerButtonIcon === 'string' && raw.registerButtonIcon !== ''
+					? raw.registerButtonIcon
+					: 'calendar-days',
 	}));
 }
 

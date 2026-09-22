@@ -117,6 +117,7 @@
 }
 
 @media (min-width: 981px) {
+
 	.nextora-box-image [data-layout-mode="grid"] .nextora-box-image__pagination,
 	.nextora-box-image [data-layout-mode="grid"] .nextora-box-image__arrow {
 		display: none !important;
@@ -553,8 +554,8 @@
 }
 
 .nextora-box-image--template-template2 .nextora-box-image__link-icon svg {
-	width: 0.875rem;
-	height: 0.875rem;
+	width: 1rem;
+	height: 1rem;
 }
 
 .nextora-box-image--template-template2 .nextora-box-image__card:hover,
@@ -684,12 +685,12 @@
 }
 
 .nextora-box-image--template-template3 .nextora-box-image__bullet-icon {
-	width: 1rem;
-	height: 1rem;
+	width: 1.125rem;
+	height: 1.125rem;
 	flex-shrink: 0;
 	margin-top: 2px;
 	color: var(--nextora-box-image-bullet-icon-color, var(--wp--preset--color--secondary, var(--wp--preset--color--primary, currentColor)));
-	stroke-width: 2.5;
+	stroke-width: 1.5;
 }
 
 /* Template 3 link */
@@ -717,8 +718,9 @@
 }
 
 .nextora-box-image--template-template3 .nextora-box-image__link--template3 .nextora-box-image__link-icon svg {
-	width: 0.9375rem;
-	height: 0.9375rem;
+	width: 1.125rem;
+	height: 1.125rem;
+	stroke-width: 1.5;
 }
 
 /* Template 3 — preserve per-item background on hover */
@@ -1489,6 +1491,7 @@
 	.nextora-box-image .nextora-box-image__edge-overlay {
 		display: none;
 	}
+
 	.nextora-box-image.has-edge-fade-tablet .nextora-box-image__edge-overlay {
 		display: block;
 	}
@@ -1498,6 +1501,7 @@
 	.nextora-box-image .nextora-box-image__edge-overlay {
 		display: none;
 	}
+
 	.nextora-box-image.has-edge-fade-mobile .nextora-box-image__edge-overlay {
 		display: block;
 	}

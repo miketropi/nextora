@@ -649,6 +649,7 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 					'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
 				);
 				gsap.killTweensOf(items);
+				gsap.set(items, { clearProps: 'all' });
 			});
 
 			// Outgoing text animation: smooth slide up and fade out
@@ -657,12 +658,16 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 				currentPane.classList.remove('is-active');
 				gsap.to(currentPane, {
 					opacity: 0,
-					y: -10,
-					duration: 0.18,
+					y: -8,
+					duration: 0.15,
 					ease: 'power2.in',
 					onComplete: () => {
 						currentPane.classList.remove('is-exiting');
 						gsap.set(currentPane, { clearProps: 'all' });
+						const items = currentPane.querySelectorAll(
+							'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
+						);
+						gsap.set(items, { clearProps: 'all' });
 					},
 				});
 			}
@@ -672,6 +677,10 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 				if (i !== prevIndex && i !== targetIndex) {
 					p.classList.remove('is-active', 'is-exiting');
 					gsap.set(p, { clearProps: 'all' });
+					const items = p.querySelectorAll(
+						'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
+					);
+					gsap.set(items, { clearProps: 'all' });
 				}
 			});
 
@@ -686,35 +695,34 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 					)
 				);
 
-				gsap.set(nextPane, { opacity: 1, y: 0 });
+				gsap.set(nextPane, { clearProps: 'all' });
+				gsap.set(nextItems, { clearProps: 'all' });
 
 				if (nextItems.length > 0) {
 					gsap.fromTo(
 						nextItems,
 						{
 							opacity: 0,
-							y: 12,
+							y: 10,
 						},
 						{
 							opacity: 1,
 							y: 0,
-							duration: 0.36,
-							stagger: 0.045,
-							delay: 0.12,
-							ease: 'power3.out',
+							duration: 0.32,
+							stagger: 0.04,
+							ease: 'power2.out',
 							clearProps: 'all',
 						}
 					);
 				} else {
 					gsap.fromTo(
 						nextPane,
-						{ opacity: 0, y: 12 },
+						{ opacity: 0, y: 10 },
 						{
 							opacity: 1,
 							y: 0,
-							duration: 0.36,
-							delay: 0.12,
-							ease: 'power3.out',
+							duration: 0.32,
+							ease: 'power2.out',
 							clearProps: 'all',
 						}
 					);
@@ -768,6 +776,18 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 		}
 
 		updateDeck(true);
+
+		const onDrawerOpen = () => {
+			stopAutoplay();
+		};
+		const onDrawerClose = () => {
+			if (autoplay) {
+				restartAutoplay();
+			}
+		};
+		document.addEventListener('nextora-team-drawer:opened', onDrawerOpen);
+		document.addEventListener('nextora-team-drawer:closed', onDrawerClose);
+
 		markSectionReady(section);
 	});
 }
@@ -957,6 +977,7 @@ function initTeamMemberDrawers(container: Element | Document = document): void {
 			drawer.classList.add('is-open');
 			drawer.setAttribute('aria-hidden', 'false');
 			document.body.classList.add('nextora-team-drawer-open');
+			document.dispatchEvent(new CustomEvent('nextora-team-drawer:opened', { detail: { memberId } }));
 
 			if (closeBtn) {
 				window.setTimeout(() => closeBtn.focus(), 80);
@@ -975,6 +996,7 @@ function initTeamMemberDrawers(container: Element | Document = document): void {
 			if (!anyOtherOpen) {
 				document.body.classList.remove('nextora-team-drawer-open');
 			}
+			document.dispatchEvent(new CustomEvent('nextora-team-drawer:closed'));
 
 			if (lastTriggerCard) {
 				lastTriggerCard.focus();

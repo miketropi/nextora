@@ -135,8 +135,8 @@
 }
 
 .nextora-testimonial-carousel__slide-author-photo {
-	width: 52px;
-	height: 52px;
+	width: 80px;
+	height: 80px;
 	border-radius: 50%;
 	object-fit: cover;
 	object-position: center;
@@ -172,7 +172,7 @@
 }
 
 .nextora-testimonial-carousel__slide-author-name {
-	font-size: var(--wp--preset--font-size--base, 1rem);
+	font-size: calc(var(--wp--preset--font-size--base, 1rem) * 1.17647);
 	font-weight: 700;
 	line-height: 1.25;
 	margin-bottom: 0.2rem;
@@ -328,6 +328,11 @@
 		flex-direction: column;
 		gap: 0.5rem;
 	}
+
+	.nextora-testimonial-carousel__slide-author-photo {
+		width: 65px;
+		height: 65px;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -453,11 +458,9 @@
 	right: 0;
 	bottom: 0;
 	width: var(--nextora-testimonial-edge-fade-width, clamp(60px, 14vw, 150px));
-	background: linear-gradient(
-		to right,
-		rgba(255, 255, 255, 0) 0%,
-		var(--nextora-testimonial-edge-fade-color, var(--nextora-testimonial-bg, var(--wp--preset--color--base, #ffffff))) 100%
-	);
+	background: linear-gradient(to right,
+			rgba(255, 255, 255, 0) 0%,
+			var(--nextora-testimonial-edge-fade-color, var(--nextora-testimonial-bg, var(--wp--preset--color--base, #ffffff))) 100%);
 	pointer-events: none;
 	z-index: 5;
 	transition: opacity 0.3s ease;
@@ -466,11 +469,9 @@
 [dir="rtl"] .nextora-testimonial-carousel__edge-overlay {
 	right: auto;
 	left: 0;
-	background: linear-gradient(
-		to left,
-		rgba(255, 255, 255, 0) 0%,
-		var(--nextora-testimonial-edge-fade-color, var(--nextora-testimonial-bg, var(--wp--preset--color--base, #ffffff))) 100%
-	);
+	background: linear-gradient(to left,
+			rgba(255, 255, 255, 0) 0%,
+			var(--nextora-testimonial-edge-fade-color, var(--nextora-testimonial-bg, var(--wp--preset--color--base, #ffffff))) 100%);
 }
 
 /* Responsive activation matching fractional settings */

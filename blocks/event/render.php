@@ -233,7 +233,10 @@ if ( ! function_exists( 'nextora_event_placeholder_image_url' ) ) {
 	}
 }
 
-$lucide_path = dirname( __DIR__ ) . '/advanced-icon/lucide.php';
+$lucide_path = get_theme_file_path( 'blocks/advanced-icon/lucide.php' );
+if ( ! file_exists( $lucide_path ) ) {
+	$lucide_path = dirname( __DIR__ ) . '/advanced-icon/lucide.php';
+}
 if ( file_exists( $lucide_path ) ) {
 	require_once $lucide_path;
 }
@@ -277,11 +280,20 @@ if ( ! function_exists( 'nextora_event_register_arrow_icon' ) ) {
 	 */
 	function nextora_event_register_arrow_icon(): string {
 		$svg = '';
+		if ( ! function_exists( 'nextora_get_lucide_svg' ) ) {
+			$lucide_path = get_theme_file_path( 'blocks/advanced-icon/lucide.php' );
+			if ( ! file_exists( $lucide_path ) ) {
+				$lucide_path = dirname( __DIR__ ) . '/advanced-icon/lucide.php';
+			}
+			if ( file_exists( $lucide_path ) ) {
+				require_once $lucide_path;
+			}
+		}
 		if ( function_exists( 'nextora_get_lucide_svg' ) ) {
-			$svg = nextora_get_lucide_svg( 'arrow-right', 16, 'currentColor', 2 );
+			$svg = nextora_get_lucide_svg( 'arrow-right', 16, 'currentColor', 1.5 );
 		}
 		if ( '' === $svg ) {
-			$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+			$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
 		}
 		return '<span class="nextora-event__register-icon" aria-hidden="true">' . $svg . '</span>';
 	}
@@ -289,15 +301,31 @@ if ( ! function_exists( 'nextora_event_register_arrow_icon' ) ) {
 
 if ( ! function_exists( 'nextora_event_calendar_icon' ) ) {
 	/**
-	 * Calendar-days icon for template1 register button.
+	 * Icon for template1 register button.
+	 *
+	 * @param string $icon_name Lucide icon slug (defaults to 'calendar-days').
 	 */
-	function nextora_event_calendar_icon(): string {
-		$svg = '';
+	function nextora_event_calendar_icon( string $icon_name = 'calendar-days' ): string {
+		$icon = '' !== trim( $icon_name ) ? trim( $icon_name ) : 'calendar-days';
+		$svg  = '';
+		if ( ! function_exists( 'nextora_get_lucide_svg' ) ) {
+			$lucide_path = get_theme_file_path( 'blocks/advanced-icon/lucide.php' );
+			if ( ! file_exists( $lucide_path ) ) {
+				$lucide_path = dirname( __DIR__ ) . '/advanced-icon/lucide.php';
+			}
+			if ( file_exists( $lucide_path ) ) {
+				require_once $lucide_path;
+			}
+		}
 		if ( function_exists( 'nextora_get_lucide_svg' ) ) {
-			$svg = nextora_get_lucide_svg( 'calendar-days', 16, 'currentColor', 2 );
+			$svg = nextora_get_lucide_svg( $icon, 16, 'currentColor', 1.5 );
 		}
 		if ( '' === $svg ) {
-			$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days" aria-hidden="true" focusable="false"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>';
+			if ( 'ticket' === $icon ) {
+				$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ticket" aria-hidden="true" focusable="false"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>';
+			} else {
+				$svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days" aria-hidden="true" focusable="false"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>';
+			}
 		}
 		return '<span class="nextora-event__register-icon" aria-hidden="true">' . $svg . '</span>';
 	}
@@ -400,42 +428,54 @@ foreach ( $raw_events as $index => $item ) {
 	}
 
 	$events[] = array(
-		'id'            => isset( $item['id'] ) ? (string) $item['id'] : (string) ( $index + 1 ),
-		'day'           => isset( $item['day'] ) ? (string) $item['day'] : '',
-		'month'         => isset( $item['month'] ) ? (string) $item['month'] : '',
-		'category'      => isset( $item['category'] ) ? (string) $item['category'] : '',
-		'title'         => isset( $item['title'] ) ? (string) $item['title'] : '',
-		'description'   => isset( $item['description'] ) ? (string) $item['description'] : '',
-		'location'      => isset( $item['location'] ) ? (string) $item['location'] : '',
-		'time'          => isset( $item['time'] ) ? (string) $item['time'] : '',
-		'price'         => isset( $item['price'] ) ? (string) $item['price'] : '',
-		'imageId'       => isset( $item['imageId'] ) ? (int) $item['imageId'] : 0,
-		'imageUrl'      => isset( $item['imageUrl'] ) ? (string) $item['imageUrl'] : '',
-		'imageAlt'      => isset( $item['imageAlt'] ) ? (string) $item['imageAlt'] : '',
-		'linkUrl'       => isset( $item['linkUrl'] ) ? (string) $item['linkUrl'] : '',
-		'linkTarget'    => isset( $item['linkTarget'] ) ? (string) $item['linkTarget'] : '_self',
-		'registerLabel' => isset( $item['registerLabel'] ) ? (string) $item['registerLabel'] : '',
+		'id'                 => isset( $item['id'] ) ? (string) $item['id'] : (string) ( $index + 1 ),
+		'day'                => isset( $item['day'] ) ? (string) $item['day'] : '',
+		'month'              => isset( $item['month'] ) ? (string) $item['month'] : '',
+		'category'           => isset( $item['category'] ) ? (string) $item['category'] : '',
+		'title'              => isset( $item['title'] ) ? (string) $item['title'] : '',
+		'description'        => isset( $item['description'] ) ? (string) $item['description'] : '',
+		'location'           => isset( $item['location'] ) ? (string) $item['location'] : '',
+		'time'               => isset( $item['time'] ) ? (string) $item['time'] : '',
+		'price'              => isset( $item['price'] ) ? (string) $item['price'] : '',
+		'imageId'            => isset( $item['imageId'] ) ? (int) $item['imageId'] : 0,
+		'imageUrl'           => isset( $item['imageUrl'] ) ? (string) $item['imageUrl'] : '',
+		'imageAlt'           => isset( $item['imageAlt'] ) ? (string) $item['imageAlt'] : '',
+		'linkUrl'            => isset( $item['linkUrl'] ) ? (string) $item['linkUrl'] : '',
+		'linkTarget'         => isset( $item['linkTarget'] ) ? (string) $item['linkTarget'] : '_self',
+		'registerLabel'      => isset( $item['registerLabel'] ) ? (string) $item['registerLabel'] : '',
+		'buttonIcon'         => ! empty( $item['buttonIcon'] )
+			? (string) $item['buttonIcon']
+			: ( ! empty( $item['registerButtonIcon'] )
+				? (string) $item['registerButtonIcon']
+				: '' ),
+		'registerButtonIcon' => ! empty( $item['registerButtonIcon'] )
+			? (string) $item['registerButtonIcon']
+			: ( ! empty( $item['buttonIcon'] )
+				? (string) $item['buttonIcon']
+				: '' ),
 	);
 }
 
 if ( array() === $events ) {
 	$events = array(
 		array(
-			'id'            => '1',
-			'day'           => '14',
-			'month'         => 'Jul',
-			'category'      => __( 'Community', 'nextora' ),
-			'title'         => __( 'Run for the Children — Charity 10K', 'nextora' ),
-			'description'   => __( 'A practical day of movement and community support for children in need.', 'nextora' ),
-			'location'      => __( 'Riverside Park', 'nextora' ),
-			'time'          => '7:00 AM',
-			'price'         => __( 'From $25', 'nextora' ),
-			'imageId'       => 0,
-			'imageUrl'      => '',
-			'imageAlt'      => '',
-			'linkUrl'       => '',
-			'linkTarget'    => '_self',
-			'registerLabel' => __( 'Register', 'nextora' ),
+			'id'                 => '1',
+			'day'                => '14',
+			'month'              => 'Jul',
+			'category'           => __( 'Community', 'nextora' ),
+			'title'              => __( 'Run for the Children — Charity 10K', 'nextora' ),
+			'description'        => __( 'A practical day of movement and community support for children in need.', 'nextora' ),
+			'location'           => __( 'Riverside Park', 'nextora' ),
+			'time'               => '7:00 AM',
+			'price'              => __( 'From $25', 'nextora' ),
+			'imageId'            => 0,
+			'imageUrl'           => '',
+			'imageAlt'           => '',
+			'linkUrl'            => '',
+			'linkTarget'         => '_self',
+			'registerLabel'      => __( 'Register', 'nextora' ),
+			'buttonIcon'         => 'calendar-days',
+			'registerButtonIcon' => 'calendar-days',
 		),
 	);
 }
@@ -603,6 +643,7 @@ if ( ! function_exists( 'nextora_event_render_card' ) ) {
 		array $date_props = array(),
 		array $meta_props = array(),
 		string $title_font_size = '',
+		string $default_register_icon = 'calendar-days',
 	): string {
 		$title = trim( $event['title'] );
 		if ( '' === $title ) {
@@ -674,6 +715,14 @@ if ( ! function_exists( 'nextora_event_render_card' ) ) {
 			$reg_class_attr = esc_attr( implode( ' ', array_filter( $reg_classes ) ) );
 			$reg_style_attr = ! empty( $reg_btn_props['style'] ) ? ' style="' . esc_attr( $reg_btn_props['style'] ) . '"' : '';
 
+			$btn_icon = ! empty( $event['buttonIcon'] )
+				? (string) $event['buttonIcon']
+				: ( ! empty( $event['registerButtonIcon'] )
+					? (string) $event['registerButtonIcon']
+					: ( '' !== trim( $default_register_icon )
+						? $default_register_icon
+						: 'calendar-days' ) );
+
 			if ( '' !== $link_url ) {
 				$register_html = sprintf(
 					'<a href="%1$s" class="%2$s" target="%3$s"%4$s%5$s>%6$s%7$s</a>',
@@ -682,7 +731,7 @@ if ( ! function_exists( 'nextora_event_render_card' ) ) {
 					esc_attr( $link_target ),
 					'' !== $rel ? ' rel="' . esc_attr( $rel ) . '"' : '',
 					$reg_style_attr,
-					nextora_event_calendar_icon(),
+					nextora_event_calendar_icon( $btn_icon ),
 					esc_html( $label ),
 				);
 			} else {
@@ -690,7 +739,7 @@ if ( ! function_exists( 'nextora_event_render_card' ) ) {
 					'<span class="%1$s nextora-event__register-card--static"%2$s>%3$s%4$s</span>',
 					$reg_class_attr,
 					$reg_style_attr,
-					nextora_event_calendar_icon(),
+					nextora_event_calendar_icon( $btn_icon ),
 					esc_html( $label ),
 				);
 			}
@@ -1224,9 +1273,10 @@ if ( $is_template1 ) {
 	$opts_json   = wp_json_encode( $swiper_opts );
 	$opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 
-	$cards_html = '';
+	$default_register_icon = ! empty( $attributes['registerButtonIcon'] ) ? (string) $attributes['registerButtonIcon'] : 'calendar-days';
+	$cards_html            = '';
 	foreach ( $events as $event ) {
-		$card = nextora_event_render_card( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props, $title_font_size );
+		$card = nextora_event_render_card( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props, $title_font_size, $default_register_icon );
 		if ( '' !== $card ) {
 			$cards_html .= $card;
 		}

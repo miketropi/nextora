@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useEffect, useMemo, useRef } from '@wordpress/element';
+import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import {
 	FontSizePicker,
@@ -9,6 +9,7 @@ import {
 } from '@wordpress/block-editor';
 import {
 	BaseControl,
+	Button,
 	PanelBody,
 	SelectControl,
 	RangeControl,
@@ -25,6 +26,8 @@ import {
 	useThemeColorPalette,
 } from '../advanced-icon/color-utils';
 import { buildEventColorStyleVars } from './event-color-map';
+import { IconPicker } from '../advanced-icon/icon-picker';
+import { EventButtonIcon } from '../event/button-icon';
 
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
@@ -58,6 +61,7 @@ interface EditProps {
 }
 
 export default function Edit({ attributes, setAttributes }: EditProps): JSX.Element {
+	const [buttonIconPickerOpen, setButtonIconPickerOpen] = useState(false);
 	const {
 		template,
 		template3Alternating,
@@ -69,6 +73,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 		excludeIds,
 		showRegisterButton,
 		registerButtonText,
+		registerButtonIcon = 'calendar-days',
 		cardBackgroundColor,
 		cardBorderColor,
 		dateBackgroundColor,
@@ -361,11 +366,74 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 						onChange={(val) => setAttributes({ showRegisterButton: val })}
 					/>
 					{showRegisterButton && (
-						<TextControl
-							label={__('Default Button Text', 'nextora')}
-							value={registerButtonText}
-							onChange={(val) => setAttributes({ registerButtonText: val })}
-						/>
+						<>
+							<TextControl
+								label={__('Default Button Text', 'nextora')}
+								value={registerButtonText}
+								onChange={(val) => setAttributes({ registerButtonText: val })}
+							/>
+							<BaseControl
+								label={__('Button icon', 'nextora')}
+								help={__(
+									'Choose an icon before the button label (e.g. calendar-days for Register, ticket for Get ticket).',
+									'nextora',
+								)}
+							>
+								<div
+									style={{
+										display: 'flex',
+										alignItems: 'center',
+										gap: '10px',
+										marginTop: '6px',
+										flexWrap: 'wrap',
+									}}
+								>
+									<Button
+										variant="secondary"
+										onClick={() => setButtonIconPickerOpen(true)}
+									>
+										{__('Choose icon', 'nextora')}
+									</Button>
+									<div
+										style={{
+											display: 'inline-flex',
+											alignItems: 'center',
+											gap: '8px',
+											padding: '4px 10px',
+											background: '#f0f0f1',
+											borderRadius: '4px',
+										}}
+									>
+										<EventButtonIcon
+											iconName={registerButtonIcon || 'calendar-days'}
+											size={16}
+										/>
+										<code style={{ fontSize: '13px', background: 'transparent' }}>
+											{registerButtonIcon || 'calendar-days'}
+										</code>
+									</div>
+									{registerButtonIcon && registerButtonIcon !== 'calendar-days' ? (
+										<Button
+											variant="link"
+											isDestructive
+											onClick={() => setAttributes({ registerButtonIcon: 'calendar-days' })}
+										>
+											{__('Reset', 'nextora')}
+										</Button>
+									) : null}
+								</div>
+							</BaseControl>
+							{buttonIconPickerOpen ? (
+								<IconPicker
+									currentIcon={registerButtonIcon || 'calendar-days'}
+									onSelect={(iconName) => {
+										setAttributes({ registerButtonIcon: iconName });
+										setButtonIconPickerOpen(false);
+									}}
+									onClose={() => setButtonIconPickerOpen(false)}
+								/>
+							) : null}
+						</>
 					)}
 				</PanelBody>
 
