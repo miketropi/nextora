@@ -18,6 +18,8 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
+import { IconPicker } from '../advanced-icon/icon-picker';
+import { EventButtonIcon } from './button-icon';
 import type { EventAttributes, EventItem } from './types';
 
 function normalizeFontSizeAttribute(
@@ -165,6 +167,7 @@ function DetailRow({
 
 export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	const [editingEventId, setEditingEventId] = useState<string | null>(null);
+	const [blockIconPickerOpen, setBlockIconPickerOpen] = useState(false);
 
 	const events = normalizeEvents(attributes.events);
 	const editingEvent = editingEventId
@@ -195,6 +198,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		template = 'default',
 		showRegisterButton = true,
 		registerButtonText = __('Register', 'nextora'),
+		registerButtonIcon = 'calendar-days',
 		template3Alternating = false,
 		titleFontSize = '',
 		descriptionFontSize = '',
@@ -622,6 +626,56 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 						checked={showRegisterButton !== false}
 						onChange={(value: boolean) => setAttributes({ showRegisterButton: value })}
 					/>
+					{showRegisterButton !== false ? (
+						<div style={{ marginTop: '12px', marginBottom: '16px' }}>
+							<BaseControl
+								label={__('Default register button icon', 'nextora')}
+								help={__('Default icon displayed before the button in Template 1 cards.', 'nextora')}
+							>
+								<div
+									style={{
+										display: 'flex',
+										alignItems: 'center',
+										gap: '8px',
+										marginTop: '6px',
+										flexWrap: 'wrap',
+									}}
+								>
+									<Button
+										variant="secondary"
+										onClick={() => setBlockIconPickerOpen(true)}
+									>
+										{__('Choose icon', 'nextora')}
+									</Button>
+									<div
+										style={{
+											display: 'inline-flex',
+											alignItems: 'center',
+											gap: '6px',
+											padding: '3px 8px',
+											background: '#f0f0f1',
+											borderRadius: '4px',
+										}}
+									>
+										<EventButtonIcon iconName={registerButtonIcon || 'calendar-days'} size={16} />
+										<code style={{ fontSize: '12px', background: 'transparent' }}>
+											{registerButtonIcon || 'calendar-days'}
+										</code>
+									</div>
+								</div>
+							</BaseControl>
+							{blockIconPickerOpen ? (
+								<IconPicker
+									currentIcon={registerButtonIcon || 'calendar-days'}
+									onSelect={(iconName) => {
+										setAttributes({ registerButtonIcon: iconName });
+										setBlockIconPickerOpen(false);
+									}}
+									onClose={() => setBlockIconPickerOpen(false)}
+								/>
+							) : null}
+						</div>
+					) : null}
 					{isTemplate3 ? (
 						<ToggleControl
 							label={__('Alternate image and content', 'nextora')}
@@ -862,10 +916,26 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 													</div>
 
 													{showRegisterButton ? (
-														<span className={['nextora-event__register-card', 'nextora-event__register-card--static', 'wp-element-button', regBgProps.className, regTextProps.className].filter(Boolean).join(' ')} style={regBtnStyle}>
-															<CalendarIcon />
+														<button
+															type="button"
+															className={['nextora-event__register-card', 'nextora-event__register-card--static', 'wp-element-button', regBgProps.className, regTextProps.className].filter(Boolean).join(' ')}
+															style={{ ...regBtnStyle, cursor: 'pointer' }}
+															onClick={(e) => {
+																e.stopPropagation();
+																openEventEditor(event.id);
+															}}
+															title={__('Click to edit event & button settings', 'nextora')}
+														>
+															<EventButtonIcon
+																iconName={
+																	event.buttonIcon ||
+																	event.registerButtonIcon ||
+																	registerButtonIcon ||
+																	'calendar-days'
+																}
+															/>
 															{registerLabel}
-														</span>
+														</button>
 													) : null}
 												</div>
 											</article>

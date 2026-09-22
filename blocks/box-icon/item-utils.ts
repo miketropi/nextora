@@ -139,6 +139,7 @@ export function buildStyleVars(attrs: {
 	iconHoverColor?: string;
 	iconHoverSurfaceBackgroundColor?: string;
 	headingFontFamily?: string;
+	edgeFadeColor?: string;
 }, lookupPalette: { slug: string; color: string }[] = []): Record<string, string> {
 	const vars: Record<string, string> = {};
 
@@ -197,6 +198,7 @@ export function buildStyleVars(attrs: {
 	setColor('--nextora-box-icon-icon-surface-border', attrs.iconSurfaceBorderColor);
 	setColor('--nextora-box-icon-icon-hover-color', attrs.iconHoverColor);
 	setColor('--nextora-box-icon-icon-hover-surface-bg', attrs.iconHoverSurfaceBackgroundColor);
+	setColor('--nextora-box-icon-edge-fade-color', attrs.edgeFadeColor);
 
 	Object.assign(vars, buildHeadingFontFamilyVar(attrs.headingFontFamily));
 

@@ -1,6 +1,9 @@
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 import { MediaUpload, MediaUploadCheck, URLInput } from '@wordpress/block-editor';
 import { BaseControl, Button, CheckboxControl, TextareaControl, TextControl } from '@wordpress/components';
+import { IconPicker } from '../advanced-icon/icon-picker';
+import { EventButtonIcon } from './button-icon';
 import type { EventItem } from './types';
 import {
 	eventDateInputValue,
@@ -31,6 +34,7 @@ export default function EventEditForm({
 	showDescription = false,
 	onPatch,
 }: EventEditFormProps) {
+	const [iconPickerOpen, setIconPickerOpen] = useState(false);
 	const dateInputValue = eventDateInputValue(event.day, event.month);
 	const timeInputValue = eventTimeInputValue(event.time);
 
@@ -193,6 +197,65 @@ export default function EventEditForm({
 					onChange={(registerLabel) => onPatch({ registerLabel: registerLabel ?? '' })}
 					help={__('Leave empty to use the block default register label.', 'nextora')}
 				/>
+
+				<div className="nextora-event__event-form-icon-row">
+					<BaseControl
+						label={__('Button icon', 'nextora')}
+						help={__(
+							'Choose an icon before the button label (e.g. calendar-days for Register, ticket for Get ticket).',
+							'nextora',
+						)}
+					>
+						<div
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								gap: '10px',
+								marginTop: '6px',
+								flexWrap: 'wrap',
+							}}
+						>
+							<Button variant="secondary" onClick={() => setIconPickerOpen(true)}>
+								{__('Choose icon', 'nextora')}
+							</Button>
+							<div
+								style={{
+									display: 'inline-flex',
+									alignItems: 'center',
+									gap: '8px',
+									padding: '4px 10px',
+									background: '#f0f0f1',
+									borderRadius: '4px',
+								}}
+							>
+								<EventButtonIcon iconName={event.buttonIcon || 'calendar-days'} size={16} />
+								<code style={{ fontSize: '13px', background: 'transparent' }}>
+									{event.buttonIcon || 'calendar-days'}
+								</code>
+							</div>
+							{event.buttonIcon && event.buttonIcon !== 'calendar-days' ? (
+								<Button
+									variant="link"
+									isDestructive
+									onClick={() => onPatch({ buttonIcon: 'calendar-days' })}
+								>
+									{__('Reset', 'nextora')}
+								</Button>
+							) : null}
+						</div>
+					</BaseControl>
+				</div>
+
+				{iconPickerOpen ? (
+					<IconPicker
+						currentIcon={event.buttonIcon || 'calendar-days'}
+						onSelect={(iconName) => {
+							onPatch({ buttonIcon: iconName });
+							setIconPickerOpen(false);
+						}}
+						onClose={() => setIconPickerOpen(false)}
+					/>
+				) : null}
 
 				<div className="nextora-event__event-form-link">
 					<p className="nextora-event__event-form-label">{__('Register link URL', 'nextora')}</p>

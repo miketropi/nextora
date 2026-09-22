@@ -742,7 +742,16 @@ if ( ! function_exists( 'nextora_team_section_render_template_02' ) ) {
 
 			$name_classes    = trim( 'nextora-team-section__deck-name ' . $name_props['class'] );
 			$name_style_attr = '' !== $name_props['style'] ? ' style="' . esc_attr( $name_props['style'] ) . '"' : '';
-			$out .= '<h4 class="' . esc_attr( $name_classes ) . '"' . $name_style_attr . '>' . esc_html( $name ) . '</h4>';
+			$name_popup_attr = '';
+			if ( $enable_popup ) {
+				$name_classes   .= ' nextora-team-section__card--has-popup';
+				$name_popup_attr = sprintf(
+					' data-member-id="%s" role="button" tabindex="0" aria-haspopup="dialog" aria-label="%s"',
+					esc_attr( (string) $member['id'] ),
+					esc_attr( sprintf( __( 'View details for %s', 'nextora' ), (string) $member['name'] ) ),
+				);
+			}
+			$out .= '<h4 class="' . esc_attr( $name_classes ) . '"' . $name_style_attr . $name_popup_attr . '>' . esc_html( $name ) . '</h4>';
 
 			if ( '' !== $role ) {
 				$role_classes    = trim( 'nextora-team-section__deck-role ' . $role_props['class'] );

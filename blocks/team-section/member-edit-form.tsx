@@ -1,5 +1,5 @@
-import { __ } from '@wordpress/i18n';
-import { MediaUpload, MediaUploadCheck, URLInput } from '@wordpress/block-editor';
+import { __, sprintf } from '@wordpress/i18n';
+import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 import {
 	Button,
 	RangeControl,
@@ -8,8 +8,16 @@ import {
 	TextControl,
 	ToggleControl,
 } from '@wordpress/components';
-import type { TeamMember, TeamCardTemplate } from './types';
+import type { TeamMember, TeamCardTemplate, TeamSocialPlatform } from './types';
 import { TEAM_SECTION_MEDIA_TYPES } from './types';
+import {
+	SOCIAL_PLATFORMS,
+	socialPlatformOptions,
+	getSocialPlaceholder,
+	getSocialPlatformLabel,
+	renderSocialIcon,
+	ICONS,
+} from './social-utils';
 
 interface WPMedia {
 	id?: number;
@@ -24,16 +32,6 @@ export interface MemberEditFormProps {
 	enablePopup?: boolean;
 	onPatch: (patch: Partial<TeamMember>) => void;
 }
-
-const socialPlatformOptions = [
-	{ label: 'LinkedIn', value: 'linkedin' },
-	{ label: 'Twitter / X', value: 'twitter' },
-	{ label: 'GitHub', value: 'github' },
-	{ label: 'Instagram', value: 'instagram' },
-	{ label: 'Facebook', value: 'facebook' },
-	{ label: __('Website', 'nextora'), value: 'website' },
-	{ label: __('Email', 'nextora'), value: 'email' },
-];
 
 export default function MemberEditForm({ member, photoUrl, cardTemplate, enablePopup, onPatch }: MemberEditFormProps) {
 	const isOverlay = cardTemplate === 'overlay-social';
@@ -214,14 +212,17 @@ export default function MemberEditForm({ member, photoUrl, cardTemplate, enableP
 						onChange={(showSocialLinks) => onPatch({ showSocialLinks })}
 					/>
 					{member.showSocialLinks && (
-						<>
+						<div className="nextora-team-section__social-manager">
 							<div className="nextora-team-section__member-form-section-header">
-								<h4 className="nextora-team-section__member-form-section-heading">
-									{__('Social links', 'nextora')}
-								</h4>
+								<div>
+									<h4 className="nextora-team-section__member-form-section-heading">
+										{__('Social links', 'nextora')}
+									</h4>
+								</div>
 								<Button
 									variant="secondary"
 									size="compact"
+									icon={ICONS.plus}
 									onClick={() =>
 										onPatch({
 											socialLinks: [
@@ -234,55 +235,139 @@ export default function MemberEditForm({ member, photoUrl, cardTemplate, enableP
 									{__('Add link', 'nextora')}
 								</Button>
 							</div>
-							{member.socialLinks.length > 0 && (
-								<div className="nextora-team-section__member-form-items">
+
+							<div className="nextora-team-section__social-presets">
+								<span className="nextora-team-section__social-presets-label">
+									{__('Quick add:', 'nextora')}
+								</span>
+								<div className="nextora-team-section__social-presets-list">
+									{SOCIAL_PLATFORMS.map((item) => (
+										<button
+											key={item.value}
+											type="button"
+											className="nextora-team-section__social-preset-btn"
+											onClick={() =>
+												onPatch({
+													socialLinks: [
+														...member.socialLinks,
+														{ platform: item.value, url: '' },
+													],
+												})
+											}
+											title={sprintf(__('Add %s link', 'nextora'), item.label)}
+										>
+											<span className="nextora-team-section__social-preset-icon">
+												{renderSocialIcon(item.value, 14)}
+											</span>
+											<span>{item.label}</span>
+										</button>
+									))}
+								</div>
+							</div>
+
+							{member.socialLinks.length === 0 ? (
+								<div className="nextora-team-section__social-empty">
+									<span>
+										{__('No social links yet. Use quick add above or click "Add link".', 'nextora')}
+									</span>
+								</div>
+							) : (
+								<div className="nextora-team-section__social-list">
 									{member.socialLinks.map((link, linkIndex) => (
 										<div
 											key={`${member.id}-social-${linkIndex}`}
-											className="nextora-team-section__member-form-social"
+											className="nextora-team-section__social-row"
 										>
-											<SelectControl
-												label={__('Platform', 'nextora')}
-												value={link.platform}
-												options={socialPlatformOptions}
-												onChange={(platform) => {
-													const socialLinks = [...member.socialLinks];
-													socialLinks[linkIndex] = {
-														...socialLinks[linkIndex],
-														platform: platform ?? 'website',
-													};
-													onPatch({ socialLinks });
-												}}
-											/>
-											<URLInput
-												value={link.url}
-												onChange={(url) => {
-													const socialLinks = [...member.socialLinks];
-													socialLinks[linkIndex] = {
-														...socialLinks[linkIndex],
-														url: url ?? '',
-													};
-													onPatch({ socialLinks });
-												}}
-											/>
-											<Button
-												variant="secondary"
-												size="compact"
-												isDestructive
-												onClick={() => {
-													const socialLinks = member.socialLinks.filter(
-														(_, i) => i !== linkIndex,
-													);
-													onPatch({ socialLinks });
-												}}
+											<div
+												className="nextora-team-section__social-icon-badge"
+												title={getSocialPlatformLabel(link.platform)}
+												aria-hidden="true"
 											>
-												{__('Remove link', 'nextora')}
-											</Button>
+												{renderSocialIcon(link.platform, 16)}
+											</div>
+
+											<div className="nextora-team-section__social-platform-select">
+												<SelectControl
+													aria-label={__('Platform', 'nextora')}
+													value={link.platform}
+													options={socialPlatformOptions}
+													onChange={(platform) => {
+														const socialLinks = [...member.socialLinks];
+														socialLinks[linkIndex] = {
+															...socialLinks[linkIndex],
+															platform: (platform as TeamSocialPlatform) ?? 'website',
+														};
+														onPatch({ socialLinks });
+													}}
+													__nextHasNoMarginBottom
+												/>
+											</div>
+
+											<div className="nextora-team-section__social-url-input">
+												<TextControl
+													aria-label={__('URL', 'nextora')}
+													value={link.url}
+													placeholder={getSocialPlaceholder(link.platform)}
+													onChange={(url) => {
+														const socialLinks = [...member.socialLinks];
+														socialLinks[linkIndex] = {
+															...socialLinks[linkIndex],
+															url: url ?? '',
+														};
+														onPatch({ socialLinks });
+													}}
+													autoComplete="off"
+													__nextHasNoMarginBottom
+												/>
+											</div>
+
+											<div className="nextora-team-section__social-row-actions">
+												<Button
+													icon={ICONS.chevronUp}
+													label={__('Move up', 'nextora')}
+													size="compact"
+													disabled={linkIndex === 0}
+													onClick={() => {
+														if (linkIndex <= 0) return;
+														const socialLinks = [...member.socialLinks];
+														const temp = socialLinks[linkIndex];
+														socialLinks[linkIndex] = socialLinks[linkIndex - 1];
+														socialLinks[linkIndex - 1] = temp;
+														onPatch({ socialLinks });
+													}}
+												/>
+												<Button
+													icon={ICONS.chevronDown}
+													label={__('Move down', 'nextora')}
+													size="compact"
+													disabled={linkIndex >= member.socialLinks.length - 1}
+													onClick={() => {
+														if (linkIndex >= member.socialLinks.length - 1) return;
+														const socialLinks = [...member.socialLinks];
+														const temp = socialLinks[linkIndex];
+														socialLinks[linkIndex] = socialLinks[linkIndex + 1];
+														socialLinks[linkIndex + 1] = temp;
+														onPatch({ socialLinks });
+													}}
+												/>
+												<Button
+													icon={ICONS.trash}
+													label={__('Remove link', 'nextora')}
+													isDestructive
+													size="compact"
+													onClick={() => {
+														const socialLinks = member.socialLinks.filter(
+															(_, i) => i !== linkIndex,
+														);
+														onPatch({ socialLinks });
+													}}
+												/>
+											</div>
 										</div>
 									))}
 								</div>
 							)}
-						</>
+						</div>
 					)}
 				</div>
 			</div>

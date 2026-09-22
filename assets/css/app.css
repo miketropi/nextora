@@ -238,9 +238,6 @@
   .visible {
     visibility: visible;
   }
-  .visible\! {
-    visibility: visible !important;
-  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -264,9 +261,6 @@
   .static {
     position: static;
   }
-  .static\! {
-    position: static !important;
-  }
   .sticky {
     position: sticky;
   }
@@ -278,9 +272,6 @@
   }
   .start {
     inset-inline-start: var(--spacing);
-  }
-  .start\! {
-    inset-inline-start: var(--spacing) !important;
   }
   .end {
     inset-inline-end: var(--spacing);
@@ -464,9 +455,6 @@
   }
   .inline {
     display: inline;
-  }
-  .inline\! {
-    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -1312,9 +1300,6 @@
   .italic {
     font-style: italic;
   }
-  .italic\! {
-    font-style: italic !important;
-  }
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
@@ -1330,9 +1315,6 @@
   }
   .underline {
     text-decoration-line: underline;
-  }
-  .underline\! {
-    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;
@@ -3430,6 +3412,31 @@ body .wp-block-accordion-heading__toggle:hover .wp-block-accordion-heading__togg
   @media (max-width: 639px) {
     :where(.mc4wp-form) {
       --nextora-form-subscribe-control-h: 2.75rem;
+    }
+  }
+  @media (max-width: 370px) {
+    :where(.mc4wp-form .mc4wp-form-fields),	.mc4wp-form .mc4wp-form-fields {
+      flex-direction: column;
+      gap: 0.5rem;
+      border-radius: 0;
+      overflow: visible;
+    }
+    .mc4wp-form .mc4wp-form-fields label {
+      width: 100%;
+      flex: none;
+    }
+    .mc4wp-form .mc4wp-form-fields input[type="email"] {
+      width: 100%;
+      border-radius: 20px;
+      border-right: 1px solid var(--nextora-form-subscribe-border);
+      padding: 0 1rem;
+    }
+    .mc4wp-form .mc4wp-form-fields input[type="submit"] {
+      width: 100%;
+      border-radius: 20px;
+      flex: none;
+      min-width: 0;
+      text-align: center;
     }
   }
 }

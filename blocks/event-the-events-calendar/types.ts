@@ -9,6 +9,7 @@ export interface EventTecAttributes {
 	excludeIds: string;
 	showRegisterButton: boolean;
 	registerButtonText: string;
+	registerButtonIcon?: string;
 	cardBackgroundColor: string;
 	cardBorderColor: string;
 	dateBackgroundColor: string;

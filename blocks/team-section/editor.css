@@ -245,24 +245,174 @@
 	border-radius: 6px;
 }
 
-.nextora-team-section__member-form-social {
+/* Social Links Manager */
+.nextora-team-section__social-manager {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	padding: 12px;
-	background: color-mix(in srgb, currentColor 4%, transparent);
-	border: 1px solid color-mix(in srgb, currentColor 8%, transparent);
-	border-radius: 6px;
 }
 
-.nextora-team-section__member-form-row .components-base-control,
-.nextora-team-section__member-form-social .components-base-control {
+.nextora-team-section__social-presets {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	background: #f8fafc;
+	border: 1px dashed #cbd5e1;
+	border-radius: 8px;
+}
+
+.nextora-team-section__social-presets-label {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: #64748b;
+	white-space: nowrap;
+}
+
+.nextora-team-section__social-presets-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	align-items: center;
+}
+
+.nextora-team-section__social-preset-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 3px 9px;
+	background: #ffffff;
+	border: 1px solid #cbd5e1;
+	border-radius: 9999px;
+	color: #334155;
+	font-size: 11.5px;
+	font-weight: 500;
+	cursor: pointer;
+	line-height: 1.4;
+	transition: all 0.15s ease;
+}
+
+.nextora-team-section__social-preset-btn:hover {
+	background: #eff6ff;
+	border-color: var(--wp-admin-theme-color, #2563eb);
+	color: var(--wp-admin-theme-color, #2563eb);
+	transform: translateY(-1px);
+}
+
+.nextora-team-section__social-preset-icon {
+	display: inline-flex;
+	align-items: center;
+	color: currentColor;
+}
+
+.nextora-team-section__social-empty {
+	padding: 14px 16px;
+	text-align: center;
+	background: #f8fafc;
+	border: 1px dashed #cbd5e1;
+	border-radius: 6px;
+	color: #64748b;
+	font-size: 12px;
+}
+
+.nextora-team-section__social-list {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.nextora-team-section__social-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	background: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.nextora-team-section__social-row:hover {
+	border-color: #cbd5e1;
+}
+
+.nextora-team-section__social-row:focus-within {
+	border-color: var(--wp-admin-theme-color, #2563eb);
+	box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #2563eb);
+}
+
+.nextora-team-section__social-icon-badge {
+	width: 30px;
+	height: 30px;
+	border-radius: 6px;
+	background: #f1f5f9;
+	color: #334155;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.nextora-team-section__social-platform-select {
+	width: 135px;
+	flex-shrink: 0;
+}
+
+.nextora-team-section__social-url-input {
 	flex: 1;
 	min-width: 160px;
 }
 
-.nextora-team-section__member-form-social .components-base-control:last-of-type {
-	margin-bottom: 0;
+.nextora-team-section__social-row .components-base-control,
+.nextora-team-section__social-row .components-base-control__field {
+	margin-bottom: 0 !important;
+	height: 100%;
+}
+
+.nextora-team-section__social-row .components-select-control__input,
+.nextora-team-section__social-row .components-text-control__input {
+	height: 32px !important;
+	min-height: 32px !important;
+	font-size: 12.5px !important;
+	padding: 0 8px !important;
+}
+
+.nextora-team-section__social-row-actions {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	flex-shrink: 0;
+}
+
+.nextora-team-section__social-row-actions .components-button {
+	padding: 4px !important;
+	min-width: 28px !important;
+	height: 28px !important;
+	border-radius: 4px;
+}
+
+@media (max-width: 540px) {
+	.nextora-team-section__social-row {
+		flex-wrap: wrap;
+	}
+	.nextora-team-section__social-platform-select {
+		flex: 1;
+	}
+	.nextora-team-section__social-url-input {
+		width: 100%;
+		order: 3;
+	}
+	.nextora-team-section__social-row-actions {
+		order: 2;
+	}
+}
+
+.nextora-team-section__member-form-row .components-base-control {
+	flex: 1;
+	min-width: 160px;
 }
 
 .nextora-team-section__member-form-media {

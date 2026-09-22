@@ -248,9 +248,15 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 				? ''
 				: iconHoverSurfaceBackgroundColor,
 			headingFontFamily,
+			edgeFadeColor: isEmptyColor(edgeFadeColor) ? '' : edgeFadeColor,
 		},
 		lookupPalette,
 	);
+
+	const isDesktopFractional = (slidesPerView % 1) !== 0;
+	const isTabletFractional = (slidesPerViewTablet % 1) !== 0;
+	const isMobileFractional = (slidesPerViewMobile % 1) !== 0;
+	const hasAnyFractional = isDesktopFractional || isTabletFractional || isMobileFractional;
 
 	const blockProps = useBlockProps({
 		className: [
@@ -265,16 +271,13 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			cardTemplate === 'timeline' && timelineAlign !== 'left'
 				? `nextora-box-icon--timeline-align-${timelineAlign}`
 				: '',
-			(slidesPerView % 1) !== 0 ? 'has-edge-fade-desktop' : '',
-			(slidesPerViewTablet % 1) !== 0 ? 'has-edge-fade-tablet' : '',
-			(slidesPerViewMobile % 1) !== 0 ? 'has-edge-fade-mobile' : '',
+			isDesktopFractional ? 'has-edge-fade-desktop' : '',
+			isTabletFractional ? 'has-edge-fade-tablet' : '',
+			isMobileFractional ? 'has-edge-fade-mobile' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
-		style: {
-			...(styleVars as CSSProperties),
-			...(edgeFadeColor ? { '--nextora-box-icon-edge-fade-color': edgeFadeColor } : {}),
-		},
+		style: styleVars as CSSProperties,
 	});
 
 	const setThemeColor = (key: keyof BoxIconAttributes, value: string | undefined): void => {
@@ -583,6 +586,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 		paginationColor,
 		paginationActiveColor,
 		arrowColor,
+		edgeFadeColor,
 		colorPalette,
 		lookupPalette,
 	]);
@@ -1307,10 +1311,11 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						</div>
 					</div>
 				) : (
-				<div
-					className="nextora-box-icon__cards"
-					aria-label={__('Box content items', 'nextora')}
-				>
+					<div className="nextora-box-icon__carousel-root">
+						<div
+							className="nextora-box-icon__cards"
+							aria-label={__('Box content items', 'nextora')}
+						>
 					{items.map((item, index) => {
 				const isMinimalLink = cardTemplate === 'minimal' && item.showLink && !!item.linkUrl;
 				const CardTag = isMinimalLink ? 'a' : 'article';
@@ -1491,7 +1496,11 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						</CardTag>
 					);
 					})}
-				</div>
+						</div>
+						{hasAnyFractional && (
+							<div className="nextora-box-icon__edge-overlay" aria-hidden="true" />
+						)}
+					</div>
 				)}
 			</div>
 		</>

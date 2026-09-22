@@ -1032,14 +1032,14 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 					$out .= '<ul class="nextora-box-image__bullets">';
 					foreach ( $bullets as $bullet ) {
 						$bullet = trim( $bullet );
-						$out .= '<li><svg class="' . esc_attr( implode( ' ', $bullet_classes ) ) . '"' . $bullet_style_attr . ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg><span>' . esc_html( $bullet ) . '</span></li>';
+						$out .= '<li><svg class="' . esc_attr( implode( ' ', $bullet_classes ) ) . '"' . $bullet_style_attr . ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg><span>' . esc_html( $bullet ) . '</span></li>';
 					}
 					$out .= '</ul>';
 				}
 			}
 
 			if ( ! $link_wrap && $show_link && '' !== $link_label ) {
-				$arrow = '<span class="nextora-box-image__link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
+				$arrow = '<span class="nextora-box-image__link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
 				if ( '' !== $link_url ) {
 					$out .= sprintf(
 						'<a class="nextora-box-image__link nextora-box-image__link--template3" href="%1$s"%2$s>%3$s%4$s</a>',
