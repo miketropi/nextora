@@ -50,6 +50,29 @@ if ( ! function_exists( 'nextora_event_tec_enqueue_view_script' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_event_decode_text' ) ) {
+	/**
+	 * Decode escaped unicode sequences and HTML entities for event text.
+	 *
+	 * @param string $text Raw text.
+	 *
+	 * @return string Decoded string.
+	 */
+	function nextora_event_decode_text( string $text ): string {
+		if ( '' === $text ) {
+			return '';
+		}
+		if ( str_contains( $text, '\u' ) || str_contains( $text, 'u0026' ) || str_contains( $text, 'u0022' ) || str_contains( $text, 'u0027' ) ) {
+			$text = (string) preg_replace( '/\\\\u0026|u0026/i', '&', $text );
+			$text = (string) preg_replace( '/\\\\u0022|u0022/i', '"', $text );
+			$text = (string) preg_replace( '/\\\\u0027|u0027/i', "'", $text );
+			$text = (string) preg_replace( '/\\\\u003c|u003c/i', '<', $text );
+			$text = (string) preg_replace( '/\\\\u003e|u003e/i', '>', $text );
+		}
+		return html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+	}
+}
+
 if ( ! function_exists( 'nextora_event_tec_resolve_color' ) ) {
 	/**
 	 * Preset slug, var(), rgb(), hsl(), or hex → CSS color value.
@@ -514,14 +537,18 @@ if ( function_exists( 'tribe_get_events' ) ) {
 	$queried_posts = get_posts( $query_args );
 }
 
-$default_register = isset( $attributes['registerButtonText'] ) ? (string) $attributes['registerButtonText'] : __( 'Register', 'nextora' );
+require_once dirname( __DIR__ ) . '/event/compact-list.php';
+
+$default_register = isset( $attributes['registerButtonText'] ) ? nextora_event_decode_text( (string) $attributes['registerButtonText'] ) : __( 'Register', 'nextora' );
 
 if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 	foreach ( $queried_posts as $item_post ) {
 		$post_id = $item_post instanceof WP_Post ? (int) $item_post->ID : (int) $item_post;
 
+		$year = '';
 		// Day & Month
 		if ( function_exists( 'tribe_get_start_date' ) ) {
+			$year  = (string) tribe_get_start_date( $post_id, false, 'Y' );
 			$day   = (string) tribe_get_start_date( $post_id, false, 'd' );
 			$month = (string) tribe_get_start_date( $post_id, false, 'M' );
 			$time  = (string) tribe_get_start_date( $post_id, false, 'g:i A' );
@@ -529,6 +556,7 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 			$raw_start = get_post_meta( $post_id, '_EventStartDate', true );
 			if ( is_string( $raw_start ) && '' !== $raw_start ) {
 				$time_ts = strtotime( $raw_start );
+				$year    = $time_ts ? date( 'Y', $time_ts ) : '';
 				$day     = $time_ts ? date( 'd', $time_ts ) : '';
 				$month   = $time_ts ? date( 'M', $time_ts ) : '';
 				$time    = $time_ts ? date( 'g:i A', $time_ts ) : '';
@@ -539,17 +567,21 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 			}
 		}
 
-		// Venue / Location
+		// Venue / Location (City only)
 		$location = '';
-		if ( function_exists( 'tribe_get_venue' ) ) {
-			$venue = (string) tribe_get_venue( $post_id );
-			$city  = function_exists( 'tribe_get_city' ) ? (string) tribe_get_city( $post_id ) : '';
-			if ( '' !== $venue && '' !== $city ) {
-				$location = $venue . ', ' . $city;
-			} elseif ( '' !== $venue ) {
-				$location = $venue;
-			} else {
-				$location = $city;
+		if ( function_exists( 'tribe_get_city' ) ) {
+			$location = (string) tribe_get_city( $post_id );
+		}
+		if ( '' === $location && function_exists( 'tribe_get_venue' ) ) {
+			$location = (string) tribe_get_venue( $post_id );
+		}
+		if ( '' === $location ) {
+			$venue_id = (int) get_post_meta( $post_id, '_EventVenueID', true );
+			if ( $venue_id > 0 ) {
+				$location = (string) get_post_meta( $venue_id, '_VenueCity', true );
+				if ( '' === $location ) {
+					$location = (string) get_the_title( $venue_id );
+				}
 			}
 		}
 
@@ -591,15 +623,16 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 			'id'                 => (string) $post_id,
 			'day'                => $day,
 			'month'              => $month,
-			'category'           => $category_name,
-			'title'              => $title,
-			'description'        => $excerpt,
-			'location'           => $location,
-			'time'               => $time,
-			'price'              => $price,
+			'year'               => $year,
+			'category'           => nextora_event_decode_text( $category_name ),
+			'title'              => nextora_event_decode_text( $title ),
+			'description'        => nextora_event_decode_text( $excerpt ),
+			'location'           => nextora_event_decode_text( $location ),
+			'time'               => nextora_event_decode_text( $time ),
+			'price'              => nextora_event_decode_text( $price ),
 			'imageId'            => $image_id,
 			'imageUrl'           => $image_url,
-			'imageAlt'           => $image_alt,
+			'imageAlt'           => nextora_event_decode_text( $image_alt ),
 			'linkUrl'            => $link_url,
 			'linkTarget'         => '_self',
 			'registerLabel'      => $default_register,
@@ -607,6 +640,11 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 			'registerButtonIcon' => $post_button_icon,
 		);
 	}
+}
+
+if ( 'template4' === $template ) {
+	echo nextora_event_render_compact_list( $events, $attributes, 'nextora_event_tec_get_color_props', 'nextora_event_tec_resolve_color' );
+	return;
 }
 
 $show_register = ! isset( $attributes['showRegisterButton'] ) || (bool) $attributes['showRegisterButton'];

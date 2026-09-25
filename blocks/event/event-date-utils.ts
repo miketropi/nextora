@@ -27,14 +27,15 @@ export function formatMonthAbbrev(monthIndex: number): string {
 /**
  * Build YYYY-MM-DD for native date input from day + month (current year).
  */
-export function eventDateInputValue(day: string, month: string): string {
+export function eventDateInputValue(day: string, month: string, savedYear?: string): string {
 	const dayNum = parseInt(day, 10);
 	const monthIndex = parseMonthAbbrev(month);
 	if (!Number.isFinite(dayNum) || dayNum < 1 || dayNum > 31 || monthIndex < 0) {
 		return '';
 	}
 
-	const year = new Date().getFullYear();
+	const year = savedYear ? Number(savedYear) : new Date().getFullYear();
+	if (!Number.isInteger(year) || year < 1000 || year > 9999) return '';
 	const date = new Date(year, monthIndex, dayNum);
 	if (
 		date.getFullYear() !== year ||
@@ -47,7 +48,7 @@ export function eventDateInputValue(day: string, month: string): string {
 	return `${year}-${String(monthIndex + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
 }
 
-export function dayMonthFromDateInput(value: string): { day: string; month: string } | null {
+export function dayMonthFromDateInput(value: string): { day: string; month: string; year: string } | null {
 	if (!value) {
 		return null;
 	}
@@ -62,7 +63,7 @@ export function dayMonthFromDateInput(value: string): { day: string; month: stri
 	const dayNum = parseInt(parts[2], 10);
 
 	if (
-		!Number.isFinite(year) ||
+		!Number.isFinite(year) || year < 1000 || year > 9999 ||
 		!Number.isFinite(monthIndex) ||
 		!Number.isFinite(dayNum) ||
 		monthIndex < 0 ||
@@ -79,6 +80,7 @@ export function dayMonthFromDateInput(value: string): { day: string; month: stri
 	return {
 		day: String(dayNum).padStart(2, '0'),
 		month: formatMonthAbbrev(monthIndex),
+		year: String(year),
 	};
 }
 

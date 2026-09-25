@@ -393,3 +393,5 @@
 	opacity: 1 !important;
 	transform: none !important;
 }
+
+.nextora-event-tec-editor-wrapper .nextora-event--template4 a { pointer-events: none; }

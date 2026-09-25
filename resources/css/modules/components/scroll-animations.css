@@ -19,6 +19,27 @@
 		opacity: 0;
 	}
 
+/* Mega menu scoped initial displacement: 14px to match block sequential motion */
+.has-mega-menu [class*="animation-fade-in-up"]:not([data-nextora-scroll-animation-init]),
+.beplus-vmn-mega-panel [class*="animation-fade-in-up"]:not([data-nextora-scroll-animation-init]) {
+	transform: translateY(14px);
+}
+
+.has-mega-menu [class*="animation-fade-in-down"]:not([data-nextora-scroll-animation-init]),
+.beplus-vmn-mega-panel [class*="animation-fade-in-down"]:not([data-nextora-scroll-animation-init]) {
+	transform: translateY(-14px);
+}
+
+.has-mega-menu [class*="animation-fade-in-left"]:not([data-nextora-scroll-animation-init]),
+.beplus-vmn-mega-panel [class*="animation-fade-in-left"]:not([data-nextora-scroll-animation-init]) {
+	transform: translateX(-14px);
+}
+
+.has-mega-menu [class*="animation-fade-in-right"]:not([data-nextora-scroll-animation-init]),
+.beplus-vmn-mega-panel [class*="animation-fade-in-right"]:not([data-nextora-scroll-animation-init]) {
+	transform: translateX(14px);
+}
+
 /* Prevent CSS transitions from fighting GSAP transform and opacity tweens */
 [class*="animation-fade-in"],
 [class*="animation-zoom-in"],

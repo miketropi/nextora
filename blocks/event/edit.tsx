@@ -48,6 +48,8 @@ function normalizeFontSizeAttribute(
 	return map[raw] || raw;
 }
 import EventEditForm from './event-edit-form';
+import CompactList from './compact-list';
+import CompactColorSettings from './compact-settings';
 import {
 	buildSectionStyleVars,
 	createDefaultEventItem,
@@ -168,6 +170,8 @@ function DetailRow({
 export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	const [editingEventId, setEditingEventId] = useState<string | null>(null);
 	const [blockIconPickerOpen, setBlockIconPickerOpen] = useState(false);
+	const [animKey, setAnimKey] = useState(0);
+	const triggerEditorPreview = () => setAnimKey((k) => k + 1);
 
 	const events = normalizeEvents(attributes.events);
 	const editingEvent = editingEventId
@@ -197,6 +201,11 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	const {
 		template = 'default',
 		showRegisterButton = true,
+		showDate = true,
+		showImage = true,
+		showLocation = true,
+		showTime = true,
+		showDescription = true,
 		registerButtonText = __('Register', 'nextora'),
 		registerButtonIcon = 'calendar-days',
 		template3Alternating = false,
@@ -219,6 +228,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		paginationColor = '',
 		paginationActiveColor = '',
 		enableScrollAnimation = true,
+		enableAnimation = false,
+		animationStyle = 'sequential',
 		autoplay = true,
 		autoplayDelay = 5000,
 		loop = true,
@@ -235,6 +246,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	const isTemplate1 = template === 'template1';
 	const isTemplate2 = template === 'template2';
 	const isTemplate3 = template === 'template3';
+	const isTemplate4 = template === 'template4';
 
 	const normalizedTitleFontSize = normalizeFontSizeAttribute(titleFontSize);
 	const normalizedDescFontSize = normalizeFontSizeAttribute(descriptionFontSize);
@@ -246,6 +258,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		className: [
 			'nextora-event',
 			'nextora-event--editor',
+			isTemplate4 ? ['nextora-event--template4', enableAnimation ? `nextora-event--animation-${animationStyle || 'sequential'}` : ''].filter(Boolean).join(' ') : '',
 			isTemplate1 ? 'nextora-event--template1 nextora-event--template1-editor' : '',
 			isTemplate2 ? 'nextora-event--template2 nextora-event--template2-editor' : '',
 			isTemplate3 ? 'nextora-event--template3 nextora-event--template3-editor' : '',
@@ -510,12 +523,13 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				<PanelBody title={__('Template', 'nextora')} initialOpen>
 					<SelectControl
 						label={__('Layout template', 'nextora')}
-						value={template as 'default' | 'template1' | 'template2' | 'template3'}
+						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4'}
 						options={[
 							{ label: __('Default — List', 'nextora'), value: 'default' as const },
 							{ label: __('Template 1 — Slider', 'nextora'), value: 'template1' as const },
 							{ label: __('Template 2 — Event cards', 'nextora'), value: 'template2' as const },
 							{ label: __('Template 3 — Editorial list', 'nextora'), value: 'template3' as const },
+							{ label: __('Template 4 — Compact List', 'nextora'), value: 'template4' },
 						]}
 						onChange={(value: string) => setAttributes({ template: value })}
 					/>
@@ -621,78 +635,182 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				</PanelBody>
 
 				<PanelBody title={__('Settings', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Show register button', 'nextora')}
-						checked={showRegisterButton !== false}
-						onChange={(value: boolean) => setAttributes({ showRegisterButton: value })}
-					/>
-					{showRegisterButton !== false ? (
-						<div style={{ marginTop: '12px', marginBottom: '16px' }}>
-							<BaseControl
-								label={__('Default register button icon', 'nextora')}
-								help={__('Default icon displayed before the button in Template 1 cards.', 'nextora')}
-							>
-								<div
-									style={{
-										display: 'flex',
-										alignItems: 'center',
-										gap: '8px',
-										marginTop: '6px',
-										flexWrap: 'wrap',
-									}}
-								>
-									<Button
-										variant="secondary"
-										onClick={() => setBlockIconPickerOpen(true)}
+					{isTemplate4 ? (
+						<>
+							<ToggleControl
+								label={__('Show date badge', 'nextora')}
+								checked={showDate !== false}
+								onChange={(value: boolean) => setAttributes({ showDate: value })}
+							/>
+							<ToggleControl
+								label={__('Show image', 'nextora')}
+								checked={showImage !== false}
+								onChange={(value: boolean) => setAttributes({ showImage: value })}
+							/>
+							<ToggleControl
+								label={__('Show location', 'nextora')}
+								checked={showLocation !== false}
+								onChange={(value: boolean) => setAttributes({ showLocation: value })}
+							/>
+							<ToggleControl
+								label={__('Show time', 'nextora')}
+								checked={showTime !== false}
+								onChange={(value: boolean) => setAttributes({ showTime: value })}
+							/>
+							<ToggleControl
+								label={__('Show description', 'nextora')}
+								checked={showDescription !== false}
+								onChange={(value: boolean) => setAttributes({ showDescription: value })}
+							/>
+							<ToggleControl
+								label={__('Show event arrow', 'nextora')}
+								checked={showRegisterButton !== false}
+								onChange={(value: boolean) => setAttributes({ showRegisterButton: value })}
+							/>
+						</>
+					) : (
+						<>
+							<ToggleControl
+								label={__('Show register button', 'nextora')}
+								checked={showRegisterButton !== false}
+								onChange={(value: boolean) => setAttributes({ showRegisterButton: value })}
+							/>
+							{showRegisterButton !== false ? (
+								<div style={{ marginTop: '12px', marginBottom: '16px' }}>
+									<BaseControl
+										label={__('Default register button icon', 'nextora')}
+										help={__('Default icon displayed before the button in Template 1 cards.', 'nextora')}
 									>
-										{__('Choose icon', 'nextora')}
-									</Button>
-									<div
-										style={{
-											display: 'inline-flex',
-											alignItems: 'center',
-											gap: '6px',
-											padding: '3px 8px',
-											background: '#f0f0f1',
-											borderRadius: '4px',
-										}}
-									>
-										<EventButtonIcon iconName={registerButtonIcon || 'calendar-days'} size={16} />
-										<code style={{ fontSize: '12px', background: 'transparent' }}>
-											{registerButtonIcon || 'calendar-days'}
-										</code>
-									</div>
+										<div
+											style={{
+												display: 'flex',
+												alignItems: 'center',
+												gap: '8px',
+												marginTop: '6px',
+												flexWrap: 'wrap',
+											}}
+										>
+											<Button
+												variant="secondary"
+												onClick={() => setBlockIconPickerOpen(true)}
+											>
+												{__('Choose icon', 'nextora')}
+											</Button>
+											<div
+												style={{
+													display: 'inline-flex',
+													alignItems: 'center',
+													gap: '6px',
+													padding: '3px 8px',
+													background: '#f0f0f1',
+													borderRadius: '4px',
+												}}
+											>
+												<EventButtonIcon iconName={registerButtonIcon || 'calendar-days'} size={16} />
+												<code style={{ fontSize: '12px', background: 'transparent' }}>
+													{registerButtonIcon || 'calendar-days'}
+												</code>
+											</div>
+										</div>
+									</BaseControl>
+									{blockIconPickerOpen ? (
+										<IconPicker
+											currentIcon={registerButtonIcon || 'calendar-days'}
+											onSelect={(iconName) => {
+												setAttributes({ registerButtonIcon: iconName });
+												setBlockIconPickerOpen(false);
+											}}
+											onClose={() => setBlockIconPickerOpen(false)}
+										/>
+									) : null}
 								</div>
-							</BaseControl>
-							{blockIconPickerOpen ? (
-								<IconPicker
-									currentIcon={registerButtonIcon || 'calendar-days'}
-									onSelect={(iconName) => {
-										setAttributes({ registerButtonIcon: iconName });
-										setBlockIconPickerOpen(false);
-									}}
-									onClose={() => setBlockIconPickerOpen(false)}
+							) : null}
+							{isTemplate3 ? (
+								<ToggleControl
+									label={__('Alternate image and content', 'nextora')}
+									help={__('Place the image left on odd items and right on even items.', 'nextora')}
+									checked={template3Alternating}
+									onChange={(value: boolean) => setAttributes({ template3Alternating: value })}
 								/>
 							) : null}
-						</div>
-					) : null}
-					{isTemplate3 ? (
-						<ToggleControl
-							label={__('Alternate image and content', 'nextora')}
-							help={__('Place the image left on odd items and right on even items.', 'nextora')}
-							checked={template3Alternating}
-							onChange={(value: boolean) => setAttributes({ template3Alternating: value })}
-						/>
-					) : null}
+						</>
+					)}
 				</PanelBody>
 
-				<PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />
+				{isTemplate4 ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />}
+
+				{isTemplate4 && (
+					<PanelBody
+						title={__('Animation', 'nextora')}
+						initialOpen={Boolean(enableAnimation)}
+					>
+						<ToggleControl
+							label={__('Enable Sequential Animation', 'nextora')}
+							help={__(
+								'Sequential: cards appear one by one with a gentle upward motion.',
+								'nextora',
+							)}
+							checked={Boolean(enableAnimation)}
+							onChange={(value: boolean) => {
+								setAttributes({ enableAnimation: value });
+								if (value) {
+									triggerEditorPreview();
+								}
+							}}
+						/>
+						{enableAnimation && (
+							<>
+								<SelectControl
+									label={__('Animation Style', 'nextora')}
+									value={animationStyle || 'sequential'}
+									options={[
+										{
+											label: __(
+												'Sequential (Cards appear one by one)',
+												'nextora',
+											),
+											value: 'sequential',
+										},
+										{
+											label: __(
+												'Fade Up (All items together)',
+												'nextora',
+											),
+											value: 'default',
+										},
+									]}
+									onChange={(value: string) => {
+										setAttributes({
+											animationStyle: value as 'sequential' | 'default',
+										});
+										triggerEditorPreview();
+									}}
+									help={__(
+										'Default: all items fade up together. Sequential: cards appear one by one with a gentle upward motion.',
+										'nextora',
+									)}
+								/>
+								<Button
+									variant="secondary"
+									onClick={triggerEditorPreview}
+									style={{
+										width: '100%',
+										justifyContent: 'center',
+										marginTop: '8px',
+									}}
+								>
+									{__('▶ Replay Animation', 'nextora')}
+								</Button>
+							</>
+						)}
+					</PanelBody>
+				)}
 
 				<PanelBody title={__('Typography', 'nextora')} initialOpen={isTemplate3}>
 					<BaseControl
 						label={__('Card title font size', 'nextora')}
 						id="nextora-event-title-font-size"
-						help={__('Default inherits global heading size.', 'nextora')}
+						help={template === 'template4' ? __('Default: 14px for Compact List.', 'nextora') : __('Default inherits global heading size.', 'nextora')}
 					>
 						<FontSizePicker
 							value={titleFontSize || undefined}
@@ -707,7 +825,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					<BaseControl
 						label={__('Card description font size', 'nextora')}
 						id="nextora-event-description-font-size"
-						help={__('Default inherits global body size.', 'nextora')}
+						help={template === 'template4' ? __('Default: 12px for Compact List.', 'nextora') : __('Default inherits global body size.', 'nextora')}
 					>
 						<FontSizePicker
 							value={descriptionFontSize || undefined}
@@ -721,7 +839,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					</BaseControl>
 				</PanelBody>
 
-				{!isTemplate1 && !isTemplate2 && !isTemplate3 ? (
+				{!isTemplate1 && !isTemplate2 && !isTemplate4 ? (
 					<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
 						<ToggleControl
 							label={__('Animate on scroll', 'nextora')}
@@ -850,7 +968,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							event={editingEvent}
 							imageUrl={resolveImageUrl(editingEvent, mediaUrlById)}
 							showEditorialFields={isTemplate3}
-							showDescription={isTemplate2 || isTemplate3}
+							showDescription={isTemplate2 || isTemplate3 || isTemplate4}
+							compact={isTemplate4}
 							onPatch={(patch) => patchEvent(editingEvent.id, patch)}
 					/>
 				</Modal>
@@ -858,7 +977,9 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 
 			<div {...blockProps}>
 				<div className="nextora-event__inner">
-					{isTemplate1 ? (
+					{isTemplate4 ? (
+						<CompactList key={animKey} attributes={attributes} events={events.map((event) => ({ ...event, imageUrl: event.imageId > 0 ? (mediaUrlById.get(event.imageId) || event.imageUrl) : event.imageUrl }))} onEdit={openEventEditor} />
+					) : isTemplate1 ? (
 						<div className="swiper nextora-event__swiper">
 							<div className="swiper-wrapper">
 								{events.map((event) => {

@@ -32,6 +32,8 @@ add_filter(
 			'nextora/advanced-list',
 			'nextora/blog-list-carousel',
 			'nextora/testimonials',
+			'nextora/event',
+			'nextora/event-the-events-calendar',
 		);
 
 		foreach ( $theme_blocks as $block_name ) {

@@ -109,27 +109,49 @@ export function createDefaultEventItem(
 	};
 }
 
+export function decodeEventString(str: string | undefined): string {
+	if (!str) return '';
+	return str
+		.replace(/\\?u0026amp;/gi, '&')
+		.replace(/\\?u0026/gi, '&')
+		.replace(/&amp;/gi, '&')
+		.replace(/\\?u0027/gi, "'")
+		.replace(/\\?u0022/gi, '"')
+		.replace(/\\?u003c/gi, '<')
+		.replace(/\\?u003e/gi, '>');
+}
+
 export function normalizeEvents(events: EventItem[] | undefined): EventItem[] {
 	if (!Array.isArray(events) || events.length === 0) {
-		return DEFAULT_EVENTS.map((item) => ({ ...item }));
+		return DEFAULT_EVENTS.map((item) => ({
+			...item,
+			title: decodeEventString(item.title),
+			description: decodeEventString(item.description),
+			location: decodeEventString(item.location),
+			category: decodeEventString(item.category),
+			time: decodeEventString(item.time),
+			price: decodeEventString(item.price),
+			registerLabel: decodeEventString(item.registerLabel),
+		}));
 	}
 
 	return events.map((raw, index) => ({
 		id: typeof raw?.id === 'string' && raw.id !== '' ? raw.id : String(index + 1),
 		day: typeof raw?.day === 'string' ? raw.day : '',
 		month: typeof raw?.month === 'string' ? raw.month : '',
-		category: typeof raw?.category === 'string' ? raw.category : '',
-		title: typeof raw?.title === 'string' ? raw.title : '',
-		description: typeof raw?.description === 'string' ? raw.description : '',
-		location: typeof raw?.location === 'string' ? raw.location : '',
-		time: typeof raw?.time === 'string' ? raw.time : '',
-		price: typeof raw?.price === 'string' ? raw.price : '',
+		...(typeof raw?.year === 'string' ? { year: raw.year } : {}),
+		category: typeof raw?.category === 'string' ? decodeEventString(raw.category) : '',
+		title: typeof raw?.title === 'string' ? decodeEventString(raw.title) : '',
+		description: typeof raw?.description === 'string' ? decodeEventString(raw.description) : '',
+		location: typeof raw?.location === 'string' ? decodeEventString(raw.location) : '',
+		time: typeof raw?.time === 'string' ? decodeEventString(raw.time) : '',
+		price: typeof raw?.price === 'string' ? decodeEventString(raw.price) : '',
 		imageId: typeof raw?.imageId === 'number' ? raw.imageId : 0,
 		imageUrl: typeof raw?.imageUrl === 'string' ? raw.imageUrl : '',
-		imageAlt: typeof raw?.imageAlt === 'string' ? raw.imageAlt : '',
+		imageAlt: typeof raw?.imageAlt === 'string' ? decodeEventString(raw.imageAlt) : '',
 		linkUrl: typeof raw?.linkUrl === 'string' ? raw.linkUrl : '',
 		linkTarget: raw?.linkTarget === '_blank' ? '_blank' : '_self',
-		registerLabel: typeof raw?.registerLabel === 'string' ? raw.registerLabel : '',
+		registerLabel: typeof raw?.registerLabel === 'string' ? decodeEventString(raw.registerLabel) : '',
 		buttonIcon:
 			typeof raw?.buttonIcon === 'string' && raw.buttonIcon !== ''
 				? raw.buttonIcon

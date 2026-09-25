@@ -205,3 +205,12 @@
 		transform: rotate(360deg);
 	}
 }
+
+.nextora-blc__card,
+.nextora-blc__carousel-root,
+.nextora-blog-list-carousel .nextora-blc__card {
+	opacity: 1 !important;
+	transform: none !important;
+	animation: none !important;
+	visibility: visible !important;
+}
