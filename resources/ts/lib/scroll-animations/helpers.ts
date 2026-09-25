@@ -173,18 +173,19 @@ function initFadeListGridAnimation(el: HTMLElement, options: ScrollAnimationOpti
 	const gen = nextRevealGen(el);
 	const revealImmediately = isInInitialRevealViewport(el);
 
+	const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 	if (revealImmediately) {
 		items.forEach((item) => {
 			item.classList.add("nextora-scroll-animation--pending");
 			gsap.set(item, from);
 		});
-		afterInitialLayout(() => {
+		const playFadeList = (): void => {
 			gsap.to(items, {
 				...to,
 				delay: options.delay,
 				duration: options.duration,
 				ease: options.ease,
-				stagger: options.stagger ?? 0.08,
+				stagger: options.stagger ?? (isMegaMenu ? 0.04 : 0.08),
 				onComplete: () => {
 					if (getRevealGen(el) !== gen) return;
 					items.forEach((item) => {
@@ -194,7 +195,12 @@ function initFadeListGridAnimation(el: HTMLElement, options: ScrollAnimationOpti
 					});
 				},
 			});
-		});
+		};
+		if (isMegaMenu) {
+			playFadeList();
+		} else {
+			afterInitialLayout(playFadeList);
+		}
 	} else {
 		items.forEach((item) => {
 			item.classList.add("nextora-scroll-animation--pending");
@@ -228,18 +234,19 @@ function initInnerFadeAnimation(el: HTMLElement, options: ScrollAnimationOptions
 	const gen = nextRevealGen(el);
 	const revealImmediately = isInInitialRevealViewport(el);
 
+	const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 	if (revealImmediately) {
 		targets.forEach((target) => {
 			target.classList.add("nextora-scroll-animation--pending");
 			gsap.set(target, from);
 		});
-		afterInitialLayout(() => {
+		const playInner = (): void => {
 			gsap.to(targets, {
 				...to,
 				delay: options.delay,
 				duration: options.duration,
 				ease: options.ease,
-				stagger: options.stagger ?? 0.08,
+				stagger: options.stagger ?? (isMegaMenu ? 0.04 : 0.08),
 				onComplete: () => {
 					if (getRevealGen(el) !== gen) return;
 					targets.forEach((target) => {
@@ -249,7 +256,12 @@ function initInnerFadeAnimation(el: HTMLElement, options: ScrollAnimationOptions
 					});
 				},
 			});
-		});
+		};
+		if (isMegaMenu) {
+			playInner();
+		} else {
+			afterInitialLayout(playInner);
+		}
 	} else {
 		targets.forEach((target) => {
 			target.classList.add("nextora-scroll-animation--pending");
@@ -349,18 +361,24 @@ export function initElementAnimations(el: HTMLElement): void {
 							},
 						});
 					};
+					const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 					if (revealImmediately) {
-						afterInitialLayout(play);
+						if (isMegaMenu) {
+							play();
+						} else {
+							afterInitialLayout(play);
+						}
 					} else {
 						play();
 					}
 				} else {
+					const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 					if (revealImmediately) {
 						gsap.set(el, from);
-						afterInitialLayout(() => {
+						const playSingle = (): void => {
 							const initialDelay = el.hasAttribute("data-delay")
 								? options.delay
-								: (el.tagName === "P" ? 0.35 : options.delay);
+								: (!isMegaMenu && el.tagName === "P" ? 0.35 : options.delay);
 							gsap.to(el, {
 								...to,
 								delay: initialDelay,
@@ -368,7 +386,12 @@ export function initElementAnimations(el: HTMLElement): void {
 								ease: options.ease,
 								onComplete: () => gsap.set(el, { clearProps: "opacity,transform,translate,rotate,scale" }),
 							});
-						});
+						};
+						if (isMegaMenu) {
+							playSingle();
+						} else {
+							afterInitialLayout(playSingle);
+						}
 					} else {
 						gsap.fromTo(el, from, { ...to, ...buildScrollTweenVars(el, options) });
 					}

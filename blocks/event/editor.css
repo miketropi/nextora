@@ -294,3 +294,12 @@
 	max-width: none;
 	object-fit: cover;
 }
+
+/* Compact cards retain frontend geometry; edit controls appear on interaction. */
+.nextora-event--template4 .nextora-event-compact__edit {
+ position: absolute; inset-block-start: 0; inset-inline-end: 0; z-index: 2;
+ padding: 3px 8px; border: 1px solid #ddd; border-radius: 4px;
+ background: #fff; color: #1e1e1e; font-size: 11px; cursor: pointer; opacity: 0;
+}
+.nextora-event--template4 .nextora-event-compact__item:hover .nextora-event-compact__edit,
+.nextora-event--template4 .nextora-event-compact__item:focus-within .nextora-event-compact__edit { opacity: 1; }

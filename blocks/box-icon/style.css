@@ -102,18 +102,149 @@
 	transition: opacity 0.25s ease;
 }
 
-/* Scroll reveal */
-.nextora-box-icon[data-nextora-scroll-reveal='1'].nextora-box-icon--reveal-pending:not(.nextora-box-icon--reveal-ready) .nextora-box-icon__carousel-root {
+/* Scroll reveal: Default style (entire carousel root moves together) */
+.nextora-box-icon[data-nextora-scroll-reveal='1']:not([data-nextora-scroll-reveal-style='sequential']).nextora-box-icon--reveal-pending:not(.nextora-box-icon--reveal-ready) .nextora-box-icon__carousel-root {
 	opacity: 0;
 	transform: translate3d(0, 2rem, 0);
 }
 
-.nextora-box-icon[data-nextora-scroll-reveal='1'].nextora-box-icon--reveal-ready .nextora-box-icon__carousel-root {
+.nextora-box-icon[data-nextora-scroll-reveal='1']:not([data-nextora-scroll-reveal-style='sequential']).nextora-box-icon--reveal-ready .nextora-box-icon__carousel-root {
 	opacity: 1;
 	transform: none;
 }
 
+/* Scroll reveal: Sequential style (container stays completely static, cards animate smoothly) */
+.nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__carousel-root {
+	opacity: 1;
+	transform: none;
+}
+
+.nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card,
+.nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row {
+	will-change: transform, opacity;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+
+/* Pending initial state: cards displaced 14px down, opacity 0 (matching menu-item standard) */
+.nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'].nextora-box-icon--reveal-pending:not(.nextora-box-icon--reveal-ready) .nextora-box-icon__card,
+.nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'].nextora-box-icon--reveal-pending:not(.nextora-box-icon--reveal-ready) .nextora-box-icon__ways-row {
+	opacity: 0;
+	transform: translateY(14px);
+}
+
+.nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'].nextora-box-icon--reveal-ready .nextora-box-icon__card,
+.nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'].nextora-box-icon--reveal-ready .nextora-box-icon__ways-row {
+	opacity: 1;
+	transform: none;
+}
+
+/* Keyframes matching menu-item standard */
+@keyframes nextoraBoxIconFadeUp {
+	0% {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* When inside mega menu: silky smooth CSS compositor animation matching menu-item standard */
+.has-mega-menu .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card,
+.has-mega-menu .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row,
+.beplus-vmn-mega-panel .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card,
+.beplus-vmn-mega-panel .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row {
+	opacity: 0;
+	transform: translateY(14px);
+	will-change: transform, opacity;
+}
+
+.has-mega-menu:hover .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card,
+.has-mega-menu:hover .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row,
+.has-mega-menu.beplus-vmn--open .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card,
+.has-mega-menu.beplus-vmn--open .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row,
+.beplus-vmn-mega-panel.is-open .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card,
+.beplus-vmn-mega-panel.is-open .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row,
+.nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'].is-animating .nextora-box-icon__card,
+.nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'].is-animating .nextora-box-icon__ways-row {
+	animation-name: nextoraBoxIconFadeUp;
+	animation-duration: 0.38s;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	animation-fill-mode: both;
+}
+
+/* Sequential Stagger Delays (1 to 16 cards) */
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(1) .nextora-box-icon__card,
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(1),
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(1) { animation-delay: 0.04s; }
+
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(2) .nextora-box-icon__card,
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(2),
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(2) { animation-delay: 0.08s; }
+
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(3) .nextora-box-icon__card,
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(3),
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(3) { animation-delay: 0.12s; }
+
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(4) .nextora-box-icon__card,
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(4),
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(4) { animation-delay: 0.16s; }
+
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(5) .nextora-box-icon__card,
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(5),
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(5) { animation-delay: 0.20s; }
+
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(6) .nextora-box-icon__card,
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(6),
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(6) { animation-delay: 0.24s; }
+
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(7) .nextora-box-icon__card,
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(7),
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(7) { animation-delay: 0.28s; }
+
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(8) .nextora-box-icon__card,
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(8),
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(8) { animation-delay: 0.32s; }
+
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(n+9) .nextora-box-icon__card,
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(n+9),
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(n+9) { animation-delay: 0.36s; }
+
+/* Reset state when mega panel closes / unhovered */
+.has-mega-menu:not(:hover):not(.beplus-vmn--open) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card,
+.has-mega-menu:not(:hover):not(.beplus-vmn--open) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row {
+	animation: none;
+	opacity: 0;
+	transform: translateY(14px);
+}
+
 /* Grid mode (desktop when layoutMode=grid) */
+@media (min-width: 981px) {
+	.nextora-box-icon__carousel-root[data-layout-mode="grid"] .nextora-box-icon__swiper {
+		overflow: visible;
+	}
+
+	.nextora-box-icon__carousel-root[data-layout-mode="grid"] .swiper-wrapper {
+		display: grid !important;
+		grid-template-columns: repeat(var(--nextora-box-icon-cols, 4), minmax(0, 1fr));
+		gap: var(--nextora-box-icon-gap, 18px);
+		transform: none !important;
+		transition-property: none !important;
+		transition-duration: 0s !important;
+		flex-direction: unset;
+		width: 100% !important;
+	}
+
+	.nextora-box-icon__carousel-root[data-layout-mode="grid"] .swiper-slide {
+		width: auto !important;
+		height: auto !important;
+		margin: 0 !important;
+		margin-right: 0 !important;
+		flex-shrink: unset !important;
+	}
+}
 .nextora-box-icon--grid-active .nextora-box-icon__swiper {
 	overflow: visible;
 }
@@ -171,6 +302,7 @@
 }
 
 @media (min-width: 981px) {
+
 	.nextora-box-icon [data-layout-mode="grid"] .nextora-box-icon__pagination,
 	.nextora-box-icon [data-layout-mode="grid"] .nextora-box-icon__arrow {
 		display: none !important;
@@ -667,7 +799,7 @@
 
 .nextora-box-icon--template-minimal .nextora-box-icon__title {
 	margin: 0;
-	margin-bottom: 0.15rem;
+	margin-bottom: 0;
 }
 
 .nextora-box-icon--template-minimal .nextora-box-icon__description {
@@ -1175,6 +1307,7 @@
 	.nextora-box-icon .nextora-box-icon__edge-overlay {
 		display: none;
 	}
+
 	.nextora-box-icon.has-edge-fade-tablet .nextora-box-icon__edge-overlay {
 		display: block;
 	}
@@ -1184,6 +1317,7 @@
 	.nextora-box-icon .nextora-box-icon__edge-overlay {
 		display: none;
 	}
+
 	.nextora-box-icon.has-edge-fade-mobile .nextora-box-icon__edge-overlay {
 		display: block;
 	}

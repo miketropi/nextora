@@ -46,6 +46,29 @@ if ( ! function_exists( 'nextora_event_enqueue_view_script' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_event_decode_text' ) ) {
+	/**
+	 * Decode escaped unicode sequences and HTML entities for event text.
+	 *
+	 * @param string $text Raw text.
+	 *
+	 * @return string Decoded string.
+	 */
+	function nextora_event_decode_text( string $text ): string {
+		if ( '' === $text ) {
+			return '';
+		}
+		if ( str_contains( $text, '\u' ) || str_contains( $text, 'u0026' ) || str_contains( $text, 'u0022' ) || str_contains( $text, 'u0027' ) ) {
+			$text = (string) preg_replace( '/\\\\u0026|u0026/i', '&', $text );
+			$text = (string) preg_replace( '/\\\\u0022|u0022/i', '"', $text );
+			$text = (string) preg_replace( '/\\\\u0027|u0027/i', "'", $text );
+			$text = (string) preg_replace( '/\\\\u003c|u003c/i', '<', $text );
+			$text = (string) preg_replace( '/\\\\u003e|u003e/i', '>', $text );
+		}
+		return html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+	}
+}
+
 if ( ! function_exists( 'nextora_event_resolve_color' ) ) {
 	/**
 	 * Preset slug, var(), rgb(), hsl(), or hex → CSS color value.
@@ -419,6 +442,8 @@ $description_font_size = isset( $attributes['descriptionFontSize'] ) && '' !== t
 	? nextora_event_normalize_font_size( (string) $attributes['descriptionFontSize'] )
 	: '';
 
+require_once __DIR__ . '/compact-list.php';
+
 $raw_events = isset( $attributes['events'] ) && is_array( $attributes['events'] ) ? $attributes['events'] : array();
 $events     = array();
 
@@ -431,18 +456,19 @@ foreach ( $raw_events as $index => $item ) {
 		'id'                 => isset( $item['id'] ) ? (string) $item['id'] : (string) ( $index + 1 ),
 		'day'                => isset( $item['day'] ) ? (string) $item['day'] : '',
 		'month'              => isset( $item['month'] ) ? (string) $item['month'] : '',
-		'category'           => isset( $item['category'] ) ? (string) $item['category'] : '',
-		'title'              => isset( $item['title'] ) ? (string) $item['title'] : '',
-		'description'        => isset( $item['description'] ) ? (string) $item['description'] : '',
-		'location'           => isset( $item['location'] ) ? (string) $item['location'] : '',
-		'time'               => isset( $item['time'] ) ? (string) $item['time'] : '',
-		'price'              => isset( $item['price'] ) ? (string) $item['price'] : '',
+		'year'               => isset( $item['year'] ) ? (string) $item['year'] : '',
+		'category'           => isset( $item['category'] ) ? nextora_event_decode_text( (string) $item['category'] ) : '',
+		'title'              => isset( $item['title'] ) ? nextora_event_decode_text( (string) $item['title'] ) : '',
+		'description'        => isset( $item['description'] ) ? nextora_event_decode_text( (string) $item['description'] ) : '',
+		'location'           => isset( $item['location'] ) ? nextora_event_decode_text( (string) $item['location'] ) : '',
+		'time'               => isset( $item['time'] ) ? nextora_event_decode_text( (string) $item['time'] ) : '',
+		'price'              => isset( $item['price'] ) ? nextora_event_decode_text( (string) $item['price'] ) : '',
 		'imageId'            => isset( $item['imageId'] ) ? (int) $item['imageId'] : 0,
 		'imageUrl'           => isset( $item['imageUrl'] ) ? (string) $item['imageUrl'] : '',
-		'imageAlt'           => isset( $item['imageAlt'] ) ? (string) $item['imageAlt'] : '',
+		'imageAlt'           => isset( $item['imageAlt'] ) ? nextora_event_decode_text( (string) $item['imageAlt'] ) : '',
 		'linkUrl'            => isset( $item['linkUrl'] ) ? (string) $item['linkUrl'] : '',
 		'linkTarget'         => isset( $item['linkTarget'] ) ? (string) $item['linkTarget'] : '_self',
-		'registerLabel'      => isset( $item['registerLabel'] ) ? (string) $item['registerLabel'] : '',
+		'registerLabel'      => isset( $item['registerLabel'] ) ? nextora_event_decode_text( (string) $item['registerLabel'] ) : '',
 		'buttonIcon'         => ! empty( $item['buttonIcon'] )
 			? (string) $item['buttonIcon']
 			: ( ! empty( $item['registerButtonIcon'] )
@@ -480,8 +506,13 @@ if ( array() === $events ) {
 	);
 }
 
+if ( 'template4' === $template ) {
+	echo nextora_event_render_compact_list( $events, $attributes, 'nextora_event_get_color_props', 'nextora_event_resolve_color' );
+	return;
+}
+
 $show_register     = ! isset( $attributes['showRegisterButton'] ) || (bool) $attributes['showRegisterButton'];
-$default_register  = isset( $attributes['registerButtonText'] ) ? (string) $attributes['registerButtonText'] : __( 'Register', 'nextora' );
+$default_register  = isset( $attributes['registerButtonText'] ) ? nextora_event_decode_text( (string) $attributes['registerButtonText'] ) : __( 'Register', 'nextora' );
 $enable_scroll     = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
 
 $color_keys = array(

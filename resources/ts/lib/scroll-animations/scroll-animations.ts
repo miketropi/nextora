@@ -21,7 +21,7 @@ import {
 	revealBottomAnchoredTriggers,
 	resolveAnimationClass,
 } from "./helpers";
-import { getAnimationSelector, registerScrollAnimationPreset } from "./presets";
+import { animationPresets, getAnimationSelector, registerScrollAnimationPreset } from "./presets";
 import { parseScrollAnimationOptions } from "./parse-options";
 
 let observer: MutationObserver | null = null;
@@ -162,6 +162,10 @@ function watchDeferredScrollElements(): void {
 		document
 			.querySelectorAll<HTMLElement>(`[${DEFERRED_ATTR}="1"]`)
 			.forEach((el) => {
+				if (el.closest(".has-mega-menu, .beplus-vmn-mega-panel")) {
+					// Mega menu panels are handled directly and synchronously by playMegaMenuAnimations on hover
+					return;
+				}
 				if (!isElementHidden(el)) {
 					el.removeAttribute(DEFERRED_ATTR);
 					el.setAttribute(REPLAY_ATTR, "1");
@@ -269,11 +273,141 @@ function forcePlayAllRevealTriggers(): void {
 	});
 }
 
+/**
+ * Synchronously play entrance animations for all .animation-* elements inside a mega menu panel.
+ * Uses fast 0.38s duration, 14px displacement, and 0.04s stagger matching block standards.
+ */
+export function playMegaMenuAnimations(panel: HTMLElement): void {
+	if (!panel) return;
+	ensureGsapPlugins();
+
+	const selector = getAnimationSelector();
+	const allElements = Array.from(panel.querySelectorAll<HTMLElement>(selector));
+
+	// Filter out elements inside blocks that already manage their own sequential animation
+	const targets = allElements.filter((el) => {
+		if (el.closest(".beplus-vmn-menu-list, .nextora-box-icon[data-nextora-scroll-reveal-style=\"sequential\"]")) {
+			return false;
+		}
+		// If element is a child of another animated container (like inside animation-inner-fade), let the container manage it
+		const parentAnim = el.parentElement?.closest<HTMLElement>(".animation-inner-fade, .animation-fade-list-grid");
+		if (parentAnim && panel.contains(parentAnim)) {
+			return false;
+		}
+		return resolveAnimationClass(el) !== null;
+	});
+
+	if (!targets.length) return;
+
+	// Calculate contextual progressive stagger per column/group
+	const containerStaggerMap = new Map<HTMLElement, number>();
+
+	targets.forEach((el) => {
+		const animationClass = resolveAnimationClass(el);
+		if (!animationClass) return;
+
+		const options = parseScrollAnimationOptions(el);
+
+		// Container for stagger grouping: nearest column or group
+		const groupContainer = el.closest<HTMLElement>(".wp-block-column, .wp-block-group, .nextora-container") || panel;
+		const groupIndex = containerStaggerMap.get(groupContainer) ?? 0;
+		containerStaggerMap.set(groupContainer, groupIndex + 1);
+
+		const staggerDelay = groupIndex * (options.stagger ?? 0.04);
+		const totalDelay = options.delay + staggerDelay;
+
+		gsap.killTweensOf(el);
+
+		if (animationClass === "animation-fade-list-grid") {
+			const items = getFadeListGridItems(el);
+			const { from, to } = animationPresets["animation-fade-list-grid"]({ distance: options.distance });
+			items.forEach((item) => {
+				gsap.killTweensOf(item);
+				gsap.set(item, from);
+			});
+			gsap.to(items, {
+				...to,
+				delay: totalDelay,
+				duration: options.duration,
+				ease: options.ease,
+				stagger: options.stagger ?? 0.04,
+				onComplete: () => {
+					items.forEach((item) => {
+						gsap.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
+					});
+				},
+			});
+			return;
+		}
+
+		if (animationClass === "animation-inner-fade") {
+			const items = getInnerFadeTargets(el);
+			const { from, to } = animationPresets["animation-inner-fade"]({ distance: options.distance });
+			items.forEach((item) => {
+				gsap.killTweensOf(item);
+				gsap.set(item, from);
+			});
+			gsap.to(items, {
+				...to,
+				delay: totalDelay,
+				duration: options.duration,
+				ease: options.ease,
+				stagger: options.stagger ?? 0.04,
+				onComplete: () => {
+					items.forEach((item) => {
+						gsap.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
+					});
+				},
+			});
+			return;
+		}
+
+		const factory = animationPresets[animationClass as keyof typeof animationPresets];
+		if (!factory) return;
+
+		const { from, to } = factory({ distance: options.distance });
+
+		gsap.set(el, from);
+		el.classList.remove("nextora-scroll-animation--ready");
+		el.classList.add("nextora-scroll-animation--pending");
+
+		gsap.to(el, {
+			...to,
+			delay: totalDelay,
+			duration: options.duration,
+			ease: options.ease,
+			onComplete: () => {
+				el.classList.remove("nextora-scroll-animation--pending");
+				el.classList.add("nextora-scroll-animation--ready");
+				gsap.set(el, { clearProps: "opacity,transform,translate,rotate,scale" });
+			},
+		});
+	});
+}
+
+/**
+ * Reset animation state for elements inside mega menu panel when closing or unhovering.
+ */
+export function resetMegaMenuAnimations(panel: HTMLElement): void {
+	if (!panel) return;
+	const selector = getAnimationSelector();
+	const targets = panel.querySelectorAll<HTMLElement>(selector);
+	targets.forEach((el) => {
+		gsap.killTweensOf(el);
+		gsap.set(el, { clearProps: "opacity,transform,translate,rotate,scale" });
+		el.classList.remove("nextora-scroll-animation--pending");
+		el.classList.add("nextora-scroll-animation--ready");
+	});
+}
+
 /** Expose preset registration and force-play for child themes / portal reinit. */
 export function attachScrollAnimationGlobals(): void {
+	(window as any).gsap = gsap;
 	window.nextoraRegisterScrollAnimation = registerScrollAnimationPreset;
 	window.nextoraForceScrollAnimations = forcePlayAllRevealTriggers;
 	window.nextoraScanScrollAnimations = scanScrollAnimations;
+	window.nextoraPlayMegaMenuAnimations = playMegaMenuAnimations;
+	window.nextoraResetMegaMenuAnimations = resetMegaMenuAnimations;
 }
 
 declare global {
@@ -281,5 +415,7 @@ declare global {
 		nextoraRegisterScrollAnimation?: typeof registerScrollAnimationPreset;
 		nextoraForceScrollAnimations?: typeof forcePlayAllRevealTriggers;
 		nextoraScanScrollAnimations?: typeof scanScrollAnimations;
+		nextoraPlayMegaMenuAnimations?: typeof playMegaMenuAnimations;
+		nextoraResetMegaMenuAnimations?: typeof resetMegaMenuAnimations;
 	}
 }

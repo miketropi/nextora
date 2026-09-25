@@ -19,16 +19,23 @@ function withSpecialDefaults(
 	options: ScrollAnimationOptions,
 	defaults: Partial<ScrollAnimationOptions>,
 ): ScrollAnimationOptions {
+	const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 	const hasDelayOverride =
 		el.hasAttribute("data-delay") ||
 		Array.from(el.classList).some((cls) => /^(?:animation-)?delay-\d+/.test(cls));
 
+	const defaultDuration = isMegaMenu ? 0.38 : (defaults.duration ?? options.duration);
+	const defaultDistance = isMegaMenu ? 14 : (defaults.distance ?? options.distance);
+	const defaultStagger = isMegaMenu ? 0.02 : (defaults.stagger ?? options.stagger);
+	const defaultDelay = isMegaMenu ? 0 : (defaults.delay ?? options.delay);
+	const defaultEase = isMegaMenu ? "power2.out" : (defaults.ease ?? options.ease);
+
 	return {
-		delay: hasDelayOverride ? options.delay : (defaults.delay ?? options.delay),
-		duration: el.hasAttribute("data-duration") ? options.duration : (defaults.duration ?? options.duration),
-		ease: el.hasAttribute("data-ease") ? options.ease : (defaults.ease ?? options.ease),
-		stagger: el.hasAttribute("data-stagger") ? options.stagger : (defaults.stagger ?? options.stagger),
-		distance: el.hasAttribute("data-distance") ? options.distance : (defaults.distance ?? options.distance),
+		delay: hasDelayOverride ? options.delay : defaultDelay,
+		duration: el.hasAttribute("data-duration") ? options.duration : defaultDuration,
+		ease: el.hasAttribute("data-ease") ? options.ease : defaultEase,
+		stagger: el.hasAttribute("data-stagger") ? options.stagger : defaultStagger,
+		distance: el.hasAttribute("data-distance") ? options.distance : defaultDistance,
 		parallaxSpeed: options.parallaxSpeed,
 	};
 }
@@ -93,8 +100,13 @@ export function initImageClipReveal(
 			});
 		};
 
+		const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 		if (revealImmediately) {
-			afterInitialLayout(play);
+			if (isMegaMenu) {
+				play();
+			} else {
+				afterInitialLayout(play);
+			}
 		} else {
 			gsap.to(img, {
 				clipPath: "inset(0 0% 0 0)",
@@ -169,8 +181,13 @@ export function initImageBorderReveal(
 			});
 		};
 
+		const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 		if (revealImmediately) {
-			afterInitialLayout(play);
+			if (isMegaMenu) {
+				play();
+			} else {
+				afterInitialLayout(play);
+			}
 		} else {
 			const st = buildRevealScrollTrigger(img, "top 90%");
 
@@ -225,9 +242,10 @@ function initTextWordReveal(
 		}
 
 		el.classList.remove("nextora-scroll-animation--pending");
+		const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 		const initialDelay = el.hasAttribute("data-delay")
 			? resolved.delay
-			: (revealImmediately ? 0.2 : resolved.delay);
+			: (isMegaMenu ? resolved.delay : (revealImmediately ? 0.2 : resolved.delay));
 
 		if (revealImmediately) {
 			gsap.from(split.words, {
@@ -263,8 +281,13 @@ function initTextWordReveal(
 		}
 	};
 
+	const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 	if (revealImmediately) {
-		afterInitialLayout(setupAndPlay);
+		if (isMegaMenu) {
+			setupAndPlay();
+		} else {
+			afterInitialLayout(setupAndPlay);
+		}
 	} else {
 		setupAndPlay();
 	}
@@ -295,9 +318,10 @@ function initTextCharReveal(
 		}
 
 		el.classList.remove("nextora-scroll-animation--pending");
+		const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 		const initialDelay = el.hasAttribute("data-delay")
 			? resolved.delay
-			: (revealImmediately ? 0.15 : resolved.delay);
+			: (isMegaMenu ? resolved.delay : (revealImmediately ? 0.15 : resolved.delay));
 
 		if (revealImmediately) {
 			gsap.from(split.chars, {
@@ -333,8 +357,13 @@ function initTextCharReveal(
 		}
 	};
 
+	const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 	if (revealImmediately) {
-		afterInitialLayout(setupAndPlay);
+		if (isMegaMenu) {
+			setupAndPlay();
+		} else {
+			afterInitialLayout(setupAndPlay);
+		}
 	} else {
 		setupAndPlay();
 	}
@@ -365,9 +394,10 @@ function initTextCharRiseReveal(
 	gsap.set(split.chars, { opacity: 0, x: resolved.distance });
 	const revealImmediately = isInInitialRevealViewport(el);
 	const play = (): void => {
+		const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 		const initialDelay = el.hasAttribute("data-delay")
 			? resolved.delay
-			: (revealImmediately ? 0.2 : resolved.delay);
+			: (isMegaMenu ? resolved.delay : (revealImmediately ? 0.2 : resolved.delay));
 		gsap.to(split.chars, {
 			x: 0,
 			y: 0,

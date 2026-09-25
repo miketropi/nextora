@@ -2,6 +2,7 @@ export interface EventItem {
 	id: string;
 	day: string;
 	month: string;
+	year?: string;
 	category: string;
 	title: string;
 	description: string;
@@ -22,11 +23,17 @@ export interface EventAttributes {
 	template: string;
 	events: EventItem[];
 	showRegisterButton: boolean;
+	showDate?: boolean;
+	showImage?: boolean;
+	showLocation?: boolean;
+	showTime?: boolean;
+	showDescription?: boolean;
 	registerButtonText: string;
 	registerButtonIcon?: string;
 	template3Alternating: boolean;
 	titleFontSize?: string;
 	descriptionFontSize?: string;
+	compactDescriptionColor?: string;
 	cardBackgroundColor: string;
 	cardBorderColor: string;
 	dateBackgroundColor: string;
@@ -44,6 +51,8 @@ export interface EventAttributes {
 	paginationColor: string;
 	paginationActiveColor: string;
 	enableScrollAnimation: boolean;
+	enableAnimation?: boolean;
+	animationStyle?: 'sequential' | 'default';
 	autoplay: boolean;
 	autoplayDelay: number;
 	loop: boolean;

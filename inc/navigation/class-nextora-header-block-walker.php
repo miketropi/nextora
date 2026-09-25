@@ -113,7 +113,7 @@ class Nextora_Header_Block_Menu_Walker extends Walker_Nav_Menu {
 		if ( $has_children ) {
 			$icon = apply_filters(
 				'nextora_header_block_submenu_toggle_icon',
-				'<span class="nextora-submenu-toggle__icon" aria-hidden="true"><svg width="12" height="8" viewBox="0 0 12 8" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>',
+				'<span class="nextora-submenu-toggle__icon" aria-hidden="true"><svg class="lucide lucide-chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="m6 9 6 6 6-6"/></svg></span>',
 				$item,
 				(int) $depth,
 			);

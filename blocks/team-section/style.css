@@ -708,7 +708,7 @@
 	pointer-events: auto;
 }
 
-.nextora-team-section__deck-info-pane.is-active > * {
+.nextora-team-section__deck-info-pane.is-active>* {
 	opacity: 1;
 }
 
@@ -883,12 +883,12 @@ body.nextora-team-drawer-open {
 .nextora-team-drawer__backdrop {
 	position: fixed;
 	inset: 0;
-	background: rgba(10, 10, 10, 0.45);
-	backdrop-filter: blur(8px);
-	-webkit-backdrop-filter: blur(8px);
+	background-color: var(--nextora-modal-scrim, rgba(0, 0, 0, 0.5));
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
 	z-index: 99991;
 	opacity: 0;
-	transition: opacity 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+	transition: opacity 0.3s ease-in-out;
 	cursor: pointer;
 }
 
@@ -902,9 +902,8 @@ body.nextora-team-drawer-open {
 	top: 0;
 	right: 0;
 	bottom: 0;
-	width: 45vw;
 	max-width: 720px;
-	min-width: 420px;
+	min-width: 600px;
 	height: 100vh;
 	height: 100dvh;
 	background-color: var(--wp--preset--color--base, #ffffff);
@@ -1044,7 +1043,7 @@ body.nextora-team-drawer-open {
 
 /* Name */
 .nextora-team-drawer__name {
-	font-size: var(--wp--preset--font-size--large, clamp(1.45rem, 2.2vw, 1.85rem));
+	font-size: var(--wp--preset--font-size--medium-plus, clamp(1.45rem, 2.2vw, 1.85rem));
 	line-height: 1.25;
 	margin: 0;
 }
@@ -1052,7 +1051,7 @@ body.nextora-team-drawer-open {
 /* Role */
 .nextora-team-drawer__role {
 	font-size: var(--wp--preset--font-size--base, 1rem);
-	font-weight: 600;
+	font-weight: 400;
 	color: var(--nextora-team-role-color, var(--wp--preset--color--primary, #1a56db)) !important;
 	margin: 0 !important;
 	letter-spacing: 0.01em;

@@ -105,6 +105,26 @@
       "type": "boolean",
       "default": true
     },
+    "showDate": {
+      "type": "boolean",
+      "default": true
+    },
+    "showImage": {
+      "type": "boolean",
+      "default": true
+    },
+    "showLocation": {
+      "type": "boolean",
+      "default": true
+    },
+    "showTime": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDescription": {
+      "type": "boolean",
+      "default": true
+    },
     "registerButtonText": {
       "type": "string",
       "default": "Register"
@@ -118,6 +138,10 @@
       "default": false
     },
     "titleFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "compactDescriptionColor": {
       "type": "string",
       "default": ""
     },
@@ -192,6 +216,14 @@
     "enableScrollAnimation": {
       "type": "boolean",
       "default": true
+    },
+    "enableAnimation": {
+      "type": "boolean",
+      "default": false
+    },
+    "animationStyle": {
+      "type": "string",
+      "default": "sequential"
     },
     "autoplay": {
       "type": "boolean",

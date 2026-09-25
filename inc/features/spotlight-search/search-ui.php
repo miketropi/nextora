@@ -68,9 +68,9 @@ function nextora_get_spotlight_search_inner_html( array $args ): string {
 		<div class="nextora-spotlight__field">
 			<span class="nextora-spotlight__field-icon" aria-hidden="true">
 				<span class="nextora-spotlight__field-icon-slot nextora-spotlight__field-icon-slot--search">
-					<svg width="20" height="20" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-						<circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" />
-						<path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+					<svg class="lucide lucide-search" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+						<circle cx="11" cy="11" r="8" />
+						<path d="m21 21-4.3-4.3" />
 					</svg>
 				</span>
 				<span class="nextora-spotlight__field-icon-slot nextora-spotlight__field-icon-slot--loading" aria-hidden="true"></span>

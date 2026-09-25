@@ -8,6 +8,11 @@ export interface EventTecAttributes {
 	order: string;
 	excludeIds: string;
 	showRegisterButton: boolean;
+	showDate?: boolean;
+	showImage?: boolean;
+	showLocation?: boolean;
+	showTime?: boolean;
+	showDescription?: boolean;
 	registerButtonText: string;
 	registerButtonIcon?: string;
 	cardBackgroundColor: string;
@@ -18,6 +23,7 @@ export interface EventTecAttributes {
 	titleColor: string;
 	titleFontSize?: string;
 	descriptionFontSize?: string;
+	compactDescriptionColor?: string;
 	metaColor: string;
 	metaIconColor: string;
 	registerBackgroundColor: string;
@@ -29,6 +35,8 @@ export interface EventTecAttributes {
 	paginationColor: string;
 	paginationActiveColor: string;
 	enableScrollAnimation: boolean;
+	enableAnimation?: boolean;
+	animationStyle?: 'sequential' | 'default';
 	autoplay: boolean;
 	autoplayDelay: number;
 	loop: boolean;

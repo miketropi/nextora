@@ -132,8 +132,9 @@ export function initTextTypewriter(el: HTMLElement, markInitialized: (node: HTML
 	revertTypewriterText(el);
 
 	const options = parseScrollAnimationOptions(el);
-	const startDelayMs = (el.hasAttribute("data-delay") ? options.delay : (shouldPlayImmediately(el) ? 0.1 : 0.25)) * 1000;
-	const charDelayMs = (el.hasAttribute("data-stagger") ? (options.stagger ?? 0.045) : 0.045) * 1000;
+	const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
+	const startDelayMs = (el.hasAttribute("data-delay") ? options.delay : (isMegaMenu ? 0 : (shouldPlayImmediately(el) ? 0.1 : 0.25))) * 1000;
+	const charDelayMs = (el.hasAttribute("data-stagger") ? (options.stagger ?? 0.045) : (isMegaMenu ? 0.02 : 0.045)) * 1000;
 
 	const state = prepareTypewriterElement(el);
 	if (!state) {
@@ -160,7 +161,11 @@ export function initTextTypewriter(el: HTMLElement, markInitialized: (node: HTML
 	});
 
 	if (shouldPlayImmediately(el)) {
-		afterInitialLayout(run);
+		if (isMegaMenu) {
+			run();
+		} else {
+			afterInitialLayout(run);
+		}
 	}
 
 	markInitialized(el);

@@ -1,0 +1,489 @@
+/* Compact List is isolated from all existing Event templates. */
+.nextora-event--template4 {
+	container-type: inline-size;
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.nextora-event--template4 *,
+.nextora-event--template4 *::before,
+.nextora-event--template4 *::after {
+	box-sizing: border-box;
+}
+
+.nextora-event--template4 .nextora-event-compact__list {
+	display: grid;
+	gap: 8px;
+}
+
+.nextora-event--template4 .nextora-event-compact__item {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+	padding: 10px;
+	border: 1px solid transparent;
+	border-radius: 12px;
+	background-color: var(--wp--preset--color--base, #ffffff);
+	transition:
+		border-color 0.25s ease,
+		background-color 0.25s ease;
+}
+
+.nextora-event--template4 .nextora-event-compact__date {
+	display: flex;
+	flex: 0 0 46px;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	align-self: stretch;
+	min-height: 64px;
+	padding: 6px 3px;
+	border-radius: 8px;
+	line-height: 1.25;
+	background-color: var(--wp--preset--color--surface, #f5f3ff);
+	transition: background-color 0.3s ease;
+}
+
+.nextora-event--template4 .nextora-event-compact__month {
+	font-size: 11px;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--paragraph, #8894b2);
+}
+
+.nextora-event--template4 .nextora-event-compact__day {
+	font-size: 22px;
+	font-weight: 700;
+}
+
+.nextora-event--template4 .nextora-event-compact__year {
+	font-size: 10px;
+	color: var(--wp--preset--color--paragraph, #8894b2);
+}
+
+.nextora-event--template4 .nextora-event-compact__image {
+	display: block;
+	flex: 0 0 76px;
+	width: 76px;
+	height: 64px;
+	max-width: none;
+	object-fit: cover;
+	border-radius: 9px;
+}
+
+.nextora-event--template4 .nextora-event-compact__content {
+	flex: 1 1 0;
+	min-width: 0;
+}
+
+.nextora-event--template4 .nextora-event-compact__title {
+	margin: 0 0 8px 0;
+	overflow-wrap: anywhere;
+}
+
+.nextora-event--template4 .nextora-event-compact__title a,
+.nextora-event--template4 .nextora-event-compact__title-link {
+	color: inherit;
+	text-decoration: none;
+	transition: color 0.25s ease, opacity 0.25s ease;
+}
+
+.nextora-event--template4 .nextora-event-compact__title a:hover,
+.nextora-event--template4 .nextora-event-compact__title-link:hover {
+	color: var(--nextora-event-title-hover-color, var(--wp--preset--color--primary, #3858e9));
+	opacity: 0.85;
+}
+
+.nextora-event--template4 .nextora-event-compact__title a:focus-visible,
+.nextora-event--template4 .nextora-event-compact__title-link:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+.nextora-event--template4 .nextora-event-compact__meta-row {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 2px;
+}
+
+.nextora-event--template4 .nextora-event-compact__location,
+.nextora-event--template4 .nextora-event-compact__time {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 11px;
+	line-height: 1.4;
+	min-width: 0;
+	max-width: 100%;
+	color: var(--wp--preset--color--paragraph, #8894b2);
+}
+
+.nextora-event--template4 .nextora-event-compact__location span,
+.nextora-event--template4 .nextora-event-compact__time span {
+	min-width: 0;
+	overflow-wrap: break-word;
+}
+
+.nextora-event--template4 .nextora-event-compact__pin,
+.nextora-event--template4 .nextora-event-compact__clock {
+	flex: 0 0 12px;
+	width: 12px;
+	height: 12px;
+}
+
+.nextora-event--template4 .nextora-event-compact__description {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	overflow-wrap: anywhere;
+	margin: 2px 0 0 0;
+	line-height: 1.4;
+	color: var(--wp--preset--color--paragraph, #8894b2);
+}
+
+.nextora-event--template4 .nextora-event-compact__action {
+	display: inline-flex;
+	flex: 0 0 30px;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	min-width: 0;
+	min-height: 0;
+	padding: 0;
+	border: 1px solid transparent;
+	border-radius: 50%;
+	text-decoration: none;
+	transition:
+		background-color 0.25s ease,
+		color 0.25s ease,
+		border-color 0.25s ease,
+		transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+		box-shadow 0.25s ease;
+}
+
+.nextora-event--template4 .nextora-event-compact__action svg {
+	display: block;
+	width: 16px;
+	height: 16px;
+	transition: transform 0.25s ease;
+}
+
+.nextora-event--template4 .nextora-event-compact__action:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 3px;
+}
+
+.nextora-event--template4 .nextora-event-compact__action:hover,
+.nextora-event--template4 .nextora-event-compact__action:focus-visible {
+	background-color: var(--nextora-event-register-hover-bg, var(--compact-action-bg)) !important;
+	color: var(--nextora-event-register-hover-text-color, var(--compact-action-color)) !important;
+	border-color: var(--nextora-event-register-hover-border-color, var(--compact-action-border, transparent)) !important;
+	transform: scale(1.08);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* ================================================================
+   Sequential & Entrance Animation
+   ================================================================ */
+
+@keyframes nextoraEventCompactFadeUp {
+	0% {
+		opacity: 0;
+		transform: translateY(14px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item,
+.nextora-event--animation-default .nextora-event-compact__item {
+	will-change: transform, opacity;
+}
+
+/* Base state inside mega menu: initially hidden until panel is opened or hovered */
+.has-mega-menu .nextora-event--animation-sequential .nextora-event-compact__item,
+.has-mega-menu .nextora-event--animation-default .nextora-event-compact__item {
+	opacity: 0;
+	transform: translateY(14px);
+}
+
+/* Trigger animation when mega panel is hovered, opened, or during .is-animating */
+.has-mega-menu:hover .nextora-event--animation-sequential .nextora-event-compact__item,
+.has-mega-menu.beplus-vmn--open .nextora-event--animation-sequential .nextora-event-compact__item,
+.beplus-vmn-mega-panel.is-open .nextora-event--animation-sequential .nextora-event-compact__item,
+.nextora-event--animation-sequential.is-animating .nextora-event-compact__item,
+.nextora-event--animation-sequential.is-animated .nextora-event-compact__item {
+	animation-name: nextoraEventCompactFadeUp;
+	animation-duration: 0.38s;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	animation-fill-mode: both;
+}
+
+.has-mega-menu:hover .nextora-event--animation-default .nextora-event-compact__item,
+.has-mega-menu.beplus-vmn--open .nextora-event--animation-default .nextora-event-compact__item,
+.beplus-vmn-mega-panel.is-open .nextora-event--animation-default .nextora-event-compact__item,
+.nextora-event--animation-default.is-animating .nextora-event-compact__item,
+.nextora-event--animation-default.is-animated .nextora-event-compact__item {
+	animation-name: nextoraEventCompactFadeUp;
+	animation-duration: 0.38s;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	animation-fill-mode: both;
+}
+
+/* Sequential Stagger Delays (1 to 24 items) */
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(1) {
+	animation-delay: 0.04s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(2) {
+	animation-delay: 0.08s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(3) {
+	animation-delay: 0.12s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(4) {
+	animation-delay: 0.16s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(5) {
+	animation-delay: 0.20s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(6) {
+	animation-delay: 0.24s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(7) {
+	animation-delay: 0.28s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(8) {
+	animation-delay: 0.32s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(9) {
+	animation-delay: 0.36s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(10) {
+	animation-delay: 0.40s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(11) {
+	animation-delay: 0.44s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(12) {
+	animation-delay: 0.48s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(13) {
+	animation-delay: 0.52s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(14) {
+	animation-delay: 0.56s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(15) {
+	animation-delay: 0.60s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(16) {
+	animation-delay: 0.64s;
+}
+
+.nextora-event--animation-sequential .nextora-event-compact__item:nth-child(n+17) {
+	animation-delay: 0.68s;
+}
+
+/* When Mega Menu is unhovered / closed: reset state */
+.has-mega-menu:not(:hover):not(.beplus-vmn--open) .nextora-event--animation-sequential:not(.is-animating) .nextora-event-compact__item,
+.has-mega-menu:not(:hover):not(.beplus-vmn--open) .nextora-event--animation-default:not(.is-animating) .nextora-event-compact__item {
+	opacity: 0;
+	transform: translateY(14px);
+	animation: none;
+}
+
+/* Standalone list (not inside a mega menu panel) */
+:not(.beplus-vmn-mega-panel)>.nextora-event--animation-sequential .nextora-event-compact__item,
+body:not(.nextora-no-anim) .nextora-event--animation-sequential:not(.has-mega-menu *) .nextora-event-compact__item {
+	animation-name: nextoraEventCompactFadeUp;
+	animation-duration: 0.4s;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	animation-fill-mode: both;
+}
+
+:not(.beplus-vmn-mega-panel)>.nextora-event--animation-default .nextora-event-compact__item,
+body:not(.nextora-no-anim) .nextora-event--animation-default:not(.has-mega-menu *) .nextora-event-compact__item {
+	animation-name: nextoraEventCompactFadeUp;
+	animation-duration: 0.4s;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	animation-fill-mode: both;
+}
+
+/* Block Editor Preview & Admin Overrides */
+:is(.editor-styles-wrapper, .block-editor-block-list__layout, .beplus-vmn-editor, .beplus-vmn-modal, .interface-interface-skeleton, body.wp-admin) .nextora-event-compact__item,
+:is(.editor-styles-wrapper, .block-editor-block-list__layout, .beplus-vmn-editor, .beplus-vmn-modal, .interface-interface-skeleton, body.wp-admin) .nextora-event--template4 .nextora-event-compact__item {
+	opacity: 1 !important;
+	transform: none !important;
+	animation: none !important;
+	visibility: visible !important;
+}
+
+/* Block Editor Preview */
+.editor-styles-wrapper .nextora-event--animation-sequential .nextora-event-compact__item,
+.editor-styles-wrapper .nextora-event--animation-default .nextora-event-compact__item {
+	animation-name: nextoraEventCompactFadeUp;
+	animation-duration: 0.4s;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	animation-fill-mode: both;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+	.nextora-event--animation-sequential .nextora-event-compact__item,
+	.nextora-event--animation-default .nextora-event-compact__item {
+		animation: none !important;
+		opacity: 1 !important;
+		transform: none !important;
+		transition: none !important;
+	}
+}
+
+@container (max-width: 360px) {
+	.nextora-event--template4 .nextora-event-compact__item {
+		gap: 12px;
+		padding: 8px 10px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__date {
+		flex: 0 0 48px;
+		min-height: 54px;
+		padding: 4px 2px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__month {
+		font-size: 10px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__day {
+		font-size: 19px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__year {
+		font-size: 9px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__image {
+		flex: 0 0 54px;
+		width: 54px;
+		height: 52px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__title {
+		margin-bottom: 4px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__meta-row {
+		gap: 8px;
+		margin-top: 2px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__location,
+	.nextora-event--template4 .nextora-event-compact__time {
+		font-size: 11px;
+		max-width: 100%;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__location span {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__action {
+		flex: 0 0 26px;
+		width: 26px;
+		height: 26px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__action svg {
+		width: 14px;
+		height: 14px;
+	}
+}
+
+@container (max-width: 280px) {
+	.nextora-event--template4 .nextora-event-compact__item {
+		gap: 6px;
+		padding: 8px 8px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__date {
+		flex: 0 0 38px;
+		min-height: 50px;
+		padding: 3px 1px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__day {
+		font-size: 17px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__month {
+		font-size: 9px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__year {
+		font-size: 8px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__action {
+		flex: 0 0 24px;
+		width: 24px;
+		height: 24px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__action svg {
+		width: 12px;
+		height: 12px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__meta-row {
+		gap: 6px;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__location,
+	.nextora-event--template4 .nextora-event-compact__time {
+		font-size: 10.5px;
+	}
+}
+
+@container (max-width: 220px) {
+	.nextora-event--template4 .nextora-event-compact__item {
+		flex-wrap: wrap;
+		align-items: flex-start;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__content {
+		flex-basis: 100%;
+		order: 2;
+	}
+
+	.nextora-event--template4 .nextora-event-compact__action {
+		margin-left: auto;
+		order: 1;
+	}
+}

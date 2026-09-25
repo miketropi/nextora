@@ -24,6 +24,7 @@ export interface EventEditFormProps {
 	imageUrl?: string;
 	showEditorialFields?: boolean;
 	showDescription?: boolean;
+	compact?: boolean;
 	onPatch: (patch: Partial<EventItem>) => void;
 }
 
@@ -32,10 +33,11 @@ export default function EventEditForm({
 	imageUrl,
 	showEditorialFields = false,
 	showDescription = false,
+	compact = false,
 	onPatch,
 }: EventEditFormProps) {
 	const [iconPickerOpen, setIconPickerOpen] = useState(false);
-	const dateInputValue = eventDateInputValue(event.day, event.month);
+	const dateInputValue = eventDateInputValue(event.day, event.month, event.year);
 	const timeInputValue = eventTimeInputValue(event.time);
 
 	return (
@@ -128,7 +130,7 @@ export default function EventEditForm({
 						id={`nextora-event-date-${event.id}`}
 						label={__('Date', 'nextora')}
 						help={__(
-							'Pick a date — day and month on the card update automatically.',
+							'Pick a date — day, month, and year update automatically.',
 							'nextora',
 						)}
 					>
@@ -141,6 +143,8 @@ export default function EventEditForm({
 								const parsed = dayMonthFromDateInput(e.target.value);
 								if (parsed) {
 									onPatch(parsed);
+								} else if (!e.target.value && compact) {
+									onPatch({ day: '', month: '', year: '' });
 								}
 							}}
 						/>
@@ -181,11 +185,13 @@ export default function EventEditForm({
 					/>
 				</div>
 
+				{compact && <TextControl label={__('Year (optional)', 'nextora')} value={event.year || ''} onChange={(year) => onPatch({ year: year || '' })} />}
 				<TextControl
 					label={__('Location', 'nextora')}
 					value={event.location}
 					onChange={(location) => onPatch({ location: location ?? '' })}
 				/>
+				{!compact && <>
 				<TextControl
 					label={__('Price / ticket', 'nextora')}
 					value={event.price}
@@ -257,6 +263,7 @@ export default function EventEditForm({
 					/>
 				) : null}
 
+				</>}
 				<div className="nextora-event__event-form-link">
 					<p className="nextora-event__event-form-label">{__('Register link URL', 'nextora')}</p>
 					<URLInput

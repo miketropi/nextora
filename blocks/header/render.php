@@ -381,7 +381,7 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			. '  .nextora-header-block__cart-placeholder{width:2rem;height:2rem;}' . "\n"
 			. '  .nextora-header-block__menu-toggle,' . "\n"
 			. '  .nextora-header-block__search--spotlight button[data-nextora-modal-open]{width:2rem;height:2rem;}' . "\n"
-			. '  .nextora-header-block__search--spotlight button[data-nextora-modal-open] svg{width:20px;height:20px;}' . "\n"
+			. '  .nextora-header-block__search--spotlight button[data-nextora-modal-open] svg{width:1.5rem;height:1.5rem;}' . "\n"
 
 			// -- utilities / actions reflow --------------------------------
 			. '  .nextora-header-block__utilities{column-gap:0.25rem;row-gap:0.25rem;align-items:center;min-width:0;flex-shrink:1;}' . "\n"
@@ -766,10 +766,10 @@ if ( ! function_exists( 'nextora_header_block_render_simple_search_form' ) ) {
 			$placeholder = __( 'Search …', 'nextora' );
 		}
 		$search_query = get_search_query();
-		$icon_svg     = '<svg class="nextora-header-block__search-submit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" /><path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>';
+		$icon_svg     = '<svg class="lucide lucide-search nextora-header-block__search-submit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';
 		$icon_svg     = apply_filters( 'nextora_header_simple_search_submit_icon_svg', $icon_svg );
 		if ( ! is_string( $icon_svg ) || '' === trim( $icon_svg ) ) {
-			$icon_svg = '<svg class="nextora-header-block__search-submit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2" /><path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>';
+			$icon_svg = '<svg class="lucide lucide-search nextora-header-block__search-submit-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';
 		}
 ?>
 		<form role="search" method="get" class="search-form" action="<?php echo esc_url( $form_action ); ?>">
@@ -982,7 +982,7 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 			$links[] = $social;
 		}
 
-		$chevron_svg = '<svg class="nextora-header-block__follow-us-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+		$chevron_svg = '<svg class="lucide lucide-chevron-down nextora-header-block__follow-us-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>';
 
 		$root_class = 'nextora-header-block__follow-us';
 		if ( $is_drawer ) {
@@ -1055,14 +1055,14 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 						<?php if ( '' !== $email ) : ?>
 							<a class="nextora-header-block__follow-us-contact" href="<?php echo esc_url( $email_link ); ?>">
 								<span class="nextora-header-block__follow-us-contact-icon" aria-hidden="true">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail-icon lucide-mail">
-										<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
-										<rect x="2" y="4" width="20" height="16" rx="2" />
+									<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail">
+										<rect width="20" height="16" x="2" y="4" rx="2" />
+										<path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
 									</svg></span>
 								<span class="nextora-header-block__follow-us-contact-text"><?php echo esc_html( $email ); ?></span>
 								<span class="nextora-header-block__follow-us-contact-chevron" aria-hidden="true">
-									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-										<path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right">
+										<path d="m9 18 6-6-6-6" />
 									</svg>
 								</span>
 							</a>
@@ -1070,13 +1070,13 @@ if ( ! function_exists( 'nextora_header_block_render_follow_us' ) ) {
 						<?php if ( '' !== $phone ) : ?>
 							<a class="nextora-header-block__follow-us-contact" href="<?php echo esc_url( $phone_url ); ?>">
 								<span class="nextora-header-block__follow-us-contact-icon" aria-hidden="true">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone-icon lucide-phone">
-										<path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384" />
+									<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone">
+										<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
 									</svg> </span>
 								<span class="nextora-header-block__follow-us-contact-text"><?php echo esc_html( $phone ); ?></span>
 								<span class="nextora-header-block__follow-us-contact-chevron" aria-hidden="true">
-									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-										<path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right">
+										<path d="m9 18 6-6-6-6" />
 									</svg>
 								</span>
 							</a>
@@ -1519,9 +1519,9 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 			<div class="nextora-header-block__account">
 				<a class="<?php echo esc_attr( $acct_class ); ?>" href="<?php echo esc_url( wc_get_account_endpoint_url( 'dashboard' ) ); ?>" aria-label="<?php esc_attr_e( 'My account', 'nextora' ); ?>">
 					<span class="nextora-header-block__account-icon" aria-hidden="true">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
-							<circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.7" />
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user" aria-hidden="true" focusable="false">
+							<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+							<circle cx="12" cy="7" r="4" />
 						</svg>
 					</span>
 					<?php if ( $show_acct_text ) : ?>
@@ -1723,7 +1723,7 @@ ob_start();
 ?>
 <button
 	type="button"
-	class="nextora-header-block__menu-toggle nextora-header-block__menu-toggle--hamburger"
+	class="nextora-header-block__menu-toggle"
 	data-nextora-nav-toggle
 	data-nextora-nav-clone-source="#<?php echo esc_attr( $source_id ); ?>"
 	data-nextora-nav-portal-root="<?php echo esc_attr( $portal_root_id ); ?>"
@@ -1736,9 +1736,11 @@ ob_start();
 	aria-expanded="false"
 	aria-controls="<?php echo esc_attr( $portal_panel ); ?>"
 	aria-label="<?php echo esc_attr( $open_label ); ?>">
-	<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
-	<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
-	<span class="nextora-header-block__hamburger-line" aria-hidden="true"></span>
+	<svg class="lucide lucide-menu" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+		<line x1="4" x2="20" y1="12" y2="12" />
+		<line x1="4" x2="20" y1="6" y2="6" />
+		<line x1="4" x2="20" y1="18" y2="18" />
+	</svg>
 </button>
 <?php
 $menu_toggle_markup = (string) ob_get_clean();
@@ -1828,6 +1830,46 @@ $header_inner_markup = (string) ob_get_clean();
 	echo $header_inner_markup;
 	?>
 </div>
+<script>
+(function(){
+	var all = document.querySelectorAll('.nextora-header-block');
+	var h = all.length ? all[all.length - 1] : null;
+	if (!h) return;
+	var toggle = h.querySelector('[data-nextora-nav-toggle]');
+	var mbp = toggle && toggle.getAttribute('data-nextora-mobile-breakpoint') ? parseInt(toggle.getAttribute('data-nextora-mobile-breakpoint'), 10) : 768;
+	var ww = window.innerWidth;
+	if (ww > 1400 || ww < mbp) return;
+	var n = h.querySelector('.nextora-header-block__nav-source');
+	var m = h.querySelector('.nextora-header-menu');
+	if (!n || !m) return;
+	var items = m.children;
+	if (!items || !items.length) return;
+	var total = 0;
+	for (var i = 0; i < items.length; i++) {
+		total += items[i].offsetWidth || 0;
+	}
+	var gap = parseFloat(window.getComputedStyle(m).gap) || 20;
+	var numGaps = Math.max(0, items.length - 1);
+	var avail = n.clientWidth;
+	if (avail > 0) {
+		var full = total + numGaps * gap;
+		if (full > avail) {
+			var minGap = 6;
+			var remForGaps = avail - 8 - total;
+			if (numGaps > 0 && (remForGaps / numGaps) >= minGap) {
+				var gapScale = Math.round(Math.max(0.25, (remForGaps / numGaps) / gap) * 1000) / 1000;
+				h.style.setProperty('--nextora-header-nav-scale', '1');
+				h.style.setProperty('--nextora-header-nav-gap-scale', String(gapScale));
+			} else {
+				var targetFontScale = Math.min(1, Math.max(0.70, (avail - 8 - numGaps * minGap) / total));
+				var minGapScale = Math.round(Math.max(0.2, minGap / gap) * 1000) / 1000;
+				h.style.setProperty('--nextora-header-nav-scale', String(Math.round(targetFontScale * 1000) / 1000));
+				h.style.setProperty('--nextora-header-nav-gap-scale', String(minGapScale));
+			}
+		}
+	}
+})();
+</script>
 <?php
 // Output custom breakpoint inline style when set to non-default value.
 $breakpoint_css = nextora_header_block_mobile_breakpoint_css( $mobile_bp );

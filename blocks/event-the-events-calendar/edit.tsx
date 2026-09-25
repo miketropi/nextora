@@ -18,6 +18,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import ServerSideRender from '@wordpress/server-side-render';
+import CompactColorSettings from '../event/compact-settings';
 import type { EventTecAttributes, EventTecColorAttribute } from './types';
 import {
 	colorValueForPicker,
@@ -71,7 +72,12 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 		orderBy,
 		order,
 		excludeIds,
-		showRegisterButton,
+		showRegisterButton = true,
+		showDate = true,
+		showImage = true,
+		showLocation = true,
+		showTime = true,
+		showDescription = true,
 		registerButtonText,
 		registerButtonIcon = 'calendar-days',
 		cardBackgroundColor,
@@ -93,6 +99,8 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 		paginationColor,
 		paginationActiveColor,
 		enableScrollAnimation,
+		enableAnimation = false,
+		animationStyle = 'sequential',
 		autoplay,
 		autoplayDelay,
 		loop,
@@ -112,6 +120,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 		ref: containerRef,
 		className: [
 			'nextora-event-tec-editor-wrapper',
+			template === 'template4' ? ['nextora-event--template4', enableAnimation ? `nextora-event--animation-${animationStyle || 'sequential'}` : ''].filter(Boolean).join(' ') : '',
 			template === 'template1' ? 'nextora-event--template1-editor' : '',
 			template === 'template2' ? 'nextora-event--template2-editor' : '',
 			template === 'template3' ? 'nextora-event--template3-editor' : '',
@@ -339,12 +348,13 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				<PanelBody title={__('Layout & Template', 'nextora')} initialOpen={true}>
 					<SelectControl
 						label={__('Template', 'nextora')}
-						value={template as 'default' | 'template1' | 'template2' | 'template3'}
+						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4'}
 						options={[
 							{ label: __('Default (List)', 'nextora'), value: 'default' },
 							{ label: __('Template 1 (Card Slider)', 'nextora'), value: 'template1' },
 							{ label: __('Template 2 (Horizontal Card Slider)', 'nextora'), value: 'template2' },
 							{ label: __('Template 3 (Editorial Alternating)', 'nextora'), value: 'template3' },
+							{ label: __('Template 4 — Compact List', 'nextora'), value: 'template4' },
 						]}
 						onChange={(val) => setAttributes({ template: val })}
 					/>
@@ -358,81 +368,118 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 					)}
 				</PanelBody>
 
-				{/* ── Button Settings ── */}
-				<PanelBody title={__('Register Button', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Show Register Button', 'nextora')}
-						checked={showRegisterButton}
-						onChange={(val) => setAttributes({ showRegisterButton: val })}
-					/>
-					{showRegisterButton && (
+				{/* ── Settings / Button Settings ── */}
+				<PanelBody title={template === 'template4' ? __('Settings', 'nextora') : __('Register Button', 'nextora')} initialOpen={false}>
+					{template === 'template4' ? (
 						<>
-							<TextControl
-								label={__('Default Button Text', 'nextora')}
-								value={registerButtonText}
-								onChange={(val) => setAttributes({ registerButtonText: val })}
+							<ToggleControl
+								label={__('Show date badge', 'nextora')}
+								checked={showDate !== false}
+								onChange={(val) => setAttributes({ showDate: val })}
 							/>
-							<BaseControl
-								label={__('Button icon', 'nextora')}
-								help={__(
-									'Choose an icon before the button label (e.g. calendar-days for Register, ticket for Get ticket).',
-									'nextora',
-								)}
-							>
-								<div
-									style={{
-										display: 'flex',
-										alignItems: 'center',
-										gap: '10px',
-										marginTop: '6px',
-										flexWrap: 'wrap',
-									}}
-								>
-									<Button
-										variant="secondary"
-										onClick={() => setButtonIconPickerOpen(true)}
+							<ToggleControl
+								label={__('Show image', 'nextora')}
+								checked={showImage !== false}
+								onChange={(val) => setAttributes({ showImage: val })}
+							/>
+							<ToggleControl
+								label={__('Show location', 'nextora')}
+								checked={showLocation !== false}
+								onChange={(val) => setAttributes({ showLocation: val })}
+							/>
+							<ToggleControl
+								label={__('Show time', 'nextora')}
+								checked={showTime !== false}
+								onChange={(val) => setAttributes({ showTime: val })}
+							/>
+							<ToggleControl
+								label={__('Show description', 'nextora')}
+								checked={showDescription !== false}
+								onChange={(val) => setAttributes({ showDescription: val })}
+							/>
+							<ToggleControl
+								label={__('Show event arrow', 'nextora')}
+								checked={showRegisterButton !== false}
+								onChange={(val) => setAttributes({ showRegisterButton: val })}
+							/>
+						</>
+					) : (
+						<>
+							<ToggleControl
+								label={__('Show Register Button', 'nextora')}
+								checked={showRegisterButton !== false}
+								onChange={(val) => setAttributes({ showRegisterButton: val })}
+							/>
+							{showRegisterButton && (
+								<>
+									<TextControl
+										label={__('Default Button Text', 'nextora')}
+										value={registerButtonText}
+										onChange={(val) => setAttributes({ registerButtonText: val })}
+									/>
+									<BaseControl
+										label={__('Button icon', 'nextora')}
+										help={__(
+											'Choose an icon before the button label (e.g. calendar-days for Register, ticket for Get ticket).',
+											'nextora',
+										)}
 									>
-										{__('Choose icon', 'nextora')}
-									</Button>
-									<div
-										style={{
-											display: 'inline-flex',
-											alignItems: 'center',
-											gap: '8px',
-											padding: '4px 10px',
-											background: '#f0f0f1',
-											borderRadius: '4px',
-										}}
-									>
-										<EventButtonIcon
-											iconName={registerButtonIcon || 'calendar-days'}
-											size={16}
-										/>
-										<code style={{ fontSize: '13px', background: 'transparent' }}>
-											{registerButtonIcon || 'calendar-days'}
-										</code>
-									</div>
-									{registerButtonIcon && registerButtonIcon !== 'calendar-days' ? (
-										<Button
-											variant="link"
-											isDestructive
-											onClick={() => setAttributes({ registerButtonIcon: 'calendar-days' })}
+										<div
+											style={{
+												display: 'flex',
+												alignItems: 'center',
+												gap: '10px',
+												marginTop: '6px',
+												flexWrap: 'wrap',
+											}}
 										>
-											{__('Reset', 'nextora')}
-										</Button>
+											<Button
+												variant="secondary"
+												onClick={() => setButtonIconPickerOpen(true)}
+											>
+												{__('Choose icon', 'nextora')}
+											</Button>
+											<div
+												style={{
+													display: 'inline-flex',
+													alignItems: 'center',
+													gap: '8px',
+													padding: '4px 10px',
+													background: '#f0f0f1',
+													borderRadius: '4px',
+												}}
+											>
+												<EventButtonIcon
+													iconName={registerButtonIcon || 'calendar-days'}
+													size={16}
+												/>
+												<code style={{ fontSize: '13px', background: 'transparent' }}>
+													{registerButtonIcon || 'calendar-days'}
+												</code>
+											</div>
+											{registerButtonIcon && registerButtonIcon !== 'calendar-days' ? (
+												<Button
+													variant="link"
+													isDestructive
+													onClick={() => setAttributes({ registerButtonIcon: 'calendar-days' })}
+												>
+													{__('Reset', 'nextora')}
+												</Button>
+											) : null}
+										</div>
+									</BaseControl>
+									{buttonIconPickerOpen ? (
+										<IconPicker
+											currentIcon={registerButtonIcon || 'calendar-days'}
+											onSelect={(iconName) => {
+												setAttributes({ registerButtonIcon: iconName });
+												setButtonIconPickerOpen(false);
+											}}
+											onClose={() => setButtonIconPickerOpen(false)}
+										/>
 									) : null}
-								</div>
-							</BaseControl>
-							{buttonIconPickerOpen ? (
-								<IconPicker
-									currentIcon={registerButtonIcon || 'calendar-days'}
-									onSelect={(iconName) => {
-										setAttributes({ registerButtonIcon: iconName });
-										setButtonIconPickerOpen(false);
-									}}
-									onClose={() => setButtonIconPickerOpen(false)}
-								/>
-							) : null}
+								</>
+							)}
 						</>
 					)}
 				</PanelBody>
@@ -513,7 +560,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				)}
 
 				{/* ── Color Settings ── */}
-				<PanelColorSettings
+				{template === 'template4' ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings
 					title={__('Color Settings', 'nextora')}
 					colorSettings={[
 						colorProps('cardBackgroundColor', __('Card background', 'nextora')),
@@ -538,14 +585,63 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 								]
 							: []),
 					]}
-				/>
+				/>}
+
+				{/* ── Animation Settings ── */}
+				{template === 'template4' && (
+					<PanelBody
+						title={__('Animation', 'nextora')}
+						initialOpen={Boolean(enableAnimation)}
+					>
+						<ToggleControl
+							label={__('Enable Sequential Animation', 'nextora')}
+							help={__(
+								'Sequential: cards appear one by one with a gentle upward motion.',
+								'nextora',
+							)}
+							checked={Boolean(enableAnimation)}
+							onChange={(val) => setAttributes({ enableAnimation: val })}
+						/>
+						{enableAnimation && (
+							<SelectControl
+								label={__('Animation Style', 'nextora')}
+								value={animationStyle || 'sequential'}
+								options={[
+									{
+										label: __(
+											'Sequential (Cards appear one by one)',
+											'nextora',
+										),
+										value: 'sequential',
+									},
+									{
+										label: __(
+											'Fade Up (All items together)',
+											'nextora',
+										),
+										value: 'default',
+									},
+								]}
+								onChange={(val) =>
+									setAttributes({
+										animationStyle: val as 'sequential' | 'default',
+									})
+								}
+								help={__(
+									'Default: all items fade up together. Sequential: cards appear one by one with a gentle upward motion.',
+									'nextora',
+								)}
+							/>
+						)}
+					</PanelBody>
+				)}
 
 				{/* ── Typography Settings ── */}
 				<PanelBody title={__('Typography', 'nextora')} initialOpen={template === 'template3'}>
 					<BaseControl
 						label={__('Card title font size', 'nextora')}
 						id="nextora-event-tec-title-font-size"
-						help={__('Default inherits global heading size.', 'nextora')}
+						help={template === 'template4' ? __('Default: 14px for Compact List.', 'nextora') : __('Default inherits global heading size.', 'nextora')}
 					>
 						<FontSizePicker
 							value={titleFontSize || undefined}
@@ -560,7 +656,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 					<BaseControl
 						label={__('Card description font size', 'nextora')}
 						id="nextora-event-tec-description-font-size"
-						help={__('Default inherits global body size.', 'nextora')}
+						help={template === 'template4' ? __('Default: 12px for Compact List.', 'nextora') : __('Default inherits global body size.', 'nextora')}
 					>
 						<FontSizePicker
 							value={descriptionFontSize || undefined}
@@ -575,13 +671,15 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				</PanelBody>
 
 				{/* ── Animation Settings ── */}
-				<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Enable scroll reveal animation', 'nextora')}
-						checked={enableScrollAnimation}
-						onChange={(val) => setAttributes({ enableScrollAnimation: val })}
-					/>
-				</PanelBody>
+				{template !== 'template4' && (
+					<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
+						<ToggleControl
+							label={__('Enable scroll reveal animation', 'nextora')}
+							checked={enableScrollAnimation}
+							onChange={(val) => setAttributes({ enableScrollAnimation: val })}
+						/>
+					</PanelBody>
+				)}
 			</InspectorControls>
 
 			<div {...blockProps}>

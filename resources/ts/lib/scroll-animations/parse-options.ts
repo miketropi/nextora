@@ -65,16 +65,20 @@ export function resolveDelay(el: HTMLElement): number {
  * Supported: data-delay, animation-delay-*, data-duration, data-ease, data-stagger, data-distance, data-parallax-speed
  */
 export function parseScrollAnimationOptions(el: HTMLElement): ScrollAnimationOptions {
+	const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
+	const defaultDuration = isMegaMenu ? 0.38 : DEFAULT_DURATION;
+	const defaultDistance = isMegaMenu ? 14 : DEFAULT_DISTANCE;
+	const defaultEase = isMegaMenu ? "power2.out" : DEFAULT_EASE;
+
 	const parallaxFromAttr = readOptionalNumber(el, "data-parallax-speed");
 	const hasParallaxClass = el.classList.contains("animation-parallax");
 
 	return {
 		delay: resolveDelay(el),
-		duration: readNumber(el, "data-duration", DEFAULT_DURATION),
-		ease: el.getAttribute("data-ease")?.trim() || DEFAULT_EASE,
-		stagger: readOptionalNumber(el, "data-stagger"),
-		distance: readNumber(el, "data-distance", DEFAULT_DISTANCE),
+		duration: readNumber(el, "data-duration", defaultDuration),
+		ease: el.getAttribute("data-ease")?.trim() || defaultEase,
+		stagger: readOptionalNumber(el, "data-stagger") ?? (isMegaMenu ? 0.04 : null),
+		distance: readNumber(el, "data-distance", defaultDistance),
 		parallaxSpeed: parallaxFromAttr ?? (hasParallaxClass ? DEFAULT_PARALLAX_SPEED : null),
 	};
 }
-

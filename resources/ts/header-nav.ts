@@ -112,7 +112,7 @@ function ensurePortalCloseButton(panel: HTMLElement, closeLabel: string): HTMLBu
 	icon.className = "nextora-primary-nav-portal__close-icon";
 	icon.setAttribute("aria-hidden", "true");
 	icon.innerHTML =
-		'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+		'<svg class="lucide lucide-x" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 
 	btn.append(icon);
 
@@ -706,3 +706,159 @@ function bindPortalSubmenuAccordions(): void {
 		li.classList.toggle("nextora-submenu--open", next);
 	});
 }
+
+/**
+ * Auto-fit desktop navigation on 1 single line.
+ * Prioritizes keeping font size as large as possible:
+ * 1. Reduces gap first when space begins to tighten.
+ * 2. Only scales down font size when gap has reached minimum threshold.
+ */
+export function initHeaderNavAutoFit(): void {
+	const headers = document.querySelectorAll<HTMLElement>(".nextora-header-block");
+	if (!headers.length) {
+		return;
+	}
+
+	const MIN_FONT_SCALE = 0.70;
+	const MIN_GAP_PX = 6;
+	const MAX_RESPONSIVE_WIDTH = 1400;
+
+	function measureAndScale(header: HTMLElement): void {
+		const navSource = header.querySelector<HTMLElement>(".nextora-header-block__nav-source");
+		const menuUl = header.querySelector<HTMLUListElement>(".nextora-header-menu");
+		const toggle = header.querySelector<HTMLButtonElement>("[data-nextora-nav-toggle]");
+		const mobileBp = toggle?.dataset.nextoraMobileBreakpoint ? parseInt(toggle.dataset.nextoraMobileBreakpoint, 10) : 768;
+
+		if (!navSource || !menuUl || navSource.offsetWidth === 0) {
+			header.style.removeProperty("--nextora-header-nav-scale");
+			header.style.removeProperty("--nextora-header-nav-gap-scale");
+			return;
+		}
+
+		// When screen is wider than 1400px (Desktop Full) or smaller than mobileBreakpoint (drawer active):
+		const windowW = window.innerWidth;
+		if (windowW > MAX_RESPONSIVE_WIDTH || windowW < mobileBp) {
+			header.style.removeProperty("--nextora-header-nav-scale");
+			header.style.removeProperty("--nextora-header-nav-gap-scale");
+			return;
+		}
+
+		const items = Array.from(menuUl.children).filter((el): el is HTMLElement => el instanceof HTMLElement);
+		if (!items.length) {
+			header.style.removeProperty("--nextora-header-nav-scale");
+			header.style.removeProperty("--nextora-header-nav-gap-scale");
+			return;
+		}
+
+		const availableWidth = navSource.clientWidth;
+		if (availableWidth <= 0) {
+			return;
+		}
+
+		const currentFontScale = parseFloat(header.style.getPropertyValue("--nextora-header-nav-scale")) || 1;
+		const currentGapScale = parseFloat(header.style.getPropertyValue("--nextora-header-nav-gap-scale")) || 1;
+
+		// 1. Obtain stable natural unscaled width (cached to prevent subpixel calculation oscillation)
+		let naturalItemsWidth = parseFloat(header.dataset.nextoraNavNaturalWidth || "0");
+		let baseGap = parseFloat(header.dataset.nextoraNavBaseGap || "0");
+
+		if (currentFontScale === 1 || naturalItemsWidth <= 0) {
+			let sum = 0;
+			for (const item of items) {
+				sum += item.getBoundingClientRect().width;
+			}
+			const computedGap = parseFloat(window.getComputedStyle(menuUl).gap) || 20;
+			baseGap = currentGapScale > 0 ? computedGap / currentGapScale : computedGap;
+
+			if (sum > 0) {
+				naturalItemsWidth = currentFontScale > 0 ? sum / currentFontScale : sum;
+				header.dataset.nextoraNavNaturalWidth = String(Math.round(naturalItemsWidth * 10) / 10);
+				header.dataset.nextoraNavBaseGap = String(Math.round(baseGap * 10) / 10);
+			}
+		}
+
+		if (naturalItemsWidth <= 0) {
+			return;
+		}
+
+		const numGaps = Math.max(0, items.length - 1);
+		const fullNaturalWidth = naturalItemsWidth + numGaps * baseGap;
+
+		// 2. When ample space, keep 100% full size for both text and gap
+		if (fullNaturalWidth <= availableWidth) {
+			if (currentFontScale !== 1 || currentGapScale !== 1) {
+				header.style.removeProperty("--nextora-header-nav-scale");
+				header.style.removeProperty("--nextora-header-nav-gap-scale");
+			}
+			return;
+		}
+
+		// 3. Space is tightening: prioritize keeping font size big (1.0), reduce gap first!
+		const remainingForGaps = availableWidth - 8 - naturalItemsWidth;
+		if (numGaps > 0) {
+			const neededGap = remainingForGaps / numGaps;
+			if (neededGap >= MIN_GAP_PX) {
+				// Text stays 100% full size! Only gap is reduced.
+				const gapScale = Math.round(Math.max(0.25, neededGap / baseGap) * 100) / 100;
+				if (currentFontScale !== 1) {
+					header.style.setProperty("--nextora-header-nav-scale", "1");
+				}
+				if (Math.abs(gapScale - currentGapScale) >= 0.01) {
+					header.style.setProperty("--nextora-header-nav-gap-scale", String(gapScale));
+				}
+				return;
+			}
+		}
+
+		// 4. Gap has reached minimum threshold (6px), now scale down font size smoothly
+		const totalGapsAtMin = numGaps * MIN_GAP_PX;
+		const targetFontScale = Math.min(1, Math.max(MIN_FONT_SCALE, (availableWidth - 8 - totalGapsAtMin) / naturalItemsWidth));
+		const roundedFontScale = Math.round(targetFontScale * 100) / 100;
+		const minGapScale = Math.round(Math.max(0.2, MIN_GAP_PX / baseGap) * 100) / 100;
+
+		if (Math.abs(roundedFontScale - currentFontScale) >= 0.01) {
+			header.style.setProperty("--nextora-header-nav-scale", String(roundedFontScale));
+		}
+		if (Math.abs(minGapScale - currentGapScale) >= 0.01) {
+			header.style.setProperty("--nextora-header-nav-gap-scale", String(minGapScale));
+		}
+	}
+
+	function updateAll(): void {
+		headers.forEach((h) => measureAndScale(h));
+	}
+
+	let rafId: number | null = null;
+	function scheduleUpdate(): void {
+		if (rafId !== null) return;
+		rafId = requestAnimationFrame(() => {
+			rafId = null;
+			updateAll();
+		});
+	}
+
+	if (typeof ResizeObserver !== "undefined") {
+		const ro = new ResizeObserver(() => {
+			scheduleUpdate();
+		});
+		headers.forEach((h) => {
+			ro.observe(h);
+		});
+	}
+
+	window.addEventListener("resize", scheduleUpdate, { passive: true });
+
+	if ("fonts" in document) {
+		document.fonts.ready.then(() => {
+			// Clear cache to re-measure with final loaded font metrics
+			headers.forEach((h) => {
+				delete h.dataset.nextoraNavNaturalWidth;
+				delete h.dataset.nextoraNavBaseGap;
+			});
+			updateAll();
+		});
+	}
+
+	updateAll();
+}
+
