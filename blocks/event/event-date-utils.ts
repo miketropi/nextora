@@ -1,4 +1,5 @@
 const MONTH_ABBREVS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const WEEKDAY_ABBREVS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const MONTH_LOOKUP: Record<string, number> = {
 	jan: 0,
@@ -22,6 +23,27 @@ export function parseMonthAbbrev(month: string): number {
 
 export function formatMonthAbbrev(monthIndex: number): string {
 	return MONTH_ABBREVS[monthIndex] ?? '';
+}
+
+export function formatWeekdayAbbrev(day: string, month: string, savedYear?: string): string {
+	const dayNum = parseInt(day, 10);
+	const monthIndex = parseMonthAbbrev(month);
+	if (!Number.isFinite(dayNum) || dayNum < 1 || dayNum > 31 || monthIndex < 0) {
+		return '';
+	}
+
+	const year = savedYear ? Number(savedYear) : new Date().getFullYear();
+	if (!Number.isInteger(year) || year < 1000 || year > 9999) return '';
+	const date = new Date(year, monthIndex, dayNum);
+	if (
+		date.getFullYear() !== year ||
+		date.getMonth() !== monthIndex ||
+		date.getDate() !== dayNum
+	) {
+		return '';
+	}
+
+	return WEEKDAY_ABBREVS[date.getDay()] ?? '';
 }
 
 /**

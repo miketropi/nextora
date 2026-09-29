@@ -143,7 +143,6 @@ function nextora_event_render_compact_list( array $events, array $attributes, ca
 		$time            = trim( nextora_event_decode_text( (string) ( $event['time'] ?? '' ) ) );
 		$day             = trim( (string) ( $event['day'] ?? '' ) );
 		$month           = trim( (string) ( $event['month'] ?? '' ) );
-		$year            = trim( (string) ( $event['year'] ?? '' ) );
 		$image_url       = ! empty( $event['imageId'] ) ? wp_get_attachment_image_url( (int) $event['imageId'], 'medium' ) : '';
 		$image_url       = $image_url ?: (string) ( $event['imageUrl'] ?? '' );
 		$url             = esc_url( (string) ( $event['linkUrl'] ?? '' ) );
@@ -156,11 +155,10 @@ function nextora_event_render_compact_list( array $events, array $attributes, ca
 		$has_meta        = ( $show_location && '' !== $location ) || ( $show_time && '' !== $time );
 		?>
 		<article <?php echo $props( 'item', array( 'background' => $value( 'cardBackgroundColor' ), 'border' => $value( 'cardBorderColor' ) ) ); ?>>
-			<?php if ( $show_date && ( '' !== $month || '' !== $day || '' !== $year ) ) : ?>
+			<?php if ( $show_date && ( '' !== $month || '' !== $day ) ) : ?>
 				<div <?php echo $props( 'date', array( 'background' => $value( 'dateBackgroundColor' ) ) ); ?>>
 					<?php if ( '' !== $month ) : ?><span <?php echo $props( 'month', array( 'color' => $value( 'dateAccentColor' ) ) ); ?>><?php echo esc_html( $month ); ?></span><?php endif; ?>
 					<?php if ( '' !== $day ) : ?><b <?php echo $props( 'day', array( 'color' => $value( 'dateDayColor' ) ) ); ?>><?php echo esc_html( $day ); ?></b><?php endif; ?>
-					<?php if ( '' !== $year ) : ?><small <?php echo $props( 'year', array( 'color' => $value( 'dateAccentColor' ) ) ); ?>><?php echo esc_html( $year ); ?></small><?php endif; ?>
 				</div>
 			<?php endif; ?>
 			<?php if ( $show_image && '' !== $image_url ) : ?><img class="nextora-event-compact__image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( (string) ( $event['imageAlt'] ?? '' ) ); ?>" loading="lazy" /><?php endif; ?>

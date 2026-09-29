@@ -63,7 +63,7 @@ export default function CompactColorSettings({
 			? [
 					makeSetting('dateBackgroundColor', __('Date badge background', 'nextora')),
 					makeSetting('dateDayColor', __('Date day number', 'nextora')),
-					makeSetting('dateAccentColor', __('Date month and year', 'nextora')),
+					makeSetting('dateAccentColor', __('Date month', 'nextora')),
 			  ]
 			: []),
 		makeSetting('titleColor', __('Event title', 'nextora')),

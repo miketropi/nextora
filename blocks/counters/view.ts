@@ -4,7 +4,7 @@ export {};
  * Count-up animation for `nextora/counters` (front end).
  */
 const ROOT_SELECTOR =
-	'.wp-block-nextora-counters[data-nextora-counters-count-up="1"]:not([data-nextora-counters-count-init="1"])';
+	'.wp-block-nextora-counters[data-nextora-counters-count-up="1"]';
 
 type EasingName = 'linear' | 'easeOutCubic' | 'easeOutExpo';
 
@@ -33,6 +33,24 @@ function setFinalValue(el: HTMLElement): void {
 	const suffix = el.dataset.nextoraCountersSuffix ?? '';
 	const prefix = el.dataset.nextoraCountersPrefix ?? '';
 	el.textContent = prefix + formatValue(target, target) + suffix;
+}
+
+function isElementVisible(el: HTMLElement): boolean {
+	if (!el.isConnected) {
+		return false;
+	}
+	if (el.offsetWidth === 0 && el.offsetHeight === 0) {
+		return false;
+	}
+	const rect = el.getBoundingClientRect();
+	const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+	const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+	return (
+		rect.bottom > 0 &&
+		rect.right > 0 &&
+		rect.top < windowHeight &&
+		rect.left < windowWidth
+	);
 }
 
 function animateCounter(
@@ -82,8 +100,8 @@ function runCountUp(wrapper: HTMLElement): void {
 	wrapper.classList.add('nextora-counters--ready');
 }
 
-function initRoot(wrapper: HTMLElement): void {
-	if (wrapper.getAttribute('data-nextora-counters-count-init') === '1') {
+function initRoot(wrapper: HTMLElement, force = false): void {
+	if (!force && wrapper.getAttribute('data-nextora-counters-count-init') === '1') {
 		return;
 	}
 
@@ -94,28 +112,102 @@ function initRoot(wrapper: HTMLElement): void {
 		return;
 	}
 
+	if (isElementVisible(wrapper)) {
+		runCountUp(wrapper);
+		return;
+	}
+
 	const observer = new IntersectionObserver(
 		(entries, obs) => {
 			entries.forEach((entry) => {
-				if (!entry.isIntersecting) {
-					return;
+				if (entry.isIntersecting || entry.intersectionRatio > 0) {
+					runCountUp(wrapper);
+					obs.unobserve(entry.target);
 				}
-				runCountUp(wrapper);
-				obs.unobserve(entry.target);
 			});
 		},
-		{ threshold: 0.3 },
+		{ threshold: 0.05 },
 	);
 
 	observer.observe(wrapper);
 }
 
-function initAll(): void {
-	document.querySelectorAll<HTMLElement>(ROOT_SELECTOR).forEach(initRoot);
+function reinitAll(scope: ParentNode = document): void {
+	scope.querySelectorAll<HTMLElement>(ROOT_SELECTOR).forEach((wrapper) => {
+		if (wrapper.closest('.nextora-primary-nav-portal')) {
+			if (isElementVisible(wrapper)) {
+				runCountUp(wrapper);
+			} else {
+				wrapper.removeAttribute('data-nextora-counters-count-init');
+				initRoot(wrapper);
+			}
+		} else {
+			if (wrapper.getAttribute('data-nextora-counters-count-init') !== '1') {
+				initRoot(wrapper);
+			}
+		}
+	});
 }
+
+function initAll(): void {
+	document.querySelectorAll<HTMLElement>(
+		'.wp-block-nextora-counters[data-nextora-counters-count-up="1"]:not([data-nextora-counters-count-init="1"])'
+	).forEach((el) => initRoot(el));
+}
+
+// Global hooks
+interface NextoraCountersGlobal {
+	nextoraReinitCounters?: () => void;
+	nextoraRunCounter?: (el: HTMLElement) => void;
+}
+(window as unknown as NextoraCountersGlobal).nextoraReinitCounters = () => reinitAll();
+(window as unknown as NextoraCountersGlobal).nextoraRunCounter = runCountUp;
+
+window.addEventListener('nextora-counters-reinit', () => {
+	reinitAll();
+});
+
+// Staggered check on user interaction (opening accordions, switching tabs, clicking menu toggles)
+document.addEventListener(
+	'click',
+	(e) => {
+		const target = e.target instanceof Element ? e.target : null;
+		if (!target) return;
+		if (
+			target.closest(
+				'.beplus-vmn-toggle, .nextora-submenu-toggle, .beplus-vmn-tab-container__tab, [data-nextora-nav-toggle], [data-nextora-accordion-toggle]'
+			)
+		) {
+			[50, 150, 300, 500].forEach((delay) => {
+				window.setTimeout(() => {
+					reinitAll();
+				}, delay);
+			});
+		}
+	},
+	{ passive: true },
+);
+
+// Check on scroll (e.g. inside scrollable mobile drawer panel)
+let scrollThrottle: number | null = null;
+const onScrollCheck = () => {
+	if (scrollThrottle !== null) return;
+	scrollThrottle = window.setTimeout(() => {
+		scrollThrottle = null;
+		document.querySelectorAll<HTMLElement>(
+			'.wp-block-nextora-counters[data-nextora-counters-count-up="1"]:not([data-nextora-counters-count-init="1"])'
+		).forEach((el) => {
+			if (isElementVisible(el)) {
+				runCountUp(el);
+			}
+		});
+	}, 120);
+};
+window.addEventListener('scroll', onScrollCheck, { passive: true });
 
 if (document.readyState === 'loading') {
 	document.addEventListener('DOMContentLoaded', initAll);
 } else {
 	initAll();
 }
+

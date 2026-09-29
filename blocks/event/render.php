@@ -69,6 +69,31 @@ if ( ! function_exists( 'nextora_event_decode_text' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_event_get_weekday' ) ) {
+	/**
+	 * Get 3-letter English weekday abbreviation (e.g. Mon, Tue, Wed) from day, month, and year.
+	 *
+	 * @param string $day   Day of the month (1-31).
+	 * @param string $month 3-letter month (Jan-Dec) or month name.
+	 * @param string $year  Year (e.g. 2026).
+	 *
+	 * @return string Weekday abbreviation (e.g. Mon), or empty string if invalid.
+	 */
+	function nextora_event_get_weekday( string $day, string $month, string $year = '' ): string {
+		$day_num = (int) $day;
+		if ( $day_num < 1 || $day_num > 31 || '' === trim( $month ) ) {
+			return '';
+		}
+		$y = '' !== trim( $year ) ? (int) $year : (int) date( 'Y' );
+		$date_str = sprintf( '%04d-%s-%02d', $y, trim( $month ), $day_num );
+		$time_ts = strtotime( $date_str );
+		if ( false !== $time_ts ) {
+			return date( 'D', $time_ts );
+		}
+		return '';
+	}
+}
+
 if ( ! function_exists( 'nextora_event_resolve_color' ) ) {
 	/**
 	 * Preset slug, var(), rgb(), hsl(), or hex → CSS color value.
@@ -457,6 +482,7 @@ foreach ( $raw_events as $index => $item ) {
 		'day'                => isset( $item['day'] ) ? (string) $item['day'] : '',
 		'month'              => isset( $item['month'] ) ? (string) $item['month'] : '',
 		'year'               => isset( $item['year'] ) ? (string) $item['year'] : '',
+		'weekday'            => isset( $item['weekday'] ) ? (string) $item['weekday'] : '',
 		'category'           => isset( $item['category'] ) ? nextora_event_decode_text( (string) $item['category'] ) : '',
 		'title'              => isset( $item['title'] ) ? nextora_event_decode_text( (string) $item['title'] ) : '',
 		'description'        => isset( $item['description'] ) ? nextora_event_decode_text( (string) $item['description'] ) : '',
@@ -1228,6 +1254,12 @@ if ( ! function_exists( 'nextora_event_render_template3_item' ) ) {
 		$date_day_style   = ! empty( $date_props['day']['style'] ) ? ' style="' . esc_attr( $date_props['day']['style'] ) . '"' : '';
 		$date_month_class = ! empty( $date_props['month']['class'] ) ? ' class="' . esc_attr( $date_props['month']['class'] ) . '"' : '';
 		$date_month_style = ! empty( $date_props['month']['style'] ) ? ' style="' . esc_attr( $date_props['month']['style'] ) . '"' : '';
+		$weekday = ! empty( $event['weekday'] )
+			? (string) $event['weekday']
+			: nextora_event_get_weekday( (string) ( $event['day'] ?? '' ), (string) ( $event['month'] ?? '' ), (string) ( $event['year'] ?? '' ) );
+		if ( '' === $weekday ) {
+			$weekday = 'Mon';
+		}
 
 		$date_badge_html = sprintf(
 			'<div class="nextora-event__template3-date-frame"><div class="nextora-event__template3-date%1$s"%2$s><span%3$s%4$s>%5$s</span><b%6$s%7$s>%8$s</b><small%3$s%4$s>%9$s</small></div></div>',
@@ -1239,7 +1271,7 @@ if ( ! function_exists( 'nextora_event_render_template3_item' ) ) {
 			$date_day_class,
 			$date_day_style,
 			esc_html( trim( $event['day'] ) ),
-			esc_html( __( 'Day', 'nextora' ) ),
+			esc_html( $weekday ),
 		);
 
 		$icon_props      = $meta_props['icon'] ?? array();

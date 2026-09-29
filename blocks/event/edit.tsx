@@ -50,6 +50,7 @@ function normalizeFontSizeAttribute(
 import EventEditForm from './event-edit-form';
 import CompactList from './compact-list';
 import CompactColorSettings from './compact-settings';
+import { formatWeekdayAbbrev } from './event-date-utils';
 import {
 	buildSectionStyleVars,
 	createDefaultEventItem,
@@ -1126,7 +1127,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 									<button type="button" className="nextora-event__item-edit" onClick={() => openEventEditor(event.id)}>
 										{__('Edit event', 'nextora')}
 									</button>
-									<div className="nextora-event__template3-date-frame"><div className={['nextora-event__template3-date', dateBgProps.className].filter(Boolean).join(' ')} style={dateBgProps.style}><span className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{event.month || __('Jan', 'nextora')}</span><b className={dateDayProps.className || undefined} style={dateDayProps.style}>{event.day || '01'}</b><small className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{__('Day', 'nextora')}</small></div></div>
+									<div className="nextora-event__template3-date-frame"><div className={['nextora-event__template3-date', dateBgProps.className].filter(Boolean).join(' ')} style={dateBgProps.style}><span className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{event.month || __('Jan', 'nextora')}</span><b className={dateDayProps.className || undefined} style={dateDayProps.style}>{event.day || '01'}</b><small className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{formatWeekdayAbbrev(event.day, event.month, event.year) || __('Mon', 'nextora')}</small></div></div>
 									<div className="nextora-event__template3-content">
 										<div className="nextora-event__template3-category">{event.category || __('Upcoming event', 'nextora')}</div>
 										<h4 className={['nextora-event__template3-title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>{event.title || __('Community fundraiser', 'nextora')}</h4>

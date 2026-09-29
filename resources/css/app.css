@@ -30,19 +30,15 @@
 	--color-primary: var(--wp--preset--color--primary, #4f46e5);
 	--color-secondary: var(--wp--preset--color--paragraph, #64748b);
 	--color-surface: var(--wp--preset--color--surface, #f1f5f9);
-	--font-sans: var(
-		--wp--preset--font-family--sans,
-		Arial,
-		Helvetica,
-		sans-serif
-	);
-	--font-mono: var(
-		--wp--preset--font-family--mono,
-		ui-monospace,
-		SFMono-Regular,
-		Menlo,
-		monospace
-	);
+	--font-sans: var(--wp--preset--font-family--sans,
+			Arial,
+			Helvetica,
+			sans-serif);
+	--font-mono: var(--wp--preset--font-family--mono,
+			ui-monospace,
+			SFMono-Regular,
+			Menlo,
+			monospace);
 
 	/**
 	 * Font switcher role variables — defaults track theme.json presets; the
@@ -55,72 +51,53 @@
 	/**
 	 * Layout rhythm — built from theme.json spacing presets (05–50).
 	 */
-	--nextora-gutter: clamp(
-		var(--wp--preset--spacing--10, 1rem),
-		4.5vw,
-		var(--wp--preset--spacing--30, 3rem)
-	);
-	--nextora-main-pad-y: clamp(
-		var(--wp--preset--spacing--20, 2rem),
-		5vw,
-		var(--wp--preset--spacing--40, 4rem)
-	);
+	--nextora-gutter: clamp(var(--wp--preset--spacing--10, 1rem),
+			4.5vw,
+			var(--wp--preset--spacing--30, 3rem));
+	--nextora-main-pad-y: clamp(var(--wp--preset--spacing--20, 2rem),
+			5vw,
+			var(--wp--preset--spacing--40, 4rem));
 
 	/**
 	 * Hero (nextora/hero-section) — optional override for the grid; default uses --nextora-gutter.
 	 */
-	--nextora-hero-gap: clamp(
-		var(--wp--preset--spacing--20, 1.25rem),
-		4vw,
-		var(--wp--preset--spacing--30, 2.75rem)
-	);
+	--nextora-hero-gap: clamp(var(--wp--preset--spacing--20, 1.25rem),
+			4vw,
+			var(--wp--preset--spacing--30, 2.75rem));
 
 	/**
 	 * Navigation — no primary brand on links; colors derived from base / contrast / secondary
 	 * so palette edits in theme.json flow through (header treats base as “on dark” ink).
 	 */
 	--nextora-nav-header-link: var(--wp--preset--color--contrast, #333);
-	--nextora-nav-header-link-hover-underline: color-mix(
-		in srgb,
-		var(--wp--preset--color--base, #fafafa) 72%,
-		var(--wp--preset--color--paragraph, #64748b)
-	);
+	--nextora-nav-header-link-hover-underline: color-mix(in srgb,
+			var(--wp--preset--color--base, #fafafa) 72%,
+			var(--wp--preset--color--paragraph, #64748b));
 	--nextora-nav-header-link-active-underline: var(--wp--preset--color--base, #fafafa);
 
-	--nextora-nav-footer-link: color-mix(
-		in srgb,
-		var(--wp--preset--color--contrast, #0f172a) 45%,
-		var(--wp--preset--color--base, #fafafa)
-	);
+	--nextora-nav-footer-link: color-mix(in srgb,
+			var(--wp--preset--color--contrast, #0f172a) 45%,
+			var(--wp--preset--color--base, #fafafa));
 	--nextora-nav-footer-link-hover: var(--wp--preset--color--contrast, #0f172a);
-	--nextora-nav-footer-link-hover-underline: color-mix(
-		in srgb,
-		var(--wp--preset--color--contrast, #0f172a) 45%,
-		var(--wp--preset--color--base, #fafafa)
-	);
+	--nextora-nav-footer-link-hover-underline: color-mix(in srgb,
+			var(--wp--preset--color--contrast, #0f172a) 45%,
+			var(--wp--preset--color--base, #fafafa));
 	--nextora-nav-footer-link-active-fg: var(--wp--preset--color--contrast, #0f172a);
 	--nextora-nav-footer-link-active-underline: var(--wp--preset--color--contrast, #0f172a);
 
 	--nextora-nav-panel-bg: var(--wp--preset--color--base, #fafafa);
-	--nextora-nav-panel-fg: var(--wp--preset--color--contrast, #0f172a); 
-	--nextora-nav-panel-border: color-mix(
-		in srgb,
-		var(--wp--preset--color--contrast, #0f172a) 10%,
-		transparent
-	);
-	--nextora-nav-panel-shadow: 0 8px 24px -6px
-		color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 18%, transparent);
-	--nextora-nav-panel-hover-bg: color-mix(
-		in srgb,
-		var(--wp--preset--color--contrast, #0f172a) 4%,
-		var(--wp--preset--color--base, #fafafa)
-	);
+	--nextora-nav-panel-fg: var(--wp--preset--color--contrast, #0f172a);
+	--nextora-nav-panel-border: color-mix(in srgb,
+			var(--wp--preset--color--contrast, #0f172a) 10%,
+			transparent);
+	--nextora-nav-panel-shadow: 0 8px 24px -6px color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 18%, transparent);
+	--nextora-nav-panel-hover-bg: color-mix(in srgb,
+			var(--wp--preset--color--contrast, #0f172a) 4%,
+			var(--wp--preset--color--base, #fafafa));
 	--nextora-nav-panel-hover-fg: var(--wp--preset--color--contrast, #0f172a);
-	--nextora-nav-panel-active-bg: color-mix(
-		in srgb,
-		var(--wp--preset--color--contrast, #0f172a) 8%,
-		var(--wp--preset--color--base, #fafafa)
-	);
+	--nextora-nav-panel-active-bg: color-mix(in srgb,
+			var(--wp--preset--color--contrast, #0f172a) 8%,
+			var(--wp--preset--color--base, #fafafa));
 	--nextora-nav-panel-active-fg: var(--wp--preset--color--primary, #0f172a);
 
 	--nextora-nav-focus-ring: var(--wp--preset--color--contrast, #0f172a);
@@ -130,11 +107,7 @@
 	 * Mobile primary nav drawer + header mini cart — light sheet: base surface, contrast text.
 	 * Borders/shadow/interaction match `--nextora-nav-panel-*` / footer link presets.
 	 */
-	--nextora-nav-portal-backdrop: color-mix(
-		in srgb,
-		var(--wp--preset--color--contrast, #0f172a) 38%,
-		transparent
-	);
+	--nextora-nav-portal-backdrop: var(--nextora-modal-scrim, rgba(0, 0, 0, 0.5));
 	--nextora-nav-mobile-drawer-bg: var(--wp--preset--color--base, #fafafa);
 	--nextora-nav-mobile-drawer-fg: var(--wp--preset--color--contrast, #0f172a);
 	--nextora-nav-mobile-drawer-shadow: var(--nextora-nav-panel-shadow);
@@ -150,51 +123,36 @@
 	/**
 	 * Pagination — same interaction model as footer nav; values track theme.json like `--nextora-nav-footer-*`.
 	 */
-	--nextora-pagination-fg: color-mix(
-		in srgb,
-		var(--wp--preset--color--contrast, #0f172a) 45%,
-		var(--wp--preset--color--base, #fafafa)
-	);
+	--nextora-pagination-fg: color-mix(in srgb,
+			var(--wp--preset--color--contrast, #0f172a) 45%,
+			var(--wp--preset--color--base, #fafafa));
 	--nextora-pagination-hover-fg: var(--wp--preset--color--contrast, #0f172a);
-	--nextora-pagination-hover-underline: color-mix(
-		in srgb,
-		var(--wp--preset--color--contrast, #0f172a) 45%,
-		var(--wp--preset--color--base, #fafafa)
-	);
+	--nextora-pagination-hover-underline: color-mix(in srgb,
+			var(--wp--preset--color--contrast, #0f172a) 45%,
+			var(--wp--preset--color--base, #fafafa));
 	--nextora-pagination-current-fg: var(--wp--preset--color--contrast, #0f172a);
 	--nextora-pagination-current-underline: var(--wp--preset--color--contrast, #0f172a);
-	--nextora-pagination-dots: color-mix(
-		in srgb,
-		var(--wp--preset--color--paragraph, #64748b) 52%,
-		var(--wp--preset--color--base, #fafafa)
-	);
+	--nextora-pagination-dots: color-mix(in srgb,
+			var(--wp--preset--color--paragraph, #64748b) 52%,
+			var(--wp--preset--color--base, #fafafa));
 	--nextora-pagination-focus-ring: var(--wp--preset--color--contrast, #0f172a);
 	--nextora-pagination-t: 0.18s ease;
 
 	/**
 	 * Comment list — spacing from presets; reply surface from surface color.
 	 */
-	--nextora-comments-between-threads: clamp(
-		var(--wp--preset--spacing--20, 2rem),
-		4.5vw,
-		var(--wp--preset--spacing--30, 3rem)
-	);
-	--nextora-comments-nested-indent: clamp(
-		var(--wp--preset--spacing--10, 1rem),
-		3vw,
-		var(--wp--preset--spacing--20, 2rem)
-	);
-	--nextora-comments-between-replies: calc(
-		(var(--wp--preset--spacing--05, 0.5rem) + var(--wp--preset--spacing--10, 1rem)) / 2
-	);
-	--nextora-comments-reply-surface: color-mix(
-		in srgb,
-		var(--wp--preset--color--surface, #f1f5f9) 70%,
-		transparent
-	);
+	--nextora-comments-between-threads: clamp(var(--wp--preset--spacing--20, 2rem),
+			4.5vw,
+			var(--wp--preset--spacing--30, 3rem));
+	--nextora-comments-nested-indent: clamp(var(--wp--preset--spacing--10, 1rem),
+			3vw,
+			var(--wp--preset--spacing--20, 2rem));
+	--nextora-comments-between-replies: calc((var(--wp--preset--spacing--05, 0.5rem) + var(--wp--preset--spacing--10, 1rem)) / 2);
+	--nextora-comments-reply-surface: color-mix(in srgb,
+			var(--wp--preset--color--surface, #f1f5f9) 70%,
+			transparent);
 	--nextora-comments-reply-radius: var(--wp--preset--spacing--05, 0.5rem);
-	--nextora-comments-reply-padding: calc(var(--wp--preset--spacing--10, 1rem) - 0.15rem)
-		var(--wp--preset--spacing--10, 1rem);
+	--nextora-comments-reply-padding: calc(var(--wp--preset--spacing--10, 1rem) - 0.15rem) var(--wp--preset--spacing--10, 1rem);
 }
 
 @import "tailwindcss/utilities.css" layer(utilities);

@@ -73,6 +73,31 @@ if ( ! function_exists( 'nextora_event_decode_text' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_event_get_weekday' ) ) {
+	/**
+	 * Get 3-letter English weekday abbreviation (e.g. Mon, Tue, Wed) from day, month, and year.
+	 *
+	 * @param string $day   Day of the month (1-31).
+	 * @param string $month 3-letter month (Jan-Dec) or month name.
+	 * @param string $year  Year (e.g. 2026).
+	 *
+	 * @return string Weekday abbreviation (e.g. Mon), or empty string if invalid.
+	 */
+	function nextora_event_get_weekday( string $day, string $month, string $year = '' ): string {
+		$day_num = (int) $day;
+		if ( $day_num < 1 || $day_num > 31 || '' === trim( $month ) ) {
+			return '';
+		}
+		$y = '' !== trim( $year ) ? (int) $year : (int) date( 'Y' );
+		$date_str = sprintf( '%04d-%s-%02d', $y, trim( $month ), $day_num );
+		$time_ts = strtotime( $date_str );
+		if ( false !== $time_ts ) {
+			return date( 'D', $time_ts );
+		}
+		return '';
+	}
+}
+
 if ( ! function_exists( 'nextora_event_tec_resolve_color' ) ) {
 	/**
 	 * Preset slug, var(), rgb(), hsl(), or hex → CSS color value.
@@ -545,13 +570,15 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 	foreach ( $queried_posts as $item_post ) {
 		$post_id = $item_post instanceof WP_Post ? (int) $item_post->ID : (int) $item_post;
 
-		$year = '';
+		$year    = '';
+		$weekday = '';
 		// Day & Month
 		if ( function_exists( 'tribe_get_start_date' ) ) {
-			$year  = (string) tribe_get_start_date( $post_id, false, 'Y' );
-			$day   = (string) tribe_get_start_date( $post_id, false, 'd' );
-			$month = (string) tribe_get_start_date( $post_id, false, 'M' );
-			$time  = (string) tribe_get_start_date( $post_id, false, 'g:i A' );
+			$year    = (string) tribe_get_start_date( $post_id, false, 'Y' );
+			$day     = (string) tribe_get_start_date( $post_id, false, 'd' );
+			$month   = (string) tribe_get_start_date( $post_id, false, 'M' );
+			$weekday = (string) tribe_get_start_date( $post_id, false, 'D' );
+			$time    = (string) tribe_get_start_date( $post_id, false, 'g:i A' );
 		} else {
 			$raw_start = get_post_meta( $post_id, '_EventStartDate', true );
 			if ( is_string( $raw_start ) && '' !== $raw_start ) {
@@ -559,11 +586,13 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 				$year    = $time_ts ? date( 'Y', $time_ts ) : '';
 				$day     = $time_ts ? date( 'd', $time_ts ) : '';
 				$month   = $time_ts ? date( 'M', $time_ts ) : '';
+				$weekday = $time_ts ? date( 'D', $time_ts ) : '';
 				$time    = $time_ts ? date( 'g:i A', $time_ts ) : '';
 			} else {
-				$day   = get_the_date( 'd', $post_id );
-				$month = get_the_date( 'M', $post_id );
-				$time  = '';
+				$day     = get_the_date( 'd', $post_id );
+				$month   = get_the_date( 'M', $post_id );
+				$weekday = get_the_date( 'D', $post_id );
+				$time    = '';
 			}
 		}
 
@@ -624,6 +653,7 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 			'day'                => $day,
 			'month'              => $month,
 			'year'               => $year,
+			'weekday'            => $weekday,
 			'category'           => nextora_event_decode_text( $category_name ),
 			'title'              => nextora_event_decode_text( $title ),
 			'description'        => nextora_event_decode_text( $excerpt ),
@@ -1389,6 +1419,14 @@ if ( ! function_exists( 'nextora_event_tec_render_template3_item' ) ) {
 		$date_day_style   = ! empty( $date_props['day']['style'] ) ? ' style="' . esc_attr( $date_props['day']['style'] ) . '"' : '';
 		$date_month_class = ! empty( $date_props['month']['class'] ) ? ' class="' . esc_attr( $date_props['month']['class'] ) . '"' : '';
 		$date_month_style = ! empty( $date_props['month']['style'] ) ? ' style="' . esc_attr( $date_props['month']['style'] ) . '"' : '';
+		$weekday          = ! empty( $event['weekday'] )
+			? (string) $event['weekday']
+			: ( function_exists( 'nextora_event_get_weekday' )
+				? nextora_event_get_weekday( (string) ( $event['day'] ?? '' ), (string) ( $event['month'] ?? '' ), (string) ( $event['year'] ?? '' ) )
+				: '' );
+		if ( '' === $weekday ) {
+			$weekday = 'Mon';
+		}
 
 		$date_badge_html = sprintf(
 			'<div class="nextora-event__template3-date-frame"><div class="nextora-event__template3-date%1$s"%2$s><span%3$s%4$s>%5$s</span><b%6$s%7$s>%8$s</b><small%3$s%4$s>%9$s</small></div></div>',
@@ -1400,7 +1438,7 @@ if ( ! function_exists( 'nextora_event_tec_render_template3_item' ) ) {
 			$date_day_class,
 			$date_day_style,
 			esc_html( trim( $event['day'] ) ),
-			esc_html( __( 'Day', 'nextora' ) ),
+			esc_html( $weekday ),
 		);
 
 		$icon_props      = $meta_props['icon'] ?? array();

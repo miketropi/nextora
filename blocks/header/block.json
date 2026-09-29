@@ -323,7 +323,7 @@
     },
     "mobileBreakpoint": {
       "type": "number",
-      "default": 768
+      "default": 1025
     }
   },
   "editorScript": "file:./index.js",

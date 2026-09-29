@@ -140,6 +140,7 @@ export function normalizeEvents(events: EventItem[] | undefined): EventItem[] {
 		day: typeof raw?.day === 'string' ? raw.day : '',
 		month: typeof raw?.month === 'string' ? raw.month : '',
 		...(typeof raw?.year === 'string' ? { year: raw.year } : {}),
+		...(typeof raw?.weekday === 'string' ? { weekday: raw.weekday } : {}),
 		category: typeof raw?.category === 'string' ? decodeEventString(raw.category) : '',
 		title: typeof raw?.title === 'string' ? decodeEventString(raw.title) : '',
 		description: typeof raw?.description === 'string' ? decodeEventString(raw.description) : '',

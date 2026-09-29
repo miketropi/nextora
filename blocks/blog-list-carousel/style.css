@@ -516,7 +516,9 @@ a.nextora-blc__card-cat:focus-visible {
 	position: relative;
 }
 
-.nextora-blc__pagination.swiper-pagination-lock {
+.nextora-blc__pagination:not(.swiper-pagination-bullets),
+.nextora-blc__pagination.swiper-pagination-lock,
+.nextora-blc__pagination:empty {
 	display: none !important;
 	margin: 0 !important;
 	height: 0 !important;
