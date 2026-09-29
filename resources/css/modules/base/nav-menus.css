@@ -983,15 +983,18 @@
 }
 
 /* Homepage Mega Menu column & columns spacing overrides */
-.mega-menu-homepage > .wp-block-column,
-.mega-menu-homepage.wp-block-columns > .wp-block-column,
-.mega-menu-homepage > .wp-block-columns > .wp-block-column {
-	padding: 0 !important;
-}
+@media (max-width:1024.98px) {
 
-.mega-menu-homepage > .wp-block-column > .wp-block-columns,
-.mega-menu-homepage.wp-block-columns > .wp-block-column > .wp-block-columns,
-.mega-menu-homepage > .wp-block-columns > .wp-block-column > .wp-block-columns {
-	gap: 0 !important;
-	--wp--style--block-gap: 0px !important;
+	.mega-menu-homepage>.wp-block-column,
+	.mega-menu-homepage.wp-block-columns>.wp-block-column,
+	.mega-menu-homepage>.wp-block-columns>.wp-block-column {
+		padding: 0 !important;
+	}
+
+	.mega-menu-homepage>.wp-block-column>.wp-block-columns,
+	.mega-menu-homepage.wp-block-columns>.wp-block-column>.wp-block-columns,
+	.mega-menu-homepage>.wp-block-columns>.wp-block-column>.wp-block-columns {
+		gap: 0 !important;
+		--wp--style--block-gap: 0px !important;
+	}
 }
