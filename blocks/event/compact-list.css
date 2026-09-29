@@ -58,11 +58,6 @@
 	font-weight: 700;
 }
 
-.nextora-event--template4 .nextora-event-compact__year {
-	font-size: 10px;
-	color: var(--wp--preset--color--paragraph, #8894b2);
-}
-
 .nextora-event--template4 .nextora-event-compact__image {
 	display: block;
 	flex: 0 0 76px;
@@ -383,10 +378,6 @@ body:not(.nextora-no-anim) .nextora-event--animation-default:not(.has-mega-menu 
 		font-size: 19px;
 	}
 
-	.nextora-event--template4 .nextora-event-compact__year {
-		font-size: 9px;
-	}
-
 	.nextora-event--template4 .nextora-event-compact__image {
 		flex: 0 0 54px;
 		width: 54px;
@@ -444,10 +435,6 @@ body:not(.nextora-no-anim) .nextora-event--animation-default:not(.has-mega-menu 
 
 	.nextora-event--template4 .nextora-event-compact__month {
 		font-size: 9px;
-	}
-
-	.nextora-event--template4 .nextora-event-compact__year {
-		font-size: 8px;
 	}
 
 	.nextora-event--template4 .nextora-event-compact__action {

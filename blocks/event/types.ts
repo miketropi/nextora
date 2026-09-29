@@ -3,6 +3,7 @@ export interface EventItem {
 	day: string;
 	month: string;
 	year?: string;
+	weekday?: string;
 	category: string;
 	title: string;
 	description: string;

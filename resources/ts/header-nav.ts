@@ -189,6 +189,7 @@ function getOrCreatePortal(btn: HTMLButtonElement): PortalElements | null {
 }
 
 const PORTAL_INIT_ATTRS = [
+	"data-nextora-counters-count-init",
 	"data-nextora-testimonials-swiper-inited",
 	"data-nextora-testimonials-swiper-pending",
 	"data-nextora-testimonial-swiper-inited",
@@ -337,6 +338,7 @@ function setupPortalMegaGuards(): void {
 }
 
 function dispatchPortalBlockReinit(): void {
+	window.dispatchEvent(new CustomEvent("nextora-counters-reinit"));
 	window.dispatchEvent(new CustomEvent("nextora-testimonials-reinit"));
 	window.dispatchEvent(new CustomEvent("nextora-testimonial-carousel-reinit"));
 	window.dispatchEvent(new CustomEvent("nextora-box-image-reinit"));
@@ -352,11 +354,13 @@ function dispatchPortalBlockReinit(): void {
 
 	window.setTimeout(() => {
 		window.nextoraForceScrollAnimations?.();
+		window.dispatchEvent(new CustomEvent("nextora-counters-reinit"));
 		revealPortalElements();
 	}, 150);
 
 	window.setTimeout(() => {
 		window.nextoraForceScrollAnimations?.();
+		window.dispatchEvent(new CustomEvent("nextora-counters-reinit"));
 		revealPortalElements();
 	}, 400);
 }
@@ -437,6 +441,35 @@ function revealPortalElements(): void {
 		".nextora-primary-nav-portal__mount .wp-block-nextora-advanced-list"
 	).forEach((el) => {
 		el.classList.add("is-visible");
+	});
+
+	document.querySelectorAll<HTMLElement>(
+		".nextora-primary-nav-portal__mount .wp-block-nextora-counters[data-nextora-counters-count-up='1']"
+	).forEach((wrapper) => {
+		const runner = (window as unknown as { nextoraRunCounter?: (el: HTMLElement) => void }).nextoraRunCounter;
+		if (typeof runner === "function") {
+			runner(wrapper);
+		} else {
+			const duration = parseInt(wrapper.dataset.nextoraCountersDuration ?? "2000", 10) || 2000;
+			wrapper.querySelectorAll<HTMLElement>(".nextora-counters__number[data-nextora-counters-value]").forEach((numEl) => {
+				const target = Math.abs(parseFloat(numEl.dataset.nextoraCountersValue ?? "") || 0);
+				const prefix = numEl.dataset.nextoraCountersPrefix ?? "";
+				const suffix = numEl.dataset.nextoraCountersSuffix ?? "";
+				const start = performance.now();
+				const tick = (now: number): void => {
+					const progress = Math.min((now - start) / duration, 1);
+					const current = (1 - Math.pow(1 - progress, 3)) * target;
+					const rounded = Number.isInteger(target) ? Math.round(current) : current;
+					numEl.textContent = prefix + rounded.toLocaleString("en-US", { maximumFractionDigits: Number.isInteger(target) ? 0 : 1 }) + suffix;
+					if (progress < 1) {
+						requestAnimationFrame(tick);
+					}
+				};
+				requestAnimationFrame(tick);
+			});
+			wrapper.setAttribute("data-nextora-counters-count-init", "1");
+			wrapper.classList.add("nextora-counters--ready");
+		}
 	});
 }
 
@@ -704,7 +737,32 @@ function bindPortalSubmenuAccordions(): void {
 
 		el.setAttribute("aria-expanded", next ? "true" : "false");
 		li.classList.toggle("nextora-submenu--open", next);
+		if (next) {
+			[50, 150, 300].forEach((delay) => {
+				window.setTimeout(() => {
+					window.dispatchEvent(new CustomEvent("nextora-counters-reinit"));
+					revealPortalElements();
+				}, delay);
+			});
+		}
 	});
+
+	document.addEventListener(
+		"click",
+		(e: MouseEvent): void => {
+			const raw = e.target;
+			const el = raw instanceof Element ? raw.closest(".beplus-vmn-toggle, .beplus-vmn-tab-container__tab") : null;
+			if (el) {
+				[50, 150, 300, 500].forEach((delay) => {
+					window.setTimeout(() => {
+						window.dispatchEvent(new CustomEvent("nextora-counters-reinit"));
+						revealPortalElements();
+					}, delay);
+				});
+			}
+		},
+		{ passive: true },
+	);
 }
 
 /**
@@ -861,4 +919,3 @@ export function initHeaderNavAutoFit(): void {
 
 	updateAll();
 }
-

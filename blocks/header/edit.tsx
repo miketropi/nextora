@@ -7,7 +7,7 @@ import {
   MediaUploadCheck,
   URLInput,
   useSetting,
-	__experimentalSpacingSizesControl as SpacingSizesControl,
+  __experimentalSpacingSizesControl as SpacingSizesControl,
   __experimentalBorderRadiusControl as BorderRadiusControl,
 } from '@wordpress/block-editor';
 import { useMemo, useState, useEffect } from '@wordpress/element';
@@ -262,38 +262,38 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     return ctaButtonBorderRadius;
   }, [ctaButtonBorderRadius]);
 
-  const [ iconPickerOpen, setIconPickerOpen ] = useState( false );
-  const [ iconNodes, setIconNodes ] = useState( null );
+  const [iconPickerOpen, setIconPickerOpen] = useState(false);
+  const [iconNodes, setIconNodes] = useState(null);
 
-  useEffect( () => {
-    if ( ! ctaButtonShowIcon ) {
-      setIconNodes( null );
+  useEffect(() => {
+    if (!ctaButtonShowIcon) {
+      setIconNodes(null);
       return;
     }
 
     const iconsUrl = window.nextoraIconBlock?.iconsUrl ?? '';
-    if ( ! iconsUrl ) {
+    if (!iconsUrl) {
       return;
     }
 
     let active = true;
-    fetch( iconsUrl )
-      .then( ( res ) => res.json() )
-      .then( ( icons ) => {
-        if ( ! active ) {
+    fetch(iconsUrl)
+      .then((res) => res.json())
+      .then((icons) => {
+        if (!active) {
           return;
         }
-        const found = Array.isArray( icons )
-          ? icons.find( ( icon ) => icon.name === ctaButtonIconName )
+        const found = Array.isArray(icons)
+          ? icons.find((icon) => icon.name === ctaButtonIconName)
           : undefined;
-        setIconNodes( found?.nodes ?? null );
-      } )
-      .catch( () => {} );
+        setIconNodes(found?.nodes ?? null);
+      })
+      .catch(() => { });
 
     return () => {
       active = false;
     };
-  }, [ ctaButtonShowIcon, ctaButtonIconName ] );
+  }, [ctaButtonShowIcon, ctaButtonIconName]);
 
   const updateFollowUsSocial = (network, patch) => {
     const next = followUsSocialRows.map((row) =>
@@ -889,18 +889,6 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               )}
             />
           )}
-          <RangeControl
-            label={__('Mobile breakpoint (px)', 'nextora')}
-            value={mobileBreakpoint}
-            onChange={(v) => setAttributes({ mobileBreakpoint: v ?? 768 })}
-            min={320}
-            max={1920}
-            step={1}
-            help={__(
-              'Viewports at or above this width use the desktop layout. Below this width the mobile layout (hamburger menu, stacked columns) is shown. Default is 768.',
-              'nextora'
-            )}
-          />
         </PanelBody>
 
         <PanelBody title={__('Advanced', 'nextora')} initialOpen={false}>

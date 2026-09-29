@@ -114,7 +114,7 @@ export default function CompactList({
 							color('cardBorderColor', 'border'),
 						])}
 					>
-						{showDate && (event.month || event.day || event.year) && (
+						{showDate && (event.month || event.day) && (
 							<div
 								{...props('date', [
 									color('dateBackgroundColor', 'background'),
@@ -129,11 +129,6 @@ export default function CompactList({
 									<b {...props('day', [color('dateDayColor')])}>
 										{event.day}
 									</b>
-								)}
-								{event.year && (
-									<small {...props('year', [color('dateAccentColor')])}>
-										{event.year}
-									</small>
 								)}
 							</div>
 						)}

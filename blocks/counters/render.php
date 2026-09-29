@@ -366,6 +366,10 @@ if ( $enable_count_up ) {
 	$wrapper_extra['data-nextora-counters-count-up']       = '1';
 	$wrapper_extra['data-nextora-counters-duration']       = (string) $duration;
 	$wrapper_extra['data-nextora-counters-easing']         = $easing;
+
+	if ( ! is_admin() && wp_script_is( 'nextora-counters-view-script', 'registered' ) ) {
+		wp_enqueue_script( 'nextora-counters-view-script' );
+	}
 }
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
