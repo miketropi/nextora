@@ -6,7 +6,10 @@ import {
 	InspectorControls,
 	PanelColorSettings,
 	useBlockProps,
+	useSettings,
 } from '@wordpress/block-editor';
+
+const BlockFontSizePicker = FontSizePicker as unknown as React.ComponentType<any>;
 import {
 	BaseControl,
 	Button,
@@ -29,7 +32,11 @@ function normalizeFontSizeAttribute(
 	if (value === undefined || value === '') {
 		return '';
 	}
-	const raw = (selectedItem?.slug || String(value)).trim().toLowerCase();
+	if (selectedItem?.slug) {
+		return selectedItem.slug;
+	}
+	const str = String(value).trim();
+	const raw = str.toLowerCase();
 	const map: Record<string, string> = {
 		sm: 'small',
 		small: 'small',
@@ -45,7 +52,54 @@ function normalizeFontSizeAttribute(
 		'2xl': 'xx-large',
 		'xx-large': 'xx-large',
 	};
-	return map[raw] || raw;
+	if (map[raw]) {
+		return map[raw];
+	}
+	if (/^\d+(\.\d+)?$/.test(str)) {
+		return `${str}px`;
+	}
+	return str;
+}
+
+const PRESET_FONT_SIZE_SLUGS = new Set([
+	'small',
+	'base',
+	'medium',
+	'medium-plus',
+	'large',
+	'x-large',
+	'xx-large',
+]);
+
+function isPresetFontSize(
+	val: string | undefined,
+	fontSizes: Array<{ slug?: string }> = [],
+): boolean {
+	if (!val) return false;
+	const lower = val.trim().toLowerCase();
+	if (/^[\d.]+(?:px|rem|em|vw|vh|%)?$/i.test(lower) || /^clamp\(/i.test(lower)) {
+		return false;
+	}
+	return (
+		PRESET_FONT_SIZE_SLUGS.has(lower) ||
+		fontSizes.some((item) => item.slug?.toLowerCase() === lower)
+	);
+}
+
+function getGutenbergFontSizeProps(
+	fontSize?: string,
+	fontSizes: Array<{ slug?: string }> = [],
+): { className: string; style?: { fontSize: string } } {
+	if (!fontSize) {
+		return { className: '' };
+	}
+	if (isPresetFontSize(fontSize, fontSizes)) {
+		return { className: `has-${fontSize}-font-size` };
+	}
+	return {
+		className: '',
+		style: { fontSize: /^\d+(\.\d+)?$/.test(fontSize) ? `${fontSize}px` : fontSize },
+	};
 }
 import EventEditForm from './event-edit-form';
 import CompactList from './compact-list';
@@ -199,6 +253,10 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		}
 	});
 
+	const [themeFontSizes = []] = (useSettings('typography.fontSizes') as [
+		Array<{ name: string; size: number | string; slug: string }> | undefined,
+	]) || [[]];
+
 	const {
 		template = 'default',
 		showRegisterButton = true,
@@ -212,6 +270,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		template3Alternating = false,
 		titleFontSize = '',
 		descriptionFontSize = '',
+		metaFontSize = '',
+		itemGap = 8,
 		cardBackgroundColor = '',
 		cardBorderColor = '',
 		dateBackgroundColor = '',
@@ -248,9 +308,11 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 	const isTemplate2 = template === 'template2';
 	const isTemplate3 = template === 'template3';
 	const isTemplate4 = template === 'template4';
-
 	const normalizedTitleFontSize = normalizeFontSizeAttribute(titleFontSize);
 	const normalizedDescFontSize = normalizeFontSizeAttribute(descriptionFontSize);
+	const normalizedMetaFontSize = normalizeFontSizeAttribute(metaFontSize);
+	const titleFontSizeProps = getGutenbergFontSizeProps(titleFontSize, themeFontSizes);
+	const descFontSizeProps = getGutenbergFontSizeProps(descriptionFontSize, themeFontSizes);
 
 	const colorPalette = useThemeColorPalette();
 	const lookupPalette = getMergedPaletteEntries(colorPalette);
@@ -287,6 +349,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				paginationActiveColor,
 			}) as CSSProperties,
 			...(isTemplate1 || isTemplate2 ? { '--nextora-event-editor-slides': String(slidesPerView), '--nextora-event-editor-gap': `${spaceBetween}px` } as CSSProperties : {}),
+			...(isTemplate4 ? ({ '--nextora-event-item-gap': `${itemGap}px` } as CSSProperties) : {}),
 			...(edgeFadeColor ? { '--nextora-event-edge-fade-color': edgeFadeColor } as CSSProperties : {}),
 		},
 	});
@@ -635,9 +698,17 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					</Button>
 				</PanelBody>
 
-				<PanelBody title={__('Settings', 'nextora')} initialOpen={false}>
+				<PanelBody title={__('Settings', 'nextora')} initialOpen={isTemplate4}>
 					{isTemplate4 ? (
 						<>
+							<RangeControl
+								label={__('Item gap (px)', 'nextora')}
+								value={itemGap}
+								onChange={(value) => setAttributes({ itemGap: value ?? 8 })}
+								min={0}
+								max={60}
+								step={1}
+							/>
 							<ToggleControl
 								label={__('Show date badge', 'nextora')}
 								checked={showDate !== false}
@@ -807,31 +878,51 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					</PanelBody>
 				)}
 
-				<PanelBody title={__('Typography', 'nextora')} initialOpen={isTemplate3}>
+				<PanelBody title={__('Typography', 'nextora')} initialOpen={isTemplate3 || isTemplate4}>
 					<BaseControl
 						label={__('Card title font size', 'nextora')}
 						id="nextora-event-title-font-size"
 						help={template === 'template4' ? __('Default: 14px for Compact List.', 'nextora') : __('Default inherits global heading size.', 'nextora')}
 					>
-						<FontSizePicker
+						<BlockFontSizePicker
+							fontSizes={themeFontSizes}
 							value={titleFontSize || undefined}
-							valueMode="slug"
-							onChange={(value, selectedItem) =>
+							valueMode={isPresetFontSize(titleFontSize, themeFontSizes) ? 'slug' : 'literal'}
+							onChange={(value: any, selectedItem: any) =>
 								setAttributes({
 									titleFontSize: normalizeFontSizeAttribute(value, selectedItem),
 								})
 							}
 						/>
 					</BaseControl>
+					{isTemplate4 && (
+						<BaseControl
+							label={__('Meta font size (Location & Time)', 'nextora')}
+							id="nextora-event-meta-font-size"
+							help={__('Default: 12px for Compact List.', 'nextora')}
+						>
+							<BlockFontSizePicker
+								fontSizes={themeFontSizes}
+								value={metaFontSize || undefined}
+								valueMode={isPresetFontSize(metaFontSize, themeFontSizes) ? 'slug' : 'literal'}
+								onChange={(value: any, selectedItem: any) =>
+									setAttributes({
+										metaFontSize: normalizeFontSizeAttribute(value, selectedItem),
+									})
+								}
+							/>
+						</BaseControl>
+					)}
 					<BaseControl
 						label={__('Card description font size', 'nextora')}
 						id="nextora-event-description-font-size"
 						help={template === 'template4' ? __('Default: 12px for Compact List.', 'nextora') : __('Default inherits global body size.', 'nextora')}
 					>
-						<FontSizePicker
+						<BlockFontSizePicker
+							fontSizes={themeFontSizes}
 							value={descriptionFontSize || undefined}
-							valueMode="slug"
-							onChange={(value, selectedItem) =>
+							valueMode={isPresetFontSize(descriptionFontSize, themeFontSizes) ? 'slug' : 'literal'}
+							onChange={(value: any, selectedItem: any) =>
 								setAttributes({
 									descriptionFontSize: normalizeFontSizeAttribute(value, selectedItem),
 								})
@@ -1028,7 +1119,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 												</div>
 
 												<div className="nextora-event__card-info">
-													<h4 className={['nextora-event__title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>
+													<h4 className={['nextora-event__title', titleFontSizeProps.className, titleColorProps.className].filter(Boolean).join(' ')} style={{ ...titleColorProps.style, ...titleFontSizeProps.style }}>
 														{event.title || __('Community fundraiser', 'nextora')}
 													</h4>
 													<div className={['nextora-event__details', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}>
@@ -1087,8 +1178,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 												</div>
 											</div>
 											<div className="nextora-event__template2-content">
-												<h4 className={['nextora-event__template2-title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>{event.title || __('Community fundraiser', 'nextora')}</h4>
-												{event.description ? <p className={['nextora-event__template2-desc', normalizedDescFontSize ? `has-${normalizedDescFontSize}-font-size` : ''].filter(Boolean).join(' ')}>{event.description}</p> : null}
+												<h4 className={['nextora-event__template2-title', titleFontSizeProps.className, titleColorProps.className].filter(Boolean).join(' ')} style={{ ...titleColorProps.style, ...titleFontSizeProps.style }}>{event.title || __('Community fundraiser', 'nextora')}</h4>
+												{event.description ? <p className={['nextora-event__template2-desc', descFontSizeProps.className].filter(Boolean).join(' ')} style={descFontSizeProps.style}>{event.description}</p> : null}
 												<div className="nextora-event__template2-footer">
 													<div className={['nextora-event__template2-details', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}>
 														<span className="nextora-event__template2-meta">
@@ -1130,9 +1221,9 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 									<div className="nextora-event__template3-date-frame"><div className={['nextora-event__template3-date', dateBgProps.className].filter(Boolean).join(' ')} style={dateBgProps.style}><span className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{event.month || __('Jan', 'nextora')}</span><b className={dateDayProps.className || undefined} style={dateDayProps.style}>{event.day || '01'}</b><small className={dateMonthProps.className || undefined} style={dateMonthProps.style}>{formatWeekdayAbbrev(event.day, event.month, event.year) || __('Mon', 'nextora')}</small></div></div>
 									<div className="nextora-event__template3-content">
 										<div className="nextora-event__template3-category">{event.category || __('Upcoming event', 'nextora')}</div>
-										<h4 className={['nextora-event__template3-title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>{event.title || __('Community fundraiser', 'nextora')}</h4>
+										<h4 className={['nextora-event__template3-title', titleFontSizeProps.className, titleColorProps.className].filter(Boolean).join(' ')} style={{ ...titleColorProps.style, ...titleFontSizeProps.style }}>{event.title || __('Community fundraiser', 'nextora')}</h4>
 										<div className={['nextora-event__template3-meta', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}><DetailRow icon="clock" iconStyle={metaIconProps.style}>{event.time || __('Time TBC', 'nextora')}</DetailRow><DetailRow icon="map-pin" iconStyle={metaIconProps.style}>{event.location || __('Location TBC', 'nextora')}</DetailRow></div>
-										{event.description ? <p className={['nextora-event__template3-description', normalizedDescFontSize ? `has-${normalizedDescFontSize}-font-size` : ''].filter(Boolean).join(' ')}>{event.description}</p> : null}
+										{event.description ? <p className={['nextora-event__template3-description', descFontSizeProps.className].filter(Boolean).join(' ')} style={descFontSizeProps.style}>{event.description}</p> : null}
 										{showRegisterButton ? (
 											<span className={['nextora-event__template3-register', 'nextora-event__template3-register--static', regBgProps.className, regTextProps.className].filter(Boolean).join(' ')} style={regBtnStyle}>
 												{registerLabel}
@@ -1198,7 +1289,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 											</div>
 
 											<div className="nextora-event__info">
-												<h4 className={['nextora-event__title', normalizedTitleFontSize ? `has-${normalizedTitleFontSize}-font-size` : '', titleColorProps.className].filter(Boolean).join(' ')} style={titleColorProps.style}>
+												<h4 className={['nextora-event__title', titleFontSizeProps.className, titleColorProps.className].filter(Boolean).join(' ')} style={{ ...titleColorProps.style, ...titleFontSizeProps.style }}>
 													{event.title || __('Community fundraiser', 'nextora')}
 												</h4>
 												<div className={['nextora-event__details', metaColorProps.className].filter(Boolean).join(' ')} style={metaColorProps.style}>

@@ -746,12 +746,16 @@ function nextora_get_switcher_payload(): array {
 		? $config['initial']['font']
 		: '';
 
+	$resolved = nextora_resolve_current_request_theme( $themes );
+
 	return array(
-		'colorPresets' => $color_presets,
-		'fontPresets'  => $font_presets,
-		'themes'       => $themes,
-		'fonts'        => $fonts,
-		'config'       => array(
+		'colorPresets'      => $color_presets,
+		'fontPresets'       => $font_presets,
+		'themes'            => $themes,
+		'fonts'             => $fonts,
+		'currentPageTheme'  => $resolved['theme'],
+		'isDirectPageTheme' => $resolved['is_direct_page_theme'],
+		'config'            => array(
 			'initial'  => array(
 				'theme' => $initial_theme,
 				'color' => $initial_color,
@@ -760,4 +764,214 @@ function nextora_get_switcher_payload(): array {
 			'sections' => $config['sections'],
 		),
 	);
+}
+
+/**
+ * Resolves the theme for the current request.
+ *
+ * Priority:
+ * 1. URL parameter (?theme=slug). (is_direct_page_theme = true)
+ * 2. Front page setting (is_front_page() || is_home()):
+ *    - If show_on_front === 'page': checks post meta `_nextora_theme` on page_on_front ID.
+ * 3. Singular post/page:
+ *    - checks post meta `_nextora_theme` on current post ID (or ancestors).
+ * 4. Cookie `nextora_active_theme`:
+ *    - For inner pages (e.g. contact, about) that do not have their own meta theme,
+ *      inherits previously active demo theme from session/cookie. (is_direct_page_theme = false)
+ *
+ * @param array<string, mixed> $themes Available themes.
+ *
+ * @return array{ theme: ?string, is_direct_page_theme: bool }
+ */
+function nextora_resolve_current_request_theme( array $themes ): array {
+	// 1. URL query parameter (?theme=slug)
+	if ( isset( $_GET['theme'] ) && is_string( $_GET['theme'] ) ) {
+		$url_slug = sanitize_title( wp_unslash( $_GET['theme'] ) );
+		if ( isset( $themes[ $url_slug ] ) ) {
+			return array(
+				'theme'               => $url_slug,
+				'is_direct_page_theme' => true,
+			);
+		}
+	}
+
+	// 2. Front page check
+	if ( is_front_page() || is_home() ) {
+		if ( 'page' === get_option( 'show_on_front' ) ) {
+			$front_id = (int) get_option( 'page_on_front' );
+			if ( $front_id > 0 ) {
+				$meta_theme = (string) get_post_meta( $front_id, '_nextora_theme', true );
+				if ( '' !== $meta_theme && isset( $themes[ $meta_theme ] ) ) {
+					return array(
+						'theme'               => $meta_theme,
+						'is_direct_page_theme' => true,
+					);
+				}
+			}
+		}
+
+		// Fallback: check cookie if visiting front-page without a designated meta theme
+		if ( isset( $_COOKIE['nextora_active_theme'] ) && is_string( $_COOKIE['nextora_active_theme'] ) ) {
+			$cookie_theme = sanitize_title( wp_unslash( $_COOKIE['nextora_active_theme'] ) );
+			if ( isset( $themes[ $cookie_theme ] ) ) {
+				return array(
+					'theme'               => $cookie_theme,
+					'is_direct_page_theme' => false,
+				);
+			}
+		}
+
+		return array(
+			'theme'               => null,
+			'is_direct_page_theme' => false,
+		);
+	}
+
+	// 3. Singular post/page
+	if ( is_singular() ) {
+		$post_id = get_queried_object_id();
+		if ( $post_id > 0 ) {
+			$meta_theme = (string) get_post_meta( $post_id, '_nextora_theme', true );
+			if ( '' !== $meta_theme && isset( $themes[ $meta_theme ] ) ) {
+				return array(
+					'theme'               => $meta_theme,
+					'is_direct_page_theme' => true,
+				);
+			}
+
+			// Check ancestors if nested page
+			$ancestors = get_post_ancestors( $post_id );
+			if ( is_array( $ancestors ) ) {
+				foreach ( $ancestors as $ancestor_id ) {
+					$ancestor_theme = (string) get_post_meta( (int) $ancestor_id, '_nextora_theme', true );
+					if ( '' !== $ancestor_theme && isset( $themes[ $ancestor_theme ] ) ) {
+						return array(
+							'theme'               => $ancestor_theme,
+							'is_direct_page_theme' => true,
+						);
+					}
+				}
+			}
+		}
+	}
+
+	// 4. Inner pages (no direct theme): inherit active session theme from cookie
+	if ( isset( $_COOKIE['nextora_active_theme'] ) && is_string( $_COOKIE['nextora_active_theme'] ) ) {
+		$cookie_theme = sanitize_title( wp_unslash( $_COOKIE['nextora_active_theme'] ) );
+		if ( isset( $themes[ $cookie_theme ] ) ) {
+			return array(
+				'theme'               => $cookie_theme,
+				'is_direct_page_theme' => false,
+			);
+		}
+	}
+
+	return array(
+		'theme'               => null,
+		'is_direct_page_theme' => false,
+	);
+}
+
+/**
+ * Builds CSS variables and button override rules for a given theme preset.
+ *
+ * @param array<string, mixed> $theme Theme preset.
+ *
+ * @return string Inline CSS.
+ */
+function nextora_get_theme_inline_css( array $theme ): string {
+	$root_rules = array();
+
+	if ( ! empty( $theme['colors'] ) && is_array( $theme['colors'] ) ) {
+		foreach ( $theme['colors'] as $slug => $hex ) {
+			$root_rules[] = '--wp--preset--color--' . $slug . ': ' . $hex . ';';
+		}
+	}
+
+	if ( ! empty( $theme['gradients'] ) && is_array( $theme['gradients'] ) ) {
+		foreach ( $theme['gradients'] as $slug => $grad ) {
+			$root_rules[] = '--wp--preset--gradient--' . $slug . ': ' . $grad . ';';
+		}
+	}
+
+	if ( ! empty( $theme['body'] ) ) {
+		$root_rules[] = '--nextora-font-body: ' . $theme['body'] . ';';
+	}
+	if ( ! empty( $theme['heading'] ) ) {
+		$root_rules[] = '--nextora-font-heading: ' . $theme['heading'] . ';';
+	}
+	if ( ! empty( $theme['button'] ) ) {
+		$root_rules[] = '--nextora-font-button: ' . $theme['button'] . ';';
+	}
+
+	if ( ! empty( $theme['buttonBg'] ) ) {
+		$root_rules[] = '--nextora-button-bg: ' . $theme['buttonBg'] . ';';
+	}
+	if ( ! empty( $theme['buttonColor'] ) ) {
+		$root_rules[] = '--nextora-button-color: ' . $theme['buttonColor'] . ';';
+	}
+	if ( ! empty( $theme['buttonHoverBg'] ) ) {
+		$root_rules[] = '--nextora-button-hover-bg: ' . $theme['buttonHoverBg'] . ';';
+	}
+	if ( ! empty( $theme['buttonHoverColor'] ) ) {
+		$root_rules[] = '--nextora-button-hover-color: ' . $theme['buttonHoverColor'] . ';';
+	}
+	if ( ! empty( $theme['headerButtonBg'] ) ) {
+		$root_rules[] = '--nextora-header-button-bg: ' . $theme['headerButtonBg'] . ';';
+	}
+	if ( ! empty( $theme['headerButtonColor'] ) ) {
+		$root_rules[] = '--nextora-header-button-color: ' . $theme['headerButtonColor'] . ';';
+	}
+	if ( ! empty( $theme['headerButtonHoverBg'] ) ) {
+		$root_rules[] = '--nextora-header-button-hover-bg: ' . $theme['headerButtonHoverBg'] . ';';
+	}
+	if ( ! empty( $theme['headerButtonHoverColor'] ) ) {
+		$root_rules[] = '--nextora-header-button-hover-color: ' . $theme['headerButtonHoverColor'] . ';';
+	}
+	if ( ! empty( $theme['buttonTextTransform'] ) ) {
+		$root_rules[] = '--nextora-button-text-transform: ' . $theme['buttonTextTransform'] . ';';
+	}
+	if ( ! empty( $theme['buttonFontWeight'] ) ) {
+		$root_rules[] = '--nextora-button-font-weight: ' . $theme['buttonFontWeight'] . ';';
+	}
+
+	$css = ':root { ' . implode( ' ', $root_rules ) . ' }';
+
+	$btn_rules = array();
+	if ( ! empty( $theme['buttonBg'] ) || ! empty( $theme['buttonColor'] ) ) {
+		$bg          = ! empty( $theme['buttonBg'] ) ? 'background-color: var(--nextora-button-bg);' : '';
+		$col         = ! empty( $theme['buttonColor'] ) ? 'color: var(--nextora-button-color);' : '';
+		$btn_rules[] = ':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline) > .wp-block-button__link) { ' . $bg . ' ' . $col . ' }';
+	}
+	if ( ! empty( $theme['buttonHoverBg'] ) || ! empty( $theme['buttonHoverColor'] ) ) {
+		$hbg         = ! empty( $theme['buttonHoverBg'] ) ? 'background-color: var(--nextora-button-hover-bg);' : '';
+		$hcol        = ! empty( $theme['buttonHoverColor'] ) ? 'color: var(--nextora-button-hover-color);' : '';
+		$btn_rules[] = ':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline) > .wp-block-button__link:hover) { ' . $hbg . ' ' . $hcol . ' }';
+	}
+	if ( ! empty( $theme['headerButtonBg'] ) || ! empty( $theme['headerButtonColor'] ) ) {
+		$hdr_bg      = ! empty( $theme['headerButtonBg'] ) ? 'background-color: var(--nextora-header-button-bg);' : '';
+		$hdr_col     = ! empty( $theme['headerButtonColor'] ) ? 'color: var(--nextora-header-button-color);' : '';
+		$btn_rules[] = ':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline), .nextora-header-block__cta.nextora-header-block__cta--solid) { ' . $hdr_bg . ' ' . $hdr_col . ' }';
+	}
+	if ( ! empty( $theme['headerButtonHoverBg'] ) || ! empty( $theme['headerButtonHoverColor'] ) ) {
+		$hdr_hbg     = ! empty( $theme['headerButtonHoverBg'] ) ? 'background-color: var(--nextora-header-button-hover-bg);' : '';
+		$hdr_hcol    = ! empty( $theme['headerButtonHoverColor'] ) ? 'color: var(--nextora-header-button-hover-color);' : '';
+		$btn_rules[] = ':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline):hover, .nextora-header-block__cta.nextora-header-block__cta--solid:hover) { ' . $hdr_hbg . ' ' . $hdr_hcol . ' }';
+	}
+	if ( ! empty( $theme['buttonTextTransform'] ) || ! empty( $theme['buttonFontWeight'] ) ) {
+		$typo = array();
+		if ( ! empty( $theme['buttonTextTransform'] ) ) {
+			$typo[] = 'text-transform: var(--nextora-button-text-transform);';
+		}
+		if ( ! empty( $theme['buttonFontWeight'] ) ) {
+			$typo[] = 'font-weight: var(--nextora-button-font-weight);';
+		}
+		$btn_rules[] = ':root:root :where(.wp-element-button, .wp-block-button__link, .nextora-header-block__cta, .alonepro-btn, .alonepro-alone-donation-box__btn, a.elementor-button, button.elementor-button) { ' . implode( ' ', $typo ) . ' }';
+	}
+
+	if ( ! empty( $btn_rules ) ) {
+		$css .= "\n" . implode( "\n", $btn_rules );
+	}
+
+	return $css;
 }

@@ -638,8 +638,6 @@ $css_vars = array(
 	'--nextora-testimonial-author-name-color' => '' !== $author_name_color ? $author_name_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
 	'--nextora-testimonial-trust-color'       => '' !== $trust_color ? $trust_color : 'var(--wp--preset--color--paragraph, #525252)',
 	'--nextora-testimonial-star-color'        => '' !== $star_color ? $star_color : '#F59E0B',
-	'--nextora-testimonial-dot-color'         => '' !== $dot_color ? $dot_color : 'color-mix(in srgb, currentColor 35%, transparent)',
-	'--nextora-testimonial-dot-active'        => '' !== $dot_active ? $dot_active : 'var(--wp--preset--color--primary, currentColor)',
 	'--nextora-testimonial-arrow-color'       => '' !== $arrow_color ? $arrow_color : 'var(--wp--preset--color--paragraph, #525252)',
 	'--nextora-testimonial-arrow-border'      => '' !== $arrow_border ? $arrow_border : 'color-mix(in srgb, currentColor 35%, transparent)',
 	'--nextora-testimonial-avatar-size'       => $avatar_size . 'px',
@@ -649,6 +647,13 @@ $css_vars = array(
 	'--nextora-testimonial-card-gap'            => $card_gap . 'px',
 	'--nextora-testimonial-edge-fade-color'     => '' !== $edge_fade_color ? $edge_fade_color : ( '' !== $bg_color ? $bg_color : 'var(--wp--preset--color--base, #ffffff)' ),
 );
+
+if ( '' !== $dot_color ) {
+	$css_vars['--nextora-testimonial-dot-color'] = $dot_color;
+}
+if ( '' !== $dot_active ) {
+	$css_vars['--nextora-testimonial-dot-active'] = $dot_active;
+}
 
 if ( '' !== $quote_font_size ) {
 	$css_vars['--nextora-testimonial-quote-size'] = $quote_font_size;

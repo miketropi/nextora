@@ -99,6 +99,14 @@ if ( ! function_exists( 'nextora_box_icon_resolve_font_family' ) ) {
 			return '';
 		}
 
+		if ( 'font-body' === $raw || 'body' === $raw ) {
+			return 'var(--nextora-font-body)';
+		}
+
+		if ( 'font-heading' === $raw || 'heading' === $raw ) {
+			return 'var(--nextora-font-heading)';
+		}
+
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
 			return 'var(--wp--preset--font-family--' . sanitize_html_class( $raw ) . ')';
 		}
@@ -572,6 +580,20 @@ if ( ! function_exists( 'nextora_box_icon_get_gutenberg_font_family_props' ) ) {
 			);
 		}
 
+		if ( 'font-body' === $font_family || 'body' === $font_family ) {
+			return array(
+				'class' => '',
+				'style' => 'font-family:var(--nextora-font-body);',
+			);
+		}
+
+		if ( 'font-heading' === $font_family || 'heading' === $font_family ) {
+			return array(
+				'class' => '',
+				'style' => 'font-family:var(--nextora-font-heading);',
+			);
+		}
+
 		if ( preg_match( '/^[a-z0-9_-]+$/i', $font_family ) ) {
 			$slug = sanitize_html_class( strtolower( $font_family ) );
 			return array(
@@ -583,6 +605,54 @@ if ( ! function_exists( 'nextora_box_icon_get_gutenberg_font_family_props' ) ) {
 		return array(
 			'class' => '',
 			'style' => 'font-family:' . esc_attr( $font_family ) . ';',
+		);
+	}
+}
+
+if ( ! function_exists( 'nextora_box_icon_get_font_size_props' ) ) {
+	/**
+	 * Preset slug or custom CSS size → font-size props.
+	 *
+	 * @param string $raw          Font size attribute.
+	 * @param string $default_size Default preset size slug if empty.
+	 *
+	 * @return array{class: string, style: string}
+	 */
+	function nextora_box_icon_get_font_size_props( string $raw, string $default_size = '' ): array {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			$raw = $default_size;
+		}
+		if ( '' === $raw ) {
+			return array(
+				'class' => '',
+				'style' => '',
+			);
+		}
+
+		$slug = '';
+		if ( preg_match( '/^var:preset\|font-size\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^var\(\s*--wp--preset--font-size--([a-z0-9_-]+)\s*\)$/i', $raw, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( ! preg_match( '/^(?:[\d.]+(?:px|rem|em|vw|vh|%)|clamp\(.+\))$/i', $raw ) && ! is_numeric( $raw ) && preg_match( '/^[a-z0-9-]+$/i', $raw ) ) {
+			$slug = sanitize_html_class( strtolower( $raw ) );
+		}
+
+		if ( '' !== $slug ) {
+			return array(
+				'class' => 'has-' . $slug . '-font-size',
+				'style' => '',
+			);
+		}
+
+		$size = $raw;
+		if ( is_numeric( $size ) ) {
+			$size .= 'px';
+		}
+		return array(
+			'class' => '',
+			'style' => 'font-size:' . esc_attr( $size ) . ';',
 		);
 	}
 }
@@ -656,25 +726,41 @@ if ( ! function_exists( 'nextora_box_icon_render_card' ) ) {
 			$out .= '<article class="nextora-box-icon__card">';
 		}
 
-		$title_classes = array( 'nextora-box-icon__title' );
-		if ( '' !== $title_font_size ) {
-			$title_classes[] = 'has-' . sanitize_html_class( $title_font_size ) . '-font-size';
+		$title_size_props = nextora_box_icon_get_font_size_props( $title_font_size );
+		$title_classes    = array( 'nextora-box-icon__title' );
+		if ( ! empty( $title_size_props['class'] ) ) {
+			$title_classes[] = $title_size_props['class'];
 		}
 		if ( ! empty( $title_color_props['class'] ) ) {
 			$title_classes[] = $title_color_props['class'];
 		}
+		$title_styles = array();
+		if ( ! empty( $title_size_props['style'] ) ) {
+			$title_styles[] = $title_size_props['style'];
+		}
+		if ( ! empty( $title_color_props['style'] ) ) {
+			$title_styles[] = $title_color_props['style'];
+		}
 		$title_class_attr = implode( ' ', $title_classes );
-		$title_style_attr = ! empty( $title_color_props['style'] ) ? ' style="' . esc_attr( $title_color_props['style'] ) . '"' : '';
+		$title_style_attr = ! empty( $title_styles ) ? ' style="' . esc_attr( implode( ' ', $title_styles ) ) . '"' : '';
 
-		$desc_classes = array( 'nextora-box-icon__description' );
-		if ( '' !== $description_font_size ) {
-			$desc_classes[] = 'has-' . sanitize_html_class( $description_font_size ) . '-font-size';
+		$desc_size_props = nextora_box_icon_get_font_size_props( $description_font_size );
+		$desc_classes    = array( 'nextora-box-icon__description' );
+		if ( ! empty( $desc_size_props['class'] ) ) {
+			$desc_classes[] = $desc_size_props['class'];
 		}
 		if ( ! empty( $desc_color_props['class'] ) ) {
 			$desc_classes[] = $desc_color_props['class'];
 		}
+		$desc_styles = array();
+		if ( ! empty( $desc_size_props['style'] ) ) {
+			$desc_styles[] = $desc_size_props['style'];
+		}
+		if ( ! empty( $desc_color_props['style'] ) ) {
+			$desc_styles[] = $desc_color_props['style'];
+		}
 		$desc_class_attr = implode( ' ', $desc_classes );
-		$desc_style_attr = ! empty( $desc_color_props['style'] ) ? ' style="' . esc_attr( $desc_color_props['style'] ) . '"' : '';
+		$desc_style_attr = ! empty( $desc_styles ) ? ' style="' . esc_attr( implode( ' ', $desc_styles ) ) . '"' : '';
 
 		if ( 'highlights' === $card_template ) {
 			$stat_num   = $number;
@@ -691,15 +777,22 @@ if ( ! function_exists( 'nextora_box_icon_render_card' ) ) {
 				$out .= $icon_html;
 			}
 			if ( '' !== trim( $stat_num ) ) {
-				$stat_num_size  = '' !== $stat_number_font_size ? $stat_number_font_size : 'large';
-				$stat_classes   = array(
-					'nextora-box-icon__stat-number',
-					'has-' . sanitize_html_class( $stat_num_size ) . '-font-size',
-				);
+				$stat_num_size_props = nextora_box_icon_get_font_size_props( $stat_number_font_size, 'large' );
+				$stat_classes        = array( 'nextora-box-icon__stat-number' );
+				if ( ! empty( $stat_num_size_props['class'] ) ) {
+					$stat_classes[] = $stat_num_size_props['class'];
+				}
 				if ( ! empty( $stat_number_font_props['class'] ) ) {
 					$stat_classes[] = $stat_number_font_props['class'];
 				}
-				$stat_style_attr = ! empty( $stat_number_font_props['style'] ) ? ' style="' . esc_attr( $stat_number_font_props['style'] ) . '"' : '';
+				$stat_styles = array();
+				if ( ! empty( $stat_num_size_props['style'] ) ) {
+					$stat_styles[] = $stat_num_size_props['style'];
+				}
+				if ( ! empty( $stat_number_font_props['style'] ) ) {
+					$stat_styles[] = $stat_number_font_props['style'];
+				}
+				$stat_style_attr = ! empty( $stat_styles ) ? ' style="' . esc_attr( implode( ' ', $stat_styles ) ) . '"' : '';
 				$out .= '<b class="' . esc_attr( implode( ' ', $stat_classes ) ) . '"' . $stat_style_attr . '>' . esc_html( $stat_num ) . '</b>';
 			}
 			if ( '' !== trim( wp_strip_all_tags( $stat_title ) ) ) {
@@ -815,9 +908,9 @@ $layout_mode = isset( $attributes['layoutMode'] ) && in_array( $attributes['layo
 	? (string) $attributes['layoutMode']
 	: ( isset( $template_defaults['layoutMode'] ) ? (string) $template_defaults['layoutMode'] : 'slider' );
 
-$title_font_size       = isset( $attributes['titleFontSize'] ) && '' !== trim( (string) $attributes['titleFontSize'] ) ? sanitize_html_class( (string) $attributes['titleFontSize'] ) : '';
-$description_font_size = isset( $attributes['descriptionFontSize'] ) && '' !== trim( (string) $attributes['descriptionFontSize'] ) ? sanitize_html_class( (string) $attributes['descriptionFontSize'] ) : '';
-$stat_number_font_size = isset( $attributes['statNumberFontSize'] ) && '' !== trim( (string) $attributes['statNumberFontSize'] ) ? sanitize_html_class( (string) $attributes['statNumberFontSize'] ) : 'large';
+$title_font_size       = isset( $attributes['titleFontSize'] ) ? trim( (string) $attributes['titleFontSize'] ) : '';
+$description_font_size = isset( $attributes['descriptionFontSize'] ) ? trim( (string) $attributes['descriptionFontSize'] ) : '';
+$stat_number_font_size = isset( $attributes['statNumberFontSize'] ) && '' !== trim( (string) $attributes['statNumberFontSize'] ) ? trim( (string) $attributes['statNumberFontSize'] ) : 'large';
 $stat_number_font_family = isset( $attributes['statNumberFontFamily'] ) ? (string) $attributes['statNumberFontFamily'] : '';
 $stat_number_font_props  = nextora_box_icon_get_gutenberg_font_family_props( $stat_number_font_family );
 
@@ -1049,26 +1142,42 @@ nextora_box_icon_enqueue_view_script();
 							<div class="nextora-box-icon__ways-row-body">
 								<span class="nextora-box-icon__ways-row-tag"><?php echo esc_html( sprintf( '%02d · %s', $index + 1, '' !== $row_number ? strtoupper( $row_number ) : strtoupper( $row_title ) ) ); ?></span>
 								<?php if ( '' !== trim( wp_strip_all_tags( $row_title ) ) ) :
-									$t4_title_classes = array( 'nextora-box-icon__title' );
-									if ( '' !== $title_font_size ) {
-										$t4_title_classes[] = 'has-' . sanitize_html_class( $title_font_size ) . '-font-size';
+									$t4_title_size_props = nextora_box_icon_get_font_size_props( $title_font_size );
+									$t4_title_classes    = array( 'nextora-box-icon__title' );
+									if ( ! empty( $t4_title_size_props['class'] ) ) {
+										$t4_title_classes[] = $t4_title_size_props['class'];
 									}
 									if ( ! empty( $title_color_props['class'] ) ) {
 										$t4_title_classes[] = $title_color_props['class'];
 									}
-									$t4_title_style = ! empty( $title_color_props['style'] ) ? ' style="' . esc_attr( $title_color_props['style'] ) . '"' : '';
+									$t4_title_styles = array();
+									if ( ! empty( $t4_title_size_props['style'] ) ) {
+										$t4_title_styles[] = $t4_title_size_props['style'];
+									}
+									if ( ! empty( $title_color_props['style'] ) ) {
+										$t4_title_styles[] = $title_color_props['style'];
+									}
+									$t4_title_style = ! empty( $t4_title_styles ) ? ' style="' . esc_attr( implode( ' ', $t4_title_styles ) ) . '"' : '';
 								?>
 									<h4 class="<?php echo esc_attr( implode( ' ', $t4_title_classes ) ); ?>"<?php echo $t4_title_style; ?>><?php echo esc_html( $row_title ); ?></h4>
 								<?php endif; ?>
 								<?php if ( '' !== trim( wp_strip_all_tags( $row_desc ) ) ) :
-									$t4_desc_classes = array( 'nextora-box-icon__description' );
-									if ( '' !== $description_font_size ) {
-										$t4_desc_classes[] = 'has-' . sanitize_html_class( $description_font_size ) . '-font-size';
+									$t4_desc_size_props = nextora_box_icon_get_font_size_props( $description_font_size );
+									$t4_desc_classes    = array( 'nextora-box-icon__description' );
+									if ( ! empty( $t4_desc_size_props['class'] ) ) {
+										$t4_desc_classes[] = $t4_desc_size_props['class'];
 									}
 									if ( ! empty( $desc_color_props['class'] ) ) {
 										$t4_desc_classes[] = $desc_color_props['class'];
 									}
-									$t4_desc_style = ! empty( $desc_color_props['style'] ) ? ' style="' . esc_attr( $desc_color_props['style'] ) . '"' : '';
+									$t4_desc_styles = array();
+									if ( ! empty( $t4_desc_size_props['style'] ) ) {
+										$t4_desc_styles[] = $t4_desc_size_props['style'];
+									}
+									if ( ! empty( $desc_color_props['style'] ) ) {
+										$t4_desc_styles[] = $desc_color_props['style'];
+									}
+									$t4_desc_style = ! empty( $t4_desc_styles ) ? ' style="' . esc_attr( implode( ' ', $t4_desc_styles ) ) . '"' : '';
 								?>
 									<p class="<?php echo esc_attr( implode( ' ', $t4_desc_classes ) ); ?>"<?php echo $t4_desc_style; ?>><?php echo esc_html( $row_desc ); ?></p>
 								<?php endif; ?>

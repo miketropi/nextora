@@ -485,6 +485,14 @@
 			);
 			localStorage.removeItem( LEGACY_STORAGE_KEY );
 		} catch ( e ) { /* storage unavailable — still works for this view */ }
+
+		try {
+			if ( state.theme ) {
+				document.cookie = 'nextora_active_theme=' + encodeURIComponent( state.theme ) + '; path=/; max-age=86400; SameSite=Lax';
+			} else {
+				document.cookie = 'nextora_active_theme=; path=/; max-age=0; SameSite=Lax';
+			}
+		} catch ( e ) {}
 	}
 
 	function bootstrap() {
@@ -496,11 +504,30 @@
 		var urlColor = params.get( 'color' );
 		var urlFont = params.get( 'font' );
 
+		var pageTheme = OPTIONS.currentPageTheme || null;
+		var isDirectPageTheme = Boolean( OPTIONS.isDirectPageTheme );
+
 		var theme = null;
+		var shouldPersist = false;
+
 		if ( urlTheme && THEMES[ urlTheme ] ) {
+			// 1. Explicit URL parameter wins (?theme=medical)
 			theme = urlTheme;
-		} else if ( hasSavedChoice ) {
-			theme = prefs.theme && THEMES[ prefs.theme ] ? prefs.theme : null;
+			shouldPersist = true;
+		} else if ( isDirectPageTheme && pageTheme && THEMES[ pageTheme ] ) {
+			// 2. Landing on a designated demo Home page (e.g. Home Medical):
+			// Actives the page's theme and automatically persists to localStorage + cookie!
+			theme = pageTheme;
+			shouldPersist = true;
+		} else if ( hasSavedChoice && prefs.theme && THEMES[ prefs.theme ] ) {
+			// 3. Inner page with NO direct theme (e.g. /contact-us/, /about-us/):
+			// Inherits the theme saved in localStorage from the demo Home previously visited!
+			theme = prefs.theme;
+			shouldPersist = true;
+		} else if ( pageTheme && THEMES[ pageTheme ] ) {
+			// 4. In case pageTheme was resolved from cookie for this request
+			theme = pageTheme;
+			shouldPersist = true;
 		} else if ( INITIAL.theme && THEMES[ INITIAL.theme ] ) {
 			theme = INITIAL.theme;
 		}
@@ -541,9 +568,7 @@
 			}
 		}
 
-		// Persist only when the URL carried a valid choice (shared links); a
-		// config `initial` fallback must not be saved as a user choice.
-		if ( appliedFromUrl ) {
+		if ( appliedFromUrl || shouldPersist ) {
 			save();
 		}
 

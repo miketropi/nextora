@@ -131,6 +131,10 @@ if ( ! function_exists( 'nextora_header_block_sanitize_font_size' ) ) {
 			return 'var(--wp--preset--font-size--' . sanitize_html_class( strtolower( $m[1] ) ) . ')';
 		}
 
+		if ( is_numeric( $value ) ) {
+			return $value . 'px';
+		}
+
 		// Preset slug (e.g. small, base, medium, medium-plus, large, x-large, xx-large)
 		if ( preg_match( '/^[a-z0-9_-]+$/i', $value ) && ! preg_match( '/\d+(?:px|rem|em|%|vh|vw|pt)$/i', $value ) ) {
 			return 'var(--wp--preset--font-size--' . sanitize_html_class( strtolower( $value ) ) . ')';
@@ -214,7 +218,7 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 	 */
 	function nextora_header_block_mobile_breakpoint_css( int $bp ): string
 	{
-		if ( 768 === $bp ) {
+		if ( $bp <= 0 ) {
 			return '';
 		}
 
@@ -246,7 +250,7 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 
 			// -- logo-nav-center layout -------------------------------------
 			. '  .nextora-header-block--layout-logo-nav-center .nextora-header-block__inner{' . "\n"
-			. '    display:grid;align-items:center;' . "\n"
+			. '    display:grid;grid-template-columns:max-content minmax(0, 1fr) max-content;align-items:center;' . "\n"
 			. '    column-gap:clamp(var(--wp--preset--spacing--10,1rem),2vw,var(--nextora-gutter,1.5rem));' . "\n"
 			. '    row-gap:var(--wp--preset--spacing--10,0.85rem);' . "\n"
 			. '  }' . "\n"
@@ -349,21 +353,29 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			. '  .nextora-header-block__row--nav{display:none !important;}' . "\n"
 
 			// -- logo swap --------------------------------------------------
-			. '  .nextora-header-block__logo-img--desktop{display:none;}' . "\n"
+			. '  .nextora-header-block__logo--image,' . "\n"
+			. '  .nextora-header-block__logo:has(.nextora-header-block__logo-img){' . "\n"
+			. '    max-width:var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px)) !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block__logo-img--desktop{display:none !important;}' . "\n"
 			. '  .nextora-header-block__logo-img--mobile{' . "\n"
-			. '    display:block;max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px)));' . "\n"
+			. '    display:block !important;max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px))) !important;' . "\n"
 			. '  }' . "\n"
 			. '  .nextora-header-block__logo-img:not(.nextora-header-block__logo-img--desktop):not(.nextora-header-block__logo-img--mobile){' . "\n"
-			. '    max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px)));' . "\n"
+			. '    max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px))) !important;' . "\n"
 			. '  }' . "\n"
 
 			// Editor canvas mirror
-			. '  .nextora-header-block--editor .nextora-header-block__logo-img--desktop{display:none;}' . "\n"
+			. '  .nextora-header-block--editor .nextora-header-block__logo--image,' . "\n"
+			. '  .nextora-header-block--editor .nextora-header-block__logo:has(.nextora-header-block__logo-img){' . "\n"
+			. '    max-width:var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px)) !important;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-header-block--editor .nextora-header-block__logo-img--desktop{display:none !important;}' . "\n"
 			. '  .nextora-header-block--editor .nextora-header-block__logo-img--mobile{' . "\n"
-			. '    display:block;max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px)));' . "\n"
+			. '    display:block !important;max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px))) !important;' . "\n"
 			. '  }' . "\n"
 			. '  .nextora-header-block--editor .nextora-header-block__logo-img:not(.nextora-header-block__logo-img--desktop):not(.nextora-header-block__logo-img--mobile){' . "\n"
-			. '    max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px)));' . "\n"
+			. '    max-width:min(100%,var(--nextora-header-logo-max-width-mobile,var(--nextora-header-logo-max-width,150px))) !important;' . "\n"
 			. '  }' . "\n"
 
 			// -- utility hide rules -----------------------------------------
@@ -673,10 +685,16 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			. '  .nextora-primary-nav-portal__mount .nextora-event,' . "\n"
 			. '  .nextora-primary-nav-portal__panel .wp-block-nextora-event-the-events-calendar,' . "\n"
 			. '  .nextora-primary-nav-portal__mount .wp-block-nextora-event-the-events-calendar{width:100% !important;max-width:100% !important;}' . "\n"
-			. '  .nextora-primary-nav-portal__panel :is(.nextora-blc__card--template-2,.nextora-blc__card--template-1,.nextora-blc__card--template-3,.nextora-blc__card),' . "\n"
-			. '  .nextora-primary-nav-portal__mount :is(.nextora-blc__card--template-2,.nextora-blc__card--template-1,.nextora-blc__card--template-3,.nextora-blc__card){display:flex !important;flex-direction:column !important;grid-template-columns:1fr !important;width:100% !important;max-width:100% !important;gap:12px !important;box-sizing:border-box !important;}' . "\n"
-			. '  .nextora-primary-nav-portal__panel :is(.nextora-blc__card--template-2,.nextora-blc__card--template-1,.nextora-blc__card--template-3,.nextora-blc__card) .nextora-blc__card-image,' . "\n"
-			. '  .nextora-primary-nav-portal__mount :is(.nextora-blc__card--template-2,.nextora-blc__card--template-1,.nextora-blc__card--template-3,.nextora-blc__card) .nextora-blc__card-image{aspect-ratio:16/9 !important;height:auto !important;width:100% !important;max-width:100% !important;box-sizing:border-box !important;}' . "\n"
+			. '  .nextora-primary-nav-portal__panel :is(.nextora-blc__card--template-2,.nextora-blc__card--template-1,.nextora-blc__card--template-3,.nextora-blc__card:not(.nextora-blc__card--template-4)),' . "\n"
+			. '  .nextora-primary-nav-portal__mount :is(.nextora-blc__card--template-2,.nextora-blc__card--template-1,.nextora-blc__card--template-3,.nextora-blc__card:not(.nextora-blc__card--template-4)){display:flex !important;flex-direction:column !important;grid-template-columns:1fr !important;width:100% !important;max-width:100% !important;gap:12px !important;box-sizing:border-box !important;}' . "\n"
+			. '  .nextora-primary-nav-portal__panel .nextora-blc__card--template-4,' . "\n"
+			. '  .nextora-primary-nav-portal__mount .nextora-blc__card--template-4{display:flex !important;flex-direction:column !important;grid-template-columns:1fr !important;width:100% !important;max-width:100% !important;gap:0 !important;row-gap:0 !important;column-gap:0 !important;box-sizing:border-box !important;}' . "\n"
+			. '  .nextora-primary-nav-portal__panel .nextora-blc__card--template-4 .nextora-blc__card-image,' . "\n"
+			. '  .nextora-primary-nav-portal__mount .nextora-blc__card--template-4 .nextora-blc__card-image{aspect-ratio:16/9 !important;height:auto !important;width:100% !important;max-width:100% !important;box-sizing:border-box !important;margin:0 !important;margin-bottom:0 !important;border-radius:0 !important;}' . "\n"
+			. '  .nextora-primary-nav-portal__panel .nextora-blc__card--template-4 .nextora-blc__card-body,' . "\n"
+			. '  .nextora-primary-nav-portal__mount .nextora-blc__card--template-4 .nextora-blc__card-body{padding:var(--nextora-blc-card-padding,20px) !important;}' . "\n"
+			. '  .nextora-primary-nav-portal__panel :is(.nextora-blc__card--template-2,.nextora-blc__card--template-1,.nextora-blc__card--template-3,.nextora-blc__card:not(.nextora-blc__card--template-4)) .nextora-blc__card-image,' . "\n"
+			. '  .nextora-primary-nav-portal__mount :is(.nextora-blc__card--template-2,.nextora-blc__card--template-1,.nextora-blc__card--template-3,.nextora-blc__card:not(.nextora-blc__card--template-4)) .nextora-blc__card-image{aspect-ratio:16/9 !important;height:auto !important;width:100% !important;max-width:100% !important;box-sizing:border-box !important;}' . "\n"
 			. '  .nextora-primary-nav-portal__panel .nextora-blc__pagination:not(.swiper-pagination-bullets),' . "\n"
 			. '  .nextora-primary-nav-portal__mount .nextora-blc__pagination:not(.swiper-pagination-bullets){display:none !important;}' . "\n"
 			. '  .nextora-primary-nav-portal__panel .nextora-box-icon__grid,' . "\n"
@@ -697,13 +715,9 @@ if ( ! function_exists( 'nextora_header_block_logo_img_inline_style' ) ) {
 	 *
 	 * @param int $max_width Max display width in pixels.
 	 */
-	function nextora_header_block_logo_img_inline_style( int $max_width ): string
+	function nextora_header_block_logo_img_inline_style( int $max_width = 0 ): string
 	{
-		if ( $max_width < 1 ) {
-			return 'width:auto;height:auto;';
-		}
-
-		return sprintf( 'max-width:min(100%%, %dpx);width:auto;height:auto;', $max_width );
+		return 'width:auto;height:auto;';
 	}
 }
 
@@ -1333,7 +1347,7 @@ $render_logo = static function ( array $atts ): string {
 
 	ob_start();
 	?>
-	<div class="nextora-header-block__logo" style="<?php echo esc_attr( $logo_style ); ?>">
+	<div class="nextora-header-block__logo nextora-header-block__logo--<?php echo esc_attr( $logo_type ); ?>" style="<?php echo esc_attr( $logo_style ); ?>">
 		<a class="nextora-header-block__logo-link" href="<?php echo esc_url( $logo_href ); ?>" rel="home">
 			<?php if ( 'text' === $logo_type ) : ?>
 				<span class="nextora-header-block__logo-text"><?php echo esc_html( $logo_label ); ?></span>
@@ -1365,7 +1379,7 @@ $render_logo = static function ( array $atts ): string {
 						$single_logo_url,
 						$logo_label,
 						'',
-						$logo_w,
+						0,
 					);
 				}
 				?>
@@ -1748,7 +1762,9 @@ $portal_panel   = $uid . '-portal-panel';
 $portal_title   = $uid . '-portal-title';
 $menu_dom_id    = 'menu-' . sanitize_html_class( str_replace( 'nextora-hb-', 'hb-', $uid ) );
 
-$mobile_bp = 1025;
+$mobile_bp = isset( $attributes['mobileBreakpoint'] ) && (int) $attributes['mobileBreakpoint'] > 0
+	? (int) $attributes['mobileBreakpoint']
+	: 1025;
 
 $wrapper_classes   = (array) apply_filters( 'nextora_header_block_wrapper_classes', array( 'nextora-header-block' ), $attributes );
 $wrapper_classes   = array_filter( array_map( 'trim', $wrapper_classes ) );

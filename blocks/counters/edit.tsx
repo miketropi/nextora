@@ -100,17 +100,48 @@ function formatDisplay(item: CounterItem): string {
 	return `${item.prefix}${formatNumber(item.number)}${item.suffix}`;
 }
 
+const PRESET_FONT_SIZE_SLUGS = new Set([
+	'small',
+	'base',
+	'medium',
+	'medium-plus',
+	'large',
+	'x-large',
+	'xx-large',
+]);
+
+function isPresetFontSize(
+	val: string | undefined,
+	fontSizes: Array<{ slug?: string }> = [],
+): boolean {
+	if (!val) {
+		return false;
+	}
+	const lower = val.trim().toLowerCase();
+	if (/^[\d.]+(?:px|rem|em|vw|vh|%)?$/i.test(lower) || /^clamp\(/i.test(lower)) {
+		return false;
+	}
+	return (
+		PRESET_FONT_SIZE_SLUGS.has(lower) ||
+		fontSizes.some((item) => item.slug?.toLowerCase() === lower)
+	);
+}
+
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
 	selectedItem?: { slug?: string },
 ): string {
-	if (value === undefined) {
+	if (value === undefined || value === '') {
 		return '';
 	}
 	if (selectedItem?.slug) {
 		return selectedItem.slug;
 	}
-	return String(value);
+	const str = String(value).trim();
+	if (/^\d+(\.\d+)?$/.test(str)) {
+		return `${str}px`;
+	}
+	return str;
 }
 
 function clampColumns(value: number, min: number, max: number): number {
@@ -481,7 +512,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 					>
 						<FontSizePicker
 							value={numberFontSize || undefined}
-							valueMode="slug"
+							valueMode={isPresetFontSize(numberFontSize) ? 'slug' : 'literal'}
 							onChange={(value, selectedItem) =>
 								setAttributes({
 									numberFontSize: normalizeFontSizeAttribute(value, selectedItem),
@@ -500,7 +531,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 					>
 						<FontSizePicker
 							value={labelFontSize || undefined}
-							valueMode="slug"
+							valueMode={isPresetFontSize(labelFontSize) ? 'slug' : 'literal'}
 							onChange={(value, selectedItem) =>
 								setAttributes({
 									labelFontSize: normalizeFontSizeAttribute(value, selectedItem),

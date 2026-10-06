@@ -161,6 +161,10 @@ export default function VerticalShowcaseEdit({ attributes, setAttributes }: {
 		const val = resolveColorToCSSValue(attributes.activeIndicatorColor);
 		if (val) blockStyle['--nextora-vs-active-indicator'] = val;
 	}
+	if (attributes.numberColor) {
+		const val = resolveColorToCSSValue(attributes.numberColor);
+		if (val) blockStyle['--nextora-vs-number-color'] = val;
+	}
 
 	const descColorProps = getGutenbergColorProps(attributes.descriptionColor, 'color');
 	const numberColorProps = getGutenbergColorProps(attributes.numberColor, 'color');
@@ -240,11 +244,11 @@ export default function VerticalShowcaseEdit({ attributes, setAttributes }: {
 							>
 								<span className="nextora-vertical-showcase__item-rail" aria-hidden="true" />
 								<span
-									className={`nextora-vertical-showcase__item-number ${numberColorProps.className}`.trim()}
+									className={`nextora-vertical-showcase__item-number ${titleFontSizeClass} ${numberColorProps.className}`.trim()}
 									style={numberColorProps.style}
 									aria-hidden="true"
 								>
-									/{String(index + 1).padStart(2, '0')}
+									{index + 1}.
 								</span>
 								<span className="nextora-vertical-showcase__item-body">
 									<h4 className={`nextora-vertical-showcase__item-title ${titleFontSizeClass}`.trim()}>

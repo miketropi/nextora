@@ -27,7 +27,7 @@
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: var(--wp--preset--spacing--20);
+  gap: 0.5rem;
   width: 100%;
   padding: var(--wp--preset--spacing--30) 0;
   border: 0;
@@ -76,10 +76,15 @@
 
 .nextora-vertical-showcase__item-number {
   flex: 0 0 auto;
-  margin-top: 0.3rem;
-  font-size: var(--wp--preset--font-size--small);
+  margin: 0;
+  font-family: var(--nextora-font-heading, inherit);
+  font-size: var(--wp--preset--font-size--medium);
+  font-weight: 600;
+  line-height: 1.25;
   font-variant-numeric: tabular-nums;
-  opacity: 0.65;
+  color: var(--nextora-vs-number-color, var(--wp--preset--color--contrast, currentColor));
+  opacity: 0.55;
+  transition: opacity 0.35s ease, color 0.35s ease;
 }
 
 .nextora-vertical-showcase__item-body {
@@ -90,20 +95,32 @@
   gap: 0.5rem;
 }
 
-/* Scoped title with (0, 2, 0) specificity purely for margin reset without overriding Global Styles typography */
+/* Scoped title and number with (0, 2, 0) specificity purely for margin reset without overriding Global Styles typography */
 .wp-block-nextora-vertical-showcase .nextora-vertical-showcase__item-title,
 .nextora-vertical-showcase__item .nextora-vertical-showcase__item-title {
   margin: 0;
   transition: opacity 0.35s ease;
 }
 
-.nextora-vertical-showcase__item:not(.nextora-vertical-showcase__item--active) .nextora-vertical-showcase__item-title {
+.wp-block-nextora-vertical-showcase .nextora-vertical-showcase__item-number,
+.nextora-vertical-showcase__item .nextora-vertical-showcase__item-number {
+  margin: 0;
+  font-family: var(--nextora-font-heading, inherit);
+  line-height: 1.25;
+  transition: opacity 0.35s ease;
+}
+
+.nextora-vertical-showcase__item:not(.nextora-vertical-showcase__item--active) .nextora-vertical-showcase__item-title,
+.nextora-vertical-showcase__item:not(.nextora-vertical-showcase__item--active) .nextora-vertical-showcase__item-number {
   opacity: 0.55;
 }
 
 .nextora-vertical-showcase__item--active .nextora-vertical-showcase__item-title,
+.nextora-vertical-showcase__item--active .nextora-vertical-showcase__item-number,
 .nextora-vertical-showcase__item:hover .nextora-vertical-showcase__item-title,
-.nextora-vertical-showcase__item:focus-visible .nextora-vertical-showcase__item-title {
+.nextora-vertical-showcase__item:hover .nextora-vertical-showcase__item-number,
+.nextora-vertical-showcase__item:focus-visible .nextora-vertical-showcase__item-title,
+.nextora-vertical-showcase__item:focus-visible .nextora-vertical-showcase__item-number {
   opacity: 1;
 }
 
@@ -114,6 +131,10 @@
 
 .wp-block-nextora-vertical-showcase[style*="--nextora-vs-inactive-title-color"] .nextora-vertical-showcase__item:not(.nextora-vertical-showcase__item--active) .nextora-vertical-showcase__item-title {
   color: var(--nextora-vs-inactive-title-color);
+}
+
+.wp-block-nextora-vertical-showcase[style*="--nextora-vs-number-color"] .nextora-vertical-showcase__item-number {
+  color: var(--nextora-vs-number-color);
 }
 
 .nextora-vertical-showcase__item-details {
@@ -284,6 +305,7 @@
   from {
     transform: scaleY(0);
   }
+
   to {
     transform: scaleY(1);
   }
@@ -342,6 +364,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .nextora-vertical-showcase *,
   .nextora-vertical-showcase *::before,
   .nextora-vertical-showcase *::after {

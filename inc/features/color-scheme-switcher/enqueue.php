@@ -13,6 +13,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 add_action(
+	'wp_head',
+	static function (): void {
+		$payload       = nextora_get_switcher_payload();
+		$current_theme = $payload['currentPageTheme'] ?? null;
+		if ( ! empty( $current_theme ) && ! empty( $payload['themes'][ $current_theme ] ) ) {
+			$css = nextora_get_theme_inline_css( $payload['themes'][ $current_theme ] );
+			if ( '' !== $css ) {
+				echo "<style id=\"nextora-page-theme-vars\">\n" . $css . "\n</style>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+		}
+	},
+	1,
+);
+
+add_action(
 	'wp_enqueue_scripts',
 	static function (): void {
 		$payload = nextora_get_switcher_payload();
@@ -37,6 +52,86 @@ add_action(
 			'window.NEXTORA_THEME_OPTIONS = ' . wp_json_encode( $payload ) . ';',
 			'before',
 		);
+	},
+);
+
+add_action(
+	'init',
+	static function (): void {
+		register_post_meta(
+			'page',
+			'_nextora_theme',
+			array(
+				'show_in_rest'      => true,
+				'single'            => true,
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_title',
+				'auth_callback'     => static function (): bool {
+					return current_user_can( 'edit_posts' );
+				},
+			),
+		);
+	},
+);
+
+add_action(
+	'add_meta_boxes',
+	static function (): void {
+		add_meta_box(
+			'nextora_page_theme_box',
+			__( 'Appearance Theme', 'nextora' ),
+			static function ( WP_Post $post ): void {
+				wp_nonce_field( 'nextora_page_theme_nonce_action', 'nextora_page_theme_nonce' );
+				$current_value = (string) get_post_meta( $post->ID, '_nextora_theme', true );
+				$fonts         = nextora_get_font_registry();
+				$themes        = nextora_get_themes( $fonts );
+				?>
+				<p class="description">
+					<?php esc_html_e( 'Select the demo theme style for this page. When set, visiting this page will automatically activate its theme and persist it for child/inner pages.', 'nextora' ); ?>
+				</p>
+				<p>
+					<label for="nextora_theme_select"><strong><?php esc_html_e( 'Theme Style:', 'nextora' ); ?></strong></label><br>
+					<select name="nextora_theme" id="nextora_theme_select" class="widefat" style="margin-top: 5px;">
+						<option value=""><?php esc_html_e( '— Default (WP Site Editor Styles) —', 'nextora' ); ?></option>
+						<?php foreach ( $themes as $slug => $theme_data ) : ?>
+							<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $current_value, $slug ); ?>>
+								<?php echo esc_html( $theme_data['title'] ?? $slug ); ?> (<?php echo esc_html( $slug ); ?>)
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</p>
+				<?php
+			},
+			'page',
+			'side',
+			'default',
+		);
+	},
+);
+
+add_action(
+	'save_post_page',
+	static function ( int $post_id ): void {
+		if ( ! isset( $_POST['nextora_page_theme_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['nextora_page_theme_nonce'] ), 'nextora_page_theme_nonce_action' ) ) {
+			return;
+		}
+
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_page', $post_id ) ) {
+			return;
+		}
+
+		if ( isset( $_POST['nextora_theme'] ) ) {
+			$theme = sanitize_title( wp_unslash( $_POST['nextora_theme'] ) );
+			if ( '' === $theme ) {
+				delete_post_meta( $post_id, '_nextora_theme' );
+			} else {
+				update_post_meta( $post_id, '_nextora_theme', $theme );
+			}
+		}
 	},
 );
 

@@ -138,6 +138,14 @@
       "type": "string",
       "default": ""
     },
+    "metaFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "itemGap": {
+      "type": "number",
+      "default": 8
+    },
     "metaColor": {
       "type": "string",
       "default": ""

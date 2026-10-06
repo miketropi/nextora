@@ -127,6 +127,9 @@
       "type": "number",
       "default": 40
     },
+    "itemHeight": {
+      "type": "number"
+    },
     "showTitle": {
       "type": "boolean",
       "default": true

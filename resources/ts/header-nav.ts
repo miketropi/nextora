@@ -777,7 +777,7 @@ export function initHeaderNavAutoFit(): void {
 		return;
 	}
 
-	const MIN_FONT_SCALE = 0.70;
+	const MIN_FONT_SCALE = 0.75;
 	const MIN_GAP_PX = 6;
 	const MAX_RESPONSIVE_WIDTH = 1400;
 
@@ -808,24 +808,26 @@ export function initHeaderNavAutoFit(): void {
 			return;
 		}
 
-		const availableWidth = navSource.clientWidth;
-		if (availableWidth <= 0) {
+		const rawAvailableWidth = navSource.clientWidth;
+		if (rawAvailableWidth <= 0) {
 			return;
 		}
 
 		const currentFontScale = parseFloat(header.style.getPropertyValue("--nextora-header-nav-scale")) || 1;
 		const currentGapScale = parseFloat(header.style.getPropertyValue("--nextora-header-nav-gap-scale")) || 1;
 
-		// 1. Obtain stable natural unscaled width (cached to prevent subpixel calculation oscillation)
+		// 1. Obtain stable natural unscaled width & baseline available room (cached to prevent layout feedback loop)
 		let naturalItemsWidth = parseFloat(header.dataset.nextoraNavNaturalWidth || "0");
 		let baseGap = parseFloat(header.dataset.nextoraNavBaseGap || "0");
+		let baseAvailableWidth = parseFloat(header.dataset.nextoraNavBaseAvailableWidth || "0");
 
-		if (currentFontScale === 1 || naturalItemsWidth <= 0) {
+		if (currentFontScale === 1 || naturalItemsWidth <= 0 || baseAvailableWidth <= 0) {
 			let sum = 0;
 			for (const item of items) {
 				sum += item.getBoundingClientRect().width;
 			}
-			const computedGap = parseFloat(window.getComputedStyle(menuUl).gap) || 20;
+			const csMenu = window.getComputedStyle(menuUl);
+			const computedGap = parseFloat(csMenu.columnGap || csMenu.gap) || 20;
 			baseGap = currentGapScale > 0 ? computedGap / currentGapScale : computedGap;
 
 			if (sum > 0) {
@@ -833,9 +835,16 @@ export function initHeaderNavAutoFit(): void {
 				header.dataset.nextoraNavNaturalWidth = String(Math.round(naturalItemsWidth * 10) / 10);
 				header.dataset.nextoraNavBaseGap = String(Math.round(baseGap * 10) / 10);
 			}
+
+			// Capture baseline available width before CTA button or items scale
+			baseAvailableWidth = navSource.clientWidth;
+			if (baseAvailableWidth > 0) {
+				header.dataset.nextoraNavBaseAvailableWidth = String(Math.round(baseAvailableWidth * 10) / 10);
+			}
 		}
 
-		if (naturalItemsWidth <= 0) {
+		const availableWidth = baseAvailableWidth > 0 ? baseAvailableWidth : navSource.clientWidth;
+		if (availableWidth <= 0 || naturalItemsWidth <= 0) {
 			return;
 		}
 
@@ -861,7 +870,7 @@ export function initHeaderNavAutoFit(): void {
 				if (currentFontScale !== 1) {
 					header.style.setProperty("--nextora-header-nav-scale", "1");
 				}
-				if (Math.abs(gapScale - currentGapScale) >= 0.01) {
+				if (Math.abs(gapScale - currentGapScale) >= 0.02) {
 					header.style.setProperty("--nextora-header-nav-gap-scale", String(gapScale));
 				}
 				return;
@@ -874,10 +883,10 @@ export function initHeaderNavAutoFit(): void {
 		const roundedFontScale = Math.round(targetFontScale * 100) / 100;
 		const minGapScale = Math.round(Math.max(0.2, MIN_GAP_PX / baseGap) * 100) / 100;
 
-		if (Math.abs(roundedFontScale - currentFontScale) >= 0.01) {
+		if (Math.abs(roundedFontScale - currentFontScale) >= 0.02) {
 			header.style.setProperty("--nextora-header-nav-scale", String(roundedFontScale));
 		}
-		if (Math.abs(minGapScale - currentGapScale) >= 0.01) {
+		if (Math.abs(minGapScale - currentGapScale) >= 0.02) {
 			header.style.setProperty("--nextora-header-nav-gap-scale", String(minGapScale));
 		}
 	}
@@ -895,16 +904,41 @@ export function initHeaderNavAutoFit(): void {
 		});
 	}
 
+	const lastHeaderWidths = new WeakMap<HTMLElement, number>();
+
 	if (typeof ResizeObserver !== "undefined") {
-		const ro = new ResizeObserver(() => {
-			scheduleUpdate();
+		const ro = new ResizeObserver((entries) => {
+			let widthChanged = false;
+			for (const entry of entries) {
+				const el = entry.target as HTMLElement;
+				const currentW = Math.round(entry.contentRect.width);
+				const prevW = lastHeaderWidths.get(el);
+				if (prevW === undefined || Math.abs(currentW - prevW) >= 1) {
+					lastHeaderWidths.set(el, currentW);
+					delete el.dataset.nextoraNavBaseAvailableWidth;
+					widthChanged = true;
+				}
+			}
+			if (widthChanged) {
+				scheduleUpdate();
+			}
 		});
 		headers.forEach((h) => {
+			lastHeaderWidths.set(h, Math.round(h.getBoundingClientRect().width));
 			ro.observe(h);
 		});
 	}
 
-	window.addEventListener("resize", scheduleUpdate, { passive: true });
+	window.addEventListener(
+		"resize",
+		() => {
+			headers.forEach((h) => {
+				delete h.dataset.nextoraNavBaseAvailableWidth;
+			});
+			scheduleUpdate();
+		},
+		{ passive: true },
+	);
 
 	if ("fonts" in document) {
 		document.fonts.ready.then(() => {
@@ -912,6 +946,7 @@ export function initHeaderNavAutoFit(): void {
 			headers.forEach((h) => {
 				delete h.dataset.nextoraNavNaturalWidth;
 				delete h.dataset.nextoraNavBaseGap;
+				delete h.dataset.nextoraNavBaseAvailableWidth;
 			});
 			updateAll();
 		});

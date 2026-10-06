@@ -62,17 +62,48 @@ const imagePositionOptions = [
 	{ label: __('Right', 'nextora'), value: 'right' },
 ];
 
+const PRESET_FONT_SIZE_SLUGS = new Set([
+	'small',
+	'base',
+	'medium',
+	'medium-plus',
+	'large',
+	'x-large',
+	'xx-large',
+]);
+
+function isPresetFontSize(
+	val: string | undefined,
+	fontSizes: Array<{ slug?: string }> = [],
+): boolean {
+	if (!val) {
+		return false;
+	}
+	const lower = val.trim().toLowerCase();
+	if (/^[\d.]+(?:px|rem|em|vw|vh|%)?$/i.test(lower) || /^clamp\(/i.test(lower)) {
+		return false;
+	}
+	return (
+		PRESET_FONT_SIZE_SLUGS.has(lower) ||
+		fontSizes.some((item) => item.slug?.toLowerCase() === lower)
+	);
+}
+
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
 	selectedItem?: { slug?: string },
 ): string {
-	if (value === undefined) {
+	if (value === undefined || value === '') {
 		return '';
 	}
 	if (selectedItem?.slug) {
 		return selectedItem.slug;
 	}
-	return String(value);
+	const str = String(value).trim();
+	if (/^\d+(\.\d+)?$/.test(str)) {
+		return `${str}px`;
+	}
+	return str;
 }
 
 interface TestimonialEditorItemProps {
@@ -548,7 +579,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 							<FontSizePicker
 								fontSizes={themeFontSizes}
 								value={headingFontSize || undefined}
-								valueMode="slug"
+								valueMode={isPresetFontSize(headingFontSize, themeFontSizes) ? 'slug' : 'literal'}
 								onChange={(value, selectedItem) =>
 									setAttributes({
 										headingFontSize: normalizeFontSizeAttribute(value, selectedItem),
@@ -576,7 +607,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 						<FontSizePicker
 							fontSizes={themeFontSizes}
 							value={quoteFontSize || undefined}
-							valueMode="slug"
+							valueMode={isPresetFontSize(quoteFontSize, themeFontSizes) ? 'slug' : 'literal'}
 							onChange={(value, selectedItem) =>
 								setAttributes({
 									quoteFontSize: normalizeFontSizeAttribute(value, selectedItem),

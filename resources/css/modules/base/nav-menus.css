@@ -901,8 +901,8 @@
 	}
 
 	/* Blog list carousel cards inside portal: stack cleanly to 1 column */
-	.nextora-primary-nav-portal__panel :is(.nextora-blc__card--template-2, .nextora-blc__card--template-1, .nextora-blc__card--template-3, .nextora-blc__card),
-	.nextora-primary-nav-portal__mount :is(.nextora-blc__card--template-2, .nextora-blc__card--template-1, .nextora-blc__card--template-3, .nextora-blc__card) {
+	.nextora-primary-nav-portal__panel :is(.nextora-blc__card--template-2, .nextora-blc__card--template-1, .nextora-blc__card--template-3, .nextora-blc__card:not(.nextora-blc__card--template-4)),
+	.nextora-primary-nav-portal__mount :is(.nextora-blc__card--template-2, .nextora-blc__card--template-1, .nextora-blc__card--template-3, .nextora-blc__card:not(.nextora-blc__card--template-4)) {
 		display: flex !important;
 		flex-direction: column !important;
 		grid-template-columns: 1fr !important;
@@ -912,8 +912,38 @@
 		box-sizing: border-box !important;
 	}
 
-	.nextora-primary-nav-portal__panel :is(.nextora-blc__card--template-2, .nextora-blc__card--template-1, .nextora-blc__card--template-3, .nextora-blc__card) .nextora-blc__card-image,
-	.nextora-primary-nav-portal__mount :is(.nextora-blc__card--template-2, .nextora-blc__card--template-1, .nextora-blc__card--template-3, .nextora-blc__card) .nextora-blc__card-image {
+	.nextora-primary-nav-portal__panel .nextora-blc__card--template-4,
+	.nextora-primary-nav-portal__mount .nextora-blc__card--template-4 {
+		display: flex !important;
+		flex-direction: column !important;
+		grid-template-columns: 1fr !important;
+		width: 100% !important;
+		max-width: 100% !important;
+		gap: 0 !important;
+		row-gap: 0 !important;
+		column-gap: 0 !important;
+		box-sizing: border-box !important;
+	}
+
+	.nextora-primary-nav-portal__panel .nextora-blc__card--template-4 .nextora-blc__card-image,
+	.nextora-primary-nav-portal__mount .nextora-blc__card--template-4 .nextora-blc__card-image {
+		aspect-ratio: 16/9 !important;
+		height: auto !important;
+		width: 100% !important;
+		max-width: 100% !important;
+		box-sizing: border-box !important;
+		margin: 0 !important;
+		margin-bottom: 0 !important;
+		border-radius: 0 !important;
+	}
+
+	.nextora-primary-nav-portal__panel .nextora-blc__card--template-4 .nextora-blc__card-body,
+	.nextora-primary-nav-portal__mount .nextora-blc__card--template-4 .nextora-blc__card-body {
+		padding: var(--nextora-blc-card-padding, 20px) !important;
+	}
+
+	.nextora-primary-nav-portal__panel :is(.nextora-blc__card--template-2, .nextora-blc__card--template-1, .nextora-blc__card--template-3, .nextora-blc__card:not(.nextora-blc__card--template-4)) .nextora-blc__card-image,
+	.nextora-primary-nav-portal__mount :is(.nextora-blc__card--template-2, .nextora-blc__card--template-1, .nextora-blc__card--template-3, .nextora-blc__card:not(.nextora-blc__card--template-4)) .nextora-blc__card-image {
 		aspect-ratio: 16/9 !important;
 		height: auto !important;
 		width: 100% !important;

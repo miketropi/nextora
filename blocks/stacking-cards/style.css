@@ -88,21 +88,28 @@
 	align-items: center;
 	gap: .5rem;
 	min-height: 2.75rem;
+	font-weight: 600;
 	text-decoration: none;
-	text-underline-offset: .25em;
 }
 
 .nextora-stacking-cards__link:not(.has-text-color) {
 	color: var(--nextora-sc-link-color, var(--wp--preset--color--primary));
 }
 
+.wp-block-nextora-stacking-cards .nextora-stacking-cards__link:hover,
 .nextora-stacking-cards__link:hover,
 .nextora-stacking-cards__link:focus-visible {
-	text-decoration: underline;
+	text-decoration: none;
 }
 
 .nextora-stacking-cards__link span {
 	font-size: 1.2em;
+	display: inline-block;
+	transition: transform .2s ease;
+}
+
+.nextora-stacking-cards__link:hover span {
+	transform: translate(2px, -2px);
 }
 
 .nextora-stacking-cards__link:focus-visible {
@@ -152,7 +159,9 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.nextora-stacking-cards__card,
-	.nextora-stacking-cards__link {
+	.nextora-stacking-cards__link,
+	.nextora-stacking-cards__link span {
 		transition: none !important;
+		transform: none !important;
 	}
 }

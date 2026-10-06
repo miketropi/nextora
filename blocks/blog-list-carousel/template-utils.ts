@@ -1,6 +1,6 @@
 import type { BlogListCarouselAttributes } from './types';
 
-export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4';
 
 export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	value: BlogListCardTemplate;
@@ -10,6 +10,7 @@ export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	{ value: 'template-1', labelKey: 'Template 1' },
 	{ value: 'template-2', labelKey: 'Template 2' },
 	{ value: 'template-3', labelKey: 'Template 3' },
+	{ value: 'template-4', labelKey: 'Template 4' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BlogListCardTemplate {
@@ -21,6 +22,9 @@ export function normalizeCardTemplate(value: string | undefined): BlogListCardTe
 	}
 	if ( value === 'template-3' ) {
 		return 'template-3';
+	}
+	if ( value === 'template-4' ) {
+		return 'template-4';
 	}
 	return 'default';
 }
@@ -126,6 +130,35 @@ export function getTemplateDefaultAttributes(
 			showCategory: true,
 			showAuthor: false,
 			excerptLineClamp: 3,
+		};
+	}
+
+	if (template === 'template-4') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 1,
+			gridColumnGap: 0,
+			gridRowGap: 32,
+			spaceBetween: 24,
+			slidesPerView: 1,
+			slidesPerViewTablet: 1,
+			slidesPerViewMobile: 1,
+			imageAspectRatio: '4-3',
+			imageBorderRadius: 0,
+			imageWidthPercent: 42,
+			cardBorderRadius: 16,
+			cardPadding: 36,
+			cardBackgroundColor: 'surface',
+			showExcerpt: true,
+			showReadMore: true,
+			readMoreText: 'Read More',
+			cardLinkBehavior: 'title-only',
+			titleFontSize: 'medium-plus',
+			showPagination: false,
+			showArrows: false,
+			showDate: true,
+			showCategory: true,
+			dateFormat: 'M j, Y',
 		};
 	}
 

@@ -145,6 +145,7 @@
 		opacity: 0;
 		transform: translateY(14px);
 	}
+
 	100% {
 		opacity: 1;
 		transform: translateY(0);
@@ -178,39 +179,57 @@
 /* Sequential Stagger Delays (1 to 16 cards) */
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(1) .nextora-box-icon__card,
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(1),
-:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(1) { animation-delay: 0.04s; }
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(1) {
+	animation-delay: 0.04s;
+}
 
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(2) .nextora-box-icon__card,
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(2),
-:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(2) { animation-delay: 0.08s; }
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(2) {
+	animation-delay: 0.08s;
+}
 
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(3) .nextora-box-icon__card,
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(3),
-:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(3) { animation-delay: 0.12s; }
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(3) {
+	animation-delay: 0.12s;
+}
 
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(4) .nextora-box-icon__card,
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(4),
-:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(4) { animation-delay: 0.16s; }
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(4) {
+	animation-delay: 0.16s;
+}
 
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(5) .nextora-box-icon__card,
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(5),
-:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(5) { animation-delay: 0.20s; }
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(5) {
+	animation-delay: 0.20s;
+}
 
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(6) .nextora-box-icon__card,
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(6),
-:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(6) { animation-delay: 0.24s; }
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(6) {
+	animation-delay: 0.24s;
+}
 
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(7) .nextora-box-icon__card,
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(7),
-:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(7) { animation-delay: 0.28s; }
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(7) {
+	animation-delay: 0.28s;
+}
 
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(8) .nextora-box-icon__card,
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(8),
-:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(8) { animation-delay: 0.32s; }
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(8) {
+	animation-delay: 0.32s;
+}
 
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .swiper-slide:nth-child(n+9) .nextora-box-icon__card,
 :is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card:nth-child(n+9),
-:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(n+9) { animation-delay: 0.36s; }
+:is(.has-mega-menu:hover, .has-mega-menu.beplus-vmn--open, .beplus-vmn-mega-panel.is-open, .is-animating) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__ways-row:nth-child(n+9) {
+	animation-delay: 0.36s;
+}
 
 /* Reset state when mega panel closes / unhovered */
 .has-mega-menu:not(:hover):not(.beplus-vmn--open) .nextora-box-icon[data-nextora-scroll-reveal='1'][data-nextora-scroll-reveal-style='sequential'] .nextora-box-icon__card,
@@ -245,6 +264,7 @@
 		flex-shrink: unset !important;
 	}
 }
+
 .nextora-box-icon--grid-active .nextora-box-icon__swiper {
 	overflow: visible;
 }
@@ -473,8 +493,8 @@
 }
 
 .nextora-box-icon__link-icon svg {
-	width: 0.9375rem;
-	height: 0.9375rem;
+	width: 1.125rem;
+	height: 1.125rem;
 }
 
 /* Pagination */
@@ -750,7 +770,7 @@
 	gap: 0.8125rem;
 	min-height: 0;
 	text-align: start;
-	background: var(--nextora-box-icon-card-bg, var(--wp--preset--color--base, #fff));
+	background: var(--nextora-box-icon-card-bg, transparent);
 	border-color: var(--nextora-box-icon-card-border-color,
 			color-mix(in srgb, var(--wp--preset--color--contrast, currentColor) 12%, transparent));
 	transition:
