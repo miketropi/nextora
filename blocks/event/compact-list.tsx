@@ -22,6 +22,7 @@ export function compactFontProps(
 		xl: 'x-large',
 		'2xl': 'xx-large',
 		normal: 'base',
+		'medium-plus': 'medium-plus',
 	};
 	return { className: `has-${aliases[value] || value}-font-size`, style: {} };
 }
@@ -41,6 +42,7 @@ export default function CompactList({
 	const showTime = attributes.showTime !== false;
 	const showDescription = attributes.showDescription !== false;
 	const showRegisterButton = attributes.showRegisterButton !== false;
+	const itemGap = attributes.itemGap ?? 8;
 
 	const color = (
 		key: string,
@@ -76,7 +78,13 @@ export default function CompactList({
 	];
 
 	return (
-		<div className="nextora-event-compact__list">
+		<div
+			className="nextora-event-compact__list"
+			style={{
+				'--nextora-event-item-gap': `${itemGap}px`,
+				gap: `${itemGap}px`,
+			} as CSSProperties}
+		>
 			{events.map((event, index) => {
 				const pastelPair = defaultPastels[index % 3];
 				const customBg = attributes.registerBackgroundColor;
@@ -162,7 +170,13 @@ export default function CompactList({
 							{hasMeta && (
 								<div className="nextora-event-compact__meta-row">
 									{showLocation && event.location && (
-										<div {...props('location', [color('metaColor')])}>
+										<div
+											{...props(
+												'location',
+												[color('metaColor')],
+												compactFontProps(attributes.metaFontSize, 12),
+											)}
+										>
 											<svg
 												{...props('pin', [color('metaIconColor')])}
 												viewBox="0 0 24 24"
@@ -178,7 +192,13 @@ export default function CompactList({
 										</div>
 									)}
 									{showTime && event.time && (
-										<div {...props('time', [color('metaColor')])}>
+										<div
+											{...props(
+												'time',
+												[color('metaColor')],
+												compactFontProps(attributes.metaFontSize, 12),
+											)}
+										>
 											<svg
 												{...props('clock', [color('metaIconColor')])}
 												viewBox="0 0 24 24"

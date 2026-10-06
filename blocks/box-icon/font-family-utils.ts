@@ -41,8 +41,11 @@ export function useFontFamilyOptions(): FontFamilyOption[] {
 		const grouped =
 			settings?.__experimentalFeatures?.typography?.fontFamilies ??
 			settings?.typography?.fontFamilies;
-		const options: FontFamilyOption[] = [{ label: __('Default', 'nextora'), value: '' }];
-		const seen = new Set<string>();
+		const options: FontFamilyOption[] = [
+			{ label: __('Default', 'nextora'), value: '' },
+			{ label: __('Body font (current)', 'nextora'), value: 'font-body' },
+		];
+		const seen = new Set<string>(['font-body']);
 
 		for (const family of flattenFontFamilyPresets(grouped)) {
 			const slug = typeof family.slug === 'string' ? family.slug : '';

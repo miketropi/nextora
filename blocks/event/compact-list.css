@@ -14,7 +14,7 @@
 
 .nextora-event--template4 .nextora-event-compact__list {
 	display: grid;
-	gap: 8px;
+	gap: var(--nextora-event-item-gap, 8px);
 }
 
 .nextora-event--template4 .nextora-event-compact__item {
@@ -34,7 +34,7 @@
 
 .nextora-event--template4 .nextora-event-compact__date {
 	display: flex;
-	flex: 0 0 46px;
+	flex: 0 0 60px;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
@@ -73,6 +73,10 @@
 	min-width: 0;
 }
 
+.nextora-event--template4 .nextora-event-compact__title:not([class*="has-"]) {
+	font-size: var(--nextora-event-compact-title-size, 14px);
+}
+
 .nextora-event--template4 .nextora-event-compact__title {
 	margin: 0 0 8px 0;
 	overflow-wrap: anywhere;
@@ -105,12 +109,16 @@
 	margin-top: 2px;
 }
 
+.nextora-event--template4 .nextora-event-compact__location:not([class*="has-"]),
+.nextora-event--template4 .nextora-event-compact__time:not([class*="has-"]) {
+	font-size: var(--nextora-event-compact-meta-size, 12px);
+}
+
 .nextora-event--template4 .nextora-event-compact__location,
 .nextora-event--template4 .nextora-event-compact__time {
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
-	font-size: 11px;
 	line-height: 1.4;
 	min-width: 0;
 	max-width: 100%;
@@ -128,6 +136,10 @@
 	flex: 0 0 12px;
 	width: 12px;
 	height: 12px;
+}
+
+.nextora-event--template4 .nextora-event-compact__description:not([class*="has-"]) {
+	font-size: var(--nextora-event-compact-desc-size, 12px);
 }
 
 .nextora-event--template4 .nextora-event-compact__description {
@@ -385,7 +397,7 @@ body:not(.nextora-no-anim) .nextora-event--animation-default:not(.has-mega-menu 
 	}
 
 	.nextora-event--template4 .nextora-event-compact__title {
-		margin-bottom: 4px;
+		margin-bottom: 6px;
 	}
 
 	.nextora-event--template4 .nextora-event-compact__meta-row {
@@ -393,9 +405,9 @@ body:not(.nextora-no-anim) .nextora-event--animation-default:not(.has-mega-menu 
 		margin-top: 2px;
 	}
 
-	.nextora-event--template4 .nextora-event-compact__location,
-	.nextora-event--template4 .nextora-event-compact__time {
-		font-size: 11px;
+	.nextora-event--template4 .nextora-event-compact__location:not([class*="has-"]),
+	.nextora-event--template4 .nextora-event-compact__time:not([class*="has-"]) {
+		font-size: var(--nextora-event-compact-meta-size, 12px);
 		max-width: 100%;
 	}
 

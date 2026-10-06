@@ -12,6 +12,7 @@ import {
 	TextControl,
 	ToggleControl,
 	TextareaControl,
+	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useEffect, useMemo } from '@wordpress/element';
@@ -230,6 +231,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		imageSize = 'medium_large',
 		imageBorderRadius = 8,
 		imageWidthPercent = 40,
+		itemHeight,
 		showTitle = true,
 		titleFontSize = '',
 		titleLineClamp = 2,
@@ -341,6 +343,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 			isDesktopFractional ? 'has-edge-fade-desktop' : '',
 			isTabletFractional ? 'has-edge-fade-tablet' : '',
 			isMobileFractional ? 'has-edge-fade-mobile' : '',
+			itemHeight && itemHeight > 0 ? 'nextora-blog-list-carousel--has-item-height' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
@@ -354,6 +357,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 			'--nextora-blc-card-padding': `${cardPadding}px`,
 			'--nextora-blc-img-col-width': `${imageWidthPercent}%`,
 			'--nextora-blc-img-col-gap': '24px',
+			'--nextora-blc-item-height': itemHeight && itemHeight > 0 ? `${itemHeight}px` : undefined,
 			'--nextora-blc-title-font-size': titleFontSizeCSS,
 			'--nextora-blc-excerpt-font-size': excerptFontSizeCSS,
 			'--nextora-blc-title-clamp': titleLineClamp,
@@ -498,14 +502,14 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						value={cardBorderRadius}
 						onChange={(v) => setAttributes({ cardBorderRadius: v ?? 0 })}
 						min={0}
-						max={cardTemplate === 'template-1' ? 32 : cardTemplate === 'template-2' ? 12 : 24}
+						max={cardTemplate === 'template-1' || cardTemplate === 'template-4' ? 32 : cardTemplate === 'template-2' ? 12 : 24}
 					/>
 					<RangeControl
 						label={__('Card inner padding', 'nextora')}
 						value={cardPadding}
 						onChange={(v) => setAttributes({ cardPadding: v ?? 0 })}
 						min={0}
-						max={cardTemplate === 'template-1' ? 32 : cardTemplate === 'template-2' ? 12 : 24}
+						max={cardTemplate === 'template-1' || cardTemplate === 'template-4' ? 64 : cardTemplate === 'template-2' ? 12 : 24}
 					/>
 				<ToggleControl
 					label={__('Show featured image', 'nextora')}
@@ -533,6 +537,38 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							min={0}
 							max={24}
 						/>
+						{(cardTemplate === 'template-2' || cardTemplate === 'template-4') && (
+							<RangeControl
+								label={__('Image width (%)', 'nextora')}
+								value={imageWidthPercent}
+								onChange={(v) =>
+									setAttributes({ imageWidthPercent: v ?? (cardTemplate === 'template-4' ? 42 : 40) })
+								}
+								min={20}
+								max={60}
+								help={__(
+									'Width of the image column as a percentage of the card.',
+									'nextora',
+								)}
+							/>
+						)}
+						{(cardTemplate === 'template-4' || cardTemplate === 'template-2') && (
+							<NumberControl
+								label={__('Item height (px)', 'nextora')}
+								value={itemHeight ?? ''}
+								onChange={(val) => {
+									const num = val === '' || val === undefined ? undefined : parseInt(String(val), 10);
+									setAttributes({ itemHeight: num && num > 0 ? num : undefined });
+								}}
+								min={100}
+								max={1200}
+								placeholder={__('Auto', 'nextora')}
+								help={__(
+									'Fixed height for card items and images (e.g. 380). Leave empty for auto height.',
+									'nextora',
+								)}
+							/>
+						)}
 					</>
 				)}
 					<ToggleControl
@@ -697,17 +733,34 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							min={0}
 							max={60}
 						/>
-						{cardTemplate === 'template-2' && (
+						{(cardTemplate === 'template-2' || cardTemplate === 'template-4') && (
 							<RangeControl
 								label={__('Image width (%)', 'nextora')}
 								value={imageWidthPercent}
 								onChange={(v) =>
-									setAttributes({ imageWidthPercent: v ?? 40 })
+									setAttributes({ imageWidthPercent: v ?? (cardTemplate === 'template-4' ? 42 : 40) })
 								}
 								min={20}
 								max={60}
 								help={__(
 									'Width of the image column as a percentage of the card.',
+									'nextora',
+								)}
+							/>
+						)}
+						{(cardTemplate === 'template-4' || cardTemplate === 'template-2') && (
+							<NumberControl
+								label={__('Item height (px)', 'nextora')}
+								value={itemHeight ?? ''}
+								onChange={(val) => {
+									const num = val === '' || val === undefined ? undefined : parseInt(String(val), 10);
+									setAttributes({ itemHeight: num && num > 0 ? num : undefined });
+								}}
+								min={100}
+								max={1200}
+								placeholder={__('Auto', 'nextora')}
+								help={__(
+									'Fixed height for card items and images (e.g. 380). Leave empty for auto height.',
 									'nextora',
 								)}
 							/>
@@ -790,7 +843,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				</PanelBody>
 
 				{/* ── Autoplay ── */}
-				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && (
+				{!((cardTemplate === 'template-2' || cardTemplate === 'template-4') && layoutMode === 'grid') && (
 				<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Enable autoplay', 'nextora')}
@@ -818,7 +871,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				)}
 
 				{/* ── Pagination & Arrows ── */}
-				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && (
+				{!((cardTemplate === 'template-2' || cardTemplate === 'template-4') && layoutMode === 'grid') && (
 				<PanelBody title={__('Pagination & Arrows', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Show pagination dots', 'nextora')}

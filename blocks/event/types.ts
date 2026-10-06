@@ -34,6 +34,8 @@ export interface EventAttributes {
 	template3Alternating: boolean;
 	titleFontSize?: string;
 	descriptionFontSize?: string;
+	metaFontSize?: string;
+	itemGap?: number;
 	compactDescriptionColor?: string;
 	cardBackgroundColor: string;
 	cardBorderColor: string;

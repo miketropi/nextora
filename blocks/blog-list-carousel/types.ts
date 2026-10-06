@@ -1,4 +1,4 @@
-export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4';
 
 export interface BlogListCarouselAttributes {
 	cardTemplate: BlogListCardTemplate;
@@ -24,6 +24,7 @@ export interface BlogListCarouselAttributes {
 	imageSize: string;
 	imageBorderRadius: number;
 	imageWidthPercent: number;
+	itemHeight?: number;
 	showTitle: boolean;
 	titleFontSize: string;
 	titleLineClamp: number;

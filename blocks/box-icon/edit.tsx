@@ -38,7 +38,12 @@ import {
 	normalizeCardTemplate,
 } from './template-utils';
 import { useFontFamilyOptions } from './font-family-utils';
-import { getGutenbergFontFamilyProps } from './typography-utils';
+import {
+	getGutenbergFontFamilyProps,
+	getGutenbergFontSizeProps,
+	isPresetFontSize,
+	normalizeFontSizeAttribute,
+} from './typography-utils';
 import type { BoxIconAttributes, BoxIconIconStyle, BoxIconScrollAnimationStyle } from './types';
 
 interface EditProps {
@@ -59,19 +64,6 @@ const layoutModeOptions = [
 
 function isEmptyColor(value: string | undefined): boolean {
 	return !value || value === 'currentColor';
-}
-
-function normalizeFontSizeAttribute(
-	value: number | string | undefined,
-	selectedItem?: { slug?: string },
-): string {
-	if (value === undefined) {
-		return '';
-	}
-	if (selectedItem?.slug) {
-		return selectedItem.slug;
-	}
-	return String(value);
 }
 
 export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
@@ -176,25 +168,52 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 	const effectiveStatNumFontSize = (attributes as { statNumberFontSize?: string }).statNumberFontSize || 'large';
 	const statNumberFontFamily = (attributes as { statNumberFontFamily?: string }).statNumberFontFamily || '';
 
+	const titleFontSizeProps = getGutenbergFontSizeProps(effectiveTitleFontSize);
+	const descFontSizeProps = getGutenbergFontSizeProps(effectiveDescFontSize);
+	const statNumFontSizeProps = getGutenbergFontSizeProps(effectiveStatNumFontSize);
+
 	const titleColorProps = getGutenbergColorProps(cardTitleColor, 'color');
 	const descColorProps = getGutenbergColorProps(cardDescriptionColor, 'color');
 	const statNumFontProps = getGutenbergFontFamilyProps(statNumberFontFamily);
 
 	const titleClasses = [
 		'nextora-box-icon__title',
-		effectiveTitleFontSize ? `has-${effectiveTitleFontSize}-font-size` : '',
+		titleFontSizeProps.className,
 		titleColorProps.className,
 	]
 		.filter(Boolean)
 		.join(' ');
 
+	const titleStyles: CSSProperties = {
+		...titleFontSizeProps.style,
+		...titleColorProps.style,
+	};
+
 	const descriptionClasses = [
 		'nextora-box-icon__description',
-		effectiveDescFontSize ? `has-${effectiveDescFontSize}-font-size` : '',
+		descFontSizeProps.className,
 		descColorProps.className,
 	]
 		.filter(Boolean)
 		.join(' ');
+
+	const descStyles: CSSProperties = {
+		...descFontSizeProps.style,
+		...descColorProps.style,
+	};
+
+	const statNumClasses = [
+		'nextora-box-icon__stat-number',
+		statNumFontSizeProps.className,
+		statNumFontProps.className,
+	]
+		.filter(Boolean)
+		.join(' ');
+
+	const statNumStyles: CSSProperties = {
+		...statNumFontSizeProps.style,
+		...statNumFontProps.style,
+	};
 	const templateOptions = BOX_CONTENT_TEMPLATE_OPTIONS.map((option) => ({
 		label: __(option.labelKey, 'nextora'),
 		value: option.value,
@@ -1110,7 +1129,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 						<FontSizePicker
 							fontSizes={themeFontSizes}
 							value={titleFontSize || undefined}
-							valueMode="slug"
+							valueMode={isPresetFontSize(titleFontSize, themeFontSizes) ? 'slug' : 'literal'}
 							onChange={(value, selectedItem) =>
 								setAttributes({
 									titleFontSize: normalizeFontSizeAttribute(value, selectedItem) || '',
@@ -1126,7 +1145,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 							<FontSizePicker
 								fontSizes={themeFontSizes}
 								value={descriptionFontSize || undefined}
-								valueMode="slug"
+								valueMode={isPresetFontSize(descriptionFontSize, themeFontSizes) ? 'slug' : 'literal'}
 								onChange={(value, selectedItem) =>
 									setAttributes({
 										descriptionFontSize: normalizeFontSizeAttribute(value, selectedItem) || '',
@@ -1145,7 +1164,14 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 								<FontSizePicker
 									fontSizes={themeFontSizes}
 									value={(attributes as { statNumberFontSize?: string }).statNumberFontSize || 'large'}
-									valueMode="slug"
+									valueMode={
+										isPresetFontSize(
+											(attributes as { statNumberFontSize?: string }).statNumberFontSize || 'large',
+											themeFontSizes,
+										)
+											? 'slug'
+											: 'literal'
+									}
 									onChange={(value, selectedItem) =>
 										setAttributes({
 											statNumberFontSize: normalizeFontSizeAttribute(value, selectedItem) || 'large',
@@ -1294,10 +1320,10 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 										<span className="nextora-box-icon__ways-row-tag">
 											{`${String(index + 1).padStart(2, '0')} · ${(item.number || item.title || __('LABEL', 'nextora')).toUpperCase()}`}
 										</span>
-										<h4 className={titleClasses}>
+										<h4 className={titleClasses} style={titleStyles}>
 											{item.title || __('Title', 'nextora')}
 										</h4>
-										<p className={descriptionClasses}>
+										<p className={descriptionClasses} style={descStyles}>
 											{item.description || __('Description…', 'nextora')}
 										</p>
 									</div>
@@ -1383,20 +1409,14 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 									<>
 										{statNum ? (
 											<b
-												className={[
-													'nextora-box-icon__stat-number',
-													`has-${effectiveStatNumFontSize}-font-size`,
-													statNumFontProps.className,
-												]
-													.filter(Boolean)
-													.join(' ')}
-												style={statNumFontProps.style}
+												className={statNumClasses}
+												style={statNumStyles}
 											>
 												{statNum}
 											</b>
 										) : null}
 										{statTitle ? (
-											<h4 className={titleClasses} style={titleColorProps.style}>
+											<h4 className={titleClasses} style={titleStyles}>
 												{statTitle}
 											</h4>
 										) : null}
@@ -1432,10 +1452,10 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 									{item.number || __('T + 0H', 'nextora')}
 								</time>
 							) : null}
-							<h4 className={titleClasses} style={titleColorProps.style}>
+							<h4 className={titleClasses} style={titleStyles}>
 								{item.title || __('Title', 'nextora')}
 							</h4>
-							<p className={descriptionClasses} style={descColorProps.style}>
+							<p className={descriptionClasses} style={descStyles}>
 								{item.description || __('Description…', 'nextora')}
 							</p>
 						</>
@@ -1464,19 +1484,19 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 							/>
 							{cardTemplate === 'minimal' ? (
 								<div className="nextora-box-icon__card-body">
-									<h4 className={titleClasses} style={titleColorProps.style}>
+									<h4 className={titleClasses} style={titleStyles}>
 										{item.title || __('Title', 'nextora')}
 									</h4>
-									<p className={descriptionClasses} style={descColorProps.style}>
+									<p className={descriptionClasses} style={descStyles}>
 										{item.description || __('Description…', 'nextora')}
 									</p>
 								</div>
 							) : (
 								<>
-									<h4 className={titleClasses} style={titleColorProps.style}>
+									<h4 className={titleClasses} style={titleStyles}>
 										{item.title || __('Title', 'nextora')}
 									</h4>
-									<p className={descriptionClasses} style={descColorProps.style}>
+									<p className={descriptionClasses} style={descStyles}>
 										{item.description || __('Description…', 'nextora')}
 									</p>
 								</>

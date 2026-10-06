@@ -290,7 +290,7 @@ Follow `docs/blocks.md` § Custom colour options exactly:
       <button class="nextora-vertical-showcase__item nextora-vertical-showcase__item--active"
               role="tab" aria-selected="true" data-nextora-vs-index="0">
         <span class="nextora-vertical-showcase__item-rail" aria-hidden="true"></span>
-        <span class="nextora-vertical-showcase__item-number" aria-hidden="true">/01</span>
+        <span class="nextora-vertical-showcase__item-number" aria-hidden="true">1.</span>
         <span class="nextora-vertical-showcase__item-body">
           <span class="nextora-vertical-showcase__item-title">Web Design</span>
           <span class="nextora-vertical-showcase__item-description">Creating beautiful…</span>

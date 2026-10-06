@@ -198,6 +198,33 @@ function getTemplate4SvgPath(count: number, stepGap = 480): string {
 	return path;
 }
 
+const PRESET_FONT_SIZE_SLUGS = new Set([
+	'small',
+	'base',
+	'medium',
+	'medium-plus',
+	'large',
+	'x-large',
+	'xx-large',
+]);
+
+function isPresetFontSize(
+	val: string | undefined,
+	fontSizes: Array<{ slug?: string }> = [],
+): boolean {
+	if (!val) {
+		return false;
+	}
+	const lower = val.trim().toLowerCase();
+	if (/^[\d.]+(?:px|rem|em|vw|vh|%)?$/i.test(lower) || /^clamp\(/i.test(lower)) {
+		return false;
+	}
+	return (
+		PRESET_FONT_SIZE_SLUGS.has(lower) ||
+		fontSizes.some((item) => item.slug?.toLowerCase() === lower)
+	);
+}
+
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
 	selectedItem?: { slug?: string },
@@ -205,7 +232,13 @@ function normalizeFontSizeAttribute(
 	if (value === undefined || value === '') {
 		return '';
 	}
-	const raw = (selectedItem?.slug || String(value)).trim().toLowerCase();
+	if (selectedItem?.slug) {
+		return selectedItem.slug;
+	}
+	const str = String(value).trim();
+	if (/^\d+(\.\d+)?$/.test(str)) {
+		return `${str}px`;
+	}
 	const map: Record<string, string> = {
 		sm: 'small',
 		small: 'small',
@@ -221,7 +254,41 @@ function normalizeFontSizeAttribute(
 		'2xl': 'xx-large',
 		'xx-large': 'xx-large',
 	};
-	return map[raw] || raw;
+	return map[str.toLowerCase()] || str;
+}
+
+function getGutenbergFontSizeProps(raw: string | undefined): {
+	className: string;
+	style: CSSProperties;
+} {
+	const val = (raw ?? '').trim();
+	if (!val) {
+		return { className: '', style: {} };
+	}
+	const presetMatch =
+		val.match(/^var:preset\|font-size\|([a-z0-9_-]+)$/i) ??
+		val.match(/^var\(\s*--wp--preset--font-size--([a-z0-9_-]+)\s*\)$/i);
+	if (presetMatch) {
+		return {
+			className: `has-${presetMatch[1].toLowerCase()}-font-size`,
+			style: {},
+		};
+	}
+	if (
+		!/^(?:[\d.]+(?:px|rem|em|vw|vh|%)|clamp\(.+\))$/i.test(val) &&
+		!/^\d+(\.\d+)?$/.test(val) &&
+		/^[a-z0-9-]+$/i.test(val)
+	) {
+		return {
+			className: `has-${val.toLowerCase()}-font-size`,
+			style: {},
+		};
+	}
+	const size = /^\d+(\.\d+)?$/.test(val) ? `${val}px` : val;
+	return {
+		className: '',
+		style: { fontSize: size },
+	};
 }
 
 export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
@@ -318,6 +385,8 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 	const effectiveBulletIconColor = attributes.bulletIconColor || templateDefaults.bulletIconColor || '';
 	const effectiveTitleFontSize = normalizeFontSizeAttribute(attributes.titleFontSize || templateDefaults.titleFontSize || '');
 	const effectiveDescFontSize = normalizeFontSizeAttribute(attributes.descriptionFontSize || templateDefaults.descriptionFontSize || '');
+	const titleFontSizeProps = getGutenbergFontSizeProps(effectiveTitleFontSize);
+	const descFontSizeProps = getGutenbergFontSizeProps(effectiveDescFontSize);
 
 	const styleVars = buildStyleVars(
 		{
@@ -1060,7 +1129,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						<FontSizePicker
 							fontSizes={themeFontSizes}
 							value={titleFontSize || undefined}
-							valueMode="slug"
+							valueMode={isPresetFontSize(titleFontSize, themeFontSizes) ? 'slug' : 'literal'}
 							onChange={(value, selectedItem) =>
 								setAttributes({
 									titleFontSize: normalizeFontSizeAttribute(value, selectedItem),
@@ -1076,7 +1145,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						<FontSizePicker
 							fontSizes={themeFontSizes}
 							value={descriptionFontSize || undefined}
-							valueMode="slug"
+							valueMode={isPresetFontSize(descriptionFontSize, themeFontSizes) ? 'slug' : 'literal'}
 							onChange={(value, selectedItem) =>
 								setAttributes({
 									descriptionFontSize: normalizeFontSizeAttribute(value, selectedItem),
@@ -1480,7 +1549,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									const itemTitleColorProps = getColorProps(itemTitleColor, 'color');
 									const titleClasses = [
 										'nextora-box-image__title',
-										effectiveTitleFontSize ? `has-${effectiveTitleFontSize}-font-size` : '',
+										titleFontSizeProps.className,
 										itemTitleColorProps.className,
 									].filter(Boolean).join(' ');
 
@@ -1488,9 +1557,12 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									const itemDescColorProps = getColorProps(itemDescColor, 'color');
 									const descClasses = [
 										'nextora-box-image__description',
-										effectiveDescFontSize ? `has-${effectiveDescFontSize}-font-size` : '',
+										descFontSizeProps.className,
 										itemDescColorProps.className,
 									].filter(Boolean).join(' ');
+
+									const titleStyle = { ...itemTitleColorProps.style, ...titleFontSizeProps.style };
+									const descStyle = { ...itemDescColorProps.style, ...descFontSizeProps.style };
 
 									const wrapStyle = {
 										'--nextora-step-top': pos.top,
@@ -1552,10 +1624,10 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													<span className="nextora-box-image__step-number" aria-hidden="true">
 														{String(index + 1).padStart(2, '0')}
 													</span>
-													<h4 className={titleClasses} style={itemTitleColorProps.style}>
+													<h4 className={titleClasses} style={titleStyle}>
 														{item.title || __('Title', 'nextora')}
 													</h4>
-													<p className={descClasses} style={itemDescColorProps.style}>
+													<p className={descClasses} style={descStyle}>
 														{item.description || __('Description…', 'nextora')}
 													</p>
 													{!item.linkWrapCard && item.showLink && item.linkLabel ? (
@@ -1598,7 +1670,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									const itemTitleColorProps = getColorProps(itemTitleColor, 'color');
 									const titleClasses = [
 										'nextora-box-image__title',
-										effectiveTitleFontSize ? `has-${effectiveTitleFontSize}-font-size` : '',
+										titleFontSizeProps.className,
 										itemTitleColorProps.className,
 									].filter(Boolean).join(' ');
 
@@ -1606,9 +1678,12 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									const itemDescColorProps = getColorProps(itemDescColor, 'color');
 									const descClasses = [
 										'nextora-box-image__description',
-										effectiveDescFontSize ? `has-${effectiveDescFontSize}-font-size` : '',
+										descFontSizeProps.className,
 										itemDescColorProps.className,
 									].filter(Boolean).join(' ');
+
+									const titleStyle = { ...itemTitleColorProps.style, ...titleFontSizeProps.style };
+									const descStyle = { ...itemDescColorProps.style, ...descFontSizeProps.style };
 
 									const badgeBg = badgeBackgroundColor || (template === 'template3' ? 'secondary' : (template === 'template5' ? 'primary' : ''));
 									const badgeBgProps = getColorProps(badgeBg, 'background');
@@ -1675,10 +1750,10 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													) : null}
 												</div>
 												<div className="nextora-box-image__card-body">
-													<h4 className={titleClasses} style={itemTitleColorProps.style}>
+													<h4 className={titleClasses} style={titleStyle}>
 														{item.title || __('Title', 'nextora')}
 													</h4>
-													<p className={descClasses} style={itemDescColorProps.style}>
+													<p className={descClasses} style={descStyle}>
 														{item.description || __('Description…', 'nextora')}
 													</p>
 													{!item.linkWrapCard && item.showLink && item.linkLabel ? (
@@ -1703,10 +1778,10 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													/>
 												</div>
 												<div className="nextora-box-image__card-body">
-												<h4 className={titleClasses} style={itemTitleColorProps.style}>
+												<h4 className={titleClasses} style={titleStyle}>
 													{item.title || __('Title', 'nextora')}
 												</h4>
-												<p className={descClasses} style={itemDescColorProps.style}>
+												<p className={descClasses} style={descStyle}>
 													{item.description || __('Description…', 'nextora')}
 												</p>
 												{!item.linkWrapCard && item.showLink && item.linkLabel ? (
@@ -1736,7 +1811,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													) : null}
 												</div>
 												<div className="nextora-box-image__card-body">
-													<h4 className={titleClasses} style={itemTitleColorProps.style}>
+													<h4 className={titleClasses} style={titleStyle}>
 														{item.title || __('Title', 'nextora')}
 													</h4>
 													{item.description ? (
@@ -1759,7 +1834,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 															))}
 														</ul>
 													) : (
-														<p className={descClasses} style={itemDescColorProps.style}>
+														<p className={descClasses} style={descStyle}>
 															{__('Add bullet points — one per line in the description field.', 'nextora')}
 														</p>
 													)}
@@ -1792,11 +1867,11 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 															{item.badge}
 														</span>
 													) : null}
-													<h4 className={titleClasses} style={itemTitleColorProps.style}>
+													<h4 className={titleClasses} style={titleStyle}>
 														{item.title || __('Title', 'nextora')}
 													</h4>
 													{item.description ? (
-														<p className={descClasses} style={itemDescColorProps.style}>
+														<p className={descClasses} style={descStyle}>
 															{item.description}
 														</p>
 													) : null}
@@ -1822,10 +1897,10 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 													/>
 												</div>
 												<div className="nextora-box-image__card-body">
-												<h4 className={titleClasses} style={itemTitleColorProps.style}>
+												<h4 className={titleClasses} style={titleStyle}>
 													{item.title || __('Title', 'nextora')}
 												</h4>
-												<p className={descClasses} style={itemDescColorProps.style}>
+												<p className={descClasses} style={descStyle}>
 													{item.description || __('Description…', 'nextora')}
 												</p>
 												{!item.linkWrapCard && item.showLink && item.linkLabel ? (

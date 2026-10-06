@@ -21,6 +21,15 @@
  * ServerSideRender preview: mirror logo max-width from style.css so the canvas
  * respects sidebar width controls (block `style` is not always applied to SSR HTML).
  */
+.nextora-header-block--editor .nextora-header-block__logo {
+	width: fit-content;
+}
+
+.nextora-header-block--editor .nextora-header-block__logo--image,
+.nextora-header-block--editor .nextora-header-block__logo:has(.nextora-header-block__logo-img) {
+	max-width: var(--nextora-header-logo-max-width, 150px);
+}
+
 .nextora-header-block--editor .nextora-header-block__logo-img {
 	display: block;
 	width: auto;
@@ -34,20 +43,48 @@
 .block-editor-block-inspector__tabs .components-base-control.components-range-control.preset-input-control__preset-range{
 	margin-bottom: 0;
 }
-@media (max-width: 767px) {
+@media (max-width: 1024.98px) {
+	.nextora-header-block--editor .nextora-header-block__logo--image,
+	.nextora-header-block--editor .nextora-header-block__logo:has(.nextora-header-block__logo-img) {
+		max-width: var(--nextora-header-logo-max-width-mobile, var(--nextora-header-logo-max-width, 150px)) !important;
+	}
+
 	.nextora-header-block--editor .nextora-header-block__logo-img--desktop {
-		display: none;
+		display: none !important;
 	}
 
 	.nextora-header-block--editor .nextora-header-block__logo-img--mobile {
-		display: block;
-		max-width: min(100%, var(--nextora-header-logo-max-width-mobile, var(--nextora-header-logo-max-width, 150px)));
+		display: block !important;
+		max-width: min(100%, var(--nextora-header-logo-max-width-mobile, var(--nextora-header-logo-max-width, 150px))) !important;
 	}
 
 	.nextora-header-block--editor
 		.nextora-header-block__logo-img:not(.nextora-header-block__logo-img--desktop):not(
 			.nextora-header-block__logo-img--mobile
 		) {
-		max-width: min(100%, var(--nextora-header-logo-max-width-mobile, var(--nextora-header-logo-max-width, 150px)));
+		max-width: min(100%, var(--nextora-header-logo-max-width-mobile, var(--nextora-header-logo-max-width, 150px))) !important;
 	}
 }
+
+/**
+ * Editor canvas: mirror menu min-size, wrapping, and CTA scaling
+ */
+.nextora-header-block--editor .nextora-navigation-from-location--primary .nextora-header-menu {
+	flex-wrap: wrap;
+	row-gap: 0.35rem;
+}
+
+.nextora-header-block--editor .nextora-navigation-from-location--primary .nextora-header-menu>li>a {
+	font-size: max(0.75rem, calc(var(--nextora-header-menu-item-font-size, var(--wp--preset--font-size--base, 1rem)) * var(--nextora-header-nav-scale, 1)));
+	white-space: nowrap;
+}
+
+.nextora-header-block--editor .nextora-header-block__cta.wp-element-button,
+.nextora-header-block--editor .nextora-header-block__cta {
+	min-height: calc(clamp(2rem, 2.5rem * var(--nextora-header-nav-scale, 1), 2.5rem));
+	font-size: max(0.8125rem, calc(var(--wp--preset--font-size--small, 0.875rem) * var(--nextora-header-nav-scale, 1)));
+	padding-block: calc(clamp(0.55rem, 0.9rem * var(--nextora-header-nav-scale, 1), 0.9rem));
+	padding-inline: calc(clamp(1.1rem, 1.75rem * var(--nextora-header-nav-scale, 1), 1.75rem));
+}
+
+

@@ -49,17 +49,48 @@ const FOLLOW_US_SOCIAL_LABELS = {
   x: __('X', 'nextora'),
 };
 
+const PRESET_FONT_SIZE_SLUGS = new Set([
+  'small',
+  'base',
+  'medium',
+  'medium-plus',
+  'large',
+  'x-large',
+  'xx-large',
+]);
+
+function isPresetFontSize(
+  val: string | undefined,
+  fontSizes: Array<{ slug?: string }> = []
+): boolean {
+  if (!val) {
+    return false;
+  }
+  const lower = val.trim().toLowerCase();
+  if (/^[\d.]+(?:px|rem|em|vw|vh|%)?$/i.test(lower) || /^clamp\(/i.test(lower)) {
+    return false;
+  }
+  return (
+    PRESET_FONT_SIZE_SLUGS.has(lower) ||
+    fontSizes.some((item) => item.slug?.toLowerCase() === lower)
+  );
+}
+
 function normalizeFontSizeAttribute(
   value: number | string | undefined,
   selectedItem?: { slug?: string }
 ): string {
-  if (value === undefined) {
+  if (value === undefined || value === '') {
     return '';
   }
   if (selectedItem?.slug) {
     return selectedItem.slug;
   }
-  return String(value);
+  const str = String(value).trim();
+  if (/^\d+(\.\d+)?$/.test(str)) {
+    return `${str}px`;
+  }
+  return str;
 }
 
 export default function HeaderEdit({ attributes, setAttributes }) {
@@ -308,7 +339,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
         <PanelBody title={__('Logo', 'nextora')} initialOpen>
           <p className="components-help-text" style={{ marginTop: 0 }}>
             {__(
-              'Image: uses the logo uploaded below (saved on this block), or the site title when none is set. Text: uses the text below (defaults to the site title when empty). Optional mobile logo and max width apply below 768px.',
+              'Image: uses the logo uploaded below (saved on this block), or the site title when none is set. Text: uses the text below (defaults to the site title when empty). Optional mobile logo and max width apply on mobile screens.',
               'nextora'
             )}
           </p>
@@ -352,14 +383,14 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                 onChange={(v) => setAttributes({ logoWidth: v ?? 150 })}
                 min={40}
                 max={400}
-                help={__('Applies to the main logo image from 768px up.', 'nextora')}
+                help={__('Applies to the main logo image on desktop screens.', 'nextora')}
               />
               <p className="components-base-control__label" style={{ marginTop: '1rem' }}>
                 {__('Mobile logo (optional)', 'nextora')}
               </p>
               <p className="components-help-text" style={{ marginTop: 0 }}>
                 {__(
-                  'Shown below 768px. When empty, the main logo is used instead.',
+                  'Shown on mobile screens. When empty, the main logo is used instead.',
                   'nextora'
                 )}
               </p>
@@ -414,7 +445,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                 min={40}
                 max={400}
                 help={__(
-                  'Below 768px. Starts at the desktop value until you change it.',
+                  'Below breakpoint. Starts at the desktop value until you change it.',
                   'nextora'
                 )}
               />
@@ -480,7 +511,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             <FontSizePicker
               fontSizes={themeFontSizes}
               value={menuItemFontSize || undefined}
-              valueMode="slug"
+              valueMode={isPresetFontSize(menuItemFontSize, themeFontSizes) ? 'slug' : 'literal'}
               onChange={(value, selectedItem) =>
                 setAttributes({
                   menuItemFontSize: normalizeFontSizeAttribute(value, selectedItem),
@@ -496,7 +527,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             <FontSizePicker
               fontSizes={themeFontSizes}
               value={submenuItemFontSize || undefined}
-              valueMode="slug"
+              valueMode={isPresetFontSize(submenuItemFontSize, themeFontSizes) ? 'slug' : 'literal'}
               onChange={(value, selectedItem) =>
                 setAttributes({
                   submenuItemFontSize: normalizeFontSizeAttribute(value, selectedItem),

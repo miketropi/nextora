@@ -23,6 +23,8 @@ export interface EventTecAttributes {
 	titleColor: string;
 	titleFontSize?: string;
 	descriptionFontSize?: string;
+	metaFontSize?: string;
+	itemGap?: number;
 	compactDescriptionColor?: string;
 	metaColor: string;
 	metaIconColor: string;

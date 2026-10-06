@@ -228,6 +228,7 @@ $color_map = array(
 	'titleColor'           => '--nextora-vs-title-color',
 	'inactiveTitleColor'   => '--nextora-vs-inactive-title-color',
 	'activeIndicatorColor' => '--nextora-vs-active-indicator',
+	'numberColor'          => '--nextora-vs-number-color',
 );
 foreach ( $color_map as $attribute => $variable ) {
 	$raw = (string) ( $attributes[ $attribute ] ?? '' );
@@ -243,6 +244,7 @@ $classes = array( 'wp-block-nextora-vertical-showcase', 'nextora-vertical-showca
 if ( $scroll_animation ) {
 	$classes[] = 'has-scroll-animation';
 }
+
 $wrapper_attributes = get_block_wrapper_attributes(
 	array(
 		'class'                      => implode( ' ', $classes ),
@@ -275,6 +277,9 @@ $wrapper_attributes = get_block_wrapper_attributes(
 				}
 
 				$num_classes = 'nextora-vertical-showcase__item-number';
+				if ( '' !== $title_size ) {
+					$num_classes .= ' has-' . sanitize_html_class( $title_size ) . '-font-size';
+				}
 				if ( '' !== $number_color_props['class'] ) {
 					$num_classes .= ' ' . $number_color_props['class'];
 				}
@@ -286,7 +291,7 @@ $wrapper_attributes = get_block_wrapper_attributes(
 				?>
 				<button type="button" class="nextora-vertical-showcase__item<?php echo 0 === $index ? ' nextora-vertical-showcase__item--active' : ''; ?>" role="tab" aria-selected="<?php echo 0 === $index ? 'true' : 'false'; ?>" data-nextora-vs-index="<?php echo esc_attr( (string) $index ); ?>">
 					<span class="nextora-vertical-showcase__item-rail" aria-hidden="true"></span>
-					<span class="<?php echo esc_attr( $num_classes ); ?>"<?php echo '' !== $number_color_props['style'] ? ' style="' . esc_attr( $number_color_props['style'] ) . '"' : ''; ?> aria-hidden="true">/<?php echo esc_html( str_pad( (string) ( (int) $index + 1 ), 2, '0', STR_PAD_LEFT ) ); ?></span>
+					<span class="<?php echo esc_attr( $num_classes ); ?>"<?php echo '' !== $number_color_props['style'] ? ' style="' . esc_attr( $number_color_props['style'] ) . '"' : ''; ?> aria-hidden="true"><?php echo esc_html( (string) ( (int) $index + 1 ) . '.' ); ?></span>
 					<span class="nextora-vertical-showcase__item-body">
 						<h4 class="<?php echo esc_attr( $title_classes ); ?>"><?php echo esc_html( $title ); ?></h4>
 						<?php

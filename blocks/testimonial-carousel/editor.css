@@ -78,14 +78,17 @@
 .nextora-testimonial-carousel__dot {
 	width: 7px;
 	height: 7px;
-	border-radius: 50%;
-	background: color-mix(in srgb, currentColor 35%, transparent);
+	border-radius: 999px;
+	background: var(--nextora-testimonial-dot-color, color-mix(in srgb, currentColor 35%, transparent));
+	opacity: 1;
 }
 
 .nextora-testimonial-carousel__dot--active {
 	width: 20px;
-	border-radius: 4px;
-	background: color-mix(in srgb, currentColor 55%, transparent);
+	height: 7px;
+	border-radius: 999px;
+	opacity: 1;
+	background: var(--nextora-testimonial-dot-active, var(--wp--preset--color--primary, #feb83d));
 }
 
 /* ==========================================================================

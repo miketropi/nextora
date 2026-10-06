@@ -110,6 +110,33 @@ function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: 
 	);
 }
 
+const PRESET_FONT_SIZE_SLUGS = new Set([
+	'small',
+	'base',
+	'medium',
+	'medium-plus',
+	'large',
+	'x-large',
+	'xx-large',
+]);
+
+function isPresetFontSize(
+	val: string | undefined,
+	fontSizes: Array<{ slug?: string }> = [],
+): boolean {
+	if (!val) {
+		return false;
+	}
+	const lower = val.trim().toLowerCase();
+	if (/^[\d.]+(?:px|rem|em|vw|vh|%)?$/i.test(lower) || /^clamp\(/i.test(lower)) {
+		return false;
+	}
+	return (
+		PRESET_FONT_SIZE_SLUGS.has(lower) ||
+		fontSizes.some((item) => item.slug?.toLowerCase() === lower)
+	);
+}
+
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
 	selectedItem?: { slug?: string },
@@ -120,7 +147,11 @@ function normalizeFontSizeAttribute(
 	if (selectedItem?.slug) {
 		return selectedItem.slug;
 	}
-	return String(value);
+	const str = String(value).trim();
+	if (/^\d+(\.\d+)?$/.test(str)) {
+		return `${str}px`;
+	}
+	return str;
 }
 
 interface TestimonialItemModalProps {
@@ -1013,7 +1044,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 							<FontSizePicker
 								fontSizes={themeFontSizes}
 								value={quoteFontSize || undefined}
-								valueMode="slug"
+								valueMode={isPresetFontSize(quoteFontSize, themeFontSizes) ? 'slug' : 'literal'}
 								onChange={(value, selectedItem) =>
 									setAttributes({
 										quoteFontSize: normalizeFontSizeAttribute(value, selectedItem),

@@ -706,8 +706,8 @@ a.nextora-blc__card-cat:focus-visible {
 }
 
 .nextora-blog-list-carousel--template-template-1 .nextora-blc__card-readmore-icon svg {
-	width: 16px;
-	height: 16px;
+	width: 18px;
+	height: 18px;
 	transition: transform 0.2s ease;
 }
 
@@ -885,6 +885,230 @@ a.nextora-blc__card-cat:focus-visible {
 	}
 }
 
+/* ── Template 4 (horizontal card with surface background, flush image, and optional fixed height) ── */
+.nextora-blc__card--template-4,
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4 {
+	display: grid;
+	grid-template-columns: var(--nextora-blc-img-col-width, 42%) 1fr;
+	gap: 0;
+	row-gap: 0;
+	column-gap: 0;
+	align-items: stretch;
+	background-color: var(--nextora-blc-card-bg, var(--wp--preset--color--surface, #f4f4f4));
+	border-radius: var(--nextora-blc-card-radius, 16px);
+	border: 1px solid var(--nextora-blc-card-border-color, transparent);
+	overflow: hidden;
+	height: var(--nextora-blc-item-height, auto);
+	min-height: var(--nextora-blc-item-height, auto);
+	box-sizing: border-box;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nextora-blc__card--template-4:last-child,
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:last-child {
+	margin-bottom: 0;
+}
+
+.nextora-blc__card--template-4 .nextora-blc__card-image,
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-image {
+	margin: 0;
+	margin-bottom: 0;
+	border-radius: 0;
+	overflow: hidden;
+	height: 100%;
+	width: 100%;
+	aspect-ratio: var(--nextora-blc-img-ratio, 4/3);
+	max-width: 100%;
+	position: relative;
+}
+
+/* When custom item height is specified, unset aspect ratio so image matches card height */
+.nextora-blog-list-carousel--has-item-height.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-image,
+.nextora-blog-list-carousel--has-item-height .nextora-blc__card--template-4 .nextora-blc__card-image {
+	aspect-ratio: unset;
+	height: 100%;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-img,
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-img-placeholder {
+	border-radius: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	transition: transform 0.4s ease;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:hover .nextora-blc__card-img,
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:focus-within .nextora-blc__card-img {
+	transform: scale(1.04);
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-body {
+	padding: clamp(20px, 3.5vw, var(--nextora-blc-card-padding, 36px));
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-meta {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px 16px;
+	margin: 0 0 14px;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-meta-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--nextora-blc-meta-color, var(--wp--preset--color--paragraph, #71717a));
+	letter-spacing: 0;
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-meta-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	color: inherit;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-meta-icon svg {
+	width: 14px;
+	height: 14px;
+	display: block;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-date,
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-author {
+	font-size: inherit;
+	color: inherit;
+	letter-spacing: inherit;
+	font-weight: inherit;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-cat {
+	position: relative;
+	z-index: 2;
+	font-size: inherit;
+	letter-spacing: inherit;
+	font-weight: inherit;
+	color: inherit;
+	background: none;
+	padding: 0;
+	border-radius: 0;
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+.nextora-blog-list-carousel--template-template-4 a.nextora-blc__card-cat:hover,
+.nextora-blog-list-carousel--template-template-4 a.nextora-blc__card-cat:focus-visible {
+	color: var(--wp--preset--color--contrast, #1A1A2E);
+	background: none;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card .nextora-blc__card-title {
+	margin: 0 0 10px;
+	font-weight: 600;
+	line-height: 1.25;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:hover .nextora-blc__card-title {
+	color: var(--nextora-blc-dot-active, var(--wp--preset--color--primary, currentColor));
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-excerpt {
+	color: var(--nextora-blc-excerpt-color, var(--wp--preset--color--paragraph, #52525b));
+	padding: 0;
+	margin: 0 0 16px !important;
+	flex: none;
+	line-height: 1.6;
+	line-clamp: var(--nextora-blc-excerpt-clamp, 3);
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-body> :last-child {
+	margin-bottom: 0 !important;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card a.nextora-blc__card-readmore--template-4,
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card a.nextora-blc__card-readmore--template-4:visited {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	margin-top: 0;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 600;
+	color: var(--nextora-blc-readmore-color, var(--wp--preset--color--primary, currentColor));
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-readmore-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-readmore-icon svg {
+	width: 16px;
+	height: 16px;
+	transition: transform 0.2s ease;
+}
+
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:hover .nextora-blc__card-readmore-icon svg,
+.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:focus-within .nextora-blc__card-readmore-icon svg {
+	transform: translateX(4px);
+}
+
+/* ── Responsive (template-4) ── */
+@media (max-width: 1024.98px) {
+	.nextora-blog-list-carousel--template-template-4,
+	.nextora-blc__card--template-4 {
+		--nextora-blc-card-padding: 20px !important;
+	}
+
+	.nextora-blc__card--template-4,
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4,
+	:is(.nextora-primary-nav-portal__panel, .nextora-primary-nav-portal__mount, body) .nextora-blc__card--template-4 {
+		display: flex !important;
+		flex-direction: column !important;
+		grid-template-columns: 1fr !important;
+		gap: 0 !important;
+		row-gap: 0 !important;
+		column-gap: 0 !important;
+		height: auto !important;
+		min-height: auto !important;
+	}
+
+	.nextora-blc__card--template-4 .nextora-blc__card-image,
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-image,
+	.nextora-blog-list-carousel--has-item-height.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-image,
+	.nextora-blog-list-carousel--has-item-height .nextora-blc__card--template-4 .nextora-blc__card-image,
+	:is(.nextora-primary-nav-portal__panel, .nextora-primary-nav-portal__mount, body) .nextora-blc__card--template-4 .nextora-blc__card-image {
+		aspect-ratio: var(--nextora-blc-img-ratio, 16/9) !important;
+		width: 100% !important;
+		height: auto !important;
+		min-height: 0 !important;
+		max-height: none !important;
+		margin: 0 !important;
+		margin-bottom: 0 !important;
+		border-radius: 0 !important;
+	}
+
+	.nextora-blc__card--template-4 .nextora-blc__card-body,
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-body,
+	:is(.nextora-primary-nav-portal__panel, .nextora-primary-nav-portal__mount, body) .nextora-blc__card--template-4 .nextora-blc__card-body {
+		padding: var(--nextora-blc-card-padding, 20px) !important;
+		justify-content: flex-start;
+	}
+}
+
 /* ── Template 3 (overlay card: text on image with gradient) ── */
 
 .nextora-blog-list-carousel--template-template-3 .nextora-blc__card--template-3 {
@@ -1007,6 +1231,10 @@ a.nextora-blc__card-cat:focus-visible {
 	.nextora-blog-list-carousel--template-template-1 .nextora-blc__card-body {
 		--nextora-blc-card-padding: 16px;
 	}
+
+	.nextora-blog-list-carousel--template-template-4 {
+		--nextora-blc-card-padding: 20px !important;
+	}
 }
 
 /* Mobile + grid→slider (tablet): no card hover (desktop keeps hover) */
@@ -1036,6 +1264,16 @@ a.nextora-blc__card-cat:focus-visible {
 
 	.nextora-blog-list-carousel--template-template-2 .nextora-blc__card--template-2:hover .nextora-blc__card-readmore-icon svg,
 	.nextora-blog-list-carousel--template-template-2 .nextora-blc__card--template-2:focus-within .nextora-blc__card-readmore-icon svg {
+		transform: none;
+	}
+
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:hover .nextora-blc__card-img,
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:focus-within .nextora-blc__card-img {
+		transform: none;
+	}
+
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:hover .nextora-blc__card-readmore-icon svg,
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:focus-within .nextora-blc__card-readmore-icon svg {
 		transform: none;
 	}
 }
@@ -1097,6 +1335,20 @@ a.nextora-blc__card-cat:focus-visible {
 	}
 
 	.nextora-blog-list-carousel--template-template-2 .nextora-blc__card-readmore-icon svg {
+		transition: none;
+	}
+
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-img,
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-img-placeholder {
+		transition: none;
+	}
+
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:hover .nextora-blc__card-img,
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:focus-within .nextora-blc__card-img {
+		transform: none;
+	}
+
+	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-readmore-icon svg {
 		transition: none;
 	}
 }

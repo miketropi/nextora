@@ -6,7 +6,10 @@ import {
 	InspectorControls,
 	PanelColorSettings,
 	useBlockProps,
+	useSettings,
 } from '@wordpress/block-editor';
+
+const BlockFontSizePicker = FontSizePicker as unknown as React.ComponentType<any>;
 import {
 	BaseControl,
 	Button,
@@ -37,7 +40,11 @@ function normalizeFontSizeAttribute(
 	if (value === undefined || value === '') {
 		return '';
 	}
-	const raw = (selectedItem?.slug || String(value)).trim().toLowerCase();
+	if (selectedItem?.slug) {
+		return selectedItem.slug;
+	}
+	const str = String(value).trim();
+	const raw = str.toLowerCase();
 	const map: Record<string, string> = {
 		sm: 'small',
 		small: 'small',
@@ -53,7 +60,38 @@ function normalizeFontSizeAttribute(
 		'2xl': 'xx-large',
 		'xx-large': 'xx-large',
 	};
-	return map[raw] || raw;
+	if (map[raw]) {
+		return map[raw];
+	}
+	if (/^\d+(\.\d+)?$/.test(str)) {
+		return `${str}px`;
+	}
+	return str;
+}
+
+const PRESET_FONT_SIZE_SLUGS = new Set([
+	'small',
+	'base',
+	'medium',
+	'medium-plus',
+	'large',
+	'x-large',
+	'xx-large',
+]);
+
+function isPresetFontSize(
+	val: string | undefined,
+	fontSizes: Array<{ slug?: string }> = [],
+): boolean {
+	if (!val) return false;
+	const lower = val.trim().toLowerCase();
+	if (/^[\d.]+(?:px|rem|em|vw|vh|%)?$/i.test(lower) || /^clamp\(/i.test(lower)) {
+		return false;
+	}
+	return (
+		PRESET_FONT_SIZE_SLUGS.has(lower) ||
+		fontSizes.some((item) => item.slug?.toLowerCase() === lower)
+	);
 }
 
 interface EditProps {
@@ -63,6 +101,10 @@ interface EditProps {
 
 export default function Edit({ attributes, setAttributes }: EditProps): JSX.Element {
 	const [buttonIconPickerOpen, setButtonIconPickerOpen] = useState(false);
+	const [themeFontSizes = []] = (useSettings('typography.fontSizes') as [
+		Array<{ name: string; size: number | string; slug: string }> | undefined,
+	]) || [[]];
+
 	const {
 		template,
 		template3Alternating,
@@ -88,6 +130,8 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 		titleColor,
 		titleFontSize = '',
 		descriptionFontSize = '',
+		metaFontSize = '',
+		itemGap = 8,
 		metaColor,
 		metaIconColor,
 		registerBackgroundColor,
@@ -147,6 +191,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				paginationColor,
 				paginationActiveColor,
 			}) as CSSProperties),
+			...(template === 'template4' ? ({ '--nextora-event-item-gap': `${itemGap}px` } as CSSProperties) : {}),
 			...(edgeFadeColor ? { '--nextora-event-edge-fade-color': edgeFadeColor } as CSSProperties : {}),
 			...(isSliderTemplate
 				? ({
@@ -369,9 +414,17 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				</PanelBody>
 
 				{/* ── Settings / Button Settings ── */}
-				<PanelBody title={template === 'template4' ? __('Settings', 'nextora') : __('Register Button', 'nextora')} initialOpen={false}>
+				<PanelBody title={template === 'template4' ? __('Settings', 'nextora') : __('Register Button', 'nextora')} initialOpen={template === 'template4'}>
 					{template === 'template4' ? (
 						<>
+							<RangeControl
+								label={__('Item gap (px)', 'nextora')}
+								value={itemGap}
+								onChange={(val) => setAttributes({ itemGap: val ?? 8 })}
+								min={0}
+								max={60}
+								step={1}
+							/>
 							<ToggleControl
 								label={__('Show date badge', 'nextora')}
 								checked={showDate !== false}
@@ -637,31 +690,51 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				)}
 
 				{/* ── Typography Settings ── */}
-				<PanelBody title={__('Typography', 'nextora')} initialOpen={template === 'template3'}>
+				<PanelBody title={__('Typography', 'nextora')} initialOpen={template === 'template3' || template === 'template4'}>
 					<BaseControl
 						label={__('Card title font size', 'nextora')}
 						id="nextora-event-tec-title-font-size"
 						help={template === 'template4' ? __('Default: 14px for Compact List.', 'nextora') : __('Default inherits global heading size.', 'nextora')}
 					>
-						<FontSizePicker
+						<BlockFontSizePicker
+							fontSizes={themeFontSizes}
 							value={titleFontSize || undefined}
-							valueMode="slug"
-							onChange={(value, selectedItem) =>
+							valueMode={isPresetFontSize(titleFontSize, themeFontSizes) ? 'slug' : 'literal'}
+							onChange={(value: any, selectedItem: any) =>
 								setAttributes({
 									titleFontSize: normalizeFontSizeAttribute(value, selectedItem),
 								})
 							}
 						/>
 					</BaseControl>
+					{template === 'template4' && (
+						<BaseControl
+							label={__('Meta font size (Location & Time)', 'nextora')}
+							id="nextora-event-tec-meta-font-size"
+							help={__('Default: 12px for Compact List.', 'nextora')}
+						>
+							<BlockFontSizePicker
+								fontSizes={themeFontSizes}
+								value={metaFontSize || undefined}
+								valueMode={isPresetFontSize(metaFontSize, themeFontSizes) ? 'slug' : 'literal'}
+								onChange={(value: any, selectedItem: any) =>
+									setAttributes({
+										metaFontSize: normalizeFontSizeAttribute(value, selectedItem),
+									})
+								}
+							/>
+						</BaseControl>
+					)}
 					<BaseControl
 						label={__('Card description font size', 'nextora')}
 						id="nextora-event-tec-description-font-size"
 						help={template === 'template4' ? __('Default: 12px for Compact List.', 'nextora') : __('Default inherits global body size.', 'nextora')}
 					>
-						<FontSizePicker
+						<BlockFontSizePicker
+							fontSizes={themeFontSizes}
 							value={descriptionFontSize || undefined}
-							valueMode="slug"
-							onChange={(value, selectedItem) =>
+							valueMode={isPresetFontSize(descriptionFontSize, themeFontSizes) ? 'slug' : 'literal'}
+							onChange={(value: any, selectedItem: any) =>
 								setAttributes({
 									descriptionFontSize: normalizeFontSizeAttribute(value, selectedItem),
 								})

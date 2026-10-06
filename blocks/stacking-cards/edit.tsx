@@ -420,6 +420,7 @@ export default function StackingCardsEdit({
 									{a.showLink && (
 										<span className={linkClasses} style={linkStyle}>
 											{card.linkText || __('Read more', 'nextora')}
+											<span aria-hidden="true">&#8599;</span>
 										</span>
 									)}
 								</div>

@@ -176,10 +176,28 @@ if ( ! function_exists( 'nextora_box_image_get_color_props' ) ) {
 	}
 }
 
-if ( ! function_exists( 'nextora_box_image_normalize_font_size' ) ) {
-	function nextora_box_image_normalize_font_size( string $size ): string {
-		$size = trim( strtolower( $size ) );
-		$map  = array(
+if ( ! function_exists( 'nextora_box_image_get_font_size_props' ) ) {
+	/**
+	 * Preset slug or custom CSS size → font-size props.
+	 *
+	 * @param string $raw          Font size attribute.
+	 * @param string $default_size Default preset size slug if empty.
+	 *
+	 * @return array{class: string, style: string}
+	 */
+	function nextora_box_image_get_font_size_props( string $raw, string $default_size = '' ): array {
+		$raw = trim( $raw );
+		if ( '' === $raw ) {
+			$raw = $default_size;
+		}
+		if ( '' === $raw ) {
+			return array(
+				'class' => '',
+				'style' => '',
+			);
+		}
+
+		$map = array(
 			'sm'          => 'small',
 			'small'       => 'small',
 			'base'        => 'base',
@@ -194,7 +212,43 @@ if ( ! function_exists( 'nextora_box_image_normalize_font_size' ) ) {
 			'2xl'         => 'xx-large',
 			'xx-large'    => 'xx-large',
 		);
-		return isset( $map[ $size ] ) ? $map[ $size ] : sanitize_html_class( $size );
+
+		$slug = '';
+		if ( preg_match( '/^var:preset\|font-size\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^var\(\s*--wp--preset--font-size--([a-z0-9_-]+)\s*\)$/i', $raw, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( isset( $map[ strtolower( $raw ) ] ) ) {
+			$slug = $map[ strtolower( $raw ) ];
+		} elseif ( ! preg_match( '/^(?:[\d.]+(?:px|rem|em|vw|vh|%)|clamp\(.+\))$/i', $raw ) && ! is_numeric( $raw ) && preg_match( '/^[a-z0-9-]+$/i', $raw ) ) {
+			$slug = sanitize_html_class( strtolower( $raw ) );
+		}
+
+		if ( '' !== $slug ) {
+			return array(
+				'class' => 'has-' . $slug . '-font-size',
+				'style' => '',
+			);
+		}
+
+		$size = $raw;
+		if ( is_numeric( $size ) ) {
+			$size .= 'px';
+		}
+		return array(
+			'class' => '',
+			'style' => 'font-size:' . esc_attr( $size ) . ';',
+		);
+	}
+}
+
+if ( ! function_exists( 'nextora_box_image_normalize_font_size' ) ) {
+	function nextora_box_image_normalize_font_size( string $size ): string {
+		$props = nextora_box_image_get_font_size_props( $size );
+		if ( '' !== $props['class'] ) {
+			return str_replace( array( 'has-', '-font-size' ), '', $props['class'] );
+		}
+		return $size;
 	}
 }
 
@@ -539,13 +593,16 @@ if ( ! function_exists( 'nextora_box_image_render_template4_card' ) ) {
 			return '';
 		}
 
-		$title_classes = array( 'nextora-box-image__title' );
-		if ( '' !== $title_font_size ) {
-			$title_classes[] = 'has-' . sanitize_html_class( $title_font_size ) . '-font-size';
+		$title_size_props = nextora_box_image_get_font_size_props( $title_font_size );
+		$title_classes    = array( 'nextora-box-image__title' );
+		if ( '' !== $title_size_props['class'] ) {
+			$title_classes[] = $title_size_props['class'];
 		}
-		$desc_classes = array( 'nextora-box-image__description' );
-		if ( '' !== $description_font_size ) {
-			$desc_classes[] = 'has-' . sanitize_html_class( $description_font_size ) . '-font-size';
+
+		$desc_size_props = nextora_box_image_get_font_size_props( $description_font_size );
+		$desc_classes    = array( 'nextora-box-image__description' );
+		if ( '' !== $desc_size_props['class'] ) {
+			$desc_classes[] = $desc_size_props['class'];
 		}
 
 		$raw_title_color = isset( $item['titleColor'] ) && '' !== trim( (string) $item['titleColor'] )
@@ -555,7 +612,8 @@ if ( ! function_exists( 'nextora_box_image_render_template4_card' ) ) {
 		if ( '' !== $title_color_props['class'] ) {
 			$title_classes[] = $title_color_props['class'];
 		}
-		$title_style_attr = '' !== $title_color_props['style'] ? ' style="' . esc_attr( $title_color_props['style'] ) . '"' : '';
+		$title_styles     = array_filter( array( $title_color_props['style'], $title_size_props['style'] ) );
+		$title_style_attr = ! empty( $title_styles ) ? ' style="' . esc_attr( implode( ' ', $title_styles ) ) . '"' : '';
 
 		$raw_desc_color = isset( $item['descriptionColor'] ) && '' !== trim( (string) $item['descriptionColor'] )
 			? trim( (string) $item['descriptionColor'] )
@@ -564,7 +622,8 @@ if ( ! function_exists( 'nextora_box_image_render_template4_card' ) ) {
 		if ( '' !== $desc_color_props['class'] ) {
 			$desc_classes[] = $desc_color_props['class'];
 		}
-		$desc_style_attr = '' !== $desc_color_props['style'] ? ' style="' . esc_attr( $desc_color_props['style'] ) . '"' : '';
+		$desc_styles     = array_filter( array( $desc_color_props['style'], $desc_size_props['style'] ) );
+		$desc_style_attr = ! empty( $desc_styles ) ? ' style="' . esc_attr( implode( ' ', $desc_styles ) ) . '"' : '';
 
 		$show_link   = ! empty( $item['showLink'] );
 		$link_label  = (string) $item['linkLabel'];
@@ -751,13 +810,16 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 			return '';
 		}
 
-		$title_classes = array( 'nextora-box-image__title' );
-		if ( '' !== $title_font_size ) {
-			$title_classes[] = 'has-' . sanitize_html_class( $title_font_size ) . '-font-size';
+		$title_size_props = nextora_box_image_get_font_size_props( $title_font_size );
+		$title_classes    = array( 'nextora-box-image__title' );
+		if ( '' !== $title_size_props['class'] ) {
+			$title_classes[] = $title_size_props['class'];
 		}
-		$desc_classes = array( 'nextora-box-image__description' );
-		if ( '' !== $description_font_size ) {
-			$desc_classes[] = 'has-' . sanitize_html_class( $description_font_size ) . '-font-size';
+
+		$desc_size_props = nextora_box_image_get_font_size_props( $description_font_size );
+		$desc_classes    = array( 'nextora-box-image__description' );
+		if ( '' !== $desc_size_props['class'] ) {
+			$desc_classes[] = $desc_size_props['class'];
 		}
 
 		$raw_title_color = isset( $item['titleColor'] ) && '' !== trim( (string) $item['titleColor'] )
@@ -767,7 +829,8 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 		if ( '' !== $title_color_props['class'] ) {
 			$title_classes[] = $title_color_props['class'];
 		}
-		$title_style_attr = '' !== $title_color_props['style'] ? ' style="' . esc_attr( $title_color_props['style'] ) . '"' : '';
+		$title_styles     = array_filter( array( $title_color_props['style'], $title_size_props['style'] ) );
+		$title_style_attr = ! empty( $title_styles ) ? ' style="' . esc_attr( implode( ' ', $title_styles ) ) . '"' : '';
 
 		$raw_desc_color = isset( $item['descriptionColor'] ) && '' !== trim( (string) $item['descriptionColor'] )
 			? trim( (string) $item['descriptionColor'] )
@@ -776,7 +839,8 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 		if ( '' !== $desc_color_props['class'] ) {
 			$desc_classes[] = $desc_color_props['class'];
 		}
-		$desc_style_attr = '' !== $desc_color_props['style'] ? ' style="' . esc_attr( $desc_color_props['style'] ) . '"' : '';
+		$desc_styles     = array_filter( array( $desc_color_props['style'], $desc_size_props['style'] ) );
+		$desc_style_attr = ! empty( $desc_styles ) ? ' style="' . esc_attr( implode( ' ', $desc_styles ) ) . '"' : '';
 
 		$show_link   = ! empty( $item['showLink'] );
 		$link_label  = (string) $item['linkLabel'];
@@ -1200,8 +1264,8 @@ $layout_mode = isset( $attributes['layoutMode'] ) && in_array( $attributes['layo
 	? (string) $attributes['layoutMode']
 	: ( isset( $template_defaults['layoutMode'] ) ? (string) $template_defaults['layoutMode'] : 'slider' );
 
-$title_font_size       = isset( $attributes['titleFontSize'] ) && '' !== trim( (string) $attributes['titleFontSize'] ) ? nextora_box_image_normalize_font_size( (string) $attributes['titleFontSize'] ) : '';
-$description_font_size = isset( $attributes['descriptionFontSize'] ) && '' !== trim( (string) $attributes['descriptionFontSize'] ) ? nextora_box_image_normalize_font_size( (string) $attributes['descriptionFontSize'] ) : '';
+$title_font_size       = isset( $attributes['titleFontSize'] ) && '' !== trim( (string) $attributes['titleFontSize'] ) ? trim( (string) $attributes['titleFontSize'] ) : '';
+$description_font_size = isset( $attributes['descriptionFontSize'] ) && '' !== trim( (string) $attributes['descriptionFontSize'] ) ? trim( (string) $attributes['descriptionFontSize'] ) : '';
 
 $content_max = isset( $attributes['contentMaxWidth'] ) ? trim( (string) $attributes['contentMaxWidth'] ) : '';
 $grid_cols   = isset( $attributes['gridColumns'] ) ? max( 1, min( 6, (int) $attributes['gridColumns'] ) ) : 4;

@@ -10,11 +10,19 @@
 }
 
 .nextora-testimonial-carousel {
+	--nextora-testimonial-dot-color: rgb(from var(--wp--preset--color--contrast, #0a0a0a) r g b / 0.2);
+	--nextora-testimonial-dot-active: var(--wp--preset--color--primary, #feb83d);
 	background-color: var(--nextora-testimonial-bg, transparent);
 	padding: var(--nextora-testimonial-padding-top, 80px) var(--wp--preset--spacing--30, 1.5rem) var(--nextora-testimonial-padding-bottom, 80px);
 	text-align: center;
 	border: none;
 	color: var(--wp--preset--color--contrast, currentColor);
+}
+
+.is-style-contrast-band.nextora-testimonial-carousel,
+.is-style-contrast-band .nextora-testimonial-carousel {
+	--nextora-testimonial-dot-color: color-mix(in srgb, var(--wp--preset--color--base, #fff) 35%, transparent);
+	--nextora-testimonial-dot-active: var(--wp--preset--color--base, #fff);
 }
 
 .nextora-testimonial-carousel--loading .nextora-testimonial-carousel__swiper {
@@ -125,6 +133,13 @@
 			var(--nextora-testimonial-quote-color, var(--wp--preset--color--contrast, currentColor)));
 }
 
+@media (max-width: 767px) {
+	.nextora-testimonial-carousel__slide-quote {
+		font-size: 20px !important;
+		line-height: 1.45 !important;
+	}
+}
+
 .nextora-testimonial-carousel__slide-author {
 	display: inline-flex;
 	align-items: center;
@@ -193,7 +208,7 @@
 	justify-content: center;
 	flex-wrap: wrap;
 	gap: 0.75rem;
-	margin-top: 2rem;
+	margin-top: var(--wp--preset--spacing--10);
 }
 
 .nextora-testimonial-carousel__trust-text {
@@ -251,14 +266,15 @@
 }
 
 .nextora-testimonial-carousel__pagination .swiper-pagination-bullet {
+	display: inline-block;
 	width: 7px !important;
 	height: 7px !important;
 	margin: 0 !important;
 	padding: 0;
 	border: none;
 	border-radius: 999px;
-	background: var(--nextora-testimonial-dot-color, color-mix(in srgb, currentColor 35%, transparent));
-	opacity: 1;
+	background: var(--nextora-testimonial-dot-color, color-mix(in srgb, currentColor 35%, transparent)) !important;
+	opacity: 1 !important;
 	box-sizing: border-box;
 	cursor: pointer;
 	transform: none;
@@ -269,7 +285,9 @@
 	width: 20px !important;
 	height: 7px !important;
 	border-radius: 999px;
-	background: var(--nextora-testimonial-dot-active, var(--wp--preset--color--primary, currentColor));
+	opacity: 1 !important;
+	transform: none;
+	background: var(--nextora-testimonial-dot-active, var(--wp--preset--color--primary, currentColor)) !important;
 }
 
 .nextora-testimonial-carousel__arrows {

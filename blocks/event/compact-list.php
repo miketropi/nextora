@@ -49,12 +49,14 @@ function nextora_event_render_compact_list( array $events, array $attributes, ca
 	$show_register = ! isset( $attributes['showRegisterButton'] ) || (bool) $attributes['showRegisterButton'];
 	$enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
 
+	$item_gap = isset( $attributes['itemGap'] ) ? (int) $attributes['itemGap'] : 8;
+
 	$value = static function ( string $key, string $fallback = '' ) use ( $attributes ): string {
 		$raw = isset( $attributes[ $key ] ) ? trim( (string) $attributes[ $key ] ) : '';
 		return '' !== $raw ? $raw : $fallback;
 	};
 
-	$props = static function ( string $name, array $colors = array(), string $size = '', string $fallback_size = '', string $extra_style = '' ) use ( $get_color_props ): string {
+	$props = static function ( string $name, array $colors = array(), string $size = '', string $extra_style = '' ) use ( $get_color_props ): string {
 		$classes = array( 'nextora-event-compact__' . $name );
 		$styles  = array();
 		if ( '' !== $extra_style ) {
@@ -72,20 +74,18 @@ function nextora_event_render_compact_list( array $events, array $attributes, ca
 				$styles[] = $resolved['style'];
 			}
 		}
-		if ( '' === $size ) {
-			$size = $fallback_size;
-		}
 		if ( '' !== $size ) {
 			if ( preg_match( '/^\d+(\.\d+)?(px|rem|em|%)?$/', $size ) ) {
 				$styles[] = 'font-size:' . ( is_numeric( $size ) ? $size . 'px' : $size ) . ';';
 			} else {
 				$aliases   = array(
-					'sm'     => 'small',
-					'md'     => 'medium',
-					'lg'     => 'large',
-					'xl'     => 'x-large',
-					'2xl'    => 'xx-large',
-					'normal' => 'base',
+					'sm'          => 'small',
+					'md'          => 'medium',
+					'lg'          => 'large',
+					'xl'          => 'x-large',
+					'2xl'         => 'xx-large',
+					'normal'      => 'base',
+					'medium-plus' => 'medium-plus',
 				);
 				$classes[] = 'has-' . sanitize_html_class( $aliases[ $size ] ?? $size ) . '-font-size';
 			}
@@ -95,10 +95,12 @@ function nextora_event_render_compact_list( array $events, array $attributes, ca
 		return $class_attr . $style_attr;
 	};
 
-	$hover_style = '';
+	$wrapper_styles = array(
+		'--nextora-event-item-gap:' . $item_gap . 'px;',
+	);
 	foreach ( array( 'registerHoverBackgroundColor' => 'bg', 'registerHoverTextColor' => 'text-color', 'registerHoverBorderColor' => 'border-color' ) as $key => $suffix ) {
 		if ( '' !== $value( $key ) ) {
-			$hover_style .= '--nextora-event-register-hover-' . $suffix . ':' . $resolve_color( $value( $key ) ) . ';';
+			$wrapper_styles[] = '--nextora-event-register-hover-' . $suffix . ':' . $resolve_color( $value( $key ) ) . ';';
 		}
 	}
 
@@ -115,10 +117,8 @@ function nextora_event_render_compact_list( array $events, array $attributes, ca
 
 	$wrapper_args = array(
 		'class' => implode( ' ', $classes ),
+		'style' => implode( '', $wrapper_styles ),
 	);
-	if ( '' !== $hover_style ) {
-		$wrapper_args['style'] = $hover_style;
-	}
 	if ( $enable_anim ) {
 		$wrapper_args['data-nextora-scroll-reveal']       = '1';
 		$wrapper_args['data-nextora-scroll-reveal-style'] = $anim_style;
@@ -126,7 +126,7 @@ function nextora_event_render_compact_list( array $events, array $attributes, ca
 	$wrapper = get_block_wrapper_attributes( $wrapper_args );
 	ob_start();
 	?>
-	<div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>><div class="nextora-event-compact__list">
+	<div <?php echo $wrapper; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>><div class="nextora-event-compact__list" style="<?php echo esc_attr( '--nextora-event-item-gap:' . $item_gap . 'px;gap:' . $item_gap . 'px;' ); ?>">
 	<?php if ( empty( $events ) ) : ?>
 		<p><?php esc_html_e( 'No upcoming events found.', 'nextora' ); ?></p>
 	<?php endif; ?>
@@ -163,25 +163,25 @@ function nextora_event_render_compact_list( array $events, array $attributes, ca
 			<?php endif; ?>
 			<?php if ( $show_image && '' !== $image_url ) : ?><img class="nextora-event-compact__image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( (string) ( $event['imageAlt'] ?? '' ) ); ?>" loading="lazy" /><?php endif; ?>
 			<div class="nextora-event-compact__content">
-				<h4 <?php echo $props( 'title', array( 'color' => $value( 'titleColor' ) ), $value( 'titleFontSize' ), '14px' ); ?>><?php if ( '' !== $url ) : ?><a class="nextora-event-compact__title-link" href="<?php echo $url; ?>"<?php echo '_blank' === ( $event['linkTarget'] ?? '' ) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>><?php echo esc_html( $title ); ?></a><?php else : ?><?php echo esc_html( $title ); ?><?php endif; ?></h4>
+				<h4 <?php echo $props( 'title', array( 'color' => $value( 'titleColor' ) ), $value( 'titleFontSize' ) ); ?>><?php if ( '' !== $url ) : ?><a class="nextora-event-compact__title-link" href="<?php echo $url; ?>"<?php echo '_blank' === ( $event['linkTarget'] ?? '' ) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>><?php echo esc_html( $title ); ?></a><?php else : ?><?php echo esc_html( $title ); ?><?php endif; ?></h4>
 				<?php if ( $has_meta ) : ?>
 					<div class="nextora-event-compact__meta-row">
 						<?php if ( $show_location && '' !== $location ) : ?>
-							<div <?php echo $props( 'location', array( 'color' => $value( 'metaColor' ) ) ); ?>>
+							<div <?php echo $props( 'location', array( 'color' => $value( 'metaColor' ) ), $value( 'metaFontSize' ) ); ?>>
 								<svg <?php echo $props( 'pin', array( 'color' => $value( 'metaIconColor' ) ) ); ?> viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span><?php echo esc_html( $location ); ?></span>
 							</div>
 						<?php endif; ?>
 						<?php if ( $show_time && '' !== $time ) : ?>
-							<div <?php echo $props( 'time', array( 'color' => $value( 'metaColor' ) ) ); ?>>
+							<div <?php echo $props( 'time', array( 'color' => $value( 'metaColor' ) ), $value( 'metaFontSize' ) ); ?>>
 								<svg <?php echo $props( 'clock', array( 'color' => $value( 'metaIconColor' ) ) ); ?> viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span><?php echo esc_html( $time ); ?></span>
 							</div>
 						<?php endif; ?>
 					</div>
 				<?php endif; ?>
-				<?php if ( $show_desc && '' !== $description ) : ?><p <?php echo $props( 'description', array( 'color' => $value( 'compactDescriptionColor' ) ), $value( 'descriptionFontSize' ), '12px' ); ?>><?php echo esc_html( $description ); ?></p><?php endif; ?>
+				<?php if ( $show_desc && '' !== $description ) : ?><p <?php echo $props( 'description', array( 'color' => $value( 'compactDescriptionColor' ) ), $value( 'descriptionFontSize' ) ); ?>><?php echo esc_html( $description ); ?></p><?php endif; ?>
 			</div>
 			<?php if ( $show_register && '' !== $url ) : ?>
-				<a <?php echo $props( 'action', array( 'background' => $background, 'color' => $foreground, 'border' => $value( 'registerBorderColor' ) ), '', '', $action_vars ); ?> href="<?php echo $url; ?>"<?php echo '_blank' === ( $event['linkTarget'] ?? '' ) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?> aria-label="<?php echo esc_attr( sprintf( __( 'View event: %s', 'nextora' ), $title ?: __( 'Event', 'nextora' ) ) ); ?>">
+				<a <?php echo $props( 'action', array( 'background' => $background, 'color' => $foreground, 'border' => $value( 'registerBorderColor' ) ), '', $action_vars ); ?> href="<?php echo $url; ?>"<?php echo '_blank' === ( $event['linkTarget'] ?? '' ) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?> aria-label="<?php echo esc_attr( sprintf( __( 'View event: %s', 'nextora' ), $title ?: __( 'Event', 'nextora' ) ) ); ?>">
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
 				</a>
 			<?php endif; ?>
