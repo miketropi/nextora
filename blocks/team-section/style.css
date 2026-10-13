@@ -701,15 +701,15 @@
 .nextora-team-section__deck-info-pane.is-active,
 .nextora-team-section__deck-info-pane.is-exiting {
 	visibility: visible;
+	opacity: 1;
 }
 
 .nextora-team-section__deck-info-pane.is-active {
-	opacity: 1;
 	pointer-events: auto;
 }
 
-.nextora-team-section__deck-info-pane.is-active>* {
-	opacity: 1;
+.nextora-team-section__deck-info-pane>* {
+	will-change: transform, opacity;
 }
 
 .nextora-team-section__deck-name {
@@ -746,25 +746,52 @@
 .nextora-team-section__deck-social {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.75rem;
+	align-items: center;
+	gap: 0.625rem;
 	margin-top: 1rem;
 	margin-bottom: 1.5rem;
 }
 
 .nextora-team-section__deck-social-link {
-	font-size: 13px;
-	font-weight: 600;
-	padding: 0.35rem 0.85rem;
-	border-radius: 9999px;
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	padding: 0;
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	background: color-mix(in srgb, var(--wp--preset--color--contrast, #000) 6%, transparent);
 	color: var(--nextora-team-social-color, var(--wp--preset--color--contrast, #0a0a0a));
 	text-decoration: none;
-	transition: background 0.2s ease, color 0.2s ease;
+	transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+	flex-shrink: 0;
 }
 
-.nextora-team-section__deck-social-link:hover {
+.nextora-team-section__deck-social-link svg {
+	width: 18px;
+	height: 18px;
+	display: block;
+	flex-shrink: 0;
+}
+
+.is-style-contrast-band .nextora-team-section__deck-social-link {
+	background: color-mix(in srgb, var(--wp--preset--color--base, #fff) 12%, transparent);
+	color: var(--wp--preset--color--base, #fff);
+}
+
+.is-style-contrast-band .nextora-team-section__deck-social-link:hover,
+.is-style-contrast-band .nextora-team-section__deck-social-link:focus-visible {
 	background: var(--wp--preset--color--primary, #2E1A47);
 	color: var(--wp--preset--color--base, #ffffff);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nextora-team-section__deck-social-link:hover,
+	.nextora-team-section__deck-social-link:focus-visible {
+		transform: none;
+	}
 }
 
 /* Nav Controls */

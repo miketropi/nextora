@@ -496,6 +496,14 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 		const rotations = [-7, 6, -5, 7, -4, 6, -6, 5];
 		const getCardRotation = (index: number) => rotations[index % rotations.length];
 
+		let textTl: gsap.core.Timeline | null = null;
+		let cardTl: gsap.core.Timeline | null = null;
+		let isAnimating = false;
+
+		const getPaneItems = (pane: HTMLElement): HTMLElement[] => {
+			return Array.from(pane.children).filter((el): el is HTMLElement => el.nodeType === 1);
+		};
+
 		const startAutoplay = () => {
 			if (!autoplay || total <= 1) return;
 			stopAutoplay();
@@ -520,6 +528,7 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 		};
 
 		const updateDeck = (instant = false): void => {
+			isAnimating = false;
 			cards.forEach((card, i) => {
 				const offset = (i - activeIndex + total) % total;
 				const isCurrent = offset === 0;
@@ -551,14 +560,11 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 				pane.classList.remove('is-exiting');
 				pane.classList.toggle('is-active', i === activeIndex);
 				gsap.set(pane, { clearProps: 'all' });
-				const items = pane.querySelectorAll(
-					'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
-				);
-				gsap.set(items, { clearProps: 'all' });
+				gsap.set(getPaneItems(pane), { clearProps: 'all' });
 			});
 		};
 
-		const animDuration = Math.min(0.24, Math.max(0.15, speedSec * 0.45));
+		const animDuration = 0.22;
 
 		const goTo = (newIndex: number, dir: 1 | -1 = 1, isUserAction = true): void => {
 			if (total <= 1) return;
@@ -579,33 +585,46 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 				return;
 			}
 
+			const direction: 1 | -1 = dir >= 0 ? 1 : -1;
+			const prevCard = cards[prevIndex];
 			const targetCard = cards[targetIndex];
 
-			// 21st.dev True Card Lift Animation:
-			// The incoming target card jumps up, rotates straight, scales up to 1, and drops over the front
+			// Clean up previous animations if rapid clicks occur
+			if (cardTl) {
+				cardTl.kill();
+				cardTl = null;
+			}
+			if (textTl) {
+				textTl.kill();
+				textTl = null;
+			}
 			gsap.killTweensOf(cards);
-			gsap.set(targetCard, { zIndex: 40, pointerEvents: 'auto' });
 
-			const cardTl = gsap.timeline({
-				onComplete: () => {
-					cards.forEach((card, i) => {
-						const offset = (i - activeIndex + total) % total;
-						const isCurrent = offset === 0;
-						card.classList.toggle('is-active', isCurrent);
-						card.style.pointerEvents = isCurrent ? 'auto' : 'none';
-						card.style.zIndex = isCurrent ? '30' : String(Math.max(1, 20 - offset));
-					});
-				},
+			// Synchronize cards baseline state before starting new transition
+			cards.forEach((card, i) => {
+				const wasPrev = i === prevIndex;
+				card.classList.toggle('is-active', wasPrev);
+				card.style.pointerEvents = wasPrev ? 'auto' : 'none';
 			});
 
-			// Lift and straighten
+			// ── 1. CARD STACK MOTION ──────────────────────────────────────────
+			// During lift (Phase 1): targetCard lifts from its depth behind prevCard.
+			// prevCard stays in front at zIndex 30.
+			gsap.set(targetCard, { zIndex: 25, pointerEvents: 'none' });
+			if (prevCard) {
+				gsap.set(prevCard, { zIndex: 30, pointerEvents: 'none' });
+			}
+
+			cardTl = gsap.timeline();
+
+			// Lift targetCard out from behind the deck to apex (-65px)
 			cardTl.fromTo(
 				targetCard,
 				{
 					y: 0,
-					scale: 0.94,
+					scale: 0.92,
 					rotation: getCardRotation(targetIndex),
-					opacity: 0.85,
+					opacity: 0.9,
 				},
 				{
 					y: -65,
@@ -617,123 +636,142 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 				}
 			);
 
-			// Drop down to front
+			// Apex reached: targetCard has cleared above the stack — switch to front
+			// and animate remaining cards (including prevCard) into their new stack resting slots
+			cardTl.call(() => {
+				gsap.set(targetCard, { zIndex: 40, pointerEvents: 'auto' });
+				cards.forEach((card, i) => {
+					if (i === targetIndex) return;
+					const offset = (i - targetIndex + total) % total;
+					card.style.zIndex = String(Math.max(1, 20 - offset));
+					gsap.to(card, {
+						scale: Math.max(0.86, 0.95 - offset * 0.03),
+						rotation: getCardRotation(i),
+						opacity: offset > 3 ? 0 : Math.max(0.4, 0.85 - offset * 0.15),
+						y: 0,
+						duration: animDuration * 1.2,
+						ease: 'power2.out',
+					});
+				});
+			});
+
+			// Phase 2: Drop targetCard down into front position
 			cardTl.to(targetCard, {
 				y: 0,
 				duration: animDuration,
 				ease: 'power2.inOut',
 			});
 
-			// Other cards animate to their new positions in the stack
-			cards.forEach((card, i) => {
-				if (i === targetIndex) return;
-				const offset = (i - targetIndex + total) % total;
-				gsap.to(card, {
-					scale: Math.max(0.86, 0.95 - offset * 0.03),
-					rotation: getCardRotation(i),
-					zIndex: Math.max(1, 20 - offset),
-					opacity: offset > 3 ? 0 : Math.max(0.4, 0.85 - offset * 0.15),
-					y: 0,
-					duration: animDuration * 1.6,
-					ease: 'power2.out',
+			// Card transition completed: finalize state
+			cardTl.call(() => {
+				cards.forEach((card, i) => {
+					const offset = (i - targetIndex + total) % total;
+					const isCurrent = offset === 0;
+					card.classList.toggle('is-active', isCurrent);
+					card.style.pointerEvents = isCurrent ? 'auto' : 'none';
+					card.style.zIndex = isCurrent ? '30' : String(Math.max(1, 20 - offset));
 				});
+				cardTl = null;
 			});
 
-			// Text Transition - Cinematic Cross-Fade & Typography Stagger
+			// ── 2. TEXT & SOCIAL TRANSITION (Cinematic Smooth Glide) ──────────
 			const currentPane = panes[prevIndex];
 			const nextPane = panes[targetIndex];
 
-			gsap.killTweensOf(panes);
 			panes.forEach((p) => {
-				const items = p.querySelectorAll(
-					'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
-				);
-				gsap.killTweensOf(items);
-				gsap.set(items, { clearProps: 'all' });
+				if (p !== currentPane && p !== nextPane) {
+					p.classList.remove('is-active', 'is-exiting');
+					p.style.removeProperty('pointer-events');
+					p.style.removeProperty('z-index');
+					gsap.set(p, { clearProps: 'all' });
+					gsap.set(getPaneItems(p), { clearProps: 'all' });
+				}
 			});
 
-			// Outgoing text animation: smooth slide up and fade out
-			if (currentPane && currentPane !== nextPane) {
-				currentPane.classList.add('is-exiting');
-				currentPane.classList.remove('is-active');
-				gsap.to(currentPane, {
+			const currentItems = currentPane ? getPaneItems(currentPane) : [];
+			const nextItems = nextPane ? getPaneItems(nextPane) : [];
+
+			// Pre-set nextItems off-screen at opacity 0 BEFORE nextPane is shown (eliminates FOUC flash)
+			if (nextItems.length > 0) {
+				gsap.set(nextItems, {
+					x: 36 * direction,
 					opacity: 0,
-					y: -8,
-					duration: 0.15,
-					ease: 'power2.in',
-					onComplete: () => {
-						currentPane.classList.remove('is-exiting');
-						gsap.set(currentPane, { clearProps: 'all' });
-						const items = currentPane.querySelectorAll(
-							'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
-						);
-						gsap.set(items, { clearProps: 'all' });
-					},
+					force3D: true,
 				});
 			}
 
-			// Clean up any other non-active panes
-			panes.forEach((p, i) => {
-				if (i !== prevIndex && i !== targetIndex) {
-					p.classList.remove('is-active', 'is-exiting');
-					gsap.set(p, { clearProps: 'all' });
-					const items = p.querySelectorAll(
-						'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
-					);
-					gsap.set(items, { clearProps: 'all' });
-				}
-			});
-
-			// Incoming text animation: starts right as the card reaches apex and drops into front
-			if (nextPane) {
-				nextPane.classList.remove('is-exiting');
-				nextPane.classList.add('is-active');
-
-				const nextItems = Array.from(
-					nextPane.querySelectorAll<HTMLElement>(
-						'.nextora-team-section__deck-name, .nextora-team-section__deck-role, .nextora-team-section__deck-bio, .nextora-team-section__deck-social'
-					)
-				);
-
-				gsap.set(nextPane, { clearProps: 'all' });
-				gsap.set(nextItems, { clearProps: 'all' });
-
-				if (nextItems.length > 0) {
-					gsap.fromTo(
-						nextItems,
-						{
-							opacity: 0,
-							y: 10,
-						},
-						{
-							opacity: 1,
-							y: 0,
-							duration: 0.32,
-							stagger: 0.04,
-							ease: 'power2.out',
-							clearProps: 'all',
-						}
-					);
-				} else {
-					gsap.fromTo(
-						nextPane,
-						{ opacity: 0, y: 10 },
-						{
-							opacity: 1,
-							y: 0,
-							duration: 0.32,
-							ease: 'power2.out',
-							clearProps: 'all',
-						}
-					);
-				}
+			if (currentPane) {
+				currentPane.classList.add('is-exiting');
+				currentPane.classList.remove('is-active');
+				currentPane.style.zIndex = '1';
+				currentPane.style.pointerEvents = 'none';
 			}
 
-			cards.forEach((card, i) => {
-				const isCurrent = i === targetIndex;
-				card.classList.toggle('is-active', isCurrent);
-				card.style.pointerEvents = isCurrent ? 'auto' : 'none';
+			textTl = gsap.timeline({
+				defaults: { ease: 'power3.out' },
+				onComplete: () => {
+					panes.forEach((p) => {
+						if (p === nextPane) {
+							p.classList.add('is-active');
+							p.classList.remove('is-exiting');
+							p.style.removeProperty('z-index');
+							p.style.removeProperty('pointer-events');
+							gsap.set(getPaneItems(p), { clearProps: 'transform,opacity' });
+						} else {
+							p.classList.remove('is-active', 'is-exiting');
+							p.style.removeProperty('z-index');
+							p.style.removeProperty('pointer-events');
+							gsap.set(p, { clearProps: 'all' });
+							gsap.set(getPaneItems(p), { clearProps: 'all' });
+						}
+					});
+					ScrollTrigger.refresh();
+					textTl = null;
+				},
 			});
+
+			// Outgoing text glides away in direction of motion and fades out cleanly
+			if (currentItems.length > 0) {
+				textTl.to(
+					currentItems,
+					{
+						x: -(26 * direction),
+						opacity: 0,
+						duration: 0.18,
+						stagger: 0.02,
+						ease: 'power2.in',
+					},
+					0
+				);
+			}
+
+			// When outgoing finishes fading (at 0.16s), reveal nextPane and slide incoming items smoothly in
+			textTl.call(
+				() => {
+					if (nextPane) {
+						nextPane.classList.add('is-active');
+						nextPane.classList.remove('is-exiting');
+						nextPane.style.zIndex = '2';
+						nextPane.style.pointerEvents = 'auto';
+					}
+				},
+				[],
+				0.16
+			);
+
+			if (nextItems.length > 0) {
+				textTl.to(
+					nextItems,
+					{
+						x: 0,
+						opacity: 1,
+						duration: 0.44,
+						stagger: 0.048,
+						ease: 'power3.out',
+					},
+					0.16
+				);
+			}
 		};
 
 		const next = (isUserAction = true) => goTo(activeIndex + 1, 1, isUserAction);
@@ -762,6 +800,17 @@ function initTeamSectionTemplate02(container: Element | Document = document): vo
 			},
 			{ passive: true }
 		);
+
+		deck.addEventListener('keydown', (e: KeyboardEvent) => {
+			if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+			if (e.key === 'ArrowLeft') {
+				e.preventDefault();
+				prev(true);
+			} else if (e.key === 'ArrowRight') {
+				e.preventDefault();
+				next(true);
+			}
+		});
 
 		if (autoplay) {
 			startAutoplay();
