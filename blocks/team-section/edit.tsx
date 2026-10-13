@@ -811,8 +811,10 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 																		key={lIdx}
 																		className={`nextora-team-section__deck-social-link ${socialColorProps.className}`.trim()}
 																		style={socialColorProps.style}
+																		title={getSocialPlatformLabel(link.platform)}
+																		aria-label={getSocialPlatformLabel(link.platform)}
 																	>
-																		<span>{getSocialPlatformLabel(link.platform)}</span>
+																		{renderSocialIcon(link.platform, 18)}
 																	</span>
 																))}
 															</div>
