@@ -56,6 +56,7 @@
 .nextora-event--template4 .nextora-event-compact__day {
 	font-size: 22px;
 	font-weight: 700;
+	color: var(--wp--preset--color--contrast, currentColor);
 }
 
 .nextora-event--template4 .nextora-event-compact__image {
@@ -78,13 +79,15 @@
 }
 
 .nextora-event--template4 .nextora-event-compact__title {
-	margin: 0 0 8px 0;
+	margin: 0 0 4px 0;
+	font-weight: 600;
+	color: var(--wp--preset--color--contrast, currentColor);
 	overflow-wrap: anywhere;
 }
 
 .nextora-event--template4 .nextora-event-compact__title a,
 .nextora-event--template4 .nextora-event-compact__title-link {
-	color: inherit;
+	color: var(--wp--preset--color--contrast, currentColor);
 	text-decoration: none;
 	transition: color 0.25s ease, opacity 0.25s ease;
 }
@@ -107,6 +110,7 @@
 	flex-wrap: wrap;
 	gap: 10px;
 	margin-top: 2px;
+	font-weight: 400;
 }
 
 .nextora-event--template4 .nextora-event-compact__location:not([class*="has-"]),
