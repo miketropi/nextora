@@ -825,7 +825,11 @@
 .nextora-box-icon--template-minimal .nextora-box-icon__description {
 	margin: 0;
 	flex: unset;
-	font-weight: 500;
+	font-weight: 400;
+}
+
+.nextora-box-icon--template-minimal .nextora-box-icon__description:not([class*="has-"]) {
+	color: var(--nextora-box-icon-description-color, var(--wp--preset--color--paragraph, currentColor));
 }
 
 .nextora-box-icon--template-minimal .nextora-box-icon__link {
