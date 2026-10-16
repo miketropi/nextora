@@ -215,7 +215,7 @@
 .nextora-box-icon--editor.nextora-box-icon--template-minimal .nextora-box-icon__card-link {
 	text-decoration: none;
 	color: inherit;
-	cursor: pointer;
+	cursor: default;
 }
 
 .nextora-box-icon--editor.nextora-box-icon--template-minimal .nextora-box-icon__card--editable {

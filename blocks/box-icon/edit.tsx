@@ -1373,38 +1373,29 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 							aria-label={__('Box content items', 'nextora')}
 						>
 					{items.map((item, index) => {
-				const isMinimalLink = cardTemplate === 'minimal' && item.showLink && !!item.linkUrl;
-				const CardTag = isMinimalLink ? 'a' : 'article';
-				const cardLinkProps = isMinimalLink
-					? {
-							href: item.linkUrl,
-							target: item.linkTarget === '_blank' ? '_blank' : undefined,
-							rel: item.linkTarget === '_blank' ? 'noopener noreferrer' : undefined,
-						}
-					: {};
+						const isMinimalLink = cardTemplate === 'minimal' && item.showLink && !!item.linkUrl;
 
-				return (
-				<CardTag
-					key={item.id}
-					className={[
-						'nextora-box-icon__card',
-						'nextora-box-icon__card--editable',
-						isMinimalLink ? 'nextora-box-icon__card-link' : '',
-					]
-						.filter(Boolean)
-						.join(' ')}
-					{...cardLinkProps}
-					style={
-						cardTemplate === 'highlights' && item.highlightAccentColor
-							? ({
-									'--__hl-accent': storedColorToCss(
-										item.highlightAccentColor,
-										lookupPalette,
-									),
-								} as CSSProperties)
-							: undefined
-					}
-				>
+						return (
+							<article
+								key={item.id}
+								className={[
+									'nextora-box-icon__card',
+									'nextora-box-icon__card--editable',
+									isMinimalLink ? 'nextora-box-icon__card-link' : '',
+								]
+									.filter(Boolean)
+									.join(' ')}
+								style={
+									cardTemplate === 'highlights' && item.highlightAccentColor
+										? ({
+												'--__hl-accent': storedColorToCss(
+													item.highlightAccentColor,
+													lookupPalette,
+												),
+											} as CSSProperties)
+										: undefined
+								}
+							>
 					<button
 						type="button"
 						className="nextora-box-icon__card-edit"
@@ -1543,7 +1534,7 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 							) : null}
 						</>
 					)}
-						</CardTag>
+						</article>
 					);
 					})}
 						</div>
