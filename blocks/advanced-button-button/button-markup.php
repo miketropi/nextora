@@ -213,7 +213,7 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 		$border_color           = nextora_advanced_button_button_color_attr( $attributes, 'buttonBorderColor', 'borderColor' );
 		$icon_color             = isset( $attributes['iconColor'] ) ? (string) $attributes['iconColor'] : '';
 		$icon_background_color  = isset( $attributes['iconBackgroundColor'] ) ? (string) $attributes['iconBackgroundColor'] : '';
-		$hover_effect           = isset( $attributes['hoverEffect'] ) ? (string) $attributes['hoverEffect'] : 'opacity';
+		$hover_effect           = isset( $attributes['hoverEffect'] ) ? (string) $attributes['hoverEffect'] : 'none';
 		$hover_background_color = isset( $attributes['hoverBackgroundColor'] ) ? (string) $attributes['hoverBackgroundColor'] : '';
 		$hover_text_color       = isset( $attributes['hoverTextColor'] ) ? (string) $attributes['hoverTextColor'] : '';
 		$hover_border_color     = isset( $attributes['hoverBorderColor'] ) ? (string) $attributes['hoverBorderColor'] : '';
@@ -240,9 +240,9 @@ if ( ! function_exists( 'nextora_advanced_button_button_parts' ) ) {
 			$icon_style = 'default';
 		}
 
-		$allowed_hover_effects = array( 'opacity', 'none', 'color-swap', 'lift' );
+		$allowed_hover_effects = array( 'none', 'color-swap', 'lift', 'opacity' );
 		if ( ! in_array( $hover_effect, $allowed_hover_effects, true ) ) {
-			$hover_effect = 'opacity';
+			$hover_effect = 'none';
 		}
 
 		$opens_modal = 'modal' === $link_type;
