@@ -482,6 +482,21 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 			return [
 				...cardColors,
 				{
+					value: colorValueForPicker(cardHoverBackgroundColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('cardHoverBackgroundColor', v),
+					label: __('Card hover background', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(titleHoverColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('titleHoverColor', v),
+					label: __('Title hover color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(descriptionHoverColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('descriptionHoverColor', v),
+					label: __('Description hover color', 'nextora'),
+				},
+				{
 					value: colorValueForPicker(iconColor, colorPalette, lookupPalette),
 					onChange: (v: string | undefined) => setThemeColor('iconColor', v),
 					label: __('Icon color', 'nextora'),
@@ -490,6 +505,21 @@ export default function BoxIconEdit({ attributes, setAttributes }: EditProps) {
 					value: colorValueForPicker(iconSurfaceBackgroundColor, colorPalette, lookupPalette),
 					onChange: (v: string | undefined) => setThemeColor('iconSurfaceBackgroundColor', v),
 					label: __('Icon circle background', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(iconHoverColor, colorPalette, lookupPalette),
+					onChange: (v: string | undefined) => setThemeColor('iconHoverColor', v),
+					label: __('Icon hover color', 'nextora'),
+				},
+				{
+					value: colorValueForPicker(
+						iconHoverSurfaceBackgroundColor,
+						colorPalette,
+						lookupPalette,
+					),
+					onChange: (v: string | undefined) =>
+						setThemeColor('iconHoverSurfaceBackgroundColor', v),
+					label: __('Icon hover circle background', 'nextora'),
 				},
 				...navColors,
 			];

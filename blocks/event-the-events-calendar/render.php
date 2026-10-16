@@ -952,15 +952,24 @@ if ( ! function_exists( 'nextora_event_tec_render_card' ) ) {
 			? '<div class="nextora-event__details">' . implode( '', $details ) . '</div>'
 			: '';
 
+		$link_url    = trim( $event['linkUrl'] );
+		$link_target = '_blank' === $event['linkTarget'] ? '_blank' : '_self';
+		$rel         = '_blank' === $link_target ? ' rel="noopener noreferrer"' : '';
+
+		$title_html = '' !== $link_url
+			? sprintf( '<a href="%1$s" target="%2$s"%3$s>%4$s</a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, esc_html( $title ) )
+			: esc_html( $title );
+
+		$image_linked = '' !== $link_url
+			? sprintf( '<a href="%1$s" target="%2$s"%3$s class="nextora-event__thumb-link" tabindex="-1" aria-hidden="true">%4$s</a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, $image_html )
+			: $image_html;
+
 		$register_html = '';
 		if ( $show_register ) {
 			$label = trim( $event['registerLabel'] );
 			if ( '' === $label ) {
 				$label = $default_register;
 			}
-			$link_url    = trim( $event['linkUrl'] );
-			$link_target = '_blank' === $event['linkTarget'] ? '_blank' : '_self';
-			$rel         = '_blank' === $link_target ? 'noopener noreferrer' : '';
 
 			$reg_classes = array( 'nextora-event__register-card', 'wp-element-button', 'wp-block-button__link' );
 			if ( ! empty( $reg_btn_props['class'] ) ) {
@@ -983,7 +992,7 @@ if ( ! function_exists( 'nextora_event_tec_render_card' ) ) {
 					esc_url( $link_url ),
 					$reg_class_attr,
 					esc_attr( $link_target ),
-					'' !== $rel ? ' rel="' . esc_attr( $rel ) . '"' : '',
+					$rel,
 					$reg_style_attr,
 					nextora_event_tec_calendar_icon( $btn_icon ),
 					esc_html( $label ),
@@ -1023,7 +1032,7 @@ if ( ! function_exists( 'nextora_event_tec_render_card' ) ) {
 		$image_with_date = sprintf(
 			'<div class="nextora-event__card-thumb">%1$s%2$s</div>',
 			$date_badge,
-			$image_html,
+			$image_linked,
 		);
 
 		$card_classes = array( 'nextora-event__card' );
@@ -1058,7 +1067,7 @@ if ( ! function_exists( 'nextora_event_tec_render_card' ) ) {
 			$image_with_date,
 			esc_attr( implode( ' ', $title_classes ) ),
 			$title_style_attr,
-			esc_html( $title ),
+			$title_html,
 			$details_html,
 			$register_html,
 		);
@@ -1141,15 +1150,24 @@ if ( ! function_exists( 'nextora_event_tec_render_list_item' ) ) {
 			? '<div class="nextora-event__details">' . implode( '', $details ) . '</div>'
 			: '';
 
+		$link_url    = trim( $event['linkUrl'] );
+		$link_target = '_blank' === $event['linkTarget'] ? '_blank' : '_self';
+		$rel         = '_blank' === $link_target ? ' rel="noopener noreferrer"' : '';
+
+		$title_html = '' !== $link_url
+			? sprintf( '<a href="%1$s" target="%2$s"%3$s>%4$s</a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, esc_html( $title ) )
+			: esc_html( $title );
+
+		$image_linked = '' !== $link_url
+			? sprintf( '<a href="%1$s" target="%2$s"%3$s class="nextora-event__thumb-link" tabindex="-1" aria-hidden="true">%4$s</a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, $image_html )
+			: $image_html;
+
 		$register_html = '';
 		if ( $show_register ) {
 			$label = trim( $event['registerLabel'] );
 			if ( '' === $label ) {
 				$label = $default_register;
 			}
-			$link_url    = trim( $event['linkUrl'] );
-			$link_target = '_blank' === $event['linkTarget'] ? '_blank' : '_self';
-			$rel         = '_blank' === $link_target ? 'noopener noreferrer' : '';
 
 			$reg_classes = array( 'nextora-event__register', 'wp-element-button' );
 			if ( ! empty( $reg_btn_props['class'] ) ) {
@@ -1164,7 +1182,7 @@ if ( ! function_exists( 'nextora_event_tec_render_list_item' ) ) {
 					esc_url( $link_url ),
 					$reg_class_attr,
 					esc_attr( $link_target ),
-					'' !== $rel ? ' rel="' . esc_attr( $rel ) . '"' : '',
+					$rel,
 					$reg_style_attr,
 					esc_html( $label ),
 					nextora_event_tec_register_arrow_icon(),
@@ -1229,10 +1247,10 @@ if ( ! function_exists( 'nextora_event_tec_render_list_item' ) ) {
 					esc_html( $month ),
 				)
 				: '',
-			$image_html,
+			$image_linked,
 			esc_attr( implode( ' ', $title_classes ) ),
 			$title_style_attr,
-			esc_html( $title ),
+			$title_html,
 			$details_html,
 			$register_html,
 		);
@@ -1385,11 +1403,15 @@ if ( ! function_exists( 'nextora_event_tec_render_template2_item' ) ) {
 		}
 		$card_style_attr = ! empty( $card_props['style'] ) ? ' style="' . esc_attr( $card_props['style'] ) . '"' : '';
 
+		$image_linked = '' !== $link_url
+			? sprintf( '<a href="%1$s" target="%2$s"%3$s class="nextora-event__thumb-link" tabindex="-1" aria-hidden="true">%4$s</a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, $image_html )
+			: $image_html;
+
 		return sprintf(
 			'<div class="swiper-slide"><article class="%1$s"%2$s><div class="nextora-event__template2-media">%3$s%4$s</div><div class="nextora-event__template2-content"><h4 class="%5$s"%6$s>%7$s</h4>%8$s%9$s</div></article></div>',
 			esc_attr( implode( ' ', $card_classes ) ),
 			$card_style_attr,
-			$image_html,
+			$image_linked,
 			$date_html,
 			esc_attr( implode( ' ', $title_classes ) ),
 			$title_style_attr,
@@ -1532,6 +1554,10 @@ if ( ! function_exists( 'nextora_event_tec_render_template3_item' ) ) {
 			? sprintf( '<span class="%1$s"%2$s>%3$s%4$s</span>', esc_attr( trim( 'nextora-event__template3-meta-item' . $meta_text_class ) ), $meta_text_style, nextora_event_tec_detail_icon( 'map-pin', $icon_props ), esc_html( $event['location'] ) )
 			: '';
 
+		$image_linked = '' !== $link_url
+			? sprintf( '<a href="%1$s" target="%2$s"%3$s class="nextora-event__thumb-link" tabindex="-1" aria-hidden="true">%4$s</a>', esc_url( $link_url ), esc_attr( $link_target ), $rel, $image_html )
+			: $image_html;
+
 		return sprintf(
 			'<article class="%1$s"%2$s>%3$s<div class="nextora-event__template3-content">%4$s<h4 class="%5$s"%6$s>%7$s</h4><div class="nextora-event__template3-meta">%8$s%9$s</div>%10$s%11$s</div><div class="nextora-event__template3-media">%12$s</div></article>',
 			esc_attr( implode( ' ', $item_classes ) ),
@@ -1545,7 +1571,7 @@ if ( ! function_exists( 'nextora_event_tec_render_template3_item' ) ) {
 			$meta_location,
 			'' !== $description ? sprintf( '<p class="%1$s"%2$s>%3$s</p>', $desc_class_attr, $desc_style_attr, esc_html( $description ) ) : '',
 			$register_html,
-			$image_html,
+			$image_linked,
 		);
 	}
 }

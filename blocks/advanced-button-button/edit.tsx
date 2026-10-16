@@ -153,7 +153,7 @@ export default function AdvancedButtonButtonEdit( {
 		backgroundColor: legacyBackgroundColor = '',
 		textColor: legacyTextColor = '',
 		borderColor: legacyBorderColor = '',
-		hoverEffect = 'opacity',
+		hoverEffect = 'none',
 		hoverBackgroundColor = '',
 		hoverTextColor = '',
 		hoverBorderColor = '',
@@ -872,10 +872,10 @@ export default function AdvancedButtonButtonEdit( {
 						label={ __( 'Hover effect', 'nextora' ) }
 						value={ hoverEffect }
 						options={ [
-							{ label: __( 'Fade (opacity)', 'nextora' ), value: 'opacity' },
+							{ label: __( 'None', 'nextora' ), value: 'none' },
 							{ label: __( 'Color swap', 'nextora' ), value: 'color-swap' },
 							{ label: __( 'Lift (shadow)', 'nextora' ), value: 'lift' },
-							{ label: __( 'None', 'nextora' ), value: 'none' },
+							{ label: __( 'Fade (opacity)', 'nextora' ), value: 'opacity' },
 						] }
 						onChange={ ( value: string ) =>
 							setAttributes( { hoverEffect: value as HoverEffect } )

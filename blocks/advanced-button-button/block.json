@@ -167,12 +167,12 @@
     },
     "hoverEffect": {
       "type": "string",
-      "default": "opacity",
+      "default": "none",
       "enum": [
-        "opacity",
         "none",
         "color-swap",
-        "lift"
+        "lift",
+        "opacity"
       ]
     },
     "hoverBackgroundColor": {

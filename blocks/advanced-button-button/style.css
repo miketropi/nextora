@@ -46,11 +46,6 @@
 	outline-offset: 2px;
 }
 
-/* Hover: opacity (default) */
-.wp-block-nextora-advanced-button-button.nextora-advanced-button-button--hover-opacity:hover,
-.wp-block-nextora-advanced-button-button.nextora-advanced-button-button--hover-opacity:focus-visible {
-	opacity: 0.8;
-}
 
 /* Hover: none */
 .wp-block-nextora-advanced-button-button.nextora-advanced-button-button--hover-none:hover,

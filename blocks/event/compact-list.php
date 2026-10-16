@@ -161,7 +161,15 @@ function nextora_event_render_compact_list( array $events, array $attributes, ca
 					<?php if ( '' !== $day ) : ?><b <?php echo $props( 'day', array( 'color' => $value( 'dateDayColor' ) ) ); ?>><?php echo esc_html( $day ); ?></b><?php endif; ?>
 				</div>
 			<?php endif; ?>
-			<?php if ( $show_image && '' !== $image_url ) : ?><img class="nextora-event-compact__image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( (string) ( $event['imageAlt'] ?? '' ) ); ?>" loading="lazy" /><?php endif; ?>
+			<?php if ( $show_image && '' !== $image_url ) : ?>
+				<?php if ( '' !== $url ) : ?>
+					<a href="<?php echo $url; ?>" class="nextora-event-compact__image-link"<?php echo '_blank' === ( $event['linkTarget'] ?? '' ) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?> tabindex="-1" aria-hidden="true">
+						<img class="nextora-event-compact__image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( (string) ( $event['imageAlt'] ?? '' ) ); ?>" loading="lazy" />
+					</a>
+				<?php else : ?>
+					<img class="nextora-event-compact__image" src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( (string) ( $event['imageAlt'] ?? '' ) ); ?>" loading="lazy" />
+				<?php endif; ?>
+			<?php endif; ?>
 			<div class="nextora-event-compact__content">
 				<h4 <?php echo $props( 'title', array( 'color' => $value( 'titleColor' ) ), $value( 'titleFontSize' ) ); ?>><?php if ( '' !== $url ) : ?><a class="nextora-event-compact__title-link" href="<?php echo $url; ?>"<?php echo '_blank' === ( $event['linkTarget'] ?? '' ) ? ' target="_blank" rel="noopener noreferrer"' : ''; ?>><?php echo esc_html( $title ); ?></a><?php else : ?><?php echo esc_html( $title ); ?><?php endif; ?></h4>
 				<?php if ( $has_meta ) : ?>

@@ -218,29 +218,19 @@
 	cursor: pointer;
 }
 
-.nextora-box-icon--editor.nextora-box-icon--template-minimal.nextora-box-icon--layout-grid
+.nextora-box-icon--editor.nextora-box-icon--template-minimal .nextora-box-icon__card--editable {
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.nextora-box-icon--editor.nextora-box-icon--template-minimal
 	.nextora-box-icon__card--editable:hover,
-.nextora-box-icon--editor.nextora-box-icon--template-minimal.nextora-box-icon--layout-grid
+.nextora-box-icon--editor.nextora-box-icon--template-minimal
 	.nextora-box-icon__card--editable:focus-within {
-	background: var(--nextora-box-icon-card-bg, var(--wp--preset--color--base, #fff));
+	background: var(--nextora-box-icon-card-hover-bg, var(--nextora-box-icon-card-bg, transparent));
 	color: var(--wp--preset--color--contrast, currentColor);
 	border-color: var(
 		--nextora-box-icon-card-hover-border-color,
-		var(--wp--preset--color--secondary, currentColor)
-	);
-}
-
-.nextora-box-icon--editor.nextora-box-icon--template-minimal.nextora-box-icon--layout-slider
-	.nextora-box-icon__card--editable:hover,
-.nextora-box-icon--editor.nextora-box-icon--template-minimal.nextora-box-icon--layout-slider
-	.nextora-box-icon__card--editable:focus-within {
-	transform: none;
-	box-shadow: none;
-	background: var(--nextora-box-icon-card-bg, var(--wp--preset--color--base, #fff));
-	color: var(--wp--preset--color--contrast, currentColor);
-	border-color: var(
-		--nextora-box-icon-card-border-color,
-		color-mix(in srgb, var(--wp--preset--color--contrast, currentColor) 12%, transparent)
+		var(--nextora-box-icon-card-border-color, color-mix(in srgb, var(--wp--preset--color--contrast, currentColor) 12%, transparent))
 	);
 }
 
@@ -255,6 +245,7 @@
 		--nextora-box-icon-icon-color,
 		color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 72%, black)
 	);
+	transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .nextora-box-icon--editor.nextora-box-icon--template-minimal
@@ -264,13 +255,39 @@
 	.nextora-box-icon__card--editable:focus-within
 	.nextora-box-icon__icon {
 	background: var(
-		--nextora-box-icon-icon-surface-bg,
-		color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 16%, transparent)
-	);
+		--nextora-box-icon-icon-hover-surface-bg,
+		var(--nextora-box-icon-icon-surface-bg, color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 16%, transparent))
+	) !important;
 	color: var(
-		--nextora-box-icon-icon-color,
-		color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 72%, black)
-	);
+		--nextora-box-icon-icon-hover-color,
+		var(--nextora-box-icon-icon-color, color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 72%, black))
+	) !important;
+}
+
+.nextora-box-icon--editor.nextora-box-icon--template-minimal .nextora-box-icon__title {
+	transition: color 0.2s ease;
+}
+
+.nextora-box-icon--editor.nextora-box-icon--template-minimal
+	.nextora-box-icon__card--editable:hover
+	.nextora-box-icon__title,
+.nextora-box-icon--editor.nextora-box-icon--template-minimal
+	.nextora-box-icon__card--editable:focus-within
+	.nextora-box-icon__title {
+	color: var(--nextora-box-icon-title-hover-color, var(--nextora-box-icon-card-title-color, currentColor)) !important;
+}
+
+.nextora-box-icon--editor.nextora-box-icon--template-minimal .nextora-box-icon__description {
+	transition: color 0.2s ease;
+}
+
+.nextora-box-icon--editor.nextora-box-icon--template-minimal
+	.nextora-box-icon__card--editable:hover
+	.nextora-box-icon__description,
+.nextora-box-icon--editor.nextora-box-icon--template-minimal
+	.nextora-box-icon__card--editable:focus-within
+	.nextora-box-icon__description {
+	color: var(--nextora-box-icon-card-desc-hover-color, var(--nextora-box-icon-description-color, var(--wp--preset--color--paragraph, currentColor))) !important;
 }
 
 .nextora-box-icon--editor.nextora-box-icon--template-minimal .nextora-box-icon__link {

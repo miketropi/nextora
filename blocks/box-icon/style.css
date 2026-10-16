@@ -774,22 +774,24 @@
 	border-color: var(--nextora-box-icon-card-border-color,
 			color-mix(in srgb, var(--wp--preset--color--contrast, currentColor) 12%, transparent));
 	transition:
+		background-color 0.2s ease,
+		border-color 0.2s ease,
+		color 0.2s ease,
 		transform 0.25s ease,
-		box-shadow 0.25s ease,
-		border-color 0.25s ease;
+		box-shadow 0.25s ease;
 }
 
 .nextora-box-icon--template-minimal .nextora-box-icon__card-link {
 	text-decoration: none;
 }
 
-.nextora-box-icon--template-minimal.nextora-box-icon--grid-active .nextora-box-icon__card:hover,
-.nextora-box-icon--template-minimal.nextora-box-icon--grid-active .nextora-box-icon__card:focus-within,
+.nextora-box-icon--template-minimal .nextora-box-icon__card:hover,
+.nextora-box-icon--template-minimal .nextora-box-icon__card:focus-within,
 .nextora-box-icon--template-minimal .nextora-box-icon__card-link:focus-visible {
-	background: var(--nextora-box-icon-card-bg, var(--wp--preset--color--base, #fff));
+	background: var(--nextora-box-icon-card-hover-bg, var(--nextora-box-icon-card-bg, transparent));
 	color: var(--wp--preset--color--contrast, currentColor);
 	border-color: var(--nextora-box-icon-card-hover-border-color,
-			var(--wp--preset--color--secondary, currentColor));
+			var(--nextora-box-icon-card-border-color, color-mix(in srgb, var(--wp--preset--color--contrast, currentColor) 12%, transparent)));
 }
 
 .nextora-box-icon--template-minimal .nextora-box-icon__icon {
@@ -800,14 +802,13 @@
 			color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 72%, black));
 	border: none;
 	border-radius: 12px;
+	transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.nextora-box-icon--template-minimal.nextora-box-icon--grid-active .nextora-box-icon__card:hover .nextora-box-icon__icon,
-.nextora-box-icon--template-minimal.nextora-box-icon--grid-active .nextora-box-icon__card:focus-within .nextora-box-icon__icon {
-	background: var(--nextora-box-icon-icon-surface-bg,
-			color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 16%, transparent));
-	color: var(--nextora-box-icon-icon-color,
-			color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 72%, black));
+.nextora-box-icon--template-minimal .nextora-box-icon__card:hover .nextora-box-icon__icon,
+.nextora-box-icon--template-minimal .nextora-box-icon__card:focus-within .nextora-box-icon__icon {
+	background: var(--nextora-box-icon-icon-hover-surface-bg, var(--nextora-box-icon-icon-surface-bg, color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 16%, transparent))) !important;
+	color: var(--nextora-box-icon-icon-hover-color, var(--nextora-box-icon-icon-color, color-mix(in srgb, var(--wp--preset--color--secondary, currentColor) 72%, black))) !important;
 }
 
 .nextora-box-icon--template-minimal .nextora-box-icon__card-body {
@@ -820,12 +821,24 @@
 .nextora-box-icon--template-minimal .nextora-box-icon__title {
 	margin: 0;
 	margin-bottom: 0;
+	transition: color 0.2s ease;
+}
+
+.nextora-box-icon--template-minimal .nextora-box-icon__card:hover .nextora-box-icon__title,
+.nextora-box-icon--template-minimal .nextora-box-icon__card:focus-within .nextora-box-icon__title {
+	color: var(--nextora-box-icon-title-hover-color, var(--nextora-box-icon-card-title-color, currentColor)) !important;
 }
 
 .nextora-box-icon--template-minimal .nextora-box-icon__description {
 	margin: 0;
 	flex: unset;
 	font-weight: 400;
+	transition: color 0.2s ease;
+}
+
+.nextora-box-icon--template-minimal .nextora-box-icon__card:hover .nextora-box-icon__description,
+.nextora-box-icon--template-minimal .nextora-box-icon__card:focus-within .nextora-box-icon__description {
+	color: var(--nextora-box-icon-card-desc-hover-color, var(--nextora-box-icon-description-color, var(--wp--preset--color--paragraph, currentColor))) !important;
 }
 
 .nextora-box-icon--template-minimal .nextora-box-icon__description:not([class*="has-"]) {
