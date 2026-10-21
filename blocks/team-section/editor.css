@@ -504,18 +504,18 @@
 /* Responsive grid breakpoints for editor */
 @media (max-width: 980px) {
 	.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__members-row {
-		grid-template-columns: repeat(min(3, var(--nextora-team-grid-columns, 4)), minmax(0, 1fr));
+		grid-template-columns: repeat(var(--nextora-team-grid-columns-tablet, min(3, var(--nextora-team-grid-columns, 4))), minmax(0, 1fr));
 	}
 }
 
 @media (max-width: 720px) {
 	.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__members-row {
-		grid-template-columns: repeat(min(2, var(--nextora-team-grid-columns, 4)), minmax(0, 1fr));
+		grid-template-columns: repeat(var(--nextora-team-grid-columns-tablet, min(2, var(--nextora-team-grid-columns, 4))), minmax(0, 1fr));
 	}
 }
 
 @media (max-width: 480px) {
 	.nextora-team-section--editor.nextora-team-section--layout-grid .nextora-team-section__members-row {
-		grid-template-columns: 1fr;
+		grid-template-columns: repeat(var(--nextora-team-grid-columns-mobile, 1), minmax(0, 1fr));
 	}
 }

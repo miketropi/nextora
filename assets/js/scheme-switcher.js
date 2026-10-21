@@ -341,7 +341,7 @@
 			var bgProp = theme.buttonBg ? 'background-color: var(--nextora-button-bg);' : '';
 			var colProp = theme.buttonColor ? 'color: var(--nextora-button-color);' : '';
 			rules.push(
-				':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline) > .wp-block-button__link) { ' + bgProp + ' ' + colProp + ' }'
+				':root:root :where(.wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link) { ' + bgProp + ' ' + colProp + ' }'
 			);
 		}
 
@@ -349,7 +349,7 @@
 			var hbgProp = theme.buttonHoverBg ? 'background-color: var(--nextora-button-hover-bg);' : '';
 			var hcolProp = theme.buttonHoverColor ? 'color: var(--nextora-button-hover-color);' : '';
 			rules.push(
-				':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline) > .wp-block-button__link:hover) { ' + hbgProp + ' ' + hcolProp + ' }'
+				':root:root :where(.wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link:hover) { ' + hbgProp + ' ' + hcolProp + ' }'
 			);
 		}
 
@@ -357,7 +357,7 @@
 			var hdrBg = theme.headerButtonBg ? 'background-color: var(--nextora-header-button-bg);' : '';
 			var hdrCol = theme.headerButtonColor ? 'color: var(--nextora-header-button-color);' : '';
 			rules.push(
-				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline), .nextora-header-block__cta.nextora-header-block__cta--solid) { ' + hdrBg + ' ' + hdrCol + ' }'
+				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-header-block__cta--outline), .wp-block-nextora-header .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link, .nextora-header-block__cta.nextora-header-block__cta--solid) { ' + hdrBg + ' ' + hdrCol + ' }'
 			);
 		}
 
@@ -365,7 +365,7 @@
 			var hdrHbg = theme.headerButtonHoverBg ? 'background-color: var(--nextora-header-button-hover-bg);' : '';
 			var hdrHcol = theme.headerButtonHoverColor ? 'color: var(--nextora-header-button-hover-color);' : '';
 			rules.push(
-				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline):hover, .nextora-header-block__cta.nextora-header-block__cta--solid:hover) { ' + hdrHbg + ' ' + hdrHcol + ' }'
+				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-header-block__cta--outline):hover, .wp-block-nextora-header .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link:hover, .nextora-header-block__cta.nextora-header-block__cta--solid:hover) { ' + hdrHbg + ' ' + hdrHcol + ' }'
 			);
 		}
 

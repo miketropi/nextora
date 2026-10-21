@@ -1,8 +1,9 @@
 // @ts-nocheck
 import type { CSSProperties } from 'react';
-import { useState } from '@wordpress/element';
+import { useMemo, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
+	__experimentalBorderRadiusControl as BorderRadiusControl,
 	FontSizePicker,
 	InspectorControls,
 	PanelColorSettings,
@@ -295,6 +296,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 		quoteFontFamily = '',
 		imagePosition = 'left',
 		imageColumnRatio = 50,
+		imageBorderRadius,
 		showPagination = true,
 		showArrows = false,
 		contentBackgroundColor = '',
@@ -313,6 +315,27 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 		enableScrollAnimation = true,
 	} = attributes;
 
+	const normalizedImageBorderRadius = useMemo(() => {
+		if (!imageBorderRadius) {
+			return {};
+		}
+		if (typeof imageBorderRadius === 'string') {
+			const str = imageBorderRadius.trim();
+			return str
+				? {
+						topLeft: str,
+						topRight: str,
+						bottomLeft: str,
+						bottomRight: str,
+				  }
+				: {};
+		}
+		if (typeof imageBorderRadius === 'object') {
+			return imageBorderRadius;
+		}
+		return {};
+	}, [imageBorderRadius]);
+
 	const typographyVars = buildTypographyStyleVars({
 		headingFontSize,
 		quoteFontSize,
@@ -329,6 +352,7 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 		style: {
 			...buildSectionStyleVars({
 				imageColumnRatio,
+				imageBorderRadius,
 				contentBackgroundColor,
 				headingColor,
 				quoteColor,
@@ -431,6 +455,44 @@ export default function TestimonialsEdit({ attributes, setAttributes }: EditProp
 								min={40}
 								max={60}
 							/>
+							<div className="nextora-testimonials__radius-control">
+								<BorderRadiusControl
+									label={__('Radius image', 'nextora')}
+									values={normalizedImageBorderRadius}
+									onChange={(next: Record<string, string | undefined> | string | undefined) => {
+										if (!next) {
+											setAttributes({ imageBorderRadius: {} });
+											return;
+										}
+										if (typeof next === 'string') {
+											const val = next.trim();
+											setAttributes({
+												imageBorderRadius: val
+													? {
+															topLeft: val,
+															topRight: val,
+															bottomLeft: val,
+															bottomRight: val,
+													  }
+													: {},
+											});
+											return;
+										}
+										if (typeof next === 'object') {
+											const clean: Record<string, string> = {};
+											const isSet = (val: unknown): val is string =>
+												typeof val === 'string' && val.trim() !== '';
+
+											if (isSet(next.topLeft)) clean.topLeft = next.topLeft.trim();
+											if (isSet(next.topRight)) clean.topRight = next.topRight.trim();
+											if (isSet(next.bottomRight)) clean.bottomRight = next.bottomRight.trim();
+											if (isSet(next.bottomLeft)) clean.bottomLeft = next.bottomLeft.trim();
+
+											setAttributes({ imageBorderRadius: clean });
+										}
+									}}
+								/>
+							</div>
 						</>
 					)}
 				</PanelBody>

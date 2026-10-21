@@ -168,7 +168,7 @@
 .nextora-event__title a:hover,
 .nextora-event__item:hover .nextora-event__title a,
 .nextora-event__card:hover .nextora-event__title a {
-	color: var(--nextora-event-meta-icon-color, var(--wp--preset--color--primary, #7f4d3e));
+	color: var(--wp--preset--color--primary) !important;
 }
 
 .nextora-event__details {
@@ -209,6 +209,7 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	line-height: 1;
 	gap: 0.5rem;
 	text-decoration: none;
 	white-space: nowrap;
@@ -268,9 +269,18 @@
 
 .nextora-event__register-icon {
 	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 0;
 	width: 1.125rem;
 	height: 1.125rem;
 	flex-shrink: 0;
+}
+
+.nextora-event__register-label {
+	display: inline-flex;
+	align-items: center;
+	line-height: 1;
 }
 
 .nextora-event__register-icon svg {
@@ -726,7 +736,7 @@
 
 .nextora-event--template3 .nextora-event__template3-title a:hover,
 .nextora-event--template3 .nextora-event__template3-learn-more:hover {
-	color: var(--wp--preset--color--primary, #7f4d3e);
+	color: var(--wp--preset--color--primary) !important;
 }
 
 /* ========================================================================
@@ -830,7 +840,7 @@
 }
 
 .nextora-event--template3 .nextora-event__template3-item:hover .nextora-event__template3-title a {
-	color: var(--nextora-event-date-month-color, var(--wp--preset--color--primary, #7f4d3e));
+	color: var(--wp--preset--color--primary) !important;
 }
 
 .nextora-event--template3 .nextora-event__template3-description {
@@ -1328,6 +1338,7 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	line-height: 1;
 	gap: 0.5rem;
 	margin-top: auto;
 	align-self: flex-start;
@@ -1629,8 +1640,9 @@
 	transition: color 0.2s ease;
 }
 
-.nextora-event--template2 .nextora-event__template2-title a:hover {
-	color: var(--nextora-event-meta-icon-color, #2563eb);
+.nextora-event--template2 .nextora-event__template2-title a:hover,
+.nextora-event--template2 .nextora-event__template2-card:hover .nextora-event__template2-title a {
+	color: var(--wp--preset--color--primary) !important;
 }
 
 .nextora-event--template2 .nextora-event__template2-desc {

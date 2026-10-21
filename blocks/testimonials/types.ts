@@ -25,6 +25,7 @@ export interface TestimonialsAttributes {
 	quoteFontFamily: string;
 	imagePosition: TestimonialsImagePosition;
 	imageColumnRatio: number;
+	imageBorderRadius?: Record<string, string> | string;
 	showPagination: boolean;
 	showArrows: boolean;
 	contentBackgroundColor: string;

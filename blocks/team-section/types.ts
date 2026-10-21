@@ -40,6 +40,9 @@ export interface TeamSectionAttributes {
 	members: TeamMember[];
 	layoutMode: TeamLayoutMode;
 	gridColumns: number;
+	gridColumnsTablet?: number;
+	gridColumnsMobile?: number;
+	disableResponsiveCarousel?: boolean;
 	gridMinWidth: number;
 	gridColumnGap: number;
 	gridRowGap: number;

@@ -100,6 +100,10 @@
       "type": "number",
       "default": 50
     },
+    "imageBorderRadius": {
+      "type": "object",
+      "default": {}
+    },
     "showPagination": {
       "type": "boolean",
       "default": true

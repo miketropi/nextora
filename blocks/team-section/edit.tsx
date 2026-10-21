@@ -125,6 +125,9 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 	const {
 		layoutMode = 'carousel',
 		gridColumns = 4,
+		gridColumnsTablet = 2,
+		gridColumnsMobile = 1,
+		disableResponsiveCarousel = false,
 		gridColumnGap = 24,
 		gridRowGap = 24,
 		cardTemplate = 'default',
@@ -183,6 +186,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 			'nextora-team-section--editor',
 			`nextora-team-section--layout-${layoutMode}`,
 			`nextora-team-section--template-${cardTemplate}`,
+			disableResponsiveCarousel && layoutMode === 'grid' ? 'nextora-team-section--grid-no-carousel' : '',
 			sectionBgProps.className,
 			isDesktopFractional ? 'has-edge-fade-desktop' : '',
 			isTabletFractional ? 'has-edge-fade-tablet' : '',
@@ -193,6 +197,8 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		style: {
 			...buildSectionStyleVars({
 				gridColumns,
+				gridColumnsTablet,
+				gridColumnsMobile,
 				gridColumnGap,
 				gridRowGap,
 				photoAspectRatio: effectivePhotoAspectRatio,
@@ -430,6 +436,42 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 										min={1}
 										max={6}
 									/>
+									<ToggleControl
+										label={__('Keep grid on mobile', 'nextora')}
+										help={__(
+											'Keep the grid layout on tablet and mobile instead of switching to a carousel.',
+											'nextora',
+										)}
+										checked={disableResponsiveCarousel}
+										onChange={(v) =>
+											setAttributes({ disableResponsiveCarousel: v })
+										}
+									/>
+									{disableResponsiveCarousel ? (
+										<>
+											<p className="nextora-team-section__inspector-subheading">
+												{__('Responsive columns', 'nextora')}
+											</p>
+											<RangeControl
+												label={__('Grid columns (tablet)', 'nextora')}
+												value={gridColumnsTablet}
+												onChange={(v) =>
+													setAttributes({ gridColumnsTablet: v ?? 2 })
+												}
+												min={1}
+												max={4}
+											/>
+											<RangeControl
+												label={__('Grid columns (mobile)', 'nextora')}
+												value={gridColumnsMobile}
+												onChange={(v) =>
+													setAttributes({ gridColumnsMobile: v ?? 1 })
+												}
+												min={1}
+												max={2}
+											/>
+										</>
+									) : null}
 									<RangeControl
 										label={__('Column gap (px)', 'nextora')}
 										value={gridColumnGap}
@@ -447,124 +489,134 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 								</>
 							)}
 
-							<p className="nextora-team-section__inspector-subheading">
-								{layoutMode === 'grid'
-									? __('Carousel (tablet & mobile)', 'nextora')
-									: __('Carousel', 'nextora')}
-							</p>
+							{!(layoutMode === 'grid' && disableResponsiveCarousel) && (
+								<>
+									<p className="nextora-team-section__inspector-subheading">
+										{layoutMode === 'grid'
+											? __('Carousel (tablet & mobile)', 'nextora')
+											: __('Carousel', 'nextora')}
+									</p>
 
-							{layoutMode === 'carousel' && (
-								<RangeControl
-									label={__('Slides per view (desktop)', 'nextora')}
-									value={slidesPerView}
-									onChange={(v) =>
-										setAttributes({
-											slidesPerView: v !== undefined ? Math.round(v * 100) / 100 : 4,
-										})
-									}
-									min={1}
-									max={6}
-									step={0.1}
-								/>
+									{layoutMode === 'carousel' && (
+										<RangeControl
+											label={__('Slides per view (desktop)', 'nextora')}
+											value={slidesPerView}
+											onChange={(v) =>
+												setAttributes({
+													slidesPerView: v !== undefined ? Math.round(v * 100) / 100 : 4,
+												})
+											}
+											min={1}
+											max={6}
+											step={0.1}
+										/>
+									)}
+									<RangeControl
+										label={__('Slides per view (tablet)', 'nextora')}
+										value={slidesPerViewTablet}
+										onChange={(v) =>
+											setAttributes({
+												slidesPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 2.5,
+											})
+										}
+										min={1}
+										max={4}
+										step={0.1}
+									/>
+									<RangeControl
+										label={__('Slides per view (mobile)', 'nextora')}
+										help={__(
+											'Fractional values show a peek of the next card.',
+											'nextora',
+										)}
+										value={slidesPerViewMobile}
+										onChange={(v) =>
+											setAttributes({
+												slidesPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 1.2,
+											})
+										}
+										min={1}
+										max={3}
+										step={0.1}
+									/>
+									<RangeControl
+										label={__('Space between (px)', 'nextora')}
+										help={
+											layoutMode === 'grid'
+												? __('Spacing for tablet & mobile carousel only (desktop uses Column/Row gap).', 'nextora')
+												: undefined
+										}
+										value={spaceBetween}
+										onChange={(v) => setAttributes({ spaceBetween: v ?? 24 })}
+										min={0}
+										max={60}
+									/>
+								</>
 							)}
-							<RangeControl
-								label={__('Slides per view (tablet)', 'nextora')}
-								value={slidesPerViewTablet}
-								onChange={(v) =>
-									setAttributes({
-										slidesPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 2.5,
-									})
-								}
-								min={1}
-								max={4}
-								step={0.1}
-							/>
-							<RangeControl
-								label={__('Slides per view (mobile)', 'nextora')}
-								help={__(
-									'Fractional values show a peek of the next card.',
-									'nextora',
-								)}
-								value={slidesPerViewMobile}
-								onChange={(v) =>
-									setAttributes({
-										slidesPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 1.2,
-									})
-								}
-								min={1}
-								max={3}
-								step={0.1}
-							/>
-							<RangeControl
-								label={__('Space between (px)', 'nextora')}
-								help={
-									layoutMode === 'grid'
-										? __('Spacing for tablet & mobile carousel only (desktop uses Column/Row gap).', 'nextora')
-										: undefined
-								}
-								value={spaceBetween}
-								onChange={(v) => setAttributes({ spaceBetween: v ?? 24 })}
-								min={0}
-								max={60}
-							/>
 						</>
 					)}
 
-					<RangeControl
-						label={__('Transition speed (ms)', 'nextora')}
-						value={speed}
-						onChange={(v) => setAttributes({ speed: v ?? 500 })}
-						min={100}
-						max={2000}
-						step={100}
-					/>
-					<ToggleControl
-						label={__('Loop', 'nextora')}
-						checked={loop}
-						onChange={(v) => setAttributes({ loop: v })}
-					/>
-					{cardTemplate !== 'template-02' && (
+					{!(layoutMode === 'grid' && disableResponsiveCarousel) && (
 						<>
-							<ToggleControl
-								label={__('Free mode', 'nextora')}
-								checked={freeMode}
-								onChange={(v) => setAttributes({ freeMode: v })}
+							<RangeControl
+								label={__('Transition speed (ms)', 'nextora')}
+								value={speed}
+								onChange={(v) => setAttributes({ speed: v ?? 500 })}
+								min={100}
+								max={2000}
+								step={100}
 							/>
 							<ToggleControl
-								label={__('Grab cursor', 'nextora')}
-								checked={grabCursor}
-								onChange={(v) => setAttributes({ grabCursor: v })}
+								label={__('Loop', 'nextora')}
+								checked={loop}
+								onChange={(v) => setAttributes({ loop: v })}
 							/>
+							{cardTemplate !== 'template-02' && (
+								<>
+									<ToggleControl
+										label={__('Free mode', 'nextora')}
+										checked={freeMode}
+										onChange={(v) => setAttributes({ freeMode: v })}
+									/>
+									<ToggleControl
+										label={__('Grab cursor', 'nextora')}
+										checked={grabCursor}
+										onChange={(v) => setAttributes({ grabCursor: v })}
+									/>
+								</>
+							)}
 						</>
 					)}
 				</PanelBody>
 
-				<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Enable autoplay', 'nextora')}
-						checked={autoplay}
-						onChange={(v) => setAttributes({ autoplay: v })}
-					/>
-					{autoplay && (
-						<>
-							<RangeControl
-								label={__('Delay (ms)', 'nextora')}
-								value={autoplayDelay}
-								onChange={(v) => setAttributes({ autoplayDelay: v ?? 4000 })}
-								min={1000}
-								max={10000}
-								step={500}
-							/>
-							<ToggleControl
-								label={__('Pause on hover', 'nextora')}
-								checked={pauseOnHover}
-								onChange={(v) => setAttributes({ pauseOnHover: v })}
-							/>
-						</>
-					)}
-				</PanelBody>
+				{!(layoutMode === 'grid' && disableResponsiveCarousel) && (
+					<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
+						<ToggleControl
+							label={__('Enable autoplay', 'nextora')}
+							checked={autoplay}
+							onChange={(v) => setAttributes({ autoplay: v })}
+						/>
+						{autoplay && (
+							<>
+								<RangeControl
+									label={__('Delay (ms)', 'nextora')}
+									value={autoplayDelay}
+									onChange={(v) => setAttributes({ autoplayDelay: v ?? 4000 })}
+									min={1000}
+									max={10000}
+									step={500}
+								/>
+								<ToggleControl
+									label={__('Pause on hover', 'nextora')}
+									checked={pauseOnHover}
+									onChange={(v) => setAttributes({ pauseOnHover: v })}
+								/>
+							</>
+						)}
+					</PanelBody>
+				)}
 
-				{cardTemplate !== 'template-02' && (
+				{cardTemplate !== 'template-02' && !(layoutMode === 'grid' && disableResponsiveCarousel) && (
 					<PanelBody title={__('Pagination', 'nextora')} initialOpen={false}>
 						<ToggleControl
 							label={__('Show pagination', 'nextora')}
@@ -587,13 +639,15 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 					</PanelBody>
 				)}
 
-				<PanelBody title={__('Navigation', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Show arrows', 'nextora')}
-						checked={showArrows}
-						onChange={(v) => setAttributes({ showArrows: v })}
-					/>
-				</PanelBody>
+				{(cardTemplate === 'template-02' || !(layoutMode === 'grid' && disableResponsiveCarousel)) && (
+					<PanelBody title={__('Navigation', 'nextora')} initialOpen={false}>
+						<ToggleControl
+							label={__('Show arrows', 'nextora')}
+							checked={showArrows}
+							onChange={(v) => setAttributes({ showArrows: v })}
+						/>
+					</PanelBody>
+				)}
 
 				<PanelColorSettings
 					enableAlpha

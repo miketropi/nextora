@@ -1147,7 +1147,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 																	'calendar-days'
 																}
 															/>
-															{registerLabel}
+															<span className="nextora-event__register-label">{registerLabel}</span>
 														</button>
 													) : null}
 												</div>
@@ -1301,7 +1301,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 
 											{showRegisterButton ? (
 												<span className={['nextora-event__register', 'nextora-event__register--static', 'wp-element-button', regBgProps.className, regTextProps.className].filter(Boolean).join(' ')} style={regBtnStyle}>
-													{registerLabel}
+													<span className="nextora-event__register-label">{registerLabel}</span>
 													<span
 														className="nextora-event__register-icon"
 														aria-hidden="true"

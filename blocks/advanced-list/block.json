@@ -43,17 +43,23 @@
         {
           "id": "1",
           "text": "Family-style care — never institutional dormitories",
-          "iconName": "check"
+          "iconName": "check",
+          "linkUrl": "",
+          "linkTarget": "_self"
         },
         {
           "id": "2",
           "text": "Full schooling, healthcare and counselling for every child",
-          "iconName": "check"
+          "iconName": "check",
+          "linkUrl": "",
+          "linkTarget": "_self"
         },
         {
           "id": "3",
           "text": "Transparent reporting — you see exactly where your gift goes",
-          "iconName": "check"
+          "iconName": "check",
+          "linkUrl": "",
+          "linkTarget": "_self"
         }
       ]
     },

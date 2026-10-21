@@ -133,6 +133,21 @@
 	display: none;
 }
 
+.nextora-testimonials__radius-control .components-border-radius-control__header legend.components-base-control__label,
+.nextora-testimonials__radius-control .components-border-radius-control__header .components-base-control__label {
+	font-size: 0 !important;
+}
+
+.nextora-testimonials__radius-control .components-border-radius-control__header legend.components-base-control__label::after,
+.nextora-testimonials__radius-control .components-border-radius-control__header .components-base-control__label::after {
+	content: 'Radius image';
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 16px;
+	text-transform: uppercase;
+	display: inline-block;
+}
+
 .nextora-testimonials__item-modal .components-modal__frame {
 	max-width: 720px;
 	width: calc(100vw - 2rem);

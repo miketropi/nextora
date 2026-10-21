@@ -157,6 +157,20 @@
 	margin: 0 !important;
 }
 
+@media (max-width: 1023.98px) {
+	.nextora-team-section--layout-grid .nextora-team-section__carousel-root--grid-active .swiper-wrapper {
+		grid-template-columns: repeat(var(--nextora-team-grid-columns-tablet, 2), 1fr);
+	}
+}
+
+@media (max-width: 639.98px) {
+	.nextora-team-section--layout-grid .nextora-team-section__carousel-root--grid-active .swiper-wrapper {
+		grid-template-columns: repeat(var(--nextora-team-grid-columns-mobile, 1), 1fr);
+	}
+}
+
+.nextora-team-section--grid-no-carousel .nextora-team-section__pagination,
+.nextora-team-section--grid-no-carousel .nextora-team-section__arrow,
 .nextora-team-section--grid-active .nextora-team-section__pagination,
 .nextora-team-section--grid-active .nextora-team-section__arrow,
 .nextora-team-section__carousel-root--grid-active .nextora-team-section__pagination,

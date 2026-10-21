@@ -330,6 +330,7 @@
 }
 
 @media (max-width: 1024.98px) {
+
 	.nextora-header-block__logo--image,
 	.nextora-header-block__logo:has(.nextora-header-block__logo-img) {
 		max-width: var(--nextora-header-logo-max-width-mobile, var(--nextora-header-logo-max-width, 150px)) !important;
@@ -1122,9 +1123,9 @@
 
 .nextora-header-block__cart--woo .wc-block-mini-cart__badge {
 	position: absolute;
-	top: -0.3rem;
-	right: -0.45rem;
-	inset-inline-end: -0.45rem;
+	top: -0.65rem;
+	right: -0.55rem;
+	inset-inline-end: -0.55rem;
 	left: auto;
 	bottom: auto;
 	margin: 0;
@@ -1181,9 +1182,9 @@ body>.wc-block-components-drawer__screen-overlay {
 
 .nextora-header-block__cart-badge {
 	position: absolute;
-	top: -0.15rem;
-	right: -0.35rem;
-	inset-inline-end: -0.35rem;
+	top: -0.65rem;
+	right: -0.55rem;
+	inset-inline-end: -0.55rem;
 	left: auto;
 	bottom: auto;
 	margin: 0;
@@ -1318,22 +1319,65 @@ button.nextora-header-block__cta {
 	cursor: pointer;
 }
 
-.nextora-header-block__cta::after,
-.nextora-header-block__cta.is-loading::after,
-.nextora-header-block__cta.alonepro-btn-loading::after,
-.nextora-header-block [data-campaign-id].is-loading::after,
-.nextora-header-block [data-campaign-id].alonepro-btn-loading::after {
-	display: none !important;
-	content: none !important;
-}
-
 .nextora-header-block__cta.is-loading,
 .nextora-header-block__cta.alonepro-btn-loading,
 .nextora-header-block [data-campaign-id].is-loading,
-.nextora-header-block [data-campaign-id].alonepro-btn-loading {
-	opacity: 1 !important;
-	cursor: pointer !important;
+.nextora-header-block [data-campaign-id].alonepro-btn-loading,
+.nextora-header-sticky-cta__btn.is-loading,
+.nextora-header-sticky-cta__btn.alonepro-btn-loading {
+	position: relative !important;
+	pointer-events: none !important;
+	cursor: wait !important;
 }
+
+.nextora-header-block__cta.is-loading > *,
+.nextora-header-block__cta.alonepro-btn-loading > *,
+.nextora-header-block [data-campaign-id].is-loading > *,
+.nextora-header-block [data-campaign-id].alonepro-btn-loading > *,
+.nextora-header-sticky-cta__btn.is-loading > *,
+.nextora-header-sticky-cta__btn.alonepro-btn-loading > * {
+	opacity: 0 !important;
+	visibility: hidden !important;
+}
+
+.nextora-header-block__cta.is-loading::after,
+.nextora-header-block__cta.alonepro-btn-loading::after,
+.nextora-header-block [data-campaign-id].is-loading::after,
+.nextora-header-block [data-campaign-id].alonepro-btn-loading::after,
+.nextora-header-sticky-cta__btn.is-loading::after,
+.nextora-header-sticky-cta__btn.alonepro-btn-loading::after {
+	content: '' !important;
+	position: absolute !important;
+	inset: 0 !important;
+	top: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	bottom: 0 !important;
+	margin: auto !important;
+	width: 18px !important;
+	height: 18px !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	border: 2px solid currentColor !important;
+	border-right-color: transparent !important;
+	border-radius: 50% !important;
+	animation: alonepro-btn-spin 0.65s linear infinite !important;
+	pointer-events: none !important;
+	z-index: 5 !important;
+	display: block !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+
+@keyframes alonepro-btn-spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
 
 /* Match spotlight trigger hit target (modal-markup.php uses size-10) */
 .nextora-header-block__menu-toggle {
@@ -1384,9 +1428,7 @@ html.nextora-header-follow-us-open {
 @media (max-width: 1024.98px) {
 
 	.nextora-header-block__utilities .nextora-header-block__follow-us,
-	.nextora-header-block__follow-us:not(.nextora-header-block__follow-us--drawer),
-	.nextora-header-block__utilities .nextora-header-block__cta-wrap,
-	.nextora-header-block__cta-wrap {
+	.nextora-header-block__follow-us:not(.nextora-header-block__follow-us--drawer) {
 		display: none !important;
 	}
 
@@ -1424,9 +1466,9 @@ html.nextora-header-follow-us-open {
 
 	.nextora-header-block__cart--woo .wc-block-mini-cart__badge {
 		position: absolute;
-		top: -0.28rem;
-		right: -0.35rem;
-		inset-inline-end: -0.35rem;
+		top: -0.6rem;
+		right: -0.5rem;
+		inset-inline-end: -0.5rem;
 		min-width: 16px;
 		height: 16px;
 		padding: 0 3px;
@@ -1446,6 +1488,15 @@ html.nextora-header-follow-us-open {
 
 	.nextora-header-block__utilities--hide-cart-mobile .nextora-header-block__cart {
 		display: none !important;
+	}
+
+	.nextora-header-block .nextora-header-block__cta.wp-element-button,
+	.nextora-header-block .nextora-header-block__cta,
+	.nextora-header-block__cta {
+		min-height: calc(clamp(1.85rem, 2.15rem * var(--nextora-header-nav-scale, 1), 2.15rem));
+		padding-block: calc(clamp(0.35rem, 0.45rem * var(--nextora-header-nav-scale, 1), 0.45rem));
+		padding-inline: calc(clamp(0.85rem, 1.25rem * var(--nextora-header-nav-scale, 1), 1.25rem));
+		line-height: 1.25;
 	}
 }
 
@@ -1494,5 +1545,85 @@ html.nextora-header-follow-us-open {
 	.nextora-primary-nav-portal__mount .wp-block-group.mega-menu-blogs {
 		padding-right: var(--wp--preset--spacing--10) !important;
 		padding-left: var(--wp--preset--spacing--10) !important;
+	}
+}
+
+/* ==========================================================================
+   Mobile Sticky Bottom CTA Bar (<= 767px)
+   ========================================================================== */
+
+.nextora-header-sticky-cta {
+	display: none;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	z-index: 9999;
+	background-color: var(--nextora-header-button-bg, var(--nextora-button-bg, var(--wp--preset--color--primary, #35c6d5))) !important;
+	box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.15);
+}
+
+.nextora-header-sticky-cta__btn {
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	width: 100% !important;
+	min-height: 48px;
+	padding: 12px 20px;
+	padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+	background-color: var(--nextora-header-button-bg, var(--nextora-button-bg, var(--wp--preset--color--primary, #35c6d5))) !important;
+	color: var(--nextora-header-button-color, var(--nextora-button-color, var(--wp--preset--color--base, #ffffff))) !important;
+	font-family: var(--nextora-font-button, inherit);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: var(--nextora-button-font-weight, 700);
+	line-height: 1.25;
+	text-align: center;
+	text-transform: var(--nextora-button-text-transform, none);
+	letter-spacing: normal;
+	text-decoration: none !important;
+	border: none !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	cursor: pointer;
+	box-sizing: border-box;
+	transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.nextora-header-sticky-cta__btn:hover,
+.nextora-header-sticky-cta__btn:focus-visible {
+	background-color: var(--nextora-header-button-hover-bg, var(--nextora-button-hover-bg, color-mix(in srgb, var(--nextora-button-bg, var(--wp--preset--color--primary, #35c6d5)) 85%, #000))) !important;
+	color: var(--nextora-header-button-hover-color, var(--nextora-button-hover-color, var(--wp--preset--color--base, #ffffff))) !important;
+	outline: none;
+}
+
+.nextora-header-sticky-cta__btn:active {
+	background-color: var(--nextora-header-button-hover-bg, var(--nextora-button-hover-bg, color-mix(in srgb, var(--nextora-button-bg, var(--wp--preset--color--primary, #35c6d5)) 75%, #000))) !important;
+}
+
+.nextora-header-block__cta-drawer,
+.nextora-primary-nav-portal__mount .nextora-header-block__cta-drawer {
+	display: none !important;
+}
+
+@media (max-width: 767.98px) {
+	.nextora-header-block__utilities .nextora-header-block__cta-wrap,
+	.nextora-header-block__cta-wrap {
+		display: none !important;
+	}
+
+	.nextora-header-sticky-cta {
+		display: flex !important;
+	}
+
+	body:has(.nextora-header-sticky-cta),
+	body.has-sticky-donation-bar {
+		padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px)) !important;
+	}
+}
+
+@media (min-width: 768px) {
+	.nextora-header-sticky-cta {
+		display: none !important;
 	}
 }

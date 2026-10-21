@@ -2,6 +2,8 @@ export interface AdvancedListItem {
 	id: string;
 	text: string;
 	iconName: string;
+	linkUrl?: string;
+	linkTarget?: string;
 }
 
 export interface AdvancedListAttributes extends Record<string, unknown> {

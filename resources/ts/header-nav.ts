@@ -160,6 +160,7 @@ function getOrCreatePortal(btn: HTMLButtonElement): PortalElements | null {
 		panel.setAttribute("role", "dialog");
 		panel.setAttribute("aria-modal", "true");
 		panel.setAttribute("aria-labelledby", titleId);
+		panel.tabIndex = -1;
 
 		const title = document.createElement("h2");
 		title.id = titleId;
@@ -474,7 +475,12 @@ function revealPortalElements(): void {
 }
 
 function focusFirstNavLink(panel: HTMLElement): void {
-	panel.querySelector<HTMLElement>("a[href]")?.focus();
+	// Touch / mobile devices should not auto-focus links inside drawer (prevents blue outline / active highlight on open)
+	if (typeof window !== "undefined" && window.matchMedia("(hover: none), (pointer: coarse)").matches) {
+		panel.focus({ preventScroll: true });
+		return;
+	}
+	panel.querySelector<HTMLElement>("a[href]")?.focus({ preventScroll: true });
 }
 
 function bindPortalDismissOnce(

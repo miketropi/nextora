@@ -261,9 +261,11 @@ $wrapper_attributes = get_block_wrapper_attributes(
 	<ul class="nextora-advanced-list__items">
 		<?php foreach ( $items as $item ) : ?>
 			<?php
-			$item_id   = $item['id'] ?? '';
-			$item_text = wp_kses_post( $item['text'] ?? '' );
-			$icon_name = sanitize_text_field( $item['iconName'] ?? 'check' );
+			$item_id     = $item['id'] ?? '';
+			$item_text   = rtrim( wp_kses_post( $item['text'] ?? '' ) );
+			$icon_name   = sanitize_text_field( $item['iconName'] ?? 'check' );
+			$link_url    = isset( $item['linkUrl'] ) ? trim( (string) $item['linkUrl'] ) : '';
+			$link_target = ( isset( $item['linkTarget'] ) && '_blank' === $item['linkTarget'] ) ? '_blank' : '_self';
 
 			if ( ! $item_text ) {
 				continue;
@@ -271,12 +273,33 @@ $wrapper_attributes = get_block_wrapper_attributes(
 
 			// Get icon SVG from lucide
 			$icon_svg = nextora_get_lucide_svg( $icon_name, $icon_size, 'currentColor', $stroke_width, '' );
+
+			$has_link   = '' !== $link_url;
+			$item_class = 'nextora-advanced-list__item' . ( $has_link ? ' has-link' : '' );
+
+			$link_attrs = '';
+			if ( $has_link ) {
+				$allowed_protocols = array_merge( wp_allowed_protocols(), array( 'tel', 'sms' ) );
+				$escaped_link_url  = esc_url( $link_url, $allowed_protocols );
+				$link_attrs        = ' href="' . $escaped_link_url . '" class="nextora-advanced-list__link"';
+				if ( '_blank' === $link_target ) {
+					$link_attrs .= ' target="_blank" rel="noopener noreferrer"';
+				}
+			}
 			?>
-			<li class="nextora-advanced-list__item" data-item-id="<?php echo esc_attr( $item_id ); ?>">
+			<li class="<?php echo esc_attr( $item_class ); ?>" data-item-id="<?php echo esc_attr( $item_id ); ?>">
+				<?php if ( $has_link ) : ?>
+					<a<?php echo $link_attrs; ?>>
+				<?php endif; ?>
+
 				<span class="<?php echo esc_attr( implode( ' ', $icon_classes ) ); ?>"<?php echo $icon_style_attr; ?> aria-hidden="true">
 					<?php echo $icon_svg; ?>
 				</span>
 				<span class="nextora-advanced-list__text"><?php echo $item_text; ?></span>
+
+				<?php if ( $has_link ) : ?>
+					</a>
+				<?php endif; ?>
 			</li>
 		<?php endforeach; ?>
 	</ul>

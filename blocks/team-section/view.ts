@@ -107,6 +107,9 @@ function shouldUseSwiper(root: HTMLElement): boolean {
 	if (getLayoutMode(root) === 'carousel') {
 		return true;
 	}
+	if (root.getAttribute('data-disable-responsive-carousel') === '1') {
+		return false;
+	}
 	return window.innerWidth < getGridMinWidth(root);
 }
 
@@ -265,6 +268,19 @@ function clearSwiperInlineStyles(root: HTMLElement): void {
 	}
 }
 
+function applyResponsiveGridColumns(wrapper: HTMLElement): void {
+	const w = window.innerWidth;
+	let cols: string;
+	if (w >= 1024) {
+		cols = wrapper.getAttribute('data-grid-columns') || '4';
+	} else if (w >= 640) {
+		cols = wrapper.getAttribute('data-grid-columns-tablet') || '2';
+	} else {
+		cols = wrapper.getAttribute('data-grid-columns-mobile') || '1';
+	}
+	wrapper.style.setProperty('--nextora-team-grid-columns', cols);
+}
+
 function setGridMode(root: HTMLElement, active: boolean): void {
 	if (active) {
 		clearSwiperInlineStyles(root);
@@ -273,6 +289,9 @@ function setGridMode(root: HTMLElement, active: boolean): void {
 	const section = root.closest<HTMLElement>('.nextora-team-section');
 	if (section) {
 		section.classList.toggle('nextora-team-section--grid-active', active);
+	}
+	if (active && root.getAttribute('data-disable-responsive-carousel') === '1') {
+		applyResponsiveGridColumns(root);
 	}
 }
 
@@ -449,6 +468,9 @@ function initSwiperIn(container: Element | Document): void {
 		const mq = window.matchMedia(`(min-width: ${getGridMinWidth(root)}px)`);
 		const onChange = (): void => {
 			ensureCorrectLayout(root);
+			if (root.getAttribute('data-disable-responsive-carousel') === '1') {
+				applyResponsiveGridColumns(root);
+			}
 			ScrollTrigger.refresh();
 		};
 
@@ -458,6 +480,23 @@ function initSwiperIn(container: Element | Document): void {
 			mq.addListener(onChange);
 		}
 	});
+
+	if (roots.length > 0 && !(window as unknown as { _nextoraTeamResizeInited?: boolean })._nextoraTeamResizeInited) {
+		(window as unknown as { _nextoraTeamResizeInited?: boolean })._nextoraTeamResizeInited = true;
+		let resizeTimer = 0;
+		window.addEventListener('resize', () => {
+			window.clearTimeout(resizeTimer);
+			resizeTimer = window.setTimeout(() => {
+				document.querySelectorAll<HTMLElement>('.nextora-team-section__carousel-root').forEach((root) => {
+					ensureCorrectLayout(root);
+					if (root.getAttribute('data-disable-responsive-carousel') === '1') {
+						applyResponsiveGridColumns(root);
+					}
+				});
+				ScrollTrigger.refresh();
+			}, 150);
+		});
+	}
 }
 
 function initTeamSectionTemplate02(container: Element | Document = document): void {
