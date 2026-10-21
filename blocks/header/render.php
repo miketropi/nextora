@@ -381,8 +381,6 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			// -- utility hide rules -----------------------------------------
 			. '  .nextora-header-block__utilities .nextora-header-block__follow-us,' . "\n"
 			. '  .nextora-header-block__follow-us:not(.nextora-header-block__follow-us--drawer),' . "\n"
-			. '  .nextora-header-block__utilities .nextora-header-block__cta-wrap,' . "\n"
-			. '  .nextora-header-block__cta-wrap{display:none !important;}' . "\n"
 			. '  .nextora-header-block__utilities--hide-search-mobile .nextora-header-block__search{display:none !important;}' . "\n"
 			. '  .nextora-header-block__utilities--hide-cart-mobile .nextora-header-block__cart{display:none !important;}' . "\n"
 
@@ -462,14 +460,24 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			. '    flex-direction:column;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;' . "\n"
 			. '    width:100%;gap:0;padding:0;margin:0;list-style:none;' . "\n"
 			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li{' . "\n"
+			. '    display:flex !important;flex-wrap:wrap;align-items:center;gap:0 var(--wp--preset--spacing--05,0.5rem);width:100%;' . "\n"
+			. '  }' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li>a{' . "\n"
-			. '    padding:var(--wp--preset--spacing--10,1rem) 0;font-size:var(--nextora-header-menu-item-font-size,var(--wp--preset--font-size--base,1rem));' . "\n"
+			. '    flex:1 1 auto;min-width:0;border-bottom:none;' . "\n"
+			. '    padding:var(--wp--preset--spacing--10,1rem) 0.15rem !important;font-size:var(--nextora-header-menu-item-font-size,var(--wp--preset--font-size--base,1rem));' . "\n"
 			. '    font-weight:500;border-radius:0;background:transparent;box-shadow:none;' . "\n"
 			. '    transition:background-color var(--nextora-nav-t,0.18s ease),color var(--nextora-nav-t,0.18s ease);color:inherit;' . "\n"
 			. '  }' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li>a:hover,' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li>a:focus-visible{' . "\n"
-			. '    color:var(--wp--preset--color--primary);background-color:transparent;' . "\n"
+			. '    color:var(--wp--preset--color--primary);background-color:transparent;outline:none;outline-offset:0;' . "\n"
+			. '  }' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu a:focus,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu a:focus-visible,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .sub-menu a:focus,' . "\n"
+			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .sub-menu a:focus-visible{' . "\n"
+			. '    outline:none !important;outline-offset:0 !important;box-shadow:none !important;' . "\n"
 			. '  }' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.menu-item-has-children{' . "\n"
 			. '    display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--wp--preset--spacing--05,0.5rem);' . "\n"
@@ -527,7 +535,7 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			. '  }' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:hover,' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:focus-visible{' . "\n"
-			. '    color:var(--wp--preset--color--primary);background-color:transparent;' . "\n"
+			. '    color:var(--wp--preset--color--primary);background-color:transparent;outline:none;outline-offset:0;' . "\n"
 			. '  }' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-item>a,' . "\n"
 			. '  .nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-ancestor>a{' . "\n"
@@ -704,8 +712,76 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			. '  .nextora-primary-nav-portal__panel .nextora-counters__grid,' . "\n"
 			. '  .nextora-primary-nav-portal__mount .nextora-counters__grid{grid-template-columns:1fr !important;width:100% !important;}' . "\n"
 
+			// -- Mobile Sticky Bottom CTA (<= 767px) & Top Header CTA Hide --
+			. '@media (max-width: 767.98px) {' . "\n"
+			. '  .nextora-header-block__utilities .nextora-header-block__cta-wrap,' . "\n"
+			. '  .nextora-header-block__cta-wrap{display:none !important;}' . "\n"
+			. '  .nextora-header-sticky-cta{display:flex !important;}' . "\n"
+			. '  body:has(.nextora-header-sticky-cta),body.has-sticky-donation-bar{' . "\n"
+			. '    padding-bottom:calc(50px + env(safe-area-inset-bottom,0px)) !important;' . "\n"
+			. '  }' . "\n"
+			. '}' . "\n"
+			. '@media (min-width: 768px) {' . "\n"
+			. '  .nextora-header-sticky-cta{display:none !important;}' . "\n"
+			. '}' . "\n"
 			. '}' . "\n"
 			. '</style>' . "\n";
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_render_sticky_bottom_cta' ) ) {
+	/**
+	 * Render fixed bottom donation CTA bar on mobile screens (<= 767px).
+	 *
+	 * @param array<string, mixed> $atts Header block attributes.
+	 *
+	 * @return string HTML markup for the sticky bottom bar.
+	 */
+	function nextora_header_block_render_sticky_bottom_cta( array $atts ): string {
+		if ( empty( $atts['showCtaButton'] ) ) {
+			return '';
+		}
+
+		$cta_text        = ! empty( $atts['ctaButtonText'] ) ? $atts['ctaButtonText'] : __( 'Donation Now', 'nextora' );
+		$sticky_text     = $cta_text;
+		$cta_url         = ! empty( $atts['ctaButtonUrl'] ) ? $atts['ctaButtonUrl'] : '#';
+		$cta_new         = ! empty( $atts['ctaButtonNewTab'] );
+		$enable_donation = ! empty( $atts['enableDonationPopup'] );
+		$donation_cid    = isset( $atts['donationCampaignId'] ) ? (int) $atts['donationCampaignId'] : 0;
+
+		if ( is_singular( 'campaign' ) ) {
+			$current_id = get_the_ID();
+			if ( $current_id > 0 ) {
+				$donation_cid = (int) $current_id;
+			}
+		}
+
+		$campaign_title = $donation_cid > 0 ? get_the_title( $donation_cid ) : '';
+
+		ob_start();
+		?>
+		<aside class="nextora-header-sticky-cta" id="nextora-header-sticky-cta" aria-label="<?php esc_attr_e( 'Donation Sticky Bar', 'nextora' ); ?>">
+			<?php if ( $enable_donation && $donation_cid > 0 ) : ?>
+				<a
+					href="#"
+					role="button"
+					class="nextora-header-sticky-cta__btn"
+					data-campaign-id="<?php echo esc_attr( (string) $donation_cid ); ?>"
+					data-campaign-title="<?php echo esc_attr( $campaign_title ); ?>"
+					onclick="event.preventDefault(); if(window.aloneproOpenDonationModal){ window.aloneproOpenDonationModal(this); }else if(window.giftflow && window.giftflow.donationButton_Handle){ window.giftflow.donationButton_Handle(this); }">
+					<span class="nextora-header-sticky-cta__text"><?php echo esc_html( $sticky_text ); ?></span>
+				</a>
+			<?php else : ?>
+				<a
+					href="<?php echo esc_url( $cta_url ); ?>"
+					class="nextora-header-sticky-cta__btn"
+					<?php echo $cta_new ? 'target="_blank" rel="noopener noreferrer"' : ''; ?>>
+					<span class="nextora-header-sticky-cta__text"><?php echo esc_html( $sticky_text ); ?></span>
+				</a>
+			<?php endif; ?>
+		</aside>
+		<?php
+		return (string) ob_get_clean();
 	}
 }
 
@@ -1978,3 +2054,32 @@ if ( '' !== $breakpoint_css ) {
 	echo $breakpoint_css;
 }
 do_action( 'nextora_header_block_after', $attributes );
+
+if ( ! is_admin() && ! empty( $attributes['showCtaButton'] ) ) {
+	add_filter(
+		'body_class',
+		static function ( array $classes ): array {
+			$classes[] = 'has-sticky-donation-bar';
+			return $classes;
+		},
+	);
+
+	if ( did_action( 'wp_footer' ) ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in render helper.
+		echo nextora_header_block_render_sticky_bottom_cta( $attributes );
+	} else {
+		add_action(
+			'wp_footer',
+			static function () use ( $attributes ): void {
+				static $rendered = false;
+				if ( $rendered ) {
+					return;
+				}
+				$rendered = true;
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in render helper.
+				echo nextora_header_block_render_sticky_bottom_cta( $attributes );
+			},
+			20,
+		);
+	}
+}

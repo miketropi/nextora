@@ -42,7 +42,7 @@ body:not(.page-template-page-full-width):not(.page-template-full-width):not([cla
 		list-style-type: decimal;
 	}
 
-	& :where(li) {
+	& :where(li:not(.wc-block-grid__product):not(.product):not(.wc-block-product)) {
 		margin-block: 0.4em;
 	}
 

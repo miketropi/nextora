@@ -9,10 +9,10 @@ import {
 } from '@wordpress/block-editor';
 import {
   Button,
-  Modal,
   PanelBody,
   RangeControl,
   SelectControl,
+  TextControl,
   TextareaControl,
   ToggleControl,
 } from '@wordpress/components';
@@ -29,7 +29,7 @@ import { getGutenbergColorProps } from './color-utils';
 import AdvancedListEditorIcon from './editor-icon';
 import type { AdvancedListAttributes, AdvancedListItem } from './types';
 
-const LUCIDE_ACTION_ICON_SIZE = 18;
+const LUCIDE_ACTION_ICON_SIZE = 16;
 const LUCIDE_ACTION_STROKE_WIDTH = 2;
 
 function LucideActionIcon({ name }: { name: string }): ReactElement | null {
@@ -84,8 +84,8 @@ function LucideActionIcon({ name }: { name: string }): ReactElement | null {
 }
 
 interface EditProps {
-	attributes: AdvancedListAttributes;
-	setAttributes: (attrs: Partial<AdvancedListAttributes>) => void;
+  attributes: AdvancedListAttributes;
+  setAttributes: (attrs: Partial<AdvancedListAttributes>) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -100,87 +100,11 @@ function normalizeItems(items: unknown): AdvancedListItem[] {
   if (!Array.isArray(items)) return [];
   return items.map((item, index) => ({
     id: typeof item?.id === 'string' ? item.id : `${index}`,
-    text: typeof item?.text === 'string' ? item.text : '',
+    text: typeof item?.text === 'string' ? item.text.replace(/\r?\n+$/, '') : '',
     iconName: typeof item?.iconName === 'string' ? item.iconName : 'check',
+    linkUrl: typeof item?.linkUrl === 'string' ? item.linkUrl : '',
+    linkTarget: item?.linkTarget === '_blank' ? '_blank' : '_self',
   }));
-}
-
-// ---------------------------------------------------------------------------
-// Item Modal
-// ---------------------------------------------------------------------------
-
-interface ItemModalProps {
-  item: AdvancedListItem;
-  onSave: (item: AdvancedListItem) => void;
-  onClose: () => void;
-}
-
-function ItemModal({ item, onSave, onClose }: ItemModalProps) {
-  const [editText, setEditText] = useState(item.text);
-  const [editIconName, setEditIconName] = useState(item.iconName);
-  const [pickerOpen, setPickerOpen] = useState(false);
-
-  const handleSave = () => {
-    onSave({
-      ...item,
-      text: editText,
-      iconName: editIconName,
-    });
-    onClose();
-  };
-
-  return (
-    <Modal
-      title={__('Edit list item', 'nextora')}
-      onRequestClose={onClose}
-      className="nextora-advanced-list-modal"
-    >
-      <div className="nextora-advanced-list-modal__content">
-        <div className="nextora-advanced-list-modal__field">
-          <label className="components-base-control__label">
-            {__('Icon', 'nextora')}
-          </label>
-          <div className="nextora-advanced-list-modal__icon-preview">
-            <div className="nextora-advanced-list__icon">
-              <AdvancedListEditorIcon iconName={editIconName} iconSize={24} strokeWidth={2} />
-            </div>
-          </div>
-          <Button variant="secondary" onClick={() => setPickerOpen(true)}>
-            {__('Choose icon', 'nextora')}
-          </Button>
-          <p className="nextora-advanced-list-modal__icon-name">
-            <code>{editIconName}</code>
-          </p>
-          {pickerOpen && (
-            <IconPicker
-              currentIcon={editIconName}
-              onSelect={(name) => {
-                setEditIconName(name);
-                setPickerOpen(false);
-              }}
-              onClose={() => setPickerOpen(false)}
-            />
-          )}
-        </div>
-
-        <TextareaControl
-          label={__('Text', 'nextora')}
-          value={editText}
-          onChange={(value) => setEditText(value)}
-          rows={4}
-        />
-
-        <div className="nextora-advanced-list-modal__actions">
-          <Button variant="primary" onClick={handleSave}>
-            {__('Save', 'nextora')}
-          </Button>
-          <Button variant="secondary" onClick={onClose}>
-            {__('Cancel', 'nextora')}
-          </Button>
-        </div>
-      </div>
-    </Modal>
-  );
 }
 
 // ---------------------------------------------------------------------------
@@ -188,7 +112,9 @@ function ItemModal({ item, onSave, onClose }: ItemModalProps) {
 // ---------------------------------------------------------------------------
 
 export default function AdvancedListEdit({ attributes, setAttributes }: EditProps) {
-  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
+  const [pickingIconForId, setPickingIconForId] = useState<string | null>(null);
+
   const items = normalizeItems(attributes.items);
 
   const colorPalette = useThemeColorPalette();
@@ -247,8 +173,6 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
   const iconColorProps = getGutenbergColorProps(iconColor, 'color');
   const iconBgProps = getGutenbergColorProps(iconBackgroundColor, 'background');
 
-  const editingItem = editingItemId ? items.find((item) => item.id === editingItemId) : undefined;
-
   const setThemeColor = (key: 'iconColor' | 'iconBackgroundColor' | 'iconBorderColor', value: string | undefined) => {
     setAttributes({
       [key]: normalizeColorForStorage(value, lookupPalette),
@@ -261,24 +185,35 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
     });
   };
 
+  const updateItemField = <K extends keyof AdvancedListItem>(
+    id: string,
+    field: K,
+    value: AdvancedListItem[K]
+  ) => {
+    setAttributes({
+      items: items.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      ),
+    });
+  };
+
   const addItem = () => {
     const newItem: AdvancedListItem = {
       id: createItemId(),
       text: __('New list item', 'nextora'),
       iconName: 'check',
+      linkUrl: '',
+      linkTarget: '_self',
     };
     setAttributes({ items: [...items, newItem] });
-  };
-
-  const updateItem = (updatedItem: AdvancedListItem) => {
-    const newItems = items.map((item) =>
-      item.id === updatedItem.id ? updatedItem : item
-    );
-    setAttributes({ items: newItems });
+    setExpandedItemId(newItem.id);
   };
 
   const removeItem = (id: string) => {
     setAttributes({ items: items.filter((item) => item.id !== id) });
+    if (expandedItemId === id) {
+      setExpandedItemId(null);
+    }
   };
 
   const moveItem = (index: number, direction: 'up' | 'down') => {
@@ -299,74 +234,139 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
               {__('No items yet. Click "Add item" to create one.', 'nextora')}
             </p>
           )}
-          {items.map((item, index) => (
-            <div
-              key={item.id}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                marginBottom: '6px',
-                padding: '6px 8px',
-                background: 'var(--wp--preset--color--base, #fff)',
-                border: '1px solid var(--wp--preset--color--contrast, #ddd)',
-                borderRadius: '4px',
-              }}
-            >
+
+          {items.map((item, index) => {
+            const isExpanded = expandedItemId === item.id;
+            return (
               <div
-                style={{
-                  flex: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  overflow: 'hidden',
-                  minWidth: 0,
-                }}
+                key={item.id}
+                className={`nextora-advanced-list-item-card ${isExpanded ? 'is-expanded' : ''}`.trim()}
               >
-                <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center', color: 'var(--wp--preset--color--primary, #1e1e1e)' }}>
-                  <AdvancedListEditorIcon iconName={item.iconName} iconSize={14} strokeWidth={2} />
-                </span>
-                <span
-                  style={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    fontSize: '12px',
-                    lineHeight: '1.4',
-                  }}
+                <div
+                  className="nextora-advanced-list-item-card__header"
+                  onClick={() => setExpandedItemId(isExpanded ? null : item.id)}
                 >
-                  {item.text || __('(empty)', 'nextora')}
-                </span>
+                  <span className="nextora-advanced-list-item-card__icon-thumb">
+                    <AdvancedListEditorIcon iconName={item.iconName} iconSize={13} strokeWidth={2} />
+                  </span>
+
+                  <span className="nextora-advanced-list-item-card__title">
+                    {item.text?.trim() || __('(Empty item)', 'nextora')}
+                  </span>
+
+                  {item.linkUrl ? (
+                    <span
+                      className="nextora-advanced-list-item-card__link-indicator"
+                      title={`${__('Link:', 'nextora')} ${item.linkUrl}${item.linkTarget === '_blank' ? ' (new tab)' : ''}`}
+                    >
+                      <LucideActionIcon name="link" />
+                    </span>
+                  ) : null}
+
+                  <div
+                    className="nextora-advanced-list-item-card__actions"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Button
+                      icon={<LucideActionIcon name="chevron-up" />}
+                      label={__('Move up', 'nextora')}
+                      onClick={() => moveItem(index, 'up')}
+                      disabled={index === 0}
+                      isSmall
+                    />
+                    <Button
+                      icon={<LucideActionIcon name="chevron-down" />}
+                      label={__('Move down', 'nextora')}
+                      onClick={() => moveItem(index, 'down')}
+                      disabled={index === items.length - 1}
+                      isSmall
+                    />
+                    <Button
+                      icon={<LucideActionIcon name={isExpanded ? 'chevron-up' : 'pencil'} />}
+                      label={isExpanded ? __('Collapse', 'nextora') : __('Edit item', 'nextora')}
+                      onClick={() => setExpandedItemId(isExpanded ? null : item.id)}
+                      isSmall
+                    />
+                    <Button
+                      icon={<LucideActionIcon name="trash-2" />}
+                      label={__('Remove', 'nextora')}
+                      onClick={() => removeItem(item.id)}
+                      isSmall
+                      isDestructive
+                    />
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <div className="nextora-advanced-list-item-card__body">
+                    <div>
+                      <label className="nextora-advanced-list-item-card__field-label">
+                        {__('Icon', 'nextora')}
+                      </label>
+                      <div className="nextora-advanced-list-item-card__icon-picker-row">
+                        <div className="nextora-advanced-list-item-card__icon-large-preview">
+                          <AdvancedListEditorIcon iconName={item.iconName} iconSize={18} strokeWidth={2} />
+                        </div>
+                        <Button
+                          variant="secondary"
+                          size="small"
+                          onClick={() => setPickingIconForId(item.id)}
+                        >
+                          {__('Change icon…', 'nextora')}
+                        </Button>
+                        <code style={{ fontSize: '11px', color: '#64748b', background: '#f8fafc', padding: '2px 6px', borderRadius: '4px' }}>
+                          {item.iconName}
+                        </code>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="nextora-advanced-list-item-card__field-label">
+                        {__('Item text', 'nextora')}
+                      </label>
+                      <TextareaControl
+                        value={item.text || ''}
+                        onChange={(newText) => updateItemText(item.id, newText)}
+                        rows={2}
+                        placeholder={__('Enter item text…', 'nextora')}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="nextora-advanced-list-item-card__field-label">
+                        {__('Link URL (optional)', 'nextora')}
+                      </label>
+                      <TextControl
+                        value={item.linkUrl || ''}
+                        onChange={(newUrl) => updateItemField(item.id, 'linkUrl', newUrl)}
+                        placeholder="https://... or tel:... or mailto:..."
+                        help={__('Supports web URLs, tel:phone, or mailto:email', 'nextora')}
+                      />
+                    </div>
+
+                    {item.linkUrl ? (
+                      <ToggleControl
+                        label={__('Open in new tab', 'nextora')}
+                        checked={item.linkTarget === '_blank'}
+                        onChange={(checked) => updateItemField(item.id, 'linkTarget', checked ? '_blank' : '_self')}
+                      />
+                    ) : null}
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '4px' }}>
+                      <Button
+                        variant="secondary"
+                        size="small"
+                        onClick={() => setExpandedItemId(null)}
+                      >
+                        {__('Done', 'nextora')}
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
-              <Button
-                icon={<LucideActionIcon name="pencil" />}
-                label={__('Edit', 'nextora')}
-                onClick={() => setEditingItemId(item.id)}
-                isSmall
-              />
-              <Button
-                icon={<LucideActionIcon name="chevron-up" />}
-                label={__('Move up', 'nextora')}
-                onClick={() => moveItem(index, 'up')}
-                disabled={index === 0}
-                isSmall
-              />
-              <Button
-                icon={<LucideActionIcon name="chevron-down" />}
-                label={__('Move down', 'nextora')}
-                onClick={() => moveItem(index, 'down')}
-                disabled={index === items.length - 1}
-                isSmall
-              />
-              <Button
-                icon={<LucideActionIcon name="trash-2" />}
-                label={__('Remove', 'nextora')}
-                onClick={() => removeItem(item.id)}
-                isSmall
-                isDestructive
-              />
-            </div>
-          ))}
+            );
+          })}
+
           <Button
             variant="secondary"
             onClick={addItem}
@@ -485,7 +485,12 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
       <div {...blockProps}>
         <ul className="nextora-advanced-list__items">
           {items.map((item) => (
-            <li key={item.id} className="nextora-advanced-list__item" data-item-id={item.id}>
+            <li
+              key={item.id}
+              className={`nextora-advanced-list__item ${item.linkUrl ? 'has-link' : ''} ${expandedItemId === item.id ? 'is-active-item' : ''}`.trim()}
+              data-item-id={item.id}
+              onClick={() => setExpandedItemId(item.id)}
+            >
               <span
                 className={`nextora-advanced-list__icon nextora-advanced-list__icon--${iconStyle} ${iconColorProps.className} ${iconBgProps.className}`.trim()}
                 style={{
@@ -504,16 +509,31 @@ export default function AdvancedListEdit({ attributes, setAttributes }: EditProp
                 placeholder={__('List item text…', 'nextora')}
                 allowedFormats={['core/bold', 'core/italic', 'core/link']}
               />
+              {item.linkUrl ? (
+                <span
+                  className="nextora-advanced-list__link-badge"
+                  title={`${__('Link:', 'nextora')} ${item.linkUrl}${item.linkTarget === '_blank' ? ' (new tab)' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExpandedItemId(item.id);
+                  }}
+                >
+                  <LucideActionIcon name="link" />
+                </span>
+              ) : null}
             </li>
           ))}
         </ul>
       </div>
 
-      {editingItem && (
-        <ItemModal
-          item={editingItem}
-          onSave={updateItem}
-          onClose={() => setEditingItemId(null)}
+      {pickingIconForId && (
+        <IconPicker
+          currentIcon={items.find((i) => i.id === pickingIconForId)?.iconName || 'check'}
+          onSelect={(name) => {
+            updateItemField(pickingIconForId, 'iconName', name);
+            setPickingIconForId(null);
+          }}
+          onClose={() => setPickingIconForId(null)}
         />
       )}
     </>

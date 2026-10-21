@@ -864,10 +864,13 @@ if ( ! in_array( $photo_aspect, array( '3/4', '4/3', '1/1', '16/9' ), true ) ) {
 	$photo_aspect = '3/4';
 }
 
-$grid_columns   = isset( $attributes['gridColumns'] ) ? max( 1, min( 6, (int) $attributes['gridColumns'] ) ) : 4;
-$grid_min_width = isset( $attributes['gridMinWidth'] ) ? max( 320, (int) $attributes['gridMinWidth'] ) : 981;
-$grid_col_gap   = isset( $attributes['gridColumnGap'] ) ? max( 0, min( 60, (int) $attributes['gridColumnGap'] ) ) : 24;
-$grid_row_gap   = isset( $attributes['gridRowGap'] ) ? max( 0, min( 60, (int) $attributes['gridRowGap'] ) ) : 24;
+$grid_columns        = isset( $attributes['gridColumns'] ) ? max( 1, min( 6, (int) $attributes['gridColumns'] ) ) : 4;
+$grid_columns_tablet = isset( $attributes['gridColumnsTablet'] ) ? max( 1, min( 4, (int) $attributes['gridColumnsTablet'] ) ) : 2;
+$grid_columns_mobile = isset( $attributes['gridColumnsMobile'] ) ? max( 1, min( 2, (int) $attributes['gridColumnsMobile'] ) ) : 1;
+$grid_no_carousel    = ! empty( $attributes['disableResponsiveCarousel'] );
+$grid_min_width      = isset( $attributes['gridMinWidth'] ) ? max( 320, (int) $attributes['gridMinWidth'] ) : 981;
+$grid_col_gap        = isset( $attributes['gridColumnGap'] ) ? max( 0, min( 60, (int) $attributes['gridColumnGap'] ) ) : 24;
+$grid_row_gap        = isset( $attributes['gridRowGap'] ) ? max( 0, min( 60, (int) $attributes['gridRowGap'] ) ) : 24;
 
 $card_radius = isset( $attributes['cardBorderRadius'] ) ? max( 0, min( 30, (int) $attributes['cardBorderRadius'] ) ) : 16;
 
@@ -949,13 +952,15 @@ $opts_json   = wp_json_encode( $swiper_opts );
 $opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 
 $css_vars = array(
-	'--nextora-team-photo-placeholder' => nextora_team_section_photo_placeholder_var(),
-	'--nextora-team-card-radius'       => $card_radius . 'px',
-	'--nextora-team-grid-columns'      => (string) $grid_columns,
-	'--nextora-team-grid-column-gap'   => $grid_col_gap . 'px',
-	'--nextora-team-grid-row-gap'      => $grid_row_gap . 'px',
-	'--nextora-team-photo-aspect'      => $photo_aspect,
-	'--nextora-team-space-between'     => $space . 'px',
+	'--nextora-team-photo-placeholder'  => nextora_team_section_photo_placeholder_var(),
+	'--nextora-team-card-radius'        => $card_radius . 'px',
+	'--nextora-team-grid-columns'       => (string) $grid_columns,
+	'--nextora-team-grid-columns-tablet' => (string) $grid_columns_tablet,
+	'--nextora-team-grid-columns-mobile' => (string) $grid_columns_mobile,
+	'--nextora-team-grid-column-gap'    => $grid_col_gap . 'px',
+	'--nextora-team-grid-row-gap'       => $grid_row_gap . 'px',
+	'--nextora-team-photo-aspect'       => $photo_aspect,
+	'--nextora-team-space-between'      => $space . 'px',
 );
 
 // Only emit color tokens when customized — inline vars beat `.is-style-*` preset rules.
@@ -1003,6 +1008,9 @@ $wrapper_classes = array(
 	'nextora-team-section--layout-' . sanitize_html_class( $layout_mode ),
 	'nextora-team-section--template-' . sanitize_html_class( $card_template ),
 );
+if ( $grid_no_carousel && 'grid' === $layout_mode ) {
+	$wrapper_classes[] = 'nextora-team-section--grid-no-carousel';
+}
 if ( '' !== $bg_props['class'] ) {
 	$wrapper_classes[] = $bg_props['class'];
 }
@@ -1091,6 +1099,12 @@ nextora_team_section_enqueue_view_script();
 				data-swiper-opts="<?php echo esc_attr( $opts_string ); ?>"
 				data-layout-mode="<?php echo esc_attr( $layout_mode ); ?>"
 				data-grid-min-width="<?php echo esc_attr( (string) $grid_min_width ); ?>"
+				data-grid-columns="<?php echo esc_attr( (string) $grid_columns ); ?>"
+				data-grid-columns-tablet="<?php echo esc_attr( (string) $grid_columns_tablet ); ?>"
+				data-grid-columns-mobile="<?php echo esc_attr( (string) $grid_columns_mobile ); ?>"
+				<?php if ( $grid_no_carousel ) : ?>
+				data-disable-responsive-carousel="1"
+				<?php endif; ?>
 			>
 				<div class="swiper nextora-team-section__swiper">
 					<div class="swiper-wrapper">

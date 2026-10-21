@@ -41,6 +41,18 @@
       "type": "number",
       "default": 4
     },
+    "gridColumnsTablet": {
+      "type": "number",
+      "default": 2
+    },
+    "gridColumnsMobile": {
+      "type": "number",
+      "default": 1
+    },
+    "disableResponsiveCarousel": {
+      "type": "boolean",
+      "default": false
+    },
     "gridMinWidth": {
       "type": "number",
       "default": 981

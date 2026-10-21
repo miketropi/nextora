@@ -114,9 +114,9 @@
 }
 
 .nextora-event--template4 .nextora-event-compact__title a:hover,
-.nextora-event--template4 .nextora-event-compact__title-link:hover {
-	color: var(--nextora-event-title-hover-color, var(--wp--preset--color--primary, #3858e9));
-	opacity: 0.85;
+.nextora-event--template4 .nextora-event-compact__title-link:hover,
+.nextora-event--template4 .nextora-event-compact__item:hover .nextora-event-compact__title-link {
+	color: var(--wp--preset--color--primary) !important;
 }
 
 .nextora-event--template4 .nextora-event-compact__title a:focus-visible,

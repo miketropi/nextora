@@ -941,22 +941,22 @@ function nextora_get_theme_inline_css( array $theme ): string {
 	if ( ! empty( $theme['buttonBg'] ) || ! empty( $theme['buttonColor'] ) ) {
 		$bg          = ! empty( $theme['buttonBg'] ) ? 'background-color: var(--nextora-button-bg);' : '';
 		$col         = ! empty( $theme['buttonColor'] ) ? 'color: var(--nextora-button-color);' : '';
-		$btn_rules[] = ':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline) > .wp-block-button__link) { ' . $bg . ' ' . $col . ' }';
+		$btn_rules[] = ':root:root :where(.wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link) { ' . $bg . ' ' . $col . ' }';
 	}
 	if ( ! empty( $theme['buttonHoverBg'] ) || ! empty( $theme['buttonHoverColor'] ) ) {
 		$hbg         = ! empty( $theme['buttonHoverBg'] ) ? 'background-color: var(--nextora-button-hover-bg);' : '';
 		$hcol        = ! empty( $theme['buttonHoverColor'] ) ? 'color: var(--nextora-button-hover-color);' : '';
-		$btn_rules[] = ':root:root :where(.wp-element-button:not(.is-style-outline):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline) > .wp-block-button__link:hover) { ' . $hbg . ' ' . $hcol . ' }';
+		$btn_rules[] = ':root:root :where(.wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link:hover) { ' . $hbg . ' ' . $hcol . ' }';
 	}
 	if ( ! empty( $theme['headerButtonBg'] ) || ! empty( $theme['headerButtonColor'] ) ) {
 		$hdr_bg      = ! empty( $theme['headerButtonBg'] ) ? 'background-color: var(--nextora-header-button-bg);' : '';
 		$hdr_col     = ! empty( $theme['headerButtonColor'] ) ? 'color: var(--nextora-header-button-color);' : '';
-		$btn_rules[] = ':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline), .nextora-header-block__cta.nextora-header-block__cta--solid) { ' . $hdr_bg . ' ' . $hdr_col . ' }';
+		$btn_rules[] = ':root:root :where(.wp-block-nextora-header .wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-header-block__cta--outline), .wp-block-nextora-header .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link, .nextora-header-block__cta.nextora-header-block__cta--solid) { ' . $hdr_bg . ' ' . $hdr_col . ' }';
 	}
 	if ( ! empty( $theme['headerButtonHoverBg'] ) || ! empty( $theme['headerButtonHoverColor'] ) ) {
 		$hdr_hbg     = ! empty( $theme['headerButtonHoverBg'] ) ? 'background-color: var(--nextora-header-button-hover-bg);' : '';
 		$hdr_hcol    = ! empty( $theme['headerButtonHoverColor'] ) ? 'color: var(--nextora-header-button-hover-color);' : '';
-		$btn_rules[] = ':root:root :where(.wp-block-nextora-header .wp-element-button:not(.nextora-header-block__cta--outline):hover, .nextora-header-block__cta.nextora-header-block__cta--solid:hover) { ' . $hdr_hbg . ' ' . $hdr_hcol . ' }';
+		$btn_rules[] = ':root:root :where(.wp-block-nextora-header .wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-header-block__cta--outline):hover, .wp-block-nextora-header .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link:hover, .nextora-header-block__cta.nextora-header-block__cta--solid:hover) { ' . $hdr_hbg . ' ' . $hdr_hcol . ' }';
 	}
 	if ( ! empty( $theme['buttonTextTransform'] ) || ! empty( $theme['buttonFontWeight'] ) ) {
 		$typo = array();

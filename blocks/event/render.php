@@ -811,7 +811,7 @@ if ( ! function_exists( 'nextora_event_render_card' ) ) {
 
 			if ( '' !== $link_url ) {
 				$register_html = sprintf(
-					'<a href="%1$s" class="%2$s" target="%3$s"%4$s%5$s>%6$s%7$s</a>',
+					'<a href="%1$s" class="%2$s" target="%3$s"%4$s%5$s>%6$s<span class="nextora-event__register-label">%7$s</span></a>',
 					esc_url( $link_url ),
 					$reg_class_attr,
 					esc_attr( $link_target ),
@@ -822,7 +822,7 @@ if ( ! function_exists( 'nextora_event_render_card' ) ) {
 				);
 			} else {
 				$register_html = sprintf(
-					'<span class="%1$s nextora-event__register-card--static"%2$s>%3$s%4$s</span>',
+					'<span class="%1$s nextora-event__register-card--static"%2$s>%3$s<span class="nextora-event__register-label">%4$s</span></span>',
 					$reg_class_attr,
 					$reg_style_attr,
 					nextora_event_calendar_icon( $btn_icon ),
@@ -1004,7 +1004,7 @@ if ( ! function_exists( 'nextora_event_render_list_item' ) ) {
 
 			if ( '' !== $link_url ) {
 				$register_html = sprintf(
-					'<a href="%1$s" class="%2$s" target="%3$s"%4$s%5$s>%6$s%7$s</a>',
+					'<a href="%1$s" class="%2$s" target="%3$s"%4$s%5$s><span class="nextora-event__register-label">%6$s</span>%7$s</a>',
 					esc_url( $link_url ),
 					$reg_class_attr,
 					esc_attr( $link_target ),
@@ -1015,7 +1015,7 @@ if ( ! function_exists( 'nextora_event_render_list_item' ) ) {
 				);
 			} else {
 				$register_html = sprintf(
-					'<span class="%1$s nextora-event__register--static"%2$s>%3$s%4$s</span>',
+					'<span class="%1$s nextora-event__register--static"%2$s><span class="nextora-event__register-label">%3$s</span>%4$s</span>',
 					$reg_class_attr,
 					$reg_style_attr,
 					esc_html( $label ),
@@ -1304,8 +1304,8 @@ if ( ! function_exists( 'nextora_event_render_template3_item' ) ) {
 		$reg_style_attr = ! empty( $reg_btn_props['style'] ) ? ' style="' . esc_attr( $reg_btn_props['style'] ) . '"' : '';
 
 		$register_html  = ! $show_register ? '' : ( '' !== $link_url
-			? sprintf( '<a class="%1$s" href="%2$s" target="%3$s"%4$s%5$s>%6$s%7$s</a>', $reg_class_attr, esc_url( $link_url ), esc_attr( $link_target ), $rel, $reg_style_attr, esc_html( $register_label ), $register_icon )
-			: sprintf( '<span class="%1$s nextora-event__template3-register--static"%2$s>%3$s%4$s</span>', $reg_class_attr, $reg_style_attr, esc_html( $register_label ), $register_icon ) );
+			? sprintf( '<a class="%1$s" href="%2$s" target="%3$s"%4$s%5$s><span class="nextora-event__register-label">%6$s</span>%7$s</a>', $reg_class_attr, esc_url( $link_url ), esc_attr( $link_target ), $rel, $reg_style_attr, esc_html( $register_label ), $register_icon )
+			: sprintf( '<span class="%1$s nextora-event__template3-register--static"%2$s><span class="nextora-event__register-label">%3$s</span>%4$s</span>', $reg_class_attr, $reg_style_attr, esc_html( $register_label ), $register_icon ) );
 
 		$item_classes = array( 'nextora-event__template3-item' );
 		if ( ! empty( $card_props['class'] ) ) {

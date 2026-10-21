@@ -371,6 +371,10 @@
 	overscroll-behavior: contain;
 }
 
+.nextora-primary-nav-portal__panel:focus {
+	outline: none;
+}
+
 @media (max-width: 1024.98px) {
 	.nextora-primary-nav-portal {
 		--nextora-nav-portal-dur: var(--nextora-offcanvas-dur);
@@ -534,8 +538,19 @@
 		list-style: none;
 	}
 
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0 var(--wp--preset--spacing--05, 0.5rem);
+		width: 100%;
+	}
+
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li>a {
-		padding: var(--wp--preset--spacing--10, 1rem) 0;
+		flex: 1 1 auto;
+		min-width: 0;
+		border-bottom: none;
+		padding: var(--wp--preset--spacing--10, 1rem) 0.15rem !important;
 		font-size: var(--wp--preset--font-size--base, 1rem);
 		font-weight: 500;
 		/* border-bottom: 1px solid var(--nextora-nav-mobile-drawer-border); */
@@ -552,6 +567,17 @@
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li>a:focus-visible {
 		color: var(--wp--preset--color--primary);
 		background-color: transparent;
+		outline: none;
+		outline-offset: 0;
+	}
+
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu a:focus,
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu a:focus-visible,
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .sub-menu a:focus,
+	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .sub-menu a:focus-visible {
+		outline: none !important;
+		outline-offset: 0 !important;
+		box-shadow: none !important;
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu>li.menu-item-has-children {
@@ -693,6 +719,8 @@
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu a:focus-visible {
 		color: var(--wp--preset--color--primary);
 		background-color: transparent;
+		outline: none;
+		outline-offset: 0;
 	}
 
 	.nextora-primary-nav-portal--open .nextora-primary-nav-portal__panel .nextora-header-menu .sub-menu .current-menu-item>a,

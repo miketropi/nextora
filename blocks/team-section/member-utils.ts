@@ -133,6 +133,8 @@ export function buildSectionStyleVars(attrs: {
 	socialColor?: string;
 	cardBorderRadius?: number;
 	gridColumns?: number;
+	gridColumnsTablet?: number;
+	gridColumnsMobile?: number;
 	gridColumnGap?: number;
 	gridRowGap?: number;
 	photoAspectRatio?: string;
@@ -150,6 +152,8 @@ export function buildSectionStyleVars(attrs: {
 		'--nextora-team-slides-per-view': String(attrs.slidesPerView ?? 4),
 	};
 	if (attrs.gridColumns) vars['--nextora-team-grid-columns'] = String(attrs.gridColumns);
+	if (attrs.gridColumnsTablet) vars['--nextora-team-grid-columns-tablet'] = String(attrs.gridColumnsTablet);
+	if (attrs.gridColumnsMobile) vars['--nextora-team-grid-columns-mobile'] = String(attrs.gridColumnsMobile);
 	if (attrs.sectionBackgroundColor) vars['--nextora-team-bg'] = resolveColorValue(attrs.sectionBackgroundColor);
 	if (attrs.paginationColor) vars['--nextora-team-dot-color'] = resolveColorValue(attrs.paginationColor);
 	if (attrs.paginationActiveColor) vars['--nextora-team-dot-active'] = resolveColorValue(attrs.paginationActiveColor);

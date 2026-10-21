@@ -92,8 +92,72 @@ export function buildSectionStyleVars(attrs: Partial<TestimonialsAttributes>): R
 	if (attrs.paginationActiveColor) {
 		vars['--nextora-testimonials-dot-active'] = resolveColor(attrs.paginationActiveColor);
 	}
+	const imageRadius = resolveBorderRadius(attrs.imageBorderRadius);
+	if (imageRadius !== '') {
+		vars['--nextora-testimonials-image-radius'] = imageRadius;
+	}
 
 	return vars;
+}
+
+export function sanitizeCssLength(value: string | undefined): string {
+	if (!value) {
+		return '';
+	}
+	const trimmed = value.trim();
+	if (trimmed === '') {
+		return '';
+	}
+	if (trimmed === '0' || trimmed === '0px') {
+		return '0';
+	}
+	const presetMatch = trimmed.match(/^var:preset\|spacing\|([a-z0-9_-]+)$/i);
+	if (presetMatch) {
+		return `var(--wp--preset--spacing--${presetMatch[1].toLowerCase()})`;
+	}
+	if (/^var\(\s*--[a-z0-9_-]+\s*\)$/i.test(trimmed)) {
+		return trimmed;
+	}
+	const unitMatch = trimmed.match(/^(\d+\.?\d*)(px|rem|em|%|vw|vh)$/i);
+	if (unitMatch) {
+		return `${unitMatch[1]}${unitMatch[2].toLowerCase()}`;
+	}
+	if (/^\d+(\.\d+)?$/.test(trimmed)) {
+		return `${trimmed}px`;
+	}
+	return '';
+}
+
+export function resolveBorderRadius(raw: unknown): string {
+	if (!raw) {
+		return '';
+	}
+	if (typeof raw === 'string') {
+		return sanitizeCssLength(raw);
+	}
+	if (typeof raw === 'object' && raw !== null) {
+		const obj = raw as Record<string, unknown>;
+		const tl = sanitizeCssLength(typeof obj.topLeft === 'string' ? obj.topLeft : undefined);
+		const tr = sanitizeCssLength(typeof obj.topRight === 'string' ? obj.topRight : undefined);
+		const br = sanitizeCssLength(typeof obj.bottomRight === 'string' ? obj.bottomRight : undefined);
+		const bl = sanitizeCssLength(typeof obj.bottomLeft === 'string' ? obj.bottomLeft : undefined);
+
+		if (!tl && !tr && !br && !bl) {
+			return '';
+		}
+
+		if (tl === tr && tr === br && br === bl) {
+			return tl || '';
+		}
+
+		const tlVal = tl || '0';
+		const trVal = tr || '0';
+		const brVal = br || '0';
+		const blVal = bl || '0';
+
+		return `${tlVal} ${trVal} ${brVal} ${blVal}`;
+	}
+	return '';
 }
 
 export function resolveFontFamily(raw: string): string {

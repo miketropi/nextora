@@ -75,6 +75,74 @@ if ( ! function_exists( 'nextora_testimonials_resolve_font_size' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_testimonials_sanitize_css_length' ) ) {
+	/**
+	 * Sanitize a CSS length for radius, spacing, etc.
+	 *
+	 * @param string $value Raw attribute value.
+	 */
+	function nextora_testimonials_sanitize_css_length( string $value ): string {
+		$value = trim( $value );
+		if ( '' === $value ) {
+			return '';
+		}
+		if ( '0' === $value || '0px' === $value ) {
+			return '0';
+		}
+		if ( preg_match( '/^var:preset\|spacing\|([a-z0-9_-]+)$/i', $value, $preset_m ) ) {
+			return 'var(--wp--preset--spacing--' . strtolower( $preset_m[1] ) . ')';
+		}
+		if ( preg_match( '/^var\(\s*--[a-z0-9_-]+\s*\)$/i', $value ) ) {
+			return $value;
+		}
+		if ( preg_match( '/^(\d+\.?\d*)(px|rem|em|%|vw|vh)$/i', $value, $length_m ) ) {
+			return $length_m[1] . strtolower( $length_m[2] );
+		}
+		if ( is_numeric( $value ) ) {
+			return $value . 'px';
+		}
+		return '';
+	}
+}
+
+if ( ! function_exists( 'nextora_testimonials_resolve_border_radius' ) ) {
+	/**
+	 * Resolve Gutenberg border radius attribute to CSS shorthand.
+	 *
+	 * @param mixed $radius_raw Array or string.
+	 */
+	function nextora_testimonials_resolve_border_radius( mixed $radius_raw ): string {
+		if ( empty( $radius_raw ) ) {
+			return '';
+		}
+		if ( is_string( $radius_raw ) ) {
+			return nextora_testimonials_sanitize_css_length( $radius_raw );
+		}
+		if ( is_array( $radius_raw ) ) {
+			$tl = isset( $radius_raw['topLeft'] ) ? nextora_testimonials_sanitize_css_length( (string) $radius_raw['topLeft'] ) : '';
+			$tr = isset( $radius_raw['topRight'] ) ? nextora_testimonials_sanitize_css_length( (string) $radius_raw['topRight'] ) : '';
+			$br = isset( $radius_raw['bottomRight'] ) ? nextora_testimonials_sanitize_css_length( (string) $radius_raw['bottomRight'] ) : '';
+			$bl = isset( $radius_raw['bottomLeft'] ) ? nextora_testimonials_sanitize_css_length( (string) $radius_raw['bottomLeft'] ) : '';
+
+			if ( '' === $tl && '' === $tr && '' === $br && '' === $bl ) {
+				return '';
+			}
+
+			if ( $tl === $tr && $tr === $br && $br === $bl ) {
+				return $tl;
+			}
+
+			$tl_val = '' !== $tl ? $tl : '0';
+			$tr_val = '' !== $tr ? $tr : '0';
+			$br_val = '' !== $br ? $br : '0';
+			$bl_val = '' !== $bl ? $bl : '0';
+
+			return "{$tl_val} {$tr_val} {$br_val} {$bl_val}";
+		}
+		return '';
+	}
+}
+
 if ( ! function_exists( 'nextora_testimonials_get_gutenberg_color_props' ) ) {
 	/**
 	 * Resolve Gutenberg standard color classes and inline styles.
@@ -571,6 +639,11 @@ $css_vars = array(
 	'--nextora-testimonials-dot-color'                  => '' !== $dot_color ? $dot_color : 'color-mix(in srgb, currentColor 35%, transparent)',
 	'--nextora-testimonials-dot-active'                 => '' !== $dot_active ? $dot_active : 'var(--wp--preset--color--primary, currentColor)',
 );
+
+$image_radius = nextora_testimonials_resolve_border_radius( $attributes['imageBorderRadius'] ?? null );
+if ( '' !== $image_radius && 'template-02' !== $template ) {
+	$css_vars['--nextora-testimonials-image-radius'] = $image_radius;
+}
 
 $style_parts = array();
 foreach ( $css_vars as $key => $value ) {
