@@ -971,7 +971,7 @@ if ( ! function_exists( 'nextora_event_tec_render_card' ) ) {
 				$label = $default_register;
 			}
 
-			$reg_classes = array( 'nextora-event__register-card', 'wp-element-button', 'wp-block-button__link' );
+			$reg_classes = array( 'nextora-event__register-card', 'wp-element-button' );
 			if ( ! empty( $reg_btn_props['class'] ) ) {
 				$reg_classes = array_merge( $reg_classes, explode( ' ', trim( $reg_btn_props['class'] ) ) );
 			}
