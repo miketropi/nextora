@@ -211,6 +211,14 @@
       "type": "boolean",
       "default": true
     },
+    "showDonorAccount": {
+      "type": "boolean",
+      "default": false
+    },
+    "donorAccountIconOnly": {
+      "type": "boolean",
+      "default": true
+    },
     "showSearchMobile": {
       "type": "boolean",
       "default": true

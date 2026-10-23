@@ -126,6 +126,8 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     showMiniCart,
     showMyAccount,
     myAccountIconOnly,
+    showDonorAccount = false,
+    donorAccountIconOnly = true,
     showSearchMobile,
     showCartMobile,
     showCtaButton,
@@ -171,6 +173,14 @@ export default function HeaderEdit({ attributes, setAttributes }) {
       ? menus.map((m) => ({ label: m.name || `#${m.id}`, value: m.id }))
       : []),
   ];
+
+  const isWooCommerceActive = useSelect((select) => {
+    if (typeof window !== 'undefined' && window.nextoraIconBlock?.isWooCommerceActive !== undefined) {
+      return !!window.nextoraIconBlock.isWooCommerceActive;
+    }
+    const pt = select(coreStore).getPostType('product');
+    return !!pt;
+  }, []);
 
   const isGiftFlowActive = useSelect((select) => {
     if (typeof window !== 'undefined' && window.nextoraIconBlock?.isGiftFlowActive !== undefined) {
@@ -675,35 +685,68 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             disabled={!showSearch}
           />
 
-          <p className="components-help-text" style={{ margin: '1rem 0 0.35rem' }}>
-            {__('WooCommerce (when active)', 'nextora')}
-          </p>
-          <ToggleControl
-            label={__('Shopping cart', 'nextora')}
-            checked={showMiniCart}
-            onChange={(v) => setAttributes({ showMiniCart: v })}
-            help={__(
-              'Uses the official WooCommerce Mini-Cart block (drawer and live cart updates).',
-              'nextora',
-            )}
-          />
-          <ToggleControl
-            label={__('My account', 'nextora')}
-            checked={showMyAccount}
-            onChange={(v) => setAttributes({ showMyAccount: v })}
-          />
-          <ToggleControl
-            label={__('Account: icon only', 'nextora')}
-            checked={myAccountIconOnly}
-            onChange={(v) => setAttributes({ myAccountIconOnly: v })}
-            disabled={!showMyAccount}
-          />
-          <ToggleControl
-            label={__('Show cart on small screens', 'nextora')}
-            checked={showCartMobile}
-            onChange={(v) => setAttributes({ showCartMobile: v })}
-            disabled={!showMiniCart}
-          />
+          {isWooCommerceActive && (
+            <>
+              <p className="components-help-text" style={{ margin: '1rem 0 0.35rem' }}>
+                {__('WooCommerce (when active)', 'nextora')}
+              </p>
+              <ToggleControl
+                label={__('Shopping cart', 'nextora')}
+                checked={showMiniCart}
+                onChange={(v) => setAttributes({ showMiniCart: v })}
+                help={__(
+                  'Uses the official WooCommerce Mini-Cart block (drawer and live cart updates).',
+                  'nextora',
+                )}
+              />
+              <ToggleControl
+                label={__('My account', 'nextora')}
+                checked={showMyAccount}
+                onChange={(v) =>
+                  setAttributes({
+                    showMyAccount: v,
+                    ...(v ? { showDonorAccount: false } : {}),
+                  })
+                }
+              />
+              <ToggleControl
+                label={__('Account: icon only', 'nextora')}
+                checked={myAccountIconOnly}
+                onChange={(v) => setAttributes({ myAccountIconOnly: v })}
+                disabled={!showMyAccount}
+              />
+              <ToggleControl
+                label={__('Show cart on small screens', 'nextora')}
+                checked={showCartMobile}
+                onChange={(v) => setAttributes({ showCartMobile: v })}
+                disabled={!showMiniCart}
+              />
+            </>
+          )}
+
+          {isGiftFlowActive && (
+            <>
+              <p className="components-help-text" style={{ margin: '1rem 0 0.35rem' }}>
+                {__('GiftFlow (when active)', 'nextora')}
+              </p>
+              <ToggleControl
+                label={__('Donor account', 'nextora')}
+                checked={showDonorAccount}
+                onChange={(v) =>
+                  setAttributes({
+                    showDonorAccount: v,
+                    ...(v ? { showMyAccount: false } : {}),
+                  })
+                }
+              />
+              <ToggleControl
+                label={__('Account: icon only', 'nextora')}
+                checked={donorAccountIconOnly}
+                onChange={(v) => setAttributes({ donorAccountIconOnly: v })}
+                disabled={!showDonorAccount}
+              />
+            </>
+          )}
 
           <p className="components-help-text" style={{ margin: '1rem 0 0.35rem' }}>
             {__('Call to action', 'nextora')}
@@ -992,6 +1035,11 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               ctaButtonIconSize,
               ctaButtonIconStrokeWidth,
               menuItemSpacing,
+              showMiniCart,
+              showMyAccount,
+              myAccountIconOnly,
+              showDonorAccount,
+              donorAccountIconOnly,
             ].join('|')}
             block={metadata.name}
             attributes={attributes}

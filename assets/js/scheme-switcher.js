@@ -418,6 +418,11 @@
 
 		applyButtonOverrides( theme );
 
+		var pageThemeStyle = document.getElementById( 'nextora-page-theme-vars' );
+		if ( pageThemeStyle ) {
+			pageThemeStyle.disabled = false;
+		}
+
 		state.theme = slug;
 		state.color = null;
 		state.font = null;
@@ -429,6 +434,10 @@
 		clearColorOverrides();
 		clearFontOverrides();
 		clearButtonOverrides();
+		var pageThemeStyle = document.getElementById( 'nextora-page-theme-vars' );
+		if ( pageThemeStyle ) {
+			pageThemeStyle.disabled = true;
+		}
 		state.theme = null;
 		state.color = null;
 		state.font = null;
@@ -488,9 +497,9 @@
 
 		try {
 			if ( state.theme ) {
-				document.cookie = 'nextora_active_theme=' + encodeURIComponent( state.theme ) + '; path=/; max-age=86400; SameSite=Lax';
+				document.cookie = 'nextora_active_theme=' + encodeURIComponent( state.theme ) + '; path=/; max-age=2592000; SameSite=Lax';
 			} else {
-				document.cookie = 'nextora_active_theme=; path=/; max-age=0; SameSite=Lax';
+				document.cookie = 'nextora_active_theme=default; path=/; max-age=2592000; SameSite=Lax';
 			}
 		} catch ( e ) {}
 	}

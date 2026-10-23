@@ -1424,7 +1424,7 @@ $render_logo = static function ( array $atts ): string {
 	ob_start();
 	?>
 	<div class="nextora-header-block__logo nextora-header-block__logo--<?php echo esc_attr( $logo_type ); ?>" style="<?php echo esc_attr( $logo_style ); ?>">
-		<a class="nextora-header-block__logo-link" href="<?php echo esc_url( $logo_href ); ?>" rel="home">
+		<a class="nextora-header-block__logo-link" href="<?php echo esc_url( $logo_href ); ?>" rel="home" aria-label="<?php echo esc_attr( $logo_label ); ?>">
 			<?php if ( 'text' === $logo_type ) : ?>
 				<span class="nextora-header-block__logo-text"><?php echo esc_html( $logo_label ); ?></span>
 			<?php elseif ( $has_desktop_logo || $has_mobile_logo ) : ?>
@@ -1623,7 +1623,18 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 	$show_follow   = ! empty( $atts['showFollowUs'] );
 	$show_search   = ! isset( $atts['showSearch'] ) || (bool) $atts['showSearch'];
 	$show_cart     = ( ! isset( $atts['showMiniCart'] ) || (bool) $atts['showMiniCart'] ) && $woo_on();
-	$show_acct     = ( ! isset( $atts['showMyAccount'] ) || (bool) $atts['showMyAccount'] ) && $woo_on();
+
+	$is_giftflow_active = defined( 'GIFTFLOW_VERSION' )
+		|| post_type_exists( 'campaign' )
+		|| function_exists( 'giftflow_prepare_campaign_status_bar_data' );
+
+	$show_donor_acct = ! empty( $atts['showDonorAccount'] ) && $is_giftflow_active;
+	$show_acct       = ( ! isset( $atts['showMyAccount'] ) || (bool) $atts['showMyAccount'] ) && $woo_on();
+
+	// Enforce mutual exclusivity: donor account and WooCommerce my-account cannot be active at the same time.
+	if ( $show_donor_acct && $show_acct ) {
+		$show_acct = false;
+	}
 
 	$show_follow_m   = isset( $atts['showFollowUsMobile'] ) && (bool) $atts['showFollowUsMobile'];
 	$hide_follow_m   = $show_follow && ! $show_follow_m;
@@ -1691,9 +1702,9 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 		<?php if ( $show_acct && function_exists( 'wc_get_account_endpoint_url' ) ) : ?>
 			<?php
 			$show_acct_text = ! isset( $atts['myAccountIconOnly'] ) || ! (bool) $atts['myAccountIconOnly'];
-			$acct_class       = 'nextora-header-block__account-link' . ( $show_acct_text ? ' nextora-header-block__account-link--with-text' : '' );
+			$acct_class     = 'nextora-header-block__account-link nextora-header-block__account-link--woo' . ( $show_acct_text ? ' nextora-header-block__account-link--with-text' : '' );
 			?>
-			<div class="nextora-header-block__account">
+			<div class="nextora-header-block__account nextora-header-block__account--woo">
 				<a class="<?php echo esc_attr( $acct_class ); ?>" href="<?php echo esc_url( wc_get_account_endpoint_url( 'dashboard' ) ); ?>" aria-label="<?php esc_attr_e( 'My account', 'nextora' ); ?>">
 					<span class="nextora-header-block__account-icon" aria-hidden="true">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user" aria-hidden="true" focusable="false">
@@ -1702,6 +1713,29 @@ $render_utils = static function ( array $atts, string $block_uid ) use ( $woo_on
 						</svg>
 					</span>
 					<?php if ( $show_acct_text ) : ?>
+						<span class="nextora-header-block__account-text">
+							<?php echo is_user_logged_in() ? esc_html( wp_get_current_user()->display_name ) : esc_html__( 'Sign in', 'nextora' ); ?>
+						</span>
+					<?php endif; ?>
+				</a>
+			</div>
+		<?php elseif ( $show_donor_acct ) : ?>
+			<?php
+			$show_donor_acct_text = ! isset( $atts['donorAccountIconOnly'] ) || ! (bool) $atts['donorAccountIconOnly'];
+			$donor_acct_class     = 'nextora-header-block__account-link nextora-header-block__account-link--donor' . ( $show_donor_acct_text ? ' nextora-header-block__account-link--with-text' : '' );
+			$donor_page_id        = function_exists( 'giftflow_get_donor_account_page' ) ? (int) giftflow_get_donor_account_page() : 0;
+			$donor_page_permalink = $donor_page_id > 0 ? get_permalink( $donor_page_id ) : false;
+			$donor_acct_url       = is_string( $donor_page_permalink ) && '' !== $donor_page_permalink ? $donor_page_permalink : home_url( '/donor-account/' );
+			?>
+			<div class="nextora-header-block__account nextora-header-block__account--donor">
+				<a class="<?php echo esc_attr( $donor_acct_class ); ?>" href="<?php echo esc_url( $donor_acct_url ); ?>" aria-label="<?php esc_attr_e( 'Donor account', 'nextora' ); ?>">
+					<span class="nextora-header-block__account-icon" aria-hidden="true">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user" aria-hidden="true" focusable="false">
+							<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+							<circle cx="12" cy="7" r="4" />
+						</svg>
+					</span>
+					<?php if ( $show_donor_acct_text ) : ?>
 						<span class="nextora-header-block__account-text">
 							<?php echo is_user_logged_in() ? esc_html( wp_get_current_user()->display_name ) : esc_html__( 'Sign in', 'nextora' ); ?>
 						</span>
