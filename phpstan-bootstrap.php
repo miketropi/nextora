@@ -115,3 +115,27 @@ if ( ! function_exists( 'tribe_get_cost' ) ) {
 		return '';
 	}
 }
+
+if ( ! function_exists( 'giftflow_get_donor_account_page' ) ) {
+	/**
+	 * GiftFlow plugin (optional) stub.
+	 *
+	 * @return int|string
+	 */
+	function giftflow_get_donor_account_page() {
+		return 0;
+	}
+}
+
+if ( ! function_exists( 'giftflow_prepare_campaign_status_bar_data' ) ) {
+	/**
+	 * GiftFlow plugin (optional) stub.
+	 *
+	 * @param int|WP_Post|null $campaign
+	 *
+	 * @return array<string, mixed>
+	 */
+	function giftflow_prepare_campaign_status_bar_data( $campaign = null ): array {
+		return array();
+	}
+}

@@ -223,8 +223,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 				$alt = (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true );
 			}
 
-			$filter = static function ( array $attr ) use ( $inline_style ): array {
-				unset( $attr['width'], $attr['height'] );
+			$filter = static function ( array $attr ) use ( $inline_style, $image_height ): array {
+				if ( ! isset( $attr['height'] ) && $image_height > 0 ) {
+					$attr['height'] = (string) $image_height;
+				}
 				$attr['style'] = $inline_style;
 
 				return $attr;
@@ -256,9 +258,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 		}
 
 		return sprintf(
-			'<img class="nextora-scrolling-promotion__media" src="%1$s" alt="%2$s" style="%3$s" loading="eager" decoding="async" />',
+			'<img class="nextora-scrolling-promotion__media" src="%1$s" alt="%2$s" width="160" height="%3$d" style="%4$s" loading="eager" decoding="async" />',
 			esc_url( $image_url ),
 			esc_attr( $image_alt ),
+			$image_height > 0 ? $image_height : 60,
 			esc_attr( $inline_style ),
 		);
 	}
