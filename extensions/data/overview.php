@@ -200,6 +200,26 @@ function nextora_get_overview_data(): array {
         'description' => __( 'Notification bar that scrolls across the top of the page with customizable text and links.', 'nextora' ),
       ),
     ),
+		/*
+		 * Getting-started lessons rendered by the Overview video workspace.
+		 *
+		 * Records use the same naming as gallery items so extensions stay consistent:
+		 * array(
+		 *     'id'          => 'unique-id',
+		 *     'title'       => 'Lesson title',
+		 *     'description' => 'Short summary.',
+		 *     'url'         => 'https://example.com/lesson.mp4',
+		 *     'thumbnail'   => 'https://example.com/lesson.jpg', // Optional.
+		 *     'sourceLabel' => 'Child theme',                     // Optional badge.
+		 * )
+		 *
+		 * Filter-returned order is display order. Entries without an id, title, or a
+		 * safe http(s) media URL are skipped by the UI. No training videos ship with
+		 * the theme, so the list is empty until a site or child theme supplies them.
+		 *
+		 * @param array<int, array<string, string>> $videos Lesson records.
+		 */
+		'videos'            => apply_filters( 'nextora_addon_overview_videos', array() ),
 		'extensionsGallery' => apply_filters( 'nextora_addon_overview_gallery', array() ),
 	);
 

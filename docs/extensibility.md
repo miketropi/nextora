@@ -133,6 +133,43 @@ See [comments-tiptap.md](./comments-tiptap.md).
 
 ---
 
+## Nextora Addon overview data
+
+`admin.php?page=nextora-addon-overview` renders from `extensions/data/overview.php` → `nextora_get_overview_data()`, served as `GET /nextora/v1/addon/overview` (nonce + `manage_options`).
+
+| Filter | Purpose | Runs |
+|--------|---------|------|
+| `nextora_addon_overview_videos` | Getting-started lessons for the video workspace. | First |
+| `nextora_addon_overview_gallery` | Items in the extra `Extensions` showcase. | First |
+| `nextora_addon_overview_data` | Whole payload; sees everything above. | Last |
+
+Lesson records use the same field names as gallery items, and the returned array order is display order.
+
+```php
+add_filter(
+	'nextora_addon_overview_videos',
+	function ( array $videos ): array {
+		$videos[] = array(
+			'id'          => 'child-theme-setup',
+			'title'       => __( 'Child theme setup', 'my-child-theme' ),
+			'description' => __( 'Where the child theme files live.', 'my-child-theme' ),
+			'url'         => 'https://example.com/lessons/child-theme.mp4',
+			'thumbnail'   => 'https://example.com/lessons/child-theme.jpg', // Optional.
+			'sourceLabel' => __( 'Child theme', 'my-child-theme' ),          // Optional badge.
+		);
+
+		return $videos;
+	}
+);
+```
+
+- The theme ships **no** tutorial videos, so the `Getting started` tab shows an empty state until a site or child theme supplies lessons.
+- `url` must be directly playable media over http(s) (`mp4`/`webm`). Provider embeds are not supported.
+- An entry without an `id`, a `title`, or a safe media URL is skipped, so malformed records never render a dead row.
+- Lesson durations are read from the media metadata at runtime; do not supply them.
+
+---
+
 ## Child theme recommendation
 
 Put integrations in the child theme’s `functions.php` (or `inc/integrations.php`) so parent theme updates are safe.

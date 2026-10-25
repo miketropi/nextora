@@ -35,6 +35,20 @@ export interface GalleryItem {
 	description: string;
 }
 
+/**
+ * Getting-started lesson supplied through `nextora_addon_overview_videos`.
+ *
+ * Fields may be missing: extension-supplied records are validated before use.
+ */
+export interface OverviewVideo {
+	id?: string;
+	title?: string;
+	description?: string;
+	url?: string;
+	thumbnail?: string;
+	sourceLabel?: string;
+}
+
 export interface QuickLink {
 	title: string;
 	url: string;
@@ -48,5 +62,6 @@ export interface OverviewData {
 	changelog: ChangelogEntry[];
 	quickLinks: QuickLink[];
 	gallery: GalleryItem[];
+	videos: OverviewVideo[];
 	extensionsGallery: GalleryItem[];
 }
