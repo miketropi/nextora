@@ -20,13 +20,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return array<int, array{slug: string, name: string, description: string, image: string, url: string, isPremium: bool, isComingSoon: bool}>
  */
 function nextora_get_supported_plugins(): array {
+	$plugin_install_url = admin_url( 'plugin-install.php' );
 	$plugins = array(
 		array(
 			'slug'         => 'beplus-visual-mega-nav',
 			'name'         => 'Beplus Visual Mega Navigation',
 			'description'  => 'A Gutenberg-powered mega menu builder for WordPress. Build rich mega menus visually using the block editor.',
 			'image'        => 'https://i.pinimg.com/1200x/c2/7c/eb/c27ceb9be031dea4b4563c9bd88d1bfe.jpg',
-			'url'          => 'https://wordpress.org/plugins/beplus-visual-mega-nav/',
+			'url'          => $plugin_install_url . '?s=beplus-visual-mega-nav&tab=search&type=term',
 			'isPremium'    => false,
 			'isComingSoon' => false,
 		),
@@ -35,7 +36,7 @@ function nextora_get_supported_plugins(): array {
 			'name'         => 'GiftFlow – Donation & Fundraising',
 			'description'  => 'Campaign-based donation and fundraising platform built natively for WordPress.',
 			'image'        => 'https://ps.w.org/giftflow/assets/banner-1544x500.png?rev=3577616',
-			'url'          => 'https://giftflow.beplus-agency.cloud/',
+			'url'          => $plugin_install_url . '?s=giftflow&tab=search&type=term',
 			'isPremium'    => true,
 			'isComingSoon' => false,
 		),
