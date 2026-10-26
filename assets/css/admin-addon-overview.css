@@ -225,6 +225,65 @@
 }
 
 /* ================================================================
+   Getting-started notice
+   ================================================================ */
+.nextora-overview-notice {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 14px;
+	margin: 0 0 32px;
+	padding: 16px 18px;
+	background: var(--nx-accent-bg);
+	border: 1px solid var(--nx-accent);
+	border-radius: 12px;
+}
+
+.nextora-overview-notice__icon {
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background: var(--nx-bg-page);
+	color: var(--nx-accent-darker);
+}
+
+.nextora-overview-notice__text {
+	flex: 1 1 320px;
+	min-width: 0;
+	margin: 0;
+	font-size: 12.5px;
+	line-height: 1.6;
+	color: var(--nx-text-secondary);
+}
+
+.nextora-overview-notice__text strong {
+	color: var(--nx-text);
+}
+
+.nextora-overview-notice__cta {
+	white-space: nowrap;
+	color: var(--nx-accent-darker);
+	font-weight: 650;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	transition: color var(--nx-ease) 0.2s;
+}
+
+.nextora-overview-notice__cta:hover {
+	color: var(--nx-text);
+}
+
+.nextora-overview-notice__cta:focus-visible {
+	outline: 2px solid var(--nx-accent-dark);
+	outline-offset: 3px;
+	border-radius: 2px;
+}
+
+/* ================================================================
    Feature overview
    ================================================================ */
 .nextora-overview-features {
@@ -446,13 +505,18 @@
 	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
-.nextora-overview-player__frame video {
+.nextora-overview-player__frame video,
+.nextora-overview-player__frame iframe {
 	display: block;
 	width: 100%;
 	height: 100%;
 	background: var(--nx-player-bg);
 	background: var(--nx-player-bg-wide);
 	object-fit: contain;
+}
+
+.nextora-overview-player__frame iframe {
+	border: 0;
 }
 
 .nextora-overview-player__details {

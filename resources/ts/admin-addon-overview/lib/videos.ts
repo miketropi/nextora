@@ -8,11 +8,16 @@ export interface PlayableVideo {
 	title: string;
 	description: string;
 	url: string;
+	/** Player URL for hosted videos (YouTube); empty for direct media files. */
+	embedUrl: string;
 	thumbnail: string;
 	sourceLabel: string;
 }
 
 const SAFE_PROTOCOLS = ['http:', 'https:'];
+
+const YOUTUBE_ID_PATTERN = /^[A-Za-z0-9_-]{11}$/;
+const YOUTUBE_PATH_PREFIXES = ['/embed/', '/shorts/', '/live/'];
 
 /**
  * Resolve a media URL, rejecting anything that is not http(s).
@@ -43,6 +48,44 @@ export function toSafeMediaUrl(value: unknown): string {
 
 function readString(value: unknown): string {
 	return typeof value === 'string' ? value.trim() : '';
+}
+
+/**
+ * Resolve a lesson URL to a privacy-friendly YouTube embed URL.
+ *
+ * Only the 11-character video id survives, so a lesson URL can never place
+ * arbitrary markup in the player `src`. Hosted lessons are embedded because
+ * YouTube serves no media file the `<video>` element could play.
+ *
+ * @param value Raw lesson URL from the REST payload.
+ * @return youtube-nocookie embed URL, or an empty string for non-YouTube URLs.
+ */
+export function toYouTubeEmbedUrl(value: unknown): string {
+	const url = toSafeMediaUrl(value);
+
+	if (!url) {
+		return '';
+	}
+
+	const parsed = new URL(url);
+	const host = parsed.hostname.toLowerCase();
+
+	if (host !== 'youtube.com' && host !== 'youtu.be' && !host.endsWith('.youtube.com')) {
+		return '';
+	}
+
+	let id = '';
+
+	if (host === 'youtu.be') {
+		id = parsed.pathname.slice(1).split('/')[0];
+	} else if (parsed.pathname === '/watch') {
+		id = parsed.searchParams.get('v') ?? '';
+	} else {
+		const prefix = YOUTUBE_PATH_PREFIXES.find((candidate) => parsed.pathname.startsWith(candidate));
+		id = prefix ? parsed.pathname.slice(prefix.length).split('/')[0] : '';
+	}
+
+	return YOUTUBE_ID_PATTERN.test(id) ? `https://www.youtube-nocookie.com/embed/${id}` : '';
 }
 
 /**
@@ -79,6 +122,7 @@ export function normalizeVideos(videos: OverviewVideo[] | undefined): PlayableVi
 			title,
 			description: readString(video.description),
 			url,
+			embedUrl: toYouTubeEmbedUrl(url),
 			thumbnail: toSafeMediaUrl(video.thumbnail),
 			sourceLabel: readString(video.sourceLabel),
 		});

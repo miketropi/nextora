@@ -137,6 +137,8 @@ See [comments-tiptap.md](./comments-tiptap.md).
 
 `admin.php?page=nextora-addon-overview` renders from `extensions/data/overview.php` → `nextora_get_overview_data()`, served as `GET /nextora/v1/addon/overview` (nonce + `manage_options`).
 
+Both sections are deep-linkable through the `tab` query variable: `admin.php?page=nextora-addon-overview&tab=videos` opens **Getting started** directly, `?tab=features` opens **Theme features**. Values are matched case-insensitively and anything unknown falls back to **Theme features**, so a stale link never breaks the page. Switching tabs rewrites `tab` in place (`history.replaceState`), which keeps other query variables intact and keeps Back leaving the screen instead of stepping through tabs. Helper: `resources/ts/admin-addon-overview/lib/tabs-url.ts`.
+
 | Filter | Purpose | Runs |
 |--------|---------|------|
 | `nextora_addon_overview_videos` | Getting-started lessons for the video workspace. | First |
@@ -158,15 +160,21 @@ add_filter(
 			'sourceLabel' => __( 'Child theme', 'my-child-theme' ),          // Optional badge.
 		);
 
+		$videos[] = array(
+			'id'    => 'megamenu-config',
+			'title' => __( 'Megamenu configuration', 'my-child-theme' ),
+			'url'   => 'https://www.youtube.com/watch?v=S86Ud-ipZaM',
+		);
+
 		return $videos;
 	}
 );
 ```
 
-- The theme ships **no** tutorial videos, so the `Getting started` tab shows an empty state until a site or child theme supplies lessons.
-- `url` must be directly playable media over http(s) (`mp4`/`webm`). Provider embeds are not supported.
-- An entry without an `id`, a `title`, or a safe media URL is skipped, so malformed records never render a dead row.
-- Lesson durations are read from the media metadata at runtime; do not supply them.
+- The filter default is the theme's own three setup guides (parent theme, child theme + home demo import, megamenu), so append to `$videos` instead of building a list from scratch unless you intend to replace them.
+- `url` accepts either directly playable media over http(s) (`mp4`/`webm`) or a YouTube URL (`youtube.com/watch`, `/shorts`, `/embed`, `/live`, or a `youtu.be` share link). YouTube lessons are embedded through `youtube-nocookie.com` and only the 11-character video id is carried over; other providers and non-http(s) schemes are not supported.
+- An entry without an `id`, a `title`, or a safe http(s) URL is skipped, so malformed records never render a dead row.
+- Lesson durations are read from the media metadata at runtime; do not supply them. Hosted embeds report no length, so a course made only of YouTube lessons shows no per-lesson time and no `total` label.
 
 ---
 

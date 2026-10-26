@@ -41,10 +41,14 @@ export default function VideoWorkspace({ videos, isActive }: VideoWorkspaceProps
 	const [mediaFailed, setMediaFailed] = useState(false);
 	const videoRef = useRef<HTMLVideoElement | null>(null);
 
-	const durations = useVideoDurations(videos.map((video) => video.url));
+	const durations = useVideoDurations(
+		videos.filter((video) => !video.embedUrl).map((video) => video.url),
+	);
 
 	const current = videos.find((video) => video.id === currentId) ?? videos[0] ?? null;
-	const activeSource = isActive && current ? current.url : '';
+	// A lesson plays either as a hosted embed or as a media file, never both.
+	const activeSource = isActive && current && !current.embedUrl ? current.url : '';
+	const activeEmbedUrl = isActive && current ? current.embedUrl : '';
 	const currentDuration = current ? formatDuration(durations[current.url]) : '';
 
 	// Keep the selection on a lesson that still exists after filtering changes.
@@ -63,17 +67,20 @@ export default function VideoWorkspace({ videos, isActive }: VideoWorkspaceProps
 	useEffect(() => {
 		const element = videoRef.current;
 
-		if (!element) {
-			return;
-		}
-
 		if (!activeSource) {
-			if (element.getAttribute('src')) {
+			// Hosted embeds and hidden panels have no media element to load.
+			setMediaFailed(false);
+
+			if (element?.getAttribute('src')) {
 				element.pause();
 				element.removeAttribute('src');
 				element.load();
 			}
 
+			return;
+		}
+
+		if (!element) {
 			return;
 		}
 
@@ -155,14 +162,25 @@ export default function VideoWorkspace({ videos, isActive }: VideoWorkspaceProps
 					</div>
 
 					<div className="nextora-overview-player__frame">
-						<video
-							ref={videoRef}
-							controls
-							playsInline
-							preload="metadata"
-							onError={() => setMediaFailed(true)}
-							onLoadedMetadata={() => setMediaFailed(false)}
-						/>
+						{current?.embedUrl ? (
+							<iframe
+								key={current.id}
+								src={activeEmbedUrl || undefined}
+								title={current.title}
+								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+								allowFullScreen
+								referrerPolicy="strict-origin-when-cross-origin"
+							/>
+						) : (
+							<video
+								ref={videoRef}
+								controls
+								playsInline
+								preload="metadata"
+								onError={() => setMediaFailed(true)}
+								onLoadedMetadata={() => setMediaFailed(false)}
+							/>
+						)}
 					</div>
 
 					{current && (
@@ -185,7 +203,7 @@ export default function VideoWorkspace({ videos, isActive }: VideoWorkspaceProps
 						</div>
 					)}
 
-					{mediaFailed && (
+					{mediaFailed && !current?.embedUrl && (
 						<p className="nextora-overview-media-error" role="alert">
 							<LucideIcon icon={AlertTriangle as IconNode} size={14} />
 							<span>{__('This video could not be loaded.', 'nextora')}</span>
