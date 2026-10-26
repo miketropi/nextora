@@ -1,3 +1,4 @@
+import { useEffect } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import Header from './components/Header';
 import Footer from '../admin-addon/components/Footer';
@@ -31,6 +32,21 @@ export default function App(): JSX.Element {
 		importError,
 		setImportError,
 	} = useCloudCatalog();
+
+	// Import feedback renders in the banner at the top of the page; surface it
+	// after a successful import instead of leaving the user on the card they clicked.
+	useEffect(() => {
+		if (!importSuccess) {
+			return;
+		}
+
+		window.scrollTo({
+			top: 0,
+			behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+				? 'auto'
+				: 'smooth',
+		});
+	}, [importSuccess]);
 
 	const activeTheme = config?.activeTheme || 'nextora';
 	const parentTheme = config?.parentTheme || 'nextora';
