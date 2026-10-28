@@ -1,4 +1,4 @@
 <?php
 
 declare(strict_types=1);
-return array( 'dependencies' => array( 'wp-components', 'wp-element', 'wp-i18n', 'wp-api-fetch' ), 'version' => '1792660664621' );
+return array( 'dependencies' => array( 'wp-components', 'wp-element', 'wp-i18n', 'wp-api-fetch' ), 'version' => '1792750308763' );
