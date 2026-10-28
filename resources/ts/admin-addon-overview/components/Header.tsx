@@ -1,34 +1,28 @@
 import { __ } from '@wordpress/i18n';
-import type { ThemeInfo } from '../types';
-import { LucideIcon } from './icons';
-import { Boxes, Clock, ShieldCheck } from 'lucide';
+import { Mail } from 'lucide';
 import type { IconNode } from 'lucide';
+import { LucideIcon } from './icons';
 
-interface HeaderProps {
-	theme: ThemeInfo;
-	featureCount: number;
-	changelogCount: number;
-}
-
-export default function OverviewHeader({ theme, featureCount, changelogCount }: HeaderProps): JSX.Element {
+export default function Header(): JSX.Element {
 	return (
-		<>
-			<div className="nextora-overview-hero">
-				<span className="nextora-overview-hero__badge">v{theme.version}</span>
-				<h1 className="nextora-overview-hero__title">{theme.name}</h1>
-				<p className="nextora-overview-hero__desc">
-					{__('Modern WordPress Block Theme — purpose-built for performance, accessibility, and the full site editor.', 'nextora')}
-				</p>
-				<div className="nextora-overview-hero__meta">
-					<a href={theme.authorUri || '#'} target="_blank" rel="noopener noreferrer">
-						{theme.author}
-					</a>
-					<span className="nextora-overview-hero__meta-dot" />
-					<span>WordPress {theme.requiresWordPress}+</span>
-					<span className="nextora-overview-hero__meta-dot" />
-					<span>PHP {theme.requiresPhp}+</span>
-				</div>
-			</div>
-		</>
+		<div className="nextora-overview-header">
+			<h1 className="nextora-overview-header__title">
+				{__('Nextora Overview', 'nextora')}
+			</h1>
+			<p className="nextora-overview-header__description">
+				{__('Explore the theme and build your first site step by step.', 'nextora')}
+			</p>
+			<p className="nextora-overview-header__contact">
+				<LucideIcon
+					icon={Mail as IconNode}
+					size={14}
+					className="nextora-overview-header__contact-icon"
+				/>
+				{__('Need help? Reach us at', 'nextora')}{' '}
+				<a href="mailto:admin@beplusthemes.com">
+					admin@beplusthemes.com
+				</a>
+			</p>
+		</div>
 	);
 }

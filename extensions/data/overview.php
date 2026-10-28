@@ -13,6 +13,37 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Getting-started lessons that ship with the theme.
+ *
+ * Media files and YouTube URLs are both accepted; the Overview video
+ * workspace picks the player per record. Order is display order.
+ *
+ * @return array<int, array<string, string>> Lesson records.
+ */
+function nextora_get_overview_lessons(): array {
+	return array(
+		array(
+			'id'          => 'parent-theme-strolling',
+			'title'       => __( 'Setup Guide Strolling Around Parent Theme', 'nextora' ),
+			'description' => __( 'A tour of the parent theme and the areas you will configure first.', 'nextora' ),
+			'url'         => 'https://www.youtube.com/watch?v=06fP7_s7WZg',
+		),
+		array(
+			'id'          => 'child-theme-license-import-demo',
+			'title'       => __( 'Setup Guide Child theme Active License & Import Home Demo', 'nextora' ),
+			'description' => __( 'Install the child theme, activate your license, then import the Home demo.', 'nextora' ),
+			'url'         => 'https://www.youtube.com/watch?v=xduHDZvDjCU',
+		),
+		array(
+			'id'          => 'megamenu-config',
+			'title'       => __( 'Setup Guide Megamenu Config', 'nextora' ),
+			'description' => __( 'Configure the mega nav dropdown: width, position, background, and animation.', 'nextora' ),
+			'url'         => 'https://www.youtube.com/watch?v=S86Ud-ipZaM',
+		),
+	);
+}
+
+/**
  * Build the overview data array for the Overview REST endpoint.
  *
  * @return array<string, mixed>
@@ -200,6 +231,26 @@ function nextora_get_overview_data(): array {
         'description' => __( 'Notification bar that scrolls across the top of the page with customizable text and links.', 'nextora' ),
       ),
     ),
+		/*
+		 * Getting-started lessons rendered by the Overview video workspace.
+		 *
+		 * Records use the same naming as gallery items so extensions stay consistent:
+		 * array(
+		 *     'id'          => 'unique-id',
+		 *     'title'       => 'Lesson title',
+		 *     'description' => 'Short summary.',                  // Optional.
+		 *     'url'         => 'https://example.com/lesson.mp4',  // Media file or YouTube URL.
+		 *     'thumbnail'   => 'https://example.com/lesson.jpg',  // Optional.
+		 *     'sourceLabel' => 'Child theme',                     // Optional badge.
+		 * )
+		 *
+		 * Filter-returned order is display order. Entries without an id, a title, or a
+		 * safe http(s) URL are skipped by the UI. Media files play in the `<video>`
+		 * element; YouTube URLs are embedded through youtube-nocookie.com.
+		 *
+		 * @param array<int, array<string, string>> $videos Lesson records.
+		 */
+		'videos'            => apply_filters( 'nextora_addon_overview_videos', nextora_get_overview_lessons() ),
 		'extensionsGallery' => apply_filters( 'nextora_addon_overview_gallery', array() ),
 	);
 
