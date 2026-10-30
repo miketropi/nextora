@@ -364,6 +364,10 @@
       "type": "string",
       "default": ""
     },
+    "arrowHoverColor": {
+      "type": "string",
+      "default": ""
+    },
     "enableScrollAnimation": {
       "type": "boolean",
       "default": true

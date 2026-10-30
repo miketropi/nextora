@@ -238,6 +238,10 @@
       "type": "string",
       "default": "minimal"
     },
+    "arrowsDesktopDotsMobile": {
+      "type": "boolean",
+      "default": false
+    },
     "freeMode": {
       "type": "boolean",
       "default": false

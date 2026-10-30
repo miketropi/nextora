@@ -133,6 +133,7 @@ export function buildStyleVars(attrs: {
 	paginationColor?: string;
 	paginationActiveColor?: string;
 	arrowColor?: string;
+	arrowHoverColor?: string;
 	iconColor?: string;
 	iconSurfaceBackgroundColor?: string;
 	iconSurfaceBorderColor?: string;
@@ -193,6 +194,7 @@ export function buildStyleVars(attrs: {
 	setColor('--nextora-box-icon-dot-color', attrs.paginationColor);
 	setColor('--nextora-box-icon-dot-active', attrs.paginationActiveColor);
 	setColor('--nextora-box-icon-arrow-color', attrs.arrowColor);
+	setColor('--nextora-box-icon-arrow-hover-color', attrs.arrowHoverColor);
 	setColor('--nextora-box-icon-icon-color', attrs.iconColor);
 	setColor('--nextora-box-icon-icon-surface-bg', attrs.iconSurfaceBackgroundColor);
 	setColor('--nextora-box-icon-icon-surface-border', attrs.iconSurfaceBorderColor);

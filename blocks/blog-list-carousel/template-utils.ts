@@ -1,6 +1,6 @@
 import type { BlogListCarouselAttributes } from './types';
 
-export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5';
 
 export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	value: BlogListCardTemplate;
@@ -11,6 +11,7 @@ export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	{ value: 'template-2', labelKey: 'Template 2' },
 	{ value: 'template-3', labelKey: 'Template 3' },
 	{ value: 'template-4', labelKey: 'Template 4' },
+	{ value: 'template-5', labelKey: 'Template 5' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BlogListCardTemplate {
@@ -25,6 +26,9 @@ export function normalizeCardTemplate(value: string | undefined): BlogListCardTe
 	}
 	if ( value === 'template-4' ) {
 		return 'template-4';
+	}
+	if ( value === 'template-5' ) {
+		return 'template-5';
 	}
 	return 'default';
 }
@@ -159,6 +163,34 @@ export function getTemplateDefaultAttributes(
 			showDate: true,
 			showCategory: true,
 			dateFormat: 'M j, Y',
+		};
+	}
+
+	if (template === 'template-5') {
+		return {
+			layoutMode: 'carousel',
+			slidesPerView: 2,
+			slidesPerViewTablet: 2,
+			slidesPerViewMobile: 1,
+			spaceBetween: 30,
+			imageAspectRatio: '16-10',
+			cardBorderRadius: 10,
+			showTitle: true,
+			titleFontSize: 'medium-plus',
+			titleLineClamp: 2,
+			showDate: true,
+			dateFormat: 'F j, Y',
+			showExcerpt: false,
+			showCategory: false,
+			showAuthor: false,
+			showReadMore: true,
+			readMoreText: 'Read More',
+			cardLinkBehavior: 'full-card',
+			showArrows: true,
+			arrowStyle: 'circle',
+			showPagination: false,
+			arrowsDesktopDotsMobile: true,
+			loop: true,
 		};
 	}
 

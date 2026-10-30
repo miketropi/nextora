@@ -450,6 +450,34 @@ if ( ! function_exists( 'nextora_blc_get_template_defaults' ) ) {
 			);
 		}
 
+		if ( 'template-5' === $template ) {
+			return array(
+				'layoutMode'          => 'carousel',
+				'slidesPerView'       => 2,
+				'slidesPerViewTablet' => 2,
+				'slidesPerViewMobile' => 1,
+				'spaceBetween'        => 30,
+				'imageAspectRatio'    => '16-10',
+				'cardBorderRadius'    => 10,
+				'showTitle'           => true,
+				'titleFontSize'       => 'medium-plus',
+				'titleLineClamp'      => 2,
+				'showDate'            => true,
+				'dateFormat'          => 'F j, Y',
+				'showExcerpt'         => false,
+				'showCategory'        => false,
+				'showAuthor'          => false,
+				'showReadMore'        => true,
+				'readMoreText'        => 'Read More',
+				'cardLinkBehavior'    => 'full-card',
+				'showArrows'          => true,
+				'arrowStyle'          => 'circle',
+				'showPagination'      => false,
+				'arrowsDesktopDotsMobile' => true,
+				'loop'                => true,
+			);
+		}
+
 		return array();
 	}
 }
@@ -460,7 +488,8 @@ $card_template     = in_array( $card_template_raw, array( 'template-1', 'news-gr
 	? 'template-1'
 	: ( in_array( $card_template_raw, array( 'template-2' ), true ) ? 'template-2'
 	: ( in_array( $card_template_raw, array( 'template-3', 'overlay-grid' ), true ) ? 'template-3'
-	: ( in_array( $card_template_raw, array( 'template-4' ), true ) ? 'template-4' : 'default' ) ) );
+	: ( in_array( $card_template_raw, array( 'template-4' ), true ) ? 'template-4'
+	: ( in_array( $card_template_raw, array( 'template-5' ), true ) ? 'template-5' : 'default' ) ) ) );
 
 $template_defaults = nextora_blc_get_template_defaults( $card_template );
 $parsed_attrs      = isset( $block ) && $block instanceof WP_Block && isset( $block->parsed_block['attrs'] ) && is_array( $block->parsed_block['attrs'] )
@@ -656,19 +685,23 @@ $loop        = isset( $attributes['loop'] ) && (bool) $attributes['loop'];
 $autoplay    = isset( $attributes['autoplay'] ) && (bool) $attributes['autoplay'];
 $autoplay_d  = isset( $attributes['autoplayDelay'] ) ? max( 2000, min( 12000, (int) $attributes['autoplayDelay'] ) ) : 5000;
 $pause_hover = ! isset( $attributes['pauseOnHover'] ) || (bool) $attributes['pauseOnHover'];
-$show_pag    = ! isset( $attributes['showPagination'] ) || (bool) $attributes['showPagination'];
-$show_arrows = isset( $attributes['showArrows'] ) && (bool) $attributes['showArrows'];
+$show_pag = isset( $attributes['showPagination'] )
+    ? (bool) $attributes['showPagination']
+    : ( isset( $template_defaults['showPagination'] ) ? (bool) $template_defaults['showPagination'] : true );
+$show_arrows = isset( $attributes['showArrows'] )
+    ? (bool) $attributes['showArrows']
+    : ( isset( $template_defaults['showArrows'] ) ? (bool) $template_defaults['showArrows'] : false );
 $arrow_style_val = isset( $attributes['arrowStyle'] ) && is_string( $attributes['arrowStyle'] )
     ? sanitize_html_class( $attributes['arrowStyle'] ) : 'minimal';
 $free_mode   = isset( $attributes['freeMode'] ) && (bool) $attributes['freeMode'];
 $grab_cursor = ! isset( $attributes['grabCursor'] ) || (bool) $attributes['grabCursor'];
 
-$card_template_raw = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-$card_template     = in_array( $card_template_raw, array( 'template-1', 'news-grid' ), true )
-    ? 'template-1'
-    : ( in_array( $card_template_raw, array( 'template-2' ), true ) ? 'template-2'
-    : ( in_array( $card_template_raw, array( 'template-3', 'overlay-grid' ), true ) ? 'template-3'
-    : ( in_array( $card_template_raw, array( 'template-4' ), true ) ? 'template-4' : 'default' ) ) );
+$arrows_desktop_dots_mobile = isset( $attributes['arrowsDesktopDotsMobile'] )
+    ? (bool) $attributes['arrowsDesktopDotsMobile']
+    : ! empty( $template_defaults['arrowsDesktopDotsMobile'] );
+
+$show_arrows_markup = $arrows_desktop_dots_mobile ? true : $show_arrows;
+$show_pag_markup    = $arrows_desktop_dots_mobile ? true : $show_pag;
 
 // Layout
 $layout_mode = isset( $attributes['layoutMode'] ) && in_array( $attributes['layoutMode'], array( 'carousel', 'grid' ), true )
@@ -725,9 +758,10 @@ $swiper_opts = array(
     'autoplay'            => $autoplay,
     'autoplayDelay'       => $autoplay_d,
     'pauseOnHover'        => $pause_hover,
-    'showPagination'      => $show_pag && $post_count > 1,
-    'showArrows'          => $show_arrows && $post_count > 1,
-    'arrowStyle'          => $arrow_style_val,
+    'showPagination'          => $show_pag_markup && $post_count > 1,
+    'showArrows'              => $show_arrows_markup && $post_count > 1,
+    'arrowStyle'              => $arrow_style_val,
+    'arrowsDesktopDotsMobile' => $arrows_desktop_dots_mobile,
 );
 
 $opts_json   = wp_json_encode( $swiper_opts );
@@ -827,6 +861,12 @@ if ( 'template-3' === $card_template ) {
 }
 if ( 'template-4' === $card_template ) {
     $wrapper_classes[] = 'nextora-blog-list-carousel--template-template-4';
+}
+if ( 'template-5' === $card_template ) {
+    $wrapper_classes[] = 'nextora-blog-list-carousel--template-template-5';
+}
+if ( $arrows_desktop_dots_mobile ) {
+    $wrapper_classes[] = 'nextora-blc--nav-desktop-arrows-mobile-dots';
 }
 if ( $item_height > 0 ) {
     $wrapper_classes[] = 'nextora-blog-list-carousel--has-item-height';
@@ -1024,6 +1064,21 @@ while ( $query->have_posts() ) :
             $meta_style_attr = '' !== $meta_color_props['style'] ? ' style="' . esc_attr( $meta_color_props['style'] ) . '"' : '';
             $meta_html = '<div class="' . esc_attr( $meta_classes ) . '"' . $meta_style_attr . '>' . implode( '', $meta_items ) . '</div>';
         }
+    } elseif ( 'template-5' === $card_template ) {
+        if ( $show_date ) {
+            $meta_classes = 'nextora-blc__card-meta nextora-blc__card-meta--template-5';
+            if ( '' !== $meta_color_props['class'] ) {
+                $meta_classes .= ' ' . $meta_color_props['class'];
+            }
+            $meta_style_attr = '' !== $meta_color_props['style'] ? ' style="' . esc_attr( $meta_color_props['style'] ) . '"' : '';
+            $meta_html = sprintf(
+            	'<div class="%1$s"%2$s><time class="nextora-blc__card-date has-medium-font-size" datetime="%3$s">%4$s</time></div>',
+            	esc_attr( $meta_classes ),
+            	$meta_style_attr,
+            	esc_attr( (string) get_the_date( 'c' ) ),
+            	esc_html( (string) get_the_date( $date_format ) ),
+            );
+        }
     } else {
         $meta_parts = array();
         if ( $show_date ) {
@@ -1075,8 +1130,11 @@ while ( $query->have_posts() ) :
     if ( $show_read_more ) {
 		$read_more_arrow = in_array( $card_template, array( 'template-1', 'template-2', 'template-4' ), true ) ? nextora_blc_render_readmore_arrow_icon() : '';
 		$read_more_classes = 'nextora-blc__card-readmore';
-		if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-4' ), true ) ) {
+		if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-4', 'template-5' ), true ) ) {
 			$read_more_classes .= ' nextora-blc__card-readmore--' . $card_template;
+		}
+		if ( 'template-5' === $card_template ) {
+			$read_more_classes .= ' wp-element-button';
 		}
 		if ( '' !== $read_more_color_props['class'] ) {
 			$read_more_classes .= ' ' . $read_more_color_props['class'];
@@ -1093,7 +1151,9 @@ while ( $query->have_posts() ) :
     }
 
     // Card body
-    if ( 'template-3' === $card_template ) {
+    if ( 'template-5' === $card_template ) {
+		$card_body = $meta_html . $title_html;
+	} elseif ( 'template-3' === $card_template ) {
 		$card_body = $title_html . $meta_html . $excerpt_html . $read_more_html;
 	} elseif ( 'template-1' === $card_template ) {
         $card_body = $meta_html . $title_html . $excerpt_html . $read_more_html;
@@ -1107,7 +1167,7 @@ while ( $query->have_posts() ) :
     if ( 'full-card' === $card_link_behavior ) {
         $card_class .= ' nextora-blc__card--linked';
     }
-	if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-3', 'template-4' ), true ) ) {
+	if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-3', 'template-4', 'template-5' ), true ) ) {
 		$card_class .= ' nextora-blc__card--' . $card_template;
 	}
 	if ( '' !== $card_bg_props['class'] ) {
@@ -1116,7 +1176,18 @@ while ( $query->have_posts() ) :
 	$card_style_attr = '' !== $card_bg_props['style'] ? ' style="' . esc_attr( $card_bg_props['style'] ) . '"' : '';
 
     // Card wrapper
-    if ( 'template-3' === $card_template ) {
+    if ( 'template-5' === $card_template ) {
+        $cards_html .= sprintf(
+        	'<div class="swiper-slide"><article class="%1$s"%2$s><div class="nextora-blc__card-image-wrapper"><a href="%6$s" class="nextora-blc__card-image-link" aria-label="%7$s">%3$s</a><div class="nextora-blc__image-overlay nextora-blc__image-overlay--template-5"></div></div><div class="nextora-blc__card-body-overlay nextora-blc__card-body-overlay--template-5"><div class="nextora-blc__card-content--template-5">%4$s</div>%5$s</div></article></div>',
+        	esc_attr( $card_class ),
+        	$card_style_attr,
+        	$image_html,
+        	$card_body,
+        	$read_more_html,
+        	$permalink,
+        	esc_attr( $title ),
+        );
+    } elseif ( 'template-3' === $card_template ) {
         $cards_html .= sprintf(
         	'<div class="swiper-slide"><article class="%1$s"%2$s><div class="nextora-blc__card-image-wrapper">%3$s<div class="nextora-blc__image-overlay"></div></div><div class="nextora-blc__card-body-overlay">%4$s</div></article></div>',
         	esc_attr( $card_class ),
@@ -1138,7 +1209,7 @@ wp_reset_postdata();
 
 // ── Arrows ──
 $arrows_html = '';
-if ( $show_arrows && $post_count > 1 ) {
+if ( $show_arrows_markup && $post_count > 1 ) {
     $prev_svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>';
     $next_svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
     $arrows_html = sprintf(
@@ -1154,7 +1225,7 @@ if ( $show_arrows && $post_count > 1 ) {
 
 // ── Pagination ──
 $pagination_html = '';
-if ( $show_pag && $post_count > 1 ) {
+if ( $show_pag_markup && $post_count > 1 ) {
     $pagination_html = '<div class="nextora-blc__pagination swiper-pagination" aria-hidden="true"></div>';
 }
 
