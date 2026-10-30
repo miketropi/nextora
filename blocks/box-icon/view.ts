@@ -173,7 +173,8 @@ function initScrollReveal(section: HTMLElement): void {
 	const carousel =
 		section.querySelector<HTMLElement>('.nextora-box-icon__carousel-root') ||
 		section.querySelector<HTMLElement>('.nextora-box-icon__timeline-grid') ||
-		section.querySelector<HTMLElement>('.nextora-box-icon__ways-rows');
+		section.querySelector<HTMLElement>('.nextora-box-icon__ways-rows') ||
+		section.querySelector<HTMLElement>('.nextora-box-icon__template-5-list');
 	const style = section.getAttribute('data-nextora-scroll-reveal-style') || 'default';
 
 	if (style === 'sequential') {
@@ -267,29 +268,32 @@ function initSequentialReveal(
 				return;
 			}
 
-			// Pre-set matching 14px subtle displacement (same as menu-item standard)
+			const isTemplate5 = section.classList.contains('nextora-box-icon--template-template-5');
+			const displacement = isTemplate5 ? 28 : 14;
+			const cardDuration = isTemplate5 ? 0.6 : 0.38;
+			const cardStagger = isTemplate5 ? 0.12 : 0.04;
+
 			if (header) {
-				gsap.set(header, { opacity: 0, y: 14, force3D: true });
+				gsap.set(header, { opacity: 0, y: displacement, force3D: true });
 			}
 			if (cards.length > 0) {
-				gsap.set(cards, { opacity: 0, y: 14, force3D: true });
+				gsap.set(cards, { opacity: 0, y: displacement, force3D: true });
 			}
 			section.classList.remove('nextora-box-icon--reveal-pending');
 
 			const gen = nextRevealGen(section);
 
-			// Match menu-item smooth curve & timing: duration 0.38s, stagger 0.04s, power3.out
 			const timeline = gsap.timeline({
 				defaults: { ease: 'power3.out' },
 				onComplete: () => {
-				if (getRevealGen(section) !== gen) return;
-				gsap.set(targets, { opacity: 1, y: 0, clearProps: 'transform' });
-				setRevealReady(section);
+					if (getRevealGen(section) !== gen) return;
+					gsap.set(targets, { opacity: 1, y: 0, clearProps: 'transform' });
+					setRevealReady(section);
 				},
 			});
 
 			if (header) {
-				timeline.to(header, { opacity: 1, y: 0, duration: 0.38 }, 0);
+				timeline.to(header, { opacity: 1, y: 0, duration: cardDuration }, 0);
 			}
 
 			if (cards.length > 0) {
@@ -298,10 +302,10 @@ function initSequentialReveal(
 					{
 						opacity: 1,
 						y: 0,
-						duration: 0.38,
-						stagger: { each: 0.04, from: 'start' },
+						duration: cardDuration,
+						stagger: { each: cardStagger, from: 'start' },
 					},
-					header ? 0.04 : 0,
+					header ? 0.08 : 0,
 				);
 			}
 		});
@@ -639,7 +643,9 @@ function initCarouselRoots(container: Element | Document = document): void {
 		});
 
 	container
-		.querySelectorAll<HTMLElement>('.nextora-box-icon--template-template-4')
+		.querySelectorAll<HTMLElement>(
+			'.nextora-box-icon--template-template-4, .nextora-box-icon--template-template-5',
+		)
 		.forEach((section) => {
 			markSectionReady(section);
 		});

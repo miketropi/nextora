@@ -1317,6 +1317,136 @@
 	}
 }
 
+/* ==========================================================================
+   Template 05: Action Cards (How You Can Help)
+   ========================================================================== */
+.nextora-box-icon--template-template-5 .nextora-box-icon__template-5-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--nextora-box-icon-gap, 15px);
+}
+
+.nextora-box-icon--template-template-5 .nextora-box-icon__card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-height: var(--nextora-box-icon-card-min-height, 0);
+	padding: var(--nextora-box-icon-card-padding, clamp(35px, 4.5vw, 70px) clamp(30px, 6vw, 105px) clamp(40px, 5vw, 85px) clamp(30px, 4.5vw, 70px));
+	border: var(--nextora-box-icon-card-border-width, 2px) solid var(--nextora-box-icon-card-border-color, var(--wp--preset--color--contrast, #252525));
+	border-radius: var(--nextora-box-icon-card-radius, 10px);
+	background-color: var(--nextora-box-icon-card-bg, transparent);
+	color: var(--nextora-box-icon-card-desc-color, var(--wp--preset--color--contrast, #252525));
+	box-sizing: border-box;
+	transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.nextora-box-icon--template-template-5 .nextora-box-icon__card-link-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	cursor: pointer;
+}
+
+.nextora-box-icon--template-template-5 .nextora-box-icon__card-header {
+	display: flex;
+	align-items: center;
+	gap: clamp(14px, 2vw, 24px);
+	margin-bottom: clamp(16px, 2vw, 24px);
+}
+
+.nextora-box-icon--template-template-5 .nextora-box-icon__card-icon {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--nextora-box-icon-icon-color, var(--wp--preset--color--contrast, #252525));
+	transition: color 0.3s ease;
+}
+
+.nextora-box-icon--template-template-5 .nextora-box-icon__card-icon .nextora-box-icon__icon {
+	background: transparent;
+	border: none;
+	width: var(--nextora-box-icon-icon-circle-size, 60px);
+	height: var(--nextora-box-icon-icon-circle-size, 60px);
+}
+
+.nextora-box-icon--template-template-5 .nextora-box-icon__card-icon svg {
+	width: var(--nextora-box-icon-icon-size, 36px);
+	height: var(--nextora-box-icon-icon-size, 36px);
+	stroke: currentColor;
+	stroke-width: var(--nextora-box-icon-stroke-width, 1.8);
+}
+
+.nextora-box-icon--template-template-5 .nextora-box-icon__title {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--x-large, clamp(1.5rem, 2.3vw, 2.25rem));
+	font-weight: 700;
+	line-height: 1.25;
+	color: var(--nextora-box-icon-card-title-color, var(--wp--preset--color--contrast, #252525));
+	transition: color 0.3s ease;
+}
+
+.nextora-box-icon--template-template-5 .nextora-box-icon__description {
+	margin: 0;
+	max-width: 620px;
+	font-size: var(--wp--preset--font-size--medium, clamp(1rem, 1.35vw, 1.375rem));
+	line-height: 1.66;
+	color: var(--nextora-box-icon-card-desc-color, var(--wp--preset--color--contrast, #252525));
+}
+
+.nextora-box-icon--template-template-5 .nextora-box-icon__card-arrow {
+	position: absolute;
+	bottom: clamp(20px, 3vw, 40px);
+	right: clamp(20px, 3.5vw, 50px);
+	width: clamp(36px, 3.5vw, 48px);
+	height: clamp(36px, 3.5vw, 48px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--nextora-box-icon-arrow-color, var(--wp--preset--color--contrast, #252525));
+	transition: color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nextora-box-icon--template-template-5 .nextora-box-icon__card-arrow svg {
+	width: 100%;
+	height: 100%;
+	stroke: currentColor;
+}
+
+/* Hover States */
+.nextora-box-icon--template-template-5:not(.nextora-box-icon--no-card-hover) .nextora-box-icon__card:hover,
+.nextora-box-icon--template-template-5:not(.nextora-box-icon--no-card-hover) .nextora-box-icon__card:focus-within {
+	background-color: var(--nextora-box-icon-card-hover-bg, rgba(229, 231, 235, 0.57));
+}
+
+.nextora-box-icon--template-template-5:not(.nextora-box-icon--no-card-hover) .nextora-box-icon__card:hover .nextora-box-icon__title,
+.nextora-box-icon--template-template-5:not(.nextora-box-icon--no-card-hover) .nextora-box-icon__card:focus-within .nextora-box-icon__title {
+	color: var(--nextora-box-icon-title-hover-color, var(--wp--preset--color--primary, #5c88c6)) !important;
+}
+
+.nextora-box-icon--template-template-5:not(.nextora-box-icon--no-card-hover) .nextora-box-icon__card:hover .nextora-box-icon__card-icon,
+.nextora-box-icon--template-template-5:not(.nextora-box-icon--no-card-hover) .nextora-box-icon__card:focus-within .nextora-box-icon__card-icon {
+	color: var(--nextora-box-icon-icon-hover-color, var(--wp--preset--color--primary, #5c88c6)) !important;
+}
+
+.nextora-box-icon--template-template-5:not(.nextora-box-icon--no-card-hover) .nextora-box-icon__card:hover .nextora-box-icon__card-arrow,
+.nextora-box-icon--template-template-5:not(.nextora-box-icon--no-card-hover) .nextora-box-icon__card:focus-within .nextora-box-icon__card-arrow {
+	color: var(--nextora-box-icon-arrow-hover-color, var(--nextora-box-icon-title-hover-color, var(--wp--preset--color--primary, #5c88c6))) !important;
+	transform: translateX(6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-box-icon--template-template-5 .nextora-box-icon__card,
+	.nextora-box-icon--template-template-5 .nextora-box-icon__card-arrow {
+		transition: none;
+	}
+
+	.nextora-box-icon--template-template-5:not(.nextora-box-icon--no-card-hover) .nextora-box-icon__card:hover .nextora-box-icon__card-arrow,
+	.nextora-box-icon--template-template-5:not(.nextora-box-icon--no-card-hover) .nextora-box-icon__card:focus-within .nextora-box-icon__card-arrow {
+		transform: none;
+	}
+}
+
 /* Edge Fade Overlay for fractional slidesPerView */
 .nextora-box-icon__edge-overlay {
 	display: none;

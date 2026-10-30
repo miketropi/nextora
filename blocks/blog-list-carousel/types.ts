@@ -1,4 +1,4 @@
-export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5';
 
 export interface BlogListCarouselAttributes {
 	cardTemplate: BlogListCardTemplate;
@@ -51,6 +51,7 @@ export interface BlogListCarouselAttributes {
 	showPagination: boolean;
 	showArrows: boolean;
 	arrowStyle: string;
+	arrowsDesktopDotsMobile?: boolean;
 	freeMode: boolean;
 	grabCursor: boolean;
 	cardTitleColor: string;

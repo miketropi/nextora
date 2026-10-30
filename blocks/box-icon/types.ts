@@ -1,7 +1,7 @@
 export type BoxIconLayoutMode = 'slider' | 'grid';
 export type BoxIconIconSource = 'theme' | 'upload';
 export type BoxIconIconStyle = 'default' | 'stacked' | 'framed';
-export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4' | 'template-5';
 export type BoxIconScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxIconItem {
@@ -80,6 +80,7 @@ export interface BoxIconAttributes {
 	paginationColor: string;
 	paginationActiveColor: string;
 	arrowColor: string;
+	arrowHoverColor?: string;
 	headingFontFamily: string;
 	enableScrollAnimation: boolean;
 	scrollAnimationStyle: BoxIconScrollAnimationStyle;
