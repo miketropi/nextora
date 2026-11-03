@@ -1,0 +1,2 @@
+# Keep PHP line endings consistent with PHP CS Fixer on every platform.
+*.php text eol=lf
