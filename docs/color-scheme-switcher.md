@@ -151,6 +151,7 @@ Semantics:
   - ship its own `styles/color-scheme/*.json` and/or `styles/font-preset/*.json`,
   - or simply expose its top-level `styles/*.json` style variations (read automatically),
   - or add `settings.typography.fontFamilies` to its `theme.json` to make extra fonts available to the switcher (fonts declared only inside a style variation load only when that variation is active).
+- **Required for font presets:** a child theme that sets `styles.typography.fontFamily` / `styles.elements.heading.typography.fontFamily` (or its own font tokens) must route them through `var(--nextora-font-body)` / `var(--nextora-font-heading)`. Because the child's `theme.json` and stylesheet are merged *after* the parent's, hardcoded font families silently win and the switcher's font section has no visible effect — the JS still sets the inline role variables, but nothing consumes them. Defaults are preserved by defining the role variables in the child stylesheet, e.g. `--nextora-font-body: var(--wp--preset--font-family--my-body-font)`, and pointing custom tokens at them.
 
 ## Known limitations
 
