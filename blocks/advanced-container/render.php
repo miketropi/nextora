@@ -640,6 +640,11 @@ if ( $use_hover_reveal ) {
 }
 ?>
 <section <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
+	<?php
+	require_once __DIR__ . '/shape-divider.php';
+	nextora_container_render_divider( $attributes['shapeDividerTop'] ?? array(), 'top' );
+	nextora_container_render_divider( $attributes['shapeDividerBottom'] ?? array(), 'bottom' );
+	?>
 	<?php if ( $use_hover_reveal ) : ?>
 		<div
 			class="nextora-advanced-container__bg-reveal"

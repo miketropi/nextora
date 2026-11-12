@@ -15,7 +15,6 @@ import {
   RangeControl,
   SelectControl,
   ToggleControl,
-  TextControl,
   __experimentalUnitControl as UnitControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
@@ -49,8 +48,14 @@ import {
 import { buildHoverRevealImageStyles } from './hover-reveal-styles';
 import { MultiIconPicker } from './ambient-icons';
 import SectionBackgroundFill from './section-background-fill';
+import { ShapeDivider, ShapeDividerControls } from './shape-divider';
+import type { ShapeDividerSettings } from './shape-divider';
+import { InspectorSection, inspectorTitle } from './inspector-section';
+import { MinHeightControl } from './min-height-control';
 
 type Attributes = {
+  shapeDividerTop?: ShapeDividerSettings;
+  shapeDividerBottom?: ShapeDividerSettings;
   backgroundType: string;
   sectionBackgroundColor: string;
   sectionBackgroundFill: 'solid' | 'gradient';
@@ -467,19 +472,13 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
     <>
       <InspectorControls>
         <PanelBody title={__('Layout', 'nextora')} initialOpen>
-          <TextControl
-            label={__('Minimum height', 'nextora')}
+          <MinHeightControl
             value={minHeight}
-            placeholder="268px"
-            help={__(
-              'Desktop (782px+). Tablet 85% and mobile 65% of this value. Empty = 268px. Use px, rem, em, %, vh, dvh, svh, or vw.',
-              'nextora',
-            )}
-            onChange={(value) => setAttributes({ minHeight: value ?? '' })}
+            onChange={(value) => setAttributes({ minHeight: value })}
           />
         </PanelBody>
 
-        <PanelBody title={__('Background', 'nextora')} initialOpen={false}>
+        <PanelBody title={inspectorTitle(__('Background', 'nextora'), backgroundType === 'image' ? __('Image', 'nextora') : backgroundType === 'video' ? __('Video', 'nextora') : normalizedSectionFill === 'gradient' ? __('Gradient', 'nextora') : __('Color', 'nextora'))} initialOpen>
           <SelectControl
             label={__('Background type', 'nextora')}
             value={backgroundType as 'color' | 'image' | 'video'}
@@ -509,48 +508,6 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
                 onSolidColorChange={(value) => setAttributes({ sectionBackgroundColor: value })}
                 onGradientChange={(value) => setAttributes({ sectionBackgroundGradient: value })}
               />
-              <ToggleControl
-                label={__('Reveal image on hover', 'nextora')}
-                checked={enableHoverReveal}
-                help={__(
-                  'Hide a decorative image under the section background. Moving the cursor erases the background like ink and reveals the image. Uses the background color or gradient above as the mask. Touch devices show the image directly.',
-                  'nextora',
-                )}
-                onChange={handleHoverRevealChange}
-              />
-              {enableHoverReveal ? (
-                <>
-                  <MediaUploadCheck>
-                    <MediaUpload
-                      onSelect={(media: any) =>
-                        setAttributes({
-                          hoverRevealImageId: media?.id ?? 0,
-                          hoverRevealImageUrl: media?.url ?? '',
-                        })
-                      }
-                      allowedTypes={['image']}
-                      value={hoverRevealImageId > 0 ? hoverRevealImageId : undefined}
-                      render={({ open }) => (
-                        <MediaActionButtons
-                          hasMedia={!!resolvedHoverRevealImageUrl}
-                          selectLabel={__('Select reveal image', 'nextora')}
-                          replaceLabel={__('Replace reveal image', 'nextora')}
-                          onSelect={open}
-                          onRemove={() => setAttributes({ hoverRevealImageId: 0, hoverRevealImageUrl: '' })}
-                        />
-                      )}
-                    />
-                  </MediaUploadCheck>
-                  {hasHoverReveal ? (
-                    <FocalPointPicker
-                      label={__('Reveal image focal point', 'nextora')}
-                      url={resolvedHoverRevealImageUrl}
-                      value={hoverRevealImageFocalPoint}
-                      onChange={(value) => setAttributes({ hoverRevealImageFocalPoint: value })}
-                    />
-                  ) : null}
-                </>
-              ) : null}
             </>
           ) : null}
 
@@ -634,115 +591,14 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
                       />
                 </>
               ) : null}
-              {ambientAnimationType === 'light-rays' ? (
-                <>
-                  <SelectControl
-                    label={__('Rays origin', 'nextora')}
-                    value={lightRaysOrigin as unknown as string}
-                    options={[
-                      { label: __('Top center', 'nextora'), value: 'top-center' as string },
-                      { label: __('Top left', 'nextora'), value: 'top-left' as string },
-                      { label: __('Top right', 'nextora'), value: 'top-right' as string },
-                      { label: __('Bottom center', 'nextora'), value: 'bottom-center' as string },
-                      { label: __('Bottom left', 'nextora'), value: 'bottom-left' as string },
-                      { label: __('Bottom right', 'nextora'), value: 'bottom-right' as string },
-                      { label: __('Left', 'nextora'), value: 'left' as string },
-                      { label: __('Right', 'nextora'), value: 'right' as string },
-                    ]}
-                    onChange={(v) => setAttributes({ lightRaysOrigin: v || 'top-center' })}
-                  />
-                  <OverlayColorField
-                    label={__('Rays color', 'nextora')}
-                    value={lightRaysColor}
-                    colors={colorPalette}
-                    lookupPalette={lookupPalette}
-                    onChange={(value) => setThemeColor('lightRaysColor' as ColorAttributeKey, value)}
-                    help={__('Empty = white rays.', 'nextora')}
-                  />
-                  <RangeControl
-                    label={__('Speed', 'nextora')}
-                    value={lightRaysSpeed}
-                    min={0.2}
-                    max={4}
-                    step={0.1}
-                    onChange={(value) => setAttributes({ lightRaysSpeed: value ?? 1 })}
-                  />
-                  <RangeControl
-                    label={__('Light spread', 'nextora')}
-                    value={lightRaysSpread}
-                    min={0.1}
-                    max={2}
-                    step={0.05}
-                    onChange={(value) => setAttributes({ lightRaysSpread: value ?? 0.5 })}
-                  />
-                  <RangeControl
-                    label={__('Ray length', 'nextora')}
-                    value={lightRaysLength}
-                    min={0.3}
-                    max={3}
-                    step={0.1}
-                    onChange={(value) => setAttributes({ lightRaysLength: value ?? 1 })}
-                  />
-                  <ToggleControl
-                    label={__('Pulsating', 'nextora')}
-                    checked={lightRaysPulsating}
-                    onChange={(value) => setAttributes({ lightRaysPulsating: value })}
-                  />
-                  <RangeControl
-                    label={__('Fade distance', 'nextora')}
-                    value={lightRaysFadeDistance}
-                    min={0.3}
-                    max={2}
-                    step={0.1}
-                    onChange={(value) => setAttributes({ lightRaysFadeDistance: value ?? 1 })}
-                  />
-                  <RangeControl
-                    label={__('Saturation', 'nextora')}
-                    value={lightRaysSaturation}
-                    min={0}
-                    max={1}
-                    step={0.05}
-                    onChange={(value) => setAttributes({ lightRaysSaturation: value ?? 1 })}
-                  />
-                  <ToggleControl
-                    label={__('Follow mouse', 'nextora')}
-                    checked={lightRaysFollowMouse}
-                    onChange={(value) => setAttributes({ lightRaysFollowMouse: value })}
-                  />
-                  {lightRaysFollowMouse ? (
-                    <RangeControl
-                      label={__('Mouse influence', 'nextora')}
-                      value={lightRaysMouseInfluence}
-                      min={0}
-                      max={1}
-                      step={0.05}
-                      onChange={(value) => setAttributes({ lightRaysMouseInfluence: value ?? 0.3 })}
-                    />
-                  ) : null}
-                  <RangeControl
-                    label={__('Noise amount', 'nextora')}
-                    value={lightRaysNoiseAmount}
-                    min={0}
-                    max={0.5}
-                    step={0.01}
-                    onChange={(value) => setAttributes({ lightRaysNoiseAmount: value ?? 0.05 })}
-                  />
-                  <RangeControl
-                    label={__('Distortion', 'nextora')}
-                    value={lightRaysDistortion}
-                    min={0}
-                    max={0.3}
-                    step={0.01}
-                    onChange={(value) => setAttributes({ lightRaysDistortion: value ?? 0.05 })}
-                  />
-                </>
-              ) : null}
                 </>
               ) : null}
             </>
           ) : null}
 
           {backgroundType === 'video' ? (
+            <>
+            {backgroundVideoUrl ? <video src={backgroundVideoUrl} controls preload="metadata" className="nextora-ac-inspector-media" aria-label={__('Background video preview', 'nextora')} /> : null}
             <MediaUploadCheck>
               <MediaUpload
                 onSelect={(media: any) => setAttributes({ backgroundVideoUrl: media?.url ?? '' })}
@@ -758,58 +614,12 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
                 )}
               />
             </MediaUploadCheck>
+            </>
           ) : null}
         </PanelBody>
 
-        {hasImage ? (
-          <PanelBody title={__('Background animation', 'nextora')} initialOpen={false}>
-            <ToggleControl
-              label={__('Animate background image', 'nextora')}
-              checked={enableBackgroundAnimation}
-              help={__(
-                'Subtle motion on the background image. Disabled automatically when the visitor prefers reduced motion. Turns off parallax while active.',
-                'nextora',
-              )}
-              onChange={handleBackgroundAnimationChange}
-            />
-            {enableBackgroundAnimation ? (
-              <>
-                <SelectControl
-                  label={__('Animation effect', 'nextora')}
-                  value={normalizedBackgroundAnimation}
-                  options={BACKGROUND_ANIMATION_CATALOG.map((entry) => ({
-                    label: __(entry.label, 'nextora'),
-                    value: entry.value,
-                  }))}
-                  onChange={(value) =>
-                    setAttributes({
-                      backgroundAnimation: normalizeBackgroundAnimation(value || 'ken-burns'),
-                    })
-                  }
-                />
-                <p className="components-base-control__help nextora-advanced-container__anim-note">
-                  {__(selectedAnimationMeta.description, 'nextora')}
-                </p>
-                <SelectControl
-                  label={__('Animation speed', 'nextora')}
-                  value={String(normalizedBackgroundAnimationSpeed)}
-                  options={BACKGROUND_ANIMATION_SPEED_OPTIONS.map((entry) => ({
-                    label: __(entry.label, 'nextora'),
-                    value: String(entry.value),
-                  }))}
-                  onChange={(value) =>
-                    setAttributes({
-                      backgroundAnimationSpeed: normalizeBackgroundAnimationSpeed(parseFloat(value || '1.75')),
-                    })
-                  }
-                />
-              </>
-            ) : null}
-          </PanelBody>
-        ) : null}
-
         {hasImage || hasVideo || hasHoverReveal ? (
-          <PanelBody title={__('Overlay', 'nextora')} initialOpen>
+          <PanelBody title={inspectorTitle(__('Background Overlay', 'nextora'), overlayOpacity > 0 ? `${Math.round(overlayOpacity * 100)}%` : __('Off', 'nextora'))} initialOpen={false}>
             <div className="nextora-advanced-container__overlay-settings">
               <SelectControl
                 label={__('Overlay style', 'nextora')}
@@ -824,6 +634,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
               />
               <RangeControl
                 label={__('Overlay opacity', 'nextora')}
+                help={__('0 = no overlay. 1 = fully opaque overlay.', 'nextora')}
                 value={overlayOpacity}
                 min={0}
                 max={1}
@@ -842,7 +653,21 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
           </PanelBody>
         ) : null}
 
-        <PanelBody title={__('Animation', 'nextora')} initialOpen={false}>
+        <PanelBody title={inspectorTitle(__('Shape Dividers', 'nextora'), [
+          attributes.shapeDividerTop?.type && attributes.shapeDividerTop.type !== 'none' ? __('Top', 'nextora') : '',
+          attributes.shapeDividerBottom?.type && attributes.shapeDividerBottom.type !== 'none' ? __('Bottom', 'nextora') : '',
+        ].filter(Boolean).join(' / ') || __('Off', 'nextora'))} initialOpen={false}>
+          <ShapeDividerControls position="top" value={attributes.shapeDividerTop || {}} onChange={(shapeDividerTop) => setAttributes({ shapeDividerTop })} />
+          <ShapeDividerControls position="bottom" value={attributes.shapeDividerBottom || {}} onChange={(shapeDividerBottom) => setAttributes({ shapeDividerBottom })} />
+        </PanelBody>
+
+        <PanelBody title={inspectorTitle(__('Motion & Interaction', 'nextora'), [
+          enableScrollAnimation ? __('Scroll reveal', 'nextora') : '',
+          enableParallax ? __('Parallax', 'nextora') : '',
+          enableBackgroundAnimation ? __('Background motion', 'nextora') : '',
+          enableHoverReveal ? __('Hover reveal', 'nextora') : '',
+        ].filter(Boolean).join(', ') || __('Off', 'nextora'))} initialOpen={false}>
+          <InspectorSection title={__('Content scroll reveal', 'nextora')}>
           <ToggleControl
             label={__('Animate on scroll', 'nextora')}
             checked={enableScrollAnimation}
@@ -852,6 +677,8 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
             )}
             onChange={(value) => setAttributes({ enableScrollAnimation: value })}
           />
+          </InspectorSection>
+          <InspectorSection title={__('Background parallax', 'nextora')}>
           <ToggleControl
             label={__('Enable parallax', 'nextora')}
             checked={enableParallax}
@@ -906,14 +733,72 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
               onChange={(value) => setAttributes({ parallaxSpeed: value ?? 0.5 })}
             />
           ) : null}
+          </InspectorSection>
+          {hasImage ? (
+            <InspectorSection title={__('Background image animation', 'nextora')}>
+              <ToggleControl
+                label={__('Animate background image', 'nextora')}
+                checked={enableBackgroundAnimation}
+                help={__('Subtle motion on the background image. Disabled automatically when the visitor prefers reduced motion. Turns off parallax while active.', 'nextora')}
+                onChange={handleBackgroundAnimationChange}
+              />
+              {enableBackgroundAnimation ? <>
+                <SelectControl
+                  label={__('Animation effect', 'nextora')}
+                  value={normalizedBackgroundAnimation}
+                  options={BACKGROUND_ANIMATION_CATALOG.map((entry) => ({ label: __(entry.label, 'nextora'), value: entry.value }))}
+                  onChange={(value) => setAttributes({ backgroundAnimation: normalizeBackgroundAnimation(value || 'ken-burns') })}
+                />
+                <p className="components-base-control__help nextora-advanced-container__anim-note">{__(selectedAnimationMeta.description, 'nextora')}</p>
+                <SelectControl
+                  label={__('Animation speed', 'nextora')}
+                  value={String(normalizedBackgroundAnimationSpeed)}
+                  options={BACKGROUND_ANIMATION_SPEED_OPTIONS.map((entry) => ({ label: __(entry.label, 'nextora'), value: String(entry.value) }))}
+                  onChange={(value) => setAttributes({ backgroundAnimationSpeed: normalizeBackgroundAnimationSpeed(parseFloat(value || '1.75')) })}
+                />
+              </> : null}
+            </InspectorSection>
+          ) : null}
+          {backgroundType === 'color' ? (
+            <InspectorSection title={__('Hover image reveal', 'nextora')}>
+              <ToggleControl
+                label={__('Reveal image on hover', 'nextora')}
+                checked={enableHoverReveal}
+                help={__('The cursor reveals an image under the background color or gradient. Touch devices show the image directly. Enabling this turns off parallax and background animation.', 'nextora')}
+                onChange={handleHoverRevealChange}
+              />
+              {enableHoverReveal ? <>
+                <MediaUploadCheck>
+                  <MediaUpload
+                    onSelect={(media: any) => setAttributes({ hoverRevealImageId: media?.id ?? 0, hoverRevealImageUrl: media?.url ?? '' })}
+                    allowedTypes={['image']}
+                    value={hoverRevealImageId > 0 ? hoverRevealImageId : undefined}
+                    render={({ open }) => <MediaActionButtons
+                      hasMedia={!!resolvedHoverRevealImageUrl}
+                      selectLabel={__('Select reveal image', 'nextora')}
+                      replaceLabel={__('Replace reveal image', 'nextora')}
+                      onSelect={open}
+                      onRemove={() => setAttributes({ hoverRevealImageId: 0, hoverRevealImageUrl: '' })}
+                    />}
+                  />
+                </MediaUploadCheck>
+                {hasHoverReveal ? <FocalPointPicker
+                  label={__('Reveal image focal point', 'nextora')}
+                  url={resolvedHoverRevealImageUrl}
+                  value={hoverRevealImageFocalPoint}
+                  onChange={(value) => setAttributes({ hoverRevealImageFocalPoint: value })}
+                /> : null}
+              </> : null}
+            </InspectorSection>
+          ) : null}
         </PanelBody>
 
-        <PanelBody title={__('Ambient Animation', 'nextora')} initialOpen={false}>
+        <PanelBody title={inspectorTitle(__('Decorative Effects', 'nextora'), !enableAmbientAnimation ? __('Off', 'nextora') : ambientAnimationType === 'light-rays' ? __('Light rays', 'nextora') : ambientAnimationType === 'ripples' ? __('Ripples', 'nextora') : __('Ambient icons', 'nextora'))} initialOpen={false}>
           <ToggleControl
-            label={__('Enable ambient animation', 'nextora')}
+              label={__('Enable decorative effects', 'nextora')}
             checked={enableAmbientAnimation}
             help={__(
-              'Floating icons or decorative elements that appear and fade randomly across the section. Adds a lively, dynamic atmosphere.',
+              'Choose floating icons, light rays, or water ripples for the section background.',
               'nextora',
             )}
             onChange={(value) => setAttributes({ enableAmbientAnimation: value })}
@@ -1029,6 +914,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
                     checked={lightRaysPulsating}
                     onChange={(value) => setAttributes({ lightRaysPulsating: value })}
                   />
+                  <InspectorSection title={__('Advanced light ray settings', 'nextora')}>
                   <RangeControl
                     label={__('Fade distance', 'nextora')}
                     value={lightRaysFadeDistance}
@@ -1076,6 +962,7 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
                     step={0.01}
                     onChange={(value) => setAttributes({ lightRaysDistortion: value ?? 0.05 })}
                   />
+                  </InspectorSection>
                 </>
               ) : null}
               {ambientAnimationType === 'ripples' ? (
@@ -1115,6 +1002,8 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
       </InspectorControls>
 
       <section {...blockProps}>
+        <ShapeDivider position="top" value={attributes.shapeDividerTop || {}} />
+        <ShapeDivider position="bottom" value={attributes.shapeDividerBottom || {}} />
         {hasHoverReveal ? (
           <>
             <div className="nextora-advanced-container__bg-reveal" style={hoverRevealImageStyles} aria-hidden="true" />

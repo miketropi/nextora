@@ -372,3 +372,21 @@
     display: none;
   }
 }
+.nextora-advanced-container__divider {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: var(--nextora-divider-height, 70px);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+.nextora-advanced-container__divider svg { display: block; width: 100%; height: 100%; }
+.nextora-advanced-container__divider--top { top: -1px; bottom: auto; transform: rotate(180deg); }
+.nextora-advanced-container__divider--flip svg { transform: scaleX(-1); }
+@media (max-width: 1024px) {
+  .nextora-advanced-container__divider { height: var(--nextora-divider-height-tablet, 70px); }
+}
+@media (max-width: 767px) {
+  .nextora-advanced-container__divider { height: var(--nextora-divider-height-mobile, 40px); }
+}

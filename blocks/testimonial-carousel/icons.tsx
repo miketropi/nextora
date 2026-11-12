@@ -24,10 +24,8 @@ export function TopIconSvg({
 		case 'quote':
 			return (
 				<svg {...dim}>
-					<path
-						{...strokeProps}
-						d="M7.5 8.5c0-2.2 1.8-4 4-4h.5M7.5 15.5V10M5 10h5M14.5 8.5c0-2.2 1.8-4 4-4h.5M14.5 15.5V10M12 10h5"
-					/>
+					<path {...strokeProps} strokeWidth={2} d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z" />
+					<path {...strokeProps} strokeWidth={2} d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z" />
 				</svg>
 			);
 		case 'star':

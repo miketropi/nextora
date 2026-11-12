@@ -1,7 +1,7 @@
 export type BoxIconLayoutMode = 'slider' | 'grid';
 export type BoxIconIconSource = 'theme' | 'upload';
 export type BoxIconIconStyle = 'default' | 'stacked' | 'framed';
-export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4' | 'template-5';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4' | 'template-5' | 'template-6';
 export type BoxIconScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxIconItem {

@@ -60,7 +60,7 @@ if ( ! function_exists( 'nextora_testimonial_carousel_icon_svg' ) ) {
 	function nextora_testimonial_carousel_icon_svg( string $type ): string {
 		$icons = array(
 			'sparkle' => '<path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><path fill="none" stroke="currentColor" stroke-width="1.5" d="M12 8.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1 1-2.5z"/>',
-			'quote'   => '<path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M7.5 8.5c0-2.2 1.8-4 4-4h.5M7.5 15.5V10M5 10h5M14.5 8.5c0-2.2 1.8-4 4-4h.5M14.5 15.5V10M12 10h5"/>',
+			'quote'   => '<path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/>',
 			'star'    => '<path fill="none" stroke="currentColor" stroke-width="1.5" d="M12 3.5l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 15.8 7.2 18.4l.9-5.4-3.9-3.8 5.4-.8L12 3.5z"/>',
 			'heart'   => '<path fill="none" stroke="currentColor" stroke-width="1.5" d="M12 20.5s-6.5-4.2-8.5-8.2C1.8 8.8 4.2 5.5 7.6 5.5c1.8 0 3.2 1 4.4 2.4C13.2 6.5 14.6 5.5 16.4 5.5 19.8 5.5 22.2 8.8 20.5 12.3 18.5 16.3 12 20.5 12 20.5z"/>',
 		);
@@ -563,7 +563,7 @@ $content_max    = isset( $attributes['contentMaxWidth'] ) ? trim( (string) $attr
 if ( '' === $content_max ) {
 	$content_max = '680px';
 }
-$top_icon_size  = isset( $attributes['topIconSize'] ) ? max( 12, min( 40, (int) $attributes['topIconSize'] ) ) : 20;
+$top_icon_size  = isset( $attributes['topIconSize'] ) ? max( 12, min( 80, (int) $attributes['topIconSize'] ) ) : 20;
 $avatar_size    = isset( $attributes['trustAvatarSize'] ) ? max( 24, min( 56, (int) $attributes['trustAvatarSize'] ) ) : 36;
 $avatar_overlap = isset( $attributes['trustAvatarOverlap'] ) ? max( 0, min( 20, (int) $attributes['trustAvatarOverlap'] ) ) : 10;
 $avatar_border  = isset( $attributes['trustAvatarBorderWidth'] ) ? max( 0, min( 5, (float) $attributes['trustAvatarBorderWidth'] ) ) : 2.5;

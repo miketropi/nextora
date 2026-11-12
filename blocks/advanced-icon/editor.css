@@ -84,13 +84,11 @@
 .editor-styles-wrapper
 	.block-editor-block-list__block.wp-block-nextora-advanced-icon[class*='-background-color'] {
 	background: transparent !important;
-	align-self: flex-start;
 	width: fit-content;
 	max-width: 100%;
 }
 
 .editor-styles-wrapper .wp-block-nextora-advanced-icon.nextora-advanced-icon {
-	align-self: flex-start;
 	width: fit-content;
 	max-width: 100%;
 }

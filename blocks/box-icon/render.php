@@ -150,6 +150,14 @@ if ( ! function_exists( 'nextora_box_icon_get_template_defaults' ) ) {
 	 * @return array<string, mixed>
 	 */
 	function nextora_box_icon_get_template_defaults( string $template ): array {
+		if ( 'template-6' === $template ) {
+			return array(
+				'layoutMode' => 'grid', 'gridColumns' => 3, 'gridColumnsTablet' => 3, 'gridColumnsMobile' => 1,
+				'disableResponsiveCarousel' => true, 'spaceBetween' => 48, 'cardBorderWidth' => 0,
+				'cardBorderRadius' => 0, 'cardMinHeight' => 0, 'iconCircleSize' => 100, 'iconSize' => 44,
+				'iconCircleRadius' => 50, 'iconStyle' => 'stacked', 'showPagination' => false, 'showArrows' => false,
+			);
+		}
 		if ( 'ways' === $template ) {
 			return array(
 				'layoutMode'          => 'grid',
@@ -933,7 +941,7 @@ $card_template = isset( $attributes['cardTemplate'] ) ? (string) $attributes['ca
 if ( 'ways-row' === $card_template ) {
 	$card_template = 'template-4';
 }
-$allowed_card_templates = array( 'default', 'ways', 'minimal', 'highlights', 'timeline', 'template-4', 'template-5' );
+$allowed_card_templates = array( 'default', 'ways', 'minimal', 'highlights', 'timeline', 'template-4', 'template-5', 'template-6' );
 if ( ! in_array( $card_template, $allowed_card_templates, true ) ) {
 	$card_template = 'default';
 }

@@ -1,6 +1,6 @@
 import type { BoxIconAttributes } from './types';
 
-export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4' | 'template-5';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4' | 'template-5' | 'template-6';
 
 export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	value: BoxIconCardTemplate;
@@ -13,9 +13,11 @@ export const BOX_CONTENT_TEMPLATE_OPTIONS: {
 	{ value: 'timeline', labelKey: 'Template 03' },
 	{ value: 'template-4', labelKey: 'Template 04' },
 	{ value: 'template-5', labelKey: 'Template 05' },
+	{ value: 'template-6', labelKey: 'Template 06' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BoxIconCardTemplate {
+	if (value === 'template-6') return 'template-6';
 	if (value === 'ways') {
 		return 'ways';
 	}
@@ -44,6 +46,14 @@ export function normalizeCardTemplate(value: string | undefined): BoxIconCardTem
 export function getTemplateDefaultAttributes(
 	template: BoxIconCardTemplate,
 ): Partial<BoxIconAttributes> {
+	if (template === 'template-6') {
+		return {
+			layoutMode: 'grid', gridColumns: 3, gridColumnsTablet: 3, gridColumnsMobile: 1,
+			disableResponsiveCarousel: true, spaceBetween: 48, cardBorderWidth: 0,
+			cardBorderRadius: 0, cardMinHeight: 0, iconCircleSize: 100, iconSize: 44,
+			iconCircleRadius: 50, iconStyle: 'stacked', showPagination: false, showArrows: false,
+		};
+	}
 	if (template === 'ways') {
 		return {
 			layoutMode: 'grid',
