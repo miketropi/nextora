@@ -504,7 +504,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						value={cardBorderRadius}
 						onChange={(v) => setAttributes({ cardBorderRadius: v ?? 0 })}
 						min={0}
-						max={cardTemplate === 'template-1' || cardTemplate === 'template-4' ? 32 : cardTemplate === 'template-2' ? 12 : 24}
+						max={cardTemplate === 'template-1' || cardTemplate === 'template-4' || cardTemplate === 'template-6' ? 32 : cardTemplate === 'template-2' ? 12 : 24}
 					/>
 					{cardTemplate !== 'template-5' && (
 					<RangeControl
@@ -512,7 +512,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						value={cardPadding}
 						onChange={(v) => setAttributes({ cardPadding: v ?? 0 })}
 						min={0}
-						max={cardTemplate === 'template-1' || cardTemplate === 'template-4' ? 64 : cardTemplate === 'template-2' ? 12 : 24}
+						max={cardTemplate === 'template-1' || cardTemplate === 'template-4' || cardTemplate === 'template-6' ? 64 : cardTemplate === 'template-2' ? 12 : 24}
 					/>
 					)}
 				<ToggleControl
@@ -539,7 +539,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							value={imageBorderRadius}
 							onChange={(v) => setAttributes({ imageBorderRadius: v ?? 8 })}
 							min={0}
-							max={24}
+							max={cardTemplate === 'template-6' ? 32 : 24}
 						/>
 						{(cardTemplate === 'template-2' || cardTemplate === 'template-4') && (
 							<RangeControl

@@ -6,6 +6,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { afterInitialLayout, isInInitialRevealViewport } from '../../resources/ts/lib/scroll-animations/initial-layout';
+import { resolveDelay } from '../../resources/ts/lib/scroll-animations/parse-options';
 
 gsap.registerPlugin( ScrollTrigger );
 
@@ -32,6 +33,7 @@ function optOutScrollAnimation( root: HTMLElement ): void {
 }
 
 function playReveal( root: HTMLElement, useScrollTrigger: boolean ): void {
+	const delay = resolveDelay( root );
 	const vars: gsap.TweenVars = {
 		opacity: 1,
 		y: 0,
@@ -42,6 +44,10 @@ function playReveal( root: HTMLElement, useScrollTrigger: boolean ): void {
 			root.classList.add( 'nextora-advanced-button--reveal-ready' );
 		},
 	};
+
+	if ( delay > 0 ) {
+		vars.delay = delay;
+	}
 
 	if (useScrollTrigger) {
 		vars.scrollTrigger = {
@@ -70,6 +76,7 @@ function initReveal( root: HTMLElement ): void {
 	}
 
 	root.setAttribute( BLOCK_INIT_ATTR, '1' );
+	root.setAttribute( GLOBAL_INIT_ATTR, '1' );
 	root.classList.add( 'nextora-advanced-button--reveal-pending' );
 
 	if ( isInInitialRevealViewport( root ) ) {

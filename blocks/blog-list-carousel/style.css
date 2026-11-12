@@ -495,7 +495,7 @@ a.nextora-blc__card-cat:focus-visible {
 	margin-top: 8px;
 	display: inline-flex;
 	align-items: center;
-	gap: 4px;
+	gap: 8px;
 }
 
 /* ── Empty ── */
@@ -1517,6 +1517,188 @@ a.nextora-blc__card-cat:focus-visible {
 	}
 }
 
+/* ── Template 6 (Swiss Grid News) ── */
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6 {
+	position: relative;
+	text-align: center;
+	overflow: hidden;
+	background: var(--nextora-blc-card-bg, var(--wp--preset--color--surface, #faf8ed));
+	border-radius: var(--nextora-blc-card-radius, 30px);
+	border: none;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-image-link {
+	display: block;
+	width: 100%;
+	text-decoration: none;
+	overflow: hidden;
+	border-radius: var(--nextora-blc-img-radius, 30px);
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-image {
+	position: relative;
+	overflow: hidden;
+	margin-bottom: 0;
+	aspect-ratio: var(--nextora-blc-img-ratio, 3/2);
+	border-radius: var(--nextora-blc-img-radius, 30px);
+	background: color-mix(in srgb, var(--wp--preset--color--contrast, #111111) 8%, var(--wp--preset--color--surface, #faf8ed));
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-img,
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-img-placeholder {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	border-radius: var(--nextora-blc-img-radius, 30px);
+	transition: transform 1.5s cubic-bezier(0.11, 0.52, 0.53, 0.79);
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6:hover .nextora-blc__card-img,
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6:focus-within .nextora-blc__card-img {
+	transform: scale(1.1);
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-body {
+	padding: var(--nextora-blc-card-padding, 20px);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	flex-grow: 1;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-meta--template-6 {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	margin: 0 0 6px 0;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	line-height: 1.5;
+	color: var(--nextora-blc-meta-color, color-mix(in srgb, var(--wp--preset--color--paragraph, #555555) 75%, transparent));
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-meta--template-6 .nextora-blc__card-date {
+	color: inherit;
+	font-size: inherit;
+	line-height: inherit;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-meta--template-6 .nextora-blc__card-cat,
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-meta--template-6 .nextora-blc__card-author {
+	color: inherit;
+	text-decoration: none;
+	font-size: inherit;
+	transition: color 0.2s ease;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-meta--template-6 a.nextora-blc__card-cat:hover,
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-meta--template-6 a.nextora-blc__card-cat:focus-visible {
+	color: var(--nextora-blc-title-hover-color, var(--wp--preset--color--primary, #4d5ef6));
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-meta--template-6 .nextora-blc__card-divider {
+	display: inline-block;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: currentColor;
+	opacity: 0.5;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-title {
+	font-size: calc(var(--nextora-blc-title-font-size, var(--wp--preset--font-size--medium, 1.125rem)) * 0.85) !important;
+	font-weight: 600;
+	line-height: 1.25;
+	margin: 0 0 20px 0;
+	color: var(--nextora-blc-title-color, var(--wp--preset--color--contrast, #111111));
+	display: -webkit-box;
+	-webkit-line-clamp: var(--nextora-blc-title-clamp, 2);
+	line-clamp: var(--nextora-blc-title-clamp, 2);
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-title a {
+	color: inherit;
+	text-decoration: none;
+	transition: color 0.25s ease;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6:hover .nextora-blc__card-title a,
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6 .nextora-blc__card-title a:hover,
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6 .nextora-blc__card-title a:focus-visible {
+	color: var(--nextora-blc-title-hover-color, var(--wp--preset--color--primary, #4d5ef6));
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-excerpt {
+	font-size: var(--nextora-blc-excerpt-font-size, var(--wp--preset--font-size--small, 0.875rem));
+	line-height: 1.5;
+	color: var(--nextora-blc-excerpt-color, var(--wp--preset--color--paragraph, #555555));
+	margin: 0 0 16px 0;
+	display: -webkit-box;
+	-webkit-line-clamp: var(--nextora-blc-excerpt-clamp, 2);
+	line-clamp: var(--nextora-blc-excerpt-clamp, 2);
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-readmore--template-6 {
+	margin-top: auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 600;
+	line-height: 1.5;
+	text-decoration: none;
+	color: var(--nextora-blc-readmore-color, var(--wp--preset--color--primary, #4d5ef6));
+	transition: color 0.3s ease;
+	position: relative;
+	z-index: 2;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-readmore--template-6:hover,
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-readmore--template-6:focus-visible {
+	color: var(--nextora-blc-readmore-hover-color, var(--wp--preset--color--contrast, #111111));
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-readmore-icon--diagonal {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 10px;
+	background: var(--nextora-blc-readmore-color, var(--wp--preset--color--primary, #4d5ef6));
+	color: var(--wp--preset--color--base, #ffffff);
+	box-shadow: 0 16px 50px 0 rgb(from var(--wp--preset--color--contrast, #111111) r g b / 0.15);
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease,
+		transform 0.3s ease;
+	flex-shrink: 0;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-readmore-icon--diagonal svg {
+	width: 18px;
+	height: 18px;
+	display: block;
+}
+
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-readmore--template-6:hover .nextora-blc__card-readmore-icon--diagonal,
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-readmore--template-6:focus-visible .nextora-blc__card-readmore-icon--diagonal,
+.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6:hover .nextora-blc__card-readmore--template-6 .nextora-blc__card-readmore-icon--diagonal {
+	background: var(--nextora-blc-readmore-hover-color, var(--wp--preset--color--contrast, #111111));
+	color: var(--wp--preset--color--base, #ffffff);
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
 	.nextora-blc__header--split {
@@ -1570,6 +1752,11 @@ a.nextora-blc__card-cat:focus-visible {
 
 	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:hover .nextora-blc__card-readmore-icon svg,
 	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card--template-4:focus-within .nextora-blc__card-readmore-icon svg {
+		transform: none;
+	}
+
+	.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6:hover .nextora-blc__card-img,
+	.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6:focus-within .nextora-blc__card-img {
 		transform: none;
 	}
 }
@@ -1646,6 +1833,17 @@ a.nextora-blc__card-cat:focus-visible {
 
 	.nextora-blog-list-carousel--template-template-4 .nextora-blc__card-readmore-icon svg {
 		transition: none;
+	}
+
+	.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6,
+	.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-img,
+	.nextora-blog-list-carousel--template-template-6 .nextora-blc__card-readmore-icon--diagonal {
+		transition: none;
+	}
+
+	.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6:hover .nextora-blc__card-img,
+	.nextora-blog-list-carousel--template-template-6 .nextora-blc__card--template-6:focus-within .nextora-blc__card-img {
+		transform: none;
 	}
 }
 
