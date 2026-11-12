@@ -31014,7 +31014,8 @@ ${nextLine.slice(indentLevel + 2)}`;
           if (revealImmediately) {
             gsapWithCSS.set(el, from2);
             const playSingle = () => {
-              const initialDelay = el.hasAttribute("data-delay") ? options.delay : !isMegaMenu && el.tagName === "P" ? 0.35 : options.delay;
+              const hasDelayOverride = el.hasAttribute("data-delay") || Array.from(el.classList).some((cls) => /^(?:animation-)?delay-\d+/.test(cls));
+              const initialDelay = hasDelayOverride ? options.delay : !isMegaMenu && el.tagName === "P" ? 0.35 : options.delay;
               gsapWithCSS.to(el, {
                 ...to,
                 delay: initialDelay,
