@@ -1,0 +1,170 @@
+.wp-block-nextora-flexbox {
+  /* Custom properties must not leak from a parent FlexBox into its children. */
+  --flexbox-display: initial;
+  --flexbox-flex-direction: initial;
+  --flexbox-justify-content: initial;
+  --flexbox-align-items: initial;
+  --flexbox-flex-wrap: initial;
+  --flexbox-column-gap: initial;
+  --flexbox-row-gap: initial;
+  --flexbox-grid-template-columns: initial;
+  --flexbox-width: initial;
+  --flexbox-min-width: initial;
+  --flexbox-max-width: initial;
+  --flexbox-height: initial;
+  --flexbox-min-height: initial;
+  --flexbox-max-height: initial;
+  --flexbox-overflow: initial;
+  --flexbox-position: initial;
+  --flexbox-top: initial;
+  --flexbox-right: initial;
+  --flexbox-bottom: initial;
+  --flexbox-left: initial;
+  --flexbox-z-index: initial;
+  --flexbox-desktop-display: initial;
+  --flexbox-desktop-flex-direction: initial;
+  --flexbox-desktop-justify-content: initial;
+  --flexbox-desktop-align-items: initial;
+  --flexbox-desktop-flex-wrap: initial;
+  --flexbox-desktop-column-gap: initial;
+  --flexbox-desktop-row-gap: initial;
+  --flexbox-desktop-grid-template-columns: initial;
+  --flexbox-desktop-width: initial;
+  --flexbox-desktop-min-width: initial;
+  --flexbox-desktop-max-width: initial;
+  --flexbox-desktop-height: initial;
+  --flexbox-desktop-min-height: initial;
+  --flexbox-desktop-position: initial;
+  --flexbox-desktop-top: initial;
+  --flexbox-desktop-right: initial;
+  --flexbox-desktop-bottom: initial;
+  --flexbox-desktop-left: initial;
+  --flexbox-desktop-z-index: initial;
+  --flexbox-tablet-flex-direction: initial;
+  --flexbox-tablet-justify-content: initial;
+  --flexbox-tablet-align-items: initial;
+  --flexbox-tablet-flex-wrap: initial;
+  --flexbox-tablet-column-gap: initial;
+  --flexbox-tablet-row-gap: initial;
+  --flexbox-tablet-grid-template-columns: initial;
+  --flexbox-tablet-width: initial;
+  --flexbox-mobile-flex-direction: initial;
+  --flexbox-mobile-justify-content: initial;
+  --flexbox-mobile-align-items: initial;
+  --flexbox-mobile-flex-wrap: initial;
+  --flexbox-mobile-column-gap: initial;
+  --flexbox-mobile-row-gap: initial;
+  --flexbox-mobile-grid-template-columns: initial;
+  --flexbox-mobile-width: initial;
+  display: var(--flexbox-display, var(--flexbox-desktop-display, flex));
+  flex-direction: var(--flexbox-flex-direction, var(--flexbox-desktop-flex-direction, column));
+  justify-content: var(--flexbox-justify-content, var(--flexbox-desktop-justify-content, normal));
+  align-items: var(--flexbox-align-items, var(--flexbox-desktop-align-items, stretch));
+  flex-wrap: var(--flexbox-flex-wrap, var(--flexbox-desktop-flex-wrap, wrap));
+  column-gap: var(--flexbox-column-gap, var(--flexbox-desktop-column-gap, normal));
+  row-gap: var(--flexbox-row-gap, var(--flexbox-desktop-row-gap, normal));
+  grid-template-columns: var(--flexbox-grid-template-columns, var(--flexbox-desktop-grid-template-columns, none));
+  width: var(--flexbox-width, var(--flexbox-desktop-width, auto));
+  min-width: var(--flexbox-min-width, var(--flexbox-desktop-min-width, 0));
+  max-width: var(--flexbox-max-width, var(--flexbox-desktop-max-width, none));
+  height: var(--flexbox-height, var(--flexbox-desktop-height, auto));
+  min-height: var(--flexbox-min-height, var(--flexbox-desktop-min-height, 0));
+  max-height: var(--flexbox-max-height, none);
+  overflow: var(--flexbox-overflow, visible);
+  position: var(--flexbox-position, var(--flexbox-desktop-position, static));
+  top: var(--flexbox-top, var(--flexbox-desktop-top, auto));
+  right: var(--flexbox-right, var(--flexbox-desktop-right, auto));
+  bottom: var(--flexbox-bottom, var(--flexbox-desktop-bottom, auto));
+  left: var(--flexbox-left, var(--flexbox-desktop-left, auto));
+  z-index: var(--flexbox-z-index, var(--flexbox-desktop-z-index, auto));
+}
+
+/* Overlay is isolated behind content without introducing a flex/grid item. */
+.wp-block-nextora-flexbox.nextora-flexbox--overlay {
+  position: var(--flexbox-position, var(--flexbox-desktop-position, relative));
+  isolation: isolate;
+}
+.wp-block-nextora-flexbox.nextora-flexbox--overlay:where([style*="--flexbox-position:static"], [style*="--flexbox-position: static"], [style*="--flexbox-desktop-position:static"], [style*="--flexbox-desktop-position: static"]) {
+  position: relative;
+}
+.wp-block-nextora-flexbox.nextora-flexbox--overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--flexbox-overlay-background);
+  opacity: var(--flexbox-overlay-opacity, 0.5);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Opt-in constrained flow keeps the existing flex/grid settings intact. */
+.wp-block-nextora-flexbox.nextora-flexbox--content-width {
+  display: flow-root;
+}
+.wp-block-nextora-flexbox.nextora-flexbox--content-width > :where(:not(.alignleft):not(.alignright):not(.alignfull):not(.nextora-flexbox-empty-guide):not(.block-list-appender)) {
+  max-width: var(--wp--style--global--content-size);
+  margin-left: auto;
+  margin-right: auto;
+}
+.wp-block-nextora-flexbox.nextora-flexbox--content-width > .alignwide {
+  max-width: var(--wp--style--global--wide-size);
+}
+.wp-block-nextora-flexbox.nextora-flexbox--content-width > .alignfull {
+  max-width: none;
+}
+
+/* The parent controls default child sizing; an explicit child width takes precedence. */
+.wp-block-nextora-flexbox.is-layout-flow:not(.nextora-flexbox--content-width):not([style*="--flexbox-display:block"]):not([style*="--flexbox-display: block"]):not([style*="--flexbox-display:inline-block"]):not([style*="--flexbox-display: inline-block"]):not([style*="--flexbox-desktop-display:block"]):not([style*="--flexbox-desktop-display: block"]):not([style*="--flexbox-desktop-display:inline-block"]):not([style*="--flexbox-desktop-display: inline-block"]) > * + * {
+  /* Flex and Grid use their own gap instead of Gutenberg's flow spacing. */
+  margin-block-start: 0;
+}
+.wp-block-nextora-flexbox > .wp-block-nextora-flexbox { flex: 0 1 auto; box-sizing: border-box; }
+.wp-block-nextora-flexbox:where([style*="--flexbox-flex-direction:row"], [style*="--flexbox-flex-direction: row"], [style*="--flexbox-desktop-flex-direction:row"], [style*="--flexbox-desktop-flex-direction: row"]) > .wp-block-nextora-flexbox { flex: 1 1 0%; }
+.wp-block-nextora-flexbox > .wp-block-nextora-flexbox[style*="--flexbox-width:"],
+.wp-block-nextora-flexbox > .wp-block-nextora-flexbox[style*="--flexbox-desktop-width:"]:not([style*="--flexbox-desktop-width:initial"]):not([style*="--flexbox-desktop-width: initial"]) { flex: 0 1 auto; }
+
+@media (max-width: 1023px) {
+  .wp-block-nextora-flexbox {
+    flex-direction: var(--flexbox-tablet-flex-direction, var(--flexbox-flex-direction, var(--flexbox-desktop-flex-direction, column)));
+    justify-content: var(--flexbox-tablet-justify-content, var(--flexbox-justify-content, var(--flexbox-desktop-justify-content, normal)));
+    align-items: var(--flexbox-tablet-align-items, var(--flexbox-align-items, var(--flexbox-desktop-align-items, stretch)));
+    flex-wrap: var(--flexbox-tablet-flex-wrap, var(--flexbox-flex-wrap, var(--flexbox-desktop-flex-wrap, wrap)));
+    column-gap: var(--flexbox-tablet-column-gap, var(--flexbox-column-gap, var(--flexbox-desktop-column-gap, normal)));
+    row-gap: var(--flexbox-tablet-row-gap, var(--flexbox-row-gap, var(--flexbox-desktop-row-gap, normal)));
+    grid-template-columns: var(--flexbox-tablet-grid-template-columns, var(--flexbox-grid-template-columns, var(--flexbox-desktop-grid-template-columns, none)));
+    width: var(--flexbox-tablet-width, var(--flexbox-width, var(--flexbox-desktop-width, auto)));
+  }
+}
+
+@media (max-width: 767px) {
+  .wp-block-nextora-flexbox {
+    flex-direction: var(--flexbox-mobile-flex-direction, var(--flexbox-tablet-flex-direction, var(--flexbox-flex-direction, var(--flexbox-desktop-flex-direction, column))));
+    justify-content: var(--flexbox-mobile-justify-content, var(--flexbox-tablet-justify-content, var(--flexbox-justify-content, var(--flexbox-desktop-justify-content, normal))));
+    align-items: var(--flexbox-mobile-align-items, var(--flexbox-tablet-align-items, var(--flexbox-align-items, var(--flexbox-desktop-align-items, stretch))));
+    flex-wrap: var(--flexbox-mobile-flex-wrap, var(--flexbox-tablet-flex-wrap, var(--flexbox-flex-wrap, var(--flexbox-desktop-flex-wrap, wrap))));
+    column-gap: var(--flexbox-mobile-column-gap, var(--flexbox-tablet-column-gap, var(--flexbox-column-gap, var(--flexbox-desktop-column-gap, normal))));
+    row-gap: var(--flexbox-mobile-row-gap, var(--flexbox-tablet-row-gap, var(--flexbox-row-gap, var(--flexbox-desktop-row-gap, normal))));
+    grid-template-columns: var(--flexbox-mobile-grid-template-columns, var(--flexbox-tablet-grid-template-columns, var(--flexbox-grid-template-columns, var(--flexbox-desktop-grid-template-columns, none))));
+    width: var(--flexbox-mobile-width, 100%);
+    box-sizing: border-box;
+  }
+}
+
+
+.wp-block-nextora-flexbox:where([style*="--flexbox-flex-direction:column"], [style*="--flexbox-flex-direction: column"], [style*="--flexbox-desktop-flex-direction:column"], [style*="--flexbox-desktop-flex-direction: column"]) > .wp-block-nextora-flexbox { flex: 0 1 auto; }
+@media (max-width: 1023px) {
+  .wp-block-nextora-flexbox:where([style*="--flexbox-tablet-flex-direction:row"], [style*="--flexbox-tablet-flex-direction: row"]) > .wp-block-nextora-flexbox { flex: 1 1 0%; }
+  .wp-block-nextora-flexbox:where([style*="--flexbox-tablet-flex-direction:column"], [style*="--flexbox-tablet-flex-direction: column"]) > .wp-block-nextora-flexbox { flex: 0 1 auto; }
+}
+@media (max-width: 1023px) {
+  .wp-block-nextora-flexbox > .wp-block-nextora-flexbox[style*="--flexbox-tablet-width:"] { flex: 0 1 auto; }
+}
+@media (max-width: 767px) {
+  .wp-block-nextora-flexbox > .wp-block-nextora-flexbox[style*="--flexbox-mobile-width:"] { flex: 0 1 auto; }
+}
+@media (max-width: 767px) {
+  .wp-block-nextora-flexbox:where([style*="--flexbox-mobile-flex-direction:row"], [style*="--flexbox-mobile-flex-direction: row"]) > .wp-block-nextora-flexbox { flex: 1 1 0%; }
+  .wp-block-nextora-flexbox:where([style*="--flexbox-mobile-flex-direction:column"], [style*="--flexbox-mobile-flex-direction: column"]) > .wp-block-nextora-flexbox { flex: 0 1 auto; }
+  .wp-block-nextora-flexbox > .wp-block-nextora-flexbox { flex: 0 1 auto; }
+}

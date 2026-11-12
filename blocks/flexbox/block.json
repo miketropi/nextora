@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "nextora/flexbox",
+  "title": "Flexbox",
+  "category": "nextora",
+  "icon": "screenoptions",
+  "description": "A responsive layout container for blocks.",
+  "keywords": ["flex", "container", "layout", "grid"],
+  "textdomain": "nextora",
+  "attributes": {
+    "tagName": { "type": "string", "default": "div" },
+    "desktop": { "type": "object", "default": {} },
+    "tablet": { "type": "object", "default": {} },
+    "mobile": { "type": "object", "default": {} },
+    "useContentWidth": { "type": "boolean", "default": false },
+    "chooseLayout": { "type": "boolean", "default": false },
+    "overlayColor": { "type": "string", "default": "" },
+    "overlayGradient": { "type": "string", "default": "" },
+    "overlayType": { "type": "string", "default": "solid" },
+    "overlayOpacity": { "type": "number", "default": 50 },
+    "layout": { "type": "object" },
+    "ariaLabel": { "type": "string", "default": "" }
+  },
+  "supports": {
+    "html": false, "anchor": true, "align": ["wide", "full"],
+    "layout": { "allowEditing": false },
+    "color": { "background": true, "text": true, "link": true, "gradients": true },
+    "background": { "backgroundImage": true, "backgroundSize": true },
+    "spacing": { "padding": true, "margin": true },
+    "typography": { "fontSize": true, "lineHeight": true },
+    "__experimentalBorder": { "radius": true, "color": true, "width": true, "style": true },
+    "shadow": true
+  },
+  "editorScript": "file:./index.js",
+  "style": "file:./style.css",
+  "editorStyle": "file:./editor.css"
+}
