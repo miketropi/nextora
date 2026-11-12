@@ -1,4 +1,4 @@
-export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5' | 'template-6';
 
 export interface BlogListCarouselAttributes {
 	cardTemplate: BlogListCardTemplate;

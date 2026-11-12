@@ -376,7 +376,10 @@ export function initElementAnimations(el: HTMLElement): void {
 					if (revealImmediately) {
 						gsap.set(el, from);
 						const playSingle = (): void => {
-							const initialDelay = el.hasAttribute("data-delay")
+							const hasDelayOverride =
+								el.hasAttribute("data-delay") ||
+								Array.from(el.classList).some((cls) => /^(?:animation-)?delay-\d+/.test(cls));
+							const initialDelay = hasDelayOverride
 								? options.delay
 								: (!isMegaMenu && el.tagName === "P" ? 0.35 : options.delay);
 							gsap.to(el, {

@@ -293,6 +293,15 @@ if ( ! function_exists( 'nextora_blc_render_readmore_arrow_icon' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_blc_render_readmore_diagonal_arrow_icon' ) ) {
+	/**
+	 * Decorative diagonal arrow for template-6 read-more links.
+	 */
+	function nextora_blc_render_readmore_diagonal_arrow_icon(): string {
+		return '<span class="nextora-blc__card-readmore-icon nextora-blc__card-readmore-icon--diagonal" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" focusable="false"><path d="M6.34357 5.31048L12.7351 5.31039M12.7351 5.31039L12.7351 11.611M12.7351 5.31039L5.31045 12.735" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+	}
+}
+
 if ( ! function_exists( 'nextora_blc_render_meta_icon' ) ) {
 	/**
 	 * Lucide-style meta icons for cards.
@@ -478,6 +487,38 @@ if ( ! function_exists( 'nextora_blc_get_template_defaults' ) ) {
 			);
 		}
 
+		if ( 'template-6' === $template ) {
+			return array(
+				'layoutMode'          => 'grid',
+				'gridColumns'         => 4,
+				'gridColumnGap'       => 30,
+				'gridRowGap'          => 35,
+				'spaceBetween'        => 30,
+				'slidesPerView'       => 4,
+				'slidesPerViewTablet' => 2,
+				'slidesPerViewMobile' => 1,
+				'postsPerPage'        => 4,
+				'showImage'           => true,
+				'imageAspectRatio'    => '3-2',
+				'imageBorderRadius'   => 30,
+				'cardBorderRadius'    => 30,
+				'cardPadding'         => 20,
+				'showTitle'           => true,
+				'titleFontSize'       => 'medium',
+				'titleLineClamp'      => 2,
+				'showDate'            => true,
+				'dateFormat'          => 'F j, Y',
+				'showExcerpt'         => false,
+				'showCategory'        => false,
+				'showAuthor'          => false,
+				'showReadMore'        => true,
+				'readMoreText'        => 'Read More',
+				'cardLinkBehavior'    => 'title-only',
+				'showPagination'      => false,
+				'showArrows'          => false,
+			);
+		}
+
 		return array();
 	}
 }
@@ -489,7 +530,8 @@ $card_template     = in_array( $card_template_raw, array( 'template-1', 'news-gr
 	: ( in_array( $card_template_raw, array( 'template-2' ), true ) ? 'template-2'
 	: ( in_array( $card_template_raw, array( 'template-3', 'overlay-grid' ), true ) ? 'template-3'
 	: ( in_array( $card_template_raw, array( 'template-4' ), true ) ? 'template-4'
-	: ( in_array( $card_template_raw, array( 'template-5' ), true ) ? 'template-5' : 'default' ) ) ) );
+	: ( in_array( $card_template_raw, array( 'template-5' ), true ) ? 'template-5'
+	: ( in_array( $card_template_raw, array( 'template-6' ), true ) ? 'template-6' : 'default' ) ) ) ) );
 
 $template_defaults = nextora_blc_get_template_defaults( $card_template );
 $parsed_attrs      = isset( $block ) && $block instanceof WP_Block && isset( $block->parsed_block['attrs'] ) && is_array( $block->parsed_block['attrs'] )
@@ -865,6 +907,9 @@ if ( 'template-4' === $card_template ) {
 if ( 'template-5' === $card_template ) {
     $wrapper_classes[] = 'nextora-blog-list-carousel--template-template-5';
 }
+if ( 'template-6' === $card_template ) {
+    $wrapper_classes[] = 'nextora-blog-list-carousel--template-template-6';
+}
 if ( $arrows_desktop_dots_mobile ) {
     $wrapper_classes[] = 'nextora-blc--nav-desktop-arrows-mobile-dots';
 }
@@ -1079,6 +1124,44 @@ while ( $query->have_posts() ) :
             	esc_html( (string) get_the_date( $date_format ) ),
             );
         }
+    } elseif ( 'template-6' === $card_template ) {
+        $meta_items = array();
+        if ( $show_date ) {
+            $meta_items[] = sprintf(
+            	'<time class="nextora-blc__card-date" datetime="%1$s">%2$s</time>',
+            	esc_attr( (string) get_the_date( 'c' ) ),
+            	esc_html( (string) get_the_date( $date_format ) ),
+            );
+        }
+        if ( $show_category ) {
+            $cats = get_the_category();
+            if ( is_array( $cats ) && array() !== $cats ) {
+                $cat = $cats[0];
+                if ( $cat instanceof WP_Term ) {
+                    $cat_link  = get_term_link( $cat );
+                    $cat_label = esc_html( $cat->name );
+                    if ( ! is_wp_error( $cat_link ) && is_string( $cat_link ) ) {
+                        $meta_items[] = '<a href="' . esc_url( $cat_link ) . '" class="nextora-blc__card-cat">' . $cat_label . '</a>';
+                    } else {
+                        $meta_items[] = '<span class="nextora-blc__card-cat">' . $cat_label . '</span>';
+                    }
+                }
+            }
+        }
+        if ( $show_author ) {
+            $meta_items[] = sprintf(
+            	'<span class="nextora-blc__card-author">%s</span>',
+            	esc_html( (string) get_the_author() ),
+            );
+        }
+        if ( array() !== $meta_items ) {
+            $meta_classes = 'nextora-blc__card-meta nextora-blc__card-meta--template-6';
+            if ( '' !== $meta_color_props['class'] ) {
+                $meta_classes .= ' ' . $meta_color_props['class'];
+            }
+            $meta_style_attr = '' !== $meta_color_props['style'] ? ' style="' . esc_attr( $meta_color_props['style'] ) . '"' : '';
+            $meta_html = '<div class="' . esc_attr( $meta_classes ) . '"' . $meta_style_attr . '>' . implode( '<span class="nextora-blc__card-divider" aria-hidden="true"></span>', $meta_items ) . '</div>';
+        }
     } else {
         $meta_parts = array();
         if ( $show_date ) {
@@ -1128,9 +1211,15 @@ while ( $query->have_posts() ) :
     // Read more
     $read_more_html = '';
     if ( $show_read_more ) {
-		$read_more_arrow = in_array( $card_template, array( 'template-1', 'template-2', 'template-4' ), true ) ? nextora_blc_render_readmore_arrow_icon() : '';
+		if ( 'template-6' === $card_template ) {
+			$read_more_arrow = nextora_blc_render_readmore_diagonal_arrow_icon();
+		} elseif ( in_array( $card_template, array( 'template-1', 'template-2', 'template-4' ), true ) ) {
+			$read_more_arrow = nextora_blc_render_readmore_arrow_icon();
+		} else {
+			$read_more_arrow = '';
+		}
 		$read_more_classes = 'nextora-blc__card-readmore';
-		if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-4', 'template-5' ), true ) ) {
+		if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-4', 'template-5', 'template-6' ), true ) ) {
 			$read_more_classes .= ' nextora-blc__card-readmore--' . $card_template;
 		}
 		if ( 'template-5' === $card_template ) {
@@ -1153,6 +1242,8 @@ while ( $query->have_posts() ) :
     // Card body
     if ( 'template-5' === $card_template ) {
 		$card_body = $meta_html . $title_html;
+	} elseif ( 'template-6' === $card_template ) {
+		$card_body = $meta_html . $title_html . $excerpt_html . $read_more_html;
 	} elseif ( 'template-3' === $card_template ) {
 		$card_body = $title_html . $meta_html . $excerpt_html . $read_more_html;
 	} elseif ( 'template-1' === $card_template ) {
@@ -1167,7 +1258,7 @@ while ( $query->have_posts() ) :
     if ( 'full-card' === $card_link_behavior ) {
         $card_class .= ' nextora-blc__card--linked';
     }
-	if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-3', 'template-4', 'template-5' ), true ) ) {
+	if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-3', 'template-4', 'template-5', 'template-6' ), true ) ) {
 		$card_class .= ' nextora-blc__card--' . $card_template;
 	}
 	if ( '' !== $card_bg_props['class'] ) {
@@ -1186,6 +1277,22 @@ while ( $query->have_posts() ) :
         	$read_more_html,
         	$permalink,
         	esc_attr( $title ),
+        );
+    } elseif ( 'template-6' === $card_template ) {
+        $rendered_image = $image_html;
+        if ( '' !== $image_html && 'full-card' !== $card_link_behavior ) {
+            $rendered_image = sprintf(
+            	'<a href="%1$s" class="nextora-blc__card-image-link" tabindex="-1" aria-hidden="true">%2$s</a>',
+            	$permalink,
+            	$image_html,
+            );
+        }
+        $cards_html .= sprintf(
+        	'<div class="swiper-slide"><article class="%1$s"%2$s>%3$s<div class="nextora-blc__card-body">%4$s</div></article></div>',
+        	esc_attr( $card_class ),
+        	$card_style_attr,
+        	$rendered_image,
+        	$card_body,
         );
     } elseif ( 'template-3' === $card_template ) {
         $cards_html .= sprintf(

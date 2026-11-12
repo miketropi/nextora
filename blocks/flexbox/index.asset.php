@@ -1,1 +1,1 @@
-<?php return [ 'dependencies' => [ 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-data', 'wp-element', 'wp-i18n' ], 'version' => '1793841709353' ];
+<?php return [ 'dependencies' => [ 'wp-blocks', 'wp-block-editor', 'wp-server-side-render', 'wp-components', 'wp-element', 'wp-i18n', 'wp-hooks', 'wp-data', 'wp-core-data', 'wp-compose', 'wp-primitives', 'wp-blob', 'wp-notices', 'wp-plugins' ], 'version' => '1794471253049' ];
