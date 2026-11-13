@@ -49,6 +49,8 @@ const excludes = [
 	`${ THEME_SLUG }/node_modules/*`,
 	`${ THEME_SLUG }/vendor/*`,
 	'*.zip',
+	`${ THEME_SLUG }/.env*`,
+	`${ THEME_SLUG }/deploy.sh`,
 
 	// VCS & CI
 	`${ THEME_SLUG }/.git/*`,
