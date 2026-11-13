@@ -22,6 +22,8 @@
 
 	var STORAGE_KEY = 'nextora-scheme-preferences';
 	var LEGACY_STORAGE_KEY = 'nextora-color-scheme';
+	var DEMO_STORAGE_KEY = 'nextora-scheme-demo';
+	var resetThemeSlug = null;
 
 	var root = document.documentElement;
 
@@ -444,6 +446,24 @@
 		refreshInvalidFontFallbacks();
 	}
 
+	function resetToDemo() {
+		resetTheme();
+		if ( resetThemeSlug ) {
+			applyTheme( resetThemeSlug );
+		}
+		save();
+		try {
+			localStorage.removeItem( STORAGE_KEY );
+			localStorage.removeItem( LEGACY_STORAGE_KEY );
+		} catch ( e ) {}
+		var url = new URL( window.location.href );
+		[ 'theme', 'color', 'font' ].forEach( function ( key ) {
+			url.searchParams.delete( key );
+		} );
+		window.history.replaceState( window.history.state, '', url.toString() );
+		updateUI();
+	}
+
 	/* ------------------------------------------------------------------
 	 * Persistence (localStorage + URL params)
 	 * ------------------------------------------------------------------ */
@@ -514,7 +534,20 @@
 		var urlFont = params.get( 'font' );
 
 		var pageTheme = OPTIONS.currentPageTheme || null;
-		var isDirectPageTheme = Boolean( OPTIONS.isDirectPageTheme );
+
+		// The reset baseline comes only from page identity, never a preview choice.
+		var pageDefault = OPTIONS.resetPageTheme;
+		if ( pageDefault && THEMES[ pageDefault ] ) {
+			resetThemeSlug = pageDefault;
+			try {
+				localStorage.setItem( DEMO_STORAGE_KEY, pageDefault );
+			} catch ( e ) {}
+		} else {
+			try {
+				var savedDemo = localStorage.getItem( DEMO_STORAGE_KEY );
+				resetThemeSlug = savedDemo && THEMES[ savedDemo ] ? savedDemo : null;
+			} catch ( e ) {}
+		}
 
 		var theme = null;
 		var shouldPersist = false;
@@ -523,10 +556,10 @@
 			// 1. Explicit URL parameter wins (?theme=medical)
 			theme = urlTheme;
 			shouldPersist = true;
-		} else if ( isDirectPageTheme && pageTheme && THEMES[ pageTheme ] ) {
+		} else if ( pageDefault && THEMES[ pageDefault ] ) {
 			// 2. Landing on a designated demo Home page (e.g. Home Medical):
 			// Actives the page's theme and automatically persists to localStorage + cookie!
-			theme = pageTheme;
+			theme = pageDefault;
 			shouldPersist = true;
 		} else if ( hasSavedChoice && prefs.theme && THEMES[ prefs.theme ] ) {
 			// 3. Inner page with NO direct theme (e.g. /contact-us/, /about-us/):
@@ -537,6 +570,8 @@
 			// 4. In case pageTheme was resolved from cookie for this request
 			theme = pageTheme;
 			shouldPersist = true;
+		} else if ( resetThemeSlug ) {
+			theme = resetThemeSlug;
 		} else if ( INITIAL.theme && THEMES[ INITIAL.theme ] ) {
 			theme = INITIAL.theme;
 		}
@@ -989,11 +1024,7 @@
 	} );
 
 	if ( resetBtn ) {
-		resetBtn.addEventListener( 'click', function () {
-			resetTheme();
-			save();
-			updateUI();
-		} );
+		resetBtn.addEventListener( 'click', resetToDemo );
 	}
 
 	if ( copyBtn ) {
