@@ -10,5 +10,7 @@ vendor/
 opencode.jsonc
 nextora-v*.zip
 .env
+.env.*
+!.env.example
 .roo
 .orchestrator/
