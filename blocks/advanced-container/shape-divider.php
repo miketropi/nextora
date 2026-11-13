@@ -24,9 +24,11 @@ if ( ! function_exists( 'nextora_container_render_divider' ) ) {
 		?>
 		<div class="<?php echo esc_attr( $class ); ?>" style="<?php echo esc_attr( $style ); ?>" aria-hidden="true"><svg viewBox="0 0 1440 70" preserveAspectRatio="none" focusable="false">
 		<?php if ( 'wave' === $settings['type'] ) : ?>
-			<path d="M0 70V20C240 65 480 65 720 30S1200 0 1440 30V70Z" fill="currentColor" fill-opacity=".35"/><path d="M0 70V30C240 0 480 0 720 35S1200 65 1440 30V70Z" fill="currentColor" fill-opacity=".6"/>
+			<path d="M0 70V30C240 4 480 4 720 30S1200 56 1440 30V70Z" fill="currentColor" fill-opacity=".25"/><path d="M0 70V36C240 10 480 10 720 36S1200 62 1440 36V70Z" fill="currentColor" fill-opacity=".5"/><path d="M0 70V42C240 16 480 16 720 42S1200 68 1440 42V70Z" fill="currentColor"/>
+		<?php else : ?>
+			<path d="M0 70V40C200 -5 420 -10 700 25s560 40 740 -10V70Z" fill="currentColor"/>
 		<?php endif; ?>
-		<path d="M0 70V40C200 -5 420 -10 700 25s560 40 740 -10V70Z" fill="currentColor"/></svg></div>
+		</svg></div>
 		<?php
 	}
 }
