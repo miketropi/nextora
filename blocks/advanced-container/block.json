@@ -53,6 +53,8 @@
     "shadow": true
   },
   "attributes": {
+    "shapeDividerTop": { "type": "object", "default": {} },
+    "shapeDividerBottom": { "type": "object", "default": {} },
     "backgroundType": {
       "type": "string",
       "default": "color"

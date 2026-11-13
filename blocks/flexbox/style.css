@@ -124,6 +124,22 @@
 .wp-block-nextora-flexbox > .wp-block-nextora-flexbox[style*="--flexbox-width:"],
 .wp-block-nextora-flexbox > .wp-block-nextora-flexbox[style*="--flexbox-desktop-width:"]:not([style*="--flexbox-desktop-width:initial"]):not([style*="--flexbox-desktop-width: initial"]) { flex: 0 1 auto; }
 
+.wp-block-nextora-flexbox:is([style*="--flexbox-border-side:"], [style*="--flexbox-tablet-border-side:"], [style*="--flexbox-mobile-border-side:"]) {
+  border-width: var(--flexbox-border-side, revert-layer) !important;
+}
+
+@media (max-width: 1023px) {
+  .wp-block-nextora-flexbox:is([style*="--flexbox-border-side:"], [style*="--flexbox-tablet-border-side:"], [style*="--flexbox-mobile-border-side:"]) {
+    border-width: var(--flexbox-tablet-border-side, var(--flexbox-border-side, revert-layer)) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .wp-block-nextora-flexbox:is([style*="--flexbox-border-side:"], [style*="--flexbox-tablet-border-side:"], [style*="--flexbox-mobile-border-side:"]) {
+    border-width: var(--flexbox-mobile-border-side, var(--flexbox-tablet-border-side, var(--flexbox-border-side, revert-layer))) !important;
+  }
+}
+
 @media (max-width: 1023px) {
   .wp-block-nextora-flexbox {
     flex-direction: var(--flexbox-tablet-flex-direction, var(--flexbox-flex-direction, var(--flexbox-desktop-flex-direction, column)));

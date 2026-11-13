@@ -2,6 +2,38 @@
  * nextora/blog-list-carousel — front-end styles.
  */
 
+.nextora-blog-list-carousel--template-template-7 .nextora-blc__card {
+	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast) 16%, transparent);
+	border-radius: var(--nextora-blc-card-radius, 8px);
+	background: var(--wp--preset--color--base);
+	overflow: hidden;
+}
+
+.nextora-blog-list-carousel--template-template-7 .nextora-blc__news-image { position: relative; }
+.nextora-blog-list-carousel--template-template-7 .nextora-blc__card-image { margin-bottom: 0; }
+.nextora-blog-list-carousel--template-template-7 .nextora-blc__news-image .nextora-blc__card-meta {
+	position: absolute;
+	inset-inline-start: 0;
+	bottom: 0;
+	margin: 0;
+	padding: 8px 14px;
+	background: var(--wp--preset--color--contrast);
+	color: var(--wp--preset--color--base);
+	font-weight: 700;
+	text-transform: uppercase;
+}
+.nextora-blog-list-carousel--template-template-7 .nextora-blc__card-body { padding: 22px 22px 26px; }
+.nextora-blog-list-carousel--template-template-7 .nextora-blc__news-image .nextora-blc__card-date { color: inherit; }
+.nextora-blog-list-carousel--template-template-7 .nextora-blc__card .nextora-blc__card-title { margin-bottom: 10px; }
+.nextora-blog-list-carousel--template-template-7 .nextora-blc__card a.nextora-blc__card-readmore:not(.wp-element-button) {
+	align-self: flex-start;
+	margin-top: 0;
+	border-bottom: 2px solid var(--wp--preset--color--primary);
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+}
+
 /* ── Loading / Ready (Swiper lifecycle only) ── */
 .nextora-blog-list-carousel--loading .nextora-blc__swiper {
 	opacity: 0.6;

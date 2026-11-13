@@ -2,6 +2,63 @@
  * Box Icon — front-end styles.
  */
 
+/* Template 06: open, centered ways-to-help cards. */
+@media (max-width: 767px) {
+	.nextora-box-icon--template-template-6.nextora-box-icon--grid-active .swiper-wrapper,
+	.nextora-box-icon--template-template-6 .nextora-box-icon__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+.nextora-box-icon--template-template-6 .nextora-box-icon__card {
+	align-items: center;
+	text-align: center;
+	padding: var(--wp--preset--spacing--10);
+	background: var(--nextora-box-icon-card-bg, transparent);
+}
+.nextora-box-icon--template-template-6 .nextora-box-icon__icon {
+	position: relative;
+	border-radius: 50%;
+	margin-bottom: var(--wp--preset--spacing--20);
+	background: var(--nextora-box-icon-icon-surface-bg, var(--wp--preset--color--contrast));
+	color: var(--nextora-box-icon-icon-color, var(--wp--preset--color--base));
+	box-shadow: 0 14px 28px color-mix(in srgb, var(--wp--preset--color--contrast) 20%, transparent);
+}
+.nextora-box-icon--template-template-6 .nextora-box-icon__icon::before,
+.nextora-box-icon--template-template-6 .nextora-box-icon__icon::after {
+	content: '';
+	position: absolute;
+	width: 3px;
+	height: 34px;
+	transform: rotate(-45deg);
+	background: var(--wp--preset--color--primary);
+	left: -8px;
+	top: -8px;
+}
+.nextora-box-icon--template-template-6 .nextora-box-icon__icon::after {
+	left: auto;
+	top: auto;
+	right: -6px;
+	bottom: -6px;
+	background: var(--wp--preset--color--contrast);
+}
+.nextora-box-icon--template-template-6 .nextora-box-icon__title {
+	font-size: var(--wp--preset--font-size--medium);
+	margin-block: 0 var(--wp--preset--spacing--10);
+}
+.nextora-box-icon--template-template-6 .nextora-box-icon__description {
+	max-width: 30ch;
+	margin-block: 0 var(--wp--preset--spacing--10);
+	color: var(--nextora-box-icon-card-desc-color, var(--wp--preset--color--paragraph));
+}
+.nextora-box-icon--template-template-6 .nextora-box-icon__link {
+	margin-top: auto;
+	color: var(--nextora-box-icon-link-color, var(--wp--preset--color--contrast));
+	text-decoration: underline;
+	text-decoration-color: var(--wp--preset--color--primary);
+	text-decoration-thickness: 2px;
+	text-underline-offset: 6px;
+}
+
 .wp-block-nextora-box-icon.nextora-box-icon,
 .nextora-box-icon {
 	box-sizing: border-box;

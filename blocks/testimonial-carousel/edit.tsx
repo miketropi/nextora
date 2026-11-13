@@ -595,7 +595,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 								value={topIconSize}
 								onChange={(v) => setAttributes({ topIconSize: v ?? 20 })}
 								min={12}
-								max={40}
+								max={80}
 							/>
 						</>
 					)}
