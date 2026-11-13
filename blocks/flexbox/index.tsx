@@ -21,12 +21,13 @@ const fields: Record<string, string> = {
   display: 'display', direction: 'flex-direction', justify: 'justify-content', align: 'align-items',
   wrap: 'flex-wrap', columnGap: 'column-gap', rowGap: 'row-gap', columns: 'grid-template-columns',
   width: 'width', minWidth: 'min-width', maxWidth: 'max-width', height: 'height', minHeight: 'min-height', maxHeight: 'max-height', overflow: 'overflow',
-  position: 'position', top: 'top', right: 'right', bottom: 'bottom', left: 'left', zIndex: 'z-index',
+  position: 'position', top: 'top', right: 'right', bottom: 'bottom', left: 'left', zIndex: 'z-index', borderSide: 'border-side',
 };
 const tags = ['div', 'section', 'article', 'aside', 'header', 'footer', 'main', 'nav'];
 const lengthPattern = /^(?:0|(?:\d*\.)?\d+(?:px|%|em|rem|vw|vh|vmin|vmax|ch|ex))$/;
 const offsetPattern = /^-?(?:0|(?:\d*\.)?\d+(?:px|%|em|rem|vw|vh|vmin|vmax|ch|ex))$/;
 function cssValue(key: string, value: string): string {
+  if (key === 'borderSide') return ({ none: '0', top: '1px 0 0 0', right: '0 1px 0 0', bottom: '0 0 1px 0', left: '0 0 0 1px' } as Record<string, string>)[value] || '';
   if (key === 'columns') return /^[1-9]$|^1[0-2]$/.test(value) ? `repeat(${value}, minmax(0, 1fr))` : '';
   if (key === 'columnGap' || key === 'rowGap') {
     const preset = /^var:preset\|spacing\|([a-zA-Z0-9-]+)$/.exec(value);
@@ -41,6 +42,7 @@ function cssValue(key: string, value: string): string {
     align: ['stretch', 'flex-start', 'center', 'flex-end', 'baseline'], wrap: ['nowrap', 'wrap', 'wrap-reverse'],
     position: ['static', 'relative', 'absolute', 'fixed', 'sticky'],
     overflow: ['visible', 'hidden', 'auto'],
+    borderSide: ['none', 'top', 'right', 'bottom', 'left'],
   };
   return allowed[key]?.includes(value) ? value : '';
 }
@@ -61,7 +63,7 @@ function previousStyle(attributes: Attributes): Record<string, string> {
   }
   return style;
 }
-const responsiveKeys = ['direction', 'justify', 'align', 'wrap', 'columnGap', 'rowGap', 'columns', 'width'];
+const responsiveKeys = ['direction', 'justify', 'align', 'wrap', 'columnGap', 'rowGap', 'columns', 'width', 'borderSide'];
 function deviceLabel(device: Device) {
   return device === 'mobile' ? __('Editing: Mobile', 'nextora') : device === 'tablet' ? __('Editing: Tablet', 'nextora') : __('Editing: Desktop', 'nextora');
 }
@@ -230,6 +232,18 @@ function Edit({ attributes, setAttributes, clientId }: Props) {
           {device !== 'desktop' && overrides.columnGap && <Button variant="link" onClick={() => set('columnGap', '')}>{__('Reset column gap to inherited', 'nextora')}</Button>}
         </>}
         <Button variant="secondary" onClick={() => { const next = { ...(attributes[device] || {}) }; (device === 'desktop' ? ['display', ...responsiveKeys.filter((key) => key !== 'width'), 'gridMinWidth'] : responsiveKeys.filter((key) => key !== 'width')).forEach((key) => delete next[key]); setAttributes({ [device]: next }); }}>{__('Reset layout settings', 'nextora')}</Button>
+      </PanelBody>
+      <PanelBody title={__('Responsive border side', 'nextora')} initialOpen={false}>
+        <p className="components-base-control__help">{__('Set the border style and color in Styles. The selected side uses a 1px border.', 'nextora')}</p>
+        <SelectControl label={responsiveLabel(__('Visible border side', 'nextora'), device)} value={(settings.borderSide || '') as '' | 'none' | 'top' | 'right' | 'bottom' | 'left'} options={[
+          { value: '', label: __('Use border styles', 'nextora') },
+          { value: 'none', label: __('None', 'nextora') },
+          { value: 'top', label: __('Top', 'nextora') },
+          { value: 'right', label: __('Right', 'nextora') },
+          { value: 'bottom', label: __('Bottom', 'nextora') },
+          { value: 'left', label: __('Left', 'nextora') },
+        ]} onChange={(value: string) => set('borderSide', value)} />
+        {device !== 'desktop' && overrides.borderSide && reset('borderSide')}
       </PanelBody>
       <PanelBody title={__('Dimensions', 'nextora')} initialOpen={false}>
         {device !== 'desktop' && <p className="components-base-control__help">{__('Only width changes by device. Other dimensions apply to all devices.', 'nextora')}</p>}
