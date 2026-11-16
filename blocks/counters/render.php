@@ -18,6 +18,9 @@ if ( ! function_exists( 'nextora_counters_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( preg_match( '/^var\(--[a-zA-Z0-9_-]+\)$/', $raw ) ) {
+			return $raw;
+		}
 		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
 			return $raw;
 		}
@@ -53,10 +56,13 @@ if ( ! function_exists( 'nextora_counters_resolve_font_size' ) ) {
 	/**
 	 * Preset slug or custom CSS size → font-size value.
 	 */
-	function nextora_counters_resolve_font_size( string $raw ): string {
+	function nextora_counters_resolve_font_size( string $raw, bool $inherit_typography = false ): string {
 		$raw = trim( $raw );
 		if ( '' === $raw ) {
 			return '';
+		}
+		if ( $inherit_typography && preg_match( '/^(?:[\d.]+(?:rem|px|em|vw|vh|%)|var\(--[a-zA-Z0-9_-]+\))$/i', $raw ) ) {
+			return $raw;
 		}
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
 			return 'var(--wp--preset--font-size--' . sanitize_html_class( $raw ) . ')';
@@ -170,6 +176,9 @@ $wrapper_classes = array(
 	'nextora-counters',
 	'nextora-counters--align-' . $text_align,
 );
+if ( ! empty( $attributes['inheritTypography'] ) ) {
+	$wrapper_classes[] = 'nextora-counters--inherit-typography';
+}
 if ( $divider ) {
 	$wrapper_classes[] = 'nextora-counters--divider';
 }
@@ -211,6 +220,7 @@ if ( '' !== $label_color ) {
 
 $number_font_size = nextora_counters_resolve_font_size(
 	isset( $attributes['numberFontSize'] ) ? (string) $attributes['numberFontSize'] : '',
+	! empty( $attributes['inheritTypography'] ),
 );
 if ( '' !== $number_font_size ) {
 	$style_parts[] = '--nextora-counters-number-size:' . esc_attr( $number_font_size );
@@ -218,6 +228,7 @@ if ( '' !== $number_font_size ) {
 
 $label_font_size = nextora_counters_resolve_font_size(
 	isset( $attributes['labelFontSize'] ) ? (string) $attributes['labelFontSize'] : '',
+	! empty( $attributes['inheritTypography'] ),
 );
 if ( '' !== $label_font_size ) {
 	$style_parts[] = '--nextora-counters-label-size:' . esc_attr( $label_font_size );

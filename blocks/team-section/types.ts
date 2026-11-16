@@ -1,6 +1,6 @@
 export type TeamLayoutMode = 'carousel' | 'grid';
 
-export type TeamCardTemplate = 'default' | 'overlay-social' | 'template-02';
+export type TeamCardTemplate = 'default' | 'overlay-social' | 'template-02' | 'template-nuptse';
 
 export type TeamPhotoAspectRatio = '3/4' | '4/3' | '1/1' | '16/9';
 
@@ -43,6 +43,7 @@ export interface TeamSectionAttributes {
 	gridColumnGap: number;
 	gridRowGap: number;
 	cardTemplate: TeamCardTemplate;
+	inheritTypography?: boolean;
 	photoAspectRatio: TeamPhotoAspectRatio;
 	slidesPerView: number;
 	slidesPerViewTablet: number;

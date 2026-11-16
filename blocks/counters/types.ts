@@ -7,6 +7,7 @@ export interface CounterItem {
 }
 
 export interface CountersAttributes {
+	inheritTypography?: boolean;
 	items: CounterItem[];
 	columns: number;
 	columnsTablet: number;

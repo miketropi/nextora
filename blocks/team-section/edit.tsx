@@ -19,6 +19,7 @@ import { useSelect } from '@wordpress/data';
 import type { TeamMember, TeamSectionAttributes } from './types';
 import { buildSectionStyleVars, createMemberId, normalizeMembers, resolvePhotoUrl } from './member-utils';
 import MemberEditForm from './member-edit-form';
+import NuptseMemberCard from './template-nuptse';
 import {
 	normalizeColorForStorage,
 	colorValueForPicker,
@@ -39,6 +40,7 @@ const cardTemplateOptions = [
 	{ label: __('Default', 'nextora'), value: 'default' },
 	{ label: __('Template 01', 'nextora'), value: 'overlay-social' },
 	{ label: __('Template 02', 'nextora'), value: 'template-02' },
+	{ label: __('Nuptse', 'nextora'), value: 'template-nuptse' },
 ];
 
 const photoAspectRatioOptions = [
@@ -148,6 +150,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 
 	const blockProps = useBlockProps({
 		className: [
+			attributes.inheritTypography ? 'nextora-team-section--inherit-typography' : '',
 			'nextora-team-section',
 			'nextora-team-section--editor',
 			`nextora-team-section--layout-${layoutMode}`,
@@ -336,9 +339,13 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						help={__('Choose the visual style for team member cards.', 'nextora')}
 						value={cardTemplate}
 						options={cardTemplateOptions}
-						onChange={(v) =>
-							setAttributes({ cardTemplate: (v as TeamSectionAttributes['cardTemplate']) ?? 'default' })
-						}
+						onChange={(v) => {
+							if (v === 'template-nuptse') {
+								setAttributes({ cardTemplate: v, layoutMode: 'grid', gridColumns: 3, gridMinWidth: 320, gridColumnGap: 16, gridRowGap: 16, photoAspectRatio: '1/1', showPagination: false, showArrows: false, cardBorderRadius: 10 });
+							} else {
+								setAttributes({ cardTemplate: (v as TeamSectionAttributes['cardTemplate']) ?? 'default' });
+							}
+						}}
 					/>
 
 					<RadioControl
@@ -711,6 +718,9 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						<div className="nextora-team-section__members-row" aria-label={__('Team members', 'nextora')}>
 							{members.map((member) => {
 								const photoUrl = resolvePhotoUrl(member, mediaUrlById);
+								if (cardTemplate === 'template-nuptse') {
+									return <NuptseMemberCard key={member.id} member={member} photoUrl={photoUrl} attributes={attributes} onEdit={() => openMemberEditor(member.id)} />;
+								}
 
 								return (
 									<article

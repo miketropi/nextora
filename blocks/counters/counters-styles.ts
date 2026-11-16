@@ -13,6 +13,7 @@ export function resolveColor(raw: string): string | undefined {
 	if (!value) {
 		return undefined;
 	}
+	if (/^var\(--[a-zA-Z0-9_-]+\)$/.test(value)) return value;
 	if (value.startsWith('#') || value.startsWith('rgb') || value.startsWith('hsl')) {
 		return value;
 	}
@@ -43,11 +44,12 @@ export function resolveFontFamily(raw: string): string | undefined {
 /**
  * Preset slug or custom CSS size → font-size value.
  */
-export function resolveFontSize(raw: string): string | undefined {
+export function resolveFontSize(raw: string, inheritTypography = false): string | undefined {
 	const value = raw.trim();
 	if (!value) {
 		return undefined;
 	}
+	if (inheritTypography && /^(?:[\d.]+(?:rem|px|em|vw|vh|%)|var\(--[a-zA-Z0-9_-]+\))$/i.test(value)) return value;
 	if (/^[a-z0-9-]+$/.test(value)) {
 		return presetFontSizeVar(value);
 	}
@@ -61,6 +63,7 @@ export function resolveFontSize(raw: string): string | undefined {
 }
 
 export function buildTypographyStyleVars(attrs: {
+	inheritTypography?: boolean;
 	numberColor?: string;
 	labelColor?: string;
 	numberFontSize?: string;
@@ -92,12 +95,12 @@ export function buildTypographyStyleVars(attrs: {
 		}
 	}
 
-	const resolvedNumberSize = resolveFontSize(numberFontSize ?? '');
+	const resolvedNumberSize = resolveFontSize(numberFontSize ?? '', attrs.inheritTypography);
 	if (resolvedNumberSize) {
 		vars['--nextora-counters-number-size'] = resolvedNumberSize;
 	}
 
-	const resolvedLabelSize = resolveFontSize(labelFontSize ?? '');
+	const resolvedLabelSize = resolveFontSize(labelFontSize ?? '', attrs.inheritTypography);
 	if (resolvedLabelSize) {
 		vars['--nextora-counters-label-size'] = resolvedLabelSize;
 	}

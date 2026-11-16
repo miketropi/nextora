@@ -29,6 +29,7 @@
     "gridColumnGap": { "type": "number", "default": 24 },
     "gridRowGap": { "type": "number", "default": 24 },
     "cardTemplate": { "type": "string", "default": "default" },
+    "inheritTypography": { "type": "boolean", "default": false },
     "photoAspectRatio": { "type": "string", "default": "3/4" },
     "members": {
       "type": "array",

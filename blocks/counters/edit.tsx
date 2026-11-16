@@ -202,6 +202,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 	const colsMobile = clampColumns(columnsMobile, 1, 4);
 
 	const typographyVars = buildTypographyStyleVars({
+		inheritTypography: attributes.inheritTypography,
 		numberColor,
 		labelColor,
 		numberFontSize,
@@ -213,6 +214,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 	const blockProps = useBlockProps({
 		className: [
 			'nextora-counters',
+			attributes.inheritTypography ? 'nextora-counters--inherit-typography' : '',
 			`nextora-counters--align-${textAlign}`,
 			divider ? 'nextora-counters--divider' : '',
 		]

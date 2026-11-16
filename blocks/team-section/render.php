@@ -57,6 +57,9 @@ if ( ! function_exists( 'nextora_team_section_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
+		if ( preg_match( '/^var\(--[a-zA-Z0-9_-]+\)$/', $raw ) ) {
+			return $raw;
+		}
 
 		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
 			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $m[1] ) ) . ')';
@@ -582,8 +585,11 @@ if ( ! in_array( $layout_mode, array( 'carousel', 'grid' ), true ) ) {
 }
 
 $card_template = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-if ( ! in_array( $card_template, array( 'default', 'overlay-social', 'template-02' ), true ) ) {
+if ( ! in_array( $card_template, array( 'default', 'overlay-social', 'template-02', 'template-nuptse' ), true ) ) {
 	$card_template = 'default';
+}
+if ( 'template-nuptse' === $card_template ) {
+	require_once __DIR__ . '/template-nuptse.php';
 }
 
 $photo_aspect = isset( $attributes['photoAspectRatio'] ) ? (string) $attributes['photoAspectRatio'] : '3/4';
@@ -703,6 +709,9 @@ $wrapper_classes = array(
 	'nextora-team-section--layout-' . sanitize_html_class( $layout_mode ),
 	'nextora-team-section--template-' . sanitize_html_class( $card_template ),
 );
+if ( ! empty( $attributes['inheritTypography'] ) ) {
+	$wrapper_classes[] = 'nextora-team-section--inherit-typography';
+}
 if ( $enable_scroll ) {
 	$wrapper_classes[] = 'nextora-team-section--reveal-pending';
 }
@@ -746,7 +755,10 @@ nextora_team_section_enqueue_view_script();
 					<div class="swiper-wrapper">
 						<?php
 						foreach ( $members as $member ) {
-							if ( 'overlay-social' === $card_template ) {
+							if ( 'template-nuptse' === $card_template ) {
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped template output.
+								echo nextora_team_section_render_member_nuptse( $member, $card_radius, $attributes );
+							} elseif ( 'overlay-social' === $card_template ) {
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
 								echo nextora_team_section_render_member_slide_overlay( $member, $card_radius );
 							} else {

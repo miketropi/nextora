@@ -1,3 +1,5 @@
+@import './template-nuptse.css';
+
 /**
  * Our Team section — front-end styles.
  */
@@ -251,16 +253,24 @@
 }
 
 .nextora-team-section__card-name {
+	margin: 0 0 0.125rem;
+}
+.nextora-team-section__card-name:where(:not(.nextora-team-section--inherit-typography *)) {
 	font-size: var(--wp--preset--font-size--medium, 1.0625rem);
 	font-weight: 600;
-	margin: 0 0 0.125rem;
+}
+.nextora-team-section__card-name:where(:not(.nextora-team-section__inherit-color)) {
 	color: var(--nextora-team-card-name-color, var(--wp--preset--color--contrast, #0a0a0a));
 }
 
 .nextora-team-section__card-role {
-	font-size: 0.9rem;
-	color: var(--nextora-team-desc-color, var(--wp--preset--color--paragraph, #525252));
 	margin: 0 0 0.625rem !important;
+}
+.nextora-team-section__card-role:where(:not(.nextora-team-section--inherit-typography *)) {
+	font-size: 0.9rem;
+}
+.nextora-team-section__card-role:where(:not(.nextora-team-section__inherit-color)) {
+	color: var(--nextora-team-desc-color, var(--wp--preset--color--paragraph, #525252));
 }
 
 .nextora-team-section__card-tags {
