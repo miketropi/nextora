@@ -575,7 +575,7 @@ export default function TextRevealAnimationEdit({
 							? 100
 							: 200);
 					const emWidth = (parsedWidth / 200) * 1.05;
-					width += emWidth * baseFontSize + 0.24 * baseFontSize;
+					width += emWidth * baseFontSize + 0.36 * baseFontSize;
 				}
 			});
 			return width;

@@ -27,24 +27,40 @@ function whenImagesReady(root: HTMLElement): Promise<void> {
   const imgs = [...root.querySelectorAll<HTMLImageElement>('img')];
   if (imgs.length === 0) return Promise.resolve();
 
-  return Promise.all(
-    imgs.map(
-      (img) =>
-        new Promise<void>((resolve) => {
-          if (img.complete) {
-            resolve();
-            return;
-          }
-          const done = (): void => {
-            img.removeEventListener('load', done);
-            img.removeEventListener('error', done);
-            resolve();
-          };
-          img.addEventListener('load', done);
-          img.addEventListener('error', done);
-        }),
-    ),
-  ).then(() => undefined);
+  imgs.forEach((img) => {
+    if (img.loading === 'lazy') {
+      img.loading = 'eager';
+    }
+  });
+
+  const imagePromises = imgs.map(
+    (img) =>
+      new Promise<void>((resolve) => {
+        if (img.complete && img.naturalWidth > 0) {
+          resolve();
+          return;
+        }
+        if (typeof img.decode === 'function') {
+          img.decode()
+            .then(() => resolve())
+            .catch(() => resolve());
+          return;
+        }
+        const done = (): void => {
+          img.removeEventListener('load', done);
+          img.removeEventListener('error', done);
+          resolve();
+        };
+        img.addEventListener('load', done, { once: true });
+        img.addEventListener('error', done, { once: true });
+      }),
+  );
+
+  const timeoutPromise = new Promise<void>((resolve) => {
+    setTimeout(resolve, 600);
+  });
+
+  return Promise.race([Promise.all(imagePromises).then(() => undefined), timeoutPromise]);
 }
 
 // ── Marquee fill ──
@@ -156,14 +172,19 @@ function observeResize(root: HTMLElement): void {
   if (!track || typeof ResizeObserver === 'undefined') return;
 
   let frame = 0;
-  const observer = new ResizeObserver(() => {
+  let lastWidth = Math.round(track.getBoundingClientRect().width);
+
+  const observer = new ResizeObserver((entries) => {
     if (prefersReducedMotion()) return;
-    cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(() => {
-      delete (root as unknown as Record<string, unknown>).nextoraSisReady;
-      root.classList.remove('nextora-sis--ready');
-      void initRoot(root);
-    });
+    for (const entry of entries) {
+      const newWidth = Math.round(entry.contentRect.width);
+      if (newWidth === lastWidth || newWidth === 0) continue;
+      lastWidth = newWidth;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        fillScrollingImageStrip(root);
+      });
+    }
   });
   observer.observe(track);
 }

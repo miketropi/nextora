@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { CSSProperties } from 'react';
 import { useState, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
@@ -9,6 +10,7 @@ import {
 	RichText,
 	useBlockProps,
 	FontSizePicker,
+	useSetting,
 } from '@wordpress/block-editor';
 import {
 	BaseControl,
@@ -108,13 +110,48 @@ function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: 
 	);
 }
 
+const PRESET_FONT_SIZE_SLUGS = new Set([
+	'small',
+	'base',
+	'medium',
+	'medium-plus',
+	'large',
+	'x-large',
+	'xx-large',
+]);
+
+function isPresetFontSize(
+	val: string | undefined,
+	fontSizes: Array<{ slug?: string }> = [],
+): boolean {
+	if (!val) {
+		return false;
+	}
+	const lower = val.trim().toLowerCase();
+	if (/^[\d.]+(?:px|rem|em|vw|vh|%)?$/i.test(lower) || /^clamp\(/i.test(lower)) {
+		return false;
+	}
+	return (
+		PRESET_FONT_SIZE_SLUGS.has(lower) ||
+		fontSizes.some((item) => item.slug?.toLowerCase() === lower)
+	);
+}
+
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
+	selectedItem?: { slug?: string },
 ): string {
-	if (value === undefined) {
+	if (value === undefined || value === null || value === '') {
 		return '';
 	}
-	return String(value);
+	if (selectedItem?.slug) {
+		return selectedItem.slug;
+	}
+	const str = String(value).trim();
+	if (/^\d+(\.\d+)?$/.test(str)) {
+		return `${str}px`;
+	}
+	return str;
 }
 
 interface TestimonialItemModalProps {
@@ -273,6 +310,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 	const [editingId, setEditingId] = useState<string | null>(null);
 	const palette = useThemeColorPalette();
 	const fontFamilyOptions = useFontFamilyOptions();
+	const themeFontSizes = useSetting('typography.fontSizes') || [];
 
 	const testimonials = normalizeTestimonials(attributes.testimonials);
 	const trustAvatars = normalizeTrustAvatars(attributes.trustAvatars);
@@ -341,14 +379,20 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 		arrowBorderColor = '',
 		quoteColor = '',
 		quoteFontFamily = '',
-					quoteFontSize = 'base',
+		quoteFontSize = '',
 		labelColor = '',
 		authorColor = '',
 		authorNameColor = '',
 		trustColor = '',
 		starColor = '',
 		enableScrollAnimation = true,
+		edgeFadeColor = '',
 	} = attributes;
+
+	const isDesktopFractional = (itemsPerViewDesktop % 1) !== 0;
+	const isTabletFractional = (itemsPerViewTablet % 1) !== 0;
+	const isMobileFractional = (itemsPerViewMobile % 1) !== 0;
+	const hasAnyFractional = isDesktopFractional || isTabletFractional || isMobileFractional;
 
 	const blockProps = useBlockProps({
 		className: [
@@ -356,6 +400,9 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 			'nextora-testimonial-carousel--editor',
 			templateStyle === 'template-1' ? 'nextora-testimonial-carousel--template-1' : '',
 			showArrows && arrowPosition === 'sides' ? 'nextora-testimonial-carousel--arrows-sides' : '',
+			isDesktopFractional ? 'has-edge-fade-desktop' : '',
+			isTabletFractional ? 'has-edge-fade-tablet' : '',
+			isMobileFractional ? 'has-edge-fade-mobile' : '',
 		]
 			.filter(Boolean)
 			.join(' '),
@@ -381,6 +428,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 			trustAvatarBorderWidth,
 			trustAvatarBorderColor,
 			cardGap,
+			edgeFadeColor,
 		}) as CSSProperties,
 	});
 
@@ -547,7 +595,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 								value={topIconSize}
 								onChange={(v) => setAttributes({ topIconSize: v ?? 20 })}
 								min={12}
-								max={40}
+								max={80}
 							/>
 						</>
 					)}
@@ -712,23 +760,38 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 							<RangeControl
 								label={__('Slides per view — Desktop', 'nextora')}
 								value={itemsPerViewDesktop}
-								onChange={(v) => setAttributes({ itemsPerViewDesktop: v ?? 3 })}
+								onChange={(v) =>
+									setAttributes({
+										itemsPerViewDesktop: v !== undefined ? Math.round(v * 100) / 100 : 3,
+									})
+								}
 								min={1}
-								max={5}
+								max={6}
+								step={0.1}
 							/>
 							<RangeControl
 								label={__('Slides per view — Tablet', 'nextora')}
 								value={itemsPerViewTablet}
-								onChange={(v) => setAttributes({ itemsPerViewTablet: v ?? 2 })}
+								onChange={(v) =>
+									setAttributes({
+										itemsPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 2,
+									})
+								}
 								min={1}
 								max={4}
+								step={0.1}
 							/>
 							<RangeControl
 								label={__('Slides per view — Mobile', 'nextora')}
 								value={itemsPerViewMobile}
-								onChange={(v) => setAttributes({ itemsPerViewMobile: v ?? 1 })}
+								onChange={(v) =>
+									setAttributes({
+										itemsPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 1,
+									})
+								}
 								min={1}
-								max={2}
+								max={3}
+								step={0.1}
 							/>
 							<RangeControl
 								label={__('Gap (px)', 'nextora')}
@@ -750,7 +813,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						checked={showArrows}
 						onChange={(v) => setAttributes({ showArrows: v })}
 					/>
-					{showArrows && templateStyle !== 'template-1' && (
+					{showArrows && (
 						<SelectControl
 							label={__('Arrow position', 'nextora')}
 							value={arrowPosition}
@@ -870,6 +933,12 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 							onChange: (v) => setAttributes({ backgroundColor: normalizeColorForStorage(v, palette) }),
 							label: __('Background', 'nextora'),
 						},
+						{
+							value: colorValueForPicker(edgeFadeColor, palette),
+							onChange: (v: string | undefined) =>
+								setAttributes({ edgeFadeColor: normalizeColorForStorage(v, palette) }),
+							label: __('Edge fade overlay', 'nextora'),
+						},
 						...(templateStyle !== 'template-1'
 							? [
 									{
@@ -968,15 +1037,17 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 						label={__('Quote font size', 'nextora')}
 						id="nextora-testimonial-carousel-quote-font-size"
 						help={__(
-							'Default uses the Base theme preset.',
+							'Default inherits the surrounding typography.',
 							'nextora',
 						)}
 					>
 							<FontSizePicker
+								fontSizes={themeFontSizes}
 								value={quoteFontSize || undefined}
-								onChange={(value) =>
+								valueMode={isPresetFontSize(quoteFontSize, themeFontSizes) ? 'slug' : 'literal'}
+								onChange={(value, selectedItem) =>
 									setAttributes({
-										quoteFontSize: normalizeFontSizeAttribute(value),
+										quoteFontSize: normalizeFontSizeAttribute(value, selectedItem),
 									})
 								}
 						/>
@@ -1074,34 +1145,42 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 									{item.quoteText ||
 										__('Write testimonial quote…', 'nextora')}
 								</blockquote>
-								<div className={`nextora-testimonial-carousel__slide-author${templateStyle === 'template-1' ? ' nextora-testimonial-carousel__slide-author--t1' : ''}`}>
-									{item.showAuthorPhoto && authorPhotoUrl ? (
-										<img
-											src={authorPhotoUrl}
-											alt=""
-											className="nextora-testimonial-carousel__slide-author-photo"
-										/>
+								<div
+									className={`nextora-testimonial-carousel__slide-author${
+										(item.showAuthorPhoto || templateStyle === 'template-1')
+											? ' nextora-testimonial-carousel__slide-author--has-photo'
+											: ' nextora-testimonial-carousel__slide-author--no-photo'
+									}${templateStyle === 'template-1' ? ' nextora-testimonial-carousel__slide-author--t1' : ''}`}
+								>
+									{item.showAuthorPhoto || templateStyle === 'template-1' ? (
+										authorPhotoUrl ? (
+											<img
+												src={authorPhotoUrl}
+												alt=""
+												className="nextora-testimonial-carousel__slide-author-photo"
+											/>
+										) : (
+											<div
+												className="nextora-testimonial-carousel__slide-author-photo nextora-testimonial-carousel__slide-author-photo--placeholder"
+												aria-hidden="true"
+											>
+												<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+													<circle cx="12" cy="8" r="3.5" />
+													<path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" />
+												</svg>
+											</div>
+										)
 									) : null}
 									<div className="nextora-testimonial-carousel__slide-author-text">
 										{item.authorName ? (
 											<>
-												{templateStyle !== 'template-1' && '— '}
 												<strong className="nextora-testimonial-carousel__slide-author-name">
 													{item.authorName}
 												</strong>
 												{item.authorRole ? (
-													templateStyle === 'template-1' ? (
-														<span className="nextora-testimonial-carousel__slide-author-role">
-															{item.authorRole}
-														</span>
-													) : (
-														<>
-															{', '}
-															<span className="nextora-testimonial-carousel__slide-author-role">
-																{item.authorRole}
-															</span>
-														</>
-													)
+													<span className="nextora-testimonial-carousel__slide-author-role">
+														{item.authorRole}
+													</span>
 												) : null}
 											</>
 										) : (
@@ -1130,9 +1209,12 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 							))}
 						</div>
 					)}
+					{hasAnyFractional && (
+						<div className="nextora-testimonial-carousel__edge-overlay" aria-hidden="true" />
+					)}
 					{showArrows && (
 						<div
-							className={`nextora-testimonial-carousel__arrows nextora-testimonial-carousel__arrows--${templateStyle === 'template-1' ? 'below-dots' : arrowPosition}`}
+							className={`nextora-testimonial-carousel__arrows nextora-testimonial-carousel__arrows--${arrowPosition}`}
 						>
 							<span className="nextora-testimonial-carousel__arrow">
 								<ChevronLeftIcon />

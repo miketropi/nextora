@@ -99,23 +99,24 @@ echo "✓ Done"
 
 ### 5. `package.json`
 
-Add the deploy script:
+Add the deploy scripts:
 
 ```json
 {
   "scripts": {
-    "deploy": "bash deploy.sh"
+    "deploy": "bash deploy.sh .env",
+    "deploy:dev": "npm run deploy",
+    "deploy:live": "bash deploy.sh .env.live",
+    "deploy:both": "npm run build && npm run build:package && concurrently -n DEV,LIVE -c cyan,magenta \"bash deploy.sh .env --skip-build\" \"bash deploy.sh .env.live --skip-build\""
   }
 }
 ```
 
 ## How It Works (Flow)
 
-1. `npm run deploy` runs `deploy.sh`.
-2. The script loads VPS config from `.env`.
-3. `npm run build` generates the theme zip.
-4. `scp` uploads the zip to `/tmp` on the VPS.
-5. Over SSH, the remote commands wipe the existing theme directory, recreate it, extract the zip into it, then delete the temporary zip.
+- **`npm run deploy` / `npm run deploy:dev`**: Loads `.env`, builds the theme (`npm run build && npm run build:package`), uploads and deploys to the Dev VPS.
+- **`npm run deploy:live`**: Loads `.env.live`, builds the theme, uploads and deploys to the Live VPS.
+- **`npm run deploy:both`**: Builds the theme **once**, then triggers `deploy.sh` for Dev and Live in parallel using `concurrently` (passing `--skip-build` to prevent redundant builds).
 
 ## Important Notes for the Implementer
 

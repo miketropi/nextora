@@ -5,28 +5,48 @@
 
 @layer components {
 	.nextora-modal__surface--spotlight {
-		width: min(100%, 36rem);
-		max-height: min(85vh, 580px);
+		width: min(100%, 38rem);
+		max-height: min(85vh, 600px);
 		border-radius: 1rem;
+		background: #ffffff;
 		box-shadow:
-			0 0 0 1px rgb(0 0 0 / 0.05),
-			0 18px 50px -20px rgb(0 0 0 / 0.22),
-			0 8px 16px -8px rgb(0 0 0 / 0.08);
+			0 20px 25px -5px rgba(0, 0, 0, 0.1),
+			0 10px 10px -5px rgba(0, 0, 0, 0.04);
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 	}
 
 	.nextora-modal__body--spotlight {
 		min-height: 0;
+		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden !important;
+	}
+
+	.nextora-modal__body--spotlight > div {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		flex: 1 1 auto;
+		overflow: hidden;
 	}
 
 	.nextora-spotlight {
 		display: flex;
 		min-height: 0;
+		height: 100%;
 		flex: 1 1 auto;
 		flex-direction: column;
+		overflow: hidden;
 		font-family: var(
 			--wp--preset--font-family--sans,
-			Arial,
-			Helvetica,
+			"Hanken Grotesk",
+			-apple-system,
+			BlinkMacSystemFont,
+			"Segoe UI",
+			Roboto,
 			sans-serif
 		);
 	}
@@ -40,22 +60,28 @@
 	}
 
 	.nextora-spotlight__field {
+		flex-shrink: 0;
 		position: relative;
+		z-index: 5;
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		margin: 0.35rem 1rem 0.2rem;
-		padding: 0.5rem 0;
+		gap: 0.75rem;
+		margin: 0.25rem 3.5rem 0.25rem 1rem;
+		padding: 0.65rem 0;
 		border: none;
 		border-radius: 0;
-		border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 12%, transparent);
-		background: transparent;
+		border-bottom: 1.5px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 14%, transparent);
+		background: #ffffff;
 		box-shadow: none;
 		transition: border-color 0.18s ease;
 	}
 
+	:dir(rtl) .nextora-spotlight__field {
+		margin: 0.25rem 1rem 0.25rem 3.5rem;
+	}
+
 	.nextora-spotlight:focus-within .nextora-spotlight__field {
-		border-bottom-color: color-mix(in srgb, var(--wp--preset--color--primary, #4f46e5) 45%, transparent);
+		border-bottom-color: var(--wp--preset--color--primary, #ea5b3a);
 		box-shadow: none;
 	}
 
@@ -125,15 +151,64 @@
 		flex: 1 1 auto;
 		border: none;
 		background: transparent;
-		font-size: 0.9375rem;
+		font-family: inherit;
+		font-size: 1rem;
 		line-height: 1.5;
-		letter-spacing: -0.015em;
+		letter-spacing: -0.01em;
 		color: var(--wp--preset--color--contrast, #0f172a);
 		outline: none;
 	}
 
 	.nextora-spotlight__input::placeholder {
 		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 65%, transparent);
+	}
+
+	/* Spotlight close button: sleek circular black button matching donation popup */
+	.nextora-spotlight__close-wrap {
+		position: absolute;
+		top: 14px;
+		right: 14px;
+		z-index: 20;
+	}
+
+	:dir(rtl) .nextora-spotlight__close-wrap {
+		right: auto;
+		left: 14px;
+	}
+
+	.nextora-spotlight__close {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: #000000;
+		color: #ffffff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		border: none;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+		transition: opacity 0.2s ease, transform 0.15s ease, background-color 0.2s ease;
+	}
+
+	.nextora-spotlight__close:hover {
+		opacity: 0.85;
+		background: #000000;
+		color: #ffffff;
+	}
+
+	.nextora-spotlight__close svg {
+		width: 16px;
+		height: 16px;
+		display: block;
+		stroke: currentColor;
+	}
+
+	.nextora-spotlight__close svg path {
+		stroke: currentColor;
+		stroke-width: 2.2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
 	}
 
 	@keyframes nextora-spotlight-spin {
@@ -160,8 +235,27 @@
 		flex: 1 1 auto;
 		overflow-x: hidden;
 		overflow-y: auto;
-		padding: 0.15rem 1rem 0.5rem;
+		padding: 0.15rem 1.25rem 0.75rem 1rem;
 		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		scrollbar-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 25%, transparent) transparent;
+	}
+
+	.nextora-spotlight__results::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.nextora-spotlight__results::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.nextora-spotlight__results::-webkit-scrollbar-thumb {
+		background-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 25%, transparent);
+		border-radius: 9999px;
+	}
+
+	.nextora-spotlight__results::-webkit-scrollbar-thumb:hover {
+		background-color: color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 45%, transparent);
 	}
 
 	.nextora-spotlight__list {
@@ -193,11 +287,11 @@
 	.nextora-spotlight__link {
 		display: flex;
 		align-items: flex-start;
-		gap: 0.55rem;
+		gap: 0.75rem;
 		margin: 0;
-		padding: 0.45rem 0;
+		padding: 0.6rem 0;
 		border-radius: 0;
-		border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 7%, transparent);
+		border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast, #0f172a) 8%, transparent);
 		text-decoration: none !important;
 		color: var(--wp--preset--color--contrast, #0f172a) !important;
 		transition: color 0.12s ease;
@@ -208,17 +302,27 @@
 	}
 
 	.nextora-spotlight__link:hover {
-		color: color-mix(in srgb, var(--wp--preset--color--primary, #4f46e5) 72%, var(--wp--preset--color--contrast, #0f172a)) !important;
+		color: var(--wp--preset--color--primary, #ea5b3a) !important;
 	}
 
 	.nextora-spotlight__link--active {
-		color: color-mix(in srgb, var(--wp--preset--color--primary, #4f46e5) 78%, var(--wp--preset--color--contrast, #0f172a)) !important;
+		color: var(--wp--preset--color--primary, #ea5b3a) !important;
+	}
+
+	.nextora-spotlight__link:hover .nextora-spotlight__title,
+	.nextora-spotlight__link--active .nextora-spotlight__title {
+		color: var(--wp--preset--color--primary, #ea5b3a) !important;
+	}
+
+	.nextora-spotlight__link:hover .nextora-spotlight__thumb,
+	.nextora-spotlight__link--active .nextora-spotlight__thumb {
+		color: var(--wp--preset--color--primary, #ea5b3a) !important;
 	}
 
 	.nextora-spotlight__link:focus-visible {
 		outline: none;
 		text-decoration: underline !important;
-		text-decoration-color: color-mix(in srgb, var(--wp--preset--color--primary, #4f46e5) 50%, transparent);
+		text-decoration-color: var(--wp--preset--color--primary, #ea5b3a);
 		text-underline-offset: 0.2em;
 	}
 
@@ -230,20 +334,17 @@
 		width: 1.25rem;
 		height: 1.25rem;
 		padding: 0;
+		margin-top: 0.15rem;
 		border-radius: 0;
 		background: transparent;
-		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 88%, transparent);
-	}
-
-	.nextora-spotlight__link--active .nextora-spotlight__thumb {
-		background: transparent;
-		color: color-mix(in srgb, var(--wp--preset--color--primary, #4f46e5) 75%, var(--wp--preset--color--contrast, #0f172a)) !important;
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 80%, transparent);
+		transition: color 0.12s ease;
 	}
 
 	.nextora-spotlight__thumb svg {
 		display: block;
-		width: 1.125rem;
-		height: 1.125rem;
+		width: 1.25rem;
+		height: 1.25rem;
 	}
 
 	.nextora-spotlight__stack {
@@ -251,8 +352,7 @@
 		min-width: 0;
 		flex: 1 1 auto;
 		flex-direction: column;
-		gap: 0.2rem;
-		padding-top: 0.1rem;
+		gap: 0.25rem;
 	}
 
 	.nextora-spotlight__title {
@@ -260,29 +360,33 @@
 		overflow: hidden;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
-		font-size: 0.90625rem;
+		font-family: inherit;
+		font-size: 0.9375rem;
 		font-weight: 500;
 		line-height: 1.4;
 		letter-spacing: -0.012em;
+		transition: color 0.12s ease;
 	}
 
 	.nextora-spotlight__meta {
 		display: flex;
 		min-width: 0;
 		align-items: center;
-		gap: 0.3rem;
-		font-size: 0.71875rem;
+		gap: 0.35rem;
+		font-family: inherit;
+		font-size: 0.75rem;
 		line-height: 1.35;
 		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 88%, transparent);
 	}
 
 	.nextora-spotlight__type {
 		flex-shrink: 0;
-		font-weight: 500;
+		font-family: inherit;
+		font-weight: 600;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		font-size: 0.625rem;
-		opacity: 0.88;
+		font-size: 0.6875rem;
+		opacity: 0.9;
 	}
 
 	.nextora-spotlight__sep {
@@ -293,37 +397,34 @@
 	.nextora-spotlight__path {
 		min-width: 0;
 		overflow: hidden;
-		font-family: var(
-			--wp--preset--font-family--mono,
-			ui-monospace,
-			SFMono-Regular,
-			Menlo,
-			Monaco,
-			Consolas,
-			"Liberation Mono",
-			"Courier New",
-			monospace
-		);
-		font-size: 0.65625rem;
+		font-family: inherit;
+		font-size: 0.75rem;
 		font-weight: 400;
 		text-overflow: ellipsis;
 		white-space: nowrap;
-		opacity: 0.92;
+		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 80%, transparent);
 	}
 
 	.nextora-spotlight__hint {
 		display: block;
-		margin: 1rem 1rem 0.65rem !important;
+		margin: 0.75rem 1rem 0.5rem !important;
 		padding: 0;
 		border: none;
 		background: none;
 		box-shadow: none;
 		text-align: start;
-		font-size: 0.78125rem;
+		font-family: inherit;
+		font-size: 0.8125rem;
 		font-weight: 400;
 		line-height: 1.55;
 		letter-spacing: 0.01em;
 		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 22%, var(--wp--preset--color--contrast, #0f172a));
+	}
+
+	.nextora-spotlight__hint[hidden],
+	.nextora-spotlight__results[hidden],
+	.nextora-spotlight__empty[hidden] {
+		display: none !important;
 	}
 
 	.nextora-spotlight__hint::before {
@@ -348,30 +449,27 @@
 	}
 
 	.nextora-spotlight__empty {
-		margin: 0 1rem 0.75rem;
+		margin: 1.5rem 1rem 1rem;
 		text-align: center;
-		font-size: 0.78125rem;
+		font-family: inherit;
+		font-size: 0.875rem;
 		line-height: 1.5;
 		font-weight: 400;
 		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 82%, transparent);
 	}
 
 	.nextora-spotlight__kbd-hint {
-		display: inline;
-		margin: 0;
+		display: block;
+		margin: 8px 0 0;
 		padding: 0;
 		border: none;
+		font-family: inherit;
 		font-size: 0.8125em;
 		font-weight: 400;
 		line-height: inherit;
 		letter-spacing: 0.012em;
 		color: color-mix(in srgb, var(--wp--preset--color--paragraph, #64748b) 88%, transparent);
 		white-space: normal;
-	}
-
-	.nextora-spotlight__kbd-hint {
-		display: block;
-		margin-top: 8px;
 	}
 
 	@media (prefers-reduced-motion: reduce) {

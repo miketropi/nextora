@@ -56,48 +56,51 @@ if ( ! function_exists( 'nextora_scrolling_promotion_enqueue_view_script' ) ) {
 if ( ! function_exists( 'nextora_scrolling_promotion_resolve_color' ) ) {
 	/**
 	 * Preset slug or hex → CSS color value.
+	 * Follows Nextora block.md color standards.
 	 */
 	function nextora_scrolling_promotion_resolve_color( string $raw ): string {
 		$raw = trim( $raw );
 		if ( '' === $raw ) {
 			return '';
 		}
+
+		if (
+			'transparent' === $raw ||
+			'rgba(0, 0, 0, 0)' === $raw ||
+			'rgba(0,0,0,0)' === $raw ||
+			preg_match( '/^#[0-9a-fA-F]{6}00$/i', $raw ) ||
+			preg_match( '/^#[0-9a-fA-F]{3}0$/i', $raw )
+		) {
+			return 'transparent';
+		}
+
+		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
+			if ( 'transparent' === strtolower( $m[1] ) ) {
+				return 'transparent';
+			}
+			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $m[1] ) ) . ')';
+		}
+
+		// 8-digit hex with alpha — MUST come before sanitize_hex_color()
 		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
 			return $raw;
 		}
 
 		$hex = sanitize_hex_color( $raw );
-		if ( $hex ) {
+		if ( is_string( $hex ) && '' !== $hex ) {
 			return $hex;
 		}
+
+		// fallback to preset slug
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
+			if ( 'transparent' === strtolower( $raw ) ) {
+				return 'transparent';
+			}
 			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
 		}
-		return '';
-	}
-}
 
-if ( ! function_exists( 'nextora_scrolling_promotion_get_color_attr' ) ) {
-	/**
-	 * Read a color from block attributes or nested style.color (block toolbar).
-	 *
-	 * @param array<string, mixed> $attributes Block attributes.
-	 */
-	function nextora_scrolling_promotion_get_color_attr( array $attributes, string $attribute_key ): string {
-		$raw = isset( $attributes[ $attribute_key ] ) ? trim( (string) $attributes[ $attribute_key ] ) : '';
-		if ( '' !== $raw ) {
-			return nextora_scrolling_promotion_resolve_color( $raw );
-		}
-
-		$style = isset( $attributes['style'] ) && is_array( $attributes['style'] ) ? $attributes['style'] : array();
-		$color = isset( $style['color'] ) && is_array( $style['color'] ) ? $style['color'] : array();
-
-		if ( 'textColor' === $attribute_key && isset( $color['text'] ) ) {
-			return nextora_scrolling_promotion_resolve_color( (string) $color['text'] );
-		}
-
-		if ( 'backgroundColor' === $attribute_key && isset( $color['background'] ) ) {
-			return nextora_scrolling_promotion_resolve_color( (string) $color['background'] );
+		if ( str_starts_with( $raw, 'var(' ) || str_starts_with( $raw, 'rgba(' ) || str_starts_with( $raw, 'rgb(' ) || str_starts_with( $raw, 'hsl(' ) ) {
+			return $raw;
 		}
 
 		return '';
@@ -106,7 +109,7 @@ if ( ! function_exists( 'nextora_scrolling_promotion_get_color_attr' ) ) {
 
 if ( ! function_exists( 'nextora_scrolling_promotion_render_separator' ) ) {
 	/**
-	 * @param string               $type   dot|dash|pipe|star|custom|none.
+	 * @param string               $type   icon|dot|dash|pipe|star|custom|none.
 	 * @param string               $custom Custom character.
 	 * @param array<string, mixed> $atts   Block attributes for classes.
 	 */
@@ -116,11 +119,26 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_separator' ) ) {
 		}
 
 		$classes = array( 'nextora-scrolling-promotion__sep' );
-		if ( in_array( $type, array( 'dash', 'pipe', 'star', 'custom' ), true ) ) {
+		if ( in_array( $type, array( 'icon', 'dash', 'pipe', 'star', 'custom' ), true ) ) {
 			$classes[] = 'nextora-scrolling-promotion__sep--' . $type;
 		}
 
 		$class_str = esc_attr( implode( ' ', $classes ) );
+
+		if ( 'icon' === $type ) {
+			$icon_name    = ! empty( $atts['separatorIcon'] ) ? (string) $atts['separatorIcon'] : 'arrow-up-right';
+			$icon_size    = isset( $atts['separatorIconSize'] ) ? (int) $atts['separatorIconSize'] : 16;
+			$icon_size    = max( 10, min( 48, $icon_size ) );
+			$stroke_width = isset( $atts['separatorIconStrokeWidth'] ) ? (float) $atts['separatorIconStrokeWidth'] : 2.0;
+			$stroke_width = max( 0.5, min( 4.0, $stroke_width ) );
+
+			$svg_html = '';
+			if ( function_exists( 'nextora_get_lucide_svg' ) ) {
+				$svg_html = nextora_get_lucide_svg( $icon_name, $icon_size, 'currentColor', $stroke_width, '' );
+			}
+
+			return '<span class="' . $class_str . '" aria-hidden="true">' . $svg_html . '</span>';
+		}
 
 		if ( 'star' === $type ) {
 			return '<span class="' . $class_str . '" aria-hidden="true">✦</span>';
@@ -205,8 +223,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 				$alt = (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true );
 			}
 
-			$filter = static function ( array $attr ) use ( $inline_style ): array {
-				unset( $attr['width'], $attr['height'] );
+			$filter = static function ( array $attr ) use ( $inline_style, $image_height ): array {
+				if ( ! isset( $attr['height'] ) && $image_height > 0 ) {
+					$attr['height'] = (string) $image_height;
+				}
 				$attr['style'] = $inline_style;
 
 				return $attr;
@@ -220,7 +240,7 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 				array(
 					'class'    => 'nextora-scrolling-promotion__media',
 					'alt'      => $alt,
-					'loading'  => 'lazy',
+					'loading'  => 'eager',
 					'decoding' => 'async',
 					'style'    => $inline_style,
 				),
@@ -238,9 +258,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 		}
 
 		return sprintf(
-			'<img class="nextora-scrolling-promotion__media" src="%1$s" alt="%2$s" style="%3$s" loading="lazy" decoding="async" />',
+			'<img class="nextora-scrolling-promotion__media" src="%1$s" alt="%2$s" width="160" height="%3$d" style="%4$s" loading="eager" decoding="async" />',
 			esc_url( $image_url ),
 			esc_attr( $image_alt ),
+			$image_height > 0 ? $image_height : 60,
 			esc_attr( $inline_style ),
 		);
 	}
@@ -248,9 +269,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_image' ) ) {
 
 if ( ! function_exists( 'nextora_scrolling_promotion_render_item_body' ) ) {
 	/**
-	 * @param array<string, mixed> $item Normalized item row.
+	 * @param array<string, mixed> $item       Normalized item row.
+	 * @param array<string, mixed> $attributes Block attributes.
 	 */
-	function nextora_scrolling_promotion_render_item_body( array $item, int $image_height ): string {
+	function nextora_scrolling_promotion_render_item_body( array $item, int $image_height, array $attributes = array() ): string {
 		$type = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
 		$text = isset( $item['text'] ) ? trim( (string) $item['text'] ) : '';
 		$img  = nextora_scrolling_promotion_render_item_image( $item, $image_height );
@@ -271,7 +293,10 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_item_body' ) ) {
 			$icon_html = '';
 
 			if ( '' !== $icon_name && function_exists( 'nextora_get_lucide_svg' ) ) {
-				$icon_html = nextora_get_lucide_svg( $icon_name, $icon_size, 'currentColor', 2, '' );
+				$raw_item_color = ! empty( $item['iconColor'] ) ? (string) $item['iconColor'] : (string) ( $attributes['iconColor'] ?? '' );
+				$resolved_icon_color = nextora_scrolling_promotion_resolve_color( $raw_item_color );
+				$stroke_color = '' !== $resolved_icon_color ? $resolved_icon_color : 'currentColor';
+				$icon_html = nextora_get_lucide_svg( $icon_name, $icon_size, $stroke_color, 2, '' );
 			}
 
 			$inner = '';
@@ -316,7 +341,7 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_items' ) ) {
 	 * @param array<string, mixed>       $attributes  Block attributes.
 	 */
 	function nextora_scrolling_promotion_render_items( array $items, bool $aria_hidden, array $attributes ): string {
-		$type   = isset( $attributes['separatorType'] ) ? (string) $attributes['separatorType'] : 'dot';
+		$type   = isset( $attributes['separatorType'] ) ? (string) $attributes['separatorType'] : 'icon';
 		$custom = isset( $attributes['customSeparator'] ) ? (string) $attributes['customSeparator'] : '✦';
 		$sep    = nextora_scrolling_promotion_render_separator( $type, $custom, $attributes );
 		$out    = '';
@@ -330,7 +355,7 @@ if ( ! function_exists( 'nextora_scrolling_promotion_render_items' ) ) {
 			}
 
 			$item_type   = isset( $item['itemType'] ) ? (string) $item['itemType'] : 'text';
-			$body        = nextora_scrolling_promotion_render_item_body( $item, $image_height );
+			$body        = nextora_scrolling_promotion_render_item_body( $item, $image_height, $attributes );
 			$hidden_attr = $aria_hidden ? ' aria-hidden="true"' : '';
 			$item_class  = 'nextora-scrolling-promotion__item nextora-scrolling-promotion__item--' . sanitize_html_class( $item_type );
 
@@ -359,6 +384,7 @@ foreach ( $raw_items as $item ) {
 		'imageAlt' => isset( $item['imageAlt'] ) ? trim( (string) $item['imageAlt'] ) : '',
 		'iconName' => isset( $item['iconName'] ) ? trim( (string) $item['iconName'] ) : '',
 		'iconSize' => isset( $item['iconSize'] ) ? (int) $item['iconSize'] : 24,
+		'iconColor' => isset( $item['iconColor'] ) ? trim( (string) $item['iconColor'] ) : '',
 	);
 	if ( nextora_scrolling_promotion_item_has_content( $normalized ) ) {
 		$items[] = $normalized;
@@ -374,6 +400,7 @@ if ( array() === $items ) {
 		'imageAlt' => '',
 		'iconName' => '',
 		'iconSize' => 24,
+		'iconColor' => '',
 	);
 }
 
@@ -383,8 +410,21 @@ $speed     = max( 5.0, min( 120.0, $speed ) );
 
 $pause_on_hover = ! isset( $attributes['pauseOnHover'] ) || (bool) $attributes['pauseOnHover'];
 
-$font_size = isset( $attributes['fontSize'] ) ? (int) $attributes['fontSize'] : 16;
-$font_size = max( 12, min( 72, $font_size ) );
+$font_size_raw    = isset( $attributes['fontSize'] ) ? (string) $attributes['fontSize'] : 'base';
+$custom_font_size = isset( $attributes['customFontSize'] ) ? (int) $attributes['customFontSize'] : 16;
+$preset_slugs     = array( 'small', 'base', 'medium', 'medium-plus', 'large', 'x-large', 'xx-large' );
+
+if ( in_array( $font_size_raw, $preset_slugs, true ) ) {
+	$font_size_css = 'var(--wp--preset--font-size--' . sanitize_html_class( $font_size_raw ) . ')';
+} elseif ( 'custom' === $font_size_raw || is_numeric( $font_size_raw ) ) {
+	$size_val      = is_numeric( $font_size_raw ) ? (int) $font_size_raw : $custom_font_size;
+	$size_val      = max( 10, min( 120, $size_val ) );
+	$font_size_css = 'clamp(0.875rem, 2.5vw, ' . $size_val . 'px)';
+} elseif ( '' !== trim( $font_size_raw ) ) {
+	$font_size_css = sanitize_text_field( $font_size_raw );
+} else {
+	$font_size_css = 'var(--wp--preset--font-size--base)';
+}
 
 $font_weight = isset( $attributes['fontWeight'] ) ? (string) $attributes['fontWeight'] : '500';
 $allowed_fw  = array( '400', '500', '600', '700', '800', '900' );
@@ -410,20 +450,34 @@ $item_gap = max( 16, min( 120, $item_gap ) );
 $image_height = isset( $attributes['imageHeight'] ) ? (int) $attributes['imageHeight'] : 32;
 $image_height = max( 16, min( 120, $image_height ) );
 
-$separator_size = isset( $attributes['separatorSize'] ) ? (int) $attributes['separatorSize'] : 6;
-$separator_size = max( 4, min( 16, $separator_size ) );
+$separator_size  = isset( $attributes['separatorSize'] ) ? (int) $attributes['separatorSize'] : 6;
+$separator_size  = max( 4, min( 16, $separator_size ) );
+$sep_badge_size  = isset( $attributes['separatorBadgeSize'] ) ? (int) $attributes['separatorBadgeSize'] : 36;
+$sep_badge_size  = max( 16, min( 100, $sep_badge_size ) );
+$sep_icon_size   = isset( $attributes['separatorIconSize'] ) ? (int) $attributes['separatorIconSize'] : 16;
+$sep_icon_size   = max( 10, min( 48, $sep_icon_size ) );
 
 $show_borders = ! empty( $attributes['showBorders'] );
 $border_width = isset( $attributes['borderWidth'] ) ? (int) $attributes['borderWidth'] : 1;
 $border_width = max( 1, min( 3, $border_width ) );
 
-$text_color = nextora_scrolling_promotion_get_color_attr( $attributes, 'textColor' );
-$bg_color   = nextora_scrolling_promotion_get_color_attr( $attributes, 'backgroundColor' );
+$text_color = nextora_scrolling_promotion_resolve_color(
+	(string) ( $attributes['marqueeTextColor'] ?? $attributes['textColor'] ?? '' ),
+);
+$bg_color   = nextora_scrolling_promotion_resolve_color(
+	(string) ( $attributes['marqueeBackgroundColor'] ?? $attributes['backgroundColor'] ?? '' ),
+);
 $sep_color  = nextora_scrolling_promotion_resolve_color(
-	isset( $attributes['separatorColor'] ) ? (string) $attributes['separatorColor'] : '',
+	(string) ( $attributes['separatorColor'] ?? '' ),
+);
+$sep_bg_color = nextora_scrolling_promotion_resolve_color(
+	(string) ( $attributes['separatorBgColor'] ?? $attributes['separatorBackgroundColor'] ?? '' ),
 );
 $border_color = nextora_scrolling_promotion_resolve_color(
-	isset( $attributes['borderColor'] ) ? (string) $attributes['borderColor'] : '',
+	(string) ( $attributes['marqueeBorderColor'] ?? $attributes['borderColor'] ?? '' ),
+);
+$icon_color = nextora_scrolling_promotion_resolve_color(
+	(string) ( $attributes['iconColor'] ?? '' ),
 );
 
 nextora_scrolling_promotion_enqueue_view_script();
@@ -440,7 +494,7 @@ $items = array_values( (array) apply_filters( 'nextora_scrolling_promotion_items
 $css_vars = array(
 	'--nextora-marquee-bg'              => '' !== $bg_color ? $bg_color : 'transparent',
 	'--nextora-marquee-text'            => '' !== $text_color ? $text_color : 'inherit',
-	'--nextora-marquee-font-size'       => 'clamp(0.875rem, 2.5vw, ' . $font_size . 'px)',
+	'--nextora-marquee-font-size'       => $font_size_css,
 	'--nextora-marquee-font-weight'     => $font_weight,
 	'--nextora-marquee-text-transform'  => $text_transform,
 	'--nextora-marquee-letter-spacing'  => $letter_spacing . 'px',
@@ -449,7 +503,11 @@ $css_vars = array(
 	'--nextora-marquee-image-height'    => $image_height . 'px',
 	'--nextora-marquee-speed'           => $speed . 's',
 	'--nextora-marquee-sep-size'        => $separator_size . 'px',
+	'--nextora-marquee-sep-badge-size'  => $sep_badge_size . 'px',
+	'--nextora-marquee-sep-icon-size'   => $sep_icon_size . 'px',
 	'--nextora-marquee-sep-color'       => '' !== $sep_color ? $sep_color : 'currentColor',
+	'--nextora-marquee-sep-bg'          => '' !== $sep_bg_color ? $sep_bg_color : 'color-mix(in srgb, currentColor 22%, transparent)',
+	'--nextora-marquee-icon-color'      => '' !== $icon_color ? $icon_color : 'currentColor',
 	'--nextora-marquee-border-color'    => $show_borders
 		? ( '' !== $border_color ? $border_color : 'currentColor' )
 		: 'transparent',

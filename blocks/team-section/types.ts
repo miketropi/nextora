@@ -30,6 +30,7 @@ export interface TeamMember {
 	tags: string[];
 	bio: string;
 	bioLineClamp: number;
+	detail?: string;
 	showSocialLinks: boolean;
 	socialLinks: TeamSocialLink[];
 	cardBorderRadius: number;
@@ -39,6 +40,9 @@ export interface TeamSectionAttributes {
 	members: TeamMember[];
 	layoutMode: TeamLayoutMode;
 	gridColumns: number;
+	gridColumnsTablet?: number;
+	gridColumnsMobile?: number;
+	disableResponsiveCarousel?: boolean;
 	gridMinWidth: number;
 	gridColumnGap: number;
 	gridRowGap: number;
@@ -68,7 +72,11 @@ export interface TeamSectionAttributes {
 	cardBorderRadius: number;
 	nameColor: string;
 	roleColor: string;
+	bioColor?: string;
+	socialColor?: string;
 	enableScrollAnimation: boolean;
+	enablePopup?: boolean;
+	edgeFadeColor?: string;
 }
 
 /** Media library types for member photos. */

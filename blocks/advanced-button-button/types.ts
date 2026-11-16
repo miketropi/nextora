@@ -28,7 +28,7 @@ export interface AdvancedButtonButtonAttributes extends Record< string, unknown 
 	clickEventId: string;
 	clickEventScript: string;
 	buttonStyle: ButtonStyle;
-	borderRadius: number;
+	borderRadius?: number;
 	iconPosition: IconPosition;
 	iconSource: IconSource;
 	iconName: string;

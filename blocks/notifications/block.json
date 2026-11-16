@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/notifications",
   "title": "Notifications",
-  "category": "theme",
+  "category": "nextora",
   "description": "Banner for alerts, announcements, and messages. Supports info, success, warning, and error types with optional dismiss.",
   "keywords": [
     "notification",
@@ -16,7 +16,10 @@
   "textdomain": "nextora",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "color": {
       "background": true,
       "text": true,

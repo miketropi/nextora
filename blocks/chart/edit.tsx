@@ -80,7 +80,7 @@ function formatDisplayValue(num: number): string {
     if (abs >= 1_000) {
         return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
     }
-    return num.toLocaleString('vi-VN');
+    return num.toLocaleString('en-US');
 }
 
 function resolveColor(raw: string): string {

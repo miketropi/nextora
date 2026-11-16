@@ -18,7 +18,11 @@ import {
 	ToggleControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
-import { buildTypographyStyleVars } from './counters-styles';
+import {
+	buildTypographyStyleVars,
+	getElementTypographyProps,
+	resolveColor,
+} from './counters-styles';
 import { normalizeColorForStorage, colorValueForPicker, useThemeColorPalette } from './color-utils';
 import type { CounterItem, CountersAttributes } from './types';
 
@@ -96,17 +100,48 @@ function formatDisplay(item: CounterItem): string {
 	return `${item.prefix}${formatNumber(item.number)}${item.suffix}`;
 }
 
+const PRESET_FONT_SIZE_SLUGS = new Set([
+	'small',
+	'base',
+	'medium',
+	'medium-plus',
+	'large',
+	'x-large',
+	'xx-large',
+]);
+
+function isPresetFontSize(
+	val: string | undefined,
+	fontSizes: Array<{ slug?: string }> = [],
+): boolean {
+	if (!val) {
+		return false;
+	}
+	const lower = val.trim().toLowerCase();
+	if (/^[\d.]+(?:px|rem|em|vw|vh|%)?$/i.test(lower) || /^clamp\(/i.test(lower)) {
+		return false;
+	}
+	return (
+		PRESET_FONT_SIZE_SLUGS.has(lower) ||
+		fontSizes.some((item) => item.slug?.toLowerCase() === lower)
+	);
+}
+
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
 	selectedItem?: { slug?: string },
 ): string {
-	if (value === undefined) {
+	if (value === undefined || value === '') {
 		return '';
 	}
 	if (selectedItem?.slug) {
 		return selectedItem.slug;
 	}
-	return String(value);
+	const str = String(value).trim();
+	if (/^\d+(\.\d+)?$/.test(str)) {
+		return `${str}px`;
+	}
+	return str;
 }
 
 function clampColumns(value: number, min: number, max: number): number {
@@ -211,11 +246,28 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 		labelFontFamily,
 	});
 
+	const numberTypography = getElementTypographyProps({
+		color: numberColor,
+		fontSize: numberFontSize,
+		fontFamily: numberFontFamily,
+	});
+
+	const labelTypography = getElementTypographyProps({
+		color: labelColor,
+		fontSize: labelFontSize,
+		fontFamily: labelFontFamily,
+	});
+
+	const resolvedDividerColor = dividerColor ? resolveColor(dividerColor) || dividerColor : '';
+
 	const blockProps = useBlockProps({
 		className: [
 			'nextora-counters',
 			attributes.inheritTypography ? 'nextora-counters--inherit-typography' : '',
 			`nextora-counters--align-${textAlign}`,
+			`nextora-counters--cols-d-${colsDesktop}`,
+			`nextora-counters--cols-t-${colsTablet}`,
+			`nextora-counters--cols-m-${colsMobile}`,
 			divider ? 'nextora-counters--divider' : '',
 		]
 			.filter(Boolean)
@@ -226,7 +278,7 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 			'--nextora-counters-cols-d': String(colsDesktop),
 			...(columnGap ? { '--nextora-counters-gap': columnGap } : {}),
 			...(numberLabelGap ? { '--nextora-counters-number-label-gap': numberLabelGap } : {}),
-			...(dividerColor ? { '--nextora-counters-divider-color': dividerColor } : {}),
+			...(resolvedDividerColor ? { '--nextora-counters-divider-color': resolvedDividerColor } : {}),
 			...typographyVars,
 		} as CSSProperties,
 	});
@@ -456,13 +508,13 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 						label={__('Number font size', 'nextora')}
 						id="nextora-counters-number-font-size"
 						help={__(
-							'Default uses the theme Extra Large preset.',
+							'Default inherits the surrounding typography.',
 							'nextora',
 						)}
 					>
 						<FontSizePicker
 							value={numberFontSize || undefined}
-							valueMode="slug"
+							valueMode={isPresetFontSize(numberFontSize) ? 'slug' : 'literal'}
 							onChange={(value, selectedItem) =>
 								setAttributes({
 									numberFontSize: normalizeFontSizeAttribute(value, selectedItem),
@@ -475,13 +527,13 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 						label={__('Label font size', 'nextora')}
 						id="nextora-counters-label-font-size"
 						help={__(
-							'Default uses the theme Small preset.',
+							'Default inherits the surrounding typography.',
 							'nextora',
 						)}
 					>
 						<FontSizePicker
 							value={labelFontSize || undefined}
-							valueMode="slug"
+							valueMode={isPresetFontSize(labelFontSize) ? 'slug' : 'literal'}
 							onChange={(value, selectedItem) =>
 								setAttributes({
 									labelFontSize: normalizeFontSizeAttribute(value, selectedItem),
@@ -527,10 +579,23 @@ export default function CountersEdit({ attributes, setAttributes }: EditProps) {
 			<div {...blockProps}>
 				{items.map((item) => (
 					<div key={item.id} className="nextora-counters__item">
-						<span className="nextora-counters__number" aria-label={formatDisplay(item)}>
+						<span
+							className={['nextora-counters__number', numberTypography.className]
+								.filter(Boolean)
+								.join(' ')}
+							style={numberTypography.style}
+							aria-label={formatDisplay(item)}
+						>
 							{formatDisplay(item)}
 						</span>
-						<span className="nextora-counters__label">{item.label}</span>
+						<span
+							className={['nextora-counters__label', labelTypography.className]
+								.filter(Boolean)
+								.join(' ')}
+							style={labelTypography.style}
+						>
+							{item.label}
+						</span>
 					</div>
 				))}
 			</div>

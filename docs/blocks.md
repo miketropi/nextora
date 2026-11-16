@@ -191,10 +191,10 @@ Every **content** block that benefits from motion should expose an editor toggle
 | **Attribute** | `enableScrollAnimation` — `boolean`, default `true`. |
 | **Sidebar** | Panel **Animation** → `ToggleControl` label **Animate on scroll** (`nextora`). Help: *Fade or move content in when it enters the viewport. Disabled automatically when the visitor prefers reduced motion.* |
 | **PHP** | When enabled, add `data-nextora-scroll-reveal="1"` on the block root (or a dedicated inner wrapper). When disabled, omit the attribute. |
-| **JS** | In `view.ts` / `view.js`: run only if `data-nextora-scroll-reveal="1"`; use **GSAP + ScrollTrigger** (see [`blocks/image-gallery-grid/view.ts`](../blocks/image-gallery-grid/view.ts)) with `once: true` and `prefers-reduced-motion: reduce` → no animation. |
+| **JS** | In `view.ts` / `view.js`: run only if `data-nextora-scroll-reveal="1"`; use **GSAP + ScrollTrigger** (see [`blocks/team-section/view.ts`](../blocks/team-section/view.ts)) with `once: true` and `prefers-reduced-motion: reduce` → no animation. |
 | **Init guard** | `data-nextora-{block}-scroll-init="1"` after setup to avoid double init. |
 
-Existing reference: **image gallery grid** — scroll reveal for bento/editorial layouts (no toggle yet; new blocks should add the toggle).
+Existing reference: **team-section** / **arc-gallery-section** — scroll reveal pattern.
 
 ## JavaScript layout blocks (carousel, slider, etc.)
 
@@ -209,7 +209,7 @@ Blocks that **depend on JS** for layout must avoid FOUC / broken first paint.
 | **Init** | Idempotent `initRoot()`; `DOMContentLoaded` + optional custom event for re-render (e.g. `nextora-image-gallery-reinit`). |
 | **Motion** | Respect `prefers-reduced-motion`; carousel may still init but skip autoplay / aggressive transitions. |
 
-Reference: [`blocks/image-gallery-slide/view.ts`](../blocks/image-gallery-slide/view.ts) (`swiperInitPending`, width polling before mount).
+Reference: [`blocks/team-section/view.ts`](../blocks/team-section/view.ts) (`swiperInitPending`, width polling before mount).
 
 ## UI consistency across blocks
 
@@ -230,10 +230,10 @@ When two or more blocks share the same type of UI element, they **must use the s
 | Component | Reference block(s) | What to match |
 |---|---|---|
 | CTA / "View All" / action button | **Team section**, **Hero section**, **Call to action** | Font size (`--wp--preset--font-size--small`), weight (`600`), border width (`1.5px` on outline), padding (`0.625rem 1.75rem`), radius (`50px`), hover opacity (`0.9`), icon class + sizing, CSS variable naming |
-| Carousel arrows | **Image gallery slide** | `aria-label` wording, SVG chevron paths, button dimensions, hover/focus states |
-| Pagination dots | **Testimonial carousel**, **Image gallery slide** | Bullet size (7px), active width (20px), transition (width + border-radius + background), ARIA |
-| Card / grid hover | **Post grid**, **Image gallery grid** | Image scale amount (`1.02`–`1.04`), transition duration (`0.3`–`0.4s`), title color shift |
-| Scroll reveal | **Testimonial carousel**, **Image gallery grid** | `--reveal-pending`/`--reveal-ready` class system, GSAP timeline (`power3.out`, `0.95s` per element, `0.12s` stagger), fallback timeout (`1800ms`) |
+| Carousel arrows | **Team section**, **Testimonial carousel** | `aria-label` wording, SVG chevron paths, button dimensions, hover/focus states |
+| Pagination dots | **Testimonial carousel** | Bullet size (7px), active width (20px), transition (width + border-radius + background), ARIA |
+| Card / grid hover | **Post grid** | Image scale amount (`1.02`–`1.04`), transition duration (`0.3`–`0.4s`), title color shift |
+| Scroll reveal | **Testimonial carousel**, **Team section** | `--reveal-pending`/`--reveal-ready` class system, GSAP timeline (`power3.out`, `0.95s` per element, `0.12s` stagger), fallback timeout (`1800ms`) |
 
 **Sidebar controls for shared components must also match:** use the same panel title, control labels, and help text as the reference block. If the reference uses `PanelColorSettings` for a colour, the new block must too — not inline `ColorPicker` in a `PanelBody`.
 
@@ -254,8 +254,6 @@ Before shipping, compare sidebar structure and help strings with the closest exi
 |-------|---------|
 | `nextora/scrolling-promotion` | CSS-only marquee, `render.php`, no `viewScript`; items repeater in editor |
 | `nextora/arc-gallery-section` | Arc layout + `arc-math.ts` / PHP mirror, live editor preview, `view.ts` scroll reveal |
-| `nextora/image-gallery-grid` | Scroll reveal (GSAP) |
-| `nextora/image-gallery-slide` | Swiper init / loading |
 | `nextora/team-section` | Swiper member carousel, `members[]` repeater, scroll reveal; see [`docs/blocks/Our Team Section Block.md`](./blocks/Our%20Team%20Section%20Block.md) |
 | `nextora/testimonial-carousel` | Fade testimonial carousel, `testimonials[]` repeater, trust avatars; see [`docs/blocks/Testimonial Carousel.md`](./blocks/Testimonial%20Carousel.md) |
 | `nextora/vertical-showcase` | Vertical tabbed service list with autoplay image showcase and progress rail; see [`docs/blocks/Vertical Showcase.md`](./blocks/Vertical%20Showcase.md) |

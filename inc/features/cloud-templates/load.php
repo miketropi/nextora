@@ -15,6 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once NEXTORA_DIR . '/inc/Core/Cloud/ApiClient.php';
+require_once NEXTORA_DIR . '/inc/Core/Cloud/TemplateImporter.php';
+require_once NEXTORA_DIR . '/inc/Core/Cloud/RestController.php';
+
 use Nextora\Core\Cloud\ApiClient;
 use Nextora\Core\Cloud\RestController;
 

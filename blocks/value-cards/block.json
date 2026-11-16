@@ -1,0 +1,113 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "nextora/value-cards",
+	"title": "Value Cards",
+	"category": "design",
+	"description": "A deck of tilted cards with interactive 3D hover tilt — perfect for value propositions, features, or services.",
+	"keywords": ["value", "cards", "tilt", "3d", "features", "services", "nextora"],
+	"textdomain": "nextora",
+	"icon": "star-filled",
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"],
+		"anchor": true,
+		"color": {
+			"background": true,
+			"text": true
+		},
+		"spacing": {
+			"padding": true,
+			"margin": true,
+			"blockGap": true
+		}
+	},
+	"attributes": {
+		"cards": {
+			"type": "array",
+			"default": [
+				{
+					"id": "1",
+					"title": "Innovation",
+					"description": "We push boundaries with cutting-edge technology and forward-thinking design.",
+					"mediaType": "image",
+					"mediaId": 0,
+					"mediaUrl": "",
+					"videoPosterId": 0,
+					"videoPosterUrl": "",
+					"rotation": -4
+				},
+				{
+					"id": "2",
+					"title": "Integrity",
+					"description": "Honest, transparent relationships built on trust and accountability.",
+					"mediaType": "image",
+					"mediaId": 0,
+					"mediaUrl": "",
+					"videoPosterId": 0,
+					"videoPosterUrl": "",
+					"rotation": 2
+				},
+				{
+					"id": "3",
+					"title": "Collaboration",
+					"description": "Great things happen when we work together toward a shared vision.",
+					"mediaType": "image",
+					"mediaId": 0,
+					"mediaUrl": "",
+					"videoPosterId": 0,
+					"videoPosterUrl": "",
+					"rotation": -2
+				}
+			]
+		},
+		"maxTilt": {
+			"type": "number",
+			"default": 12
+		},
+		"hoverScale": {
+			"type": "number",
+			"default": 1.06
+		},
+		"cardMinWidth": {
+			"type": "number",
+			"default": 180
+		},
+		"cardMaxWidth": {
+			"type": "number",
+			"default": 240
+		},
+		"cardBorderRadius": {
+			"type": "number",
+			"default": 20
+		},
+		"perspective": {
+			"type": "number",
+			"default": 1000
+		},
+		"gap": {
+			"type": "number",
+			"default": 20
+		},
+		"cardBackgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"cardTitleColor": {
+			"type": "string",
+			"default": ""
+		},
+		"cardDescriptionColor": {
+			"type": "string",
+			"default": ""
+		},
+		"cardBorderColor": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:./view.js",
+	"style": "file:./style.css",
+	"render": "file:./render.php"
+}

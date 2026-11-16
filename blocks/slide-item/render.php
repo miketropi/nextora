@@ -29,6 +29,16 @@ if ( ! function_exists( 'nextora_si_resolve_color' ) ) {
 			return '';
 		}
 
+		if (
+			'transparent' === $raw ||
+			'rgba(0, 0, 0, 0)' === $raw ||
+			'rgba(0,0,0,0)' === $raw ||
+			preg_match( '/^#[0-9a-fA-F]{6}00$/i', $raw ) ||
+			preg_match( '/^#[0-9a-fA-F]{3}0$/i', $raw )
+		) {
+			return 'transparent';
+		}
+
 		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
 			return $raw;
 		}
@@ -43,6 +53,9 @@ if ( ! function_exists( 'nextora_si_resolve_color' ) ) {
 		}
 
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
+			if ( 'transparent' === strtolower( $raw ) ) {
+				return 'transparent';
+			}
 			return 'var(--wp--preset--color--' . sanitize_title( $raw ) . ')';
 		}
 
@@ -207,7 +220,7 @@ if ( ! in_array( $overlay_mode, array( 'color', 'gradient' ), true ) ) {
 }
 
 $inner_html = '';
-if ( $block instanceof WP_Block && $block->inner_blocks->count() > 0 ) {
+if ( $block instanceof WP_Block && count( $block->inner_blocks ) > 0 ) {
 	foreach ( $block->inner_blocks as $inner_block ) {
 		if ( $inner_block instanceof WP_Block ) {
 			$inner_html .= $inner_block->render();

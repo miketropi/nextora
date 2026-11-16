@@ -133,6 +133,51 @@ See [comments-tiptap.md](./comments-tiptap.md).
 
 ---
 
+## Nextora Addon overview data
+
+`admin.php?page=nextora-addon-overview` renders from `extensions/data/overview.php` → `nextora_get_overview_data()`, served as `GET /nextora/v1/addon/overview` (nonce + `manage_options`).
+
+Both sections are deep-linkable through the `tab` query variable: `admin.php?page=nextora-addon-overview&tab=videos` opens **Getting started** directly, `?tab=features` opens **Theme features**. Values are matched case-insensitively and anything unknown falls back to **Theme features**, so a stale link never breaks the page. Switching tabs rewrites `tab` in place (`history.replaceState`), which keeps other query variables intact and keeps Back leaving the screen instead of stepping through tabs. Helper: `resources/ts/admin-addon-overview/lib/tabs-url.ts`.
+
+| Filter | Purpose | Runs |
+|--------|---------|------|
+| `nextora_addon_overview_videos` | Getting-started lessons for the video workspace. | First |
+| `nextora_addon_overview_gallery` | Items in the extra `Extensions` showcase. | First |
+| `nextora_addon_overview_data` | Whole payload; sees everything above. | Last |
+
+Lesson records use the same field names as gallery items, and the returned array order is display order.
+
+```php
+add_filter(
+	'nextora_addon_overview_videos',
+	function ( array $videos ): array {
+		$videos[] = array(
+			'id'          => 'child-theme-setup',
+			'title'       => __( 'Child theme setup', 'my-child-theme' ),
+			'description' => __( 'Where the child theme files live.', 'my-child-theme' ),
+			'url'         => 'https://example.com/lessons/child-theme.mp4',
+			'thumbnail'   => 'https://example.com/lessons/child-theme.jpg', // Optional.
+			'sourceLabel' => __( 'Child theme', 'my-child-theme' ),          // Optional badge.
+		);
+
+		$videos[] = array(
+			'id'    => 'megamenu-config',
+			'title' => __( 'Megamenu configuration', 'my-child-theme' ),
+			'url'   => 'https://www.youtube.com/watch?v=S86Ud-ipZaM',
+		);
+
+		return $videos;
+	}
+);
+```
+
+- The filter default is the theme's own three setup guides (parent theme, child theme + home demo import, megamenu), so append to `$videos` instead of building a list from scratch unless you intend to replace them.
+- `url` accepts either directly playable media over http(s) (`mp4`/`webm`) or a YouTube URL (`youtube.com/watch`, `/shorts`, `/embed`, `/live`, or a `youtu.be` share link). YouTube lessons are embedded through `youtube-nocookie.com` and only the 11-character video id is carried over; other providers and non-http(s) schemes are not supported.
+- An entry without an `id`, a `title`, or a safe http(s) URL is skipped, so malformed records never render a dead row.
+- Lesson durations are read from the media metadata at runtime; do not supply them. Hosted embeds report no length, so a course made only of YouTube lessons shows no per-lesson time and no `total` label.
+
+---
+
 ## Child theme recommendation
 
 Put integrations in the child theme’s `functions.php` (or `inc/integrations.php`) so parent theme updates are safe.

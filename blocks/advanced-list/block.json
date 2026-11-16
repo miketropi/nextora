@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/advanced-list",
   "title": "Advanced List",
-  "category": "design",
+  "category": "nextora",
   "description": "List with customizable icons and text for each item.",
   "keywords": [
     "list",
@@ -31,7 +31,9 @@
     },
     "typography": {
       "fontSize": true,
-      "lineHeight": true
+      "lineHeight": true,
+      "fontFamily": true,
+      "fontWeight": true
     }
   },
   "attributes": {
@@ -41,17 +43,23 @@
         {
           "id": "1",
           "text": "Family-style care — never institutional dormitories",
-          "iconName": "check"
+          "iconName": "check",
+          "linkUrl": "",
+          "linkTarget": "_self"
         },
         {
           "id": "2",
           "text": "Full schooling, healthcare and counselling for every child",
-          "iconName": "check"
+          "iconName": "check",
+          "linkUrl": "",
+          "linkTarget": "_self"
         },
         {
           "id": "3",
           "text": "Transparent reporting — you see exactly where your gift goes",
-          "iconName": "check"
+          "iconName": "check",
+          "linkUrl": "",
+          "linkTarget": "_self"
         }
       ]
     },
@@ -70,7 +78,11 @@
     "iconStyle": {
       "type": "string",
       "default": "stacked",
-      "enum": ["default", "stacked", "framed"]
+      "enum": [
+        "default",
+        "stacked",
+        "framed"
+      ]
     },
     "strokeWidth": {
       "type": "number",
@@ -81,16 +93,13 @@
       "default": 50
     },
     "iconColor": {
-      "type": "string",
-      "default": "base"
+      "type": "string"
     },
     "iconBackgroundColor": {
-      "type": "string",
-      "default": "primary"
+      "type": "string"
     },
     "iconBorderColor": {
-      "type": "string",
-      "default": "primary"
+      "type": "string"
     },
     "iconTextGap": {
       "type": "number",

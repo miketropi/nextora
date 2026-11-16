@@ -23,7 +23,7 @@ Disabled by default (constant undefined). Any value other than the boolean `true
 | **Persistence** | `localStorage` key `nextora-scheme-preferences` → `{ "v": 3, "theme": "education", "color": null, "font": null }`. |
 | **URL params** | `?theme=<slug>&color=<slug>&font=<slug>`. URL wins over storage; storage wins over the theme default. Applied values are re-persisted. |
 | **Share** | The popover's **Copy link** button copies the current URL with `theme` / `color` / `font` params set. |
-| **Reset** | Per-section "Default" options plus a global **Reset** remove all inline overrides and stored choices. |
+| **Reset** | Global **Reset** restores the current demo's original theme, removes saved preview preferences and appearance URL parameters, and retains unrelated URL parameters/hash. Without a demo context it restores website defaults. |
 
 ## Files
 
@@ -135,6 +135,10 @@ Semantics:
 
 ## Override mechanism
 
+### Demo reset context
+
+The payload's `resetPageTheme` identifies the page's own theme independently of preview URL parameters and the active-theme cookie. Visiting a designated demo page updates `localStorage` key `nextora-scheme-demo`; shared inner pages reuse that validated demo identity. Preview selections never change this reset baseline. A direct inner-page visit without a stored demo resets to website defaults. On reset, the active-theme cookie is updated to the restored theme, while saved preview preferences and `theme` / `color` / `font` URL parameters are removed. The child theme can hide the Default tile with `sections.themes.showDefault: false`.
+
 - **Colors** — inline `style.setProperty('--wp--preset--color--{slug}', value)` on `<html>`. Inline styles on `html` beat the `global-styles` stylesheet, so no `!important` is needed. Reset uses `removeProperty()` so the cascade falls back to the theme's own values (including Site Editor customizations).
 - **Fonts** — `theme.json` maps the role variables to global styles:
   - `styles.typography.fontFamily` → `var(--nextora-font-body)`
@@ -151,6 +155,7 @@ Semantics:
   - ship its own `styles/color-scheme/*.json` and/or `styles/font-preset/*.json`,
   - or simply expose its top-level `styles/*.json` style variations (read automatically),
   - or add `settings.typography.fontFamilies` to its `theme.json` to make extra fonts available to the switcher (fonts declared only inside a style variation load only when that variation is active).
+- **Required for font presets:** a child theme that sets `styles.typography.fontFamily` / `styles.elements.heading.typography.fontFamily` (or its own font tokens) must route them through `var(--nextora-font-body)` / `var(--nextora-font-heading)`. Because the child's `theme.json` and stylesheet are merged *after* the parent's, hardcoded font families silently win and the switcher's font section has no visible effect — the JS still sets the inline role variables, but nothing consumes them. Defaults are preserved by defining the role variables in the child stylesheet, e.g. `--nextora-font-body: var(--wp--preset--font-family--my-body-font)`, and pointing custom tokens at them.
 
 ## Known limitations
 

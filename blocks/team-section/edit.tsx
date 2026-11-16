@@ -17,14 +17,22 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import type { TeamMember, TeamSectionAttributes } from './types';
-import { buildSectionStyleVars, createMemberId, normalizeMembers, resolvePhotoUrl } from './member-utils';
+import {
+	buildSectionStyleVars,
+	createMemberId,
+	getTemplateDefaultAttributes,
+	normalizeMembers,
+	resolvePhotoUrl,
+} from './member-utils';
 import MemberEditForm from './member-edit-form';
 import NuptseMemberCard from './template-nuptse';
 import {
 	normalizeColorForStorage,
 	colorValueForPicker,
 	useThemeColorPalette,
+	getColorProps,
 } from './color-utils';
+import { renderSocialIcon, getSocialPlatformLabel } from './social-utils';
 
 interface EditProps {
 	attributes: TeamSectionAttributes;
@@ -81,6 +89,7 @@ function InlineSvg({ name, className }: { name: keyof typeof ICONS; className?: 
 
 export default function TeamSectionEdit({ attributes, setAttributes }: EditProps) {
 	const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+	const [activeDeckIndex, setActiveDeckIndex] = useState(0);
 
 	const palette = useThemeColorPalette();
 
@@ -118,6 +127,9 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 	const {
 		layoutMode = 'carousel',
 		gridColumns = 4,
+		gridColumnsTablet = 2,
+		gridColumnsMobile = 1,
+		disableResponsiveCarousel = false,
 		gridColumnGap = 24,
 		gridRowGap = 24,
 		cardTemplate = 'default',
@@ -142,11 +154,33 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		cardBackgroundColor = '',
 		tagBackgroundColor = '',
 		tagTextColor = '',
-		cardBorderRadius = 16,
+		cardBorderRadius,
 		nameColor = '',
 		roleColor = '',
+		bioColor = '',
+		socialColor = '',
 		enableScrollAnimation = true,
+		enablePopup = false,
+		edgeFadeColor = '',
 	} = attributes;
+
+	const isDesktopFractional = (slidesPerView % 1) !== 0;
+	const isTabletFractional = (slidesPerViewTablet % 1) !== 0;
+	const isMobileFractional = (slidesPerViewMobile % 1) !== 0;
+	const hasAnyFractional = isDesktopFractional || isTabletFractional || isMobileFractional;
+
+	const templateDefaults = getTemplateDefaultAttributes(cardTemplate);
+	const effectiveCardBorderRadius = cardBorderRadius ?? templateDefaults.cardBorderRadius ?? 16;
+	const effectivePhotoAspectRatio = photoAspectRatio ?? templateDefaults.photoAspectRatio ?? '3/4';
+
+	const nameColorProps = getColorProps(nameColor, 'color');
+	const roleColorProps = getColorProps(roleColor, 'color');
+	const bioColorProps = getColorProps(bioColor, 'color');
+	const socialColorProps = getColorProps(socialColor, 'color');
+	const cardBgProps = getColorProps(cardBackgroundColor, 'background');
+	const tagBgProps = getColorProps(tagBackgroundColor, 'background');
+	const tagTextColorProps = getColorProps(tagTextColor, 'color');
+	const sectionBgProps = getColorProps(sectionBackgroundColor, 'background');
 
 	const blockProps = useBlockProps({
 		className: [
@@ -155,23 +189,39 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 			'nextora-team-section--editor',
 			`nextora-team-section--layout-${layoutMode}`,
 			`nextora-team-section--template-${cardTemplate}`,
-		].join(' '),
-		style: buildSectionStyleVars({
-			gridColumns,
-			gridColumnGap,
-			gridRowGap,
-			photoAspectRatio,
-			spaceBetween,
-			sectionBackgroundColor,
-			paginationColor,
-			paginationActiveColor,
-			cardBackgroundColor,
-			tagBackgroundColor,
-			tagTextColor,
-			nameColor,
-			roleColor,
-			cardBorderRadius,
-		}) as CSSProperties,
+			disableResponsiveCarousel && layoutMode === 'grid' ? 'nextora-team-section--grid-no-carousel' : '',
+			sectionBgProps.className,
+			isDesktopFractional ? 'has-edge-fade-desktop' : '',
+			isTabletFractional ? 'has-edge-fade-tablet' : '',
+			isMobileFractional ? 'has-edge-fade-mobile' : '',
+		]
+			.filter(Boolean)
+			.join(' '),
+		style: {
+			...buildSectionStyleVars({
+				gridColumns,
+				gridColumnsTablet,
+				gridColumnsMobile,
+				gridColumnGap,
+				gridRowGap,
+				photoAspectRatio: effectivePhotoAspectRatio,
+				spaceBetween,
+				slidesPerView,
+				sectionBackgroundColor,
+				paginationColor,
+				paginationActiveColor,
+				cardBackgroundColor,
+				tagBackgroundColor,
+				tagTextColor,
+				nameColor,
+				roleColor,
+				bioColor,
+				socialColor,
+				cardBorderRadius: effectiveCardBorderRadius,
+				edgeFadeColor,
+			}),
+			...sectionBgProps.style,
+		} as CSSProperties,
 	});
 
 	const setMembers = (next: TeamMember[]): void => {
@@ -196,6 +246,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 				tags: [],
 				bio: '',
 				bioLineClamp: 3,
+				detail: '',
 				showSocialLinks: false,
 				socialLinks: [],
 				cardBorderRadius,
@@ -340,11 +391,11 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						value={cardTemplate}
 						options={cardTemplateOptions}
 						onChange={(v) => {
-							if (v === 'template-nuptse') {
-								setAttributes({ cardTemplate: v, layoutMode: 'grid', gridColumns: 3, gridMinWidth: 320, gridColumnGap: 16, gridRowGap: 16, photoAspectRatio: '1/1', showPagination: false, showArrows: false, cardBorderRadius: 10 });
-							} else {
-								setAttributes({ cardTemplate: (v as TeamSectionAttributes['cardTemplate']) ?? 'default' });
-							}
+							const nextTpl = (v as TeamSectionAttributes['cardTemplate']) ?? 'default';
+							setAttributes({
+								cardTemplate: nextTpl,
+								...getTemplateDefaultAttributes(nextTpl),
+							});
 						}}
 					/>
 
@@ -388,6 +439,42 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 										min={1}
 										max={6}
 									/>
+									<ToggleControl
+										label={__('Keep grid on mobile', 'nextora')}
+										help={__(
+											'Keep the grid layout on tablet and mobile instead of switching to a carousel.',
+											'nextora',
+										)}
+										checked={disableResponsiveCarousel}
+										onChange={(v) =>
+											setAttributes({ disableResponsiveCarousel: v })
+										}
+									/>
+									{disableResponsiveCarousel ? (
+										<>
+											<p className="nextora-team-section__inspector-subheading">
+												{__('Responsive columns', 'nextora')}
+											</p>
+											<RangeControl
+												label={__('Grid columns (tablet)', 'nextora')}
+												value={gridColumnsTablet}
+												onChange={(v) =>
+													setAttributes({ gridColumnsTablet: v ?? 2 })
+												}
+												min={1}
+												max={4}
+											/>
+											<RangeControl
+												label={__('Grid columns (mobile)', 'nextora')}
+												value={gridColumnsMobile}
+												onChange={(v) =>
+													setAttributes({ gridColumnsMobile: v ?? 1 })
+												}
+												min={1}
+												max={2}
+											/>
+										</>
+									) : null}
 									<RangeControl
 										label={__('Column gap (px)', 'nextora')}
 										value={gridColumnGap}
@@ -405,112 +492,134 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 								</>
 							)}
 
-							<p className="nextora-team-section__inspector-subheading">
-								{layoutMode === 'grid'
-									? __('Carousel (tablet & mobile)', 'nextora')
-									: __('Carousel', 'nextora')}
-							</p>
+							{!(layoutMode === 'grid' && disableResponsiveCarousel) && (
+								<>
+									<p className="nextora-team-section__inspector-subheading">
+										{layoutMode === 'grid'
+											? __('Carousel (tablet & mobile)', 'nextora')
+											: __('Carousel', 'nextora')}
+									</p>
 
-							{layoutMode === 'carousel' && (
-								<RangeControl
-									label={__('Slides per view (desktop)', 'nextora')}
-									value={slidesPerView}
-									onChange={(v) => setAttributes({ slidesPerView: v ?? 4 })}
-									min={1}
-									max={6}
-									step={0.5}
-								/>
+									{layoutMode === 'carousel' && (
+										<RangeControl
+											label={__('Slides per view (desktop)', 'nextora')}
+											value={slidesPerView}
+											onChange={(v) =>
+												setAttributes({
+													slidesPerView: v !== undefined ? Math.round(v * 100) / 100 : 4,
+												})
+											}
+											min={1}
+											max={6}
+											step={0.1}
+										/>
+									)}
+									<RangeControl
+										label={__('Slides per view (tablet)', 'nextora')}
+										value={slidesPerViewTablet}
+										onChange={(v) =>
+											setAttributes({
+												slidesPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 2.5,
+											})
+										}
+										min={1}
+										max={4}
+										step={0.1}
+									/>
+									<RangeControl
+										label={__('Slides per view (mobile)', 'nextora')}
+										help={__(
+											'Fractional values show a peek of the next card.',
+											'nextora',
+										)}
+										value={slidesPerViewMobile}
+										onChange={(v) =>
+											setAttributes({
+												slidesPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 1.2,
+											})
+										}
+										min={1}
+										max={3}
+										step={0.1}
+									/>
+									<RangeControl
+										label={__('Space between (px)', 'nextora')}
+										help={
+											layoutMode === 'grid'
+												? __('Spacing for tablet & mobile carousel only (desktop uses Column/Row gap).', 'nextora')
+												: undefined
+										}
+										value={spaceBetween}
+										onChange={(v) => setAttributes({ spaceBetween: v ?? 24 })}
+										min={0}
+										max={60}
+									/>
+								</>
 							)}
-							<RangeControl
-								label={__('Slides per view (tablet)', 'nextora')}
-								value={slidesPerViewTablet}
-								onChange={(v) => setAttributes({ slidesPerViewTablet: v ?? 2.5 })}
-								min={1}
-								max={4}
-								step={0.5}
-							/>
-							<RangeControl
-								label={__('Slides per view (mobile)', 'nextora')}
-								help={__(
-									'Fractional values show a peek of the next card.',
-									'nextora',
-								)}
-								value={slidesPerViewMobile}
-								onChange={(v) => setAttributes({ slidesPerViewMobile: v ?? 1.2 })}
-								min={1}
-								max={2}
-								step={0.1}
-							/>
-							<RangeControl
-								label={__('Space between (px)', 'nextora')}
-								help={
-									layoutMode === 'grid'
-										? __('Spacing for tablet & mobile carousel only (desktop uses Column/Row gap).', 'nextora')
-										: undefined
-								}
-								value={spaceBetween}
-								onChange={(v) => setAttributes({ spaceBetween: v ?? 24 })}
-								min={0}
-								max={60}
-							/>
 						</>
 					)}
 
-					<RangeControl
-						label={__('Transition speed (ms)', 'nextora')}
-						value={speed}
-						onChange={(v) => setAttributes({ speed: v ?? 500 })}
-						min={100}
-						max={2000}
-						step={100}
-					/>
-					<ToggleControl
-						label={__('Loop', 'nextora')}
-						checked={loop}
-						onChange={(v) => setAttributes({ loop: v })}
-					/>
-					{cardTemplate !== 'template-02' && (
+					{!(layoutMode === 'grid' && disableResponsiveCarousel) && (
 						<>
-							<ToggleControl
-								label={__('Free mode', 'nextora')}
-								checked={freeMode}
-								onChange={(v) => setAttributes({ freeMode: v })}
+							<RangeControl
+								label={__('Transition speed (ms)', 'nextora')}
+								value={speed}
+								onChange={(v) => setAttributes({ speed: v ?? 500 })}
+								min={100}
+								max={2000}
+								step={100}
 							/>
 							<ToggleControl
-								label={__('Grab cursor', 'nextora')}
-								checked={grabCursor}
-								onChange={(v) => setAttributes({ grabCursor: v })}
+								label={__('Loop', 'nextora')}
+								checked={loop}
+								onChange={(v) => setAttributes({ loop: v })}
 							/>
+							{cardTemplate !== 'template-02' && (
+								<>
+									<ToggleControl
+										label={__('Free mode', 'nextora')}
+										checked={freeMode}
+										onChange={(v) => setAttributes({ freeMode: v })}
+									/>
+									<ToggleControl
+										label={__('Grab cursor', 'nextora')}
+										checked={grabCursor}
+										onChange={(v) => setAttributes({ grabCursor: v })}
+									/>
+								</>
+							)}
 						</>
 					)}
 				</PanelBody>
 
-				<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Enable autoplay', 'nextora')}
-						checked={autoplay}
-						onChange={(v) => setAttributes({ autoplay: v })}
-					/>
-					{autoplay && (
-						<>
-							<RangeControl
-								label={__('Delay (ms)', 'nextora')}
-								value={autoplayDelay}
-								onChange={(v) => setAttributes({ autoplayDelay: v ?? 4000 })}
-								min={1000}
-								max={10000}
-								step={500}
-							/>
-							<ToggleControl
-								label={__('Pause on hover', 'nextora')}
-								checked={pauseOnHover}
-								onChange={(v) => setAttributes({ pauseOnHover: v })}
-							/>
-						</>
-					)}
-				</PanelBody>
+				{!(layoutMode === 'grid' && disableResponsiveCarousel) && (
+					<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
+						<ToggleControl
+							label={__('Enable autoplay', 'nextora')}
+							checked={autoplay}
+							onChange={(v) => setAttributes({ autoplay: v })}
+						/>
+						{autoplay && (
+							<>
+								<RangeControl
+									label={__('Delay (ms)', 'nextora')}
+									value={autoplayDelay}
+									onChange={(v) => setAttributes({ autoplayDelay: v ?? 4000 })}
+									min={1000}
+									max={10000}
+									step={500}
+								/>
+								<ToggleControl
+									label={__('Pause on hover', 'nextora')}
+									checked={pauseOnHover}
+									onChange={(v) => setAttributes({ pauseOnHover: v })}
+								/>
+							</>
+						)}
+					</PanelBody>
+				)}
 
-				{cardTemplate !== 'template-02' && (
+				{cardTemplate !== 'template-02' && !(layoutMode === 'grid' && disableResponsiveCarousel) && (
 					<PanelBody title={__('Pagination', 'nextora')} initialOpen={false}>
 						<ToggleControl
 							label={__('Show pagination', 'nextora')}
@@ -533,13 +642,15 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 					</PanelBody>
 				)}
 
-				<PanelBody title={__('Navigation', 'nextora')} initialOpen={false}>
-					<ToggleControl
-						label={__('Show arrows', 'nextora')}
-						checked={showArrows}
-						onChange={(v) => setAttributes({ showArrows: v })}
-					/>
-				</PanelBody>
+				{(cardTemplate === 'template-02' || !(layoutMode === 'grid' && disableResponsiveCarousel)) && (
+					<PanelBody title={__('Navigation', 'nextora')} initialOpen={false}>
+						<ToggleControl
+							label={__('Show arrows', 'nextora')}
+							checked={showArrows}
+							onChange={(v) => setAttributes({ showArrows: v })}
+						/>
+					</PanelBody>
+				)}
 
 				<PanelColorSettings
 					enableAlpha
@@ -550,20 +661,29 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 							onChange: (v) => setAttributes({ sectionBackgroundColor: normalizeColorForStorage(v, palette) }),
 							label: __('Background', 'nextora'),
 						},
-						...(cardTemplate === 'overlay-social' || cardTemplate === 'template-02'
+						{
+							value: colorValueForPicker(edgeFadeColor, palette),
+							onChange: (v: string | undefined) =>
+								setAttributes({ edgeFadeColor: normalizeColorForStorage(v, palette) }),
+							label: __('Edge fade overlay', 'nextora'),
+						},
+						{
+							value: colorValueForPicker(nameColor, palette),
+							onChange: (v: string | undefined) => setAttributes({ nameColor: normalizeColorForStorage(v, palette) }),
+							label: __('Heading / Name', 'nextora'),
+						},
+						{
+							value: colorValueForPicker(roleColor, palette),
+							onChange: (v: string | undefined) => setAttributes({ roleColor: normalizeColorForStorage(v, palette) }),
+							label: __('Role', 'nextora'),
+						},
+						...(cardTemplate !== 'overlay-social'
 							? [
 									{
-										value: colorValueForPicker(nameColor, palette),
-										onChange: (v: string | undefined) => setAttributes({ nameColor: normalizeColorForStorage(v, palette) }),
-										label: __('Name', 'nextora'),
+										value: colorValueForPicker(bioColor, palette),
+										onChange: (v: string | undefined) => setAttributes({ bioColor: normalizeColorForStorage(v, palette) }),
+										label: __('Description / Bio', 'nextora'),
 									},
-									{
-										value: colorValueForPicker(roleColor, palette),
-										onChange: (v: string | undefined) => setAttributes({ roleColor: normalizeColorForStorage(v, palette) }),
-										label: __('Role', 'nextora'),
-									},
-								]
-							: [
 									{
 										value: colorValueForPicker(cardBackgroundColor, palette),
 										onChange: (v: string | undefined) => setAttributes({ cardBackgroundColor: normalizeColorForStorage(v, palette) }),
@@ -579,7 +699,13 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 										onChange: (v: string | undefined) => setAttributes({ tagTextColor: normalizeColorForStorage(v, palette) }),
 										label: __('Tag text', 'nextora'),
 									},
-								]),
+							  ]
+							: []),
+						{
+							value: colorValueForPicker(socialColor, palette),
+							onChange: (v: string | undefined) => setAttributes({ socialColor: normalizeColorForStorage(v, palette) }),
+							label: __('Social links', 'nextora'),
+						},
 						...(showPagination && cardTemplate !== 'template-02'
 							? [
 									{
@@ -610,6 +736,18 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						onChange={(v) => setAttributes({ enableScrollAnimation: v })}
 					/>
 				</PanelBody>
+
+				<PanelBody title={__('Popup Drawer', 'nextora')} initialOpen={false}>
+					<ToggleControl
+						label={__('Enable member detail popup', 'nextora')}
+						help={__(
+							'When enabled, clicking a team member opens a slide-over panel from the right with full details.',
+							'nextora',
+						)}
+						checked={enablePopup === true}
+						onChange={(v) => setAttributes({ enablePopup: v })}
+					/>
+				</PanelBody>
 			</InspectorControls>
 
 			{editingMember && (
@@ -631,6 +769,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						member={editingMember}
 						photoUrl={resolvePhotoUrl(editingMember, mediaUrlById)}
 						cardTemplate={cardTemplate}
+						enablePopup={enablePopup}
 						onPatch={(patch) => patchMember(editingMember.id, patch)}
 					/>
 				</Modal>
@@ -639,147 +778,303 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 			<div {...blockProps}>
 				<div className="nextora-team-section__inner">
 					{cardTemplate === 'template-02' ? (
-						<div className="nextora-team-section__deck-wrap">
-							<div className="nextora-team-section__deck-left">
-								<div className="nextora-team-section__deck-stack">
-									{members.map((member, idx) => {
-										const photoUrl = resolvePhotoUrl(member, mediaUrlById);
-										const isCurrent = idx === 0;
-										const rotateDeg = isCurrent ? 0 : ((idx * 6) % 15) - 6;
-										const zIndex = isCurrent ? 10 : members.length - idx;
+						(() => {
+							const safeActiveDeckIndex =
+								members.length > 0
+									? ((activeDeckIndex % members.length) + members.length) % members.length
+									: 0;
+							const currentDeckMember = members[safeActiveDeckIndex] ?? members[0];
 
-										return (
-											<div
-												key={member.id}
-												className={`nextora-team-section__deck-card ${isCurrent ? 'is-active' : ''}`}
-												style={{
-													transform: `rotate(${rotateDeg}deg) scale(${isCurrent ? 1 : 0.94})`,
-													zIndex,
-													borderRadius: member.cardBorderRadius || cardBorderRadius,
-												}}
-												onClick={() => openMemberEditor(member.id)}
-											>
-												<button
-													type="button"
-													className="nextora-team-section__card-edit"
-													onClick={(e) => {
-														e.stopPropagation();
-														openMemberEditor(member.id);
-													}}
-												>
-													{__('Edit member', 'nextora')}
-												</button>
-												{photoUrl ? (
-													<img src={photoUrl} alt="" className="nextora-team-section__deck-img" />
-												) : (
-													<div className="nextora-team-section__card-photo--empty" />
-												)}
+							return (
+								<div className="nextora-team-section__deck-container">
+									<div className="nextora-team-section__deck-grid">
+										<div className="nextora-team-section__deck-photo-col">
+											<div className="nextora-team-section__deck-photo-stack">
+												{members.map((member, idx) => {
+													const photoUrl = resolvePhotoUrl(member, mediaUrlById);
+													const isCurrent = idx === safeActiveDeckIndex;
+													const offsetFromCurrent =
+														(idx - safeActiveDeckIndex + members.length) % members.length;
+													const rotateDeg = isCurrent ? 0 : ((offsetFromCurrent * 6) % 15) - 6;
+													const zIndex = isCurrent ? 10 : members.length - offsetFromCurrent;
+													const memberRadius =
+														member.cardBorderRadius && member.cardBorderRadius > 0
+															? member.cardBorderRadius
+															: effectiveCardBorderRadius;
+
+													return (
+														<div
+															key={member.id}
+															className={`nextora-team-section__deck-photo-card ${isCurrent ? 'is-active' : ''} ${cardBgProps.className}`.trim()}
+															style={{
+																transform: `rotate(${rotateDeg}deg) scale(${isCurrent ? 1 : 0.94})`,
+																zIndex,
+																borderRadius: `${memberRadius}px`,
+																...cardBgProps.style,
+															}}
+															onClick={() => setActiveDeckIndex(idx)}
+														>
+															<button
+																type="button"
+																className="nextora-team-section__card-edit"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	openMemberEditor(member.id);
+																}}
+															>
+																{__('Edit member', 'nextora')}
+															</button>
+															{photoUrl ? (
+																<img src={photoUrl} alt="" className="nextora-team-section__deck-photo-img" />
+															) : (
+																<div className="nextora-team-section__card-photo--empty" />
+															)}
+														</div>
+													);
+												})}
 											</div>
-										);
-									})}
-								</div>
-							</div>
-							{members.length > 0 && (
-								<div className="nextora-team-section__deck-right">
-									<div className="nextora-team-section__deck-details">
-										<h3 className="nextora-team-section__deck-name">
-											{members[0].name || __('Member name', 'nextora')}
-										</h3>
-										{members[0].role ? (
-											<p className="nextora-team-section__deck-role">{members[0].role}</p>
-										) : null}
-										{members[0].bio ? (
-											<div className="nextora-team-section__deck-bio">{members[0].bio}</div>
-										) : null}
+										</div>
+										{currentDeckMember && (
+											<div className="nextora-team-section__deck-info-col">
+												<div className="nextora-team-section__deck-info-stack">
+													<div className="nextora-team-section__deck-info-pane is-active">
+														<h4
+															className={`nextora-team-section__deck-name ${nameColorProps.className}`.trim()}
+															style={nameColorProps.style}
+														>
+															{currentDeckMember.name || __('Member name', 'nextora')}
+														</h4>
+														{currentDeckMember.role ? (
+															<p
+																className={`nextora-team-section__deck-role ${roleColorProps.className}`.trim()}
+																style={roleColorProps.style}
+															>
+																{currentDeckMember.role}
+															</p>
+														) : null}
+														{currentDeckMember.bio ? (
+															<div
+																className={`nextora-team-section__deck-bio ${bioColorProps.className}`.trim()}
+																style={bioColorProps.style}
+															>
+																{currentDeckMember.bio}
+															</div>
+														) : null}
 
-										{showArrows && members.length > 1 && (
-											<div className="nextora-team-section__deck-nav">
-												<button
-													type="button"
-													className="nextora-team-section__deck-nav-btn nextora-team-section__deck-nav-btn--prev"
-													aria-label={__('Previous', 'nextora')}
-												>
-													<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nextora-team-section__deck-nav-icon"><path d="m15 18-6-6 6-6"/></svg>
-												</button>
-												<button
-													type="button"
-													className="nextora-team-section__deck-nav-btn nextora-team-section__deck-nav-btn--next"
-													aria-label={__('Next', 'nextora')}
-												>
-													<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nextora-team-section__deck-nav-icon"><path d="m9 18 6-6-6-6"/></svg>
-												</button>
+														{currentDeckMember.showSocialLinks && currentDeckMember.socialLinks.length > 0 && (
+															<div className="nextora-team-section__deck-social">
+																{currentDeckMember.socialLinks.map((link, lIdx) => (
+																	<span
+																		key={lIdx}
+																		className={`nextora-team-section__deck-social-link ${socialColorProps.className}`.trim()}
+																		style={socialColorProps.style}
+																		title={getSocialPlatformLabel(link.platform)}
+																		aria-label={getSocialPlatformLabel(link.platform)}
+																	>
+																		{renderSocialIcon(link.platform, 18)}
+																	</span>
+																))}
+															</div>
+														)}
+
+														{showArrows && members.length > 1 && (
+															<div className="nextora-team-section__deck-nav">
+																<button
+																	type="button"
+																	className="nextora-team-section__deck-nav-btn nextora-team-section__deck-nav-btn--prev"
+																	aria-label={__('Previous', 'nextora')}
+																	onClick={() =>
+																		setActiveDeckIndex(
+																			(prev) => (prev - 1 + members.length) % members.length,
+																		)
+																	}
+																>
+																	<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nextora-team-section__deck-nav-icon"><path d="m15 18-6-6 6-6"/></svg>
+																</button>
+																<button
+																	type="button"
+																	className="nextora-team-section__deck-nav-btn nextora-team-section__deck-nav-btn--next"
+																	aria-label={__('Next', 'nextora')}
+																	onClick={() =>
+																		setActiveDeckIndex((prev) => (prev + 1) % members.length)
+																	}
+																>
+																	<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="nextora-team-section__deck-nav-icon"><path d="m9 18 6-6-6-6"/></svg>
+																</button>
+															</div>
+														)}
+													</div>
+												</div>
 											</div>
 										)}
 									</div>
 								</div>
-							)}
-						</div>
+							);
+						})()
 					) : (
-						<div className="nextora-team-section__members-row" aria-label={__('Team members', 'nextora')}>
-							{members.map((member) => {
-								const photoUrl = resolvePhotoUrl(member, mediaUrlById);
-								if (cardTemplate === 'template-nuptse') {
-									return <NuptseMemberCard key={member.id} member={member} photoUrl={photoUrl} attributes={attributes} onEdit={() => openMemberEditor(member.id)} />;
-								}
+						<div className="nextora-team-section__carousel-root">
+							<div className="nextora-team-section__members-row" aria-label={__('Team members', 'nextora')}>
+								{members.map((member) => {
+									const photoUrl = resolvePhotoUrl(member, mediaUrlById);
+									if (cardTemplate === 'template-nuptse') {
+										return (
+											<NuptseMemberCard
+												key={member.id}
+												member={member}
+												photoUrl={photoUrl}
+												attributes={attributes}
+												onEdit={() => openMemberEditor(member.id)}
+											/>
+										);
+									}
+									const memberRadius =
+										member.cardBorderRadius && member.cardBorderRadius > 0
+											? member.cardBorderRadius
+											: effectiveCardBorderRadius;
 
-								return (
-									<article
-										key={member.id}
-										className="nextora-team-section__card nextora-team-section__card--editable"
-										style={
-											{
-												'--nextora-team-bio-clamp': member.bioLineClamp,
-												borderRadius: member.cardBorderRadius || cardBorderRadius,
-											} as CSSProperties
-										}
-									>
-										<button
-											type="button"
-											className="nextora-team-section__card-edit"
-											onClick={() => openMemberEditor(member.id)}
-										>
-											{__('Edit member', 'nextora')}
-										</button>
-										<div
-											className={
-												photoUrl
-													? 'nextora-team-section__card-photo'
-													: 'nextora-team-section__card-photo nextora-team-section__card-photo--empty'
+									return (
+										<article
+											key={member.id}
+											className={`nextora-team-section__card nextora-team-section__card--editable ${cardTemplate === 'overlay-social' ? 'nextora-team-section__card--overlay' : ''} ${cardBgProps.className}`.trim()}
+											style={
+												{
+													'--nextora-team-bio-clamp': member.bioLineClamp,
+													borderRadius: `${memberRadius}px`,
+													...cardBgProps.style,
+												} as CSSProperties
 											}
 										>
-											{photoUrl ? (
-												<img
-													src={photoUrl}
-													alt=""
-													className="nextora-team-section__card-img"
-												/>
-											) : null}
-										</div>
-										<div className="nextora-team-section__card-body">
-											<h4 className="nextora-team-section__card-name">
-												{member.name || __('Member name', 'nextora')}
-											</h4>
-											{member.role ? (
-												<p className="nextora-team-section__card-role">{member.role}</p>
-											) : null}
-											{member.tags.length > 0 && (
-												<div className="nextora-team-section__card-tags">
-													{member.tags.map((tag) =>
-														tag ? (
-															<span key={tag} className="nextora-team-section__card-tag">
-																{tag}
+											<button
+												type="button"
+												className="nextora-team-section__card-edit"
+												onClick={() => openMemberEditor(member.id)}
+											>
+												{__('Edit member', 'nextora')}
+											</button>
+											<div
+												className={
+													photoUrl
+														? 'nextora-team-section__card-photo'
+														: 'nextora-team-section__card-photo nextora-team-section__card-photo--empty'
+												}
+											>
+												{photoUrl ? (
+													<img
+														src={photoUrl}
+														alt=""
+														className="nextora-team-section__card-img"
+													/>
+												) : null}
+												{cardTemplate === 'overlay-social' && member.showSocialLinks && member.socialLinks.length > 0 && (
+													<div className="nextora-team-section__card-social-overlay">
+														{member.socialLinks.map((link, lIdx) => (
+															<span key={lIdx} className="nextora-team-section__card-social-link-overlay" aria-label={link.platform}>
+																{renderSocialIcon(link.platform)}
 															</span>
-														) : null,
-													)}
-												</div>
-											)}
-											{member.bio ? (
-												<p className="nextora-team-section__card-bio">{member.bio}</p>
-											) : null}
-										</div>
-									</article>
-								);
-							})}
+														))}
+													</div>
+												)}
+											</div>
+											<div className="nextora-team-section__card-body">
+												<h4
+													className={`nextora-team-section__card-name ${nameColorProps.className}`.trim()}
+													style={nameColorProps.style}
+												>
+													{member.name || __('Member name', 'nextora')}
+												</h4>
+												{member.role ? (
+													<p
+														className={`nextora-team-section__card-role ${roleColorProps.className}`.trim()}
+														style={roleColorProps.style}
+													>
+														{member.role}
+													</p>
+												) : null}
+												{cardTemplate !== 'overlay-social' && member.tags.length > 0 && (
+													<div className="nextora-team-section__card-tags">
+														{member.tags.map((tag) =>
+															tag ? (
+																<span
+																	key={tag}
+																	className={`nextora-team-section__card-tag ${tagBgProps.className} ${tagTextColorProps.className}`.trim()}
+																	style={{ ...tagBgProps.style, ...tagTextColorProps.style }}
+																>
+																	{tag}
+																</span>
+															) : null,
+														)}
+													</div>
+												)}
+												{cardTemplate !== 'overlay-social' && member.bio ? (
+													<p
+														className={`nextora-team-section__card-bio ${bioColorProps.className}`.trim()}
+														style={bioColorProps.style}
+													>
+														{member.bio}
+													</p>
+												) : null}
+												{cardTemplate === 'default' && member.showSocialLinks && member.socialLinks.length > 0 && (
+													<div className="nextora-team-section__card-social">
+														{member.socialLinks.map((link, lIdx) => (
+															<span
+																key={lIdx}
+																className={`nextora-team-section__card-social-link ${socialColorProps.className}`.trim()}
+																style={socialColorProps.style}
+															>
+																{getSocialPlatformLabel(link.platform)}
+															</span>
+														))}
+													</div>
+												)}
+											</div>
+										</article>
+									);
+								})}
+							</div>
+
+							{layoutMode === 'carousel' && hasAnyFractional && (
+								<div className="nextora-team-section__edge-overlay" aria-hidden="true" />
+							)}
+
+							{layoutMode === 'carousel' && showArrows && members.length > 1 && (
+								<>
+									<button
+										type="button"
+										className="nextora-team-section__arrow nextora-team-section__arrow--prev"
+										aria-label={__('Previous team member', 'nextora')}
+									>
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+									</button>
+									<button
+										type="button"
+										className="nextora-team-section__arrow nextora-team-section__arrow--next"
+										aria-label={__('Next team member', 'nextora')}
+									>
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+									</button>
+								</>
+							)}
+
+							{layoutMode === 'carousel' && showPagination && members.length > 1 && (
+								<div className={`nextora-team-section__pagination swiper-pagination swiper-pagination-${paginationType}`} aria-hidden="true">
+									{paginationType === 'bullets' &&
+										members.map((_, i) => (
+											<span
+												key={i}
+												className={`swiper-pagination-bullet ${i === 0 ? 'swiper-pagination-bullet-active' : ''}`}
+											/>
+										))}
+									{paginationType === 'fraction' && (
+										<span className="swiper-pagination-current">1 / {members.length}</span>
+									)}
+									{paginationType === 'progressbar' && (
+										<span
+											className="swiper-pagination-progressbar-fill"
+											style={{ width: `${Math.round(100 / members.length)}%` }}
+										/>
+									)}
+								</div>
+							)}
 						</div>
 					)}
 				</div>

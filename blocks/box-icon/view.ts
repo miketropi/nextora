@@ -173,10 +173,15 @@ function initScrollReveal(section: HTMLElement): void {
 	const carousel =
 		section.querySelector<HTMLElement>('.nextora-box-icon__carousel-root') ||
 		section.querySelector<HTMLElement>('.nextora-box-icon__timeline-grid') ||
-		section.querySelector<HTMLElement>('.nextora-box-icon__ways-rows');
+		section.querySelector<HTMLElement>('.nextora-box-icon__ways-rows') ||
+		section.querySelector<HTMLElement>('.nextora-box-icon__template-5-list');
 	const style = section.getAttribute('data-nextora-scroll-reveal-style') || 'default';
 
 	if (style === 'sequential') {
+		if (section.closest('.has-mega-menu, .beplus-vmn-mega-panel')) {
+			setRevealReady(section);
+			return;
+		}
 		initSequentialReveal(section, header, carousel);
 		return;
 	}
@@ -222,7 +227,7 @@ function initSequentialReveal(
 	const waitForLayout = (callback: () => void): void => {
 		const hasCards = Boolean(
 			carousel?.querySelector(
-				'.swiper-slide, .nextora-box-icon__card, .nextora-box-icon__ways-row',
+				'.nextora-box-icon__card, .nextora-box-icon__ways-row',
 			),
 		);
 		if (carousel && (!hasCards || carousel.clientWidth < 2)) {
@@ -233,7 +238,7 @@ function initSequentialReveal(
 			}
 		}
 
-		requestAnimationFrame(() => requestAnimationFrame(callback));
+		requestAnimationFrame(callback);
 	};
 
 	const playReveal = (): void => {
@@ -247,46 +252,48 @@ function initSequentialReveal(
 			}
 			played = true;
 
-		const slides = carousel
-			? Array.from(carousel.querySelectorAll<HTMLElement>('.swiper-slide'))
-			: [];
-		const cards =
-			slides.length > 0
-				? slides
-				: carousel
-					? Array.from(
-							carousel.querySelectorAll<HTMLElement>(
-								'.nextora-box-icon__card, .nextora-box-icon__ways-row',
-							),
-						)
-					: [];
+			// ALWAYS target the inner card elements, NEVER .swiper-slide to avoid layout & swiper conflicts
+			const cards = carousel
+				? Array.from(
+						carousel.querySelectorAll<HTMLElement>(
+							'.nextora-box-icon__card, .nextora-box-icon__ways-row',
+						),
+					)
+				: [];
 
-		const targets = [header, ...cards].filter((el): el is HTMLElement => el !== null);
+			const targets = [header, ...cards].filter((el): el is HTMLElement => el !== null);
 
 			if (targets.length === 0) {
 				setRevealReady(section);
 				return;
 			}
 
-			gsap.set(targets, { opacity: 0, y: 40, force3D: true });
-			section.classList.remove('nextora-box-icon--reveal-pending');
-
-		const gen = nextRevealGen(section);
-
-		const timeline = gsap.timeline({
-			defaults: { ease: 'power3.out' },
-			onComplete: () => {
-				if (getRevealGen(section) !== gen) return;
-				clearRevealStyles(targets);
-				if (carousel) {
-					gsap.set(carousel, { clearProps: 'opacity,transform,translate' });
-				}
-				setRevealReady(section);
-			},
-		});
+			const isTemplate5 = section.classList.contains('nextora-box-icon--template-template-5');
+			const displacement = isTemplate5 ? 28 : 14;
+			const cardDuration = isTemplate5 ? 0.6 : 0.38;
+			const cardStagger = isTemplate5 ? 0.12 : 0.04;
 
 			if (header) {
-				timeline.to(header, { opacity: 1, y: 0, duration: 0.85 }, 0);
+				gsap.set(header, { opacity: 0, y: displacement, force3D: true });
+			}
+			if (cards.length > 0) {
+				gsap.set(cards, { opacity: 0, y: displacement, force3D: true });
+			}
+			section.classList.remove('nextora-box-icon--reveal-pending');
+
+			const gen = nextRevealGen(section);
+
+			const timeline = gsap.timeline({
+				defaults: { ease: 'power3.out' },
+				onComplete: () => {
+					if (getRevealGen(section) !== gen) return;
+					gsap.set(targets, { opacity: 1, y: 0, clearProps: 'transform' });
+					setRevealReady(section);
+				},
+			});
+
+			if (header) {
+				timeline.to(header, { opacity: 1, y: 0, duration: cardDuration }, 0);
 			}
 
 			if (cards.length > 0) {
@@ -295,10 +302,10 @@ function initSequentialReveal(
 					{
 						opacity: 1,
 						y: 0,
-						duration: 0.75,
-						stagger: { each: 0.14, from: 'start' },
+						duration: cardDuration,
+						stagger: { each: cardStagger, from: 'start' },
 					},
-					header ? 0.12 : 0,
+					header ? 0.08 : 0,
 				);
 			}
 		});
@@ -499,16 +506,15 @@ function mountSwiper(root: HTMLElement): void {
 		isGridMode ? Math.max(cap(tabletSpv), Math.min(gridCols, slideCount)) : cap(desktopSpv);
 
 	const swiperBreakpoints: Record<number, { slidesPerView: number; spaceBetween: number }> = {};
-	swiperBreakpoints[768] = { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) };
+	swiperBreakpoints[640] = { slidesPerView: cap(tabletSpv), spaceBetween: Math.max(0, gap) };
 
 	if (isGridMode) {
-		if (gridMin > 768) {
+		if (gridMin > 640) {
 			const bp = gridMin - 1;
 			swiperBreakpoints[bp] = { slidesPerView: effectiveDesktopSpv, spaceBetween: Math.max(0, gap) };
 		}
 	} else {
-		const desktopBp = Math.max(gridMin, 1024);
-		swiperBreakpoints[desktopBp] = { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) };
+		swiperBreakpoints[1024] = { slidesPerView: cap(desktopSpv), spaceBetween: Math.max(0, gap) };
 	}
 
 	const wantLoop = Boolean(opts.loop) && slideCount > 1;
@@ -637,7 +643,9 @@ function initCarouselRoots(container: Element | Document = document): void {
 		});
 
 	container
-		.querySelectorAll<HTMLElement>('.nextora-box-icon--template-template-4')
+		.querySelectorAll<HTMLElement>(
+			'.nextora-box-icon--template-template-4, .nextora-box-icon--template-template-5',
+		)
 		.forEach((section) => {
 			markSectionReady(section);
 		});
@@ -729,9 +737,13 @@ function watchDeferredElements(): void {
 				const wasHidden = visibilityState.get(root);
 
 				if (hidden && !wasHidden) {
-					// Just became hidden — reset carousel + grid + animations
+					// Just became hidden — reset animations without destroying layout
 					const section = root.closest<HTMLElement>('.nextora-box-icon');
-					const cards = Array.from(root.querySelectorAll<HTMLElement>('.swiper-slide'));
+					const cards = Array.from(
+						root.querySelectorAll<HTMLElement>(
+							'.nextora-box-icon__card, .nextora-box-icon__ways-row, .swiper-slide',
+						),
+					);
 					const headerEl = section?.querySelector<HTMLElement>('.nextora-box-icon__header');
 
 					// Kill all active GSAP tweens
@@ -745,24 +757,29 @@ function watchDeferredElements(): void {
 					// Clear inline styles from cards
 					if (cards.length > 0) clearRevealStyles(cards);
 					if (headerEl) clearRevealStyles([headerEl]);
-					clearRevealStyles([root]);
 
-					destroySwiper(root);
-					setGridMode(root, false);
-					root.classList.remove('nextora-box-icon__carousel-root--grid-active');
+					// Rewind Swiper without destroying instance
+					const swiper = swiperByRoot.get(root);
+					if (swiper) {
+						swiper.slideTo(0, 0);
+					}
+
 					if (section) {
 						section.removeAttribute(SCROLL_INIT_ATTR);
 						section.removeAttribute('data-reveal-gen');
-						section.classList.remove('nextora-box-icon--grid-active');
 						section.classList.remove('nextora-box-icon--reveal-ready');
 						section.classList.add('nextora-box-icon--reveal-pending');
 					}
 				} else if (!hidden && wasHidden) {
 					// Just became visible — force clean re-init
 					const section = root.closest<HTMLElement>('.nextora-box-icon');
-					// Remove stale scroll-init marker so initScrollReveal never skips
 					if (section) section.removeAttribute(SCROLL_INIT_ATTR);
-					syncCarouselRoot(root);
+					const swiper = swiperByRoot.get(root);
+					if (swiper) {
+						swiper.update();
+					} else {
+						syncCarouselRoot(root);
+					}
 					if (section) {
 						initScrollReveal(section);
 					}
@@ -785,7 +802,11 @@ function watchDeferredElements(): void {
 				const wasHidden = visibilityState.get(section);
 
 				if (hidden && !wasHidden) {
-					const cards = Array.from(section.querySelectorAll<HTMLElement>('.swiper-slide'));
+					const cards = Array.from(
+						section.querySelectorAll<HTMLElement>(
+							'.nextora-box-icon__card, .nextora-box-icon__ways-row, .swiper-slide',
+						),
+					);
 					const headerEl = section.querySelector<HTMLElement>('.nextora-box-icon__header');
 					const allTargets: (HTMLElement | HTMLElement[])[] = [];
 					if (cards.length) allTargets.push(cards as unknown as HTMLElement[]);

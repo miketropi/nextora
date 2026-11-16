@@ -1,5 +1,5 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { useMemo, useCallback } from '@wordpress/element';
+import { useMemo, useCallback, useEffect } from '@wordpress/element';
 import {
   useBlockProps,
   InspectorControls,
@@ -22,7 +22,7 @@ import {
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 
-import type { ScrollingImageStripAttributes } from './types';
+import type { ScrollingImageStripAttributes, ScrollingImageItem } from './types';
 import {
   type PaletteColor,
   normalizeColorForStorage,
@@ -113,6 +113,7 @@ const ALLOWED = ['image'];
 export default function ScrollingImageStripEdit({ attributes, setAttributes }: EditProps) {
   const {
     imageIds,
+    images,
     imageHeight,
     imageHeightUnit,
     imageAspectRatio,
@@ -152,47 +153,129 @@ export default function ScrollingImageStripEdit({ attributes, setAttributes }: E
     [currentPalette],
   );
 
+  const effectiveItems: ScrollingImageItem[] = useMemo(() => {
+    if (Array.isArray(images) && images.length > 0) {
+      return images;
+    }
+    if (Array.isArray(imageIds) && imageIds.length > 0) {
+      return imageIds.map((id) => ({ id, url: '', alt: '' }));
+    }
+    return [];
+  }, [images, imageIds]);
+
+  const idsToQuery = useMemo(() => {
+    return effectiveItems
+      .map((it) => it.id)
+      .filter((id): id is number => typeof id === 'number' && id > 0);
+  }, [effectiveItems]);
+
   const media = useSelect(
     (select) => {
-      if (!imageIds || imageIds.length === 0) return [];
+      if (!idsToQuery || idsToQuery.length === 0) return [];
       try {
         const { getMedia } = select('core') as { getMedia?: (id: number) => Attachment | null };
         if (typeof getMedia !== 'function') return [];
-        return imageIds
+        return idsToQuery
           .map((id) => getMedia(id))
           .filter(Boolean) as Attachment[];
       } catch {
         return [];
       }
     },
-    [imageIds],
+    [idsToQuery],
   );
 
-  const idList: number[] = imageIds || [];
+  // Auto-sync images array for blocks that only had imageIds, or backfill URLs
+  useEffect(() => {
+    if (!media || media.length === 0) return;
 
-  const hasImages = idList.length > 0;
+    if ((!images || images.length === 0) && imageIds && imageIds.length > 0) {
+      const generated: ScrollingImageItem[] = imageIds.map((id) => {
+        const m = media.find((x) => x && x.id === id);
+        return {
+          id,
+          url: m?.source_url || m?.url || '',
+          alt: m?.alt_text || '',
+        };
+      });
+      if (generated.some((g) => g.url)) {
+        setAttributes({ images: generated });
+      }
+      return;
+    }
 
-  const onSelectImages = (mediaList: { id: number }[]): void => {
-    const ids = mediaList.map((m) => m.id).filter((id) => typeof id === 'number' && id > 0);
-    setAttributes({ imageIds: ids });
+    if (images && images.length > 0) {
+      let needsUpdate = false;
+      const updated = images.map((item) => {
+        if (item.id && !item.url) {
+          const m = media.find((x) => x && x.id === item.id);
+          if (m && (m.source_url || m.url)) {
+            needsUpdate = true;
+            return {
+              ...item,
+              url: m.source_url || m.url || '',
+              alt: item.alt || m.alt_text || '',
+            };
+          }
+        }
+        return item;
+      });
+      if (needsUpdate) {
+        setAttributes({ images: updated });
+      }
+    }
+  }, [media, images, imageIds, setAttributes]);
+
+  const hasImages = effectiveItems.length > 0;
+
+  const onSelectImages = (mediaList: any): void => {
+    const list = Array.isArray(mediaList) ? mediaList : [mediaList];
+    const ids: number[] = [];
+    const items: ScrollingImageItem[] = [];
+
+    for (const m of list) {
+      if (!m) continue;
+      const id = typeof m.id === 'number' && m.id > 0 ? m.id : undefined;
+      const url =
+        m.url ||
+        m.source_url ||
+        (m.sizes && (m.sizes.large?.url || m.sizes.full?.url)) ||
+        '';
+      const alt = m.alt || m.alt_text || '';
+      if (id) {
+        ids.push(id);
+      }
+      if (url || id) {
+        items.push({ id, url, alt });
+      }
+    }
+
+    setAttributes({ imageIds: ids, images: items });
   };
 
   const move = useCallback(
     (index: number, dir: -1 | 1) => {
-      const next = [...idList];
+      const next = [...effectiveItems];
       const j = index + dir;
       if (j < 0 || j >= next.length) return;
       [next[index], next[j]] = [next[j], next[index]];
-      setAttributes({ imageIds: next });
+      const nextIds = next
+        .map((item) => item.id)
+        .filter((id): id is number => typeof id === 'number' && id > 0);
+      setAttributes({ images: next, imageIds: nextIds });
     },
-    [idList, setAttributes],
+    [effectiveItems, setAttributes],
   );
 
   const removeAt = useCallback(
     (index: number) => {
-      setAttributes({ imageIds: idList.filter((_, i) => i !== index) });
+      const next = effectiveItems.filter((_, i) => i !== index);
+      const nextIds = next
+        .map((item) => item.id)
+        .filter((id): id is number => typeof id === 'number' && id > 0);
+      setAttributes({ images: next, imageIds: nextIds });
     },
-    [idList, setAttributes],
+    [effectiveItems, setAttributes],
   );
 
   return (
@@ -380,7 +463,7 @@ export default function ScrollingImageStripEdit({ attributes, setAttributes }: E
         <MediaUpload
           onSelect={onSelectImages}
           allowedTypes={ALLOWED}
-          value={idList}
+          value={idsToQuery}
           multiple
           render={({ open }) => (
             <>
@@ -417,8 +500,8 @@ export default function ScrollingImageStripEdit({ attributes, setAttributes }: E
                     <div className="nextora-sis-editor__head">
                       <p className="nextora-sis-editor__head-text" aria-live="polite">
                         {sprintf(
-                          _n('%d image', '%d images', idList.length, 'nextora'),
-                          idList.length,
+                          _n('%d image', '%d images', effectiveItems.length, 'nextora'),
+                          effectiveItems.length,
                         )}
                       </p>
                       <Button variant="secondary" onClick={open} icon={imageIcon as any}>
@@ -427,18 +510,19 @@ export default function ScrollingImageStripEdit({ attributes, setAttributes }: E
                     </div>
 
                     <ul className="nextora-sis-editor__thumbs" aria-label={__('Images in order', 'nextora')}>
-                      {idList.map((id, i) => {
-                        const m = media.find((x) => x && x.id === id);
-                        const src = m?.source_url;
+                      {effectiveItems.map((item, i) => {
+                        const m = item.id ? media.find((x) => x && x.id === item.id) : null;
+                        const src = m?.source_url || m?.url || item.url;
+                        const alt = m?.alt_text || item.alt || '';
 
                         return (
-                          <li key={id} className="nextora-sis-editor__thumb">
+                          <li key={item.id ? `id-${item.id}-${i}` : `item-${i}`} className="nextora-sis-editor__thumb">
                             <div className="nextora-sis-editor__thumb-preview">
                               {src ? (
                                 <img
                                   className="nextora-sis-editor__img"
                                   src={src}
-                                  alt={m?.alt_text || ''}
+                                  alt={alt}
                                 />
                               ) : (
                                 <div className="nextora-sis-editor__thumb-skeleton" aria-hidden>
@@ -465,7 +549,7 @@ export default function ScrollingImageStripEdit({ attributes, setAttributes }: E
                                 isSmall
                                 label={__('Move later', 'nextora')}
                                 onClick={() => move(i, 1)}
-                                disabled={i === idList.length - 1}
+                                disabled={i === effectiveItems.length - 1}
                               />
                               <Button
                                 className="nextora-sis-editor__reorder"

@@ -38,7 +38,12 @@ const stack: ModalStackEntry[] = [];
 let scrollLocked = false;
 
 function getScrollbarWidth(): number {
-	return Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+	const doc = document.documentElement;
+	const gutter = window.getComputedStyle(doc).scrollbarGutter;
+	if (gutter && gutter.includes("stable")) {
+		return 0;
+	}
+	return Math.max(0, window.innerWidth - doc.clientWidth);
 }
 
 function lockScroll(lock: boolean): void {

@@ -55,14 +55,18 @@ function nextora_event_localize_editor_script(): void {
 		),
 	);
 
-	// Color utils also read style-variation palette from nextoraIconBlock.
+	// Ensure icon library URL and palette entries are available to IconPicker.
+	$icons_url = ( defined( 'NEXTORA_URI' ) ? NEXTORA_URI : get_template_directory_uri() ) . '/assets/data/lucide-icons.json';
+	$icon_bootstrap = array(
+		'iconsUrl' => $icons_url,
+	);
 	if ( array() !== $palette_entries ) {
-		wp_add_inline_script(
-			$handle,
-			'window.nextoraIconBlock = window.nextoraIconBlock || {}; window.nextoraIconBlock.paletteEntries = '
-			. wp_json_encode( $palette_entries ) . ';',
-			'before',
-		);
+		$icon_bootstrap['paletteEntries'] = $palette_entries;
 	}
+	wp_add_inline_script(
+		$handle,
+		'window.nextoraIconBlock = Object.assign(window.nextoraIconBlock || {}, ' . wp_json_encode( $icon_bootstrap ) . ');',
+		'before',
+	);
 }
 add_action( 'enqueue_block_editor_assets', 'nextora_event_localize_editor_script' );

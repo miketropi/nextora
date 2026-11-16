@@ -7,7 +7,7 @@ import { initArticleShare } from "./lib/article-share";
 import { initCommentTiptap } from "./lib/comment-tiptap";
 import { attachScrollAnimationGlobals, initScrollAnimations } from "./lib/scroll-animations";
 import { initHeaderSticky } from "./header-sticky";
-import { initHeaderNavigation } from "./header-nav";
+import { initHeaderNavigation, initHeaderNavAutoFit } from "./header-nav";
 import { initHeaderFollowUs } from "./header-follow-us";
 import { bindHeaderMiniCartAfterAjaxAdd, mountHeaderMiniCartPortalToBody } from "./mini-cart-portal";
 import { attachModalGlobals, initModals } from "./lib/modal";
@@ -20,6 +20,7 @@ function bootNextora(): void {
 
 	initHeaderSticky();
 	initHeaderNavigation();
+	initHeaderNavAutoFit();
 	initHeaderFollowUs();
 	mountHeaderMiniCartPortalToBody();
 	mountSpotlightSearchPortalToBody();

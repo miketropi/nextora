@@ -3,14 +3,22 @@
   "apiVersion": 3,
   "name": "nextora/plugin-notice",
   "title": "Plugin Notice",
-  "category": "design",
+  "category": "nextora",
   "description": "Dotted-border notice with a message and links to supported plugins.",
-  "keywords": ["plugin", "notice", "announcement", "nextora"],
+  "keywords": [
+    "plugin",
+    "notice",
+    "announcement",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "admin-plugins",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": true,

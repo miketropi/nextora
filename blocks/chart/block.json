@@ -3,13 +3,22 @@
   "apiVersion": 3,
   "name": "nextora/chart",
   "title": "Chart",
-  "category": "design",
+  "category": "nextora",
   "icon": "chart-bar",
   "description": "Data visualisation with line, bar, or doughnut charts. Displays values directly on chart elements.",
-  "keywords": ["chart", "graph", "data", "statistics", "diagram"],
+  "keywords": [
+    "chart",
+    "graph",
+    "data",
+    "statistics",
+    "diagram"
+  ],
   "textdomain": "nextora",
   "supports": {
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": true,
@@ -25,15 +34,35 @@
     "chartType": {
       "type": "string",
       "default": "line",
-      "enum": ["line", "bar", "doughnut"]
+      "enum": [
+        "line",
+        "bar",
+        "doughnut"
+      ]
     },
     "dataPoints": {
       "type": "array",
       "default": [
-        { "id": "default-1", "label": "Item 1", "value": 50 },
-        { "id": "default-2", "label": "Item 2", "value": 80 },
-        { "id": "default-3", "label": "Item 3", "value": 65 },
-        { "id": "default-4", "label": "Item 4", "value": 90 }
+        {
+          "id": "default-1",
+          "label": "Item 1",
+          "value": 50
+        },
+        {
+          "id": "default-2",
+          "label": "Item 2",
+          "value": 80
+        },
+        {
+          "id": "default-3",
+          "label": "Item 3",
+          "value": 65
+        },
+        {
+          "id": "default-4",
+          "label": "Item 4",
+          "value": 90
+        }
       ]
     },
     "showDataLabels": {
@@ -47,7 +76,12 @@
     "legendPosition": {
       "type": "string",
       "default": "top",
-      "enum": ["top", "bottom", "left", "right"]
+      "enum": [
+        "top",
+        "bottom",
+        "left",
+        "right"
+      ]
     },
     "showTooltip": {
       "type": "boolean",

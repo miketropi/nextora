@@ -3,14 +3,24 @@
   "apiVersion": 3,
   "name": "nextora/arc-gallery-section",
   "title": "Arc Gallery Section",
-  "category": "media",
+  "category": "nextora",
   "description": "Images along a curved arc with eyebrow, heading, and CTA buttons.",
-  "keywords": ["arc", "gallery", "images", "cta", "section", "nextora"],
+  "keywords": [
+    "arc",
+    "gallery",
+    "images",
+    "cta",
+    "section",
+    "nextora"
+  ],
   "textdomain": "nextora",
   "icon": "images-alt2",
   "supports": {
     "html": false,
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "anchor": true,
     "color": {
       "background": true,
@@ -31,39 +41,138 @@
       "type": "array",
       "default": []
     },
-    "imageWidth": { "type": "number", "default": 311 },
-    "imageHeight": { "type": "number", "default": 416 },
-    "imageBorderRadius": { "type": "number", "default": 6 },
-    "imageBorderWidth": { "type": "number", "default": 3 },
-    "imageBorderColor": { "type": "string", "default": "" },
-    "arcRadius": { "type": "number", "default": 1500 },
-    "arcSpread": { "type": "number", "default": 48 },
-    "arcDirection": { "type": "string", "default": "down" },
-    "eyebrowText": { "type": "string", "default": "Protecting People & Planet" },
-    "headingText": { "type": "string", "default": "Join Save the World in Creating a Future That's Worth Inheriting" },
-    "descriptionText": { "type": "string", "default": "Save the World restores forests, protects clean water, and helps communities face climate change together." },
-    "headingLevel": { "type": "number", "default": 2 },
-    "textAlign": { "type": "string", "default": "center" },
-    "contentMaxWidth": { "type": "string", "default": "700px" },
-    "contentOffsetY": { "type": "number", "default": 0 },
-    "showPrimaryButton": { "type": "boolean", "default": true },
-    "primaryButtonText": { "type": "string", "default": "Donate Now" },
-    "primaryButtonUrl": { "type": "string", "default": "" },
-    "primaryButtonTarget": { "type": "boolean", "default": false },
-    "primaryButtonStyle": { "type": "string", "default": "solid" },
-    "showSecondaryButton": { "type": "boolean", "default": true },
-    "secondaryButtonText": { "type": "string", "default": "Learn More" },
-    "secondaryButtonUrl": { "type": "string", "default": "" },
-    "secondaryButtonTarget": { "type": "boolean", "default": false },
-    "backgroundColor": { "type": "string", "default": "" },
-    "textColor": { "type": "string", "default": "" },
-    "eyebrowColor": { "type": "string", "default": "" },
-    "descriptionColor": { "type": "string", "default": "" },
-    "primaryButtonBg": { "type": "string", "default": "" },
-    "primaryButtonColor": { "type": "string", "default": "" },
-    "secondaryButtonColor": { "type": "string", "default": "" },
-    "enableScrollAnimation": { "type": "boolean", "default": true },
-    "enableGalleryScrollAnimation": { "type": "boolean", "default": true }
+    "imageWidth": {
+      "type": "number",
+      "default": 311
+    },
+    "imageHeight": {
+      "type": "number",
+      "default": 416
+    },
+    "imageBorderRadius": {
+      "type": "number",
+      "default": 6
+    },
+    "imageBorderWidth": {
+      "type": "number",
+      "default": 3
+    },
+    "imageBorderColor": {
+      "type": "string",
+      "default": ""
+    },
+    "arcRadius": {
+      "type": "number",
+      "default": 1500
+    },
+    "arcSpread": {
+      "type": "number",
+      "default": 48
+    },
+    "arcDirection": {
+      "type": "string",
+      "default": "down"
+    },
+    "eyebrowText": {
+      "type": "string",
+      "default": "Protecting People & Planet"
+    },
+    "headingText": {
+      "type": "string",
+      "default": "Join Save the World in Creating a Future That's Worth Inheriting"
+    },
+    "descriptionText": {
+      "type": "string",
+      "default": "Save the World restores forests, protects clean water, and helps communities face climate change together."
+    },
+    "headingLevel": {
+      "type": "number",
+      "default": 2
+    },
+    "textAlign": {
+      "type": "string",
+      "default": "center"
+    },
+    "contentMaxWidth": {
+      "type": "string",
+      "default": "700px"
+    },
+    "contentOffsetY": {
+      "type": "number",
+      "default": 0
+    },
+    "showPrimaryButton": {
+      "type": "boolean",
+      "default": true
+    },
+    "primaryButtonText": {
+      "type": "string",
+      "default": "Donate Now"
+    },
+    "primaryButtonUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "primaryButtonTarget": {
+      "type": "boolean",
+      "default": false
+    },
+    "primaryButtonStyle": {
+      "type": "string",
+      "default": "solid"
+    },
+    "showSecondaryButton": {
+      "type": "boolean",
+      "default": true
+    },
+    "secondaryButtonText": {
+      "type": "string",
+      "default": "Learn More"
+    },
+    "secondaryButtonUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "secondaryButtonTarget": {
+      "type": "boolean",
+      "default": false
+    },
+    "backgroundColor": {
+      "type": "string",
+      "default": ""
+    },
+    "textColor": {
+      "type": "string",
+      "default": ""
+    },
+    "eyebrowColor": {
+      "type": "string",
+      "default": ""
+    },
+    "descriptionColor": {
+      "type": "string",
+      "default": ""
+    },
+    "primaryButtonBg": {
+      "type": "string",
+      "default": ""
+    },
+    "primaryButtonColor": {
+      "type": "string",
+      "default": ""
+    },
+    "secondaryButtonColor": {
+      "type": "string",
+      "default": ""
+    },
+    "enableScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableGalleryScrollAnimation": {
+      "type": "boolean",
+      "default": true
+    }
   },
   "editorScript": "file:./index.js",
   "style": "file:./style.css",

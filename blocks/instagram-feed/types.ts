@@ -47,6 +47,7 @@ export interface InstagramFeedAttributes {
 	paginationColor: string;
 	paginationActiveColor: string;
 	lightboxSidebarBackground: string;
+	edgeFadeColor?: string;
 	enableScrollAnimation: boolean;
 }
 

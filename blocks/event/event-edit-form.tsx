@@ -1,6 +1,9 @@
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 import { MediaUpload, MediaUploadCheck, URLInput } from '@wordpress/block-editor';
 import { BaseControl, Button, CheckboxControl, TextareaControl, TextControl } from '@wordpress/components';
+import { IconPicker } from '../advanced-icon/icon-picker';
+import { EventButtonIcon } from './button-icon';
 import type { EventItem } from './types';
 import {
 	eventDateInputValue,
@@ -20,11 +23,21 @@ export interface EventEditFormProps {
 	event: EventItem;
 	imageUrl?: string;
 	showEditorialFields?: boolean;
+	showDescription?: boolean;
+	compact?: boolean;
 	onPatch: (patch: Partial<EventItem>) => void;
 }
 
-export default function EventEditForm({ event, imageUrl, showEditorialFields = false, onPatch }: EventEditFormProps) {
-	const dateInputValue = eventDateInputValue(event.day, event.month);
+export default function EventEditForm({
+	event,
+	imageUrl,
+	showEditorialFields = false,
+	showDescription = false,
+	compact = false,
+	onPatch,
+}: EventEditFormProps) {
+	const [iconPickerOpen, setIconPickerOpen] = useState(false);
+	const dateInputValue = eventDateInputValue(event.day, event.month, event.year);
 	const timeInputValue = eventTimeInputValue(event.time);
 
 	return (
@@ -102,7 +115,7 @@ export default function EventEditForm({ event, imageUrl, showEditorialFields = f
 					value={event.title}
 					onChange={(title) => onPatch({ title: title ?? '' })}
 				/>
-				{showEditorialFields ? (
+				{showEditorialFields || showDescription ? (
 					<TextareaControl
 						label={__('Description', 'nextora')}
 						value={event.description}
@@ -117,7 +130,7 @@ export default function EventEditForm({ event, imageUrl, showEditorialFields = f
 						id={`nextora-event-date-${event.id}`}
 						label={__('Date', 'nextora')}
 						help={__(
-							'Pick a date — day and month on the card update automatically.',
+							'Pick a date — day, month, and year update automatically.',
 							'nextora',
 						)}
 					>
@@ -130,6 +143,8 @@ export default function EventEditForm({ event, imageUrl, showEditorialFields = f
 								const parsed = dayMonthFromDateInput(e.target.value);
 								if (parsed) {
 									onPatch(parsed);
+								} else if (!e.target.value && compact) {
+									onPatch({ day: '', month: '', year: '' });
 								}
 							}}
 						/>
@@ -170,11 +185,13 @@ export default function EventEditForm({ event, imageUrl, showEditorialFields = f
 					/>
 				</div>
 
+				{compact && <TextControl label={__('Year (optional)', 'nextora')} value={event.year || ''} onChange={(year) => onPatch({ year: year || '' })} />}
 				<TextControl
 					label={__('Location', 'nextora')}
 					value={event.location}
 					onChange={(location) => onPatch({ location: location ?? '' })}
 				/>
+				{!compact && <>
 				<TextControl
 					label={__('Price / ticket', 'nextora')}
 					value={event.price}
@@ -187,6 +204,66 @@ export default function EventEditForm({ event, imageUrl, showEditorialFields = f
 					help={__('Leave empty to use the block default register label.', 'nextora')}
 				/>
 
+				<div className="nextora-event__event-form-icon-row">
+					<BaseControl
+						label={__('Button icon', 'nextora')}
+						help={__(
+							'Choose an icon before the button label (e.g. calendar-days for Register, ticket for Get ticket).',
+							'nextora',
+						)}
+					>
+						<div
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								gap: '10px',
+								marginTop: '6px',
+								flexWrap: 'wrap',
+							}}
+						>
+							<Button variant="secondary" onClick={() => setIconPickerOpen(true)}>
+								{__('Choose icon', 'nextora')}
+							</Button>
+							<div
+								style={{
+									display: 'inline-flex',
+									alignItems: 'center',
+									gap: '8px',
+									padding: '4px 10px',
+									background: '#f0f0f1',
+									borderRadius: '4px',
+								}}
+							>
+								<EventButtonIcon iconName={event.buttonIcon || 'calendar-days'} size={16} />
+								<code style={{ fontSize: '13px', background: 'transparent' }}>
+									{event.buttonIcon || 'calendar-days'}
+								</code>
+							</div>
+							{event.buttonIcon && event.buttonIcon !== 'calendar-days' ? (
+								<Button
+									variant="link"
+									isDestructive
+									onClick={() => onPatch({ buttonIcon: 'calendar-days' })}
+								>
+									{__('Reset', 'nextora')}
+								</Button>
+							) : null}
+						</div>
+					</BaseControl>
+				</div>
+
+				{iconPickerOpen ? (
+					<IconPicker
+						currentIcon={event.buttonIcon || 'calendar-days'}
+						onSelect={(iconName) => {
+							onPatch({ buttonIcon: iconName });
+							setIconPickerOpen(false);
+						}}
+						onClose={() => setIconPickerOpen(false)}
+					/>
+				) : null}
+
+				</>}
 				<div className="nextora-event__event-form-link">
 					<p className="nextora-event__event-form-label">{__('Register link URL', 'nextora')}</p>
 					<URLInput

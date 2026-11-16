@@ -36,7 +36,6 @@
   gap: 1rem;
   padding: 1.25rem 0;
   text-decoration: none;
-  color: inherit;
   cursor: default;
   transition: opacity 0.3s ease;
   counter-increment: thli-item;
@@ -122,10 +121,8 @@
 
 .nextora-text-list-hover-image__item-title {
   margin: 0;
-  font-size: var(--nextora-thli-title-size, var(--wp--preset--font-size--medium));
-  font-weight: var(--nextora-thli-title-weight, 500);
+  font-size: var(--nextora-thli-title-size, inherit);
   color: var(--nextora-thli-title-color, var(--wp--preset--color--contrast));
-  line-height: 1.3;
   letter-spacing: -0.01em;
   text-decoration: none;
 }
@@ -172,7 +169,7 @@
 
 .nextora-text-list-hover-image__item-description {
   margin: 0.25rem 0 0;
-  font-size: var(--nextora-thli-description-size, var(--wp--preset--font-size--small));
+  font-size: var(--nextora-thli-description-size, inherit);
   color: var(--nextora-thli-description-color, var(--wp--preset--color--paragraph));
   line-height: 1.6;
   transition: color 0.3s ease;
@@ -330,7 +327,7 @@
 
   .nextora-text-list-hover-image__item-number::before {
     width: 1.75rem;
-    font-size: 0.75rem;
+    font-size: var(--wp--preset--font-size--small, 0.75rem);
   }
 }
 

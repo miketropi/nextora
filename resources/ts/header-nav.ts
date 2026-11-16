@@ -7,8 +7,8 @@
 import gsap from "gsap";
 import { bindHeaderFollowUsIn, clearFollowUsBindingState } from "./header-follow-us";
 
-function getDesktopMediaQuery(): string {
-	const toggle = document.querySelector<HTMLButtonElement>("[data-nextora-nav-toggle]");
+function getDesktopMediaQuery(btn?: HTMLButtonElement | null): string {
+	const toggle = btn ?? document.querySelector<HTMLButtonElement>("[data-nextora-nav-toggle]");
 	if (toggle?.dataset.nextoraMobileBreakpoint) {
 		const bp = parseInt(toggle.dataset.nextoraMobileBreakpoint, 10);
 		if (bp >= 320) {
@@ -18,7 +18,6 @@ function getDesktopMediaQuery(): string {
 	return "(min-width: 768px)";
 }
 
-const DESKTOP_MQ = getDesktopMediaQuery();
 /** Must match `--nextora-offcanvas-dur` in `resources/css/app.css` (seconds). */
 const OFFCANVAS_DUR_S = 0.4;
 /** Fallback if GSAP path fails; slightly longer than `OFFCANVAS_DUR_S` for paint/rounding. */
@@ -113,7 +112,7 @@ function ensurePortalCloseButton(panel: HTMLElement, closeLabel: string): HTMLBu
 	icon.className = "nextora-primary-nav-portal__close-icon";
 	icon.setAttribute("aria-hidden", "true");
 	icon.innerHTML =
-		'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+		'<svg class="lucide lucide-x" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
 
 	btn.append(icon);
 
@@ -161,6 +160,7 @@ function getOrCreatePortal(btn: HTMLButtonElement): PortalElements | null {
 		panel.setAttribute("role", "dialog");
 		panel.setAttribute("aria-modal", "true");
 		panel.setAttribute("aria-labelledby", titleId);
+		panel.tabIndex = -1;
 
 		const title = document.createElement("h2");
 		title.id = titleId;
@@ -190,6 +190,7 @@ function getOrCreatePortal(btn: HTMLButtonElement): PortalElements | null {
 }
 
 const PORTAL_INIT_ATTRS = [
+	"data-nextora-counters-count-init",
 	"data-nextora-testimonials-swiper-inited",
 	"data-nextora-testimonials-swiper-pending",
 	"data-nextora-testimonial-swiper-inited",
@@ -338,6 +339,7 @@ function setupPortalMegaGuards(): void {
 }
 
 function dispatchPortalBlockReinit(): void {
+	window.dispatchEvent(new CustomEvent("nextora-counters-reinit"));
 	window.dispatchEvent(new CustomEvent("nextora-testimonials-reinit"));
 	window.dispatchEvent(new CustomEvent("nextora-testimonial-carousel-reinit"));
 	window.dispatchEvent(new CustomEvent("nextora-box-image-reinit"));
@@ -353,11 +355,13 @@ function dispatchPortalBlockReinit(): void {
 
 	window.setTimeout(() => {
 		window.nextoraForceScrollAnimations?.();
+		window.dispatchEvent(new CustomEvent("nextora-counters-reinit"));
 		revealPortalElements();
 	}, 150);
 
 	window.setTimeout(() => {
 		window.nextoraForceScrollAnimations?.();
+		window.dispatchEvent(new CustomEvent("nextora-counters-reinit"));
 		revealPortalElements();
 	}, 400);
 }
@@ -372,6 +376,7 @@ function revealPortalElements(): void {
 		".animation-fade-list-grid",
 		".animation-image-clip-reveal",
 		".animation-image-border-reveal",
+		".animation-svg-draw",
 		".nextora-scroll-animation--pending",
 		".nextora-scroll-animation--ready",
 	];
@@ -438,10 +443,44 @@ function revealPortalElements(): void {
 	).forEach((el) => {
 		el.classList.add("is-visible");
 	});
+
+	document.querySelectorAll<HTMLElement>(
+		".nextora-primary-nav-portal__mount .wp-block-nextora-counters[data-nextora-counters-count-up='1']"
+	).forEach((wrapper) => {
+		const runner = (window as unknown as { nextoraRunCounter?: (el: HTMLElement) => void }).nextoraRunCounter;
+		if (typeof runner === "function") {
+			runner(wrapper);
+		} else {
+			const duration = parseInt(wrapper.dataset.nextoraCountersDuration ?? "2000", 10) || 2000;
+			wrapper.querySelectorAll<HTMLElement>(".nextora-counters__number[data-nextora-counters-value]").forEach((numEl) => {
+				const target = Math.abs(parseFloat(numEl.dataset.nextoraCountersValue ?? "") || 0);
+				const prefix = numEl.dataset.nextoraCountersPrefix ?? "";
+				const suffix = numEl.dataset.nextoraCountersSuffix ?? "";
+				const start = performance.now();
+				const tick = (now: number): void => {
+					const progress = Math.min((now - start) / duration, 1);
+					const current = (1 - Math.pow(1 - progress, 3)) * target;
+					const rounded = Number.isInteger(target) ? Math.round(current) : current;
+					numEl.textContent = prefix + rounded.toLocaleString("en-US", { maximumFractionDigits: Number.isInteger(target) ? 0 : 1 }) + suffix;
+					if (progress < 1) {
+						requestAnimationFrame(tick);
+					}
+				};
+				requestAnimationFrame(tick);
+			});
+			wrapper.setAttribute("data-nextora-counters-count-init", "1");
+			wrapper.classList.add("nextora-counters--ready");
+		}
+	});
 }
 
 function focusFirstNavLink(panel: HTMLElement): void {
-	panel.querySelector<HTMLElement>("a[href]")?.focus();
+	// Touch / mobile devices should not auto-focus links inside drawer (prevents blue outline / active highlight on open)
+	if (typeof window !== "undefined" && window.matchMedia("(hover: none), (pointer: coarse)").matches) {
+		panel.focus({ preventScroll: true });
+		return;
+	}
+	panel.querySelector<HTMLElement>("a[href]")?.focus({ preventScroll: true });
 }
 
 function bindPortalDismissOnce(
@@ -477,8 +516,6 @@ function bindPortalDismissOnce(
 }
 
 export function initHeaderNavigation(): void {
-	const mq = window.matchMedia(DESKTOP_MQ);
-
 	document.querySelectorAll<HTMLButtonElement>("[data-nextora-nav-toggle]").forEach((btn) => {
 		const sourceSel = btn.dataset.nextoraNavCloneSource?.trim();
 		if (!sourceSel) {
@@ -489,6 +526,8 @@ export function initHeaderNavigation(): void {
 		if (!sourcePanel?.hasAttribute("data-nextora-nav-source-panel")) {
 			return;
 		}
+
+		const mq = window.matchMedia(getDesktopMediaQuery(btn));
 
 		const labels = readToggleLabels(btn);
 
@@ -704,5 +743,220 @@ function bindPortalSubmenuAccordions(): void {
 
 		el.setAttribute("aria-expanded", next ? "true" : "false");
 		li.classList.toggle("nextora-submenu--open", next);
+		if (next) {
+			[50, 150, 300].forEach((delay) => {
+				window.setTimeout(() => {
+					window.dispatchEvent(new CustomEvent("nextora-counters-reinit"));
+					revealPortalElements();
+				}, delay);
+			});
+		}
 	});
+
+	document.addEventListener(
+		"click",
+		(e: MouseEvent): void => {
+			const raw = e.target;
+			const el = raw instanceof Element ? raw.closest(".beplus-vmn-toggle, .beplus-vmn-tab-container__tab") : null;
+			if (el) {
+				[50, 150, 300, 500].forEach((delay) => {
+					window.setTimeout(() => {
+						window.dispatchEvent(new CustomEvent("nextora-counters-reinit"));
+						revealPortalElements();
+					}, delay);
+				});
+			}
+		},
+		{ passive: true },
+	);
+}
+
+/**
+ * Auto-fit desktop navigation on 1 single line.
+ * Prioritizes keeping font size as large as possible:
+ * 1. Reduces gap first when space begins to tighten.
+ * 2. Only scales down font size when gap has reached minimum threshold.
+ */
+export function initHeaderNavAutoFit(): void {
+	const headers = document.querySelectorAll<HTMLElement>(".nextora-header-block");
+	if (!headers.length) {
+		return;
+	}
+
+	const MIN_FONT_SCALE = 0.75;
+	const MIN_GAP_PX = 6;
+	const MAX_RESPONSIVE_WIDTH = 1400;
+
+	function measureAndScale(header: HTMLElement): void {
+		const navSource = header.querySelector<HTMLElement>(".nextora-header-block__nav-source");
+		const menuUl = header.querySelector<HTMLUListElement>(".nextora-header-menu");
+		const toggle = header.querySelector<HTMLButtonElement>("[data-nextora-nav-toggle]");
+		const mobileBp = toggle?.dataset.nextoraMobileBreakpoint ? parseInt(toggle.dataset.nextoraMobileBreakpoint, 10) : 768;
+
+		if (!navSource || !menuUl || navSource.offsetWidth === 0) {
+			header.style.removeProperty("--nextora-header-nav-scale");
+			header.style.removeProperty("--nextora-header-nav-gap-scale");
+			return;
+		}
+
+		// When screen is wider than 1400px (Desktop Full) or smaller than mobileBreakpoint (drawer active):
+		const windowW = window.innerWidth;
+		if (windowW > MAX_RESPONSIVE_WIDTH || windowW < mobileBp) {
+			header.style.removeProperty("--nextora-header-nav-scale");
+			header.style.removeProperty("--nextora-header-nav-gap-scale");
+			return;
+		}
+
+		const items = Array.from(menuUl.children).filter((el): el is HTMLElement => el instanceof HTMLElement);
+		if (!items.length) {
+			header.style.removeProperty("--nextora-header-nav-scale");
+			header.style.removeProperty("--nextora-header-nav-gap-scale");
+			return;
+		}
+
+		const rawAvailableWidth = navSource.clientWidth;
+		if (rawAvailableWidth <= 0) {
+			return;
+		}
+
+		const currentFontScale = parseFloat(header.style.getPropertyValue("--nextora-header-nav-scale")) || 1;
+		const currentGapScale = parseFloat(header.style.getPropertyValue("--nextora-header-nav-gap-scale")) || 1;
+
+		// 1. Obtain stable natural unscaled width & baseline available room (cached to prevent layout feedback loop)
+		let naturalItemsWidth = parseFloat(header.dataset.nextoraNavNaturalWidth || "0");
+		let baseGap = parseFloat(header.dataset.nextoraNavBaseGap || "0");
+		let baseAvailableWidth = parseFloat(header.dataset.nextoraNavBaseAvailableWidth || "0");
+
+		if (currentFontScale === 1 || naturalItemsWidth <= 0 || baseAvailableWidth <= 0) {
+			let sum = 0;
+			for (const item of items) {
+				sum += item.getBoundingClientRect().width;
+			}
+			const csMenu = window.getComputedStyle(menuUl);
+			const computedGap = parseFloat(csMenu.columnGap || csMenu.gap) || 20;
+			baseGap = currentGapScale > 0 ? computedGap / currentGapScale : computedGap;
+
+			if (sum > 0) {
+				naturalItemsWidth = currentFontScale > 0 ? sum / currentFontScale : sum;
+				header.dataset.nextoraNavNaturalWidth = String(Math.round(naturalItemsWidth * 10) / 10);
+				header.dataset.nextoraNavBaseGap = String(Math.round(baseGap * 10) / 10);
+			}
+
+			// Capture baseline available width before CTA button or items scale
+			baseAvailableWidth = navSource.clientWidth;
+			if (baseAvailableWidth > 0) {
+				header.dataset.nextoraNavBaseAvailableWidth = String(Math.round(baseAvailableWidth * 10) / 10);
+			}
+		}
+
+		const availableWidth = baseAvailableWidth > 0 ? baseAvailableWidth : navSource.clientWidth;
+		if (availableWidth <= 0 || naturalItemsWidth <= 0) {
+			return;
+		}
+
+		const numGaps = Math.max(0, items.length - 1);
+		const fullNaturalWidth = naturalItemsWidth + numGaps * baseGap;
+
+		// 2. When ample space, keep 100% full size for both text and gap
+		if (fullNaturalWidth <= availableWidth) {
+			if (currentFontScale !== 1 || currentGapScale !== 1) {
+				header.style.removeProperty("--nextora-header-nav-scale");
+				header.style.removeProperty("--nextora-header-nav-gap-scale");
+			}
+			return;
+		}
+
+		// 3. Space is tightening: prioritize keeping font size big (1.0), reduce gap first!
+		const remainingForGaps = availableWidth - 8 - naturalItemsWidth;
+		if (numGaps > 0) {
+			const neededGap = remainingForGaps / numGaps;
+			if (neededGap >= MIN_GAP_PX) {
+				// Text stays 100% full size! Only gap is reduced.
+				const gapScale = Math.round(Math.max(0.25, neededGap / baseGap) * 100) / 100;
+				if (currentFontScale !== 1) {
+					header.style.setProperty("--nextora-header-nav-scale", "1");
+				}
+				if (Math.abs(gapScale - currentGapScale) >= 0.02) {
+					header.style.setProperty("--nextora-header-nav-gap-scale", String(gapScale));
+				}
+				return;
+			}
+		}
+
+		// 4. Gap has reached minimum threshold (6px), now scale down font size smoothly
+		const totalGapsAtMin = numGaps * MIN_GAP_PX;
+		const targetFontScale = Math.min(1, Math.max(MIN_FONT_SCALE, (availableWidth - 8 - totalGapsAtMin) / naturalItemsWidth));
+		const roundedFontScale = Math.round(targetFontScale * 100) / 100;
+		const minGapScale = Math.round(Math.max(0.2, MIN_GAP_PX / baseGap) * 100) / 100;
+
+		if (Math.abs(roundedFontScale - currentFontScale) >= 0.02) {
+			header.style.setProperty("--nextora-header-nav-scale", String(roundedFontScale));
+		}
+		if (Math.abs(minGapScale - currentGapScale) >= 0.02) {
+			header.style.setProperty("--nextora-header-nav-gap-scale", String(minGapScale));
+		}
+	}
+
+	function updateAll(): void {
+		headers.forEach((h) => measureAndScale(h));
+	}
+
+	let rafId: number | null = null;
+	function scheduleUpdate(): void {
+		if (rafId !== null) return;
+		rafId = requestAnimationFrame(() => {
+			rafId = null;
+			updateAll();
+		});
+	}
+
+	const lastHeaderWidths = new WeakMap<HTMLElement, number>();
+
+	if (typeof ResizeObserver !== "undefined") {
+		const ro = new ResizeObserver((entries) => {
+			let widthChanged = false;
+			for (const entry of entries) {
+				const el = entry.target as HTMLElement;
+				const currentW = Math.round(entry.contentRect.width);
+				const prevW = lastHeaderWidths.get(el);
+				if (prevW === undefined || Math.abs(currentW - prevW) >= 1) {
+					lastHeaderWidths.set(el, currentW);
+					delete el.dataset.nextoraNavBaseAvailableWidth;
+					widthChanged = true;
+				}
+			}
+			if (widthChanged) {
+				scheduleUpdate();
+			}
+		});
+		headers.forEach((h) => {
+			lastHeaderWidths.set(h, Math.round(h.getBoundingClientRect().width));
+			ro.observe(h);
+		});
+	}
+
+	window.addEventListener(
+		"resize",
+		() => {
+			headers.forEach((h) => {
+				delete h.dataset.nextoraNavBaseAvailableWidth;
+			});
+			scheduleUpdate();
+		},
+		{ passive: true },
+	);
+
+	if ("fonts" in document) {
+		document.fonts.ready.then(() => {
+			// Clear cache to re-measure with final loaded font metrics
+			headers.forEach((h) => {
+				delete h.dataset.nextoraNavNaturalWidth;
+				delete h.dataset.nextoraNavBaseGap;
+				delete h.dataset.nextoraNavBaseAvailableWidth;
+			});
+			updateAll();
+		});
+	}
+
+	updateAll();
 }

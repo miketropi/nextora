@@ -1,7 +1,7 @@
 export type BoxIconLayoutMode = 'slider' | 'grid';
 export type BoxIconIconSource = 'theme' | 'upload';
 export type BoxIconIconStyle = 'default' | 'stacked' | 'framed';
-export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4';
+export type BoxIconCardTemplate = 'default' | 'ways' | 'minimal' | 'highlights' | 'timeline' | 'template-4' | 'template-5' | 'template-6';
 export type BoxIconScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxIconItem {
@@ -60,10 +60,16 @@ export interface BoxIconAttributes {
 	showArrows: boolean;
 	grabCursor: boolean;
 	freeMode: boolean;
+	edgeFadeColor?: string;
 	cardBorderColor: string;
 	cardBackgroundColor: string;
 	cardHoverBackgroundColor: string;
+	titleFontSize?: string;
+	descriptionFontSize?: string;
+	statNumberFontSize?: string;
+	statNumberFontFamily?: string;
 	cardTitleColor: string;
+	titleHoverColor?: string;
 	cardDescriptionColor: string;
 	descriptionHoverColor: string;
 	linkColor: string;
@@ -74,6 +80,7 @@ export interface BoxIconAttributes {
 	paginationColor: string;
 	paginationActiveColor: string;
 	arrowColor: string;
+	arrowHoverColor?: string;
 	headingFontFamily: string;
 	enableScrollAnimation: boolean;
 	scrollAnimationStyle: BoxIconScrollAnimationStyle;
@@ -86,14 +93,4 @@ export interface BoxIconAttributes {
 	showTimelineLine: boolean;
 	showTimelineTime: boolean;
 	timelineAlign: 'left' | 'center' | 'right';
-	showEyebrow: boolean;
-	eyebrowText: string;
-	showSubtitle: boolean;
-	subtitleText: string;
-	showHeading: boolean;
-	headingText: string;
-	headingLevel: number;
-	showDescription: boolean;
-	descriptionText: string;
-	headerAlign: string;
 }

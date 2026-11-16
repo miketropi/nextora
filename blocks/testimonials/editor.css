@@ -13,7 +13,7 @@
 }
 
 .nextora-testimonials--editor .nextora-testimonials__content--section-preview {
-	background-color: var(--nextora-testimonials-content-bg, var(--wp--preset--color--base, #fff));
+	background-color: var(--nextora-testimonials-content-bg, var(--wp--preset--color--surface));
 	border: 1px dashed color-mix(in srgb, currentColor 20%, transparent);
 }
 
@@ -131,6 +131,21 @@
 
 .nextora-testimonials__font-size-control .components-font-size-picker__header {
 	display: none;
+}
+
+.nextora-testimonials__radius-control .components-border-radius-control__header legend.components-base-control__label,
+.nextora-testimonials__radius-control .components-border-radius-control__header .components-base-control__label {
+	font-size: 0 !important;
+}
+
+.nextora-testimonials__radius-control .components-border-radius-control__header legend.components-base-control__label::after,
+.nextora-testimonials__radius-control .components-border-radius-control__header .components-base-control__label::after {
+	content: 'Radius image';
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 16px;
+	text-transform: uppercase;
+	display: inline-block;
 }
 
 .nextora-testimonials__item-modal .components-modal__frame {
@@ -255,6 +270,10 @@
 }
 
 /* Template 01 editor styles */
+.nextora-testimonials--template-template-01.nextora-testimonials--editor {
+	background-color: var(--nextora-testimonials-content-bg, var(--wp--preset--color--surface));
+}
+
 .nextora-testimonials--template-template-01.nextora-testimonials--editor .nextora-testimonials__editor-section {
 	display: none;
 }

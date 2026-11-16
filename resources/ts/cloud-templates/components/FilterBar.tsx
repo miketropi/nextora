@@ -1,9 +1,10 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { CloudThemeItem } from '../types';
+import { CloudCategoryItem, CloudThemeItem } from '../types';
 import { PaletteIcon, RefreshIcon, SearchIcon } from './icons';
 
 interface FilterBarProps {
 	themes: CloudThemeItem[];
+	categories?: CloudCategoryItem[];
 	selectedTheme: string;
 	onThemeChange: (theme: string) => void;
 	isChildTheme: boolean;
@@ -18,7 +19,7 @@ interface FilterBarProps {
 	total: number;
 }
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
 	{ label: __('All Categories', 'nextora'), value: 'all' },
 	{ label: __('Landing', 'nextora'), value: 'landing' },
 	{ label: __('SaaS', 'nextora'), value: 'saas' },
@@ -30,6 +31,7 @@ const CATEGORIES = [
 
 export function FilterBar({
 	themes,
+	categories = [],
 	selectedTheme,
 	onThemeChange,
 	isChildTheme,
@@ -43,6 +45,16 @@ export function FilterBar({
 	loading,
 	total,
 }: FilterBarProps): JSX.Element {
+	const categoryList =
+		categories.length > 0
+			? [
+					{ label: __('All Categories', 'nextora'), value: 'all' },
+					...categories.map((c) => ({
+						label: c.name,
+						value: c.slug,
+					})),
+				]
+			: DEFAULT_CATEGORIES;
 	return (
 		<div className="nextora-cloud-controls">
 			{/* Theme Selector Tabs (Only active child theme + parent theme allowed) */}
@@ -78,7 +90,7 @@ export function FilterBar({
 			{/* Filter & Search Bar */}
 			<div className="nextora-addon-section-intro nextora-cloud-filter-row">
 				<div className="nextora-cloud-categories">
-					{CATEGORIES.map((cat) => (
+					{categoryList.map((cat) => (
 						<button
 							key={cat.value}
 							type="button"

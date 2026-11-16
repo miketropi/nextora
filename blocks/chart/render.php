@@ -12,9 +12,27 @@ function nextora_chart_resolve_color( ?string $color ): string {
 
     $color = trim( $color );
 
+    if (
+        'transparent' === $color ||
+        'rgba(0, 0, 0, 0)' === $color ||
+        'rgba(0,0,0,0)' === $color ||
+        preg_match( '/^#[0-9a-fA-F]{6}00$/i', $color ) ||
+        preg_match( '/^#[0-9a-fA-F]{3}0$/i', $color )
+    ) {
+        return 'transparent';
+    }
+
     // Already a hex colour
     if ( preg_match( '/^#[a-fA-F0-9]{3,8}$/', $color ) ) {
         return $color;
+    }
+
+    // Extract slug if wrapped in var:preset or var(--wp--preset--color--)
+    $slug = $color;
+    if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $color, $m ) ) {
+        $slug = strtolower( $m[1] );
+    } elseif ( preg_match( '/^var\(\s*--wp--preset--color--([a-z0-9_-]+)\s*\)$/i', $color, $m ) ) {
+        $slug = strtolower( $m[1] );
     }
 
     // Try to resolve as a theme preset slug
@@ -22,20 +40,20 @@ function nextora_chart_resolve_color( ?string $color ): string {
     $palette = $settings['color']['palette']['theme'] ?? array();
 
     foreach ( $palette as $item ) {
-        if ( ( $item['slug'] ?? '' ) === $color ) {
-            return $item['color'] ?? $color;
+        if ( ( $item['slug'] ?? '' ) === $slug ) {
+            return $item['color'] ?? $slug;
         }
     }
 
     // Try default palette (core presets)
     $default_palette = $settings['color']['palette']['default'] ?? array();
     foreach ( $default_palette as $item ) {
-        if ( ( $item['slug'] ?? '' ) === $color ) {
-            return $item['color'] ?? $color;
+        if ( ( $item['slug'] ?? '' ) === $slug ) {
+            return $item['color'] ?? $slug;
         }
     }
 
-    return $color;
+    return $slug;
 }
 } // end function_exists('nextora_chart_resolve_color')
 

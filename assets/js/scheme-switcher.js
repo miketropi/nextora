@@ -22,6 +22,8 @@
 
 	var STORAGE_KEY = 'nextora-scheme-preferences';
 	var LEGACY_STORAGE_KEY = 'nextora-color-scheme';
+	var DEMO_STORAGE_KEY = 'nextora-scheme-demo';
+	var resetThemeSlug = null;
 
 	var root = document.documentElement;
 
@@ -32,6 +34,7 @@
 
 	var trigger = switcher.querySelector( '.scheme-switcher__trigger' );
 	var popover = switcher.querySelector( '.scheme-switcher__popover' );
+	var backdrop = switcher.querySelector( '[data-scheme-backdrop]' );
 	var closeBtn = switcher.querySelector( '.scheme-switcher__close' );
 	var colorList = switcher.querySelector( '[data-scheme-color-list]' );
 	var fontList = switcher.querySelector( '[data-scheme-font-list]' );
@@ -39,6 +42,7 @@
 	var copyBtn = switcher.querySelector( '[data-scheme-copy-link]' );
 	var resetBtn = switcher.querySelector( '[data-scheme-reset]' );
 	var fontFallbackStyle = null;
+	var buttonOverrideStyle = null;
 
 	var state = {
 		theme: null,
@@ -202,6 +206,7 @@
 		}
 
 		clearColorOverrides();
+		clearButtonOverrides();
 
 		Object.keys( preset.colors ).forEach( function ( colorSlug ) {
 			root.style.setProperty(
@@ -221,6 +226,7 @@
 
 	function resetColor() {
 		clearColorOverrides();
+		clearButtonOverrides();
 		state.theme = null;
 		state.color = null;
 		refreshInvalidFontFallbacks();
@@ -269,6 +275,119 @@
 	}
 
 	/* ------------------------------------------------------------------
+	 * Button color application
+	 * ------------------------------------------------------------------ */
+
+	function clearButtonOverrides() {
+		if ( buttonOverrideStyle ) {
+			buttonOverrideStyle.textContent = '';
+		}
+		root.style.removeProperty( '--nextora-button-bg' );
+		root.style.removeProperty( '--nextora-button-color' );
+		root.style.removeProperty( '--nextora-button-hover-bg' );
+		root.style.removeProperty( '--nextora-button-hover-color' );
+		root.style.removeProperty( '--nextora-header-button-bg' );
+		root.style.removeProperty( '--nextora-header-button-color' );
+		root.style.removeProperty( '--nextora-header-button-hover-bg' );
+		root.style.removeProperty( '--nextora-header-button-hover-color' );
+		root.style.removeProperty( '--nextora-button-text-transform' );
+		root.style.removeProperty( '--nextora-button-font-weight' );
+	}
+
+	function applyButtonOverrides( theme ) {
+		clearButtonOverrides();
+
+		if ( ! theme ) {
+			return;
+		}
+
+		if ( theme.buttonBg ) {
+			root.style.setProperty( '--nextora-button-bg', theme.buttonBg );
+		}
+		if ( theme.buttonColor ) {
+			root.style.setProperty( '--nextora-button-color', theme.buttonColor );
+		}
+		if ( theme.buttonHoverBg ) {
+			root.style.setProperty( '--nextora-button-hover-bg', theme.buttonHoverBg );
+		}
+		if ( theme.buttonHoverColor ) {
+			root.style.setProperty( '--nextora-button-hover-color', theme.buttonHoverColor );
+		}
+		if ( theme.headerButtonBg ) {
+			root.style.setProperty( '--nextora-header-button-bg', theme.headerButtonBg );
+		}
+		if ( theme.headerButtonColor ) {
+			root.style.setProperty( '--nextora-header-button-color', theme.headerButtonColor );
+		}
+		if ( theme.headerButtonHoverBg ) {
+			root.style.setProperty( '--nextora-header-button-hover-bg', theme.headerButtonHoverBg );
+		}
+		if ( theme.headerButtonHoverColor ) {
+			root.style.setProperty( '--nextora-header-button-hover-color', theme.headerButtonHoverColor );
+		}
+		if ( theme.buttonTextTransform ) {
+			root.style.setProperty( '--nextora-button-text-transform', theme.buttonTextTransform );
+		}
+		if ( theme.buttonFontWeight ) {
+			root.style.setProperty( '--nextora-button-font-weight', theme.buttonFontWeight );
+		}
+
+		if ( ! buttonOverrideStyle ) {
+			buttonOverrideStyle = document.createElement( 'style' );
+			buttonOverrideStyle.id = 'nextora-scheme-button-overrides';
+			document.head.appendChild( buttonOverrideStyle );
+		}
+
+		var rules = [];
+		if ( theme.buttonBg || theme.buttonColor ) {
+			var bgProp = theme.buttonBg ? 'background-color: var(--nextora-button-bg);' : '';
+			var colProp = theme.buttonColor ? 'color: var(--nextora-button-color);' : '';
+			rules.push(
+				':root:root :where(.wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link) { ' + bgProp + ' ' + colProp + ' }'
+			);
+		}
+
+		if ( theme.buttonHoverBg || theme.buttonHoverColor ) {
+			var hbgProp = theme.buttonHoverBg ? 'background-color: var(--nextora-button-hover-bg);' : '';
+			var hcolProp = theme.buttonHoverColor ? 'color: var(--nextora-button-hover-color);' : '';
+			rules.push(
+				':root:root :where(.wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link:hover) { ' + hbgProp + ' ' + hcolProp + ' }'
+			);
+		}
+
+		if ( theme.headerButtonBg || theme.headerButtonColor ) {
+			var hdrBg = theme.headerButtonBg ? 'background-color: var(--nextora-header-button-bg);' : '';
+			var hdrCol = theme.headerButtonColor ? 'color: var(--nextora-header-button-color);' : '';
+			rules.push(
+				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-header-block__cta--outline), .wp-block-nextora-header .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link, .nextora-header-block__cta.nextora-header-block__cta--solid) { ' + hdrBg + ' ' + hdrCol + ' }'
+			);
+		}
+
+		if ( theme.headerButtonHoverBg || theme.headerButtonHoverColor ) {
+			var hdrHbg = theme.headerButtonHoverBg ? 'background-color: var(--nextora-header-button-hover-bg);' : '';
+			var hdrHcol = theme.headerButtonHoverColor ? 'color: var(--nextora-header-button-hover-color);' : '';
+			rules.push(
+				':root:root :where(.wp-block-nextora-header .wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-header-block__cta--outline):hover, .wp-block-nextora-header .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link:hover, .nextora-header-block__cta.nextora-header-block__cta--solid:hover) { ' + hdrHbg + ' ' + hdrHcol + ' }'
+			);
+		}
+
+		if ( theme.buttonTextTransform || theme.buttonFontWeight ) {
+			var typoProps = [];
+			if ( theme.buttonTextTransform ) {
+				typoProps.push( 'text-transform: var(--nextora-button-text-transform);' );
+			}
+			if ( theme.buttonFontWeight ) {
+				typoProps.push( 'font-weight: var(--nextora-button-font-weight);' );
+			}
+			rules.push(
+				':root:root :where(.wp-element-button, .wp-block-button__link, .nextora-header-block__cta, .alonepro-btn, .alonepro-alone-donation-box__btn, a.elementor-button, button.elementor-button) { ' + typoProps.join( ' ' ) + ' }'
+			);
+		}
+
+		buttonOverrideStyle.textContent = rules.join( '\n' );
+	}
+
+	/* ------------------------------------------------------------------
 	 * Theme application (bundled color + font)
 	 * ------------------------------------------------------------------ */
 
@@ -280,6 +399,7 @@
 
 		clearColorOverrides();
 		clearFontOverrides();
+		clearButtonOverrides();
 
 		Object.keys( theme.colors || {} ).forEach( function ( colorSlug ) {
 			root.style.setProperty( '--wp--preset--color--' + colorSlug, theme.colors[ colorSlug ] );
@@ -298,6 +418,13 @@
 			root.style.setProperty( '--nextora-font-button', theme.button );
 		}
 
+		applyButtonOverrides( theme );
+
+		var pageThemeStyle = document.getElementById( 'nextora-page-theme-vars' );
+		if ( pageThemeStyle ) {
+			pageThemeStyle.disabled = false;
+		}
+
 		state.theme = slug;
 		state.color = null;
 		state.font = null;
@@ -308,10 +435,33 @@
 	function resetTheme() {
 		clearColorOverrides();
 		clearFontOverrides();
+		clearButtonOverrides();
+		var pageThemeStyle = document.getElementById( 'nextora-page-theme-vars' );
+		if ( pageThemeStyle ) {
+			pageThemeStyle.disabled = true;
+		}
 		state.theme = null;
 		state.color = null;
 		state.font = null;
 		refreshInvalidFontFallbacks();
+	}
+
+	function resetToDemo() {
+		resetTheme();
+		if ( resetThemeSlug ) {
+			applyTheme( resetThemeSlug );
+		}
+		save();
+		try {
+			localStorage.removeItem( STORAGE_KEY );
+			localStorage.removeItem( LEGACY_STORAGE_KEY );
+		} catch ( e ) {}
+		var url = new URL( window.location.href );
+		[ 'theme', 'color', 'font' ].forEach( function ( key ) {
+			url.searchParams.delete( key );
+		} );
+		window.history.replaceState( window.history.state, '', url.toString() );
+		updateUI();
 	}
 
 	/* ------------------------------------------------------------------
@@ -334,6 +484,7 @@
 		}
 
 		// One-time migration from the legacy single color key.
+		var hasLegacy = false;
 		if ( ! prefs ) {
 			var legacy = null;
 			try {
@@ -341,6 +492,7 @@
 			} catch ( e ) {}
 
 			if ( legacy ) {
+				hasLegacy = true;
 				prefs = { color: legacy, font: null };
 				try {
 					localStorage.removeItem( LEGACY_STORAGE_KEY );
@@ -348,7 +500,10 @@
 			}
 		}
 
-		return prefs && typeof prefs === 'object' ? prefs : {};
+		return {
+			hasSaved: stored !== null || hasLegacy,
+			prefs: prefs && typeof prefs === 'object' ? prefs : {},
+		};
 	}
 
 	function save() {
@@ -359,20 +514,67 @@
 			);
 			localStorage.removeItem( LEGACY_STORAGE_KEY );
 		} catch ( e ) { /* storage unavailable — still works for this view */ }
+
+		try {
+			if ( state.theme ) {
+				document.cookie = 'nextora_active_theme=' + encodeURIComponent( state.theme ) + '; path=/; max-age=2592000; SameSite=Lax';
+			} else {
+				document.cookie = 'nextora_active_theme=default; path=/; max-age=2592000; SameSite=Lax';
+			}
+		} catch ( e ) {}
 	}
 
 	function bootstrap() {
-		var prefs = readStorage();
+		var storageData = readStorage();
+		var prefs = storageData.prefs;
+		var hasSavedChoice = storageData.hasSaved;
 		var params = new URLSearchParams( window.location.search );
 		var urlTheme = params.get( 'theme' );
 		var urlColor = params.get( 'color' );
 		var urlFont = params.get( 'font' );
 
-		var theme = urlTheme && THEMES[ urlTheme ]
-			? urlTheme
-			: ( prefs.theme && THEMES[ prefs.theme ]
-				? prefs.theme
-				: ( INITIAL.theme && THEMES[ INITIAL.theme ] ? INITIAL.theme : null ) );
+		var pageTheme = OPTIONS.currentPageTheme || null;
+
+		// The reset baseline comes only from page identity, never a preview choice.
+		var pageDefault = OPTIONS.resetPageTheme;
+		if ( pageDefault && THEMES[ pageDefault ] ) {
+			resetThemeSlug = pageDefault;
+			try {
+				localStorage.setItem( DEMO_STORAGE_KEY, pageDefault );
+			} catch ( e ) {}
+		} else {
+			try {
+				var savedDemo = localStorage.getItem( DEMO_STORAGE_KEY );
+				resetThemeSlug = savedDemo && THEMES[ savedDemo ] ? savedDemo : null;
+			} catch ( e ) {}
+		}
+
+		var theme = null;
+		var shouldPersist = false;
+
+		if ( urlTheme && THEMES[ urlTheme ] ) {
+			// 1. Explicit URL parameter wins (?theme=medical)
+			theme = urlTheme;
+			shouldPersist = true;
+		} else if ( pageDefault && THEMES[ pageDefault ] ) {
+			// 2. Landing on a designated demo Home page (e.g. Home Medical):
+			// Actives the page's theme and automatically persists to localStorage + cookie!
+			theme = pageDefault;
+			shouldPersist = true;
+		} else if ( hasSavedChoice && prefs.theme && THEMES[ prefs.theme ] ) {
+			// 3. Inner page with NO direct theme (e.g. /contact-us/, /about-us/):
+			// Inherits the theme saved in localStorage from the demo Home previously visited!
+			theme = prefs.theme;
+			shouldPersist = true;
+		} else if ( pageTheme && THEMES[ pageTheme ] ) {
+			// 4. In case pageTheme was resolved from cookie for this request
+			theme = pageTheme;
+			shouldPersist = true;
+		} else if ( resetThemeSlug ) {
+			theme = resetThemeSlug;
+		} else if ( INITIAL.theme && THEMES[ INITIAL.theme ] ) {
+			theme = INITIAL.theme;
+		}
 
 		var appliedFromUrl = Boolean(
 			( urlTheme && THEMES[ urlTheme ] ) ||
@@ -384,17 +586,23 @@
 			applyTheme( theme );
 		} else {
 			// URL wins over storage; storage wins over config initial; initial wins over theme default.
-			var color = urlColor && COLOR_PRESETS[ urlColor ]
-				? urlColor
-				: ( prefs.color && COLOR_PRESETS[ prefs.color ]
-					? prefs.color
-					: ( INITIAL.color && COLOR_PRESETS[ INITIAL.color ] ? INITIAL.color : null ) );
+			var color = null;
+			if ( urlColor && COLOR_PRESETS[ urlColor ] ) {
+				color = urlColor;
+			} else if ( hasSavedChoice ) {
+				color = prefs.color && COLOR_PRESETS[ prefs.color ] ? prefs.color : null;
+			} else if ( INITIAL.color && COLOR_PRESETS[ INITIAL.color ] ) {
+				color = INITIAL.color;
+			}
 
-			var font = urlFont && FONT_PRESETS[ urlFont ]
-				? urlFont
-				: ( prefs.font && FONT_PRESETS[ prefs.font ]
-					? prefs.font
-					: ( INITIAL.font && FONT_PRESETS[ INITIAL.font ] ? INITIAL.font : null ) );
+			var font = null;
+			if ( urlFont && FONT_PRESETS[ urlFont ] ) {
+				font = urlFont;
+			} else if ( hasSavedChoice ) {
+				font = prefs.font && FONT_PRESETS[ prefs.font ] ? prefs.font : null;
+			} else if ( INITIAL.font && FONT_PRESETS[ INITIAL.font ] ) {
+				font = INITIAL.font;
+			}
 
 			if ( color ) {
 				applyColor( color );
@@ -404,9 +612,7 @@
 			}
 		}
 
-		// Persist only when the URL carried a valid choice (shared links); a
-		// config `initial` fallback must not be saved as a user choice.
-		if ( appliedFromUrl ) {
+		if ( appliedFromUrl || shouldPersist ) {
 			save();
 		}
 
@@ -611,6 +817,9 @@
 		popover.classList.add( 'is-open' );
 		popover.setAttribute( 'aria-hidden', 'false' );
 		trigger.setAttribute( 'aria-expanded', 'true' );
+		if ( backdrop ) {
+			backdrop.classList.add( 'is-active' );
+		}
 
 		var focusable = getFocusable();
 		if ( focusable.length ) {
@@ -622,6 +831,9 @@
 		popover.classList.remove( 'is-open' );
 		popover.setAttribute( 'aria-hidden', 'true' );
 		trigger.setAttribute( 'aria-expanded', 'false' );
+		if ( backdrop ) {
+			backdrop.classList.remove( 'is-active' );
+		}
 		trigger.focus();
 	}
 
@@ -736,6 +948,13 @@
 		togglePopover();
 	} );
 
+	if ( backdrop ) {
+		backdrop.addEventListener( 'click', function ( e ) {
+			e.stopPropagation();
+			closePopover();
+		} );
+	}
+
 	if ( closeBtn ) {
 		closeBtn.addEventListener( 'click', closePopover );
 	}
@@ -805,11 +1024,7 @@
 	} );
 
 	if ( resetBtn ) {
-		resetBtn.addEventListener( 'click', function () {
-			resetTheme();
-			save();
-			updateUI();
-		} );
+		resetBtn.addEventListener( 'click', resetToDemo );
 	}
 
 	if ( copyBtn ) {

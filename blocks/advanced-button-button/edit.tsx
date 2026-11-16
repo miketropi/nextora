@@ -135,7 +135,7 @@ export default function AdvancedButtonButtonEdit( {
 		clickEventId = '',
 		clickEventScript = '',
 		buttonStyle = 'fill',
-		borderRadius = 50,
+		borderRadius,
 		iconPosition = 'left',
 		iconSource = 'theme',
 		iconName = 'arrow-right',
@@ -153,7 +153,7 @@ export default function AdvancedButtonButtonEdit( {
 		backgroundColor: legacyBackgroundColor = '',
 		textColor: legacyTextColor = '',
 		borderColor: legacyBorderColor = '',
-		hoverEffect = 'opacity',
+		hoverEffect = 'none',
 		hoverBackgroundColor = '',
 		hoverTextColor = '',
 		hoverBorderColor = '',
@@ -300,7 +300,9 @@ export default function AdvancedButtonButtonEdit( {
 	const buttonClassName = `wp-block-nextora-advanced-button-button nextora-advanced-button__button wp-element-button nextora-advanced-button-button nextora-advanced-button-button--style-${ buttonStyle } nextora-advanced-button-button--icon-${ iconStyle } nextora-advanced-button-button--hover-${ hoverEffect }${ showIcon ? '' : ' nextora-advanced-button-button--no-icon' }`;
 
 	const buttonStyleVars = {
-		'--nextora-advanced-button-radius': `${ borderRadius }px`,
+		...( typeof borderRadius === 'number'
+			? { borderRadius: `${ borderRadius }px` }
+			: {} ),
 		'--nextora-advanced-button-gap': '0.5rem',
 		'--nextora-advanced-button-icon-size': `${ iconSize }px`,
 		...( hasSurfaceStyle
@@ -734,7 +736,7 @@ export default function AdvancedButtonButtonEdit( {
 						label={ __( 'Button border radius (px)', 'nextora' ) }
 						value={ borderRadius }
 						onChange={ ( value: number | undefined ) =>
-							setAttributes( { borderRadius: value ?? 50 } )
+							setAttributes( { borderRadius: value } )
 						}
 						min={ 0 }
 						max={ 999 }
@@ -748,9 +750,11 @@ export default function AdvancedButtonButtonEdit( {
 						onChange={ ( value: number | undefined ) =>
 							setAttributes( { iconSize: value ?? 20 } )
 						}
-						min={ 12 }
-						max={ 48 }
+						min={ 8 }
+						max={ 200 }
 						step={ 1 }
+						allowReset={ true }
+						resetFallbackValue={ 20 }
 					/>
 					) }
 
@@ -868,10 +872,10 @@ export default function AdvancedButtonButtonEdit( {
 						label={ __( 'Hover effect', 'nextora' ) }
 						value={ hoverEffect }
 						options={ [
-							{ label: __( 'Fade (opacity)', 'nextora' ), value: 'opacity' },
+							{ label: __( 'None', 'nextora' ), value: 'none' },
 							{ label: __( 'Color swap', 'nextora' ), value: 'color-swap' },
 							{ label: __( 'Lift (shadow)', 'nextora' ), value: 'lift' },
-							{ label: __( 'None', 'nextora' ), value: 'none' },
+							{ label: __( 'Fade (opacity)', 'nextora' ), value: 'opacity' },
 						] }
 						onChange={ ( value: string ) =>
 							setAttributes( { hoverEffect: value as HoverEffect } )

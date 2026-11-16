@@ -31,8 +31,16 @@ function nextora_header_block_editor_assets(): void {
 		return;
 	}
 
+	$is_giftflow_active = defined( 'GIFTFLOW_VERSION' )
+		|| post_type_exists( 'campaign' )
+		|| function_exists( 'giftflow_prepare_campaign_status_bar_data' );
+
+	$is_woocommerce_active = class_exists( 'WooCommerce' ) || function_exists( 'WC' );
+
 	$data = array(
-		'iconsUrl' => NEXTORA_URI . '/assets/data/lucide-icons.json',
+		'iconsUrl'            => NEXTORA_URI . '/assets/data/lucide-icons.json',
+		'isGiftFlowActive'    => $is_giftflow_active,
+		'isWooCommerceActive' => $is_woocommerce_active,
 	);
 
 	wp_add_inline_script(

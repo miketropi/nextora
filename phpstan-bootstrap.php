@@ -66,3 +66,76 @@ if ( ! function_exists( 'wc_get_account_endpoint_url' ) ) {
 		return '';
 	}
 }
+
+if ( ! function_exists( 'tribe_get_events' ) ) {
+	/**
+	 * The Events Calendar plugin (optional) stub.
+	 *
+	 * @param array<string, mixed> $args
+	 *
+	 * @return array<int, WP_Post>
+	 */
+	function tribe_get_events( $args = array() ): array {
+		return array();
+	}
+}
+
+if ( ! function_exists( 'tribe_get_start_date' ) ) {
+	/**
+	 * @param int|WP_Post|null $event
+	 */
+	function tribe_get_start_date( $event = null, bool $display_time = true, string $date_format = 'Y-m-d' ): string {
+		return '';
+	}
+}
+
+if ( ! function_exists( 'tribe_get_venue' ) ) {
+	/**
+	 * @param int|WP_Post|null $event
+	 */
+	function tribe_get_venue( $event = null ): string {
+		return '';
+	}
+}
+
+if ( ! function_exists( 'tribe_get_city' ) ) {
+	/**
+	 * @param int|WP_Post|null $event
+	 */
+	function tribe_get_city( $event = null ): string {
+		return '';
+	}
+}
+
+if ( ! function_exists( 'tribe_get_cost' ) ) {
+	/**
+	 * @param int|WP_Post|null $event
+	 */
+	function tribe_get_cost( $event = null, bool $with_currency_symbol = false ): string {
+		return '';
+	}
+}
+
+if ( ! function_exists( 'giftflow_get_donor_account_page' ) ) {
+	/**
+	 * GiftFlow plugin (optional) stub.
+	 *
+	 * @return int|string
+	 */
+	function giftflow_get_donor_account_page() {
+		return 0;
+	}
+}
+
+if ( ! function_exists( 'giftflow_prepare_campaign_status_bar_data' ) ) {
+	/**
+	 * GiftFlow plugin (optional) stub.
+	 *
+	 * @param int|WP_Post|null $campaign
+	 *
+	 * @return array<string, mixed>
+	 */
+	function giftflow_prepare_campaign_status_bar_data( $campaign = null ): array {
+		return array();
+	}
+}

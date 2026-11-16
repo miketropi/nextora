@@ -195,10 +195,7 @@
 	align-items: center;
 	gap: var(--wp--preset--spacing--10, 0.5rem);
 	text-decoration: none;
-	font-family: inherit;
-	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	font-weight: normal;
-	line-height: 1.25;
+	cursor: pointer;
 	transition:
 		background-color 0.2s ease,
 		color 0.2s ease,
@@ -208,36 +205,30 @@
 }
 
 .nextora-arc-gallery__btn:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #000);
+	outline: 2px solid var(--wp--preset--color--primary, currentColor);
 	outline-offset: 2px;
 }
 
 .nextora-arc-gallery__btn--primary {
-	padding: 0.8em 2.25em;
-	background: var(--nextora-arc-btn-bg, var(--wp--preset--color--primary, #000));
-	color: var(--nextora-arc-btn-color, var(--wp--preset--color--base, #fff));
-	border-radius: 50px;
 	border: 2px solid transparent;
-	box-shadow: 0 1px 2px
-		color-mix(in srgb, var(--wp--preset--color--contrast, #0a0a0a) 8%, transparent);
 }
 
-.nextora-arc-gallery__btn--primary:hover, .nextora-arc-gallery__btn--primary:focus{
-	color: var(--nextora-arc-btn-color, var(--wp--preset--color--base, #fff));
-	background: color-mix(in srgb, var(--nextora-arc-btn-bg, var(--wp--preset--color--primary, #000)) 70%, white);
+.nextora-arc-gallery__btn--primary:hover,
+.nextora-arc-gallery__btn--primary:focus {
+	opacity: 0.9;
 	text-decoration: none;
 }
 
 .nextora-arc-gallery__btn--primary.is-outline {
-	background: transparent;
-	border-color: var(--nextora-arc-btn-bg, var(--wp--preset--color--primary, #000));
-	color: var(--nextora-arc-btn-bg, var(--wp--preset--color--primary, #000));
+	background: transparent !important;
+	border-color: currentColor;
+	color: currentColor;
 	box-shadow: none;
 }
 
-.nextora-arc-gallery__btn--primary.is-outline:hover {
-	background: var(--nextora-arc-btn-bg, var(--wp--preset--color--primary, #000));
-	color: var(--nextora-arc-btn-color, var(--wp--preset--color--base, #fff));
+.is-style-contrast-band .nextora-arc-gallery__btn--primary {
+	background-color: var(--nextora-arc-btn-bg, var(--wp--preset--color--base));
+	color: var(--nextora-arc-btn-color, var(--wp--preset--color--contrast));
 }
 
 .nextora-arc-gallery__btn--link {

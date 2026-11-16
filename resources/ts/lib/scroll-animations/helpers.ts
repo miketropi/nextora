@@ -70,9 +70,13 @@ export function getRevealGen(el: HTMLElement): number {
  * is not inside another `li` (excludes category/tag sub-lists in post cards).
  */
 export function getFadeListGridItems(el: HTMLElement): HTMLElement[] {
-	return Array.from(el.querySelectorAll<HTMLElement>("ul > li")).filter((li) => {
+	if (el.tagName === "UL" || el.tagName === "OL") {
+		return Array.from(el.children).filter((child): child is HTMLElement => child.tagName === "LI");
+	}
+
+	return Array.from(el.querySelectorAll<HTMLElement>("ul > li, ol > li")).filter((li) => {
 		const parentUl = li.parentElement;
-		if (!parentUl || parentUl.tagName !== "UL") {
+		if (!parentUl || (parentUl.tagName !== "UL" && parentUl.tagName !== "OL")) {
 			return false;
 		}
 
@@ -102,8 +106,19 @@ export function resolveAnimationClass(el: HTMLElement): AnimationClassName | nul
 		}
 	}
 	const custom = Array.from(el.classList).find((name) => name in animationPresets);
-	return (custom as AnimationClassName | undefined) ?? null;
+	if (custom) {
+		return custom as AnimationClassName;
+	}
+
+	// Fallback: If element only has a delay class without explicit animation class, default to animation-fade-in-up
+	const hasDelayClass = Array.from(el.classList).some((name) => /^(?:animation-)?delay-\d+/.test(name));
+	if (hasDelayClass) {
+		return "animation-fade-in-up";
+	}
+
+	return null;
 }
+
 
 function markInitialized(el: HTMLElement): void {
 	// Never mark as ready if container is currently hidden (reset in progress)
@@ -156,20 +171,51 @@ function initFadeListGridAnimation(el: HTMLElement, options: ScrollAnimationOpti
 
 	el.classList.remove("nextora-scroll-animation--pending");
 	const gen = nextRevealGen(el);
+	const revealImmediately = isInInitialRevealViewport(el);
 
-	items.forEach((item) => {
-		item.classList.add("nextora-scroll-animation--pending");
-		gsap.fromTo(item, from, {
-			...to,
-			...buildScrollTweenVars(item, options, item),
-			onComplete: () => {
-				if (getRevealGen(el) !== gen) return;
-				item.classList.remove("nextora-scroll-animation--pending");
-				item.classList.add("nextora-scroll-animation--ready");
-				gsap.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
-			},
+	const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
+	if (revealImmediately) {
+		items.forEach((item) => {
+			item.classList.add("nextora-scroll-animation--pending");
+			gsap.set(item, from);
 		});
-	});
+		const playFadeList = (): void => {
+			gsap.to(items, {
+				...to,
+				delay: options.delay,
+				duration: options.duration,
+				ease: options.ease,
+				stagger: options.stagger ?? (isMegaMenu ? 0.04 : 0.08),
+				onComplete: () => {
+					if (getRevealGen(el) !== gen) return;
+					items.forEach((item) => {
+						item.classList.remove("nextora-scroll-animation--pending");
+						item.classList.add("nextora-scroll-animation--ready");
+						gsap.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
+					});
+				},
+			});
+		};
+		if (isMegaMenu) {
+			playFadeList();
+		} else {
+			afterInitialLayout(playFadeList);
+		}
+	} else {
+		items.forEach((item) => {
+			item.classList.add("nextora-scroll-animation--pending");
+			gsap.fromTo(item, from, {
+				...to,
+				...buildScrollTweenVars(item, options, item),
+				onComplete: () => {
+					if (getRevealGen(el) !== gen) return;
+					item.classList.remove("nextora-scroll-animation--pending");
+					item.classList.add("nextora-scroll-animation--ready");
+					gsap.set(item, { clearProps: "opacity,transform,translate,rotate,scale" });
+				},
+			});
+		});
+	}
 
 	markInitialized(el);
 }
@@ -186,20 +232,51 @@ function initInnerFadeAnimation(el: HTMLElement, options: ScrollAnimationOptions
 
 	el.classList.remove("nextora-scroll-animation--pending");
 	const gen = nextRevealGen(el);
+	const revealImmediately = isInInitialRevealViewport(el);
 
-	targets.forEach((target) => {
-		target.classList.add("nextora-scroll-animation--pending");
-		gsap.fromTo(target, from, {
-			...to,
-			...buildScrollTweenVars(target, options, target),
-			onComplete: () => {
-				if (getRevealGen(el) !== gen) return;
-				target.classList.remove("nextora-scroll-animation--pending");
-				target.classList.add("nextora-scroll-animation--ready");
-				gsap.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
-			},
+	const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
+	if (revealImmediately) {
+		targets.forEach((target) => {
+			target.classList.add("nextora-scroll-animation--pending");
+			gsap.set(target, from);
 		});
-	});
+		const playInner = (): void => {
+			gsap.to(targets, {
+				...to,
+				delay: options.delay,
+				duration: options.duration,
+				ease: options.ease,
+				stagger: options.stagger ?? (isMegaMenu ? 0.04 : 0.08),
+				onComplete: () => {
+					if (getRevealGen(el) !== gen) return;
+					targets.forEach((target) => {
+						target.classList.remove("nextora-scroll-animation--pending");
+						target.classList.add("nextora-scroll-animation--ready");
+						gsap.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
+					});
+				},
+			});
+		};
+		if (isMegaMenu) {
+			playInner();
+		} else {
+			afterInitialLayout(playInner);
+		}
+	} else {
+		targets.forEach((target) => {
+			target.classList.add("nextora-scroll-animation--pending");
+			gsap.fromTo(target, from, {
+				...to,
+				...buildScrollTweenVars(target, options, target),
+				onComplete: () => {
+					if (getRevealGen(el) !== gen) return;
+					target.classList.remove("nextora-scroll-animation--pending");
+					target.classList.add("nextora-scroll-animation--ready");
+					gsap.set(target, { clearProps: "opacity,transform,translate,rotate,scale" });
+				},
+			});
+		});
+	}
 
 	markInitialized(el);
 }
@@ -284,23 +361,40 @@ export function initElementAnimations(el: HTMLElement): void {
 							},
 						});
 					};
+					const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 					if (revealImmediately) {
-						afterInitialLayout(play);
+						if (isMegaMenu) {
+							play();
+						} else {
+							afterInitialLayout(play);
+						}
 					} else {
 						play();
 					}
 				} else {
+					const isMegaMenu = Boolean(el.closest(".has-mega-menu, .beplus-vmn-mega-panel"));
 					if (revealImmediately) {
 						gsap.set(el, from);
-						afterInitialLayout(() => {
+						const playSingle = (): void => {
+							const hasDelayOverride =
+								el.hasAttribute("data-delay") ||
+								Array.from(el.classList).some((cls) => /^(?:animation-)?delay-\d+/.test(cls));
+							const initialDelay = hasDelayOverride
+								? options.delay
+								: (!isMegaMenu && el.tagName === "P" ? 0.35 : options.delay);
 							gsap.to(el, {
 								...to,
-								delay: options.delay,
+								delay: initialDelay,
 								duration: options.duration,
 								ease: options.ease,
 								onComplete: () => gsap.set(el, { clearProps: "opacity,transform,translate,rotate,scale" }),
 							});
-						});
+						};
+						if (isMegaMenu) {
+							playSingle();
+						} else {
+							afterInitialLayout(playSingle);
+						}
 					} else {
 						gsap.fromTo(el, from, { ...to, ...buildScrollTweenVars(el, options) });
 					}

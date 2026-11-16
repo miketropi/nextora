@@ -1,6 +1,6 @@
 export type BoxImageLayoutMode = 'slider' | 'grid';
 export type BoxImageFit = 'cover' | 'contain' | 'fill' | 'none';
-export type BoxImageTemplate = 'default' | 'template1' | 'template2' | 'template3';
+export type BoxImageTemplate = 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5';
 export type BoxImageScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxImageItem {
@@ -19,6 +19,15 @@ export interface BoxImageItem {
 	linkColor: string;
 	badge: string;
 	linkWrapCard: boolean;
+	accentColor?: string;
+	iconSource?: 'theme' | 'upload';
+	iconName?: string;
+	uploadedIconId?: number;
+	uploadedIconUrl?: string;
+	iconType?: 'none' | 'preset' | 'custom';
+	iconPreset?: string;
+	iconId?: number;
+	iconUrl?: string;
 }
 
 export interface BoxImageAttributes {
@@ -49,11 +58,14 @@ export interface BoxImageAttributes {
 	showArrows: boolean;
 	grabCursor: boolean;
 	freeMode: boolean;
+	edgeFadeColor?: string;
 	cardBorderColor: string;
 	cardBackgroundColor: string;
 	cardHoverBackgroundColor: string;
 	cardTitleColor: string;
 	cardDescriptionColor: string;
+	titleFontSize?: string;
+	descriptionFontSize?: string;
 	descriptionHoverColor: string;
 	linkColor: string;
 	linkHoverColor: string;
@@ -63,6 +75,9 @@ export interface BoxImageAttributes {
 	badgeBackgroundColor: string;
 	badgeTextColor: string;
 	bulletIconColor: string;
+	showBackgroundGrid?: boolean;
+	stepVerticalGap?: number;
+	stepHorizontalGap?: number;
 	enableScrollAnimation: boolean;
 	scrollAnimationStyle: BoxImageScrollAnimationStyle;
 	enableCardHover: boolean;

@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { __ } from '@wordpress/i18n';
 import {
 	useBlockProps,
@@ -6,7 +7,7 @@ import {
 	InnerBlocks,
 } from '@wordpress/block-editor';
 import type { BlockEditProps } from '@wordpress/blocks';
-import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
+import { PanelBody, SelectControl, ToggleControl, RangeControl } from '@wordpress/components';
 import type { ButtonAlign, AdvancedButtonAttributes } from './types';
 
 const ALLOWED_BLOCKS = [ 'nextora/advanced-button-button' ];
@@ -31,7 +32,12 @@ export default function AdvancedButtonEdit( {
 	attributes,
 	setAttributes,
 }: BlockEditProps< AdvancedButtonAttributes > ) {
-	const { buttonAlign = 'left', enableScrollAnimation = true } = attributes;
+	const {
+		buttonAlign = 'left',
+		columnGap = 12,
+		rowGap = 12,
+		enableScrollAnimation = true,
+	} = attributes;
 
 	const scrollEnabled = enableScrollAnimation !== false;
 	const alignClass = ALIGN_CLASS[ buttonAlign ] ?? ALIGN_CLASS.left;
@@ -48,6 +54,10 @@ export default function AdvancedButtonEdit( {
 	const innerBlocksProps = useInnerBlocksProps(
 		{
 			className: `nextora-advanced-button__buttons ${ alignClass }`,
+			style: {
+				'--nextora-advanced-button-col-gap': `${ columnGap }px`,
+				'--nextora-advanced-button-row-gap': `${ rowGap }px`,
+			} as CSSProperties,
 		},
 		{
 			allowedBlocks: ALLOWED_BLOCKS,
@@ -73,6 +83,28 @@ export default function AdvancedButtonEdit( {
 						onChange={ ( value: string ) =>
 							setAttributes( { buttonAlign: value as ButtonAlign } )
 						}
+					/>
+					<RangeControl
+						label={ __( 'Column gap (px)', 'nextora' ) }
+						help={ __( 'Horizontal space between buttons.', 'nextora' ) }
+						value={ columnGap }
+						onChange={ ( value: number | undefined ) =>
+							setAttributes( { columnGap: value ?? 12 } )
+						}
+						min={ 0 }
+						max={ 100 }
+						step={ 1 }
+					/>
+					<RangeControl
+						label={ __( 'Row gap (px)', 'nextora' ) }
+						help={ __( 'Vertical space between buttons when wrapped into multiple lines.', 'nextora' ) }
+						value={ rowGap }
+						onChange={ ( value: number | undefined ) =>
+							setAttributes( { rowGap: value ?? 12 } )
+						}
+						min={ 0 }
+						max={ 100 }
+						step={ 1 }
 					/>
 				</PanelBody>
 

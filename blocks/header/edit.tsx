@@ -6,7 +6,8 @@ import {
   MediaUpload,
   MediaUploadCheck,
   URLInput,
-	__experimentalSpacingSizesControl as SpacingSizesControl,
+  useSetting,
+  __experimentalSpacingSizesControl as SpacingSizesControl,
   __experimentalBorderRadiusControl as BorderRadiusControl,
 } from '@wordpress/block-editor';
 import { useMemo, useState, useEffect } from '@wordpress/element';
@@ -20,6 +21,8 @@ import {
   Notice,
   Button,
   ColorPalette,
+  BaseControl,
+  FontSizePicker,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
@@ -46,6 +49,50 @@ const FOLLOW_US_SOCIAL_LABELS = {
   x: __('X', 'nextora'),
 };
 
+const PRESET_FONT_SIZE_SLUGS = new Set([
+  'small',
+  'base',
+  'medium',
+  'medium-plus',
+  'large',
+  'x-large',
+  'xx-large',
+]);
+
+function isPresetFontSize(
+  val: string | undefined,
+  fontSizes: Array<{ slug?: string }> = []
+): boolean {
+  if (!val) {
+    return false;
+  }
+  const lower = val.trim().toLowerCase();
+  if (/^[\d.]+(?:px|rem|em|vw|vh|%)?$/i.test(lower) || /^clamp\(/i.test(lower)) {
+    return false;
+  }
+  return (
+    PRESET_FONT_SIZE_SLUGS.has(lower) ||
+    fontSizes.some((item) => item.slug?.toLowerCase() === lower)
+  );
+}
+
+function normalizeFontSizeAttribute(
+  value: number | string | undefined,
+  selectedItem?: { slug?: string }
+): string {
+  if (value === undefined || value === '') {
+    return '';
+  }
+  if (selectedItem?.slug) {
+    return selectedItem.slug;
+  }
+  const str = String(value).trim();
+  if (/^\d+(\.\d+)?$/.test(str)) {
+    return `${str}px`;
+  }
+  return str;
+}
+
 export default function HeaderEdit({ attributes, setAttributes }) {
   const {
     logoType,
@@ -59,12 +106,17 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     menuLocation,
     menuDepth,
     menuItemSpacing,
+    menuItemFontSize,
+    submenuItemFontSize,
     showFollowUs,
     showFollowUsMobile,
     followUsLabel,
     followUsSupportText,
     followUsEmail,
+    followUsEmailLink,
     followUsPhone,
+    followUsPhoneUrl,
+    followUsTrigger,
     followUsContactButtonText,
     followUsContactButtonUrl,
     followUsContactButtonTarget,
@@ -74,9 +126,13 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     showMiniCart,
     showMyAccount,
     myAccountIconOnly,
+    showDonorAccount = false,
+    donorAccountIconOnly = true,
     showSearchMobile,
     showCartMobile,
     showCtaButton,
+    enableDonationPopup = false,
+    donationCampaignId = 0,
     ctaButtonText,
     ctaButtonUrl,
     ctaButtonTarget,
@@ -118,6 +174,55 @@ export default function HeaderEdit({ attributes, setAttributes }) {
       : []),
   ];
 
+  const isWooCommerceActive = useSelect((select) => {
+    if (typeof window !== 'undefined' && window.nextoraIconBlock?.isWooCommerceActive !== undefined) {
+      return !!window.nextoraIconBlock.isWooCommerceActive;
+    }
+    const pt = select(coreStore).getPostType('product');
+    return !!pt;
+  }, []);
+
+  const isGiftFlowActive = useSelect((select) => {
+    if (typeof window !== 'undefined' && window.nextoraIconBlock?.isGiftFlowActive !== undefined) {
+      return !!window.nextoraIconBlock.isGiftFlowActive;
+    }
+    const pt = select(coreStore).getPostType('campaign');
+    return !!pt;
+  }, []);
+
+  const campaigns = useSelect(
+    (select) => {
+      if (!isGiftFlowActive) return [];
+      return (
+        select(coreStore).getEntityRecords('postType', 'campaign', {
+          per_page: 100,
+          status: 'publish',
+        }) ?? []
+      );
+    },
+    [isGiftFlowActive]
+  );
+
+  const campaignOptions = useMemo(() => {
+    const list = Array.isArray(campaigns) ? campaigns : [];
+    return [
+      { label: __('— Select donation campaign —', 'nextora'), value: 0 },
+      ...list.map((c) => {
+        const rawTitle =
+          typeof c?.title === 'object' ? c.title?.rendered || c.title?.raw : c?.title;
+        const cleanTitle = (rawTitle || `#${c.id}`)
+          .replace(/&amp;/g, '&')
+          .replace(/&#8211;/g, '–')
+          .replace(/&#8217;/g, "'")
+          .replace(/&#038;/g, '&');
+        return {
+          label: cleanTitle,
+          value: Number(c.id),
+        };
+      }),
+    ];
+  }, [campaigns]);
+
   const themeColorPaletteRaw = useSelect((select) => {
     try {
       const s = select('core/block-editor').getSettings() ?? {};
@@ -144,6 +249,8 @@ export default function HeaderEdit({ attributes, setAttributes }) {
         typeof (c.color ?? c.value) === 'string'
     );
   }, [themeColorPaletteRaw]);
+
+  const themeFontSizes = useSetting('typography.fontSizes') || [];
 
   const menuItemSpacingOptions = useMemo(() => [
     { label: __('— Theme default —', 'nextora'), value: '' },
@@ -196,38 +303,38 @@ export default function HeaderEdit({ attributes, setAttributes }) {
     return ctaButtonBorderRadius;
   }, [ctaButtonBorderRadius]);
 
-  const [ iconPickerOpen, setIconPickerOpen ] = useState( false );
-  const [ iconNodes, setIconNodes ] = useState( null );
+  const [iconPickerOpen, setIconPickerOpen] = useState(false);
+  const [iconNodes, setIconNodes] = useState(null);
 
-  useEffect( () => {
-    if ( ! ctaButtonShowIcon ) {
-      setIconNodes( null );
+  useEffect(() => {
+    if (!ctaButtonShowIcon) {
+      setIconNodes(null);
       return;
     }
 
     const iconsUrl = window.nextoraIconBlock?.iconsUrl ?? '';
-    if ( ! iconsUrl ) {
+    if (!iconsUrl) {
       return;
     }
 
     let active = true;
-    fetch( iconsUrl )
-      .then( ( res ) => res.json() )
-      .then( ( icons ) => {
-        if ( ! active ) {
+    fetch(iconsUrl)
+      .then((res) => res.json())
+      .then((icons) => {
+        if (!active) {
           return;
         }
-        const found = Array.isArray( icons )
-          ? icons.find( ( icon ) => icon.name === ctaButtonIconName )
+        const found = Array.isArray(icons)
+          ? icons.find((icon) => icon.name === ctaButtonIconName)
           : undefined;
-        setIconNodes( found?.nodes ?? null );
-      } )
-      .catch( () => {} );
+        setIconNodes(found?.nodes ?? null);
+      })
+      .catch(() => { });
 
     return () => {
       active = false;
     };
-  }, [ ctaButtonShowIcon, ctaButtonIconName ] );
+  }, [ctaButtonShowIcon, ctaButtonIconName]);
 
   const updateFollowUsSocial = (network, patch) => {
     const next = followUsSocialRows.map((row) =>
@@ -242,7 +349,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
         <PanelBody title={__('Logo', 'nextora')} initialOpen>
           <p className="components-help-text" style={{ marginTop: 0 }}>
             {__(
-              'Image: uses the logo uploaded below (saved on this block), or the site title when none is set. Text: uses the text below (defaults to the site title when empty). Optional mobile logo and max width apply below 768px.',
+              'Image: uses the logo uploaded below (saved on this block), or the site title when none is set. Text: uses the text below (defaults to the site title when empty). Optional mobile logo and max width apply on mobile screens.',
               'nextora'
             )}
           </p>
@@ -286,14 +393,14 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                 onChange={(v) => setAttributes({ logoWidth: v ?? 150 })}
                 min={40}
                 max={400}
-                help={__('Applies to the main logo image from 768px up.', 'nextora')}
+                help={__('Applies to the main logo image on desktop screens.', 'nextora')}
               />
               <p className="components-base-control__label" style={{ marginTop: '1rem' }}>
                 {__('Mobile logo (optional)', 'nextora')}
               </p>
               <p className="components-help-text" style={{ marginTop: 0 }}>
                 {__(
-                  'Shown below 768px. When empty, the main logo is used instead.',
+                  'Shown on mobile screens. When empty, the main logo is used instead.',
                   'nextora'
                 )}
               </p>
@@ -348,7 +455,7 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                 min={40}
                 max={400}
                 help={__(
-                  'Below 768px. Starts at the desktop value until you change it.',
+                  'Below breakpoint. Starts at the desktop value until you change it.',
                   'nextora'
                 )}
               />
@@ -406,6 +513,38 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             onChange={(v) => setAttributes({ menuItemSpacing: v ?? '' })}
             help={__('Horizontal gap between top-level menu items. Empty uses the theme default.', 'nextora')}
           />
+          <BaseControl
+            label={__('Menu item font size', 'nextora')}
+            id="nextora-header-menu-item-font-size"
+            help={__('Font size for top-level navigation items. Empty uses the header/theme default.', 'nextora')}
+          >
+            <FontSizePicker
+              fontSizes={themeFontSizes}
+              value={menuItemFontSize || undefined}
+              valueMode={isPresetFontSize(menuItemFontSize, themeFontSizes) ? 'slug' : 'literal'}
+              onChange={(value, selectedItem) =>
+                setAttributes({
+                  menuItemFontSize: normalizeFontSizeAttribute(value, selectedItem),
+                })
+              }
+            />
+          </BaseControl>
+          <BaseControl
+            label={__('Submenu item font size', 'nextora')}
+            id="nextora-header-submenu-item-font-size"
+            help={__('Font size for dropdown submenu items. Empty uses the theme default.', 'nextora')}
+          >
+            <FontSizePicker
+              fontSizes={themeFontSizes}
+              value={submenuItemFontSize || undefined}
+              valueMode={isPresetFontSize(submenuItemFontSize, themeFontSizes) ? 'slug' : 'literal'}
+              onChange={(value, selectedItem) =>
+                setAttributes({
+                  submenuItemFontSize: normalizeFontSizeAttribute(value, selectedItem),
+                })
+              }
+            />
+          </BaseControl>
         </PanelBody>
 
         <PanelBody title={__('Icons & utilities', 'nextora')} initialOpen>
@@ -428,6 +567,17 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                   'When off, Follow Us appears inside the mobile menu instead of the header bar.',
                   'nextora'
                 )}
+              />
+              <SelectControl
+                label={__('Dropdown trigger', 'nextora')}
+                value={followUsTrigger || 'both'}
+                options={[
+                  { label: __('Hover & Click', 'nextora'), value: 'both' },
+                  { label: __('Hover only', 'nextora'), value: 'hover' },
+                  { label: __('Click only', 'nextora'), value: 'click' },
+                ]}
+                onChange={(v) => setAttributes({ followUsTrigger: v })}
+                help={__('Choose whether the dropdown opens on hover, click, or both.', 'nextora')}
               />
               <TextControl
                 label={__('Trigger label', 'nextora')}
@@ -460,17 +610,30 @@ export default function HeaderEdit({ attributes, setAttributes }) {
                 </div>
               ))}
               <TextControl
-                label={__('Email', 'nextora')}
+                label={__('Email display text', 'nextora')}
                 value={followUsEmail}
                 onChange={(v) => setAttributes({ followUsEmail: v ?? '' })}
-                placeholder="hello@example.com"
-                type="email"
+                placeholder="support@gmail.com"
               />
               <TextControl
-                label={__('Phone', 'nextora')}
+                label={__('Email link target (optional)', 'nextora')}
+                value={followUsEmailLink}
+                onChange={(v) => setAttributes({ followUsEmailLink: v ?? '' })}
+                placeholder="mailto:bearsthemes@gmail.com"
+                help={__('Leave empty to use mailto: with the display email above.', 'nextora')}
+              />
+              <TextControl
+                label={__('Phone display text', 'nextora')}
                 value={followUsPhone}
                 onChange={(v) => setAttributes({ followUsPhone: v ?? '' })}
-                placeholder="+1 (555) 000-0000"
+                placeholder="+1 (234) 567 890"
+              />
+              <TextControl
+                label={__('Phone link target (optional)', 'nextora')}
+                value={followUsPhoneUrl}
+                onChange={(v) => setAttributes({ followUsPhoneUrl: v ?? '' })}
+                placeholder="tel:1234567890"
+                help={__('Leave empty to automatically use tel: with the phone digits.', 'nextora')}
               />
               <TextControl
                 label={__('Contact Us button text', 'nextora')}
@@ -522,35 +685,68 @@ export default function HeaderEdit({ attributes, setAttributes }) {
             disabled={!showSearch}
           />
 
-          <p className="components-help-text" style={{ margin: '1rem 0 0.35rem' }}>
-            {__('WooCommerce (when active)', 'nextora')}
-          </p>
-          <ToggleControl
-            label={__('Shopping cart', 'nextora')}
-            checked={showMiniCart}
-            onChange={(v) => setAttributes({ showMiniCart: v })}
-            help={__(
-              'Uses the official WooCommerce Mini-Cart block (drawer and live cart updates).',
-              'nextora',
-            )}
-          />
-          <ToggleControl
-            label={__('My account', 'nextora')}
-            checked={showMyAccount}
-            onChange={(v) => setAttributes({ showMyAccount: v })}
-          />
-          <ToggleControl
-            label={__('Account: icon only', 'nextora')}
-            checked={myAccountIconOnly}
-            onChange={(v) => setAttributes({ myAccountIconOnly: v })}
-            disabled={!showMyAccount}
-          />
-          <ToggleControl
-            label={__('Show cart on small screens', 'nextora')}
-            checked={showCartMobile}
-            onChange={(v) => setAttributes({ showCartMobile: v })}
-            disabled={!showMiniCart}
-          />
+          {isWooCommerceActive && (
+            <>
+              <p className="components-help-text" style={{ margin: '1rem 0 0.35rem' }}>
+                {__('WooCommerce (when active)', 'nextora')}
+              </p>
+              <ToggleControl
+                label={__('Shopping cart', 'nextora')}
+                checked={showMiniCart}
+                onChange={(v) => setAttributes({ showMiniCart: v })}
+                help={__(
+                  'Uses the official WooCommerce Mini-Cart block (drawer and live cart updates).',
+                  'nextora',
+                )}
+              />
+              <ToggleControl
+                label={__('My account', 'nextora')}
+                checked={showMyAccount}
+                onChange={(v) =>
+                  setAttributes({
+                    showMyAccount: v,
+                    ...(v ? { showDonorAccount: false } : {}),
+                  })
+                }
+              />
+              <ToggleControl
+                label={__('Account: icon only', 'nextora')}
+                checked={myAccountIconOnly}
+                onChange={(v) => setAttributes({ myAccountIconOnly: v })}
+                disabled={!showMyAccount}
+              />
+              <ToggleControl
+                label={__('Show cart on small screens', 'nextora')}
+                checked={showCartMobile}
+                onChange={(v) => setAttributes({ showCartMobile: v })}
+                disabled={!showMiniCart}
+              />
+            </>
+          )}
+
+          {isGiftFlowActive && (
+            <>
+              <p className="components-help-text" style={{ margin: '1rem 0 0.35rem' }}>
+                {__('GiftFlow (when active)', 'nextora')}
+              </p>
+              <ToggleControl
+                label={__('Donor account', 'nextora')}
+                checked={showDonorAccount}
+                onChange={(v) =>
+                  setAttributes({
+                    showDonorAccount: v,
+                    ...(v ? { showMyAccount: false } : {}),
+                  })
+                }
+              />
+              <ToggleControl
+                label={__('Account: icon only', 'nextora')}
+                checked={donorAccountIconOnly}
+                onChange={(v) => setAttributes({ donorAccountIconOnly: v })}
+                disabled={!showDonorAccount}
+              />
+            </>
+          )}
 
           <p className="components-help-text" style={{ margin: '1rem 0 0.35rem' }}>
             {__('Call to action', 'nextora')}
@@ -566,22 +762,57 @@ export default function HeaderEdit({ attributes, setAttributes }) {
           />
           {showCtaButton && (
             <>
+              {isGiftFlowActive && (
+                <>
+                  <ToggleControl
+                    label={__('Enable donation popup', 'nextora')}
+                    checked={enableDonationPopup}
+                    onChange={(v) => {
+                      const updates: Record<string, unknown> = { enableDonationPopup: v };
+                      if (v && (!ctaButtonText || ctaButtonText === 'Get started' || ctaButtonText === 'Get Started')) {
+                        updates.ctaButtonText = __('Donation Now', 'nextora');
+                      }
+                      setAttributes(updates);
+                    }}
+                    help={__(
+                      'When enabled, clicking this button triggers the GiftFlow donation popup.',
+                      'nextora',
+                    )}
+                  />
+                  {enableDonationPopup && (
+                    <SelectControl
+                      label={__('Select donation campaign', 'nextora')}
+                      value={donationCampaignId}
+                      options={campaignOptions}
+                      onChange={(v) => setAttributes({ donationCampaignId: Number(v) || 0 })}
+                      help={__(
+                        'Choose which campaign will be loaded in the donation modal.',
+                        'nextora',
+                      )}
+                    />
+                  )}
+                </>
+              )}
               <TextControl
                 label={__('Button text', 'nextora')}
                 value={ctaButtonText}
                 onChange={(v) => setAttributes({ ctaButtonText: v ?? '' })}
-                placeholder={__('Get started', 'nextora')}
+                placeholder={enableDonationPopup ? __('Donation Now', 'nextora') : __('Get started', 'nextora')}
               />
-              <p className="components-base-control__label">{__('Button URL', 'nextora')}</p>
-              <URLInput
-                value={ctaButtonUrl}
-                onChange={(url) => setAttributes({ ctaButtonUrl: url ?? '' })}
-              />
-              <ToggleControl
-                label={__('Open in new tab', 'nextora')}
-                checked={ctaButtonTarget}
-                onChange={(v) => setAttributes({ ctaButtonTarget: v })}
-              />
+              {!enableDonationPopup && (
+                <>
+                  <p className="components-base-control__label">{__('Button URL', 'nextora')}</p>
+                  <URLInput
+                    value={ctaButtonUrl}
+                    onChange={(url) => setAttributes({ ctaButtonUrl: url ?? '' })}
+                  />
+                  <ToggleControl
+                    label={__('Open in new tab', 'nextora')}
+                    checked={ctaButtonTarget}
+                    onChange={(v) => setAttributes({ ctaButtonTarget: v })}
+                  />
+                </>
+              )}
               <SelectControl
                 label={__('Button style', 'nextora')}
                 value={ctaButtonStyle}
@@ -732,18 +963,6 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               )}
             />
           )}
-          <RangeControl
-            label={__('Mobile breakpoint (px)', 'nextora')}
-            value={mobileBreakpoint}
-            onChange={(v) => setAttributes({ mobileBreakpoint: v ?? 768 })}
-            min={320}
-            max={1920}
-            step={1}
-            help={__(
-              'Viewports at or above this width use the desktop layout. Below this width the mobile layout (hamburger menu, stacked columns) is shown. Default is 768.',
-              'nextora'
-            )}
-          />
         </PanelBody>
 
         <PanelBody title={__('Advanced', 'nextora')} initialOpen={false}>
@@ -796,11 +1015,16 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               followUsLabel,
               followUsSupportText,
               followUsEmail,
+              followUsEmailLink,
               followUsPhone,
+              followUsPhoneUrl,
+              followUsTrigger,
               followUsContactButtonText,
               followUsContactButtonUrl,
               JSON.stringify(followUsSocialRows),
               showCtaButton,
+              enableDonationPopup,
+              donationCampaignId,
               ctaButtonText,
               ctaButtonStyle,
               JSON.stringify(ctaPaddingValues),
@@ -811,6 +1035,11 @@ export default function HeaderEdit({ attributes, setAttributes }) {
               ctaButtonIconSize,
               ctaButtonIconStrokeWidth,
               menuItemSpacing,
+              showMiniCart,
+              showMyAccount,
+              myAccountIconOnly,
+              showDonorAccount,
+              donorAccountIconOnly,
             ].join('|')}
             block={metadata.name}
             attributes={attributes}

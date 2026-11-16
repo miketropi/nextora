@@ -97,13 +97,13 @@
 		transform: translate3d(0, 0, 0);
 	}
 	100% {
-		transform: translate3d(calc(0px - var(--nextora-marquee-loop-width, 0px)), 0, 0);
+		transform: translate3d(-50%, 0, 0);
 	}
 }
 
 @keyframes nextora-marquee-scroll-right {
 	0% {
-		transform: translate3d(calc(0px - var(--nextora-marquee-loop-width, 0px)), 0, 0);
+		transform: translate3d(-50%, 0, 0);
 	}
 	100% {
 		transform: translate3d(0, 0, 0);

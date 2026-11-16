@@ -1,3 +1,5 @@
+@import './style.css';
+
 /**
  * Expanding Cards — editor styles
  */
@@ -39,6 +41,11 @@
 .wp-block-nextora-expanding-cards--editor .nextora-expanding-cards__card-content {
   opacity: 1;
   transform: translateY(0);
+}
+
+.wp-block-nextora-expanding-cards--editor .nextora-expanding-cards__card-button {
+  cursor: default;
+  pointer-events: none;
 }
 
 .wp-block-nextora-expanding-cards--editor .nextora-expanding-cards__card-placeholder {

@@ -2,6 +2,8 @@ export interface EventItem {
 	id: string;
 	day: string;
 	month: string;
+	year?: string;
+	weekday?: string;
 	category: string;
 	title: string;
 	description: string;
@@ -14,13 +16,27 @@ export interface EventItem {
 	linkUrl: string;
 	linkTarget: string;
 	registerLabel: string;
+	buttonIcon?: string;
+	registerButtonIcon?: string;
 }
 
 export interface EventAttributes {
 	template: string;
 	events: EventItem[];
 	showRegisterButton: boolean;
+	showDate?: boolean;
+	showImage?: boolean;
+	showLocation?: boolean;
+	showTime?: boolean;
+	showDescription?: boolean;
 	registerButtonText: string;
+	registerButtonIcon?: string;
+	template3Alternating: boolean;
+	titleFontSize?: string;
+	descriptionFontSize?: string;
+	metaFontSize?: string;
+	itemGap?: number;
+	compactDescriptionColor?: string;
 	cardBackgroundColor: string;
 	cardBorderColor: string;
 	dateBackgroundColor: string;
@@ -35,7 +51,11 @@ export interface EventAttributes {
 	registerHoverTextColor: string;
 	registerHoverBackgroundColor: string;
 	registerHoverBorderColor: string;
+	paginationColor: string;
+	paginationActiveColor: string;
 	enableScrollAnimation: boolean;
+	enableAnimation?: boolean;
+	animationStyle?: 'sequential' | 'default';
 	autoplay: boolean;
 	autoplayDelay: number;
 	loop: boolean;
@@ -46,6 +66,7 @@ export interface EventAttributes {
 	spaceBetween: number;
 	tabletSlides: number;
 	mobileSlides: number;
+	edgeFadeColor?: string;
 }
 
 export type EventColorAttribute = keyof Pick<
@@ -64,4 +85,7 @@ export type EventColorAttribute = keyof Pick<
 	| 'registerHoverTextColor'
 	| 'registerHoverBackgroundColor'
 	| 'registerHoverBorderColor'
+	| 'paginationColor'
+	| 'paginationActiveColor'
+	| 'edgeFadeColor'
 >;

@@ -57,12 +57,14 @@ if ( ! function_exists( 'nextora_team_section_resolve_color' ) ) {
 		if ( '' === $raw ) {
 			return '';
 		}
-		if ( preg_match( '/^var\(--[a-zA-Z0-9_-]+\)$/', $raw ) ) {
-			return $raw;
+
+		if ( 'transparent' === $raw || 'rgba(0,0,0,0)' === $raw || '#00000000' === $raw ) {
+			return 'transparent';
 		}
 
 		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $raw, $m ) ) {
-			return 'var(--wp--preset--color--' . sanitize_html_class( strtolower( $m[1] ) ) . ')';
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+			return 'transparent' === $slug ? 'transparent' : 'var(--wp--preset--color--' . $slug . ')';
 		}
 
 		if ( preg_match( '/^#[0-9a-fA-F]{8}$/', $raw ) ) {
@@ -74,30 +76,180 @@ if ( ! function_exists( 'nextora_team_section_resolve_color' ) ) {
 			return $hex;
 		}
 		if ( preg_match( '/^[a-z0-9-]+$/', $raw ) ) {
-			return 'var(--wp--preset--color--' . sanitize_html_class( $raw ) . ')';
+			$slug = sanitize_html_class( strtolower( $raw ) );
+			return 'transparent' === $slug ? 'transparent' : 'var(--wp--preset--color--' . $slug . ')';
 		}
 		return '';
 	}
 }
 
-if ( ! function_exists( 'nextora_team_section_social_platform_label' ) ) {
+if ( ! function_exists( 'nextora_team_section_get_color_props' ) ) {
 	/**
-	 * Human-readable label for a social platform slug.
+	 * Resolves a stored color attribute into standard Gutenberg classes and inline style.
+	 *
+	 * @param string $color Attribute value (slug, preset string, or hex/rgb).
+	 * @param string $type  'color' (for text), 'background', or 'border'.
+	 *
+	 * @return array{class: string, style: string, slug: string, value: string}
 	 */
-	function nextora_team_section_social_platform_label( string $platform ): string {
-		$labels = array(
-			'linkedin'  => __( 'LinkedIn', 'nextora' ),
-			'twitter'   => __( 'Twitter / X', 'nextora' ),
-			'github'    => __( 'GitHub', 'nextora' ),
-			'instagram' => __( 'Instagram', 'nextora' ),
-			'facebook'  => __( 'Facebook', 'nextora' ),
-			'website'   => __( 'Website', 'nextora' ),
-			'email'     => __( 'Email', 'nextora' ),
+	function nextora_team_section_get_color_props( string $color, string $type = 'color' ): array {
+		$color = trim( $color );
+		if ( '' === $color ) {
+			return array( 'class' => '', 'style' => '', 'slug' => '', 'value' => '' );
+		}
+
+		if (
+			'transparent' === $color ||
+			'rgba(0,0,0,0)' === $color ||
+			'#00000000' === $color
+		) {
+			if ( 'border' === $type ) {
+				return array(
+					'class' => '',
+					'style' => 'border-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-transparent-background-color',
+					'style' => 'background-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-transparent-color',
+				'style' => 'color:transparent;',
+				'slug'  => 'transparent',
+				'value' => 'transparent',
+			);
+		}
+
+		$slug = '';
+		if ( preg_match( '/^var:preset\|color\|([a-z0-9_-]+)$/i', $color, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^var\(\s*--wp--preset--color--([a-z0-9_-]+)\s*\)$/i', $color, $m ) ) {
+			$slug = sanitize_html_class( strtolower( $m[1] ) );
+		} elseif ( preg_match( '/^[a-z0-9_-]+$/i', $color ) && ! preg_match( '/^[0-9a-f]{3,8}$/i', $color ) ) {
+			$slug = sanitize_html_class( strtolower( $color ) );
+		}
+
+		if ( 'transparent' === $slug ) {
+			if ( 'border' === $type ) {
+				return array(
+					'class' => '',
+					'style' => 'border-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-transparent-background-color',
+					'style' => 'background-color:transparent;',
+					'slug'  => 'transparent',
+					'value' => 'transparent',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-transparent-color',
+				'style' => 'color:transparent;',
+				'slug'  => 'transparent',
+				'value' => 'transparent',
+			);
+		}
+
+		if ( '' !== $slug ) {
+			if ( 'background' === $type ) {
+				return array(
+					'class' => 'has-background has-' . $slug . '-background-color',
+					'style' => '',
+					'slug'  => $slug,
+					'value' => 'var(--wp--preset--color--' . $slug . ')',
+				);
+			}
+			if ( 'border' === $type ) {
+				return array(
+					'class' => 'has-border-color has-' . $slug . '-border-color',
+					'style' => '',
+					'slug'  => $slug,
+					'value' => 'var(--wp--preset--color--' . $slug . ')',
+				);
+			}
+			return array(
+				'class' => 'has-text-color has-' . $slug . '-color',
+				'style' => '',
+				'slug'  => $slug,
+				'value' => 'var(--wp--preset--color--' . $slug . ')',
+			);
+		}
+
+		// Custom hex / rgb / hsl
+		if ( 'background' === $type ) {
+			return array(
+				'class' => 'has-background',
+				'style' => 'background-color:' . esc_attr( $color ) . ';',
+				'slug'  => '',
+				'value' => $color,
+			);
+		}
+		if ( 'border' === $type ) {
+			return array(
+				'class' => 'has-border-color',
+				'style' => 'border-color:' . esc_attr( $color ) . ';',
+				'slug'  => '',
+				'value' => $color,
+			);
+		}
+		return array(
+			'class' => 'has-text-color',
+			'style' => 'color:' . esc_attr( $color ) . ';',
+			'slug'  => '',
+			'value' => $color,
 		);
+	}
+}
 
-		$key = sanitize_key( $platform );
-
-		return isset( $labels[ $key ] ) ? $labels[ $key ] : ucfirst( $key );
+if ( ! function_exists( 'nextora_team_section_get_template_defaults' ) ) {
+	/**
+	 * Get template-specific default attribute values.
+	 *
+	 * @param string $template Template name.
+	 *
+	 * @return array<string, mixed>
+	 */
+	function nextora_team_section_get_template_defaults( string $template ): array {
+	if ( 'template-nuptse' === $template ) {
+		return array(
+			'layoutMode'       => 'grid',
+			'gridColumns'      => 3,
+			'gridMinWidth'     => 320,
+			'gridColumnGap'    => 16,
+			'gridRowGap'       => 16,
+			'photoAspectRatio' => '1/1',
+			'showPagination'   => false,
+			'showArrows'       => false,
+			'cardBorderRadius' => 10,
+		);
+	}
+	if ( 'template-02' === $template ) {
+			return array(
+				'photoAspectRatio' => '3/4',
+				'cardBorderRadius' => 24,
+			);
+		}
+		if ( 'overlay-social' === $template ) {
+			return array(
+				'photoAspectRatio' => '3/4',
+				'cardBorderRadius' => 20,
+			);
+		}
+		return array(
+			'photoAspectRatio' => '3/4',
+			'cardBorderRadius' => 16,
+		);
 	}
 }
 
@@ -119,6 +271,40 @@ if ( ! function_exists( 'nextora_team_section_social_platform_label' ) ) {
 		$key = sanitize_key( $platform );
 
 		return isset( $labels[ $key ] ) ? $labels[ $key ] : ucfirst( $key );
+	}
+}
+
+if ( ! function_exists( 'nextora_team_section_render_social_icon' ) ) {
+	/**
+	 * Render SVG icon markup for a social platform.
+	 *
+	 * @param string $platform Platform slug.
+	 * @param int    $size     Icon size in pixels.
+	 *
+	 * @return string SVG markup.
+	 */
+	function nextora_team_section_render_social_icon( string $platform, int $size = 18 ): string {
+		$p = strtolower( trim( $platform ) );
+
+		switch ( $p ) {
+			case 'linkedin':
+				return '<svg viewBox="0 0 24 24" fill="currentColor" width="' . $size . '" height="' . $size . '" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>';
+			case 'email':
+				return '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>';
+			case 'twitter':
+			case 'x':
+				return '<svg viewBox="0 0 24 24" fill="currentColor" width="' . $size . '" height="' . $size . '" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>';
+			case 'github':
+				return '<svg viewBox="0 0 24 24" fill="currentColor" width="' . $size . '" height="' . $size . '" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>';
+			case 'instagram':
+				return '<svg viewBox="0 0 24 24" fill="currentColor" width="' . $size . '" height="' . $size . '" aria-hidden="true"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>';
+			case 'facebook':
+				return '<svg viewBox="0 0 24 24" fill="currentColor" width="' . $size . '" height="' . $size . '" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>';
+			case 'website':
+				return '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>';
+			default:
+				return '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+		}
 	}
 }
 
@@ -166,9 +352,10 @@ if ( ! function_exists( 'nextora_team_section_normalize_member' ) ) {
 			'tags'             => $tags,
 			'bio'              => isset( $raw['bio'] ) ? trim( (string) $raw['bio'] ) : '',
 			'bioLineClamp'     => isset( $raw['bioLineClamp'] ) ? max( 1, min( 5, (int) $raw['bioLineClamp'] ) ) : 3,
+			'detail'           => isset( $raw['detail'] ) ? trim( (string) $raw['detail'] ) : '',
 			'showSocialLinks'  => ! empty( $raw['showSocialLinks'] ),
 			'socialLinks'      => $social,
-			'cardBorderRadius' => isset( $raw['cardBorderRadius'] ) ? max( 0, min( 30, (int) $raw['cardBorderRadius'] ) ) : 16,
+			'cardBorderRadius' => isset( $raw['cardBorderRadius'] ) && (int) $raw['cardBorderRadius'] > 0 ? max( 0, min( 30, (int) $raw['cardBorderRadius'] ) ) : 0,
 		);
 	}
 }
@@ -202,10 +389,12 @@ if ( ! function_exists( 'nextora_team_section_render_member_photo_fallback' ) ) 
 
 if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 	/**
-	 * @param array<string, mixed> $member Normalized member.
-	 * @param int                  $radius Default card radius from section.
+	 * @param array<string, mixed>  $member        Normalized member.
+	 * @param int                   $radius        Default card radius from section.
+	 * @param bool                  $enable_popup  Whether member popup drawer is enabled.
+	 * @param array<string, string> $color_options Color attributes for name, role, cardBg, tagBg, tagText.
 	 */
-	function nextora_team_section_render_member_slide( array $member, int $radius ): string {
+	function nextora_team_section_render_member_slide( array $member, int $radius, bool $enable_popup = false, array $color_options = array() ): string {
 		$name = (string) $member['name'];
 		if ( '' === trim( wp_strip_all_tags( $name ) ) ) {
 			return '';
@@ -221,15 +410,41 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 		$show_soc   = ! empty( $member['showSocialLinks'] );
 		$social     = is_array( $member['socialLinks'] ) ? $member['socialLinks'] : array();
 
+		$name_props     = nextora_team_section_get_color_props( (string) ( $color_options['nameColor'] ?? '' ), 'color' );
+		$role_props     = nextora_team_section_get_color_props( (string) ( $color_options['roleColor'] ?? '' ), 'color' );
+		$bio_props      = nextora_team_section_get_color_props( (string) ( $color_options['bioColor'] ?? '' ), 'color' );
+		$card_bg_props  = nextora_team_section_get_color_props( (string) ( $color_options['cardBackgroundColor'] ?? '' ), 'background' );
+		$tag_bg_props   = nextora_team_section_get_color_props( (string) ( $color_options['tagBackgroundColor'] ?? '' ), 'background' );
+		$tag_text_props = nextora_team_section_get_color_props( (string) ( $color_options['tagTextColor'] ?? '' ), 'color' );
+		$social_props   = nextora_team_section_get_color_props( (string) ( $color_options['socialColor'] ?? '' ), 'color' );
+
 		$card_style = sprintf(
 			'border-radius:%dpx;--nextora-team-card-radius:%dpx;--nextora-team-bio-clamp:%d;',
 			$card_rad,
 			$card_rad,
 			$clamp,
 		);
+		if ( '' !== $card_bg_props['style'] ) {
+			$card_style .= $card_bg_props['style'];
+		}
+
+		$card_class = 'nextora-team-section__card';
+		if ( '' !== $card_bg_props['class'] ) {
+			$card_class .= ' ' . $card_bg_props['class'];
+		}
+
+		$card_attrs = '';
+		if ( $enable_popup ) {
+			$card_class .= ' nextora-team-section__card--has-popup';
+			$card_attrs  = sprintf(
+				' role="button" tabindex="0" data-member-id="%s" aria-haspopup="dialog" aria-label="%s"',
+				esc_attr( (string) $member['id'] ),
+				esc_attr( sprintf( __( 'View details for %s', 'nextora' ), $name ) ),
+			);
+		}
 
 		$out  = '<div class="swiper-slide">';
-		$out .= '<article class="nextora-team-section__card" style="' . esc_attr( $card_style ) . '">';
+		$out .= '<article class="' . esc_attr( $card_class ) . '" style="' . esc_attr( $card_style ) . '"' . $card_attrs . '>';
 		$out .= '<div class="nextora-team-section__card-photo">';
 
 		if ( $photo_id > 0 ) {
@@ -259,25 +474,38 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 		}
 
 		$out .= '</div><div class="nextora-team-section__card-body">';
-		$out .= '<h4 class="nextora-team-section__card-name">' . esc_html( $name ) . '</h4>';
+
+		$name_classes    = trim( 'nextora-team-section__card-name ' . $name_props['class'] );
+		$name_style_attr = '' !== $name_props['style'] ? ' style="' . esc_attr( $name_props['style'] ) . '"' : '';
+		$out .= '<h4 class="' . esc_attr( $name_classes ) . '"' . $name_style_attr . '>' . esc_html( $name ) . '</h4>';
 
 		if ( '' !== $role ) {
-			$out .= '<p class="nextora-team-section__card-role">' . esc_html( $role ) . '</p>';
+			$role_classes    = trim( 'nextora-team-section__card-role ' . $role_props['class'] );
+			$role_style_attr = '' !== $role_props['style'] ? ' style="' . esc_attr( $role_props['style'] ) . '"' : '';
+			$out .= '<p class="' . esc_attr( $role_classes ) . '"' . $role_style_attr . '>' . esc_html( $role ) . '</p>';
 		}
 
 		if ( array() !== $tags ) {
+			$tag_classes    = trim( 'nextora-team-section__card-tag ' . $tag_bg_props['class'] . ' ' . $tag_text_props['class'] );
+			$tag_styles     = trim( $tag_bg_props['style'] . ' ' . $tag_text_props['style'] );
+			$tag_style_attr = '' !== $tag_styles ? ' style="' . esc_attr( $tag_styles ) . '"' : '';
+
 			$out .= '<div class="nextora-team-section__card-tags">';
 			foreach ( $tags as $tag ) {
-				$out .= '<span class="nextora-team-section__card-tag">' . esc_html( (string) $tag ) . '</span>';
+				$out .= '<span class="' . esc_attr( $tag_classes ) . '"' . $tag_style_attr . '>' . esc_html( (string) $tag ) . '</span>';
 			}
 			$out .= '</div>';
 		}
 
 		if ( '' !== $bio ) {
-			$out .= '<p class="nextora-team-section__card-bio">' . esc_html( $bio ) . '</p>';
+			$bio_classes    = trim( 'nextora-team-section__card-bio ' . $bio_props['class'] );
+			$bio_style_attr = '' !== $bio_props['style'] ? ' style="' . esc_attr( $bio_props['style'] ) . '"' : '';
+			$out           .= '<p class="' . esc_attr( $bio_classes ) . '"' . $bio_style_attr . '>' . esc_html( $bio ) . '</p>';
 		}
 
 		if ( $show_soc && array() !== $social ) {
+			$soc_classes = trim( 'nextora-team-section__card-social-link ' . $social_props['class'] );
+			$soc_style   = '' !== $social_props['style'] ? ' style="' . esc_attr( $social_props['style'] ) . '"' : '';
 			$out .= '<div class="nextora-team-section__card-social">';
 			foreach ( $social as $link ) {
 				if ( ! is_array( $link ) ) {
@@ -289,7 +517,7 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 					continue;
 				}
 				$label = nextora_team_section_social_platform_label( $platform );
-				$out  .= '<a class="nextora-team-section__card-social-link" href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">';
+				$out  .= '<a class="' . esc_attr( $soc_classes ) . '"' . $soc_style . ' href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer">';
 				$out  .= esc_html( $label );
 				$out  .= '</a>';
 			}
@@ -306,10 +534,12 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide_overlay' ) ) {
 	/**
 	 * Render overlay-social template card.
 	 *
-	 * @param array<string, mixed> $member Normalized member.
-	 * @param int                  $radius Default card radius from section.
+	 * @param array<string, mixed>  $member        Normalized member.
+	 * @param int                   $radius        Default card radius from section.
+	 * @param bool                  $enable_popup  Whether member popup drawer is enabled.
+	 * @param array<string, string> $color_options Color attributes for name, role.
 	 */
-	function nextora_team_section_render_member_slide_overlay( array $member, int $radius ): string {
+	function nextora_team_section_render_member_slide_overlay( array $member, int $radius, bool $enable_popup = false, array $color_options = array() ): string {
 		$name = (string) $member['name'];
 		if ( '' === trim( wp_strip_all_tags( $name ) ) ) {
 			return '';
@@ -322,14 +552,28 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide_overlay' ) ) {
 		$show_soc   = ! empty( $member['showSocialLinks'] );
 		$social     = is_array( $member['socialLinks'] ) ? $member['socialLinks'] : array();
 
+		$name_props = nextora_team_section_get_color_props( (string) ( $color_options['nameColor'] ?? '' ), 'color' );
+		$role_props = nextora_team_section_get_color_props( (string) ( $color_options['roleColor'] ?? '' ), 'color' );
+
 		$card_style = sprintf(
 			'border-radius:%dpx;--nextora-team-card-radius:%dpx;',
 			$card_rad,
 			$card_rad,
 		);
 
+		$card_class = 'nextora-team-section__card nextora-team-section__card--overlay';
+		$card_attrs = '';
+		if ( $enable_popup ) {
+			$card_class .= ' nextora-team-section__card--has-popup';
+			$card_attrs  = sprintf(
+				' role="button" tabindex="0" data-member-id="%s" aria-haspopup="dialog" aria-label="%s"',
+				esc_attr( (string) $member['id'] ),
+				esc_attr( sprintf( __( 'View details for %s', 'nextora' ), $name ) ),
+			);
+		}
+
 		$out  = '<div class="swiper-slide">';
-		$out .= '<article class="nextora-team-section__card nextora-team-section__card--overlay" style="' . esc_attr( $card_style ) . '">';
+		$out .= '<article class="' . esc_attr( $card_class ) . '" style="' . esc_attr( $card_style ) . '"' . $card_attrs . '>';
 		$out .= '<div class="nextora-team-section__card-photo">';
 
 		if ( $photo_id > 0 ) {
@@ -371,38 +615,23 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide_overlay' ) ) {
 					continue;
 				}
 				$label = nextora_team_section_social_platform_label( $platform );
-				$out  .= '<a class="nextora-team-section__card-social-link-overlay" href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr( $label ) . '">';
-
-				// Icon based on platform.
-				if ( 'linkedin' === $platform ) {
-					$out .= '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>';
-				} elseif ( 'email' === $platform ) {
-					$out .= '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>';
-				} elseif ( 'twitter' === $platform ) {
-					$out .= '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>';
-				} elseif ( 'github' === $platform ) {
-					$out .= '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>';
-				} elseif ( 'instagram' === $platform ) {
-					$out .= '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg>';
-				} elseif ( 'facebook' === $platform ) {
-					$out .= '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>';
-				} elseif ( 'website' === $platform ) {
-					$out .= '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>';
-				} else {
-					// Default icon.
-					$out .= '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
-				}
-
-				$out .= '</a>';
+				$out  .= '<a class="nextora-team-section__card-social-link-overlay" href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr( $label ) . '" title="' . esc_attr( $label ) . '">';
+				$out  .= nextora_team_section_render_social_icon( $platform, 18 );
+				$out  .= '</a>';
 			}
 			$out .= '</div>';
 		}
 
 		$out .= '</div><div class="nextora-team-section__card-body">';
-		$out .= '<h4 class="nextora-team-section__card-name">' . esc_html( $name ) . '</h4>';
+
+		$name_classes    = trim( 'nextora-team-section__card-name ' . $name_props['class'] );
+		$name_style_attr = '' !== $name_props['style'] ? ' style="' . esc_attr( $name_props['style'] ) . '"' : '';
+		$out .= '<h4 class="' . esc_attr( $name_classes ) . '"' . $name_style_attr . '>' . esc_html( $name ) . '</h4>';
 
 		if ( '' !== $role ) {
-			$out .= '<p class="nextora-team-section__card-role">' . esc_html( $role ) . '</p>';
+			$role_classes    = trim( 'nextora-team-section__card-role ' . $role_props['class'] );
+			$role_style_attr = '' !== $role_props['style'] ? ' style="' . esc_attr( $role_props['style'] ) . '"' : '';
+			$out .= '<p class="' . esc_attr( $role_classes ) . '"' . $role_style_attr . '>' . esc_html( $role ) . '</p>';
 		}
 
 		$out .= '</div></article></div>';
@@ -423,12 +652,20 @@ if ( ! function_exists( 'nextora_team_section_render_template_02' ) ) {
 	 * @param int                        $speed          Transition speed ms.
 	 * @param bool                       $pause_on_hover Pause autoplay on mouse hover.
 	 * @param bool                       $show_arrows    Show navigation arrows.
+	 * @param bool                       $enable_popup   Whether member popup drawer is enabled.
+	 * @param array<string, string>      $color_options  Color attributes for name, role, cardBg.
 	 */
-	function nextora_team_section_render_template_02( array $members, int $radius, bool $autoplay, int $autoplay_delay, bool $loop, int $speed = 500, bool $pause_on_hover = true, bool $show_arrows = true ): string {
+	function nextora_team_section_render_template_02( array $members, int $radius, bool $autoplay, int $autoplay_delay, bool $loop, int $speed = 500, bool $pause_on_hover = true, bool $show_arrows = true, bool $enable_popup = false, array $color_options = array() ): string {
 		$count = count( $members );
 		if ( 0 === $count ) {
 			return '';
 		}
+
+		$name_props    = nextora_team_section_get_color_props( (string) ( $color_options['nameColor'] ?? '' ), 'color' );
+		$role_props    = nextora_team_section_get_color_props( (string) ( $color_options['roleColor'] ?? '' ), 'color' );
+		$bio_props     = nextora_team_section_get_color_props( (string) ( $color_options['bioColor'] ?? '' ), 'color' );
+		$card_bg_props = nextora_team_section_get_color_props( (string) ( $color_options['cardBackgroundColor'] ?? '' ), 'background' );
+		$social_props  = nextora_team_section_get_color_props( (string) ( $color_options['socialColor'] ?? '' ), 'color' );
 
 		$out = sprintf(
 			'<div class="nextora-team-section__deck-container" data-autoplay="%s" data-autoplay-delay="%d" data-loop="%s" data-speed="%d" data-pause-on-hover="%s">',
@@ -451,11 +688,33 @@ if ( ! function_exists( 'nextora_team_section_render_template_02' ) ) {
 			$photo_alt = (string) $member['photoAlt'];
 			$card_rad  = (int) $member['cardBorderRadius'] > 0 ? (int) $member['cardBorderRadius'] : $radius;
 
+			$card_popup_cls  = '';
+			$card_popup_attr = '';
+			if ( $enable_popup ) {
+				$card_popup_cls  = ' nextora-team-section__card--has-popup';
+				$card_popup_attr = sprintf(
+					' data-member-id="%s" role="button" tabindex="0" aria-haspopup="dialog" aria-label="%s"',
+					esc_attr( (string) $member['id'] ),
+					esc_attr( sprintf( __( 'View details for %s', 'nextora' ), (string) $member['name'] ) ),
+				);
+			}
+
+			$card_cls = 'nextora-team-section__deck-photo-card' . ( $is_active ? ' is-active' : '' ) . $card_popup_cls;
+			if ( '' !== $card_bg_props['class'] ) {
+				$card_cls .= ' ' . $card_bg_props['class'];
+			}
+
+			$card_inline_style = sprintf( 'border-radius:%dpx;', $card_rad );
+			if ( '' !== $card_bg_props['style'] ) {
+				$card_inline_style .= $card_bg_props['style'];
+			}
+
 			$out .= sprintf(
-				'<div class="nextora-team-section__deck-photo-card%s" data-deck-index="%d" style="border-radius:%dpx;">',
-				$is_active ? ' is-active' : '',
+				'<div class="%s" data-deck-index="%d"%s style="%s">',
+				esc_attr( $card_cls ),
 				$idx,
-				$card_rad,
+				$card_popup_attr,
+				esc_attr( $card_inline_style ),
 			);
 
 			if ( $photo_id > 0 ) {
@@ -508,17 +767,34 @@ if ( ! function_exists( 'nextora_team_section_render_template_02' ) ) {
 				$idx,
 			);
 
-			$out .= '<h3 class="nextora-team-section__deck-name">' . esc_html( $name ) . '</h3>';
+			$name_classes    = trim( 'nextora-team-section__deck-name ' . $name_props['class'] );
+			$name_style_attr = '' !== $name_props['style'] ? ' style="' . esc_attr( $name_props['style'] ) . '"' : '';
+			$name_popup_attr = '';
+			if ( $enable_popup ) {
+				$name_classes   .= ' nextora-team-section__card--has-popup';
+				$name_popup_attr = sprintf(
+					' data-member-id="%s" role="button" tabindex="0" aria-haspopup="dialog" aria-label="%s"',
+					esc_attr( (string) $member['id'] ),
+					esc_attr( sprintf( __( 'View details for %s', 'nextora' ), (string) $member['name'] ) ),
+				);
+			}
+			$out .= '<h4 class="' . esc_attr( $name_classes ) . '"' . $name_style_attr . $name_popup_attr . '>' . esc_html( $name ) . '</h4>';
 
 			if ( '' !== $role ) {
-				$out .= '<p class="nextora-team-section__deck-role">' . esc_html( $role ) . '</p>';
+				$role_classes    = trim( 'nextora-team-section__deck-role ' . $role_props['class'] );
+				$role_style_attr = '' !== $role_props['style'] ? ' style="' . esc_attr( $role_props['style'] ) . '"' : '';
+				$out .= '<p class="' . esc_attr( $role_classes ) . '"' . $role_style_attr . '>' . esc_html( $role ) . '</p>';
 			}
 
 			if ( '' !== $bio ) {
-				$out .= '<div class="nextora-team-section__deck-bio">' . esc_html( $bio ) . '</div>';
+				$deck_bio_classes = trim( 'nextora-team-section__deck-bio ' . $bio_props['class'] );
+				$deck_bio_style   = '' !== $bio_props['style'] ? ' style="' . esc_attr( $bio_props['style'] ) . '"' : '';
+				$out             .= '<div class="' . esc_attr( $deck_bio_classes ) . '"' . $deck_bio_style . '>' . esc_html( $bio ) . '</div>';
 			}
 
 			if ( $show_soc && array() !== $social ) {
+				$deck_soc_classes = trim( 'nextora-team-section__deck-social-link ' . $social_props['class'] );
+				$deck_soc_style   = '' !== $social_props['style'] ? ' style="' . esc_attr( $social_props['style'] ) . '"' : '';
 				$out .= '<div class="nextora-team-section__deck-social">';
 				foreach ( $social as $link ) {
 					if ( ! is_array( $link ) ) {
@@ -530,8 +806,9 @@ if ( ! function_exists( 'nextora_team_section_render_template_02' ) ) {
 						continue;
 					}
 					$label = nextora_team_section_social_platform_label( $platform );
-					$out  .= '<a class="nextora-team-section__deck-social-link" href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr( $label ) . '">';
-					$out  .= '<span>' . esc_html( $label ) . '</span>';
+					$icon  = nextora_team_section_render_social_icon( $platform, 18 );
+					$out  .= '<a class="' . esc_attr( $deck_soc_classes ) . '"' . $deck_soc_style . ' href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer" aria-label="' . esc_attr( $label ) . '" title="' . esc_attr( $label ) . '">';
+					$out  .= $icon;
 					$out  .= '</a>';
 				}
 				$out .= '</div>';
@@ -592,19 +869,39 @@ if ( 'template-nuptse' === $card_template ) {
 	require_once __DIR__ . '/template-nuptse.php';
 }
 
+$parsed_attrs      = isset( $block ) && $block instanceof WP_Block && isset( $block->parsed_block['attrs'] ) && is_array( $block->parsed_block['attrs'] )
+	? $block->parsed_block['attrs']
+	: array();
+$template_defaults = nextora_team_section_get_template_defaults( $card_template );
+$attributes        = array_merge( $attributes, $template_defaults, $parsed_attrs );
+
 $photo_aspect = isset( $attributes['photoAspectRatio'] ) ? (string) $attributes['photoAspectRatio'] : '3/4';
 if ( ! in_array( $photo_aspect, array( '3/4', '4/3', '1/1', '16/9' ), true ) ) {
 	$photo_aspect = '3/4';
 }
 
-$grid_columns   = isset( $attributes['gridColumns'] ) ? max( 1, min( 6, (int) $attributes['gridColumns'] ) ) : 4;
-$grid_min_width = isset( $attributes['gridMinWidth'] ) ? max( 320, (int) $attributes['gridMinWidth'] ) : 981;
-$grid_col_gap   = isset( $attributes['gridColumnGap'] ) ? max( 0, min( 60, (int) $attributes['gridColumnGap'] ) ) : 24;
-$grid_row_gap   = isset( $attributes['gridRowGap'] ) ? max( 0, min( 60, (int) $attributes['gridRowGap'] ) ) : 24;
+$grid_columns        = isset( $attributes['gridColumns'] ) ? max( 1, min( 6, (int) $attributes['gridColumns'] ) ) : 4;
+$grid_columns_tablet = isset( $attributes['gridColumnsTablet'] ) ? max( 1, min( 4, (int) $attributes['gridColumnsTablet'] ) ) : 2;
+$grid_columns_mobile = isset( $attributes['gridColumnsMobile'] ) ? max( 1, min( 2, (int) $attributes['gridColumnsMobile'] ) ) : 1;
+$grid_no_carousel    = ! empty( $attributes['disableResponsiveCarousel'] );
+$grid_min_width      = isset( $attributes['gridMinWidth'] ) ? max( 320, (int) $attributes['gridMinWidth'] ) : 981;
+$grid_col_gap        = isset( $attributes['gridColumnGap'] ) ? max( 0, min( 60, (int) $attributes['gridColumnGap'] ) ) : 24;
+$grid_row_gap        = isset( $attributes['gridRowGap'] ) ? max( 0, min( 60, (int) $attributes['gridRowGap'] ) ) : 24;
 
 $card_radius = isset( $attributes['cardBorderRadius'] ) ? max( 0, min( 30, (int) $attributes['cardBorderRadius'] ) ) : 16;
 
-$bg_color     = nextora_team_section_resolve_color( (string) ( $attributes['sectionBackgroundColor'] ?? $attributes['backgroundColor'] ?? '' ) );
+$color_options = array(
+	'nameColor'           => (string) ( $attributes['nameColor'] ?? '' ),
+	'roleColor'           => (string) ( $attributes['roleColor'] ?? '' ),
+	'bioColor'            => (string) ( $attributes['bioColor'] ?? '' ),
+	'cardBackgroundColor' => (string) ( $attributes['cardBackgroundColor'] ?? '' ),
+	'tagBackgroundColor'  => (string) ( $attributes['tagBackgroundColor'] ?? '' ),
+	'tagTextColor'        => (string) ( $attributes['tagTextColor'] ?? '' ),
+	'socialColor'         => (string) ( $attributes['socialColor'] ?? '' ),
+);
+
+$raw_bg       = (string) ( $attributes['sectionBackgroundColor'] ?? $attributes['backgroundColor'] ?? '' );
+$bg_props     = nextora_team_section_get_color_props( $raw_bg, 'background' );
 $dot_c        = nextora_team_section_resolve_color( isset( $attributes['paginationColor'] ) ? (string) $attributes['paginationColor'] : '' );
 $dot_active_c = nextora_team_section_resolve_color( isset( $attributes['paginationActiveColor'] ) ? (string) $attributes['paginationActiveColor'] : '' );
 $card_bg_c    = nextora_team_section_resolve_color( isset( $attributes['cardBackgroundColor'] ) ? (string) $attributes['cardBackgroundColor'] : '' );
@@ -612,11 +909,19 @@ $tag_bg_c     = nextora_team_section_resolve_color( isset( $attributes['tagBackg
 $tag_text_c   = nextora_team_section_resolve_color( isset( $attributes['tagTextColor'] ) ? (string) $attributes['tagTextColor'] : '' );
 $name_c       = nextora_team_section_resolve_color( isset( $attributes['nameColor'] ) ? (string) $attributes['nameColor'] : '' );
 $role_c       = nextora_team_section_resolve_color( isset( $attributes['roleColor'] ) ? (string) $attributes['roleColor'] : '' );
+$social_c     = nextora_team_section_resolve_color( isset( $attributes['socialColor'] ) ? (string) $attributes['socialColor'] : '' );
 
 $spv_mobile  = round( isset( $attributes['slidesPerViewMobile'] ) ? (float) $attributes['slidesPerViewMobile'] : 1.2, 3 );
 $spv_tablet  = round( isset( $attributes['slidesPerViewTablet'] ) ? (float) $attributes['slidesPerViewTablet'] : 2.5, 3 );
 $spv_desktop = round( isset( $attributes['slidesPerView'] ) ? (float) $attributes['slidesPerView'] : 4.0, 3 );
 $space       = isset( $attributes['spaceBetween'] ) ? max( 0, min( 60, (int) $attributes['spaceBetween'] ) ) : 24;
+
+$is_desktop_fractional = ( fmod( (float) $spv_desktop, 1.0 ) != 0.0 );
+$is_tablet_fractional  = ( fmod( (float) $spv_tablet, 1.0 ) != 0.0 );
+$is_mobile_fractional  = ( fmod( (float) $spv_mobile, 1.0 ) != 0.0 );
+$has_any_fractional    = $is_desktop_fractional || $is_tablet_fractional || $is_mobile_fractional;
+
+$edge_fade_c = nextora_team_section_resolve_color( isset( $attributes['edgeFadeColor'] ) ? (string) $attributes['edgeFadeColor'] : '' );
 $speed       = isset( $attributes['speed'] ) ? max( 100, min( 2000, (int) $attributes['speed'] ) ) : 500;
 $loop        = ! empty( $attributes['loop'] );
 $autoplay    = ! empty( $attributes['autoplay'] );
@@ -632,6 +937,7 @@ $free_mode   = ! empty( $attributes['freeMode'] );
 $grab_cursor = ! isset( $attributes['grabCursor'] ) || (bool) $attributes['grabCursor'];
 
 $enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
+$enable_popup  = ! empty( $attributes['enablePopup'] );
 
 /** @var list<array<string, mixed>> $members */
 $members = array_values( (array) apply_filters( 'nextora_team_section_members', $members, $attributes ) );
@@ -662,18 +968,20 @@ $opts_json   = wp_json_encode( $swiper_opts );
 $opts_string = is_string( $opts_json ) ? $opts_json : '{}';
 
 $css_vars = array(
-	'--nextora-team-photo-placeholder' => nextora_team_section_photo_placeholder_var(),
-	'--nextora-team-card-radius'       => $card_radius . 'px',
-	'--nextora-team-grid-columns'      => (string) $grid_columns,
-	'--nextora-team-grid-column-gap'   => $grid_col_gap . 'px',
-	'--nextora-team-grid-row-gap'      => $grid_row_gap . 'px',
-	'--nextora-team-photo-aspect'      => $photo_aspect,
-	'--nextora-team-space-between'     => $space . 'px',
+	'--nextora-team-photo-placeholder'  => nextora_team_section_photo_placeholder_var(),
+	'--nextora-team-card-radius'        => $card_radius . 'px',
+	'--nextora-team-grid-columns'       => (string) $grid_columns,
+	'--nextora-team-grid-columns-tablet' => (string) $grid_columns_tablet,
+	'--nextora-team-grid-columns-mobile' => (string) $grid_columns_mobile,
+	'--nextora-team-grid-column-gap'    => $grid_col_gap . 'px',
+	'--nextora-team-grid-row-gap'       => $grid_row_gap . 'px',
+	'--nextora-team-photo-aspect'       => $photo_aspect,
+	'--nextora-team-space-between'      => $space . 'px',
 );
 
 // Only emit color tokens when customized — inline vars beat `.is-style-*` preset rules.
-if ( '' !== $bg_color ) {
-	$css_vars['--nextora-team-bg'] = $bg_color;
+if ( '' !== $bg_props['value'] ) {
+	$css_vars['--nextora-team-bg'] = $bg_props['value'];
 }
 if ( '' !== $dot_c ) {
 	$css_vars['--nextora-team-dot-color'] = $dot_c;
@@ -696,8 +1004,15 @@ if ( '' !== $name_c ) {
 if ( '' !== $role_c ) {
 	$css_vars['--nextora-team-role-color'] = $role_c;
 }
+if ( '' !== $social_c ) {
+	$css_vars['--nextora-team-social-color'] = $social_c;
+}
+$css_vars['--nextora-team-edge-fade-color'] = '' !== $edge_fade_c ? $edge_fade_c : ( '' !== $bg_props['value'] ? $bg_props['value'] : 'var(--wp--preset--color--base, #ffffff)' );
 
 $style_parts = array();
+if ( '' !== $bg_props['style'] ) {
+	$style_parts[] = rtrim( $bg_props['style'], ';' );
+}
 foreach ( $css_vars as $key => $value ) {
 	$style_parts[] = $key . ':' . $value;
 }
@@ -712,8 +1027,26 @@ $wrapper_classes = array(
 if ( ! empty( $attributes['inheritTypography'] ) ) {
 	$wrapper_classes[] = 'nextora-team-section--inherit-typography';
 }
+if ( $grid_no_carousel && 'grid' === $layout_mode ) {
+	$wrapper_classes[] = 'nextora-team-section--grid-no-carousel';
+}
+if ( '' !== $bg_props['class'] ) {
+	$wrapper_classes[] = $bg_props['class'];
+}
 if ( $enable_scroll ) {
 	$wrapper_classes[] = 'nextora-team-section--reveal-pending';
+}
+if ( $enable_popup ) {
+	$wrapper_classes[] = 'nextora-team-section--popup-enabled';
+}
+if ( $is_desktop_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-desktop';
+}
+if ( $is_tablet_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-tablet';
+}
+if ( $is_mobile_fractional ) {
+	$wrapper_classes[] = 'has-edge-fade-mobile';
 }
 
 $wrapper_classes = (array) apply_filters(
@@ -729,6 +1062,9 @@ $wrapper_extra = array(
 if ( $enable_scroll ) {
 	$wrapper_extra['data-nextora-scroll-reveal'] = '1';
 }
+if ( $enable_popup ) {
+	$wrapper_extra['data-enable-popup'] = '1';
+}
 
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
 $wrapper_attributes = (string) apply_filters(
@@ -737,19 +1073,57 @@ $wrapper_attributes = (string) apply_filters(
 	$attributes,
 );
 
+$popup_data = array();
+if ( $enable_popup ) {
+	foreach ( $members as $m ) {
+		$mid  = (string) $m['id'];
+		$pid  = (int) $m['photoId'];
+		$purl = '';
+		if ( $pid > 0 ) {
+			$pimg = wp_get_attachment_image_src( $pid, 'large' );
+			if ( $pimg && ! empty( $pimg[0] ) ) {
+				$purl = $pimg[0];
+			}
+		}
+		if ( empty( $purl ) ) {
+			$purl = (string) ( $m['photoUrl'] ?? '' );
+		}
+		if ( empty( $purl ) ) {
+			$purl = nextora_team_section_photo_placeholder_url();
+		}
+		$popup_data[ $mid ] = array(
+			'id'          => $mid,
+			'name'        => (string) $m['name'],
+			'role'        => (string) $m['role'],
+			'tags'        => is_array( $m['tags'] ) ? $m['tags'] : array(),
+			'bio'         => (string) $m['bio'],
+			'detail'      => (string) ( $m['detail'] ?? '' ),
+			'photoUrl'    => $purl,
+			'photoAlt'    => (string) ( $m['photoAlt'] ?? '' ),
+			'socialLinks' => is_array( $m['socialLinks'] ) ? $m['socialLinks'] : array(),
+		);
+	}
+}
+
 nextora_team_section_enqueue_view_script();
 
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>>
 	<div class="nextora-team-section__inner">
 		<?php if ( 'template-02' === $card_template ) : ?>
-			<?php echo nextora_team_section_render_template_02( $members, $card_radius, $autoplay, $autoplay_d, $use_loop, $speed, $pause_hover, $show_arrows ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
+			<?php echo nextora_team_section_render_template_02( $members, $card_radius, $autoplay, $autoplay_d, $use_loop, $speed, $pause_hover, $show_arrows, $enable_popup, $color_options ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped?>
 		<?php else : ?>
 			<div
 				class="nextora-team-section__carousel-root"
 				data-swiper-opts="<?php echo esc_attr( $opts_string ); ?>"
 				data-layout-mode="<?php echo esc_attr( $layout_mode ); ?>"
 				data-grid-min-width="<?php echo esc_attr( (string) $grid_min_width ); ?>"
+				data-grid-columns="<?php echo esc_attr( (string) $grid_columns ); ?>"
+				data-grid-columns-tablet="<?php echo esc_attr( (string) $grid_columns_tablet ); ?>"
+				data-grid-columns-mobile="<?php echo esc_attr( (string) $grid_columns_mobile ); ?>"
+				<?php if ( $grid_no_carousel ) : ?>
+				data-disable-responsive-carousel="1"
+				<?php endif; ?>
 			>
 				<div class="swiper nextora-team-section__swiper">
 					<div class="swiper-wrapper">
@@ -760,15 +1134,18 @@ nextora_team_section_enqueue_view_script();
 								echo nextora_team_section_render_member_nuptse( $member, $card_radius, $attributes );
 							} elseif ( 'overlay-social' === $card_template ) {
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
-								echo nextora_team_section_render_member_slide_overlay( $member, $card_radius );
+								echo nextora_team_section_render_member_slide_overlay( $member, $card_radius, $enable_popup, $color_options );
 							} else {
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
-								echo nextora_team_section_render_member_slide( $member, $card_radius );
+								echo nextora_team_section_render_member_slide( $member, $card_radius, $enable_popup, $color_options );
 							}
 						}
 						?>
 					</div>
 				</div>
+				<?php if ( $has_any_fractional ) : ?>
+					<div class="nextora-team-section__edge-overlay" aria-hidden="true"></div>
+				<?php endif; ?>
 				<?php if ( $show_arrows && $slide_count > 1 ) : ?>
 					<button type="button" class="nextora-team-section__arrow nextora-team-section__arrow--prev" aria-label="<?php echo esc_attr__( 'Previous team member', 'nextora' ); ?>">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
@@ -783,4 +1160,38 @@ nextora_team_section_enqueue_view_script();
 			</div>
 		<?php endif; ?>
 	</div>
+	<?php if ( $enable_popup ) : ?>
+		<script type="application/json" class="nextora-team-section__popup-data">
+			<?php echo wp_json_encode( $popup_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ); ?>
+		</script>
+		<div class="nextora-team-drawer" data-placeholder-url="<?php echo esc_url( nextora_team_section_photo_placeholder_url() ); ?>" aria-hidden="true" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Team Member Details', 'nextora' ); ?>">
+			<div class="nextora-team-drawer__backdrop" tabindex="-1"></div>
+			<div class="nextora-team-drawer__panel">
+				<button type="button" class="nextora-team-drawer__close" aria-label="<?php esc_attr_e( 'Close', 'nextora' ); ?>">
+					<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+				</button>
+				<div class="nextora-team-drawer__body">
+					<div class="nextora-team-drawer__hero">
+						<div class="nextora-team-drawer__photo-wrap">
+							<img class="nextora-team-drawer__photo" src="" alt="" />
+						</div>
+						<div class="nextora-team-drawer__meta">
+							<div class="nextora-team-drawer__tags"></div>
+							<h4 class="nextora-team-drawer__name"></h4>
+							<p class="nextora-team-drawer__role"></p>
+							<div class="nextora-team-drawer__social"></div>
+						</div>
+					</div>
+					<div class="nextora-team-drawer__divider"></div>
+					<div class="nextora-team-drawer__bio-wrap">
+						<p class="nextora-team-drawer__bio"></p>
+					</div>
+					<div class="nextora-team-drawer__detail-wrap">
+						<h4 class="nextora-team-drawer__section-title"><?php esc_html_e( 'About', 'nextora' ); ?></h4>
+						<div class="nextora-team-drawer__detail"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	<?php endif; ?>
 </div>

@@ -176,72 +176,83 @@ function initSequentialReveal(
 	header: HTMLElement | null,
 	carousel: HTMLElement | null,
 ): void {
+	if (section.closest('.has-mega-menu, .beplus-vmn-mega-panel')) {
+		setRevealReady(section);
+		return;
+	}
+
 	let played = false;
-	let scheduled = false;
 	let readyCheck = 0;
 
 	const waitForLayout = (callback: () => void): void => {
-		const hasCards = Boolean(carousel?.querySelector('.swiper-slide'));
+		const hasCards = Boolean(carousel?.querySelector('.nextora-blc__card'));
 		if (carousel && (!hasCards || carousel.clientWidth < 2) && readyCheck < 60) {
 			readyCheck += 1;
 			requestAnimationFrame(() => waitForLayout(callback));
 			return;
 		}
-		requestAnimationFrame(() => requestAnimationFrame(callback));
+		requestAnimationFrame(callback);
 	};
 
 	const playReveal = (): void => {
 		if (played || section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
-		scheduled = true;
+
 		waitForLayout(() => {
 			if (played || section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
 			played = true;
 
-		const cards = carousel
-			? Array.from(carousel.querySelectorAll<HTMLElement>('.swiper-slide'))
-			: [];
+			// ALWAYS target the inner card elements, NEVER .swiper-slide to avoid layout & swiper conflicts
+			const cards = carousel
+				? Array.from(carousel.querySelectorAll<HTMLElement>('.nextora-blc__card'))
+				: [];
 
-		const targets = [header, ...cards].filter((el): el is HTMLElement => el !== null);
+			const targets = [header, ...cards].filter((el): el is HTMLElement => el !== null);
 
-		if (targets.length === 0) {
-			setRevealReady(section);
-			return;
-		}
-
-		gsap.set(targets, { opacity: 0, y: 40, force3D: true });
-		section.classList.remove('nextora-blog-list-carousel--reveal-pending');
-
-		const gen = nextRevealGen(section);
-		const timeline = gsap.timeline({
-			defaults: { ease: 'power3.out' },
-			onComplete: () => {
-				if (getRevealGen(section) !== gen) return;
-				clearRevealStyles(targets);
+			if (targets.length === 0) {
 				setRevealReady(section);
-			},
-		});
+				return;
+			}
 
-		if (header) {
-			timeline.to(header, { opacity: 1, y: 0, duration: 0.85 }, 0);
-		}
+			// Pre-set matching 14px subtle displacement (same as menu-item & box-icon standard)
+			if (header) {
+				gsap.set(header, { opacity: 0, y: 14, force3D: true });
+			}
+			if (cards.length > 0) {
+				gsap.set(cards, { opacity: 0, y: 14, force3D: true });
+			}
+			section.classList.remove('nextora-blog-list-carousel--reveal-pending');
 
-		if (cards.length > 0) {
-			timeline.to(
-				cards,
-				{
-					opacity: 1,
-					y: 0,
-					duration: 0.75,
-					stagger: { each: 0.14, from: 'start' },
+			const gen = nextRevealGen(section);
+			const timeline = gsap.timeline({
+				defaults: { ease: 'power3.out' },
+				onComplete: () => {
+					if (getRevealGen(section) !== gen) return;
+					gsap.set(targets, { opacity: 1, y: 0, clearProps: 'transform' });
+					setRevealReady(section);
 				},
-				header ? 0.12 : 0,
-			);
-		}
+			});
+
+			if (header) {
+				timeline.to(header, { opacity: 1, y: 0, duration: 0.38 }, 0);
+			}
+
+			if (cards.length > 0) {
+				timeline.to(
+					cards,
+					{
+						opacity: 1,
+						y: 0,
+						duration: 0.38,
+						stagger: { each: 0.04, from: 'start' },
+					},
+					header ? 0.04 : 0,
+				);
+			}
 		});
 	};
 
 	window.setTimeout(() => {
-		if (scheduled || section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
+		if (played || section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
 		if (!isRevealStartPassed(section)) return;
 		setRevealReady(section);
 	}, REVEAL_FALLBACK_MS);
@@ -270,6 +281,11 @@ function playRevealOnEnter(
 	const playReveal = (): void => {
 		if (played || section.classList.contains('nextora-blog-list-carousel--reveal-ready')) return;
 		played = true;
+		if (typeof document !== 'undefined' && document.hidden) {
+			clearRevealStyles(targets);
+			setRevealReady(section);
+			return;
+		}
 		timeline.play();
 	};
 
@@ -310,7 +326,7 @@ function initScrollReveal(section: HTMLElement): void {
 	if (section.getAttribute(SCROLL_INIT_ATTR) === '1') return;
 	section.setAttribute(SCROLL_INIT_ATTR, '1');
 
-	if (prefersReducedMotion()) {
+	if (prefersReducedMotion() || (typeof document !== 'undefined' && document.hidden)) {
 		setRevealReady(section);
 		return;
 	}
@@ -476,13 +492,9 @@ function mountSwiper(root: HTMLElement): void {
 			observeParents: true,
 			resizeObserver: true,
 			updateOnWindowResize: true,
-			breakpointsBase: 'container',
+			breakpointsBase: 'window',
 			breakpoints: {
-				480: {
-					slidesPerView: cap(mobileSpv),
-					spaceBetween: Math.max(0, Math.min(12, gap)),
-				},
-				768: {
+				640: {
 					slidesPerView: cap(tabletSpv),
 					spaceBetween: Math.max(0, Math.min(24, gap)),
 				},
@@ -709,6 +721,12 @@ function run(): void {
 	initAllScrollReveals(document);
 	watchDeferredElements();
 	ScrollTrigger.config({ autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load,resize' });
+	document.addEventListener('visibilitychange', () => {
+		if (!document.hidden) {
+			initAllScrollReveals(document);
+			ScrollTrigger.refresh();
+		}
+	});
 	ScrollTrigger.refresh();
 }
 

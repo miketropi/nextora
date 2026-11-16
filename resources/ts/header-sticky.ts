@@ -16,7 +16,7 @@ declare global {
 const STICKY_SEL =
 	".nextora-header-block--sticky-always, .nextora-header-block--sticky-scroll-up";
 const SCROLL_UP_SEL = ".nextora-header-block--sticky-scroll-up";
-const HEADER_SHELL_SEL = "header.wp-block-template-part";
+const HEADER_SHELL_SEL = "header.wp-block-template-part, .wp-block-template-part";
 const PINNED_CLASS = "nextora-header-block--is-pinned";
 const HIDDEN_CLASS = "nextora-header-block--scroll-hidden";
 const SPACER_CLASS = "nextora-header-block__sticky-spacer";
@@ -26,14 +26,17 @@ const VAR_LEFT = "--nextora-header-sticky-left";
 const VAR_WIDTH = "--nextora-header-sticky-width";
 const VAR_TRANSLATE_Y = "--nextora-header-sticky-translate-y";
 
-const SCROLL_DELTA = 6;
+/** Minimum accumulated downward scroll before hiding the header (px). */
+const HIDE_DELTA_THRESHOLD = 15;
+/** Minimum accumulated upward scroll before revealing the header (px). */
+const SHOW_DELTA_THRESHOLD = 15;
 const DEFAULT_HIDE_AFTER = 72;
 
 type StickyEntry = {
 	el: HTMLElement;
 	shell: HTMLElement;
 	spacer: HTMLElement | null;
-	/** Document scrollY when the block should pin; measured only while unpinned. */
+	/** Document scrollY when the block should pin. */
 	pinScrollY: number;
 };
 
@@ -61,15 +64,17 @@ function measurePinTop(): number {
 
 /**
  * Document scrollY when the block top reaches the pin line.
- * Invalid while `position: fixed` — use cached `entry.pinScrollY` when pinned.
  */
-function measurePinScrollY(block: HTMLElement, pinTop: number): number {
-	const top = block.getBoundingClientRect().top;
+function measurePinScrollY(element: HTMLElement, pinTop: number): number {
+	const top = element.getBoundingClientRect().top;
 	return Math.max(0, Math.round(window.scrollY + top - pinTop));
 }
 
 function refreshPinScrollY(entry: StickyEntry, pinTop: number): void {
 	if (entry.el.classList.contains(PINNED_CLASS)) {
+		if (entry.spacer) {
+			entry.pinScrollY = measurePinScrollY(entry.spacer, pinTop);
+		}
 		return;
 	}
 	entry.pinScrollY = measurePinScrollY(entry.el, pinTop);
@@ -86,17 +91,16 @@ function updateGeometry(
 		return;
 	}
 	const box = shell.getBoundingClientRect();
-	el.style.setProperty(VAR_LEFT, `${Math.round(box.left)}px`);
-	el.style.setProperty(VAR_WIDTH, `${Math.round(box.width)}px`);
+	if (box.width > 0) {
+		el.style.setProperty(VAR_LEFT, `${Math.round(box.left)}px`);
+		el.style.setProperty(VAR_WIDTH, `${Math.round(box.width)}px`);
+	}
 }
 
 function setPinned(entry: StickyEntry, pinned: boolean): void {
 	const { el } = entry;
 	const wasPinned = el.classList.contains(PINNED_CLASS);
 	if (wasPinned === pinned) {
-		if (pinned && entry.spacer) {
-			entry.spacer.style.height = `${el.offsetHeight}px`;
-		}
 		return;
 	}
 
@@ -127,8 +131,10 @@ function setPinned(entry: StickyEntry, pinned: boolean): void {
 /** Scroll-up show/hide on the block root (`.nextora-header-block`). */
 function setHidden(entry: StickyEntry, hidden: boolean): void {
 	const { el } = entry;
+	if (el.classList.contains(HIDDEN_CLASS) === hidden) {
+		return;
+	}
 	el.classList.toggle(HIDDEN_CLASS, hidden);
-	el.style.setProperty(VAR_TRANSLATE_Y, hidden ? `${-el.offsetHeight}px` : "0px");
 }
 
 function collectEntries(): StickyEntry[] {
@@ -159,7 +165,8 @@ export function initHeaderSticky(): void {
 			: DEFAULT_HIDE_AFTER;
 
 	const hiddenState = new Map<StickyEntry, boolean>();
-	let lastY = window.scrollY;
+	let lastY = Math.max(0, window.scrollY);
+	let accumulatedDelta = 0;
 	let ticking = false;
 
 	const syncLayout = (): void => {
@@ -167,8 +174,12 @@ export function initHeaderSticky(): void {
 		for (const entry of entries) {
 			refreshPinScrollY(entry, pinTop);
 			const pinned = window.scrollY >= entry.pinScrollY - 1;
-			updateGeometry(entry, pinTop, !pinned);
+			// Crucial: ALWAYS refreshBox = true on resize/sync so width/left never freeze!
+			updateGeometry(entry, pinTop, true);
 			setPinned(entry, pinned);
+			if (pinned && entry.spacer) {
+				entry.spacer.style.height = `${entry.el.offsetHeight}px`;
+			}
 			if (hiddenState.get(entry)) {
 				setHidden(entry, true);
 			}
@@ -177,7 +188,7 @@ export function initHeaderSticky(): void {
 
 	const applyScroll = (): void => {
 		ticking = false;
-		const y = window.scrollY;
+		const y = Math.max(0, window.scrollY);
 		const delta = y - lastY;
 		lastY = y;
 
@@ -197,23 +208,34 @@ export function initHeaderSticky(): void {
 
 		for (const entry of scrollUpEntries) {
 			if (!entry.el.classList.contains(PINNED_CLASS)) {
+				accumulatedDelta = 0;
 				setHidden(entry, false);
 				continue;
 			}
 
 			const hideThreshold = entry.pinScrollY + hideAfter;
 
+			// Elastic overscroll or near the top: always keep visible.
 			if (y < hideThreshold) {
+				accumulatedDelta = 0;
 				hiddenState.set(entry, false);
 				setHidden(entry, false);
 				continue;
 			}
-			if (delta > SCROLL_DELTA) {
-				hiddenState.set(entry, true);
-				setHidden(entry, true);
-			} else if (delta < -SCROLL_DELTA) {
-				hiddenState.set(entry, false);
-				setHidden(entry, false);
+
+			// Accumulate delta for intentional scroll direction detection (no micro-jitter).
+			if (delta > 0) {
+				accumulatedDelta = accumulatedDelta < 0 ? delta : accumulatedDelta + delta;
+				if (accumulatedDelta >= HIDE_DELTA_THRESHOLD) {
+					hiddenState.set(entry, true);
+					setHidden(entry, true);
+				}
+			} else if (delta < 0) {
+				accumulatedDelta = accumulatedDelta > 0 ? delta : accumulatedDelta + delta;
+				if (accumulatedDelta <= -SHOW_DELTA_THRESHOLD) {
+					hiddenState.set(entry, false);
+					setHidden(entry, false);
+				}
 			}
 		}
 	};
@@ -237,7 +259,8 @@ export function initHeaderSticky(): void {
 	window.addEventListener(
 		"resize",
 		() => {
-			lastY = window.scrollY;
+			lastY = Math.max(0, window.scrollY);
+			accumulatedDelta = 0;
 			syncLayout();
 		},
 		{ passive: true },
@@ -246,7 +269,6 @@ export function initHeaderSticky(): void {
 	if (typeof ResizeObserver !== "undefined") {
 		const ro = new ResizeObserver(() => syncLayout());
 		for (const entry of entries) {
-			ro.observe(entry.el);
 			ro.observe(entry.shell);
 		}
 		const adminBar = document.getElementById("wpadminbar");

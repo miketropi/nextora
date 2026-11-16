@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/hero-section",
   "title": "Hero Section",
-  "category": "theme",
+  "category": "nextora",
   "description": "Two-column hero: copy and supporting visuals. Layout uses CSS clamp() for small screens; use the sidebar to adjust column ratio and order.",
   "keywords": [
     "hero",
@@ -29,7 +29,9 @@
     },
     "typography": {
       "fontSize": true,
-      "lineHeight": true
+      "lineHeight": true,
+      "fontFamily": true,
+      "fontWeight": true
     },
     "dimensions": {
       "minHeight": true

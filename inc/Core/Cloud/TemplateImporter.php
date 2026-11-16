@@ -56,9 +56,9 @@ final class TemplateImporter {
 	public static function import_as_page( string $title, string $slug, string $content, array $template_data ): array|WP_Error {
 		$post_id = wp_insert_post(
 			array(
-				'post_title'   => $title,
+				'post_title'   => wp_slash( $title ),
 				'post_name'    => $slug,
-				'post_content' => $content,
+				'post_content' => wp_slash( $content ),
 				'post_status'  => 'draft',
 				'post_type'    => 'page',
 				'post_author'  => get_current_user_id() ?: 1,
@@ -129,9 +129,9 @@ final class TemplateImporter {
 		);
 
 		$post_data = array(
-			'post_title'   => $title,
+			'post_title'   => wp_slash( $title ),
 			'post_name'    => $slug,
-			'post_content' => $content,
+			'post_content' => wp_slash( $content ),
 			'post_status'  => 'publish',
 			'post_type'    => 'wp_template',
 			'tax_input'    => array(

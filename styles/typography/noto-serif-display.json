@@ -4,7 +4,7 @@
 	"title": "Noto Serif Display",
 	"styles": {
 		"typography": {
-			"fontFamily": "var(--wp--preset--font-family--josefin-sans)"
+			"fontFamily": "var(--wp--preset--font-family--noto-serif-display)"
 		},
 		"elements": {
 			"heading": {
@@ -14,14 +14,14 @@
 			},
 			"button": {
 				"typography": {
-					"fontFamily": "var(--wp--preset--font-family--josefin-sans)"
+					"fontFamily": "var(--wp--preset--font-family--noto-serif-display)"
 				}
 			}
 		},
 		"blocks": {
 			"nextora/header": {
 				"typography": {
-					"fontFamily": "var(--wp--preset--font-family--josefin-sans)"
+					"fontFamily": "var(--wp--preset--font-family--noto-serif-display)"
 				}
 			}
 		}

@@ -295,7 +295,7 @@ ob_start();
 								<?php } ?>
 							<?php endif; ?>
 
-							<h4 class="nextora-post-grid__title order-0 !m-0 text-lg font-semibold leading-snug tracking-tight  md:text-xl">
+							<h4 class="nextora-post-grid__title order-0 !m-0 font-semibold tracking-tight">
 								<a href="<?php the_permalink(); ?>" class="text-inherit !no-underline decoration-paragraph/30 decoration-2 underline-offset-4 transition-colors !text-contrast hover:!text-primary">
 									<?php the_title(); ?>
 								</a>

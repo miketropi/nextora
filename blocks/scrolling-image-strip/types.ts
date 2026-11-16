@@ -1,5 +1,12 @@
+export interface ScrollingImageItem {
+  id?: number;
+  url: string;
+  alt?: string;
+}
+
 export interface ScrollingImageStripAttributes {
   imageIds: number[];
+  images?: ScrollingImageItem[];
   imageHeight: number;
   imageHeightUnit: string;
   imageAspectRatio: string;

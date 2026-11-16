@@ -16,11 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Editor placeholder when WooCommerce skips SSR cart markup (REST / admin).
  */
 function nextora_header_block_woo_mini_cart_editor_placeholder(): string {
-	$icon = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-		<path d="M6 7h15l-1.5 9h-12L6 7Zm0 0L5 3H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
-		<circle cx="9" cy="20" r="1.35" fill="currentColor" />
-		<circle cx="18" cy="20" r="1.35" fill="currentColor" />
-	</svg>';
+	$icon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart" aria-hidden="true" focusable="false"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>';
 
 	return '<div class="nextora-header-block__cart-placeholder" aria-hidden="true">'
 		. '<span class="nextora-header-block__cart-placeholder-icon">' . $icon . '</span>'
@@ -76,6 +72,12 @@ function nextora_header_block_render_woo_mini_cart( array $atts = array() ): str
 
 	if ( '' === trim( $markup ) && defined( 'REST_REQUEST' ) && REST_REQUEST ) {
 		return nextora_header_block_woo_mini_cart_editor_placeholder();
+	}
+
+	// Standardize WooCommerce Mini-Cart icon with official Lucide shopping-cart icon.
+	$lucide_cart = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart wc-block-mini-cart__icon" aria-hidden="true" focusable="false"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>';
+	if ( preg_match( '/<svg[^>]*class="[^"]*wc-block-mini-cart__icon[^"]*"[^>]*>.*?<\/svg>/s', $markup ) ) {
+		$markup = (string) preg_replace( '/<svg[^>]*class="[^"]*wc-block-mini-cart__icon[^"]*"[^>]*>.*?<\/svg>/s', $lucide_cart, $markup, 1 );
 	}
 
 	/**

@@ -12,6 +12,7 @@ import {
 	TextControl,
 	ToggleControl,
 	TextareaControl,
+	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { useEffect, useMemo } from '@wordpress/element';
@@ -24,6 +25,7 @@ import {
 } from '../advanced-icon/color-utils';
 import {
 	BLOG_LIST_TEMPLATE_OPTIONS,
+	RESET_COLOR_ATTRIBUTES,
 	getTemplateDefaultAttributes,
 	normalizeCardTemplate,
 } from './template-utils';
@@ -185,6 +187,7 @@ const titleFontSizeOptions = [
 	{ label: __('Small', 'nextora'), value: 'small' },
 	{ label: __('Base', 'nextora'), value: 'base' },
 	{ label: __('Medium', 'nextora'), value: 'medium' },
+	{ label: __('Medium Plus', 'nextora'), value: 'medium-plus' },
 	{ label: __('Large', 'nextora'), value: 'large' },
 	{ label: __('Extra Large', 'nextora'), value: 'x-large' },
 	{ label: __('2XL', 'nextora'), value: 'xx-large' },
@@ -228,10 +231,12 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		imageSize = 'medium_large',
 		imageBorderRadius = 8,
 		imageWidthPercent = 40,
+		itemHeight,
 		showTitle = true,
 		titleFontSize = '',
 		titleLineClamp = 2,
 		showExcerpt = true,
+		excerptFontSize = '',
 		excerptLineClamp = 3,
 		excerptLength = 120,
 		showDate = true,
@@ -253,11 +258,13 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		showPagination = true,
 		showArrows = false,
 		arrowStyle = 'minimal',
+		arrowsDesktopDotsMobile = false,
 		freeMode = false,
 		grabCursor = true,
 		cardTitleColor = '',
 		cardExcerptColor = '',
 		cardMetaColor = '',
+		cardMetaIconColor = '',
 		cardBackgroundColor = '',
 		cardBorderColor = '',
 		cardBorderRadius = 0,
@@ -268,6 +275,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		arrowColor = '',
 		enableScrollAnimation = true,
 		scrollAnimationStyle = 'default',
+		edgeFadeColor = '',
 	} = attributes;
 
 	const cardTemplate = normalizeCardTemplate(cardTemplateRaw);
@@ -288,15 +296,62 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		setAttributes({ [key]: normalizeColorForStorage(value, lookupPalette) } as Partial<BlogListCarouselAttributes>);
 	};
 
+	const fontSizeAliasMap: Record<string, string> = {
+		sm: 'small',
+		md: 'medium',
+		'medium-plus': 'medium-plus',
+		lg: 'large',
+		xl: 'x-large',
+		'2xl': 'xx-large',
+	};
+	const normalizedTitleSize = titleFontSize ? (fontSizeAliasMap[titleFontSize] ?? titleFontSize) : '';
 	const titleFontSizeCSS =
-		titleFontSize && ['small', 'base', 'medium', 'large', 'x-large', 'xx-large'].includes(titleFontSize)
-			? `var(--wp--preset--font-size--${titleFontSize})`
+		normalizedTitleSize &&
+		[
+			'small',
+			'base',
+			'medium',
+			'medium-plus',
+			'large',
+			'x-large',
+			'xx-large',
+		].includes(normalizedTitleSize)
+			? `var(--wp--preset--font-size--${normalizedTitleSize})`
 			: undefined;
 
+	const normalizedExcerptSize = excerptFontSize ? (fontSizeAliasMap[excerptFontSize] ?? excerptFontSize) : '';
+	const excerptFontSizeCSS =
+		normalizedExcerptSize &&
+		[
+			'small',
+			'base',
+			'medium',
+			'medium-plus',
+			'large',
+			'x-large',
+			'xx-large',
+		].includes(normalizedExcerptSize)
+			? `var(--wp--preset--font-size--${normalizedExcerptSize})`
+			: undefined;
+
+	const isDesktopFractional = (slidesPerView % 1) !== 0;
+	const isTabletFractional = (slidesPerViewTablet % 1) !== 0;
+	const isMobileFractional = (slidesPerViewMobile % 1) !== 0;
+
 	const blockProps = useBlockProps({
-		className: 'nextora-blog-list-carousel-block--editor',
+		className: [
+			'nextora-blog-list-carousel-block--editor',
+			isDesktopFractional ? 'has-edge-fade-desktop' : '',
+			isTabletFractional ? 'has-edge-fade-tablet' : '',
+			isMobileFractional ? 'has-edge-fade-mobile' : '',
+			itemHeight && itemHeight > 0 ? 'nextora-blog-list-carousel--has-item-height' : '',
+			arrowsDesktopDotsMobile ? 'nextora-blc--nav-desktop-arrows-mobile-dots' : '',
+		]
+			.filter(Boolean)
+			.join(' '),
 		style: {
 			'--nextora-blc-grid-cols': gridColumns,
+			'--nextora-blc-spv': slidesPerView,
 			'--nextora-blc-gap': `${spaceBetween}px`,
 			'--nextora-blc-grid-column-gap': `${gridColumnGap}px`,
 			'--nextora-blc-grid-row-gap': `${gridRowGap}px`,
@@ -304,7 +359,12 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 			'--nextora-blc-card-padding': `${cardPadding}px`,
 			'--nextora-blc-img-col-width': `${imageWidthPercent}%`,
 			'--nextora-blc-img-col-gap': '24px',
+			'--nextora-blc-item-height': itemHeight && itemHeight > 0 ? `${itemHeight}px` : undefined,
 			'--nextora-blc-title-font-size': titleFontSizeCSS,
+			'--nextora-blc-excerpt-font-size': excerptFontSizeCSS,
+			'--nextora-blc-title-clamp': titleLineClamp,
+			'--nextora-blc-excerpt-clamp': excerptLineClamp,
+			'--nextora-blc-edge-fade-color': edgeFadeColor || undefined,
 		} as React.CSSProperties,
 	});
 
@@ -444,15 +504,17 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						value={cardBorderRadius}
 						onChange={(v) => setAttributes({ cardBorderRadius: v ?? 0 })}
 						min={0}
-						max={cardTemplate === 'template-1' ? 32 : cardTemplate === 'template-2' ? 12 : 24}
+						max={cardTemplate === 'template-1' || cardTemplate === 'template-4' || cardTemplate === 'template-6' ? 32 : cardTemplate === 'template-2' ? 12 : 24}
 					/>
+					{cardTemplate !== 'template-5' && (
 					<RangeControl
 						label={__('Card inner padding', 'nextora')}
 						value={cardPadding}
 						onChange={(v) => setAttributes({ cardPadding: v ?? 0 })}
 						min={0}
-						max={cardTemplate === 'template-1' ? 32 : cardTemplate === 'template-2' ? 12 : 24}
+						max={cardTemplate === 'template-1' || cardTemplate === 'template-4' || cardTemplate === 'template-6' ? 64 : cardTemplate === 'template-2' ? 12 : 24}
 					/>
+					)}
 				<ToggleControl
 					label={__('Show featured image', 'nextora')}
 					checked={showImage}
@@ -477,8 +539,40 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							value={imageBorderRadius}
 							onChange={(v) => setAttributes({ imageBorderRadius: v ?? 8 })}
 							min={0}
-							max={24}
+							max={cardTemplate === 'template-6' ? 32 : 24}
 						/>
+						{(cardTemplate === 'template-2' || cardTemplate === 'template-4') && (
+							<RangeControl
+								label={__('Image width (%)', 'nextora')}
+								value={imageWidthPercent}
+								onChange={(v) =>
+									setAttributes({ imageWidthPercent: v ?? (cardTemplate === 'template-4' ? 42 : 40) })
+								}
+								min={20}
+								max={60}
+								help={__(
+									'Width of the image column as a percentage of the card.',
+									'nextora',
+								)}
+							/>
+						)}
+						{(cardTemplate === 'template-4' || cardTemplate === 'template-2') && (
+							<NumberControl
+								label={__('Item height (px)', 'nextora')}
+								value={itemHeight ?? ''}
+								onChange={(val) => {
+									const num = val === '' || val === undefined ? undefined : parseInt(String(val), 10);
+									setAttributes({ itemHeight: num && num > 0 ? num : undefined });
+								}}
+								min={100}
+								max={1200}
+								placeholder={__('Auto', 'nextora')}
+								help={__(
+									'Fixed height for card items and images (e.g. 380). Leave empty for auto height.',
+									'nextora',
+								)}
+							/>
+						)}
 					</>
 				)}
 					<ToggleControl
@@ -504,27 +598,38 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							/>
 						</>
 					)}
-					<ToggleControl
-						label={__('Show excerpt', 'nextora')}
-						checked={showExcerpt}
-						onChange={(v) => setAttributes({ showExcerpt: v })}
-					/>
-					{showExcerpt && (
+					{cardTemplate !== 'template-5' && (
 						<>
-							<RangeControl
-								label={__('Excerpt line clamp', 'nextora')}
-								value={excerptLineClamp}
-								onChange={(v) => setAttributes({ excerptLineClamp: v ?? 3 })}
-								min={1}
-								max={5}
+							<ToggleControl
+								label={__('Show excerpt', 'nextora')}
+								checked={showExcerpt}
+								onChange={(v) => setAttributes({ showExcerpt: v })}
 							/>
-							<RangeControl
-								label={__('Excerpt length (chars)', 'nextora')}
-								value={excerptLength}
-								onChange={(v) => setAttributes({ excerptLength: v ?? 120 })}
-								min={40}
-								max={300}
-							/>
+							{showExcerpt && (
+								<>
+									<SelectControl
+										label={__('Excerpt font size', 'nextora')}
+										value={excerptFontSize}
+										options={titleFontSizeOptions}
+										onChange={(v) => setAttributes({ excerptFontSize: v })}
+										help={__('Overrides the default card excerpt size.', 'nextora')}
+									/>
+									<RangeControl
+										label={__('Excerpt line clamp', 'nextora')}
+										value={excerptLineClamp}
+										onChange={(v) => setAttributes({ excerptLineClamp: v ?? 3 })}
+										min={1}
+										max={5}
+									/>
+									<RangeControl
+										label={__('Excerpt length (chars)', 'nextora')}
+										value={excerptLength}
+										onChange={(v) => setAttributes({ excerptLength: v ?? 120 })}
+										min={40}
+										max={300}
+									/>
+								</>
+							)}
 						</>
 					)}
 					<ToggleControl
@@ -540,16 +645,20 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							help={__('PHP date format (e.g. "d M Y", "F j, Y").', 'nextora')}
 						/>
 					)}
-					<ToggleControl
-						label={__('Show category badge', 'nextora')}
-						checked={showCategory}
-						onChange={(v) => setAttributes({ showCategory: v })}
-					/>
-					<ToggleControl
-						label={__('Show author', 'nextora')}
-						checked={showAuthor}
-						onChange={(v) => setAttributes({ showAuthor: v })}
-					/>
+					{cardTemplate !== 'template-5' && (
+						<>
+							<ToggleControl
+								label={__('Show category badge', 'nextora')}
+								checked={showCategory}
+								onChange={(v) => setAttributes({ showCategory: v })}
+							/>
+							<ToggleControl
+								label={__('Show author', 'nextora')}
+								checked={showAuthor}
+								onChange={(v) => setAttributes({ showAuthor: v })}
+							/>
+						</>
+					)}
 					<ToggleControl
 						label={__('Show "Read More"', 'nextora')}
 						checked={showReadMore}
@@ -585,11 +694,11 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						}
 						setAttributes({
 							cardTemplate: next,
+							...RESET_COLOR_ATTRIBUTES,
 							...getTemplateDefaultAttributes(next),
 						});
 					}}
 				/>
-				{cardTemplate !== 'template-4' && (
 					<SelectControl
 						label={__('Desktop layout', 'nextora')}
 						help={
@@ -609,7 +718,6 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							setAttributes({ layoutMode: v === 'grid' ? 'grid' : 'carousel' })
 						}
 					/>
-				)}
 				{layoutMode === 'grid' ? (
 					<>
 						{cardTemplate !== 'template-2' && (
@@ -637,17 +745,34 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							min={0}
 							max={60}
 						/>
-						{cardTemplate === 'template-2' && (
+						{(cardTemplate === 'template-2' || cardTemplate === 'template-4') && (
 							<RangeControl
 								label={__('Image width (%)', 'nextora')}
 								value={imageWidthPercent}
 								onChange={(v) =>
-									setAttributes({ imageWidthPercent: v ?? 40 })
+									setAttributes({ imageWidthPercent: v ?? (cardTemplate === 'template-4' ? 42 : 40) })
 								}
 								min={20}
 								max={60}
 								help={__(
 									'Width of the image column as a percentage of the card.',
+									'nextora',
+								)}
+							/>
+						)}
+						{(cardTemplate === 'template-4' || cardTemplate === 'template-2') && (
+							<NumberControl
+								label={__('Item height (px)', 'nextora')}
+								value={itemHeight ?? ''}
+								onChange={(val) => {
+									const num = val === '' || val === undefined ? undefined : parseInt(String(val), 10);
+									setAttributes({ itemHeight: num && num > 0 ? num : undefined });
+								}}
+								min={100}
+								max={1200}
+								placeholder={__('Auto', 'nextora')}
+								help={__(
+									'Fixed height for card items and images (e.g. 380). Leave empty for auto height.',
 									'nextora',
 								)}
 							/>
@@ -662,26 +787,39 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 						<RangeControl
 							label={__('Desktop slides', 'nextora')}
 							value={slidesPerView}
-							onChange={(v) => setAttributes({ slidesPerView: v ?? 3 })}
+							onChange={(v) =>
+								setAttributes({
+									slidesPerView: v !== undefined ? Math.round(v * 100) / 100 : 3,
+								})
+							}
 							min={1}
-							max={5}
+							max={6}
+							step={0.1}
 						/>
 					) : null}
 					<RangeControl
 						label={__('Tablet slides', 'nextora')}
 						value={slidesPerViewTablet}
-						onChange={(v) => setAttributes({ slidesPerViewTablet: v ?? 2 })}
+						onChange={(v) =>
+							setAttributes({
+								slidesPerViewTablet: v !== undefined ? Math.round(v * 100) / 100 : 2,
+							})
+						}
 						min={1}
 						max={4}
-						step={0.5}
+						step={0.1}
 					/>
 					<RangeControl
 						label={__('Mobile slides', 'nextora')}
 						value={slidesPerViewMobile}
-						onChange={(v) => setAttributes({ slidesPerViewMobile: v ?? 1.15 })}
+						onChange={(v) =>
+							setAttributes({
+								slidesPerViewMobile: v !== undefined ? Math.round(v * 100) / 100 : 1.15,
+							})
+						}
 						min={1}
-						max={2}
-						step={0.05}
+						max={3}
+						step={0.1}
 					/>
 					<RangeControl
 						label={__('Space between', 'nextora')}
@@ -717,7 +855,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				</PanelBody>
 
 				{/* ── Autoplay ── */}
-				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && cardTemplate !== 'template-4' && (
+				{!((cardTemplate === 'template-2' || cardTemplate === 'template-4') && layoutMode === 'grid') && (
 				<PanelBody title={__('Autoplay', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Enable autoplay', 'nextora')}
@@ -745,19 +883,40 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 				)}
 
 				{/* ── Pagination & Arrows ── */}
-				{!(cardTemplate === 'template-2' && layoutMode === 'grid') && cardTemplate !== 'template-4' && (
+				{!((cardTemplate === 'template-2' || cardTemplate === 'template-4') && layoutMode === 'grid') && (
 				<PanelBody title={__('Pagination & Arrows', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Show pagination dots', 'nextora')}
-						checked={showPagination}
+						checked={arrowsDesktopDotsMobile ? true : showPagination}
+						disabled={Boolean(arrowsDesktopDotsMobile)}
+						help={
+							arrowsDesktopDotsMobile
+								? __('Active on mobile (managed by Desktop arrows, mobile pagination).', 'nextora')
+								: undefined
+						}
 						onChange={(v) => setAttributes({ showPagination: v })}
 					/>
 					<ToggleControl
 						label={__('Show arrows', 'nextora')}
-						checked={showArrows}
+						checked={arrowsDesktopDotsMobile ? true : showArrows}
+						disabled={Boolean(arrowsDesktopDotsMobile)}
+						help={
+							arrowsDesktopDotsMobile
+								? __('Active on desktop (managed by Desktop arrows, mobile pagination).', 'nextora')
+								: undefined
+						}
 						onChange={(v) => setAttributes({ showArrows: v })}
 					/>
-					{showArrows && (
+					<ToggleControl
+						label={__('Desktop arrows, mobile pagination', 'nextora')}
+						help={__(
+							'Show arrows on desktop and switch to pagination dots on mobile.',
+							'nextora'
+						)}
+						checked={Boolean(arrowsDesktopDotsMobile)}
+						onChange={(v) => setAttributes({ arrowsDesktopDotsMobile: v })}
+					/>
+					{(showArrows || arrowsDesktopDotsMobile) && (
 						<SelectControl
 							label={__('Arrow style', 'nextora')}
 							value={arrowStyle}
@@ -789,13 +948,23 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 							onChange: (v) => setThemeColor('cardMetaColor', v),
 							label: __('Date / category', 'nextora'),
 						},
-						{
-							value: colorValueForPicker(cardBackgroundColor, colorPalette, lookupPalette),
-							onChange: (v) => setThemeColor('cardBackgroundColor', v),
-							label: __('Card background', 'nextora'),
-						},
+						...(cardTemplate !== 'template-5'
+							? [
+									{
+										value: colorValueForPicker(cardBackgroundColor, colorPalette, lookupPalette),
+										onChange: (v: string | undefined) => setThemeColor('cardBackgroundColor', v),
+										label: __('Card background', 'nextora'),
+									},
+								]
+							: []),
 						...(cardTemplate === 'template-1'
 							? [
+									{
+										value: colorValueForPicker(cardMetaIconColor, colorPalette, lookupPalette),
+										onChange: (v: string | undefined) =>
+											setThemeColor('cardMetaIconColor', v),
+										label: __('Meta icon color', 'nextora'),
+									},
 									{
 										value: colorValueForPicker(cardBorderColor, colorPalette, lookupPalette),
 										onChange: (v: string | undefined) =>
@@ -814,7 +983,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 									},
 								]
 							: []),
-						...(showPagination
+						...(showPagination || arrowsDesktopDotsMobile
 							? [
 									{
 										value: colorValueForPicker(paginationColor, colorPalette, lookupPalette),
@@ -830,7 +999,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 									},
 								]
 							: []),
-						...(showArrows
+						...(showArrows || arrowsDesktopDotsMobile
 							? [
 									{
 										value: colorValueForPicker(arrowColor, colorPalette, lookupPalette),
@@ -840,6 +1009,12 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 									},
 								]
 							: []),
+						{
+							value: colorValueForPicker(edgeFadeColor, colorPalette, lookupPalette),
+							onChange: (v: string | undefined) =>
+								setThemeColor('edgeFadeColor', v),
+							label: __('Edge fade overlay', 'nextora'),
+						},
 					]}
 				/>
 

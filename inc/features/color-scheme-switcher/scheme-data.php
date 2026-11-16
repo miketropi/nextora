@@ -255,7 +255,7 @@ function nextora_get_font_presets( array $fonts ): array {
  * @param string                $file     Absolute path to the JSON file.
  * @param array<string, string> $font_map Font registry slug => family stack.
  *
- * @return array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }|null
+ * @return array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonTextTransform: ?string, buttonFontWeight: ?string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }|null
  */
 function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 	if ( ! is_readable( $file ) ) {
@@ -301,11 +301,21 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 		}
 	}
 
-	$body    = null;
-	$heading = null;
-	$button  = null;
-	$font_slugs = array();
-	$local_font_map = array();
+	$body                       = null;
+	$heading                    = null;
+	$button                     = null;
+	$button_text_transform      = null;
+	$button_font_weight         = null;
+	$button_bg                  = null;
+	$button_color               = null;
+	$button_hover_bg            = null;
+	$button_hover_color         = null;
+	$header_button_bg           = null;
+	$header_button_color        = null;
+	$header_button_hover_bg     = null;
+	$header_button_hover_color  = null;
+	$font_slugs                 = array();
+	$local_font_map             = array();
 
 	$file_fonts = $data['settings']['typography']['fontFamilies'] ?? null;
 	if ( is_array( $file_fonts ) && array() !== $file_fonts ) {
@@ -354,6 +364,44 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 				$button = $resolved_button;
 			}
 		}
+
+		$btn_style = $styles['elements']['button'] ?? null;
+		if ( is_array( $btn_style ) ) {
+			if ( isset( $btn_style['color']['background'] ) && is_string( $btn_style['color']['background'] ) ) {
+				$button_bg = $btn_style['color']['background'];
+			}
+			if ( isset( $btn_style['color']['text'] ) && is_string( $btn_style['color']['text'] ) ) {
+				$button_color = $btn_style['color']['text'];
+			}
+			if ( isset( $btn_style[':hover']['color']['background'] ) && is_string( $btn_style[':hover']['color']['background'] ) ) {
+				$button_hover_bg = $btn_style[':hover']['color']['background'];
+			}
+			if ( isset( $btn_style[':hover']['color']['text'] ) && is_string( $btn_style[':hover']['color']['text'] ) ) {
+				$button_hover_color = $btn_style[':hover']['color']['text'];
+			}
+			if ( isset( $btn_style['typography']['textTransform'] ) && is_string( $btn_style['typography']['textTransform'] ) && '' !== $btn_style['typography']['textTransform'] ) {
+				$button_text_transform = sanitize_text_field( $btn_style['typography']['textTransform'] );
+			}
+			if ( isset( $btn_style['typography']['fontWeight'] ) && ( is_string( $btn_style['typography']['fontWeight'] ) || is_numeric( $btn_style['typography']['fontWeight'] ) ) && '' !== (string) $btn_style['typography']['fontWeight'] ) {
+				$button_font_weight = (string) $btn_style['typography']['fontWeight'];
+			}
+		}
+
+		$hdr_btn_style = $styles['blocks']['nextora/header']['elements']['button'] ?? null;
+		if ( is_array( $hdr_btn_style ) ) {
+			if ( isset( $hdr_btn_style['color']['background'] ) && is_string( $hdr_btn_style['color']['background'] ) ) {
+				$header_button_bg = $hdr_btn_style['color']['background'];
+			}
+			if ( isset( $hdr_btn_style['color']['text'] ) && is_string( $hdr_btn_style['color']['text'] ) ) {
+				$header_button_color = $hdr_btn_style['color']['text'];
+			}
+			if ( isset( $hdr_btn_style[':hover']['color']['background'] ) && is_string( $hdr_btn_style[':hover']['color']['background'] ) ) {
+				$header_button_hover_bg = $hdr_btn_style[':hover']['color']['background'];
+			}
+			if ( isset( $hdr_btn_style[':hover']['color']['text'] ) && is_string( $hdr_btn_style[':hover']['color']['text'] ) ) {
+				$header_button_hover_color = $hdr_btn_style[':hover']['color']['text'];
+			}
+		}
 	}
 
 	if ( is_array( $file_fonts ) && array() !== $file_fonts ) {
@@ -381,6 +429,16 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 		$button = $body;
 	}
 
+	$button_bg          = $button_bg ?? 'var(--wp--preset--color--primary)';
+	$button_color       = $button_color ?? 'var(--wp--preset--color--base)';
+	$button_hover_bg    = $button_hover_bg ?? 'var(--wp--preset--color--secondary)';
+	$button_hover_color = $button_hover_color ?? 'var(--wp--preset--color--base)';
+
+	$header_button_bg          = $header_button_bg ?? $button_bg;
+	$header_button_color       = $header_button_color ?? $button_color;
+	$header_button_hover_bg    = $header_button_hover_bg ?? $button_hover_bg;
+	$header_button_hover_color = $header_button_hover_color ?? $button_hover_color;
+
 	if ( array() === $font_slugs ) {
 		foreach ( $font_map as $font_slug => $font_family ) {
 			if ( $font_family === $body || $font_family === $heading ) {
@@ -394,13 +452,23 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
 		: basename( $file, '.json' );
 
 	return array(
-		'title'     => $title,
-		'colors'    => $colors,
-		'gradients' => $gradients,
-		'body'      => $body,
-		'heading'   => $heading,
-		'button'    => $button,
-		'fontSlugs' => array_values( array_unique( $font_slugs ) ),
+		'title'                  => $title,
+		'colors'                 => $colors,
+		'gradients'              => $gradients,
+		'body'                   => $body,
+		'heading'                => $heading,
+		'button'                 => $button,
+		'buttonTextTransform'    => $button_text_transform,
+		'buttonFontWeight'       => $button_font_weight,
+		'buttonBg'               => $button_bg,
+		'buttonColor'            => $button_color,
+		'buttonHoverBg'          => $button_hover_bg,
+		'buttonHoverColor'       => $button_hover_color,
+		'headerButtonBg'         => $header_button_bg,
+		'headerButtonColor'      => $header_button_color,
+		'headerButtonHoverBg'    => $header_button_hover_bg,
+		'headerButtonHoverColor' => $header_button_hover_color,
+		'fontSlugs'              => array_values( array_unique( $font_slugs ) ),
 	);
 }
 
@@ -410,7 +478,7 @@ function nextora_parse_theme_preset( string $file, array $font_map ): ?array {
  *
  * @param array<string, array{ name: string, family: string }> $fonts Font registry.
  *
- * @return array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }>
+ * @return array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonTextTransform: ?string, buttonFontWeight: ?string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }>
  */
 function nextora_get_themes( array $fonts ): array {
 	$font_map = array();
@@ -551,7 +619,7 @@ function nextora_get_switcher_config(): array {
  * @return array{
  *   colorPresets: array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string> }>,
  *   fontPresets: array<string, array{ title: string, body: string, heading: string }>,
- *   themes: array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }>,
+ *   themes: array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonTextTransform: ?string, buttonFontWeight: ?string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }>,
  *   fonts: array<string, array{ name: string, family: string }>,
  *   config: array{
  *     initial: array{ theme: string, color: string, font: string },
@@ -637,7 +705,7 @@ function nextora_get_switcher_payload(): array {
 	$theme_rules = $config['presets']['themes'];
 
 	if ( null !== $theme_rules ) {
-		/** @var array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, fontSlugs: list<string> }> $filtered_themes */
+		/** @var array<string, array{ title: string, colors: array<string, string>, gradients: array<string, string>, body: string, heading: string, button: string, buttonTextTransform: ?string, buttonFontWeight: ?string, buttonBg: string, buttonColor: string, buttonHoverBg: string, buttonHoverColor: string, headerButtonBg: string, headerButtonColor: string, headerButtonHoverBg: string, headerButtonHoverColor: string, fontSlugs: list<string> }> $filtered_themes */
 		$filtered_themes = array();
 
 		foreach ( $theme_rules as $rule ) {
@@ -678,12 +746,18 @@ function nextora_get_switcher_payload(): array {
 		? $config['initial']['font']
 		: '';
 
+	$resolved = nextora_resolve_current_request_theme( $themes, $initial_theme );
+	$page_defaults = nextora_resolve_current_request_theme( $themes, '', true );
+
 	return array(
-		'colorPresets' => $color_presets,
-		'fontPresets'  => $font_presets,
-		'themes'       => $themes,
-		'fonts'        => $fonts,
-		'config'       => array(
+		'colorPresets'      => $color_presets,
+		'fontPresets'       => $font_presets,
+		'themes'            => $themes,
+		'fonts'             => $fonts,
+		'currentPageTheme'  => $resolved['theme'],
+		'isDirectPageTheme' => $resolved['is_direct_page_theme'],
+		'resetPageTheme'    => $page_defaults['theme'],
+		'config'            => array(
 			'initial'  => array(
 				'theme' => $initial_theme,
 				'color' => $initial_color,
@@ -692,4 +766,259 @@ function nextora_get_switcher_payload(): array {
 			'sections' => $config['sections'],
 		),
 	);
+}
+
+/**
+ * Resolves the theme for the current request.
+ *
+ * Priority:
+ * 1. URL parameter (?theme=slug). (is_direct_page_theme = true)
+ * 2. Front page setting (is_front_page() || is_home()):
+ *    - If show_on_front === 'page': checks post meta `_nextora_theme` on page_on_front ID.
+ * 3. Singular post/page:
+ *    - checks post meta `_nextora_theme` on current post ID (or ancestors).
+ * 4. Cookie `nextora_active_theme`:
+ *    - For inner pages (e.g. contact, about) that do not have their own meta theme,
+ *      inherits previously active demo theme from session/cookie. (is_direct_page_theme = false)
+ *
+ * @param array<string, mixed> $themes           Available themes.
+ * @param string               $initial_fallback Optional fallback theme slug from config.
+ * @param bool                 $page_only        Ignore preview URL and cookie preferences.
+ *
+ * @return array{ theme: ?string, is_direct_page_theme: bool }
+ */
+function nextora_resolve_current_request_theme( array $themes, string $initial_fallback = '', bool $page_only = false ): array {
+	// Explicit default reset via cookie
+	if ( ! $page_only && isset( $_COOKIE['nextora_active_theme'] ) && 'default' === $_COOKIE['nextora_active_theme'] ) {
+		return array(
+			'theme'                => null,
+			'is_direct_page_theme' => false,
+		);
+	}
+
+	// 1. URL query parameter (?theme=slug)
+	if ( ! $page_only && isset( $_GET['theme'] ) && is_string( $_GET['theme'] ) ) {
+		$url_slug = sanitize_title( wp_unslash( $_GET['theme'] ) );
+		if ( isset( $themes[ $url_slug ] ) ) {
+			return array(
+				'theme'                => $url_slug,
+				'is_direct_page_theme' => true,
+			);
+		}
+	}
+
+	// 2. Front page check
+	if ( is_front_page() || is_home() ) {
+		if ( 'page' === get_option( 'show_on_front' ) ) {
+			$front_id = (int) get_option( 'page_on_front' );
+			if ( $front_id > 0 ) {
+				$meta_theme = (string) get_post_meta( $front_id, '_nextora_theme', true );
+				if ( '' !== $meta_theme && isset( $themes[ $meta_theme ] ) ) {
+					return array(
+						'theme'                => $meta_theme,
+						'is_direct_page_theme' => true,
+					);
+				}
+			}
+		}
+
+		// Fallback: check cookie if visiting front-page without a designated meta theme
+		if ( ! $page_only && isset( $_COOKIE['nextora_active_theme'] ) && is_string( $_COOKIE['nextora_active_theme'] ) ) {
+			$cookie_theme = sanitize_title( wp_unslash( $_COOKIE['nextora_active_theme'] ) );
+			if ( isset( $themes[ $cookie_theme ] ) ) {
+				return array(
+					'theme'                => $cookie_theme,
+					'is_direct_page_theme' => false,
+				);
+			}
+		}
+
+		if ( '' !== $initial_fallback && isset( $themes[ $initial_fallback ] ) ) {
+			return array(
+				'theme'                => $initial_fallback,
+				'is_direct_page_theme' => false,
+			);
+		}
+
+		return array(
+			'theme'                => null,
+			'is_direct_page_theme' => false,
+		);
+	}
+
+	// 3. Singular post/page
+	if ( is_singular() ) {
+		$post_id = get_queried_object_id();
+		if ( $post_id > 0 ) {
+			$meta_theme = (string) get_post_meta( $post_id, '_nextora_theme', true );
+			if ( '' !== $meta_theme && isset( $themes[ $meta_theme ] ) ) {
+				return array(
+					'theme'                => $meta_theme,
+					'is_direct_page_theme' => true,
+				);
+			}
+
+			// Fallback: check page slug against available theme slugs (e.g. /medical/ -> medical)
+			$post = get_post( $post_id );
+			if ( $post instanceof WP_Post && '' !== $post->post_name ) {
+				$post_slug = sanitize_title( $post->post_name );
+				if ( isset( $themes[ $post_slug ] ) ) {
+					return array(
+						'theme'                => $post_slug,
+						'is_direct_page_theme' => true,
+					);
+				}
+				// Also normalize hyphens/kebab (e.g. clean-water -> cleanwater)
+				$unhyphenated = str_replace( '-', '', $post_slug );
+				if ( isset( $themes[ $unhyphenated ] ) ) {
+					return array(
+						'theme'                => $unhyphenated,
+						'is_direct_page_theme' => true,
+					);
+				}
+			}
+
+			// Check ancestors if nested page
+			$ancestors = get_post_ancestors( $post_id );
+			if ( is_array( $ancestors ) ) {
+				foreach ( $ancestors as $ancestor_id ) {
+					$ancestor_theme = (string) get_post_meta( (int) $ancestor_id, '_nextora_theme', true );
+					if ( '' !== $ancestor_theme && isset( $themes[ $ancestor_theme ] ) ) {
+						return array(
+							'theme'                => $ancestor_theme,
+							'is_direct_page_theme' => true,
+						);
+					}
+				}
+			}
+		}
+	}
+
+	// 4. Inner pages (no direct theme): inherit active session theme from cookie
+	if ( ! $page_only && isset( $_COOKIE['nextora_active_theme'] ) && is_string( $_COOKIE['nextora_active_theme'] ) ) {
+		$cookie_theme = sanitize_title( wp_unslash( $_COOKIE['nextora_active_theme'] ) );
+		if ( isset( $themes[ $cookie_theme ] ) ) {
+			return array(
+				'theme'                => $cookie_theme,
+				'is_direct_page_theme' => false,
+			);
+		}
+	}
+
+	// 5. Config initial theme fallback
+	if ( '' !== $initial_fallback && isset( $themes[ $initial_fallback ] ) ) {
+		return array(
+			'theme'                => $initial_fallback,
+			'is_direct_page_theme' => false,
+		);
+	}
+
+	return array(
+		'theme'                => null,
+		'is_direct_page_theme' => false,
+	);
+}
+
+/**
+ * Builds CSS variables and button override rules for a given theme preset.
+ *
+ * @param array<string, mixed> $theme Theme preset.
+ *
+ * @return string Inline CSS.
+ */
+function nextora_get_theme_inline_css( array $theme ): string {
+	$root_rules = array();
+
+	if ( ! empty( $theme['colors'] ) && is_array( $theme['colors'] ) ) {
+		foreach ( $theme['colors'] as $slug => $hex ) {
+			$root_rules[] = '--wp--preset--color--' . $slug . ': ' . $hex . ';';
+		}
+	}
+
+	if ( ! empty( $theme['gradients'] ) && is_array( $theme['gradients'] ) ) {
+		foreach ( $theme['gradients'] as $slug => $grad ) {
+			$root_rules[] = '--wp--preset--gradient--' . $slug . ': ' . $grad . ';';
+		}
+	}
+
+	if ( ! empty( $theme['body'] ) ) {
+		$root_rules[] = '--nextora-font-body: ' . $theme['body'] . ';';
+	}
+	if ( ! empty( $theme['heading'] ) ) {
+		$root_rules[] = '--nextora-font-heading: ' . $theme['heading'] . ';';
+	}
+	if ( ! empty( $theme['button'] ) ) {
+		$root_rules[] = '--nextora-font-button: ' . $theme['button'] . ';';
+	}
+
+	if ( ! empty( $theme['buttonBg'] ) ) {
+		$root_rules[] = '--nextora-button-bg: ' . $theme['buttonBg'] . ';';
+	}
+	if ( ! empty( $theme['buttonColor'] ) ) {
+		$root_rules[] = '--nextora-button-color: ' . $theme['buttonColor'] . ';';
+	}
+	if ( ! empty( $theme['buttonHoverBg'] ) ) {
+		$root_rules[] = '--nextora-button-hover-bg: ' . $theme['buttonHoverBg'] . ';';
+	}
+	if ( ! empty( $theme['buttonHoverColor'] ) ) {
+		$root_rules[] = '--nextora-button-hover-color: ' . $theme['buttonHoverColor'] . ';';
+	}
+	if ( ! empty( $theme['headerButtonBg'] ) ) {
+		$root_rules[] = '--nextora-header-button-bg: ' . $theme['headerButtonBg'] . ';';
+	}
+	if ( ! empty( $theme['headerButtonColor'] ) ) {
+		$root_rules[] = '--nextora-header-button-color: ' . $theme['headerButtonColor'] . ';';
+	}
+	if ( ! empty( $theme['headerButtonHoverBg'] ) ) {
+		$root_rules[] = '--nextora-header-button-hover-bg: ' . $theme['headerButtonHoverBg'] . ';';
+	}
+	if ( ! empty( $theme['headerButtonHoverColor'] ) ) {
+		$root_rules[] = '--nextora-header-button-hover-color: ' . $theme['headerButtonHoverColor'] . ';';
+	}
+	if ( ! empty( $theme['buttonTextTransform'] ) ) {
+		$root_rules[] = '--nextora-button-text-transform: ' . $theme['buttonTextTransform'] . ';';
+	}
+	if ( ! empty( $theme['buttonFontWeight'] ) ) {
+		$root_rules[] = '--nextora-button-font-weight: ' . $theme['buttonFontWeight'] . ';';
+	}
+
+	$css = ':root:root { ' . implode( ' ', $root_rules ) . ' }';
+
+	$btn_rules = array();
+	if ( ! empty( $theme['buttonBg'] ) || ! empty( $theme['buttonColor'] ) ) {
+		$bg          = ! empty( $theme['buttonBg'] ) ? 'background-color: var(--nextora-button-bg);' : '';
+		$col         = ! empty( $theme['buttonColor'] ) ? 'color: var(--nextora-button-color);' : '';
+		$btn_rules[] = ':root:root :where(.wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button), .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link) { ' . $bg . ' ' . $col . ' }';
+	}
+	if ( ! empty( $theme['buttonHoverBg'] ) || ! empty( $theme['buttonHoverColor'] ) ) {
+		$hbg         = ! empty( $theme['buttonHoverBg'] ) ? 'background-color: var(--nextora-button-hover-bg);' : '';
+		$hcol        = ! empty( $theme['buttonHoverColor'] ) ? 'color: var(--nextora-button-hover-color);' : '';
+		$btn_rules[] = ':root:root :where(.wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link:hover) { ' . $hbg . ' ' . $hcol . ' }';
+	}
+	if ( ! empty( $theme['headerButtonBg'] ) || ! empty( $theme['headerButtonColor'] ) ) {
+		$hdr_bg      = ! empty( $theme['headerButtonBg'] ) ? 'background-color: var(--nextora-header-button-bg);' : '';
+		$hdr_col     = ! empty( $theme['headerButtonColor'] ) ? 'color: var(--nextora-header-button-color);' : '';
+		$btn_rules[] = ':root:root :where(.wp-block-nextora-header .wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-header-block__cta--outline), .wp-block-nextora-header .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link, .nextora-header-block__cta.nextora-header-block__cta--solid) { ' . $hdr_bg . ' ' . $hdr_col . ' }';
+	}
+	if ( ! empty( $theme['headerButtonHoverBg'] ) || ! empty( $theme['headerButtonHoverColor'] ) ) {
+		$hdr_hbg     = ! empty( $theme['headerButtonHoverBg'] ) ? 'background-color: var(--nextora-header-button-hover-bg);' : '';
+		$hdr_hcol    = ! empty( $theme['headerButtonHoverColor'] ) ? 'color: var(--nextora-header-button-hover-color);' : '';
+		$btn_rules[] = ':root:root :where(.wp-block-nextora-header .wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-header-block__cta--outline):hover, .wp-block-nextora-header .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link:hover, .nextora-header-block__cta.nextora-header-block__cta--solid:hover) { ' . $hdr_hbg . ' ' . $hdr_hcol . ' }';
+	}
+	if ( ! empty( $theme['buttonTextTransform'] ) || ! empty( $theme['buttonFontWeight'] ) ) {
+		$typo = array();
+		if ( ! empty( $theme['buttonTextTransform'] ) ) {
+			$typo[] = 'text-transform: var(--nextora-button-text-transform);';
+		}
+		if ( ! empty( $theme['buttonFontWeight'] ) ) {
+			$typo[] = 'font-weight: var(--nextora-button-font-weight);';
+		}
+		$btn_rules[] = ':root:root :where(.wp-element-button, .wp-block-button__link, .nextora-header-block__cta, .alonepro-btn, .alonepro-alone-donation-box__btn, a.elementor-button, button.elementor-button) { ' . implode( ' ', $typo ) . ' }';
+	}
+
+	if ( ! empty( $btn_rules ) ) {
+		$css .= "\n" . implode( "\n", $btn_rules );
+	}
+
+	return $css;
 }

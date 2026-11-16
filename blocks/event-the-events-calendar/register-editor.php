@@ -1,0 +1,72 @@
+<?php
+
+/**
+ * Editor assets for nextora/event-the-events-calendar.
+ *
+ * @package Nextora
+ */
+
+declare( strict_types=1 );
+
+/**
+ * Landscape placeholder for events without an image.
+ */
+function nextora_event_tec_image_placeholder_url(): string {
+	$url = get_theme_file_uri( 'assets/images/placeholder/general-img-landscape.png' );
+
+	/** @var string $url */
+	$url = apply_filters( 'nextora_event_placeholder_image_url', $url );
+
+	return $url;
+}
+
+/**
+ * Expose placeholder URL + palette entries to the block editor script.
+ */
+function nextora_event_tec_localize_editor_script(): void {
+	$handle = 'nextora-event-the-events-calendar-editor-script';
+
+	if ( ! wp_script_is( $handle, 'registered' ) ) {
+		return;
+	}
+
+	$palette_entries = array();
+
+	$lucide_path = get_template_directory() . '/blocks/advanced-icon/lucide.php';
+	if ( is_readable( $lucide_path ) ) {
+		require_once $lucide_path;
+		if ( function_exists( 'nextora_icon_collect_palette_entries' ) ) {
+			foreach ( nextora_icon_collect_palette_entries() as $entry ) {
+				$palette_entries[] = array(
+					'slug'  => $entry['slug'],
+					'color' => $entry['color'],
+					'name'  => ucwords( str_replace( '-', ' ', $entry['slug'] ) ),
+				);
+			}
+		}
+	}
+
+	wp_localize_script(
+		$handle,
+		'nextoraEventTec',
+		array(
+			'imagePlaceholderUrl' => nextora_event_tec_image_placeholder_url(),
+			'paletteEntries'      => $palette_entries,
+		),
+	);
+
+	// Ensure icon library URL and palette entries are available to IconPicker.
+	$icons_url = ( defined( 'NEXTORA_URI' ) ? NEXTORA_URI : get_template_directory_uri() ) . '/assets/data/lucide-icons.json';
+	$icon_bootstrap = array(
+		'iconsUrl' => $icons_url,
+	);
+	if ( array() !== $palette_entries ) {
+		$icon_bootstrap['paletteEntries'] = $palette_entries;
+	}
+	wp_add_inline_script(
+		$handle,
+		'window.nextoraIconBlock = Object.assign(window.nextoraIconBlock || {}, ' . wp_json_encode( $icon_bootstrap ) . ');',
+		'before',
+	);
+}
+add_action( 'enqueue_block_editor_assets', 'nextora_event_tec_localize_editor_script' );

@@ -57,7 +57,7 @@ After changing CSS, TS, or block sources, run **`npm run build`** (or **`npm run
 - **Registration**: `blocks/blocks.php` — globs `blocks/*/block.json`, requires built `index.js` + `index.asset.php`.
 - **Build**: `scripts/build-blocks.mjs` — `@wordpress/*` → `window.wp.*`.
 - **Scaffold**: `npm run gen -- --name=slug --ns=nextora`
-- **Examples**: `blocks/header/`, `blocks/spotlight-search/`, `blocks/hero-section/`, `blocks/post-grid/`, `blocks/image-gallery-grid/`, `blocks/image-gallery-slide/`, `blocks/call-to-action/`, `blocks/scrolling-promotion/`, `blocks/testimonial-carousel/`, `blocks/page-title/`
+- **Examples**: `blocks/header/`, `blocks/spotlight-search/`, `blocks/hero-section/`, `blocks/post-grid/`, `blocks/call-to-action/`, `blocks/scrolling-promotion/`, `blocks/testimonial-carousel/`, `blocks/page-title/`
 
 ### Default template parts
 

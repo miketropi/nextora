@@ -1,7 +1,9 @@
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5' | 'template-6' | 'template-7';
+
 export interface BlogListCarouselAttributes {
-	cardTemplate: 'default' | 'template-1' | 'template-2' | 'template-4';
-	layoutMode: 'carousel' | 'grid';
-	gridColumns: number;
+	cardTemplate: BlogListCardTemplate;
+	layoutMode?: 'carousel' | 'grid';
+	gridColumns?: number;
 	gridColumnGap: number;
 	gridRowGap: number;
 	gridMinWidth: number;
@@ -22,10 +24,12 @@ export interface BlogListCarouselAttributes {
 	imageSize: string;
 	imageBorderRadius: number;
 	imageWidthPercent: number;
+	itemHeight?: number;
 	showTitle: boolean;
 	titleFontSize: string;
 	titleLineClamp: number;
 	showExcerpt: boolean;
+	excerptFontSize?: string;
 	excerptLineClamp: number;
 	excerptLength: number;
 	showDate: boolean;
@@ -47,11 +51,13 @@ export interface BlogListCarouselAttributes {
 	showPagination: boolean;
 	showArrows: boolean;
 	arrowStyle: string;
+	arrowsDesktopDotsMobile?: boolean;
 	freeMode: boolean;
 	grabCursor: boolean;
 	cardTitleColor: string;
 	cardExcerptColor: string;
 	cardMetaColor: string;
+	cardMetaIconColor: string;
 	cardBackgroundColor: string;
 	cardBorderColor: string;
 	cardBorderRadius: number;
@@ -62,4 +68,5 @@ export interface BlogListCarouselAttributes {
 	arrowColor: string;
 	enableScrollAnimation: boolean;
 	scrollAnimationStyle: 'default' | 'sequential';
+	edgeFadeColor?: string;
 }

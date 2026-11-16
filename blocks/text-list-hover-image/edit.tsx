@@ -26,6 +26,7 @@ import {
 import type { TextListHoverImageAttributes, TextListHoverImageItem } from './types';
 
 const FONT_SIZE_OPTIONS = [
+  { label: __('Theme default', 'nextora'), value: '' },
   { label: __('Small', 'nextora'), value: 'small' },
   { label: __('Base', 'nextora'), value: 'base' },
   { label: __('Medium', 'nextora'), value: 'medium' },
@@ -253,8 +254,8 @@ export default function TextListHoverImageEdit({ attributes, setAttributes }: Ed
   const lookupPalette = getMergedPaletteEntries(colorPalette);
 
   const {
-    titleSize = 'medium',
-    descriptionSize = 'small',
+    titleSize = '',
+    descriptionSize = '',
     titleWeight = '500',
     imageWidth = 280,
     imageHeight = 180,
@@ -323,8 +324,8 @@ export default function TextListHoverImageEdit({ attributes, setAttributes }: Ed
       '--nextora-thli-number-color': editorNumberColor,
       '--nextora-thli-image-width': `${imageWidth}px`,
       '--nextora-thli-image-height': `${imageHeight}px`,
-      '--nextora-thli-title-size': `var(--wp--preset--font-size--${titleSize})`,
-      '--nextora-thli-description-size': `var(--wp--preset--font-size--${descriptionSize})`,
+      ...(titleSize ? { '--nextora-thli-title-size': `var(--wp--preset--font-size--${titleSize})` } : {}),
+      ...(descriptionSize ? { '--nextora-thli-description-size': `var(--wp--preset--font-size--${descriptionSize})` } : {}),
       '--nextora-thli-title-weight': titleWeight,
     } as React.CSSProperties,
   });
@@ -516,22 +517,22 @@ export default function TextListHoverImageEdit({ attributes, setAttributes }: Ed
               <span className="nextora-text-list-hover-image__item-number" aria-hidden="true" />
               <div className="nextora-text-list-hover-image__item-content">
                 <div className="nextora-text-list-hover-image__item-main">
-                  <h3
+                    <h4
                     className="nextora-text-list-hover-image__item-title"
                     style={{
-                      fontSize: `var(--wp--preset--font-size--${titleSize})`,
+                      ...(titleSize ? { fontSize: `var(--wp--preset--font-size--${titleSize})` } : {}),
                       fontWeight: titleWeight,
                       color: editorTitleColor,
                     }}
                   >
                     {item.title || __('Untitled', 'nextora')}
-                  </h3>
+                  </h4>
                 </div>
                 {item.description && (
                   <p
                     className="nextora-text-list-hover-image__item-description"
                     style={{
-                      fontSize: `var(--wp--preset--font-size--${descriptionSize})`,
+                      ...(descriptionSize ? { fontSize: `var(--wp--preset--font-size--${descriptionSize})` } : {}),
                       color: editorDescriptionColor,
                     }}
                   >

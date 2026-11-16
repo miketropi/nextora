@@ -3,7 +3,7 @@
   "apiVersion": 3,
   "name": "nextora/hero-paper-roll",
   "title": "Hero Paper Roll",
-  "category": "theme",
+  "category": "nextora",
   "description": "Full-screen hero with an infinite 3D paper-roll background and InnerBlocks overlay for headings, text, and CTAs.",
   "keywords": [
     "hero",
@@ -33,7 +33,9 @@
     },
     "typography": {
       "fontSize": true,
-      "lineHeight": true
+      "lineHeight": true,
+      "fontFamily": true,
+      "fontWeight": true
     },
     "dimensions": {
       "minHeight": true
