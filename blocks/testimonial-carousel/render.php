@@ -264,7 +264,8 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 				if ( is_string( $img ) && '' !== $img ) {
 					$photo_markup = $img;
 				}
-			} elseif ( '' !== $photo_url ) {
+			}
+			if ( '' === $photo_markup && '' !== $photo_url ) {
 				$safe_url = esc_url( $photo_url );
 				if ( '' !== $safe_url ) {
 					$photo_markup = sprintf(
@@ -379,7 +380,8 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide_t1' ) ) {
 			if ( is_string( $img ) && '' !== $img ) {
 				$photo_markup = $img;
 			}
-		} elseif ( '' !== $photo_url ) {
+		}
+		if ( '' === $photo_markup && '' !== $photo_url ) {
 			$safe_url = esc_url( $photo_url );
 			if ( '' !== $safe_url ) {
 				$photo_markup = sprintf(
