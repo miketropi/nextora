@@ -480,7 +480,7 @@ if ( ! function_exists( 'nextora_event_get_font_size_props' ) ) {
 nextora_event_enqueue_view_script();
 
 $template = isset( $attributes['template'] ) ? (string) $attributes['template'] : 'default';
-$is_template1 = 'template1' === $template;
+$is_template1 = in_array( $template, array( 'template1', 'template5' ), true );
 $is_template2 = 'template2' === $template;
 $is_template3 = 'template3' === $template;
 
@@ -608,6 +608,9 @@ foreach ( $css_vars as $key => $value ) {
 $inline_style = implode( ';', $style_parts );
 
 $wrapper_classes = array( 'nextora-event' );
+if ( 'template5' === $template ) {
+	$wrapper_classes[] = 'nextora-event--template5';
+}
 if ( $is_template1 ) {
 	$wrapper_classes[] = 'nextora-event--template1';
 	$wrapper_classes[] = 'nextora-event--loading';
@@ -1441,7 +1444,12 @@ if ( $is_template1 ) {
 	$default_register_icon = ! empty( $attributes['registerButtonIcon'] ) ? (string) $attributes['registerButtonIcon'] : 'calendar-days';
 	$cards_html            = '';
 	foreach ( $events as $event ) {
-		$card = nextora_event_render_card( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props, $title_font_size, $default_register_icon );
+		if ( 'template5' === $template ) {
+			require_once __DIR__ . '/somoni-card.php';
+			$card = nextora_event_render_somoni_card( $event, $attributes, 'nextora_event', $placeholder_url );
+		} else {
+			$card = nextora_event_render_card( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props, $title_font_size, $default_register_icon );
+		}
 		if ( '' !== $card ) {
 			$cards_html .= $card;
 		}
@@ -1453,7 +1461,7 @@ if ( $is_template1 ) {
 
 	$pagination_html = '';
 	if ( $show_pag && $slide_count > 1 ) {
-		$pagination_html = '<div class="nextora-event__pagination swiper-pagination" aria-hidden="true"></div>';
+		$pagination_html = '<div class="nextora-event__pagination swiper-pagination"' . ( 'template5' === $template ? '' : ' aria-hidden="true"' ) . '></div>';
 	}
 
 	$arrows_html = '';

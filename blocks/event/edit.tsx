@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { useMemo, useState } from '@wordpress/element';
+import { useMemo, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	FontSizePicker,
@@ -24,6 +24,7 @@ import { useSelect } from '@wordpress/data';
 import { IconPicker } from '../advanced-icon/icon-picker';
 import { EventButtonIcon } from './button-icon';
 import type { EventAttributes, EventItem } from './types';
+import { SomoniSettings } from './somoni-settings';
 
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
@@ -304,14 +305,23 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		edgeFadeColor = '',
 	} = attributes;
 
-	const isTemplate1 = template === 'template1';
+	const isTemplate5 = template === 'template5';
+	const somoniTrack = useRef<HTMLDivElement>(null);
+	const [somoniIndex, setSomoniIndex] = useState(0);
+	const scrollSomoni = (direction: number): void => {
+		const track = somoniTrack.current;
+		if (!track) return;
+		const slide = track.querySelector<HTMLElement>('.swiper-slide');
+		track.scrollBy({ left: direction * ((slide?.offsetWidth || 0) + spaceBetween), behavior: 'auto' });
+	};
+	const isTemplate1 = template === 'template1' || isTemplate5;
 	const isTemplate2 = template === 'template2';
 	const isTemplate3 = template === 'template3';
 	const isTemplate4 = template === 'template4';
 	const normalizedTitleFontSize = normalizeFontSizeAttribute(titleFontSize);
 	const normalizedDescFontSize = normalizeFontSizeAttribute(descriptionFontSize);
 	const normalizedMetaFontSize = normalizeFontSizeAttribute(metaFontSize);
-	const titleFontSizeProps = getGutenbergFontSizeProps(titleFontSize, themeFontSizes);
+	const titleFontSizeProps = getGutenbergFontSizeProps(titleFontSize || (isTemplate5 ? 'medium' : ''), themeFontSizes);
 	const descFontSizeProps = getGutenbergFontSizeProps(descriptionFontSize, themeFontSizes);
 
 	const colorPalette = useThemeColorPalette();
@@ -321,6 +331,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		className: [
 			'nextora-event',
 			'nextora-event--editor',
+			isTemplate5 ? 'nextora-event--template5' : '',
 			isTemplate4 ? ['nextora-event--template4', enableAnimation ? `nextora-event--animation-${animationStyle || 'sequential'}` : ''].filter(Boolean).join(' ') : '',
 			isTemplate1 ? 'nextora-event--template1 nextora-event--template1-editor' : '',
 			isTemplate2 ? 'nextora-event--template2 nextora-event--template2-editor' : '',
@@ -587,13 +598,14 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				<PanelBody title={__('Template', 'nextora')} initialOpen>
 					<SelectControl
 						label={__('Layout template', 'nextora')}
-						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4'}
+						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5'}
 						options={[
 							{ label: __('Default — List', 'nextora'), value: 'default' as const },
 							{ label: __('Template 1 — Slider', 'nextora'), value: 'template1' as const },
 							{ label: __('Template 2 — Event cards', 'nextora'), value: 'template2' as const },
 							{ label: __('Template 3 — Editorial list', 'nextora'), value: 'template3' as const },
 							{ label: __('Template 4 — Compact List', 'nextora'), value: 'template4' },
+							{ label: __('Template 5 — Somoni Card Slider', 'nextora'), value: 'template5' },
 						]}
 						onChange={(value: string) => setAttributes({ template: value })}
 					/>
@@ -698,7 +710,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					</Button>
 				</PanelBody>
 
-				<PanelBody title={__('Settings', 'nextora')} initialOpen={isTemplate4}>
+				{!isTemplate5 && <PanelBody title={__('Settings', 'nextora')} initialOpen={isTemplate4}>
 					{isTemplate4 ? (
 						<>
 							<RangeControl
@@ -809,7 +821,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					)}
 				</PanelBody>
 
-				{isTemplate4 ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />}
+				}
+				{isTemplate5 ? <SomoniSettings attributes={attributes} setAttributes={setAttributes} /> : isTemplate4 ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />}
 
 				{isTemplate4 && (
 					<PanelBody
@@ -1060,7 +1073,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							event={editingEvent}
 							imageUrl={resolveImageUrl(editingEvent, mediaUrlById)}
 							showEditorialFields={isTemplate3}
-							showDescription={isTemplate2 || isTemplate3 || isTemplate4}
+							showDescription={isTemplate2 || isTemplate3 || isTemplate4 || isTemplate5}
 							compact={isTemplate4}
 							onPatch={(patch) => patchEvent(editingEvent.id, patch)}
 					/>
@@ -1071,6 +1084,37 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				<div className="nextora-event__inner">
 					{isTemplate4 ? (
 						<CompactList key={animKey} attributes={attributes} events={events.map((event) => ({ ...event, imageUrl: event.imageId > 0 ? (mediaUrlById.get(event.imageId) || event.imageUrl) : event.imageUrl }))} onEdit={openEventEditor} />
+					) : isTemplate5 ? (
+						<div className="nextora-event__carousel-root">
+							<div className="swiper nextora-event__swiper"><div className="swiper-wrapper" ref={somoniTrack} onScroll={() => {
+								const track = somoniTrack.current;
+								const slide = track?.querySelector<HTMLElement>('.swiper-slide');
+								if (track && slide) setSomoniIndex(Math.round(track.scrollLeft / (slide.offsetWidth + spaceBetween)));
+							}}>
+								{events.map((event) => {
+									const time = event.time.trim().replace(/\s*(AM|PM)$/i, '');
+									const period = event.time.match(/(AM|PM)$/i)?.[1] || '';
+									return <div key={event.id} className="swiper-slide"><article className={['nextora-event-somoni', cardBgProps.className].filter(Boolean).join(' ')} style={cardStyle}>
+										<button type="button" className="nextora-event__item-edit" onClick={() => openEventEditor(event.id)}>{__('Edit event', 'nextora')}</button>
+										{attributes.showImage !== false ? <div className="nextora-event-somoni__image"><img src={resolveImageUrl(event, mediaUrlById)} alt={event.imageAlt || event.title} /></div> : null}
+										<div className="nextora-event-somoni__content">
+											<div className="nextora-event-somoni__badge">
+												{attributes.showDate !== false ? <div className={['nextora-event-somoni__date', dateBgProps.className].filter(Boolean).join(' ')} style={dateBgProps.style}><b className={dateDayProps.className} style={dateDayProps.style}>{event.day}</b><span className={dateMonthProps.className} style={dateMonthProps.style}>{event.month}</span></div> : null}
+												{attributes.showTime !== false && time ? <div className="nextora-event-somoni__time"><b>{time}</b>{period ? <span>{period}</span> : null}</div> : null}
+											</div>
+											<h4 className={['nextora-event-somoni__title', titleFontSizeProps.className, titleColorProps.className].filter(Boolean).join(' ')} style={{ ...titleColorProps.style, ...titleFontSizeProps.style }}>{event.title}</h4>
+											{attributes.showDescription !== false && event.description ? <p className={['nextora-event-somoni__description', descFontSizeProps.className || 'has-small-font-size', getGutenbergColorProps(attributes.compactDescriptionColor || '', 'color').className].join(' ')} style={{ ...descFontSizeProps.style, ...getGutenbergColorProps(attributes.compactDescriptionColor || '', 'color').style }}>{event.description}</p> : null}
+											{showRegisterButton ? <span className={['nextora-event-somoni__link', regTextProps.className].join(' ')} style={regTextProps.style}>{event.registerLabel || registerButtonText || __('Join with us', 'nextora')}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg></span> : null}
+										</div>
+									</article></div>;
+								})}
+							</div></div>
+							{showArrows && events.length > 1 ? <>
+								<button type="button" className="nextora-event__arrow nextora-event__arrow--prev" aria-label={__('Previous events', 'nextora')} onClick={() => scrollSomoni(-1)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></button>
+								<button type="button" className="nextora-event__arrow nextora-event__arrow--next" aria-label={__('Next events', 'nextora')} onClick={() => scrollSomoni(1)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg></button>
+							</> : null}
+							{showPagination && events.length > 1 ? <div className="nextora-event__pagination swiper-pagination" aria-hidden="true">{events.map((event, i) => <span key={event.id} className={`swiper-pagination-bullet${i === somoniIndex ? ' swiper-pagination-bullet-active' : ''}`} />)}</div> : null}
+						</div>
 					) : isTemplate1 ? (
 						<div className="swiper nextora-event__swiper">
 							<div className="swiper-wrapper">

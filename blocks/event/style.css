@@ -1,4 +1,5 @@
 @import '../event/compact-list.css';
+@import './somoni-card.css';
 
 /**
  * Events block — front-end styles (.events-list design).
