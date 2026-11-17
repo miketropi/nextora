@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { SomoniSettings } from '../event/somoni-settings';
 import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import {
@@ -159,7 +160,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 	} = attributes;
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const isSliderTemplate = template === 'template1' || template === 'template2';
+	const isSliderTemplate = template === 'template1' || template === 'template2' || template === 'template5';
 	const blockProps = useBlockProps({
 		ref: containerRef,
 		className: [
@@ -393,13 +394,14 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				<PanelBody title={__('Layout & Template', 'nextora')} initialOpen={true}>
 					<SelectControl
 						label={__('Template', 'nextora')}
-						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4'}
+						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5'}
 						options={[
 							{ label: __('Default (List)', 'nextora'), value: 'default' },
 							{ label: __('Template 1 (Card Slider)', 'nextora'), value: 'template1' },
 							{ label: __('Template 2 (Horizontal Card Slider)', 'nextora'), value: 'template2' },
 							{ label: __('Template 3 (Editorial Alternating)', 'nextora'), value: 'template3' },
 							{ label: __('Template 4 — Compact List', 'nextora'), value: 'template4' },
+							{ label: __('Template 5 — Somoni Card Slider', 'nextora'), value: 'template5' },
 						]}
 						onChange={(val) => setAttributes({ template: val })}
 					/>
@@ -414,7 +416,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				</PanelBody>
 
 				{/* ── Settings / Button Settings ── */}
-				<PanelBody title={template === 'template4' ? __('Settings', 'nextora') : __('Register Button', 'nextora')} initialOpen={template === 'template4'}>
+				{template !== 'template5' && <PanelBody title={template === 'template4' ? __('Settings', 'nextora') : __('Register Button', 'nextora')} initialOpen={template === 'template4'}>
 					{template === 'template4' ? (
 						<>
 							<RangeControl
@@ -537,6 +539,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 					)}
 				</PanelBody>
 
+				}
 				{/* ── Slider Settings ── */}
 				{isSliderTemplate && (
 					<PanelBody title={__('Slider Settings', 'nextora')} initialOpen={false}>
@@ -613,7 +616,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				)}
 
 				{/* ── Color Settings ── */}
-				{template === 'template4' ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings
+				{template === 'template5' ? <SomoniSettings attributes={attributes} setAttributes={setAttributes} /> : template === 'template4' ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings
 					title={__('Color Settings', 'nextora')}
 					colorSettings={[
 						colorProps('cardBackgroundColor', __('Card background', 'nextora')),

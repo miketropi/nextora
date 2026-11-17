@@ -188,7 +188,10 @@ function initTemplate1Swiper(root: HTMLElement): void {
 	const paginationEl = root.querySelector<HTMLElement>('.nextora-event__pagination');
 
 	const reduced = prefersReducedMotion();
-	const useLoop = Boolean(opts.loop) && slideCount > 1;
+	const isSomoni = root.getAttribute('data-nextora-event-template') === 'template5';
+	const useLoop = Boolean(opts.loop) && slideCount > (isSomoni ? Math.ceil(Math.max(slidesPerView, tabletSlides, mobileSlides)) : 1);
+	const breakpoints = breakpointsForSlides(slidesPerView, tabletSlides, mobileSlides, spaceBetween);
+	if (isSomoni) breakpoints[320].spaceBetween = Math.min(spaceBetween, 16);
 
 	carouselRoot.dataset.nextoraEventSwiperPending = '1';
 
@@ -212,12 +215,12 @@ function initTemplate1Swiper(root: HTMLElement): void {
 		}
 
 		// eslint-disable-next-line no-new
-		new Swiper(el, {
+		const swiper = new Swiper(el, {
 			modules,
 			slidesPerView: 1,
 			spaceBetween,
 			loop: useLoop,
-			speed: typeof opts.speed === 'number' ? opts.speed : 600,
+			speed: isSomoni && reduced ? 0 : typeof opts.speed === 'number' ? opts.speed : 600,
 			watchOverflow: true,
 			observer: true,
 			observeParents: true,
@@ -239,7 +242,7 @@ function initTemplate1Swiper(root: HTMLElement): void {
 				nextSlideMessage: 'Next events',
 				paginationBulletMessage: 'Go to slide {{index}}',
 			},
-			breakpoints: breakpointsForSlides(slidesPerView, tabletSlides, mobileSlides, spaceBetween),
+			breakpoints,
 			...(showArrows && prevEl && nextEl ? { navigation: { nextEl, prevEl } } : {}),
 			...(showPagination && paginationEl
 				? {
@@ -252,6 +255,7 @@ function initTemplate1Swiper(root: HTMLElement): void {
 				: {}),
 		});
 
+		if (isSomoni) el.addEventListener('focusin', () => swiper.autoplay.stop());
 		requestAnimationFrame(() => ScrollTrigger.refresh());
 		window.setTimeout(finish, 220);
 	};
@@ -262,6 +266,7 @@ function initTemplate1Swiper(root: HTMLElement): void {
 function initRoot(root: HTMLElement): void {
 	if (
 		root.getAttribute('data-nextora-event-template') === 'template1' ||
+		root.getAttribute('data-nextora-event-template') === 'template5' ||
 		root.getAttribute('data-nextora-event-template') === 'template2'
 	) {
 		initTemplate1Swiper(root);
