@@ -311,11 +311,40 @@ function initRipplesWrapper(root: HTMLElement): void {
   } catch { /* */ }
 }
 
+function initBackgroundVideo(root: HTMLElement): void {
+  const video = root.querySelector<HTMLVideoElement>('video[data-managed-video]');
+  const button = root.querySelector<HTMLButtonElement>('[data-video-toggle]');
+  if (!video) return;
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let pausedByUser = motion.matches;
+  let visible = true;
+  const update = () => { if (button) button.textContent = video.paused ? button.dataset.playLabel || '' : button.dataset.pauseLabel || ''; };
+  const sync = () => {
+    if (pausedByUser || !visible || document.hidden) video.pause();
+    else void video.play().catch(update);
+  };
+  if (button) {
+    button.hidden = false;
+    button.addEventListener('click', () => { pausedByUser = !video.paused; sync(); });
+  }
+  video.addEventListener('play', update);
+  video.addEventListener('pause', update);
+  document.addEventListener('visibilitychange', sync);
+  motion.addEventListener('change', (event) => { if (event.matches) { pausedByUser = true; sync(); } });
+  if ('IntersectionObserver' in window) {
+    visible = false;
+    new IntersectionObserver((entries) => { visible = entries[0]?.isIntersecting ?? false; sync(); }, { threshold: 0.05 }).observe(root);
+  } else sync();
+  update();
+}
+
 function initRoot(root: HTMLElement): void {
   if (root.getAttribute(INIT_ATTR) === '1') {
     return;
   }
   root.setAttribute(INIT_ATTR, '1');
+
+  try { initBackgroundVideo(root); } catch {}
 
   try { initScrollReveal(root); } catch {}
   try { initParallax(root); } catch {}

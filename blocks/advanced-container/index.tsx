@@ -16,6 +16,9 @@ type Attributes = {
   backgroundImageCustomSize: string;
   backgroundImageRepeat: boolean;
   backgroundVideoUrl: string;
+  backgroundVideoPoster: string;
+  managedBackgroundVideo: boolean;
+  showBackgroundVideoControl: boolean;
   overlayColor: string;
   overlayOpacity: number;
   overlayStyle: string;

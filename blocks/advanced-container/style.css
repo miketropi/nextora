@@ -182,6 +182,23 @@
   object-fit: cover;
 }
 
+.nextora-advanced-container__video-toggle:not([hidden]) {
+  position: absolute;
+  z-index: 5;
+  right: var(--wp--preset--spacing--20, 1rem);
+  bottom: var(--wp--preset--spacing--20, 1rem);
+  color: var(--wp--preset--color--base);
+  background: var(--wp--preset--color--dark, #000);
+  border: 1px solid currentColor;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.nextora-advanced-container__video-toggle:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
 /* Background image motion (CSS). Slightly oversized layer prevents edge gaps during transform. */
 .nextora-advanced-container--bg-anim .nextora-advanced-container__bg {
   width: 115%;

@@ -994,6 +994,14 @@ function nextora_get_theme_inline_css( array $theme ): string {
 		$hbg         = ! empty( $theme['buttonHoverBg'] ) ? 'background-color: var(--nextora-button-hover-bg);' : '';
 		$hcol        = ! empty( $theme['buttonHoverColor'] ) ? 'color: var(--nextora-button-hover-color);' : '';
 		$btn_rules[] = ':root:root :where(.wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link:hover) { ' . $hbg . ' ' . $hcol . ' }';
+		// Palette utility classes use !important, so match that priority only for
+		// default fill buttons. Explicit hover effects and outline buttons remain independent.
+		if ( ! empty( $theme['buttonHoverBg'] ) ) {
+			$btn_rules[] = ':root:root .nextora-advanced-button-button--style-fill.nextora-advanced-button-button--hover-none[class*="-background-color"]:is(:hover, :focus-visible) { background-color: var(--nextora-button-hover-bg) !important; }';
+		}
+		if ( ! empty( $theme['buttonHoverColor'] ) ) {
+			$btn_rules[] = ':root:root .nextora-advanced-button-button--style-fill.nextora-advanced-button-button--hover-none[class*="-color"]:is(:hover, :focus-visible) { color: var(--nextora-button-hover-color) !important; }';
+		}
 	}
 	if ( ! empty( $theme['headerButtonBg'] ) || ! empty( $theme['headerButtonColor'] ) ) {
 		$hdr_bg      = ! empty( $theme['headerButtonBg'] ) ? 'background-color: var(--nextora-header-button-bg);' : '';

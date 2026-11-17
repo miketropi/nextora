@@ -328,6 +328,9 @@ if ( $background_image_id > 0 ) {
 $background_image_url = nextora_ac_normalize_upload_url( $background_image_url );
 
 $background_video_url = isset( $attributes['backgroundVideoUrl'] ) ? esc_url_raw( trim( (string) $attributes['backgroundVideoUrl'] ) ) : '';
+$video_poster = isset( $attributes['backgroundVideoPoster'] ) ? esc_url_raw( trim( (string) $attributes['backgroundVideoPoster'] ) ) : '';
+$managed_video = ! empty( $attributes['managedBackgroundVideo'] );
+$show_video_control = ! isset( $attributes['showBackgroundVideoControl'] ) || (bool) $attributes['showBackgroundVideoControl'];
 $overlay_color = nextora_ac_resolve_color( isset( $attributes['overlayColor'] ) ? (string) $attributes['overlayColor'] : '' );
 $overlay_opacity = isset( $attributes['overlayOpacity'] ) ? max( 0, min( 1, (float) $attributes['overlayOpacity'] ) ) : 0.3;
 $overlay_style   = nextora_ac_normalize_overlay_style(
@@ -527,7 +530,7 @@ if ( $enable_scroll ) {
 	$classes[] = 'nextora-advanced-container--scroll-reveal';
 }
 
-if ( $enable_scroll || ( $enable_parallax && ( $use_image || $use_video ) && 'gsap' === $parallax_type ) || $use_hover_reveal || $enable_ambient_animation ) {
+if ( $enable_scroll || ( $use_video && $managed_video ) || ( $enable_parallax && ( $use_image || $use_video ) && 'gsap' === $parallax_type ) || $use_hover_reveal || $enable_ambient_animation ) {
 	nextora_ac_enqueue_view_script();
 }
 
@@ -661,10 +664,13 @@ if ( $use_hover_reveal ) {
 		></div>
 	<?php elseif ( $use_video ) : ?>
 		<div class="nextora-advanced-container__bg nextora-advanced-container__bg--video" aria-hidden="true">
-			<video class="nextora-advanced-container__video" autoplay muted loop playsinline>
+			<video class="nextora-advanced-container__video" <?php if ( $managed_video ) : ?>data-managed-video preload="none"<?php else : ?>autoplay<?php endif; ?> muted loop playsinline<?php if ( '' !== $video_poster ) : ?> poster="<?php echo esc_url( $video_poster ); ?>"<?php endif; ?>>
 				<source src="<?php echo esc_url( $background_video_url ); ?>" />
 			</video>
 		</div>
+	<?php endif; ?>
+	<?php if ( $use_video && $managed_video && $show_video_control ) : ?>
+		<button type="button" class="nextora-advanced-container__video-toggle" data-video-toggle hidden data-play-label="<?php echo esc_attr__( 'Play background video', 'nextora' ); ?>" data-pause-label="<?php echo esc_attr__( 'Pause background video', 'nextora' ); ?>"><?php esc_html_e( 'Play background video', 'nextora' ); ?></button>
 	<?php endif; ?>
 
 	<?php if ( $enable_ambient_animation && 'light-rays' === $ambient_animation_type ) : ?>
