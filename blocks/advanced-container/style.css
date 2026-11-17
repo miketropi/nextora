@@ -182,6 +182,23 @@
   object-fit: cover;
 }
 
+.nextora-advanced-container__video-toggle:not([hidden]) {
+  position: absolute;
+  z-index: 5;
+  right: var(--wp--preset--spacing--20, 1rem);
+  bottom: var(--wp--preset--spacing--20, 1rem);
+  color: var(--wp--preset--color--base);
+  background: var(--wp--preset--color--dark, #000);
+  border: 1px solid currentColor;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.nextora-advanced-container__video-toggle:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+
 /* Background image motion (CSS). Slightly oversized layer prevents edge gaps during transform. */
 .nextora-advanced-container--bg-anim .nextora-advanced-container__bg {
   width: 115%;
@@ -371,4 +388,22 @@
   .nextora-advanced-container--ripples canvas {
     display: none;
   }
+}
+.nextora-advanced-container__divider {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: var(--nextora-divider-height, 70px);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+.nextora-advanced-container__divider svg { display: block; width: 100%; height: 100%; }
+.nextora-advanced-container__divider--top { top: -1px; bottom: auto; transform: rotate(180deg); }
+.nextora-advanced-container__divider--flip svg { transform: scaleX(-1); }
+@media (max-width: 1024px) {
+  .nextora-advanced-container__divider { height: var(--nextora-divider-height-tablet, 70px); }
+}
+@media (max-width: 767px) {
+  .nextora-advanced-container__divider { height: var(--nextora-divider-height-mobile, 40px); }
 }

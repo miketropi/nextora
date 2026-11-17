@@ -21,12 +21,13 @@ const fields: Record<string, string> = {
   display: 'display', direction: 'flex-direction', justify: 'justify-content', align: 'align-items',
   wrap: 'flex-wrap', columnGap: 'column-gap', rowGap: 'row-gap', columns: 'grid-template-columns',
   width: 'width', minWidth: 'min-width', maxWidth: 'max-width', height: 'height', minHeight: 'min-height', maxHeight: 'max-height', overflow: 'overflow',
-  position: 'position', top: 'top', right: 'right', bottom: 'bottom', left: 'left', zIndex: 'z-index',
+  position: 'position', top: 'top', right: 'right', bottom: 'bottom', left: 'left', zIndex: 'z-index', borderSide: 'border-side',
 };
 const tags = ['div', 'section', 'article', 'aside', 'header', 'footer', 'main', 'nav'];
 const lengthPattern = /^(?:0|(?:\d*\.)?\d+(?:px|%|em|rem|vw|vh|vmin|vmax|ch|ex))$/;
 const offsetPattern = /^-?(?:0|(?:\d*\.)?\d+(?:px|%|em|rem|vw|vh|vmin|vmax|ch|ex))$/;
 function cssValue(key: string, value: string): string {
+  if (key === 'borderSide') return ({ none: '0', top: '1px 0 0 0', right: '0 1px 0 0', bottom: '0 0 1px 0', left: '0 0 0 1px' } as Record<string, string>)[value] || '';
   if (key === 'columns') return /^[1-9]$|^1[0-2]$/.test(value) ? `repeat(${value}, minmax(0, 1fr))` : '';
   if (key === 'columnGap' || key === 'rowGap') {
     const preset = /^var:preset\|spacing\|([a-zA-Z0-9-]+)$/.exec(value);
@@ -41,6 +42,7 @@ function cssValue(key: string, value: string): string {
     align: ['stretch', 'flex-start', 'center', 'flex-end', 'baseline'], wrap: ['nowrap', 'wrap', 'wrap-reverse'],
     position: ['static', 'relative', 'absolute', 'fixed', 'sticky'],
     overflow: ['visible', 'hidden', 'auto'],
+    borderSide: ['none', 'top', 'right', 'bottom', 'left'],
   };
   return allowed[key]?.includes(value) ? value : '';
 }
@@ -61,7 +63,7 @@ function previousStyle(attributes: Attributes): Record<string, string> {
   }
   return style;
 }
-const responsiveKeys = ['direction', 'justify', 'align', 'wrap', 'columnGap', 'rowGap', 'columns', 'width'];
+const responsiveKeys = ['direction', 'justify', 'align', 'wrap', 'columnGap', 'rowGap', 'columns', 'width', 'borderSide'];
 function deviceLabel(device: Device) {
   return device === 'mobile' ? __('Editing: Mobile', 'nextora') : device === 'tablet' ? __('Editing: Tablet', 'nextora') : __('Editing: Desktop', 'nextora');
 }
@@ -187,12 +189,30 @@ function Edit({ attributes, setAttributes, clientId }: Props) {
     }
     setAttributes({ chooseLayout: false });
   };
+  const borderOptions: [string, string, string][] = [
+    ['', device === 'desktop' ? __('Use border styles', 'nextora') : __('Inherit from larger screen', 'nextora'), 'M5 5h14v14H5z'],
+    ['none', __('None', 'nextora'), 'M5 5l14 14M19 5 5 19'],
+    ['top', __('Top', 'nextora'), 'M5 5h14'],
+    ['right', __('Right', 'nextora'), 'M19 5v14'],
+    ['bottom', __('Bottom', 'nextora'), 'M5 19h14'],
+    ['left', __('Left', 'nextora'), 'M5 5v14'],
+  ];
   return <>
     <InspectorControls group="background">
       <PanelBody className="nextora-flexbox-overlay-panel" title={__('Background overlay', 'nextora')} initialOpen={false}>
         <SectionBackgroundFill fillType={attributes.overlayType === 'gradient' ? 'gradient' : 'solid'} solidColor={attributes.overlayColor || ''} gradient={attributes.overlayGradient || ''} colorPalette={palette} lookupPalette={getMergedPaletteEntries(palette)} lookupGradients={getMergedGradientEntries(gradients)} onFillTypeChange={(overlayType) => setAttributes({ overlayType })} onSolidColorChange={(overlayColor) => setAttributes({ overlayColor })} onGradientChange={(overlayGradient) => setAttributes({ overlayGradient })} />
         <RangeControl label={__('Overlay opacity', 'nextora')} value={attributes.overlayOpacity ?? 50} min={0} max={100} onChange={(overlayOpacity) => setAttributes({ overlayOpacity: overlayOpacity ?? 50 })} />
       </PanelBody>
+    </InspectorControls>
+    <InspectorControls group="border">
+      <fieldset className="nextora-flexbox-options nextora-flexbox-options--border-side">
+        <legend>{responsiveLabel(__('Border sides', 'nextora'), device)}</legend>
+        <div className="nextora-flexbox-options__buttons" role="group" aria-label={__('Border sides', 'nextora')}>
+          {borderOptions.map(([value, label, path]) => <Button key={value} className="nextora-flexbox-options__button" label={label} showTooltip aria-pressed={(settings.borderSide || '') === value} isPressed={(settings.borderSide || '') === value} onClick={() => set('borderSide', value)}><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d={path} /></svg></Button>)}
+        </div>
+        <p className="components-base-control__help">{device === 'desktop' ? __('A selected side uses a 1px border. Use border styles to restore the configured border.', 'nextora') : __('A selected side uses a 1px border. Use inherit to restore the larger screen setting.', 'nextora')}</p>
+        {device !== 'desktop' && (overrides.borderSide ? reset('borderSide') : <p className="components-base-control__help">{__('Inherited from a larger screen.', 'nextora')}</p>)}
+      </fieldset>
     </InspectorControls>
     <InspectorControls>
       <PanelBody title={__('Layout', 'nextora')} initialOpen={true}>

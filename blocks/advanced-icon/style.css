@@ -19,10 +19,15 @@
 
 .wp-block-nextora-advanced-icon.nextora-advanced-icon--align-center {
 	justify-content: center;
+	align-self: center;
+	margin-inline: auto;
 }
 
 .wp-block-nextora-advanced-icon.nextora-advanced-icon--align-right {
 	justify-content: flex-end;
+	align-self: flex-end;
+	margin-inline-start: auto;
+	margin-inline-end: 0;
 }
 
 .wp-block-nextora-advanced-icon.nextora-advanced-icon svg.lucide {
@@ -188,6 +193,5 @@
 	animation: none !important;
 	transition: none !important;
 }
-
 
 

@@ -210,7 +210,7 @@ if ( ! function_exists( 'nextora_counters_format_number' ) ) {
 		if ( abs( $number - round( $number ) ) < 0.00001 ) {
 			return number_format( $number, 0, '.', ',' );
 		}
-		return number_format( $number, 1, '.', ',' );
+		return rtrim( rtrim( number_format( $number, 2, '.', ',' ), '0' ), '.' );
 	}
 }
 

@@ -747,6 +747,7 @@ function nextora_get_switcher_payload(): array {
 		: '';
 
 	$resolved = nextora_resolve_current_request_theme( $themes, $initial_theme );
+	$page_defaults = nextora_resolve_current_request_theme( $themes, '', true );
 
 	return array(
 		'colorPresets'      => $color_presets,
@@ -755,6 +756,7 @@ function nextora_get_switcher_payload(): array {
 		'fonts'             => $fonts,
 		'currentPageTheme'  => $resolved['theme'],
 		'isDirectPageTheme' => $resolved['is_direct_page_theme'],
+		'resetPageTheme'    => $page_defaults['theme'],
 		'config'            => array(
 			'initial'  => array(
 				'theme' => $initial_theme,
@@ -781,12 +783,13 @@ function nextora_get_switcher_payload(): array {
  *
  * @param array<string, mixed> $themes           Available themes.
  * @param string               $initial_fallback Optional fallback theme slug from config.
+ * @param bool                 $page_only        Ignore preview URL and cookie preferences.
  *
  * @return array{ theme: ?string, is_direct_page_theme: bool }
  */
-function nextora_resolve_current_request_theme( array $themes, string $initial_fallback = '' ): array {
+function nextora_resolve_current_request_theme( array $themes, string $initial_fallback = '', bool $page_only = false ): array {
 	// Explicit default reset via cookie
-	if ( isset( $_COOKIE['nextora_active_theme'] ) && 'default' === $_COOKIE['nextora_active_theme'] ) {
+	if ( ! $page_only && isset( $_COOKIE['nextora_active_theme'] ) && 'default' === $_COOKIE['nextora_active_theme'] ) {
 		return array(
 			'theme'                => null,
 			'is_direct_page_theme' => false,
@@ -794,7 +797,7 @@ function nextora_resolve_current_request_theme( array $themes, string $initial_f
 	}
 
 	// 1. URL query parameter (?theme=slug)
-	if ( isset( $_GET['theme'] ) && is_string( $_GET['theme'] ) ) {
+	if ( ! $page_only && isset( $_GET['theme'] ) && is_string( $_GET['theme'] ) ) {
 		$url_slug = sanitize_title( wp_unslash( $_GET['theme'] ) );
 		if ( isset( $themes[ $url_slug ] ) ) {
 			return array(
@@ -820,7 +823,7 @@ function nextora_resolve_current_request_theme( array $themes, string $initial_f
 		}
 
 		// Fallback: check cookie if visiting front-page without a designated meta theme
-		if ( isset( $_COOKIE['nextora_active_theme'] ) && is_string( $_COOKIE['nextora_active_theme'] ) ) {
+		if ( ! $page_only && isset( $_COOKIE['nextora_active_theme'] ) && is_string( $_COOKIE['nextora_active_theme'] ) ) {
 			$cookie_theme = sanitize_title( wp_unslash( $_COOKIE['nextora_active_theme'] ) );
 			if ( isset( $themes[ $cookie_theme ] ) ) {
 				return array(
@@ -892,7 +895,7 @@ function nextora_resolve_current_request_theme( array $themes, string $initial_f
 	}
 
 	// 4. Inner pages (no direct theme): inherit active session theme from cookie
-	if ( isset( $_COOKIE['nextora_active_theme'] ) && is_string( $_COOKIE['nextora_active_theme'] ) ) {
+	if ( ! $page_only && isset( $_COOKIE['nextora_active_theme'] ) && is_string( $_COOKIE['nextora_active_theme'] ) ) {
 		$cookie_theme = sanitize_title( wp_unslash( $_COOKIE['nextora_active_theme'] ) );
 		if ( isset( $themes[ $cookie_theme ] ) ) {
 			return array(
@@ -991,6 +994,14 @@ function nextora_get_theme_inline_css( array $theme ): string {
 		$hbg         = ! empty( $theme['buttonHoverBg'] ) ? 'background-color: var(--nextora-button-hover-bg);' : '';
 		$hcol        = ! empty( $theme['buttonHoverColor'] ) ? 'color: var(--nextora-button-hover-color);' : '';
 		$btn_rules[] = ':root:root :where(.wp-element-button:not(.wp-block-button__link):not(.is-style-outline):not([class*="is-style-outline"]):not(.is-style-outline *):not([class*="is-style-outline"] *):not(.nextora-advanced-button-button--style-outline):not(.nextora-header-block__cta--outline):not(.alonepro-alone-donation-box__btn--outline):not(.alonepro-btn--outline):not(.wc-block-components-button):hover, .wp-block-button:not(.is-style-outline):not([class*="is-style-outline"]) > .wp-block-button__link:hover) { ' . $hbg . ' ' . $hcol . ' }';
+		// Palette utility classes use !important, so match that priority only for
+		// default fill buttons. Explicit hover effects and outline buttons remain independent.
+		if ( ! empty( $theme['buttonHoverBg'] ) ) {
+			$btn_rules[] = ':root:root .nextora-advanced-button-button--style-fill.nextora-advanced-button-button--hover-none[class*="-background-color"]:is(:hover, :focus-visible) { background-color: var(--nextora-button-hover-bg) !important; }';
+		}
+		if ( ! empty( $theme['buttonHoverColor'] ) ) {
+			$btn_rules[] = ':root:root .nextora-advanced-button-button--style-fill.nextora-advanced-button-button--hover-none[class*="-color"]:is(:hover, :focus-visible) { color: var(--nextora-button-hover-color) !important; }';
+		}
 	}
 	if ( ! empty( $theme['headerButtonBg'] ) || ! empty( $theme['headerButtonColor'] ) ) {
 		$hdr_bg      = ! empty( $theme['headerButtonBg'] ) ? 'background-color: var(--nextora-header-button-bg);' : '';

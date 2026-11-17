@@ -1,6 +1,6 @@
 import type { BlogListCarouselAttributes } from './types';
 
-export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5' | 'template-6';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5' | 'template-6' | 'template-7';
 
 export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	value: BlogListCardTemplate;
@@ -13,6 +13,7 @@ export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	{ value: 'template-4', labelKey: 'Template 4' },
 	{ value: 'template-5', labelKey: 'Template 5' },
 	{ value: 'template-6', labelKey: 'Template 6' },
+	{ value: 'template-7', labelKey: 'Template 7 — News Cards' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BlogListCardTemplate {
@@ -33,6 +34,9 @@ export function normalizeCardTemplate(value: string | undefined): BlogListCardTe
 	}
 	if ( value === 'template-6' ) {
 		return 'template-6';
+	}
+	if ( value === 'template-7' ) {
+		return 'template-7';
 	}
 	return 'default';
 }
@@ -60,6 +64,18 @@ export const RESET_COLOR_ATTRIBUTES: Partial<BlogListCarouselAttributes> = {
 export function getTemplateDefaultAttributes(
 	template: BlogListCardTemplate,
 ): Partial<BlogListCarouselAttributes> {
+	if (template === 'template-7') {
+		return {
+			layoutMode: 'carousel', postsPerPage: 6, slidesPerView: 3,
+			slidesPerViewTablet: 2, slidesPerViewMobile: 1, spaceBetween: 26,
+			imageAspectRatio: '3-2', imageBorderRadius: 0, cardBorderRadius: 8,
+			showDate: true, dateFormat: 'M j, Y', showCategory: false,
+			showAuthor: false, showExcerpt: true, showReadMore: true,
+			readMoreText: 'Read story', cardLinkBehavior: 'title-only',
+			showArrows: false, showPagination: true, autoplay: false,
+			loop: false,
+		};
+	}
 	if (template === 'template-1') {
 		return {
 			layoutMode: 'grid',

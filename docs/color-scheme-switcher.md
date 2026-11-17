@@ -23,7 +23,7 @@ Disabled by default (constant undefined). Any value other than the boolean `true
 | **Persistence** | `localStorage` key `nextora-scheme-preferences` → `{ "v": 3, "theme": "education", "color": null, "font": null }`. |
 | **URL params** | `?theme=<slug>&color=<slug>&font=<slug>`. URL wins over storage; storage wins over the theme default. Applied values are re-persisted. |
 | **Share** | The popover's **Copy link** button copies the current URL with `theme` / `color` / `font` params set. |
-| **Reset** | Per-section "Default" options plus a global **Reset** remove all inline overrides and stored choices. |
+| **Reset** | Global **Reset** restores the current demo's original theme, removes saved preview preferences and appearance URL parameters, and retains unrelated URL parameters/hash. Without a demo context it restores website defaults. |
 
 ## Files
 
@@ -134,6 +134,10 @@ Semantics:
 - **Child theme** overrides the parent at the key level; `presets.themes` / `presets.colors` / `presets.fonts` arrays are replaced wholesale (not merged by index).
 
 ## Override mechanism
+
+### Demo reset context
+
+The payload's `resetPageTheme` identifies the page's own theme independently of preview URL parameters and the active-theme cookie. Visiting a designated demo page updates `localStorage` key `nextora-scheme-demo`; shared inner pages reuse that validated demo identity. Preview selections never change this reset baseline. A direct inner-page visit without a stored demo resets to website defaults. On reset, the active-theme cookie is updated to the restored theme, while saved preview preferences and `theme` / `color` / `font` URL parameters are removed. The child theme can hide the Default tile with `sections.themes.showDefault: false`.
 
 - **Colors** — inline `style.setProperty('--wp--preset--color--{slug}', value)` on `<html>`. Inline styles on `html` beat the `global-styles` stylesheet, so no `!important` is needed. Reset uses `removeProperty()` so the cascade falls back to the theme's own values (including Site Editor customizations).
 - **Fonts** — `theme.json` maps the role variables to global styles:

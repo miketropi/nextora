@@ -349,6 +349,17 @@ if ( ! function_exists( 'nextora_blc_get_template_defaults' ) ) {
 	 * @return array<string, mixed>
 	 */
 	function nextora_blc_get_template_defaults( string $template ): array {
+		if ( 'template-7' === $template ) {
+			return array(
+				'layoutMode' => 'carousel', 'postsPerPage' => 6, 'slidesPerView' => 3,
+				'slidesPerViewTablet' => 2, 'slidesPerViewMobile' => 1, 'spaceBetween' => 26,
+				'imageAspectRatio' => '3-2', 'imageBorderRadius' => 0, 'cardBorderRadius' => 8,
+				'showDate' => true, 'dateFormat' => 'M j, Y', 'showCategory' => false,
+				'showAuthor' => false, 'showExcerpt' => true, 'showReadMore' => true,
+				'readMoreText' => 'Read story', 'cardLinkBehavior' => 'title-only',
+				'showArrows' => false, 'showPagination' => true, 'autoplay' => false, 'loop' => false,
+			);
+		}
 		if ( 'template-1' === $template ) {
 			return array(
 				'layoutMode'          => 'grid',
@@ -525,19 +536,22 @@ if ( ! function_exists( 'nextora_blc_get_template_defaults' ) ) {
 
 // ── Normalize template & merge template defaults ──
 $card_template_raw = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-$card_template     = in_array( $card_template_raw, array( 'template-1', 'news-grid' ), true )
+$card_template     = 'template-7' === $card_template_raw ? 'template-7' : ( in_array( $card_template_raw, array( 'template-1', 'news-grid' ), true )
 	? 'template-1'
 	: ( in_array( $card_template_raw, array( 'template-2' ), true ) ? 'template-2'
 	: ( in_array( $card_template_raw, array( 'template-3', 'overlay-grid' ), true ) ? 'template-3'
 	: ( in_array( $card_template_raw, array( 'template-4' ), true ) ? 'template-4'
 	: ( in_array( $card_template_raw, array( 'template-5' ), true ) ? 'template-5'
-	: ( in_array( $card_template_raw, array( 'template-6' ), true ) ? 'template-6' : 'default' ) ) ) ) );
+	: ( in_array( $card_template_raw, array( 'template-6' ), true ) ? 'template-6' : 'default' ) ) ) ) ) );
 
 $template_defaults = nextora_blc_get_template_defaults( $card_template );
 $parsed_attrs      = isset( $block ) && $block instanceof WP_Block && isset( $block->parsed_block['attrs'] ) && is_array( $block->parsed_block['attrs'] )
 	? $block->parsed_block['attrs']
 	: array();
 $attributes        = array_merge( $template_defaults, $attributes, $parsed_attrs );
+if ( 'template-7' === $card_template ) {
+	$attributes = array_merge( $attributes, $template_defaults, $parsed_attrs );
+}
 
 // ── Build WP_Query args ──
 $post_type = isset( $attributes['postType'] ) && is_string( $attributes['postType'] )
@@ -1242,6 +1256,8 @@ while ( $query->have_posts() ) :
     // Card body
     if ( 'template-5' === $card_template ) {
 		$card_body = $meta_html . $title_html;
+	} elseif ( 'template-7' === $card_template ) {
+		$card_body = $title_html . $excerpt_html . $read_more_html;
 	} elseif ( 'template-6' === $card_template ) {
 		$card_body = $meta_html . $title_html . $excerpt_html . $read_more_html;
 	} elseif ( 'template-3' === $card_template ) {
@@ -1277,6 +1293,15 @@ while ( $query->have_posts() ) :
         	$read_more_html,
         	$permalink,
         	esc_attr( $title ),
+        );
+    } elseif ( 'template-7' === $card_template ) {
+        $cards_html .= sprintf(
+        	'<div class="swiper-slide"><article class="%1$s"%2$s><div class="nextora-blc__news-image">%3$s%4$s</div><div class="nextora-blc__card-body">%5$s</div></article></div>',
+        	esc_attr( $card_class ),
+        	$card_style_attr,
+        	$image_html,
+        	$meta_html,
+        	$card_body,
         );
     } elseif ( 'template-6' === $card_template ) {
         $rendered_image = $image_html;

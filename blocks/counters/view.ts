@@ -24,7 +24,7 @@ function prefersReducedMotion(): boolean {
 function formatValue(value: number, target: number): string {
 	const rounded = Number.isInteger(target) ? Math.round(value) : value;
 	return rounded.toLocaleString('en-US', {
-		maximumFractionDigits: Number.isInteger(target) ? 0 : 1,
+		maximumFractionDigits: Number.isInteger(target) ? 0 : 2,
 	});
 }
 
@@ -210,4 +210,3 @@ if (document.readyState === 'loading') {
 } else {
 	initAll();
 }
-
