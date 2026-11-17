@@ -68,6 +68,9 @@ type Attributes = {
   backgroundImageCustomSize: string;
   backgroundImageRepeat: boolean;
   backgroundVideoUrl: string;
+  backgroundVideoPoster: string;
+  managedBackgroundVideo: boolean;
+  showBackgroundVideoControl: boolean;
   overlayColor: string;
   overlayOpacity: number;
   overlayStyle: string;
@@ -599,6 +602,35 @@ export default function Edit({ attributes, setAttributes }: BlockEditProps<Attri
           {backgroundType === 'video' ? (
             <>
             {backgroundVideoUrl ? <video src={backgroundVideoUrl} controls preload="metadata" className="nextora-ac-inspector-media" aria-label={__('Background video preview', 'nextora')} /> : null}
+            <ToggleControl
+              label={__('Accessible video controls', 'nextora')}
+              help={__('Adds a play/pause control and respects reduced motion.', 'nextora')}
+              checked={attributes.managedBackgroundVideo}
+              onChange={(value) => setAttributes({ managedBackgroundVideo: value })}
+            />
+            {attributes.managedBackgroundVideo ? (
+              <ToggleControl
+                label={__('Show video play/pause button', 'nextora')}
+                help={__('Without a pause button, looping video may not meet accessibility requirements.', 'nextora')}
+                checked={attributes.showBackgroundVideoControl}
+                onChange={(value) => setAttributes({ showBackgroundVideoControl: value })}
+              />
+            ) : null}
+            <MediaUploadCheck>
+              <MediaUpload
+                allowedTypes={['image']}
+                onSelect={(media: any) => setAttributes({ backgroundVideoPoster: media?.url ?? '' })}
+                render={({ open }) => (
+                  <MediaActionButtons
+                    hasMedia={!!attributes.backgroundVideoPoster}
+                    selectLabel={__('Select video poster', 'nextora')}
+                    replaceLabel={__('Replace video poster', 'nextora')}
+                    onSelect={open}
+                    onRemove={() => setAttributes({ backgroundVideoPoster: '' })}
+                  />
+                )}
+              />
+            </MediaUploadCheck>
             <MediaUploadCheck>
               <MediaUpload
                 onSelect={(media: any) => setAttributes({ backgroundVideoUrl: media?.url ?? '' })}
