@@ -246,6 +246,16 @@ function cloneNavIntoMount(sourcePanel: HTMLElement, mount: HTMLElement): void {
 			clones.push(clone);
 		}
 	});
+	const header = sourcePanel.closest<HTMLElement>(".nextora-header-block--cta-menu");
+	const cta = header?.querySelector<HTMLElement>(
+		".nextora-header-block__utilities:not(.nextora-header-block__utilities--hide-cta-mobile) .nextora-header-block__cta-wrap",
+	);
+	if (cta) {
+		const drawerCta = cta.cloneNode(true) as HTMLElement;
+		drawerCta.classList.add("nextora-header-block__cta-drawer");
+		dedupeCloneIds(drawerCta);
+		clones.splice(1, 0, drawerCta);
+	}
 
 	mount.replaceChildren(...clones);
 	bindHeaderFollowUsIn(mount);

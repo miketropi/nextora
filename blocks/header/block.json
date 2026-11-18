@@ -243,6 +243,14 @@
       "type": "string",
       "default": ""
     },
+    "ctaMobilePlacement": {
+      "type": "string",
+      "default": "bottom"
+    },
+    "ctaHiddenOn": {
+      "type": "array",
+      "default": []
+    },
     "ctaButtonUrl": {
       "type": "string",
       "default": ""

@@ -713,15 +713,19 @@ if ( ! function_exists( 'nextora_header_block_mobile_breakpoint_css' ) ) {
 			. '  .nextora-primary-nav-portal__mount .nextora-counters__grid{grid-template-columns:1fr !important;width:100% !important;}' . "\n"
 
 			// -- Mobile Sticky Bottom CTA (<= 767px) & Top Header CTA Hide --
-			. '@media (max-width: 767.98px) {' . "\n"
-			. '  .nextora-header-block__utilities .nextora-header-block__cta-wrap,' . "\n"
-			. '  .nextora-header-block__cta-wrap{display:none !important;}' . "\n"
+			. '@media (max-width: ' . $m2 . 'px) {' . "\n"
+			. '  .nextora-header-block--cta-bottom .nextora-header-block__cta-wrap,.nextora-header-block--cta-menu .nextora-header-block__cta-wrap,.nextora-header-block__utilities--hide-cta-mobile .nextora-header-block__cta-wrap{display:none !important;}' . "\n"
+			. '  .nextora-primary-nav-portal__mount .nextora-header-block__cta-drawer{display:block !important;margin-block:var(--wp--preset--spacing--20,1rem);}' . "\n"
+			. '  .nextora-header-block--cta-header .nextora-header-block__logo,.nextora-header-block--cta-header .nextora-header-block__actions,.nextora-header-block--cta-header .nextora-header-block__utilities{min-width:0;}' . "\n"
+			. '  .nextora-header-block--cta-header .nextora-header-block__inner{grid-template-columns:minmax(0,1fr) minmax(0,auto) !important;}' . "\n"
+			. '  .nextora-header-block--cta-header .nextora-header-block__cta-wrap{min-width:0;flex-shrink:1;}' . "\n"
+			. '  .nextora-header-block--cta-header .nextora-header-block__cta{white-space:normal;overflow-wrap:anywhere;}' . "\n"
 			. '  .nextora-header-sticky-cta{display:flex !important;}' . "\n"
-			. '  body:has(.nextora-header-sticky-cta),body.has-sticky-donation-bar{' . "\n"
+			. '  body:has(.nextora-header-sticky-cta){' . "\n"
 			. '    padding-bottom:calc(50px + env(safe-area-inset-bottom,0px)) !important;' . "\n"
 			. '  }' . "\n"
 			. '}' . "\n"
-			. '@media (min-width: 768px) {' . "\n"
+			. '@media (min-width: ' . $d . 'px) {' . "\n"
 			. '  .nextora-header-sticky-cta{display:none !important;}' . "\n"
 			. '}' . "\n"
 			. '}' . "\n"
@@ -745,7 +749,7 @@ if ( ! function_exists( 'nextora_header_block_render_sticky_bottom_cta' ) ) {
 		$cta_text        = ! empty( $atts['ctaButtonText'] ) ? $atts['ctaButtonText'] : __( 'Donation Now', 'nextora' );
 		$sticky_text     = $cta_text;
 		$cta_url         = ! empty( $atts['ctaButtonUrl'] ) ? $atts['ctaButtonUrl'] : '#';
-		$cta_new         = ! empty( $atts['ctaButtonNewTab'] );
+		$cta_new         = ! empty( $atts['ctaButtonTarget'] );
 		$enable_donation = ! empty( $atts['enableDonationPopup'] );
 		$donation_cid    = isset( $atts['donationCampaignId'] ) ? (int) $atts['donationCampaignId'] : 0;
 
@@ -760,7 +764,7 @@ if ( ! function_exists( 'nextora_header_block_render_sticky_bottom_cta' ) ) {
 
 		ob_start();
 		?>
-		<aside class="nextora-header-sticky-cta" id="nextora-header-sticky-cta" aria-label="<?php esc_attr_e( 'Donation Sticky Bar', 'nextora' ); ?>">
+		<aside class="nextora-header-sticky-cta" id="nextora-header-sticky-cta" aria-label="<?php esc_attr_e( 'Call to action', 'nextora' ); ?>">
 			<?php if ( $enable_donation && $donation_cid > 0 ) : ?>
 				<a
 					href="#"
@@ -1876,8 +1880,20 @@ $mobile_bp = isset( $attributes['mobileBreakpoint'] ) && (int) $attributes['mobi
 	? (int) $attributes['mobileBreakpoint']
 	: 1025;
 
+$hidden_on = isset( $attributes['ctaHiddenOn'] ) && is_array( $attributes['ctaHiddenOn'] ) ? $attributes['ctaHiddenOn'] : array();
+if ( is_singular() ) {
+	foreach ( $hidden_on as $hidden_item ) {
+		if ( ( 'campaigns' === $hidden_item && is_singular( 'campaign' ) ) || ( is_array( $hidden_item ) && isset( $hidden_item['id'] ) && (int) $hidden_item['id'] === get_queried_object_id() ) ) {
+			$attributes['showCtaButton'] = false;
+			break;
+		}
+	}
+}
+$cta_placement = isset( $attributes['ctaMobilePlacement'] ) && in_array( $attributes['ctaMobilePlacement'], array( 'bottom', 'header', 'menu' ), true ) ? $attributes['ctaMobilePlacement'] : 'bottom';
+
 $wrapper_classes   = (array) apply_filters( 'nextora_header_block_wrapper_classes', array( 'nextora-header-block' ), $attributes );
 $wrapper_classes   = array_filter( array_map( 'trim', $wrapper_classes ) );
+$wrapper_classes[] = 'nextora-header-block--cta-' . $cta_placement;
 
 if ( ! empty( $attributes['stickyHeader'] ) ) {
 	$sticky_style = isset( $attributes['stickyStyle'] ) && 'always' === $attributes['stickyStyle'] ? 'always' : 'scroll-up';
@@ -2089,15 +2105,7 @@ if ( '' !== $breakpoint_css ) {
 }
 do_action( 'nextora_header_block_after', $attributes );
 
-if ( ! is_admin() && ! empty( $attributes['showCtaButton'] ) ) {
-	add_filter(
-		'body_class',
-		static function ( array $classes ): array {
-			$classes[] = 'has-sticky-donation-bar';
-			return $classes;
-		},
-	);
-
+if ( ! is_admin() && ! empty( $attributes['showCtaButton'] ) && 'bottom' === $cta_placement && ( ! isset( $attributes['showCtaButtonMobile'] ) || $attributes['showCtaButtonMobile'] ) ) {
 	if ( did_action( 'wp_footer' ) ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in render helper.
 		echo nextora_header_block_render_sticky_bottom_cta( $attributes );

@@ -1491,8 +1491,7 @@ html.nextora-header-follow-us-open {
 	}
 
 	.nextora-header-block .nextora-header-block__cta.wp-element-button,
-	.nextora-header-block .nextora-header-block__cta,
-	.nextora-header-block__cta {
+	.nextora-header-block .nextora-header-block__cta {
 		min-height: calc(clamp(1.85rem, 2.15rem * var(--nextora-header-nav-scale, 1), 2.15rem));
 		padding-block: calc(clamp(0.35rem, 0.45rem * var(--nextora-header-nav-scale, 1), 0.45rem));
 		padding-inline: calc(clamp(0.85rem, 1.25rem * var(--nextora-header-nav-scale, 1), 1.25rem));
@@ -1606,24 +1605,11 @@ html.nextora-header-follow-us-open {
 	display: none !important;
 }
 
-@media (max-width: 767.98px) {
-	.nextora-header-block__utilities .nextora-header-block__cta-wrap,
-	.nextora-header-block__cta-wrap {
-		display: none !important;
-	}
-
-	.nextora-header-sticky-cta {
-		display: flex !important;
-	}
-
-	body:has(.nextora-header-sticky-cta),
-	body.has-sticky-donation-bar {
-		padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px)) !important;
-	}
-}
-
-@media (min-width: 768px) {
-	.nextora-header-sticky-cta {
-		display: none !important;
-	}
+.nextora-primary-nav-portal__mount .nextora-header-block__cta-drawer .nextora-header-block__cta {
+	min-width: min(100%, 12rem);
+	min-height: 3.25rem;
+	max-width: 100%;
+	padding-block: var(--wp--preset--spacing--10, 1rem) !important;
+	white-space: normal;
+	overflow-wrap: anywhere;
 }

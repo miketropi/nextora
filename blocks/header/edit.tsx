@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { __ } from '@wordpress/i18n';
+import apiFetch from '@wordpress/api-fetch';
 import {
   useBlockProps,
   InspectorControls,
@@ -23,6 +24,7 @@ import {
   ColorPalette,
   BaseControl,
   FontSizePicker,
+  FormTokenField,
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
@@ -94,6 +96,29 @@ function normalizeFontSizeAttribute(
 }
 
 export default function HeaderEdit({ attributes, setAttributes }) {
+  const [ctaSearch, setCtaSearch] = useState('');
+  const [ctaSearchResults, setCtaSearchResults] = useState([]);
+  useEffect(() => {
+    let active = true;
+    if (!ctaSearch.trim()) {
+      setCtaSearchResults([]);
+      return () => { active = false; };
+    }
+    apiFetch({ path: `/wp/v2/search?type=post&per_page=20&search=${encodeURIComponent(ctaSearch)}` })
+      .then((results) => { if (active) setCtaSearchResults(Array.isArray(results) ? results : []); })
+      .catch(() => { if (active) setCtaSearchResults([]); });
+    return () => { active = false; };
+  }, [ctaSearch]);
+  const hiddenOn = Array.isArray(attributes.ctaHiddenOn) ? attributes.ctaHiddenOn : [];
+  const campaignToken = __('All single campaigns', 'nextora');
+  const tokenLabel = (item) => item === 'campaigns' ? campaignToken : `${item.title} (#${item.id})`;
+  const ctaChoices = [
+    { token: campaignToken, value: 'campaigns' },
+    ...ctaSearchResults.map((item) => ({
+      token: `${item.title || __('Untitled', 'nextora')} (#${item.id})`,
+      value: { id: item.id, title: item.title || __('Untitled', 'nextora') },
+    })),
+  ];
   const {
     logoType,
     logoImageUrl,
@@ -762,6 +787,29 @@ export default function HeaderEdit({ attributes, setAttributes }) {
           />
           {showCtaButton && (
             <>
+              <SelectControl
+                label={__('Mobile button placement', 'nextora')}
+                value={attributes.ctaMobilePlacement || 'bottom'}
+                options={[
+                  { label: __('Bottom bar', 'nextora'), value: 'bottom' },
+                  { label: __('Header', 'nextora'), value: 'header' },
+                  { label: __('Inside mobile menu', 'nextora'), value: 'menu' },
+                ]}
+                onChange={(value) => setAttributes({ ctaMobilePlacement: value })}
+              />
+              <FormTokenField
+                label={__('Hide button on', 'nextora')}
+                value={hiddenOn.map(tokenLabel)}
+                suggestions={ctaChoices.map((choice) => choice.token)}
+                onInputChange={setCtaSearch}
+                onChange={(tokens) => setAttributes({
+                  ctaHiddenOn: tokens.map((token) => {
+                    const existing = hiddenOn.find((item) => tokenLabel(item) === token);
+                    return existing || ctaChoices.find((choice) => choice.token === token)?.value;
+                  }).filter(Boolean),
+                })}
+                help={__('Select all single campaigns or search for individual pages and posts.', 'nextora')}
+              />
               {isGiftFlowActive && (
                 <>
                   <ToggleControl

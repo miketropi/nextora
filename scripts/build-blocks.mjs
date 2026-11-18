@@ -24,7 +24,10 @@ function toWpHandle(pkg) {
 function writeAssetFile(entryFile, dependencies) {
   const dir = path.dirname(entryFile);
   const version = Date.now().toString();
-  const depsPhp = dependencies.map((d) => `'${d}'`).join(', ');
+  const handles = path.basename(dir) === 'header'
+    ? [...dependencies, 'wp-api-fetch']
+    : dependencies;
+  const depsPhp = handles.map((d) => `'${d}'`).join(', ');
   const content = `<?php return [ 'dependencies' => [ ${depsPhp} ], 'version' => '${version}' ];\n`;
   fs.writeFileSync(path.join(dir, 'index.asset.php'), content, 'utf8');
 }
