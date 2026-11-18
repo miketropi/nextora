@@ -679,6 +679,12 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 				$organizer = (string) get_the_title( $organizer_id );
 			}
 		}
+		if ( '' === $organizer ) {
+			$author_id = (int) get_post_field( 'post_author', $post_id );
+			if ( $author_id > 0 ) {
+				$organizer = (string) get_the_author_meta( 'display_name', $author_id );
+			}
+		}
 
 		$events[] = array(
 			'id'                 => (string) $post_id,
