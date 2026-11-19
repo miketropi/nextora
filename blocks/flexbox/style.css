@@ -83,6 +83,7 @@
 .wp-block-nextora-flexbox.nextora-flexbox--overlay {
   position: var(--flexbox-position, var(--flexbox-desktop-position, relative));
   isolation: isolate;
+  margin: 0;
 }
 .wp-block-nextora-flexbox.nextora-flexbox--overlay:where([style*="--flexbox-position:static"], [style*="--flexbox-position: static"], [style*="--flexbox-desktop-position:static"], [style*="--flexbox-desktop-position: static"]) {
   position: relative;
@@ -101,6 +102,7 @@
 /* Opt-in constrained flow keeps the existing flex/grid settings intact. */
 .wp-block-nextora-flexbox.nextora-flexbox--content-width {
   display: flow-root;
+  margin: 0;
 }
 .wp-block-nextora-flexbox.nextora-flexbox--content-width > :where(:not(.alignleft):not(.alignright):not(.alignfull):not(.nextora-flexbox-empty-guide):not(.block-list-appender)) {
   max-width: var(--wp--style--global--content-size);

@@ -98,6 +98,15 @@ if ( ! function_exists( 'tribe_get_venue' ) ) {
 	}
 }
 
+if ( ! function_exists( 'tribe_get_organizer' ) ) {
+	/**
+	 * @param int|WP_Post|null $event
+	 */
+	function tribe_get_organizer( $event = null ): string {
+		return '';
+	}
+}
+
 if ( ! function_exists( 'tribe_get_city' ) ) {
 	/**
 	 * @param int|WP_Post|null $event

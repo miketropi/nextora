@@ -196,6 +196,9 @@
   .visible {
     visibility: visible;
   }
+  .visible\! {
+    visibility: visible !important;
+  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -219,6 +222,9 @@
   .static {
     position: static;
   }
+  .static\! {
+    position: static !important;
+  }
   .sticky {
     position: sticky;
   }
@@ -230,6 +236,9 @@
   }
   .start {
     inset-inline-start: var(--spacing);
+  }
+  .start\! {
+    inset-inline-start: var(--spacing) !important;
   }
   .end {
     inset-inline-end: var(--spacing);
@@ -413,6 +422,9 @@
   }
   .inline {
     display: inline;
+  }
+  .inline\! {
+    display: inline !important;
   }
   .inline-block {
     display: inline-block;
@@ -1258,6 +1270,9 @@
   .italic {
     font-style: italic;
   }
+  .italic\! {
+    font-style: italic !important;
+  }
   .tabular-nums {
     --tw-numeric-spacing: tabular-nums;
     font-variant-numeric: var(--tw-ordinal,) var(--tw-slashed-zero,) var(--tw-numeric-figure,) var(--tw-numeric-spacing,) var(--tw-numeric-fraction,);
@@ -1273,6 +1288,9 @@
   }
   .underline {
     text-decoration-line: underline;
+  }
+  .underline\! {
+    text-decoration-line: underline !important;
   }
   .decoration-2 {
     text-decoration-thickness: 2px;

@@ -35,6 +35,7 @@ export interface MemberEditFormProps {
 
 export default function MemberEditForm({ member, photoUrl, cardTemplate, enablePopup, onPatch }: MemberEditFormProps) {
 	const isOverlay = cardTemplate === 'overlay-social';
+	const isTaboche = cardTemplate === 'template-03';
 	const showTags = cardTemplate === 'default';
 
 	return (
@@ -121,7 +122,7 @@ export default function MemberEditForm({ member, photoUrl, cardTemplate, enableP
 						value={member.role}
 						onChange={(role) => onPatch({ role: role ?? '' })}
 					/>
-					{!isOverlay && (
+					{!isOverlay && !isTaboche && (
 						<>
 							<TextareaControl
 								label={__('Bio', 'nextora')}

@@ -557,6 +557,12 @@ if ( 'template4' === $template ) {
 	return;
 }
 
+if ( 'template6' === $template ) {
+	require_once __DIR__ . '/taboche-row.php';
+	echo nextora_event_render_taboche_list( $events, $attributes, 'nextora_event_get_color_props', 'nextora_event_resolve_color' );
+	return;
+}
+
 $show_register     = ! isset( $attributes['showRegisterButton'] ) || (bool) $attributes['showRegisterButton'];
 $default_register  = isset( $attributes['registerButtonText'] ) ? nextora_event_decode_text( (string) $attributes['registerButtonText'] ) : __( 'Register', 'nextora' );
 $enable_scroll     = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];

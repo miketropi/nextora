@@ -25,6 +25,8 @@ import { IconPicker } from '../advanced-icon/icon-picker';
 import { EventButtonIcon } from './button-icon';
 import type { EventAttributes, EventItem } from './types';
 import { SomoniSettings } from './somoni-settings';
+import { TabocheSettings } from './taboche-settings';
+import { TabocheList } from './taboche-row';
 
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
@@ -305,6 +307,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		edgeFadeColor = '',
 	} = attributes;
 
+	const isTemplate6 = template === 'template6';
 	const isTemplate5 = template === 'template5';
 	const somoniTrack = useRef<HTMLDivElement>(null);
 	const [somoniIndex, setSomoniIndex] = useState(0);
@@ -331,6 +334,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		className: [
 			'nextora-event',
 			'nextora-event--editor',
+			isTemplate6 ? 'nextora-event--template6' : '',
 			isTemplate5 ? 'nextora-event--template5' : '',
 			isTemplate4 ? ['nextora-event--template4', enableAnimation ? `nextora-event--animation-${animationStyle || 'sequential'}` : ''].filter(Boolean).join(' ') : '',
 			isTemplate1 ? 'nextora-event--template1 nextora-event--template1-editor' : '',
@@ -598,7 +602,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				<PanelBody title={__('Template', 'nextora')} initialOpen>
 					<SelectControl
 						label={__('Layout template', 'nextora')}
-						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5'}
+						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5' | 'template6'}
 						options={[
 							{ label: __('Default — List', 'nextora'), value: 'default' as const },
 							{ label: __('Template 1 — Slider', 'nextora'), value: 'template1' as const },
@@ -606,6 +610,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							{ label: __('Template 3 — Editorial list', 'nextora'), value: 'template3' as const },
 							{ label: __('Template 4 — Compact List', 'nextora'), value: 'template4' },
 							{ label: __('Template 5 — Somoni Card Slider', 'nextora'), value: 'template5' },
+							{ label: __('Template 6 — Taboche Editorial Row', 'nextora'), value: 'template6' },
 						]}
 						onChange={(value: string) => setAttributes({ template: value })}
 					/>
@@ -710,7 +715,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					</Button>
 				</PanelBody>
 
-				{!isTemplate5 && <PanelBody title={__('Settings', 'nextora')} initialOpen={isTemplate4}>
+				{!isTemplate5 && !isTemplate6 && <PanelBody title={__('Settings', 'nextora')} initialOpen={isTemplate4}>
 					{isTemplate4 ? (
 						<>
 							<RangeControl
@@ -822,7 +827,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				</PanelBody>
 
 				}
-				{isTemplate5 ? <SomoniSettings attributes={attributes} setAttributes={setAttributes} /> : isTemplate4 ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />}
+				{isTemplate6 ? <TabocheSettings attributes={attributes} setAttributes={setAttributes} /> : isTemplate5 ? <SomoniSettings attributes={attributes} setAttributes={setAttributes} /> : isTemplate4 ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />}
 
 				{isTemplate4 && (
 					<PanelBody
@@ -1082,7 +1087,9 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 
 			<div {...blockProps}>
 				<div className="nextora-event__inner">
-					{isTemplate4 ? (
+					{isTemplate6 ? (
+						<TabocheList attributes={attributes} events={events} onEdit={openEventEditor} />
+					) : isTemplate4 ? (
 						<CompactList key={animKey} attributes={attributes} events={events.map((event) => ({ ...event, imageUrl: event.imageId > 0 ? (mediaUrlById.get(event.imageId) || event.imageUrl) : event.imageUrl }))} onEdit={openEventEditor} />
 					) : isTemplate5 ? (
 						<div className="nextora-event__carousel-root">
