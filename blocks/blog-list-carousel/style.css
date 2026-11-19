@@ -2,6 +2,120 @@
  * nextora/blog-list-carousel — front-end styles.
  */
 
+/* ── Template 8: Taboche Editorial News Carousel Card ── */
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card {
+	text-align: center;
+	background: var(--nextora-blc-card-bg, transparent);
+	border: none;
+	box-shadow: none;
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card .nextora-blc__card-image-wrapper {
+	overflow: hidden;
+	border-radius: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card .nextora-blc__card-image {
+	margin-bottom: 0;
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card .nextora-blc__card-image-wrapper img {
+	width: 100%;
+	aspect-ratio: 3 / 2;
+	object-fit: cover;
+	display: block;
+	transition: transform 0.35s ease;
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card:hover .nextora-blc__card-image-wrapper img {
+	transform: scale(1.04);
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card .nextora-blc__card-body {
+	padding: 0;
+	margin: 0;
+	text-align: center;
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card .nextora-blc__card-author-taboche {
+	display: block;
+	margin-top: 16px;
+	margin-bottom: 8px;
+	font-size: var(--wp--preset--font-size--small, 13px);
+	line-height: 1.4;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: var(--nextora-blc-meta-color, var(--wp--preset--color--muted, var(--wp--preset--color--paragraph, #595959)));
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card .nextora-blc__card-title {
+	font-size: var(--wp--preset--font-size--medium, 22px);
+	line-height: 1.5;
+	margin-top: 0;
+	margin-bottom: 8px;
+	font-weight: 700;
+	text-align: center;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card .nextora-blc__card-title a {
+	color: inherit;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card .nextora-blc__card-title a:hover {
+	color: var(--wp--preset--color--primary, #F7DB07);
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__card .nextora-blc__card-date-taboche {
+	display: block;
+	font-size: var(--wp--preset--font-size--small, 14px);
+	line-height: 1.4;
+	letter-spacing: 1px;
+	color: var(--nextora-blc-meta-color, var(--wp--preset--color--muted, var(--wp--preset--color--paragraph, #595959)));
+	margin-top: 0;
+	margin-bottom: 0;
+	text-align: center;
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__arrow {
+	top: 126px;
+	background: var(--wp--preset--color--base, #ffffff);
+	color: var(--nextora-blc-arrow-color, var(--wp--preset--color--contrast, #222222));
+	opacity: 0.95;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__arrow:hover {
+	opacity: 1;
+	background: var(--wp--preset--color--contrast, #222222);
+	color: var(--wp--preset--color--base, #ffffff);
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__pagination {
+	margin-top: 24px;
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__pagination .swiper-pagination-bullet {
+	background: var(--nextora-blc-dot-color, color-mix(in srgb, currentColor 35%, transparent));
+	width: 8px;
+	height: 8px;
+	transition: all 0.25s ease;
+}
+
+.nextora-blog-list-carousel--template-template-8 .nextora-blc__pagination .swiper-pagination-bullet-active {
+	background: var(--nextora-blc-dot-active, var(--wp--preset--color--primary, currentColor));
+	width: 24px;
+	border-radius: 50px;
+}
+
 .nextora-blog-list-carousel--template-template-7 .nextora-blc__card {
 	border: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast) 16%, transparent);
 	border-radius: var(--nextora-blc-card-radius, 8px);
