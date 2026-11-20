@@ -1,1 +1,1 @@
-<?php return [ 'dependencies' => [ 'wp-components', 'wp-element', 'wp-i18n', 'wp-api-fetch' ], 'version' => '1794818864384' ];
+<?php return [ 'dependencies' => [ 'wp-components', 'wp-element', 'wp-i18n', 'wp-api-fetch' ], 'version' => '1795139042642' ];

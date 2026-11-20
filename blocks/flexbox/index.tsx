@@ -189,12 +189,30 @@ function Edit({ attributes, setAttributes, clientId }: Props) {
     }
     setAttributes({ chooseLayout: false });
   };
+  const borderOptions: [string, string, string][] = [
+    ['', device === 'desktop' ? __('Use border styles', 'nextora') : __('Inherit from larger screen', 'nextora'), 'M5 5h14v14H5z'],
+    ['none', __('None', 'nextora'), 'M5 5l14 14M19 5 5 19'],
+    ['top', __('Top', 'nextora'), 'M5 5h14'],
+    ['right', __('Right', 'nextora'), 'M19 5v14'],
+    ['bottom', __('Bottom', 'nextora'), 'M5 19h14'],
+    ['left', __('Left', 'nextora'), 'M5 5v14'],
+  ];
   return <>
     <InspectorControls group="background">
       <PanelBody className="nextora-flexbox-overlay-panel" title={__('Background overlay', 'nextora')} initialOpen={false}>
         <SectionBackgroundFill fillType={attributes.overlayType === 'gradient' ? 'gradient' : 'solid'} solidColor={attributes.overlayColor || ''} gradient={attributes.overlayGradient || ''} colorPalette={palette} lookupPalette={getMergedPaletteEntries(palette)} lookupGradients={getMergedGradientEntries(gradients)} onFillTypeChange={(overlayType) => setAttributes({ overlayType })} onSolidColorChange={(overlayColor) => setAttributes({ overlayColor })} onGradientChange={(overlayGradient) => setAttributes({ overlayGradient })} />
         <RangeControl label={__('Overlay opacity', 'nextora')} value={attributes.overlayOpacity ?? 50} min={0} max={100} onChange={(overlayOpacity) => setAttributes({ overlayOpacity: overlayOpacity ?? 50 })} />
       </PanelBody>
+    </InspectorControls>
+    <InspectorControls group="border">
+      <fieldset className="nextora-flexbox-options nextora-flexbox-options--border-side">
+        <legend>{responsiveLabel(__('Border sides', 'nextora'), device)}</legend>
+        <div className="nextora-flexbox-options__buttons" role="group" aria-label={__('Border sides', 'nextora')}>
+          {borderOptions.map(([value, label, path]) => <Button key={value} className="nextora-flexbox-options__button" label={label} showTooltip aria-pressed={(settings.borderSide || '') === value} isPressed={(settings.borderSide || '') === value} onClick={() => set('borderSide', value)}><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d={path} /></svg></Button>)}
+        </div>
+        <p className="components-base-control__help">{device === 'desktop' ? __('A selected side uses a 1px border. Use border styles to restore the configured border.', 'nextora') : __('A selected side uses a 1px border. Use inherit to restore the larger screen setting.', 'nextora')}</p>
+        {device !== 'desktop' && (overrides.borderSide ? reset('borderSide') : <p className="components-base-control__help">{__('Inherited from a larger screen.', 'nextora')}</p>)}
+      </fieldset>
     </InspectorControls>
     <InspectorControls>
       <PanelBody title={__('Layout', 'nextora')} initialOpen={true}>
@@ -232,18 +250,6 @@ function Edit({ attributes, setAttributes, clientId }: Props) {
           {device !== 'desktop' && overrides.columnGap && <Button variant="link" onClick={() => set('columnGap', '')}>{__('Reset column gap to inherited', 'nextora')}</Button>}
         </>}
         <Button variant="secondary" onClick={() => { const next = { ...(attributes[device] || {}) }; (device === 'desktop' ? ['display', ...responsiveKeys.filter((key) => key !== 'width'), 'gridMinWidth'] : responsiveKeys.filter((key) => key !== 'width')).forEach((key) => delete next[key]); setAttributes({ [device]: next }); }}>{__('Reset layout settings', 'nextora')}</Button>
-      </PanelBody>
-      <PanelBody title={__('Responsive border side', 'nextora')} initialOpen={false}>
-        <p className="components-base-control__help">{__('Set the border style and color in Styles. The selected side uses a 1px border.', 'nextora')}</p>
-        <SelectControl label={responsiveLabel(__('Visible border side', 'nextora'), device)} value={(settings.borderSide || '') as '' | 'none' | 'top' | 'right' | 'bottom' | 'left'} options={[
-          { value: '', label: __('Use border styles', 'nextora') },
-          { value: 'none', label: __('None', 'nextora') },
-          { value: 'top', label: __('Top', 'nextora') },
-          { value: 'right', label: __('Right', 'nextora') },
-          { value: 'bottom', label: __('Bottom', 'nextora') },
-          { value: 'left', label: __('Left', 'nextora') },
-        ]} onChange={(value: string) => set('borderSide', value)} />
-        {device !== 'desktop' && overrides.borderSide && reset('borderSide')}
       </PanelBody>
       <PanelBody title={__('Dimensions', 'nextora')} initialOpen={false}>
         {device !== 'desktop' && <p className="components-base-control__help">{__('Only width changes by device. Other dimensions apply to all devices.', 'nextora')}</p>}

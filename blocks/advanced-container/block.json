@@ -87,6 +87,9 @@
       "type": "string",
       "default": ""
     },
+    "backgroundVideoPoster": { "type": "string", "default": "" },
+    "managedBackgroundVideo": { "type": "boolean", "default": false },
+    "showBackgroundVideoControl": { "type": "boolean", "default": true },
     "backgroundImageFocalPoint": {
       "type": "object",
       "default": {

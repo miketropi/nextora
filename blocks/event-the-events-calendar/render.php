@@ -489,7 +489,7 @@ if ( ! function_exists( 'nextora_event_tec_render_image_html' ) ) {
 nextora_event_tec_enqueue_view_script();
 
 $template     = isset( $attributes['template'] ) ? (string) $attributes['template'] : 'default';
-$is_template1 = 'template1' === $template;
+$is_template1 = in_array( $template, array( 'template1', 'template5' ), true );
 $is_template2 = 'template2' === $template;
 $is_template3 = 'template3' === $template;
 
@@ -672,6 +672,20 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 			$post_button_icon = (string) get_post_meta( $post_id, 'button_icon', true );
 		}
 
+		$organizer = function_exists( 'tribe_get_organizer' ) ? (string) tribe_get_organizer( $post_id ) : '';
+		if ( '' === $organizer ) {
+			$organizer_id = (int) get_post_meta( $post_id, '_EventOrganizerID', true );
+			if ( $organizer_id > 0 ) {
+				$organizer = (string) get_the_title( $organizer_id );
+			}
+		}
+		if ( '' === $organizer ) {
+			$author_id = (int) get_post_field( 'post_author', $post_id );
+			if ( $author_id > 0 ) {
+				$organizer = (string) get_the_author_meta( 'display_name', $author_id );
+			}
+		}
+
 		$events[] = array(
 			'id'                 => (string) $post_id,
 			'day'                => $day,
@@ -683,6 +697,7 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 			'description'        => nextora_event_decode_text( $excerpt ),
 			'location'           => nextora_event_decode_text( $location ),
 			'time'               => nextora_event_decode_text( $time ),
+			'organizer'          => nextora_event_decode_text( $organizer ),
 			'price'              => nextora_event_decode_text( $price ),
 			'imageId'            => $image_id,
 			'imageUrl'           => $image_url,
@@ -698,6 +713,12 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 
 if ( 'template4' === $template ) {
 	echo nextora_event_render_compact_list( $events, $attributes, 'nextora_event_tec_get_color_props', 'nextora_event_tec_resolve_color' );
+	return;
+}
+
+if ( 'template6' === $template ) {
+	require_once dirname( __DIR__ ) . '/event/taboche-row.php';
+	echo nextora_event_render_taboche_list( $events, $attributes, 'nextora_event_tec_get_color_props', 'nextora_event_tec_resolve_color' );
 	return;
 }
 
@@ -760,6 +781,9 @@ foreach ( $css_vars as $key => $value ) {
 $inline_style = implode( ';', $style_parts );
 
 $wrapper_classes = array( 'nextora-event', 'nextora-event-tec' );
+if ( 'template5' === $template ) {
+	$wrapper_classes[] = 'nextora-event--template5';
+}
 if ( $is_editor ) {
 	$wrapper_classes[] = 'nextora-event--editor';
 }
@@ -1612,7 +1636,12 @@ if ( $is_template1 ) {
 	$default_register_icon = ! empty( $attributes['registerButtonIcon'] ) ? (string) $attributes['registerButtonIcon'] : 'calendar-days';
 	$cards_html            = '';
 	foreach ( $events as $event ) {
-		$card = nextora_event_tec_render_card( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props, $title_font_size, $default_register_icon );
+		if ( 'template5' === $template ) {
+			require_once dirname( __DIR__ ) . '/event/somoni-card.php';
+			$card = nextora_event_render_somoni_card( $event, $attributes, 'nextora_event_tec', $placeholder_url );
+		} else {
+			$card = nextora_event_tec_render_card( $event, $placeholder_url, $show_register, $default_register, $title_color_props, $card_props, $reg_btn_props, $date_props, $meta_props, $title_font_size, $default_register_icon );
+		}
 		if ( '' !== $card ) {
 			$cards_html .= $card;
 		}
@@ -1624,7 +1653,7 @@ if ( $is_template1 ) {
 
 	$pagination_html = '';
 	if ( $show_pag && $slide_count > 1 ) {
-		$pagination_html = '<div class="nextora-event__pagination swiper-pagination" aria-hidden="true"></div>';
+		$pagination_html = '<div class="nextora-event__pagination swiper-pagination"' . ( 'template5' === $template ? '' : ' aria-hidden="true"' ) . '></div>';
 	}
 
 	$arrows_html = '';

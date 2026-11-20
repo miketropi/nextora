@@ -1,0 +1,166 @@
+/* Template 5: Somoni image-box cards, sharing the existing slider shell. */
+.nextora-event--template5 .nextora-event-somoni {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 12px;
+	border: 1px solid var(--nextora-event-card-border-color, transparent);
+	border-radius: 20px;
+	background: var(--nextora-event-card-bg, color-mix(in srgb, var(--wp--preset--color--surface) 55%, var(--wp--preset--color--base)));
+	transition: background-color .3s ease, box-shadow .3s ease;
+}
+
+.nextora-event--template5 .nextora-event-somoni:hover {
+	background: var(--nextora-event-card-bg, var(--wp--preset--color--base));
+	box-shadow: 0 20px 30px rgb(from var(--wp--preset--color--accent, var(--wp--preset--color--primary)) r g b / .1);
+}
+
+.nextora-event--template5 .nextora-event-somoni__image {
+	overflow: hidden;
+	border-radius: 16px;
+	aspect-ratio: 1.55;
+}
+
+.nextora-event--template5 .nextora-event-somoni__image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 1.5s cubic-bezier(.11, .52, .53, .79);
+}
+
+.nextora-event--template5 .nextora-event-somoni:hover .nextora-event-somoni__image img {
+	transform: scale(1.1);
+}
+
+.nextora-event--template5 .nextora-event-somoni__content {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	padding: 54px 12px 12px;
+	text-align: center;
+}
+
+.nextora-event--template5 .nextora-event-somoni__badge {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	display: flex;
+	max-width: 100%;
+	overflow: hidden;
+	border-radius: 10px;
+	text-align: center;
+	transform: translate(-50%, -50%);
+}
+
+.nextora-event--template5 .nextora-event-somoni__date,
+.nextora-event--template5 .nextora-event-somoni__time {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-width: 60px;
+	padding: 5px 10px;
+	line-height: 1.5;
+}
+
+.nextora-event--template5 .nextora-event-somoni__date {
+	background: var(--nextora-event-date-bg, var(--wp--preset--color--primary));
+	color: var(--wp--preset--color--base);
+}
+
+.nextora-event--template5 .nextora-event-somoni__time {
+	min-width: 90px;
+	background: var(--wp--preset--color--secondary);
+	color: var(--wp--preset--color--contrast);
+}
+
+.nextora-event--template5 .nextora-event-somoni__badge b {
+	font-size: var(--wp--preset--font-size--medium);
+	line-height: 1.2;
+}
+
+.nextora-event--template5 .nextora-event-somoni__badge span {
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.nextora-event--template5 .nextora-event-somoni__title {
+	margin: 0 0 16px;
+	line-height: 1.35;
+}
+
+.nextora-event--template5 .nextora-event-somoni__title a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.nextora-event--template5 .nextora-event-somoni__description {
+	margin: 0 0 24px;
+	line-height: 1.5;
+}
+
+.nextora-event--template5 .nextora-event-somoni__link {
+	display: inline-flex;
+	align-items: center;
+	align-self: center;
+	gap: 8px;
+	margin-top: auto;
+	font-weight: 700;
+	text-decoration: none;
+	color: var(--nextora-event-register-text-color, var(--wp--preset--color--contrast));
+}
+
+.nextora-event--template5 .nextora-event-somoni__link svg {
+	flex: 0 0 24px;
+	width: 24px;
+	height: 24px;
+	padding: 4px;
+	border-radius: 50%;
+	background: var(--nextora-event-register-bg, var(--wp--preset--color--contrast));
+	color: var(--wp--preset--color--base);
+	transition: background-color .3s ease;
+}
+
+.nextora-event--template5 .nextora-event-somoni__link:hover {
+	color: var(--nextora-event-register-hover-text-color, var(--wp--preset--color--accent, var(--wp--preset--color--primary)));
+}
+
+.nextora-event--template5 .nextora-event-somoni__link:hover svg {
+	background: var(--nextora-event-register-hover-bg, var(--wp--preset--color--accent, var(--wp--preset--color--primary)));
+}
+
+.nextora-event--template5 a:focus-visible,
+.nextora-event--template5 button:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary);
+	outline-offset: 4px;
+}
+
+.nextora-event--template5 .nextora-event__swiper {
+	padding: 8px 4px 40px !important;
+}
+
+.nextora-event--template5 .swiper-slide {
+	height: auto;
+}
+
+.nextora-event--template5 .nextora-event__item-edit {
+	z-index: 2;
+}
+
+.nextora-event--template5.nextora-event--editor .swiper-wrapper {
+	padding: 8px 4px 40px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.nextora-event--template5 .nextora-event-somoni,
+	.nextora-event--template5 .nextora-event-somoni__image img,
+	.nextora-event--template5 .nextora-event-somoni__link svg {
+		transition: none;
+	}
+
+	.nextora-event--template5 .nextora-event-somoni:hover .nextora-event-somoni__image img {
+		transform: none;
+	}
+}

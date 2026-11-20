@@ -1,0 +1,94 @@
+/* Template 03: Taboche Editorial Member Card */
+.nextora-team-section--template-template-03 .nextora-team-section__card--taboche {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	background: transparent;
+	border: none;
+	padding: 0;
+	height: 100%;
+}
+
+.nextora-team-section--template-template-03 .nextora-team-section__card-photo {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	background: var(--wp--preset--color--surface, #eee);
+	aspect-ratio: var(--nextora-team-aspect-ratio, 3/4);
+}
+
+.nextora-team-section--template-template-03 .nextora-team-section__card-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nextora-team-section--template-template-03 .nextora-team-section__card--taboche:hover .nextora-team-section__card-img {
+	transform: scale(1.05);
+}
+
+.nextora-team-section--template-template-03 .nextora-team-section__card-body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 18px 0 0;
+	gap: 6px;
+}
+
+.nextora-team-section--template-template-03 .nextora-team-section__card-name {
+	font-size: var(--wp--preset--font-size--medium, 22px);
+	line-height: 1.25;
+	margin: 0 !important;
+	margin-block: 0 !important;
+	color: var(--nextora-team-name-color, var(--wp--preset--color--contrast, #222));
+}
+
+.nextora-team-section--template-template-03 .nextora-team-section__card-role {
+	font-size: 13px;
+	line-height: 1.5;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	margin: 0 !important;
+	margin-block: 0 !important;
+	color: var(--nextora-team-role-color, var(--wp--preset--color--paragraph, #595959));
+}
+
+.nextora-team-section--template-template-03 .nextora-team-section__card-social {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 6px;
+}
+
+.nextora-team-section--template-template-03 .nextora-team-section__card-social-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: var(--nextora-team-social-bg, rgba(0, 0, 0, 0.06));
+	color: var(--nextora-team-social-color, var(--wp--preset--color--contrast, #222));
+	text-decoration: none;
+	transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.nextora-team-section--template-template-03 .nextora-team-section__card-social-icon svg {
+	width: 16px;
+	height: 16px;
+	fill: currentColor;
+}
+
+.nextora-team-section--template-template-03 .nextora-team-section__card-social-icon:hover {
+	background: var(--nextora-team-social-hover-bg, var(--wp--preset--color--primary, #F7DB07));
+	color: var(--nextora-team-social-hover-color, var(--wp--preset--color--dark, #000));
+}
+
+/* Editor prose isolation: keep .editor-styles-wrapper margin-block off card body elements */
+.editor-styles-wrapper .nextora-team-section--template-template-03 :is(h4, p, span, div) {
+	margin: 0 !important;
+	margin-block: 0 !important;
+}

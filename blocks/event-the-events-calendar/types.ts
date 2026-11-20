@@ -12,6 +12,7 @@ export interface EventTecAttributes {
 	showImage?: boolean;
 	showLocation?: boolean;
 	showTime?: boolean;
+	showOrganizer?: boolean;
 	showDescription?: boolean;
 	registerButtonText: string;
 	registerButtonIcon?: string;

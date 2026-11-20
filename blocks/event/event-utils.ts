@@ -146,6 +146,7 @@ export function normalizeEvents(events: EventItem[] | undefined): EventItem[] {
 		description: typeof raw?.description === 'string' ? decodeEventString(raw.description) : '',
 		location: typeof raw?.location === 'string' ? decodeEventString(raw.location) : '',
 		time: typeof raw?.time === 'string' ? decodeEventString(raw.time) : '',
+		organizer: typeof raw?.organizer === 'string' ? decodeEventString(raw.organizer) : '',
 		price: typeof raw?.price === 'string' ? decodeEventString(raw.price) : '',
 		imageId: typeof raw?.imageId === 'number' ? raw.imageId : 0,
 		imageUrl: typeof raw?.imageUrl === 'string' ? raw.imageUrl : '',

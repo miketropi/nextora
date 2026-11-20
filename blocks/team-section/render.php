@@ -221,20 +221,32 @@ if ( ! function_exists( 'nextora_team_section_get_template_defaults' ) ) {
 	 * @return array<string, mixed>
 	 */
 	function nextora_team_section_get_template_defaults( string $template ): array {
-	if ( 'template-nuptse' === $template ) {
-		return array(
-			'layoutMode'       => 'grid',
-			'gridColumns'      => 3,
-			'gridMinWidth'     => 320,
-			'gridColumnGap'    => 16,
-			'gridRowGap'       => 16,
-			'photoAspectRatio' => '1/1',
-			'showPagination'   => false,
-			'showArrows'       => false,
-			'cardBorderRadius' => 10,
-		);
-	}
-	if ( 'template-02' === $template ) {
+		if ( 'template-nuptse' === $template ) {
+			return array(
+				'layoutMode'       => 'grid',
+				'gridColumns'      => 3,
+				'gridMinWidth'     => 320,
+				'gridColumnGap'    => 16,
+				'gridRowGap'       => 16,
+				'photoAspectRatio' => '1/1',
+				'showPagination'   => false,
+				'showArrows'       => false,
+				'cardBorderRadius' => 10,
+			);
+		}
+		if ( 'template-03' === $template ) {
+			return array(
+				'layoutMode'        => 'grid',
+				'gridColumns'       => 3,
+				'gridColumnsTablet' => 2,
+				'gridColumnsMobile' => 1,
+				'gridColumnGap'     => 30,
+				'gridRowGap'        => 30,
+				'photoAspectRatio'  => '3/4',
+				'cardBorderRadius'  => 3,
+			);
+		}
+		if ( 'template-02' === $template ) {
 			return array(
 				'photoAspectRatio' => '3/4',
 				'cardBorderRadius' => 24,
@@ -862,7 +874,7 @@ if ( ! in_array( $layout_mode, array( 'carousel', 'grid' ), true ) ) {
 }
 
 $card_template = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-if ( ! in_array( $card_template, array( 'default', 'overlay-social', 'template-02', 'template-nuptse' ), true ) ) {
+if ( ! in_array( $card_template, array( 'default', 'overlay-social', 'template-02', 'template-03', 'template-nuptse' ), true ) ) {
 	$card_template = 'default';
 }
 if ( 'template-nuptse' === $card_template ) {
@@ -1132,6 +1144,10 @@ nextora_team_section_enqueue_view_script();
 							if ( 'template-nuptse' === $card_template ) {
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped template output.
 								echo nextora_team_section_render_member_nuptse( $member, $card_radius, $attributes );
+							} elseif ( 'template-03' === $card_template ) {
+								require_once __DIR__ . '/taboche-card.php';
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+								echo nextora_team_section_render_member_slide_taboche( $member, $card_radius, $enable_popup, $color_options );
 							} elseif ( 'overlay-social' === $card_template ) {
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
 								echo nextora_team_section_render_member_slide_overlay( $member, $card_radius, $enable_popup, $color_options );

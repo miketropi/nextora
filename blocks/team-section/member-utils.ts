@@ -104,6 +104,18 @@ export function getTemplateDefaultAttributes(
 			cardBorderRadius: 10,
 		};
 	}
+	if (template === 'template-03') {
+		return {
+			photoAspectRatio: '3/4',
+			cardBorderRadius: 3,
+			layoutMode: 'grid',
+			gridColumns: 3,
+			gridColumnsTablet: 2,
+			gridColumnsMobile: 1,
+			gridColumnGap: 30,
+			gridRowGap: 30,
+		};
+	}
 	if (template === 'template-02') {
 		return {
 			photoAspectRatio: '3/4',

@@ -1,6 +1,6 @@
 import type { BlogListCarouselAttributes } from './types';
 
-export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5' | 'template-6' | 'template-7';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5' | 'template-6' | 'template-7' | 'template-8';
 
 export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	value: BlogListCardTemplate;
@@ -14,6 +14,7 @@ export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	{ value: 'template-5', labelKey: 'Template 5' },
 	{ value: 'template-6', labelKey: 'Template 6' },
 	{ value: 'template-7', labelKey: 'Template 7 — News Cards' },
+	{ value: 'template-8', labelKey: 'Template 8 — Taboche News' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BlogListCardTemplate {
@@ -37,6 +38,9 @@ export function normalizeCardTemplate(value: string | undefined): BlogListCardTe
 	}
 	if ( value === 'template-7' ) {
 		return 'template-7';
+	}
+	if ( value === 'template-8' ) {
+		return 'template-8';
 	}
 	return 'default';
 }
@@ -64,6 +68,34 @@ export const RESET_COLOR_ATTRIBUTES: Partial<BlogListCarouselAttributes> = {
 export function getTemplateDefaultAttributes(
 	template: BlogListCardTemplate,
 ): Partial<BlogListCarouselAttributes> {
+	if (template === 'template-8') {
+		return {
+			layoutMode: 'carousel',
+			postsPerPage: 6,
+			slidesPerView: 3,
+			slidesPerViewTablet: 2,
+			slidesPerViewMobile: 1,
+			spaceBetween: 30,
+			imageAspectRatio: '3-2',
+			imageBorderRadius: 0,
+			cardBorderRadius: 0,
+			cardPadding: 0,
+			showImage: true,
+			showAuthor: true,
+			showDate: true,
+			dateFormat: 'M j, Y',
+			showCategory: false,
+			showExcerpt: false,
+			showReadMore: false,
+			cardLinkBehavior: 'title-only',
+			showArrows: false,
+			showPagination: false,
+			loop: true,
+			autoplay: true,
+			autoplayDelay: 4000,
+			pauseOnHover: true,
+		};
+	}
 	if (template === 'template-7') {
 		return {
 			layoutMode: 'carousel', postsPerPage: 6, slidesPerView: 3,
