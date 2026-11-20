@@ -147,6 +147,7 @@ The payload's `resetPageTheme` identifies the page's own theme independently of 
     - `--nextora-font-body: var(--wp--preset--font-family--sans, Arial, Helvetica, sans-serif)`
     - `--nextora-font-heading: var(--nextora-font-body)` (headings inherit the body font until a preset sets it independently)
   - The switcher sets `--nextora-font-body` / `--nextora-font-heading` inline on `<html>`; reset removes them.
+  - **Preset-pinned styles:** when the merged global styles (Site Editor or a style variation) pin body/heading/button directly to a preset variable such as `var(--wp--preset--font-family--josefin-sans)`, the role variables are bypassed. `nextora_get_font_switch_defaults()` maps those preset variables back to the matching role and seeds `--nextora-font-*` from the current styles; `enqueue.php` prints the bridge as `#nextora-font-role-defaults`. Default rendering is unchanged, and switching now affects those styles too.
 
 ## Child-theme support
 
@@ -161,7 +162,8 @@ The payload's `resetPageTheme` identifies the page's own theme independently of 
 
 - Only values referenced through CSS variables change. Hardcoded colors or fonts are not affected — including block-level `fontFamily` / color attributes set in templates or blocks (e.g. a hero heading pinned to a display font), which intentionally outrank the global `--nextora-font-*` override.
 - The script is `defer`red, so there is a brief flash of default colors/fonts on reload (accepted for v1).
-- An **active style variation** that hardcodes its own `styles.typography.fontFamily` / element fonts takes precedence over `--nextora-font-*` (same class of limitation as colors).
+- An **active style variation** that hardcodes a literal font stack (not a `--wp--preset--font-family--*` variable) still takes precedence over `--nextora-font-*`. Styles pinned to a preset variable are bridged back to the role variables.
+- If body and heading share the same preset variable but the chosen font preset needs different families, the shared preset can only follow one role (body wins). Use distinct preset variables for independent body/heading switching.
 - Full-page caches are unaffected (HTML is identical for all users), but caches must be purged after toggling the `wp-config.php` constant.
 
 ## Verification

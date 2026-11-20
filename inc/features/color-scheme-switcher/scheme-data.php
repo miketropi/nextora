@@ -920,6 +920,76 @@ function nextora_resolve_current_request_theme( array $themes, string $initial_f
 }
 
 /**
+ * Role-variable defaults for fonts pinned by the merged global styles.
+ *
+ * The switcher changes typography through `--nextora-font-*`. When the active
+ * global styles (Site Editor or a style variation) pin body/heading/button to a
+ * preset variable such as `--wp--preset--font-family--josefin-sans`, that pin
+ * bypasses the role variables. Map the pinned preset variables back to the
+ * roles and seed the role defaults from the current styles so the default
+ * rendering still matches and the switcher keeps working.
+ *
+ * @return array{roles: array<string, string>, presets: array<string, string>}
+ */
+function nextora_get_font_switch_defaults(): array {
+	$defaults = array(
+		'roles'   => array(),
+		'presets' => array(),
+	);
+
+	if ( ! class_exists( 'WP_Theme_JSON_Resolver' ) ) {
+		return $defaults;
+	}
+
+	$data = WP_Theme_JSON_Resolver::get_merged_data()->get_raw_data();
+
+	if ( ! isset( $data['styles'] ) || ! is_array( $data['styles'] ) ) {
+		return $defaults;
+	}
+
+	$styles = $data['styles'];
+
+	$font_map = array();
+
+	foreach ( nextora_get_heading_inline_font_families() as $font ) {
+		$slug   = isset( $font['slug'] ) ? sanitize_key( (string) $font['slug'] ) : '';
+		$family = isset( $font['fontFamily'] ) ? (string) $font['fontFamily'] : '';
+
+		if ( '' !== $slug && '' !== $family ) {
+			$font_map[ $slug ] = $family;
+		}
+	}
+
+	$role_values = array(
+		'body'    => _wp_array_get( $styles, array( 'typography', 'fontFamily' ), '' ),
+		'heading' => _wp_array_get( $styles, array( 'elements', 'heading', 'typography', 'fontFamily' ), '' ),
+		'button'  => _wp_array_get( $styles, array( 'elements', 'button', 'typography', 'fontFamily' ), '' ),
+	);
+
+	foreach ( $role_values as $role => $value ) {
+		if ( ! is_string( $value ) || ! preg_match( '/var\(\s*--wp--preset--font-family--([a-z0-9-]+)\s*\)/', $value, $matches ) ) {
+			continue;
+		}
+
+		$slug   = sanitize_key( $matches[1] );
+		$family = isset( $font_map[ $slug ] ) ? nextora_resolve_heading_font_family_stack( $font_map[ $slug ], $font_map ) : '';
+
+		if ( '' === $slug || '' === $family || str_contains( $family, 'var(' ) ) {
+			continue;
+		}
+
+		$defaults['roles'][ $role ] = (string) preg_replace( '/[<>{};]/', '', $family );
+
+		// A preset shared by several roles can only follow one role variable.
+		if ( ! isset( $defaults['presets'][ $slug ] ) ) {
+			$defaults['presets'][ $slug ] = $role;
+		}
+	}
+
+	return $defaults;
+}
+
+/**
  * Builds CSS variables and button override rules for a given theme preset.
  *
  * @param array<string, mixed> $theme Theme preset.
