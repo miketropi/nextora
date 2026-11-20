@@ -95,13 +95,15 @@ export function getTemplateDefaultAttributes(
 		return {
 			layoutMode: 'grid',
 			gridColumns: 3,
-			gridMinWidth: 320,
+			gridColumnsTablet: 3,
+			gridColumnsMobile: 1,
+			disableResponsiveCarousel: true,
 			gridColumnGap: 16,
 			gridRowGap: 16,
 			photoAspectRatio: '1/1',
+			cardBorderRadius: 10,
 			showPagination: false,
 			showArrows: false,
-			cardBorderRadius: 10,
 		};
 	}
 	if (template === 'template-03') {

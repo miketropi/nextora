@@ -47,7 +47,6 @@ export interface TeamSectionAttributes {
 	gridColumnGap: number;
 	gridRowGap: number;
 	cardTemplate: TeamCardTemplate;
-	inheritTypography?: boolean;
 	photoAspectRatio: TeamPhotoAspectRatio;
 	slidesPerView: number;
 	slidesPerViewTablet: number;

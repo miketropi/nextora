@@ -25,7 +25,6 @@ import {
 	resolvePhotoUrl,
 } from './member-utils';
 import MemberEditForm from './member-edit-form';
-import NuptseMemberCard from './template-nuptse';
 import {
 	normalizeColorForStorage,
 	colorValueForPicker,
@@ -185,7 +184,6 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 
 	const blockProps = useBlockProps({
 		className: [
-			attributes.inheritTypography ? 'nextora-team-section--inherit-typography' : '',
 			'nextora-team-section',
 			'nextora-team-section--editor',
 			`nextora-team-section--layout-${layoutMode}`,
@@ -400,14 +398,20 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						}}
 					/>
 
-					<RadioControl
-						label={__('Photo aspect ratio', 'nextora')}
-						selected={photoAspectRatio}
-						options={photoAspectRatioOptions}
-						onChange={(v) =>
-							setAttributes({ photoAspectRatio: (v as TeamSectionAttributes['photoAspectRatio']) ?? '3/4' })
-						}
-					/>
+					{cardTemplate === 'template-nuptse' ? (
+						<p className="components-base-control__help">
+							{__('Nuptse displays names and roles above circular, square-cropped photos.', 'nextora')}
+						</p>
+					) : (
+						<RadioControl
+							label={__('Photo aspect ratio', 'nextora')}
+							selected={photoAspectRatio}
+							options={photoAspectRatioOptions}
+							onChange={(v) =>
+								setAttributes({ photoAspectRatio: (v as TeamSectionAttributes['photoAspectRatio']) ?? '3/4' })
+							}
+						/>
+					)}
 
 					{cardTemplate !== 'template-02' && (
 						<>
@@ -917,21 +921,36 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 							<div className="nextora-team-section__members-row" aria-label={__('Team members', 'nextora')}>
 								{members.map((member) => {
 									const photoUrl = resolvePhotoUrl(member, mediaUrlById);
-									if (cardTemplate === 'template-nuptse') {
-										return (
-											<NuptseMemberCard
-												key={member.id}
-												member={member}
-												photoUrl={photoUrl}
-												attributes={attributes}
-												onEdit={() => openMemberEditor(member.id)}
-											/>
-										);
-									}
 									const memberRadius =
 										member.cardBorderRadius && member.cardBorderRadius > 0
 											? member.cardBorderRadius
 											: effectiveCardBorderRadius;
+									const photo = (
+										<div
+											className={
+												photoUrl
+													? 'nextora-team-section__card-photo'
+													: 'nextora-team-section__card-photo nextora-team-section__card-photo--empty'
+											}
+										>
+											{photoUrl ? (
+												<img
+													src={photoUrl}
+													alt=""
+													className="nextora-team-section__card-img"
+												/>
+											) : null}
+											{cardTemplate === 'overlay-social' && member.showSocialLinks && member.socialLinks.length > 0 && (
+												<div className="nextora-team-section__card-social-overlay">
+													{member.socialLinks.map((link, lIdx) => (
+														<span key={lIdx} className="nextora-team-section__card-social-link-overlay" aria-label={link.platform}>
+															{renderSocialIcon(link.platform)}
+														</span>
+													))}
+												</div>
+											)}
+										</div>
+									);
 
 									return (
 										<article
@@ -952,30 +971,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 											>
 												{__('Edit member', 'nextora')}
 											</button>
-											<div
-												className={
-													photoUrl
-														? 'nextora-team-section__card-photo'
-														: 'nextora-team-section__card-photo nextora-team-section__card-photo--empty'
-												}
-											>
-												{photoUrl ? (
-													<img
-														src={photoUrl}
-														alt=""
-														className="nextora-team-section__card-img"
-													/>
-												) : null}
-												{cardTemplate === 'overlay-social' && member.showSocialLinks && member.socialLinks.length > 0 && (
-													<div className="nextora-team-section__card-social-overlay">
-														{member.socialLinks.map((link, lIdx) => (
-															<span key={lIdx} className="nextora-team-section__card-social-link-overlay" aria-label={link.platform}>
-																{renderSocialIcon(link.platform)}
-															</span>
-														))}
-													</div>
-												)}
-											</div>
+											{cardTemplate !== 'template-nuptse' ? photo : null}
 											<div className="nextora-team-section__card-body">
 												<h4
 													className={`nextora-team-section__card-name ${nameColorProps.className}`.trim()}
@@ -1028,7 +1024,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 														))}
 													</div>
 												)}
-												{cardTemplate === 'default' && member.showSocialLinks && member.socialLinks.length > 0 && (
+												{(cardTemplate === 'default' || cardTemplate === 'template-nuptse') && member.showSocialLinks && member.socialLinks.length > 0 && (
 													<div className="nextora-team-section__card-social">
 														{member.socialLinks.map((link, lIdx) => (
 															<span
@@ -1042,6 +1038,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 													</div>
 												)}
 											</div>
+											{cardTemplate === 'template-nuptse' ? photo : null}
 										</article>
 									);
 								})}

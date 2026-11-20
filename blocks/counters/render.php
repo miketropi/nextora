@@ -301,9 +301,6 @@ $wrapper_classes = array(
 	'nextora-counters--cols-t-' . (string) $columns_tablet,
 	'nextora-counters--cols-m-' . (string) $columns_mobile,
 );
-if ( ! empty( $attributes['inheritTypography'] ) ) {
-	$wrapper_classes[] = 'nextora-counters--inherit-typography';
-}
 if ( $divider ) {
 	$wrapper_classes[] = 'nextora-counters--divider';
 }
