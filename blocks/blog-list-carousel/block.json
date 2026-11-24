@@ -48,12 +48,10 @@
       "type": "number"
     },
     "gridColumnGap": {
-      "type": "number",
-      "default": 24
+      "type": "number"
     },
     "gridRowGap": {
-      "type": "number",
-      "default": 24
+      "type": "number"
     },
     "gridMinWidth": {
       "type": "number",
@@ -112,16 +110,14 @@
       "default": true
     },
     "imageAspectRatio": {
-      "type": "string",
-      "default": "4-3"
+      "type": "string"
     },
     "imageSize": {
       "type": "string",
       "default": "medium_large"
     },
     "imageBorderRadius": {
-      "type": "number",
-      "default": 8
+      "type": "number"
     },
     "imageWidthPercent": {
       "type": "number",
@@ -135,16 +131,14 @@
       "default": true
     },
     "titleFontSize": {
-      "type": "string",
-      "default": ""
+      "type": "string"
     },
     "titleLineClamp": {
       "type": "number",
       "default": 2
     },
     "showExcerpt": {
-      "type": "boolean",
-      "default": true
+      "type": "boolean"
     },
     "excerptFontSize": {
       "type": "string",
@@ -163,16 +157,16 @@
       "default": true
     },
     "dateFormat": {
-      "type": "string",
-      "default": "d M Y"
+      "type": "string"
     },
     "showCategory": {
-      "type": "boolean",
-      "default": true
+      "type": "boolean"
     },
     "showAuthor": {
-      "type": "boolean",
-      "default": false
+      "type": "boolean"
+    },
+    "showComments": {
+      "type": "boolean"
     },
     "showReadMore": {
       "type": "boolean",
@@ -187,8 +181,7 @@
       "default": ""
     },
     "cardLinkBehavior": {
-      "type": "string",
-      "default": "full-card"
+      "type": "string"
     },
     "slidesPerView": {
       "type": "number",
@@ -199,20 +192,17 @@
       "default": 2
     },
     "slidesPerViewMobile": {
-      "type": "number",
-      "default": 1.15
+      "type": "number"
     },
     "spaceBetween": {
-      "type": "number",
-      "default": 24
+      "type": "number"
     },
     "speed": {
       "type": "number",
       "default": 500
     },
     "loop": {
-      "type": "boolean",
-      "default": false
+      "type": "boolean"
     },
     "autoplay": {
       "type": "boolean",
@@ -279,8 +269,7 @@
       "default": 0
     },
     "cardPadding": {
-      "type": "number",
-      "default": 0
+      "type": "number"
     },
     "readMoreLinkColor": {
       "type": "string",

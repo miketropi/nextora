@@ -205,6 +205,10 @@ const layoutModeOptions = [
 ];
 
 export default function BlogListCarouselEdit({ attributes, setAttributes }: EditProps) {
+	// Resolve template-dependent defaults without swallowing explicit false/zero values.
+	if (attributes.cardTemplate === 'template-8') {
+		attributes = { ...getTemplateDefaultAttributes('template-8'), ...attributes };
+	}
 	const colorPalette = useThemeColorPalette();
 	const lookupPalette = useMemo(() => getMergedPaletteEntries(colorPalette), [colorPalette]);
 
@@ -243,6 +247,7 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 		dateFormat = 'd M Y',
 		showCategory = true,
 		showAuthor = false,
+		showComments = false,
 		showReadMore = false,
 		readMoreText = 'Read More',
 		cardLinkBehavior = 'full-card',
@@ -657,6 +662,13 @@ export default function BlogListCarouselEdit({ attributes, setAttributes }: Edit
 								checked={showAuthor}
 								onChange={(v) => setAttributes({ showAuthor: v })}
 							/>
+							{cardTemplate === 'template-8' && (
+								<ToggleControl
+									label={__('Show comment count', 'nextora')}
+									checked={showComments}
+									onChange={(v) => setAttributes({ showComments: v })}
+								/>
+							)}
 						</>
 					)}
 					<ToggleControl

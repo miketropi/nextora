@@ -25,6 +25,7 @@ export interface EventEditFormProps {
 	showEditorialFields?: boolean;
 	showDescription?: boolean;
 	compact?: boolean;
+	changtse?: boolean;
 	onPatch: (patch: Partial<EventItem>) => void;
 }
 
@@ -34,6 +35,7 @@ export default function EventEditForm({
 	showEditorialFields = false,
 	showDescription = false,
 	compact = false,
+	changtse = false,
 	onPatch,
 }: EventEditFormProps) {
 	const [iconPickerOpen, setIconPickerOpen] = useState(false);
@@ -100,13 +102,13 @@ export default function EventEditForm({
 			</div>
 
 			<div className="nextora-event__event-form-fields">
-				{showEditorialFields ? (
+				{showEditorialFields || changtse ? (
 					<>
 						<TextControl
 							label={__('Category', 'nextora')}
 							value={event.category}
 							onChange={(category) => onPatch({ category: category ?? '' })}
-							help={__('Small uppercase label used by the editorial event list.', 'nextora')}
+							help={changtse ? __('Categories displayed above the event title.', 'nextora') : __('Small uppercase label used by the editorial event list.', 'nextora')}
 						/>
 					</>
 				) : null}
@@ -143,14 +145,14 @@ export default function EventEditForm({
 								const parsed = dayMonthFromDateInput(e.target.value);
 								if (parsed) {
 									onPatch(parsed);
-								} else if (!e.target.value && compact) {
+								} else if (!e.target.value && (compact || changtse)) {
 									onPatch({ day: '', month: '', year: '' });
 								}
 							}}
 						/>
 					</BaseControl>
 
-					<BaseControl
+					{!changtse && <BaseControl
 						id={`nextora-event-time-${event.id}`}
 						label={__('Time', 'nextora')}
 						help={__('Uses your device time picker.', 'nextora')}
@@ -169,7 +171,7 @@ export default function EventEditForm({
 								}
 							}}
 						/>
-					</BaseControl>
+					</BaseControl>}
 				</div>
 
 				<div className="nextora-event__event-form-row nextora-event__event-form-row--split">
@@ -185,13 +187,13 @@ export default function EventEditForm({
 					/>
 				</div>
 
-				{compact && <TextControl label={__('Year (optional)', 'nextora')} value={event.year || ''} onChange={(year) => onPatch({ year: year || '' })} />}
+				{(compact || changtse) && <TextControl label={__('Year (optional)', 'nextora')} value={event.year || ''} onChange={(year) => onPatch({ year: year || '' })} />}
 				<TextControl
 					label={__('Location', 'nextora')}
 					value={event.location}
 					onChange={(location) => onPatch({ location: location ?? '' })}
 				/>
-				{!compact && <>
+				{!compact && !changtse && <>
 				<TextControl
 					label={__('Price / ticket', 'nextora')}
 					value={event.price}

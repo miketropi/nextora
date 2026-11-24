@@ -1,0 +1,137 @@
+.nextora-event-changtse,
+.nextora-event-changtse *,
+.nextora-event-changtse *::before,
+.nextora-event-changtse *::after {
+	box-sizing: border-box;
+}
+
+.nextora-event-changtse {
+	display: grid;
+	gap: var(--nextora-event-changtse-gap, 30px);
+}
+
+.nextora-event-changtse .nextora-event-changtse__item {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 24px;
+	min-width: 0;
+	margin: 0;
+}
+
+.nextora-event-changtse__media {
+	position: relative;
+	flex: 0 0 170px;
+	width: 170px;
+	aspect-ratio: 100 / 76;
+	overflow: hidden;
+	border-radius: 5px;
+	background: var(--wp--preset--color--surface);
+}
+
+.nextora-event-changtse__media img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 1.5s cubic-bezier(0.11, 0.52, 0.53, 0.79);
+}
+
+.nextora-event-changtse__image-link {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.nextora-event-changtse .nextora-event-changtse__image-link:focus-visible {
+	outline-offset: -3px;
+}
+
+.nextora-event-changtse__item:hover .nextora-event-changtse__media img {
+	transform: scale(1.1);
+}
+
+.nextora-event-changtse__content {
+	flex: 1;
+	min-width: 0;
+}
+
+.nextora-event-changtse .nextora-event-changtse__category {
+	margin: 0 0 4px;
+	line-height: 1.5;
+}
+
+.nextora-event-changtse .nextora-event-changtse__title {
+	margin: 0 0 16px;
+	font-weight: 600;
+	line-height: 1.3;
+	overflow-wrap: anywhere;
+}
+
+.nextora-event-changtse__title a,
+.nextora-event-changtse__category a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.nextora-event-changtse__details {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px 0;
+}
+
+.nextora-event-changtse__detail+.nextora-event-changtse__detail {
+	border-inline-start: 1px solid color-mix(in srgb, var(--wp--preset--color--contrast) 35%, transparent);
+	margin-inline-start: 30px;
+	padding-inline-start: 30px;
+}
+
+.nextora-event-changtse__detail {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.nextora-event-changtse__label,
+.nextora-event-changtse__value {
+	display: block;
+	line-height: 1.5;
+}
+
+.nextora-event-changtse__label {
+	font-size: 14px;
+	text-transform: uppercase;
+}
+
+.nextora-event-changtse a:focus-visible {
+	outline: 2px solid var(--wp--preset--color--contrast);
+	outline-offset: 3px;
+}
+
+@media (max-width: 767px) {
+	.nextora-event-changtse .nextora-event-changtse__item {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.nextora-event-changtse__media {
+		flex-basis: auto;
+		width: 100%;
+	}
+}
+
+@media (max-width: 380px) {
+	.nextora-event-changtse__detail+.nextora-event-changtse__detail {
+		margin-inline-start: 16px;
+		padding-inline-start: 16px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nextora-event-changtse__media img {
+		transition: none;
+	}
+
+	.nextora-event-changtse__item:hover .nextora-event-changtse__media img {
+		transform: none;
+	}
+}

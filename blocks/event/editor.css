@@ -4,6 +4,19 @@
 
 @import './style.css';
 
+.nextora-event-changtse__edit {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	z-index: 2;
+	cursor: pointer;
+}
+
+.nextora-event-changtse__edit:focus-visible {
+	outline: 2px solid var(--wp--preset--color--contrast);
+	outline-offset: 2px;
+}
+
 .wp-block-nextora-event.nextora-event--editor,
 .nextora-event--editor {
 	padding: 0;

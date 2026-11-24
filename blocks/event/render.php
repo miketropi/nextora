@@ -552,6 +552,12 @@ if ( array() === $events ) {
 	);
 }
 
+if ( 'template6' === $template ) {
+	require_once __DIR__ . '/changtse-list.php';
+	echo nextora_event_render_changtse_list( $events, $attributes, 'nextora_event_get_color_props' );
+	return;
+}
+
 if ( 'template4' === $template ) {
 	echo nextora_event_render_compact_list( $events, $attributes, 'nextora_event_get_color_props', 'nextora_event_resolve_color' );
 	return;

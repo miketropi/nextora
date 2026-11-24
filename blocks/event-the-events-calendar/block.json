@@ -38,6 +38,12 @@
     }
   },
   "attributes": {
+    "changtseItemGap": { "type": "number" },
+    "changtseShowCategory": { "type": "boolean" },
+    "changtseCategoryColor": { "type": "string" },
+    "changtseLabelColor": { "type": "string" },
+    "changtseViewText": { "type": "string" },
+    "changtseCategoryFontSize": { "type": "string" },
     "template": {
       "type": "string",
       "default": "default"

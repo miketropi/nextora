@@ -322,12 +322,14 @@ if ( ! function_exists( 'nextora_blc_render_meta_icon' ) ) {
 		}
 
 		if ( function_exists( 'nextora_get_lucide_svg' ) ) {
-			$icon_name = 'calendar' === $type ? 'calendar' : ( ( 'user' === $type || 'author' === $type ) ? 'user' : 'folder' );
+			$icon_name = 'comment' === $type ? 'message-circle' : ( 'calendar' === $type ? 'calendar' : ( ( 'user' === $type || 'author' === $type ) ? 'user' : 'folder' ) );
 			$svg       = nextora_get_lucide_svg( $icon_name, 14, 'currentColor', 1.8 );
 		}
 
 		if ( '' === $svg ) {
-			if ( 'calendar' === $type ) {
+			if ( 'comment' === $type ) {
+				$svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg>';
+			} elseif ( 'calendar' === $type ) {
 				$svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>';
 			} elseif ( 'user' === $type || 'author' === $type ) {
 				$svg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
@@ -349,6 +351,21 @@ if ( ! function_exists( 'nextora_blc_get_template_defaults' ) ) {
 	 * @return array<string, mixed>
 	 */
 	function nextora_blc_get_template_defaults( string $template ): array {
+		if ( 'template-8' === $template ) {
+			return array(
+				'layoutMode' => 'carousel', 'postsPerPage' => 6, 'slidesPerView' => 3,
+				'slidesPerViewTablet' => 2, 'slidesPerViewMobile' => 1, 'spaceBetween' => 30,
+				'gridColumns' => 3, 'gridColumnGap' => 30, 'gridRowGap' => 30,
+				'showImage' => true, 'imageAspectRatio' => '3-2', 'imageBorderRadius' => 5,
+				'cardBorderRadius' => 0, 'cardPadding' => 20, 'showTitle' => true,
+				'titleFontSize' => 'medium', 'titleLineClamp' => 2,
+				'showDate' => true, 'dateFormat' => 'F j, Y', 'showComments' => true,
+				'showAuthor' => true, 'showExcerpt' => false, 'showCategory' => false,
+				'showReadMore' => false, 'cardLinkBehavior' => 'title-only',
+				'showArrows' => false, 'showPagination' => true, 'autoplay' => false,
+				'arrowsDesktopDotsMobile' => false, 'loop' => true,
+			);
+		}
 		if ( 'template-7' === $template ) {
 			return array(
 				'layoutMode' => 'carousel', 'postsPerPage' => 6, 'slidesPerView' => 3,
@@ -536,7 +553,7 @@ if ( ! function_exists( 'nextora_blc_get_template_defaults' ) ) {
 
 // ── Normalize template & merge template defaults ──
 $card_template_raw = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-$card_template     = 'template-7' === $card_template_raw ? 'template-7' : ( in_array( $card_template_raw, array( 'template-1', 'news-grid' ), true )
+$card_template     = in_array( $card_template_raw, array( 'template-7', 'template-8' ), true ) ? $card_template_raw : ( in_array( $card_template_raw, array( 'template-1', 'news-grid' ), true )
 	? 'template-1'
 	: ( in_array( $card_template_raw, array( 'template-2' ), true ) ? 'template-2'
 	: ( in_array( $card_template_raw, array( 'template-3', 'overlay-grid' ), true ) ? 'template-3'
@@ -545,6 +562,20 @@ $card_template     = 'template-7' === $card_template_raw ? 'template-7' : ( in_a
 	: ( in_array( $card_template_raw, array( 'template-6' ), true ) ? 'template-6' : 'default' ) ) ) ) ) );
 
 $template_defaults = nextora_blc_get_template_defaults( $card_template );
+// These defaults moved out of block.json so Changtse options can serialize even
+// when they match the former generic defaults. Preserve older cards unchanged.
+if ( 'template-8' !== $card_template ) {
+	$attributes = array_merge(
+		array(
+			'gridColumnGap' => 24, 'gridRowGap' => 24, 'imageAspectRatio' => '4-3',
+			'imageBorderRadius' => 8, 'titleFontSize' => '', 'showExcerpt' => true,
+			'dateFormat' => 'd M Y', 'showCategory' => true, 'showAuthor' => false,
+			'cardLinkBehavior' => 'full-card', 'slidesPerViewMobile' => 1.15,
+			'spaceBetween' => 24, 'loop' => false, 'cardPadding' => 0,
+		),
+		$attributes,
+	);
+}
 $parsed_attrs      = isset( $block ) && $block instanceof WP_Block && isset( $block->parsed_block['attrs'] ) && is_array( $block->parsed_block['attrs'] )
 	? $block->parsed_block['attrs']
 	: array();
@@ -716,6 +747,7 @@ $date_format     = isset( $attributes['dateFormat'] ) && is_string( $attributes[
     ? $attributes['dateFormat'] : 'd M Y';
 $show_category   = ! isset( $attributes['showCategory'] ) || (bool) $attributes['showCategory'];
 $show_author     = isset( $attributes['showAuthor'] ) && (bool) $attributes['showAuthor'];
+$show_comments   = isset( $attributes['showComments'] ) && (bool) $attributes['showComments'];
 $show_read_more  = isset( $attributes['showReadMore'] ) && (bool) $attributes['showReadMore'];
 $read_more_text  = isset( $attributes['readMoreText'] ) && is_string( $attributes['readMoreText'] )
     ? esc_html( trim( $attributes['readMoreText'] ) ) : esc_html__( 'Read More', 'nextora' );
@@ -1138,6 +1170,35 @@ while ( $query->have_posts() ) :
             	esc_html( (string) get_the_date( $date_format ) ),
             );
         }
+    } elseif ( 'template-8' === $card_template ) {
+		$meta_items = array();
+		if ( $show_date ) {
+			$meta_items[] = sprintf(
+				'<span class="nextora-blc__card-meta-item">%1$s<time class="nextora-blc__card-date" datetime="%2$s">%3$s</time></span>',
+				nextora_blc_render_meta_icon( 'calendar', $meta_icon_color_props['class'], $meta_icon_color_props['style'] ),
+				esc_attr( (string) get_the_date( 'c' ) ),
+				esc_html( (string) get_the_date( $date_format ) ),
+			);
+		}
+		if ( $show_comments ) {
+			$comment_count = (int) get_comments_number();
+			$comment_label = sprintf(
+				/* translators: %s: number of comments. */
+				_n( '%s comment', '%s comments', $comment_count, 'nextora' ),
+				number_format_i18n( $comment_count ),
+			);
+			$meta_items[] = sprintf(
+				'<a class="nextora-blc__card-meta-item" href="%1$s" aria-label="%2$s">%3$s%4$s</a>',
+				esc_url( (string) get_comments_link() ),
+				esc_attr( $comment_label ),
+				nextora_blc_render_meta_icon( 'comment', $meta_icon_color_props['class'], $meta_icon_color_props['style'] ),
+				esc_html( number_format_i18n( $comment_count ) ),
+			);
+		}
+		if ( $show_category ) {
+			$meta_items[] = get_the_category_list( ', ' );
+		}
+		$meta_html = '' === implode( '', $meta_items ) ? '' : '<div class="nextora-blc__card-meta has-small-font-size ' . esc_attr( $meta_color_props['class'] ) . '" style="' . esc_attr( $meta_color_props['style'] ) . '">' . implode( '', $meta_items ) . '</div>';
     } elseif ( 'template-6' === $card_template ) {
         $meta_items = array();
         if ( $show_date ) {
@@ -1253,9 +1314,25 @@ while ( $query->have_posts() ) :
 		);
     }
 
+    $author_html = '';
+	if ( 'template-8' === $card_template && $show_author ) {
+		$author_id = (int) get_the_author_meta( 'ID' );
+		$author_html = sprintf(
+			'<div class="nextora-blc__changtse-author has-small-font-size %1$s" style="%2$s"><a href="%3$s">%4$s<span>%5$s %6$s</span></a></div>',
+			esc_attr( $meta_color_props['class'] ),
+			esc_attr( $meta_color_props['style'] ),
+			esc_url( get_author_posts_url( $author_id ) ),
+			get_avatar( $author_id, 40, '', '', array( 'extra_attr' => 'loading="lazy"' ) ),
+			esc_html__( 'By', 'nextora' ),
+			esc_html( (string) get_the_author() ),
+		);
+	}
+
     // Card body
     if ( 'template-5' === $card_template ) {
 		$card_body = $meta_html . $title_html;
+	} elseif ( 'template-8' === $card_template ) {
+		$card_body = $meta_html . $title_html . $excerpt_html . $author_html . $read_more_html;
 	} elseif ( 'template-7' === $card_template ) {
 		$card_body = $title_html . $excerpt_html . $read_more_html;
 	} elseif ( 'template-6' === $card_template ) {
@@ -1303,7 +1380,7 @@ while ( $query->have_posts() ) :
         	$meta_html,
         	$card_body,
         );
-    } elseif ( 'template-6' === $card_template ) {
+    } elseif ( in_array( $card_template, array( 'template-6', 'template-8' ), true ) ) {
         $rendered_image = $image_html;
         if ( '' !== $image_html && 'full-card' !== $card_link_behavior ) {
             $rendered_image = sprintf(

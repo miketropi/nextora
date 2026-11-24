@@ -1,4 +1,4 @@
-export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5' | 'template-6' | 'template-7';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5' | 'template-6' | 'template-7' | 'template-8';
 
 export interface BlogListCarouselAttributes {
 	cardTemplate: BlogListCardTemplate;
@@ -36,6 +36,7 @@ export interface BlogListCarouselAttributes {
 	dateFormat: string;
 	showCategory: boolean;
 	showAuthor: boolean;
+	showComments?: boolean;
 	showReadMore: boolean;
 	readMoreText: string;
 	cardLinkBehavior: string;

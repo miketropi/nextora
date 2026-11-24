@@ -37,6 +37,8 @@ export interface TestimonialCarouselAttributes {
 	itemsPerViewMobile: number;
 	cardGap: number;
 	testimonials: TestimonialItem[];
+	showQuoteIcon: boolean;
+	quoteIconSize: number;
 	showTopIcon: boolean;
 	topIconType: TestimonialIconType;
 	customIconSvg: string;
