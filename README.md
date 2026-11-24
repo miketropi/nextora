@@ -99,8 +99,8 @@ There are **no classic PHP templates** (`header.php`, `single.php`, etc.) in thi
 | Path | Role |
 |------|------|
 | `templates/index.html` | Blog / posts index fallback |
-| `templates/home.html` | Front page when “latest posts” |
-| `templates/front-page.html` | Static front page |
+| `templates/home.html` | Posts index; used when no `front-page` template exists |
+| `templates/front-page.html` | Default front page for the posts index; static front pages resolve through the page hierarchy |
 | `templates/single.html` | Single post |
 | `templates/page.html` | Page |
 | `templates/archive.html` | Archives |
@@ -108,6 +108,8 @@ There are **no classic PHP templates** (`header.php`, `single.php`, etc.) in thi
 | `templates/404.html` | Not found |
 | `parts/header.html` | Site header (`nextora/header` by default) |
 | `parts/footer.html` | Site footer (navigation + credits) |
+
+When a static front page is configured, `front-page.html` is hidden from the Site Editor template list and the front end resolves the selected page through the page hierarchy (`page-full-width`, `page-{slug}`, `page`, …). `front-page.html` remains the default only for the posts index.
 
 ### Source vs generated (do not hand-edit generated files)
 

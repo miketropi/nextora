@@ -1,6 +1,7 @@
 @import '../event/compact-list.css';
 @import './somoni-card.css';
 @import './changtse-list.css';
+@import './taboche-row.css';
 
 /**
  * Events block — front-end styles (.events-list design).

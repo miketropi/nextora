@@ -11,6 +11,7 @@ export interface EventItem {
 	description: string;
 	location: string;
 	time: string;
+	organizer?: string;
 	price: string;
 	imageId: number;
 	imageUrl: string;
@@ -30,6 +31,7 @@ export interface EventAttributes extends ChangtseOptions {
 	showImage?: boolean;
 	showLocation?: boolean;
 	showTime?: boolean;
+	showOrganizer?: boolean;
 	showDescription?: boolean;
 	registerButtonText: string;
 	registerButtonIcon?: string;

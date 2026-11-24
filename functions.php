@@ -21,6 +21,7 @@ if ( is_readable( NEXTORA_DIR . '/vendor/autoload.php' ) ) {
 }
 
 require_once NEXTORA_DIR . '/inc/setup/theme-support.php';
+require_once NEXTORA_DIR . '/inc/setup/front-page-template.php';
 require_once NEXTORA_DIR . '/inc/setup/pattern-categories.php';
 require_once NEXTORA_DIR . '/inc/setup/elementor.php';
 require_once NEXTORA_DIR . '/inc/setup/activation.php';

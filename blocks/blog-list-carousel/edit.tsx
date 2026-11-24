@@ -206,8 +206,8 @@ const layoutModeOptions = [
 
 export default function BlogListCarouselEdit({ attributes, setAttributes }: EditProps) {
 	// Resolve template-dependent defaults without swallowing explicit false/zero values.
-	if (attributes.cardTemplate === 'template-8') {
-		attributes = { ...getTemplateDefaultAttributes('template-8'), ...attributes };
+	if (attributes.cardTemplate === 'template-8' || attributes.cardTemplate === 'template-9') {
+		attributes = { ...getTemplateDefaultAttributes(attributes.cardTemplate), ...attributes };
 	}
 	const colorPalette = useThemeColorPalette();
 	const lookupPalette = useMemo(() => getMergedPaletteEntries(colorPalette), [colorPalette]);

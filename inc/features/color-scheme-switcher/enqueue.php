@@ -28,6 +28,30 @@ add_action(
 );
 
 add_action(
+	'wp_head',
+	static function (): void {
+		$defaults = nextora_get_font_switch_defaults();
+
+		if ( empty( $defaults['roles'] ) || empty( $defaults['presets'] ) ) {
+			return;
+		}
+
+		$rules = array();
+
+		foreach ( $defaults['roles'] as $role => $family ) {
+			$rules[] = '--nextora-font-' . $role . ':' . $family . ';';
+		}
+
+		foreach ( $defaults['presets'] as $slug => $role ) {
+			$rules[] = '--wp--preset--font-family--' . $slug . ':var(--nextora-font-' . $role . ');';
+		}
+
+		echo '<style id="nextora-font-role-defaults">:root{' . implode( '', $rules ) . "}</style>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	},
+	20,
+);
+
+add_action(
 	'wp_enqueue_scripts',
 	static function (): void {
 		$payload = nextora_get_switcher_payload();

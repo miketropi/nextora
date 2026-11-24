@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { SomoniSettings } from '../event/somoni-settings';
 import ChangtseSettings from '../event/changtse-settings';
+import { TabocheSettings } from '../event/taboche-settings';
 import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import {
@@ -395,7 +396,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				<PanelBody title={__('Layout & Template', 'nextora')} initialOpen={true}>
 					<SelectControl
 						label={__('Template', 'nextora')}
-						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5' | 'template6'}
+						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5' | 'template6' | 'template7'}
 						options={[
 							{ label: __('Default (List)', 'nextora'), value: 'default' },
 							{ label: __('Template 1 (Card Slider)', 'nextora'), value: 'template1' },
@@ -404,6 +405,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 							{ label: __('Template 4 — Compact List', 'nextora'), value: 'template4' },
 							{ label: __('Template 5 — Somoni Card Slider', 'nextora'), value: 'template5' },
 							{ label: __('Template 6 — Changtse List', 'nextora'), value: 'template6' },
+							{ label: __('Template 7 — Taboche Editorial Row', 'nextora'), value: 'template7' },
 						]}
 						onChange={(val) => setAttributes({ template: val })}
 					/>
@@ -418,7 +420,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				</PanelBody>
 
 				{/* ── Settings / Button Settings ── */}
-				{template !== 'template5' && template !== 'template6' && <PanelBody title={template === 'template4' ? __('Settings', 'nextora') : __('Register Button', 'nextora')} initialOpen={template === 'template4'}>
+				{template !== 'template5' && template !== 'template6' && template !== 'template7' && <PanelBody title={template === 'template4' ? __('Settings', 'nextora') : __('Register Button', 'nextora')} initialOpen={template === 'template4'}>
 					{template === 'template4' ? (
 						<>
 							<RangeControl
@@ -618,32 +620,42 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				)}
 
 				{/* ── Color Settings ── */}
-				{template === 'template6' ? <ChangtseSettings attributes={attributes} setAttributes={setAttributes} /> : template === 'template5' ? <SomoniSettings attributes={attributes} setAttributes={setAttributes} /> : template === 'template4' ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings
-					title={__('Color Settings', 'nextora')}
-					colorSettings={[
-						colorProps('cardBackgroundColor', __('Card background', 'nextora')),
-						colorProps('cardBorderColor', __('Card border', 'nextora')),
-						colorProps('dateBackgroundColor', __('Date badge background', 'nextora')),
-						colorProps('dateDayColor', __('Date day text', 'nextora')),
-						colorProps('dateAccentColor', __('Date label', 'nextora')),
-						colorProps('titleColor', __('Event title', 'nextora')),
-						colorProps('metaColor', __('Details meta text', 'nextora')),
-						colorProps('metaIconColor', __('Details icon color', 'nextora')),
-						colorProps('registerBackgroundColor', __('Register button background', 'nextora')),
-						colorProps('registerTextColor', __('Register button text', 'nextora')),
-						colorProps('registerBorderColor', __('Register button border', 'nextora')),
-						colorProps('registerHoverBackgroundColor', __('Register button hover background', 'nextora')),
-						colorProps('registerHoverTextColor', __('Register button hover text', 'nextora')),
-						colorProps('registerHoverBorderColor', __('Register button hover border', 'nextora')),
-						...(isSliderTemplate
-							? [
-									colorProps('paginationColor', __('Pagination dot', 'nextora')),
-									colorProps('paginationActiveColor', __('Pagination dot active', 'nextora')),
-									colorProps('edgeFadeColor', __('Edge fade color', 'nextora')),
-								]
-							: []),
-					]}
-				/>}
+				{template === 'template6' ? (
+					<ChangtseSettings attributes={attributes} setAttributes={setAttributes} />
+				) : template === 'template7' ? (
+					<TabocheSettings attributes={attributes} setAttributes={setAttributes} />
+				) : template === 'template5' ? (
+					<SomoniSettings attributes={attributes} setAttributes={setAttributes} />
+				) : template === 'template4' ? (
+					<CompactColorSettings attributes={attributes} setAttributes={setAttributes} />
+				) : (
+					<PanelColorSettings
+						title={__('Color Settings', 'nextora')}
+						colorSettings={[
+							colorProps('cardBackgroundColor', __('Card background', 'nextora')),
+							colorProps('cardBorderColor', __('Card border', 'nextora')),
+							colorProps('dateBackgroundColor', __('Date badge background', 'nextora')),
+							colorProps('dateDayColor', __('Date day text', 'nextora')),
+							colorProps('dateAccentColor', __('Date label', 'nextora')),
+							colorProps('titleColor', __('Event title', 'nextora')),
+							colorProps('metaColor', __('Details meta text', 'nextora')),
+							colorProps('metaIconColor', __('Details icon color', 'nextora')),
+							colorProps('registerBackgroundColor', __('Register button background', 'nextora')),
+							colorProps('registerTextColor', __('Register button text', 'nextora')),
+							colorProps('registerBorderColor', __('Register button border', 'nextora')),
+							colorProps('registerHoverBackgroundColor', __('Register button hover background', 'nextora')),
+							colorProps('registerHoverTextColor', __('Register button hover text', 'nextora')),
+							colorProps('registerHoverBorderColor', __('Register button hover border', 'nextora')),
+							...(isSliderTemplate
+								? [
+										colorProps('paginationColor', __('Pagination dot', 'nextora')),
+										colorProps('paginationActiveColor', __('Pagination dot active', 'nextora')),
+										colorProps('edgeFadeColor', __('Edge fade color', 'nextora')),
+									]
+								: []),
+						]}
+					/>
+				)}
 
 				{/* ── Animation Settings ── */}
 				{template === 'template4' && (

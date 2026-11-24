@@ -366,6 +366,34 @@ if ( ! function_exists( 'nextora_blc_get_template_defaults' ) ) {
 				'arrowsDesktopDotsMobile' => false, 'loop' => true,
 			);
 		}
+		if ( 'template-9' === $template ) {
+			return array(
+				'layoutMode'          => 'carousel',
+				'postsPerPage'        => 6,
+				'slidesPerView'       => 3,
+				'slidesPerViewTablet' => 2,
+				'slidesPerViewMobile' => 1,
+				'spaceBetween'        => 30,
+				'imageAspectRatio'    => '3-2',
+				'imageBorderRadius'   => 0,
+				'cardBorderRadius'    => 0,
+				'cardPadding'         => 0,
+				'showImage'           => true,
+				'showAuthor'          => true,
+				'showDate'            => true,
+				'dateFormat'          => 'M j, Y',
+				'showCategory'        => false,
+				'showExcerpt'         => false,
+				'showReadMore'        => false,
+				'cardLinkBehavior'    => 'title-only',
+				'showArrows'          => false,
+				'showPagination'      => false,
+				'loop'                => true,
+				'autoplay'            => true,
+				'autoplayDelay'       => 4000,
+				'pauseOnHover'        => true,
+			);
+		}
 		if ( 'template-7' === $template ) {
 			return array(
 				'layoutMode' => 'carousel', 'postsPerPage' => 6, 'slidesPerView' => 3,
@@ -553,7 +581,7 @@ if ( ! function_exists( 'nextora_blc_get_template_defaults' ) ) {
 
 // ── Normalize template & merge template defaults ──
 $card_template_raw = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-$card_template     = in_array( $card_template_raw, array( 'template-7', 'template-8' ), true ) ? $card_template_raw : ( in_array( $card_template_raw, array( 'template-1', 'news-grid' ), true )
+$card_template     = in_array( $card_template_raw, array( 'template-7', 'template-8', 'template-9' ), true ) ? $card_template_raw : ( in_array( $card_template_raw, array( 'template-1', 'news-grid' ), true )
 	? 'template-1'
 	: ( in_array( $card_template_raw, array( 'template-2' ), true ) ? 'template-2'
 	: ( in_array( $card_template_raw, array( 'template-3', 'overlay-grid' ), true ) ? 'template-3'
@@ -564,7 +592,7 @@ $card_template     = in_array( $card_template_raw, array( 'template-7', 'templat
 $template_defaults = nextora_blc_get_template_defaults( $card_template );
 // These defaults moved out of block.json so Changtse options can serialize even
 // when they match the former generic defaults. Preserve older cards unchanged.
-if ( 'template-8' !== $card_template ) {
+if ( ! in_array( $card_template, array( 'template-8', 'template-9' ), true ) ) {
 	$attributes = array_merge(
 		array(
 			'gridColumnGap' => 24, 'gridRowGap' => 24, 'imageAspectRatio' => '4-3',
@@ -955,6 +983,9 @@ if ( 'template-5' === $card_template ) {
 }
 if ( 'template-6' === $card_template ) {
     $wrapper_classes[] = 'nextora-blog-list-carousel--template-template-6';
+}
+if ( 'template-9' === $card_template ) {
+    $wrapper_classes[] = 'nextora-blog-list-carousel--template-template-9';
 }
 if ( $arrows_desktop_dots_mobile ) {
     $wrapper_classes[] = 'nextora-blc--nav-desktop-arrows-mobile-dots';
@@ -1351,7 +1382,7 @@ while ( $query->have_posts() ) :
     if ( 'full-card' === $card_link_behavior ) {
         $card_class .= ' nextora-blc__card--linked';
     }
-	if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-3', 'template-4', 'template-5', 'template-6' ), true ) ) {
+	if ( in_array( $card_template, array( 'template-1', 'template-2', 'template-3', 'template-4', 'template-5', 'template-6', 'template-8', 'template-9' ), true ) ) {
 		$card_class .= ' nextora-blc__card--' . $card_template;
 	}
 	if ( '' !== $card_bg_props['class'] ) {
@@ -1360,7 +1391,38 @@ while ( $query->have_posts() ) :
 	$card_style_attr = '' !== $card_bg_props['style'] ? ' style="' . esc_attr( $card_bg_props['style'] ) . '"' : '';
 
     // Card wrapper
-    if ( 'template-5' === $card_template ) {
+    if ( 'template-9' === $card_template ) {
+        $author_html = '';
+        if ( $show_author ) {
+            $author_html = sprintf(
+            	'<p class="nextora-blc__card-author-taboche %1$s"%2$s>%3$s %4$s</p>',
+            	esc_attr( $meta_color_props['class'] ),
+            	'' !== $meta_color_props['style'] ? ' style="' . esc_attr( $meta_color_props['style'] ) . '"' : '',
+            	esc_html__( 'By', 'nextora' ),
+            	esc_html( (string) get_the_author() ),
+            );
+        }
+        $date_html = '';
+        if ( $show_date ) {
+            $date_html = sprintf(
+            	'<time class="nextora-blc__card-date-taboche %1$s" style="%2$s" datetime="%3$s">%4$s</time>',
+            	esc_attr( $meta_color_props['class'] ),
+            	esc_attr( $meta_color_props['style'] ),
+            	esc_attr( (string) get_the_date( 'c' ) ),
+            	esc_html( (string) get_the_date( $date_format ) ),
+            );
+        }
+        $card_body = $author_html . $title_html . $date_html;
+        $cards_html .= sprintf(
+        	'<div class="swiper-slide"><article class="%1$s"%2$s><div class="nextora-blc__card-image-wrapper"><a href="%3$s" class="nextora-blc__card-image-link" aria-label="%4$s">%5$s</a></div><div class="nextora-blc__card-body">%6$s</div></article></div>',
+        	esc_attr( $card_class ),
+        	$card_style_attr,
+        	$permalink,
+        	esc_attr( $title ),
+        	$image_html,
+        	$card_body,
+        );
+    } elseif ( 'template-5' === $card_template ) {
         $cards_html .= sprintf(
         	'<div class="swiper-slide"><article class="%1$s"%2$s><div class="nextora-blc__card-image-wrapper"><a href="%6$s" class="nextora-blc__card-image-link" aria-label="%7$s">%3$s</a><div class="nextora-blc__image-overlay nextora-blc__image-overlay--template-5"></div></div><div class="nextora-blc__card-body-overlay nextora-blc__card-body-overlay--template-5"><div class="nextora-blc__card-content--template-5">%4$s</div>%5$s</div></article></div>',
         	esc_attr( $card_class ),

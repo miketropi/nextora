@@ -127,6 +127,10 @@
       "type": "boolean",
       "default": true
     },
+    "showOrganizer": {
+      "type": "boolean",
+      "default": true
+    },
     "showDescription": {
       "type": "boolean",
       "default": true

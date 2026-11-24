@@ -221,6 +221,33 @@ if ( ! function_exists( 'nextora_team_section_get_template_defaults' ) ) {
 	 * @return array<string, mixed>
 	 */
 	function nextora_team_section_get_template_defaults( string $template ): array {
+		if ( 'template-nuptse' === $template ) {
+			return array(
+				'layoutMode'                => 'grid',
+				'gridColumns'               => 3,
+				'gridColumnsTablet'         => 3,
+				'gridColumnsMobile'         => 1,
+				'disableResponsiveCarousel' => true,
+				'gridColumnGap'             => 16,
+				'gridRowGap'                => 16,
+				'photoAspectRatio'          => '1/1',
+				'cardBorderRadius'          => 10,
+				'showPagination'           => false,
+				'showArrows'               => false,
+			);
+		}
+		if ( 'template-03' === $template ) {
+			return array(
+				'layoutMode'        => 'grid',
+				'gridColumns'       => 3,
+				'gridColumnsTablet' => 2,
+				'gridColumnsMobile' => 1,
+				'gridColumnGap'     => 30,
+				'gridRowGap'        => 30,
+				'photoAspectRatio'  => '3/4',
+				'cardBorderRadius'  => 3,
+			);
+		}
 		if ( 'template-02' === $template ) {
 			return array(
 				'photoAspectRatio' => '3/4',
@@ -380,8 +407,9 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 	 * @param int                   $radius        Default card radius from section.
 	 * @param bool                  $enable_popup  Whether member popup drawer is enabled.
 	 * @param array<string, string> $color_options Color attributes for name, role, cardBg, tagBg, tagText.
+	 * @param string                $card_template Card layout template.
 	 */
-	function nextora_team_section_render_member_slide( array $member, int $radius, bool $enable_popup = false, array $color_options = array() ): string {
+	function nextora_team_section_render_member_slide( array $member, int $radius, bool $enable_popup = false, array $color_options = array(), string $card_template = 'default' ): string {
 		$name = (string) $member['name'];
 		if ( '' === trim( wp_strip_all_tags( $name ) ) ) {
 			return '';
@@ -432,7 +460,7 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 
 		$out  = '<div class="swiper-slide">';
 		$out .= '<article class="' . esc_attr( $card_class ) . '" style="' . esc_attr( $card_style ) . '"' . $card_attrs . '>';
-		$out .= '<div class="nextora-team-section__card-photo">';
+		$photo_out = '<div class="nextora-team-section__card-photo">';
 
 		if ( $photo_id > 0 ) {
 			$alt = $photo_alt;
@@ -452,15 +480,19 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 				),
 			);
 			if ( is_string( $img ) && '' !== $img ) {
-				$out .= $img;
+				$photo_out .= $img;
 			} else {
-				$out .= nextora_team_section_render_member_photo_fallback( $member ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+				$photo_out .= nextora_team_section_render_member_photo_fallback( $member ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
 			}
 		} else {
-			$out .= nextora_team_section_render_member_photo_fallback( $member ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+			$photo_out .= nextora_team_section_render_member_photo_fallback( $member ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
 		}
 
-		$out .= '</div><div class="nextora-team-section__card-body">';
+		$photo_out .= '</div>';
+		if ( 'template-nuptse' !== $card_template ) {
+			$out .= $photo_out;
+		}
+		$out .= '<div class="nextora-team-section__card-body">';
 
 		$name_classes    = trim( 'nextora-team-section__card-name ' . $name_props['class'] );
 		$name_style_attr = '' !== $name_props['style'] ? ' style="' . esc_attr( $name_props['style'] ) . '"' : '';
@@ -511,7 +543,11 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 			$out .= '</div>';
 		}
 
-		$out .= '</div></article></div>';
+		$out .= '</div>';
+		if ( 'template-nuptse' === $card_template ) {
+			$out .= $photo_out;
+		}
+		$out .= '</article></div>';
 
 		return $out;
 	}
@@ -843,13 +879,8 @@ if ( array() === $members ) {
 	return;
 }
 
-$layout_mode = isset( $attributes['layoutMode'] ) ? (string) $attributes['layoutMode'] : 'carousel';
-if ( ! in_array( $layout_mode, array( 'carousel', 'grid' ), true ) ) {
-	$layout_mode = 'carousel';
-}
-
 $card_template = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-if ( ! in_array( $card_template, array( 'default', 'overlay-social', 'template-02' ), true ) ) {
+if ( ! in_array( $card_template, array( 'default', 'overlay-social', 'template-02', 'template-03', 'template-nuptse' ), true ) ) {
 	$card_template = 'default';
 }
 
@@ -857,7 +888,17 @@ $parsed_attrs      = isset( $block ) && $block instanceof WP_Block && isset( $bl
 	? $block->parsed_block['attrs']
 	: array();
 $template_defaults = nextora_team_section_get_template_defaults( $card_template );
+if ( 'template-nuptse' === $card_template ) {
+	// WordPress omits false (the schema default) when saving this toggle.
+	// Keep the resolved block value; Nuptse's initial true is set in the editor.
+	unset( $template_defaults['disableResponsiveCarousel'] );
+}
 $attributes        = array_merge( $attributes, $template_defaults, $parsed_attrs );
+
+$layout_mode = isset( $attributes['layoutMode'] ) ? (string) $attributes['layoutMode'] : 'carousel';
+if ( ! in_array( $layout_mode, array( 'carousel', 'grid' ), true ) ) {
+	$layout_mode = 'carousel';
+}
 
 $photo_aspect = isset( $attributes['photoAspectRatio'] ) ? (string) $attributes['photoAspectRatio'] : '3/4';
 if ( ! in_array( $photo_aspect, array( '3/4', '4/3', '1/1', '16/9' ), true ) ) {
@@ -1110,12 +1151,16 @@ nextora_team_section_enqueue_view_script();
 					<div class="swiper-wrapper">
 						<?php
 						foreach ( $members as $member ) {
-							if ( 'overlay-social' === $card_template ) {
+							if ( 'template-03' === $card_template ) {
+								require_once __DIR__ . '/taboche-card.php';
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+								echo nextora_team_section_render_member_slide_taboche( $member, $card_radius, $enable_popup, $color_options );
+							} elseif ( 'overlay-social' === $card_template ) {
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
 								echo nextora_team_section_render_member_slide_overlay( $member, $card_radius, $enable_popup, $color_options );
 							} else {
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
-								echo nextora_team_section_render_member_slide( $member, $card_radius, $enable_popup, $color_options );
+								echo nextora_team_section_render_member_slide( $member, $card_radius, $enable_popup, $color_options, $card_template );
 							}
 						}
 						?>

@@ -519,3 +519,12 @@
 		grid-template-columns: repeat(var(--nextora-team-grid-columns-mobile, 1), minmax(0, 1fr));
 	}
 }
+
+/* Nuptse uses the editor device setting, including the "Keep grid" toggle. */
+.nextora-team-section--editor.nextora-team-section--template-template-nuptse.nextora-team-section--layout-grid .nextora-team-section__members-row {
+	grid-template-columns: repeat(var(--nextora-team-preview-grid-columns, 3), minmax(0, 1fr));
+}
+
+.nextora-team-section--editor.nextora-team-section--template-template-nuptse.nextora-team-section--layout-carousel .nextora-team-section__card {
+	min-width: 0;
+}

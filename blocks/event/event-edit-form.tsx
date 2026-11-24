@@ -193,6 +193,12 @@ export default function EventEditForm({
 					value={event.location}
 					onChange={(location) => onPatch({ location: location ?? '' })}
 				/>
+				<TextControl
+					label={__('Organizer / Author', 'nextora')}
+					value={event.organizer || ''}
+					onChange={(organizer) => onPatch({ organizer: organizer ?? '' })}
+					help={__('Displayed beside event time in Template 7 — Taboche Editorial Row.', 'nextora')}
+				/>
 				{!compact && !changtse && <>
 				<TextControl
 					label={__('Price / ticket', 'nextora')}

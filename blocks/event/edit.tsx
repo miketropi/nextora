@@ -25,6 +25,8 @@ import { IconPicker } from '../advanced-icon/icon-picker';
 import { EventButtonIcon } from './button-icon';
 import type { EventAttributes, EventItem } from './types';
 import { SomoniSettings } from './somoni-settings';
+import { TabocheSettings } from './taboche-settings';
+import { TabocheList } from './taboche-row';
 
 function normalizeFontSizeAttribute(
 	value: number | string | undefined,
@@ -307,6 +309,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		edgeFadeColor = '',
 	} = attributes;
 
+	const isTemplate7 = template === 'template7';
 	const isTemplate5 = template === 'template5';
 	const somoniTrack = useRef<HTMLDivElement>(null);
 	const [somoniIndex, setSomoniIndex] = useState(0);
@@ -334,6 +337,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 		className: [
 			'nextora-event',
 			'nextora-event--editor',
+			isTemplate7 ? 'nextora-event--template7' : '',
 			isTemplate5 ? 'nextora-event--template5' : '',
 			isTemplate4 ? ['nextora-event--template4', enableAnimation ? `nextora-event--animation-${animationStyle || 'sequential'}` : ''].filter(Boolean).join(' ') : '',
 			isTemplate1 ? 'nextora-event--template1 nextora-event--template1-editor' : '',
@@ -601,7 +605,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				<PanelBody title={__('Template', 'nextora')} initialOpen>
 					<SelectControl
 						label={__('Layout template', 'nextora')}
-						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5' | 'template6'}
+						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5' | 'template6' | 'template7'}
 						options={[
 							{ label: __('Default — List', 'nextora'), value: 'default' as const },
 							{ label: __('Template 1 — Slider', 'nextora'), value: 'template1' as const },
@@ -610,6 +614,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 							{ label: __('Template 4 — Compact List', 'nextora'), value: 'template4' },
 							{ label: __('Template 5 — Somoni Card Slider', 'nextora'), value: 'template5' },
 							{ label: __('Template 6 — Changtse List', 'nextora'), value: 'template6' },
+							{ label: __('Template 7 — Taboche Editorial Row', 'nextora'), value: 'template7' },
 						]}
 						onChange={(value: string) => setAttributes({ template: value })}
 					/>
@@ -714,7 +719,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 					</Button>
 				</PanelBody>
 
-				{!isTemplate5 && !isTemplate6 && <PanelBody title={__('Settings', 'nextora')} initialOpen={isTemplate4}>
+				{!isTemplate5 && !isTemplate6 && !isTemplate7 && <PanelBody title={__('Settings', 'nextora')} initialOpen={isTemplate4}>
 					{isTemplate4 ? (
 						<>
 							<RangeControl
@@ -826,7 +831,7 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				</PanelBody>
 
 				}
-				{isTemplate6 ? <ChangtseSettings attributes={attributes} setAttributes={setAttributes} /> : isTemplate5 ? <SomoniSettings attributes={attributes} setAttributes={setAttributes} /> : isTemplate4 ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />}
+				{isTemplate6 ? <ChangtseSettings attributes={attributes} setAttributes={setAttributes} /> : isTemplate7 ? <TabocheSettings attributes={attributes} setAttributes={setAttributes} /> : isTemplate5 ? <SomoniSettings attributes={attributes} setAttributes={setAttributes} /> : isTemplate4 ? <CompactColorSettings attributes={attributes} setAttributes={setAttributes} /> : <PanelColorSettings enableAlpha title={__('Colors', 'nextora')} colorSettings={colorSettings} />}
 
 				{isTemplate4 && (
 					<PanelBody
@@ -1090,6 +1095,8 @@ export default function EventEdit({ attributes, setAttributes }: EditProps) {
 				<div className="nextora-event__inner">
 					{isTemplate6 ? (
 						<ChangtseList attributes={attributes} events={events.map((event) => ({ ...event, imageUrl: resolveImageUrl(event, mediaUrlById) || '' }))} onEdit={openEventEditor} />
+					) : isTemplate7 ? (
+						<TabocheList attributes={attributes} events={events} onEdit={openEventEditor} />
 					) : isTemplate4 ? (
 						<CompactList key={animKey} attributes={attributes} events={events.map((event) => ({ ...event, imageUrl: event.imageId > 0 ? (mediaUrlById.get(event.imageId) || event.imageUrl) : event.imageUrl }))} onEdit={openEventEditor} />
 					) : isTemplate5 ? (
