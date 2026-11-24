@@ -1,4 +1,6 @@
-export interface EventTecAttributes {
+import type { ChangtseOptions } from '../event/changtse-list';
+
+export interface EventTecAttributes extends ChangtseOptions {
 	template: string;
 	template3Alternating: boolean;
 	postsPerPage: number;

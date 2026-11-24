@@ -67,7 +67,7 @@ if ( ! function_exists( 'nextora_event_render_taboche_list' ) ) {
 			}
 		}
 
-		$classes = array( 'nextora-event', 'nextora-event--template6' );
+		$classes = array( 'nextora-event', 'nextora-event--template7' );
 		if ( $enable_anim ) {
 			$classes[] = 'nextora-event--animation-' . $anim_style;
 		}

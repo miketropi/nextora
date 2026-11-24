@@ -1,6 +1,6 @@
 import type { BlogListCarouselAttributes } from './types';
 
-export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5' | 'template-6' | 'template-7' | 'template-8';
+export type BlogListCardTemplate = 'default' | 'template-1' | 'template-2' | 'template-3' | 'template-4' | 'template-5' | 'template-6' | 'template-7' | 'template-8' | 'template-9';
 
 export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	value: BlogListCardTemplate;
@@ -14,10 +14,14 @@ export const BLOG_LIST_TEMPLATE_OPTIONS: {
 	{ value: 'template-5', labelKey: 'Template 5' },
 	{ value: 'template-6', labelKey: 'Template 6' },
 	{ value: 'template-7', labelKey: 'Template 7 — News Cards' },
-	{ value: 'template-8', labelKey: 'Template 8 — Taboche News' },
+	{ value: 'template-8', labelKey: 'Template 8 — Changtse' },
+	{ value: 'template-9', labelKey: 'Template 9 — Taboche News' },
 ];
 
 export function normalizeCardTemplate(value: string | undefined): BlogListCardTemplate {
+	if (value === 'template-8') {
+		return 'template-8';
+	}
 	if ( value === 'template-1' || value === 'news-grid' ) {
 		return 'template-1';
 	}
@@ -39,8 +43,8 @@ export function normalizeCardTemplate(value: string | undefined): BlogListCardTe
 	if ( value === 'template-7' ) {
 		return 'template-7';
 	}
-	if ( value === 'template-8' ) {
-		return 'template-8';
+	if ( value === 'template-9' ) {
+		return 'template-9';
 	}
 	return 'default';
 }
@@ -69,6 +73,21 @@ export function getTemplateDefaultAttributes(
 	template: BlogListCardTemplate,
 ): Partial<BlogListCarouselAttributes> {
 	if (template === 'template-8') {
+		return {
+			layoutMode: 'carousel', postsPerPage: 6, slidesPerView: 3,
+			slidesPerViewTablet: 2, slidesPerViewMobile: 1, spaceBetween: 30,
+			gridColumns: 3, gridColumnGap: 30, gridRowGap: 30,
+			showImage: true, imageAspectRatio: '3-2', imageBorderRadius: 5,
+			cardBorderRadius: 0, cardPadding: 20, showTitle: true,
+			titleFontSize: 'medium', titleLineClamp: 2,
+			showDate: true, dateFormat: 'F j, Y', showComments: true,
+			showAuthor: true, showExcerpt: false, showCategory: false,
+			showReadMore: false, cardLinkBehavior: 'title-only',
+			showArrows: false, showPagination: true, autoplay: false,
+			arrowsDesktopDotsMobile: false, loop: true,
+		};
+	}
+	if (template === 'template-9') {
 		return {
 			layoutMode: 'carousel',
 			postsPerPage: 6,
