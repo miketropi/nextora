@@ -47,7 +47,7 @@ const cardTemplateOptions = [
 	{ label: __('Default', 'nextora'), value: 'default' },
 	{ label: __('Template 01', 'nextora'), value: 'overlay-social' },
 	{ label: __('Template 02', 'nextora'), value: 'template-02' },
-	{ label: __('Template Nupste', 'nextora'), value: 'template-nuptse' },
+	{ label: __('Template Nuptse', 'nextora'), value: 'template-nuptse' },
 	{ label: __('Template 03 (Taboche)', 'nextora'), value: 'template-03' },
 ];
 
