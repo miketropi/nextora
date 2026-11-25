@@ -102,6 +102,9 @@ export function getTemplateDefaultAttributes(
 			gridRowGap: 16,
 			photoAspectRatio: '1/1',
 			cardBorderRadius: 10,
+			cardBackgroundColor: 'base',
+			nameColor: 'contrast',
+			roleColor: 'primary',
 			showPagination: false,
 			showArrows: false,
 		};
