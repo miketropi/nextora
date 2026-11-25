@@ -103,6 +103,14 @@
         }
       ]
     },
+    "showQuoteIcon": {
+      "type": "boolean",
+      "default": false
+    },
+    "quoteIconSize": {
+      "type": "number",
+      "default": 32
+    },
     "showTopIcon": {
       "type": "boolean",
       "default": true

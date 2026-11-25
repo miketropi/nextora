@@ -508,6 +508,7 @@ foreach ( $raw_events as $index => $item ) {
 		'description'        => isset( $item['description'] ) ? nextora_event_decode_text( (string) $item['description'] ) : '',
 		'location'           => isset( $item['location'] ) ? nextora_event_decode_text( (string) $item['location'] ) : '',
 		'time'               => isset( $item['time'] ) ? nextora_event_decode_text( (string) $item['time'] ) : '',
+		'organizer'          => isset( $item['organizer'] ) ? nextora_event_decode_text( (string) $item['organizer'] ) : '',
 		'price'              => isset( $item['price'] ) ? nextora_event_decode_text( (string) $item['price'] ) : '',
 		'imageId'            => isset( $item['imageId'] ) ? (int) $item['imageId'] : 0,
 		'imageUrl'           => isset( $item['imageUrl'] ) ? (string) $item['imageUrl'] : '',
@@ -552,12 +553,18 @@ if ( array() === $events ) {
 	);
 }
 
+if ( 'template6' === $template ) {
+	require_once __DIR__ . '/changtse-list.php';
+	echo nextora_event_render_changtse_list( $events, $attributes, 'nextora_event_get_color_props' );
+	return;
+}
+
 if ( 'template4' === $template ) {
 	echo nextora_event_render_compact_list( $events, $attributes, 'nextora_event_get_color_props', 'nextora_event_resolve_color' );
 	return;
 }
 
-if ( 'template6' === $template ) {
+if ( 'template7' === $template ) {
 	require_once __DIR__ . '/taboche-row.php';
 	echo nextora_event_render_taboche_list( $events, $attributes, 'nextora_event_get_color_props', 'nextora_event_resolve_color' );
 	return;

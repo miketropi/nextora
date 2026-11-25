@@ -638,6 +638,14 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 			}
 		}
 
+		if ( 'template6' === $template ) {
+			$venue_id = (int) get_post_meta( $post_id, '_EventVenueID', true );
+			$country = $venue_id > 0 ? (string) get_post_meta( $venue_id, '_VenueCountry', true ) : '';
+			if ( '' !== $country ) {
+				$location = $country;
+			}
+		}
+
 		// Price / Cost
 		$price = function_exists( 'tribe_get_cost' ) ? (string) tribe_get_cost( $post_id, true ) : '';
 		if ( '' === $price ) {
@@ -651,6 +659,19 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 		if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
 			$first_term    = reset( $terms );
 			$category_name = false !== $first_term ? (string) $first_term->name : '';
+		}
+
+		$changtse_categories = array();
+		if ( 'template6' === $template && ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+			$names = array();
+			foreach ( $terms as $term ) {
+				$names[] = $term->name;
+				$term_url = get_term_link( $term );
+				if ( ! is_wp_error( $term_url ) ) {
+					$changtse_categories[] = array( 'name' => $term->name, 'url' => $term_url );
+				}
+			}
+			$category_name = implode( ', ', $names );
 		}
 
 		// Title & Description
@@ -693,6 +714,7 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 			'year'               => $year,
 			'weekday'            => $weekday,
 			'category'           => nextora_event_decode_text( $category_name ),
+			'categories'         => $changtse_categories,
 			'title'              => nextora_event_decode_text( $title ),
 			'description'        => nextora_event_decode_text( $excerpt ),
 			'location'           => nextora_event_decode_text( $location ),
@@ -711,12 +733,18 @@ if ( ! empty( $queried_posts ) && is_array( $queried_posts ) ) {
 	}
 }
 
+if ( 'template6' === $template ) {
+	require_once dirname( __DIR__ ) . '/event/changtse-list.php';
+	echo nextora_event_render_changtse_list( $events, $attributes, 'nextora_event_tec_get_color_props' );
+	return;
+}
+
 if ( 'template4' === $template ) {
 	echo nextora_event_render_compact_list( $events, $attributes, 'nextora_event_tec_get_color_props', 'nextora_event_tec_resolve_color' );
 	return;
 }
 
-if ( 'template6' === $template ) {
+if ( 'template7' === $template ) {
 	require_once dirname( __DIR__ ) . '/event/taboche-row.php';
 	echo nextora_event_render_taboche_list( $events, $attributes, 'nextora_event_tec_get_color_props', 'nextora_event_tec_resolve_color' );
 	return;

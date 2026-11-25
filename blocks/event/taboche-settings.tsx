@@ -91,7 +91,7 @@ export function TabocheSettings({
 
 	return (
 		<>
-			<PanelBody title={__('Template 6 Settings', 'nextora')} initialOpen>
+			<PanelBody title={__('Template 7 — Taboche Settings', 'nextora')} initialOpen>
 				{visibility.map(([key, label]) => (
 					<ToggleControl
 						key={key}
