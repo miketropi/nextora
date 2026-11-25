@@ -234,6 +234,9 @@ if ( ! function_exists( 'nextora_testimonial_carousel_render_slide' ) ) {
 		$out  = '<div class="swiper-slide">';
 		$out .= '<article class="nextora-testimonial-carousel__slide"' . ( '' !== $slide_style ? ' style="' . esc_attr( $slide_style ) . '"' : '' ) . '>';
 		$out .= nextora_testimonial_carousel_render_stars( $rating );
+		if ( ! empty( $context_props['showQuoteIcon'] ) ) {
+			$out .= '<div class="nextora-testimonial-carousel__slide-quote-icon" aria-hidden="true">' . nextora_testimonial_carousel_icon_svg( 'quote' ) . '</div>';
+		}
 		$out .= '<blockquote class="' . esc_attr( implode( ' ', $quote_classes ) ) . '"' . $quote_style_attr . '>' . esc_html( $quote ) . '</blockquote>';
 
 		$photo_markup = '';
@@ -632,6 +635,7 @@ $css_vars = array(
 	'--nextora-testimonial-bg'                 => '' !== $bg_color ? $bg_color : 'transparent',
 	'--nextora-testimonial-max-width'         => $content_max,
 	'--nextora-testimonial-icon-size'         => $top_icon_size . 'px',
+	'--nextora-testimonial-quote-icon-size'   => ( isset( $attributes['quoteIconSize'] ) ? max( 12, min( 120, (int) $attributes['quoteIconSize'] ) ) : 32 ) . 'px',
 	'--nextora-testimonial-icon-color'        => '' !== $icon_color ? $icon_color : 'currentColor',
 	'--nextora-testimonial-label-color'       => '' !== $label_color ? $label_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
 	'--nextora-testimonial-quote-color'       => '' !== $quote_color ? $quote_color : 'var(--wp--preset--color--contrast, #0a0a0a)',
@@ -709,6 +713,7 @@ $wrapper_attributes = (string) apply_filters(
 );
 
 $context_props = array(
+	'showQuoteIcon'      => ! $is_template_1 && ! empty( $attributes['showQuoteIcon'] ),
 	'quoteColorRaw'      => isset( $attributes['quoteColor'] ) ? (string) $attributes['quoteColor'] : '',
 	'authorColorRaw'     => isset( $attributes['authorColor'] ) ? (string) $attributes['authorColor'] : '',
 	'authorNameColorRaw' => isset( $attributes['authorNameColor'] ) ? (string) $attributes['authorNameColor'] : '',

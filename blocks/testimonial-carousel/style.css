@@ -121,6 +121,18 @@
 	opacity: 0.3;
 }
 
+.nextora-testimonial-carousel__slide-quote-icon {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 1rem;
+	color: var(--wp--preset--color--primary);
+}
+
+.nextora-testimonial-carousel__slide-quote-icon svg {
+	width: var(--nextora-testimonial-quote-icon-size, 32px);
+	height: var(--nextora-testimonial-quote-icon-size, 32px);
+}
+
 .nextora-testimonial-carousel__slide-quote {
 	margin: 0;
 	padding: 0;

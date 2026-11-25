@@ -345,6 +345,8 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 		itemsPerViewTablet = 2,
 		itemsPerViewMobile = 1,
 		cardGap = 22,
+		showQuoteIcon = false,
+		quoteIconSize = 32,
 		showTopIcon = true,
 		topIconType = 'sparkle',
 		customIconSvg = '',
@@ -409,6 +411,7 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 		style: buildSectionStyleVars({
 			backgroundColor,
 			contentMaxWidth,
+			quoteIconSize,
 			topIconSize,
 			topIconColor,
 			paginationColor,
@@ -608,6 +611,23 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 				)}
 
 				<PanelBody title={__('Testimonials', 'nextora')} initialOpen>
+					{templateStyle === 'default' && (
+						<ToggleControl
+							label={__('Show quote icon', 'nextora')}
+							help={__('Display a quotation-mark icon above each testimonial quote.', 'nextora')}
+							checked={showQuoteIcon}
+							onChange={(v) => setAttributes({ showQuoteIcon: v })}
+						/>
+					)}
+					{templateStyle === 'default' && showQuoteIcon && (
+						<RangeControl
+							label={__('Quote icon size (px)', 'nextora')}
+							value={quoteIconSize}
+							onChange={(v) => setAttributes({ quoteIconSize: v ?? 32 })}
+							min={12}
+							max={120}
+						/>
+					)}
 					{testimonials.length === 0 && (
 						<p className="components-base-control__help" style={{ marginBottom: '8px' }}>
 							{__('No items yet. Click "Add item" to create one.', 'nextora')}
@@ -1141,6 +1161,11 @@ export default function TestimonialCarouselEdit({ attributes, setAttributes }: E
 									{__('Edit', 'nextora')}
 								</button>
 								<StarRating rating={item.rating} />
+								{templateStyle === 'default' && showQuoteIcon && (
+									<div className="nextora-testimonial-carousel__slide-quote-icon" aria-hidden="true">
+										<TopIconSvg type="quote" size={quoteIconSize} />
+									</div>
+								)}
 								<blockquote className="nextora-testimonial-carousel__slide-quote">
 									{item.quoteText ||
 										__('Write testimonial quote…', 'nextora')}

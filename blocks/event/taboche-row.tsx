@@ -20,7 +20,7 @@ export function TabocheList({
 
 	return (
 		<div
-			className="nextora-event nextora-event--template6"
+			className="nextora-event nextora-event--template7"
 			style={{
 				'--nextora-event-item-gap': `${itemGap}px`,
 			} as React.CSSProperties}
