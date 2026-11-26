@@ -487,6 +487,11 @@
 	height: 1.125rem;
 }
 
+/* Only explicitly customized Nuptse arrows show the selected colors at full opacity. */
+.nextora-team-section--template-template-nuptse .nextora-team-section__arrow--custom-colors {
+	opacity: 1;
+}
+
 .nextora-team-section__arrow:hover {
 	opacity: 1;
 	box-shadow: 0 4px 12px color-mix(in srgb, currentColor 14%, transparent);

@@ -3,11 +3,14 @@ import { useState, useEffect } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	InspectorControls,
+	FontSizePicker,
+	useSettings,
 	PanelColorSettings,
 	useBlockProps,
 } from '@wordpress/block-editor';
 import {
 	Button,
+	BaseControl,
 	Modal,
 	PanelBody,
 	RadioControl,
@@ -33,6 +36,14 @@ import {
 	getColorProps,
 } from './color-utils';
 import { renderSocialIcon, getSocialPlatformLabel } from './social-utils';
+import { getFontSizeProps, normalizeFontSize } from './typography-utils';
+
+const TeamFontSizePicker = FontSizePicker as unknown as React.ComponentType<{
+	fontSizes: Array<{ name: string; slug: string; size: string | number }>;
+	value: string | undefined;
+	valueMode: 'slug' | 'literal';
+	onChange: (value: string | number | undefined, selectedItem?: { slug?: string }) => void;
+}>;
 
 interface EditProps {
 	attributes: TeamSectionAttributes;
@@ -163,6 +174,10 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		tagTextColor = '',
 		cardBorderRadius,
 		nameColor = '',
+		nuptseNameFontSize = '',
+		nuptseRoleFontSize = '',
+		nuptseArrowColor = '',
+		nuptseArrowBackgroundColor = '',
 		roleColor = '',
 		bioColor = '',
 		socialColor = '',
@@ -182,6 +197,19 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 	const effectivePhotoAspectRatio = photoAspectRatio ?? templateDefaults.photoAspectRatio ?? '3/4';
 	// Nuptse follows the selected editor device, not the admin window's media queries.
 	const isNuptse = cardTemplate === 'template-nuptse';
+	const [themeFontSizes = []] = useSettings('typography.fontSizes') as [
+		Array<{ name: string; slug: string; size: string | number }>,
+	];
+	const nameFontProps = getFontSizeProps(isNuptse ? nuptseNameFontSize || 'medium' : '');
+	const roleFontProps = getFontSizeProps(isNuptse ? nuptseRoleFontSize || 'base' : '');
+	const arrowColorProps = getColorProps(isNuptse ? nuptseArrowColor : '', 'color');
+	const arrowBgProps = getColorProps(isNuptse ? nuptseArrowBackgroundColor : '', 'background');
+	const arrowClasses = [
+		arrowColorProps.className,
+		arrowBgProps.className,
+		isNuptse && (nuptseArrowColor || nuptseArrowBackgroundColor) ? 'nextora-team-section__arrow--custom-colors' : '',
+	].filter(Boolean).join(' ');
+	const arrowStyle = { ...arrowColorProps.style, ...arrowBgProps.style };
 	const editorLayoutMode = isNuptse && layoutMode === 'grid' && !disableResponsiveCarousel && previewDevice !== 'desktop'
 		? 'carousel'
 		: layoutMode;
@@ -680,10 +708,39 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 					</PanelBody>
 				)}
 
+				{isNuptse && (
+					<PanelBody title={__('Typography', 'nextora')} initialOpen={false}>
+						{([
+							['nuptseNameFontSize', __('Name font size', 'nextora'), nuptseNameFontSize],
+							['nuptseRoleFontSize', __('Role font size', 'nextora'), nuptseRoleFontSize],
+						] as const).map(([attribute, label, value]) => (
+							<BaseControl key={attribute} id={`nextora-team-${attribute}`} label={label}>
+								<TeamFontSizePicker
+									fontSizes={themeFontSizes}
+									value={value || undefined}
+									valueMode={/^[a-z][a-z0-9-]*$/i.test(value) ? 'slug' : 'literal'}
+									onChange={(size, selectedItem) => setAttributes({ [attribute]: normalizeFontSize(size, selectedItem) })}
+								/>
+							</BaseControl>
+						))}
+					</PanelBody>
+				)}
 				<PanelColorSettings
 					enableAlpha
 					title={__('Colors', 'nextora')}
 					colorSettings={[
+						...(isNuptse ? [
+							{
+								value: colorValueForPicker(nuptseArrowColor, palette),
+								onChange: (value: string | undefined) => setAttributes({ nuptseArrowColor: normalizeColorForStorage(value, palette) }),
+								label: __('Arrow icon color', 'nextora'),
+							},
+							{
+								value: colorValueForPicker(nuptseArrowBackgroundColor, palette),
+								onChange: (value: string | undefined) => setAttributes({ nuptseArrowBackgroundColor: normalizeColorForStorage(value, palette) }),
+								label: __('Arrow background', 'nextora'),
+							},
+						] : []),
 						{
 							value: colorValueForPicker(sectionBackgroundColor, palette),
 							onChange: (v) => setAttributes({ sectionBackgroundColor: normalizeColorForStorage(v, palette) }),
@@ -1011,15 +1068,15 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 											{cardTemplate !== 'template-nuptse' ? photo : null}
 											<div className="nextora-team-section__card-body">
 												<NameTag
-													className={`nextora-team-section__card-name ${isNuptse ? 'has-medium-font-size ' : ''}${nameColorProps.className}`.trim()}
-													style={nameColorProps.style}
+													className={`nextora-team-section__card-name ${nameFontProps.className} ${nameColorProps.className}`.trim()}
+													style={{ ...nameColorProps.style, ...nameFontProps.style }}
 												>
 													{member.name || __('Member name', 'nextora')}
 												</NameTag>
 												{member.role ? (
 													<p
-														className={`nextora-team-section__card-role ${isNuptse ? 'has-base-font-size ' : ''}${roleColorProps.className}`.trim()}
-														style={roleColorProps.style}
+														className={`nextora-team-section__card-role ${roleFontProps.className} ${roleColorProps.className}`.trim()}
+														style={{ ...roleColorProps.style, ...roleFontProps.style }}
 													>
 														{member.role}
 													</p>
@@ -1089,14 +1146,16 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 								<>
 									<button
 										type="button"
-										className="nextora-team-section__arrow nextora-team-section__arrow--prev"
+										className={`nextora-team-section__arrow nextora-team-section__arrow--prev ${arrowClasses}`.trim()}
+										style={arrowStyle}
 										aria-label={__('Previous team member', 'nextora')}
 									>
 										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
 									</button>
 									<button
 										type="button"
-										className="nextora-team-section__arrow nextora-team-section__arrow--next"
+										className={`nextora-team-section__arrow nextora-team-section__arrow--next ${arrowClasses}`.trim()}
+										style={arrowStyle}
 										aria-label={__('Next team member', 'nextora')}
 									>
 										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>

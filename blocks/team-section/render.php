@@ -9,6 +9,28 @@
 
 declare( strict_types=1 );
 
+if ( ! function_exists( 'nextora_team_section_get_font_size_props' ) ) {
+	/**
+	 * Keep preset sizes linked to Global Styles.
+	 *
+	 * @return array{class: string, style: string}
+	 */
+	function nextora_team_section_get_font_size_props( string $raw ): array {
+		$size = trim( $raw );
+		if (
+			preg_match( '/^var:preset\|font-size\|([a-z0-9_-]+)$/i', $size, $match )
+			|| preg_match( '/^var\(\s*--wp--preset--font-size--([a-z0-9_-]+)\s*\)$/i', $size, $match )
+			|| preg_match( '/^([a-z][a-z0-9_-]*)$/i', $size, $match )
+		) {
+			return array( 'class' => 'has-' . sanitize_html_class( strtolower( $match[1] ) ) . '-font-size', 'style' => '' );
+		}
+		if ( preg_match( '/^\d+(?:\.\d+)?$/', $size ) ) {
+			$size .= 'px';
+		}
+		return array( 'class' => '', 'style' => '' !== $size ? safecss_filter_attr( 'font-size:' . $size . ';' ) : '' );
+	}
+}
+
 if ( ! function_exists( 'nextora_team_section_enqueue_view_script' ) ) {
 	/**
 	 * Ensure the block view script is queued (Swiper + scroll reveal).
@@ -518,13 +540,17 @@ if ( ! function_exists( 'nextora_team_section_render_member_slide' ) ) {
 		$out .= '<div class="nextora-team-section__card-body">';
 
 		$is_nuptse       = 'template-nuptse' === $card_template;
+		$name_font       = nextora_team_section_get_font_size_props( $is_nuptse ? ( (string) ( $color_options['nuptseNameFontSize'] ?? '' ) ?: 'medium' ) : '' );
+		$role_font       = nextora_team_section_get_font_size_props( $is_nuptse ? ( (string) ( $color_options['nuptseRoleFontSize'] ?? '' ) ?: 'base' ) : '' );
+		$name_props['style'] .= $name_font['style'];
+		$role_props['style'] .= $role_font['style'];
 		$name_tag        = $is_nuptse ? 'p' : 'h4';
-		$name_classes    = trim( 'nextora-team-section__card-name ' . ( $is_nuptse ? 'has-medium-font-size ' : '' ) . $name_props['class'] );
+		$name_classes    = trim( 'nextora-team-section__card-name ' . ( '' !== $name_font['class'] ? $name_font['class'] . ' ' : '' ) . $name_props['class'] );
 		$name_style_attr = '' !== $name_props['style'] ? ' style="' . esc_attr( $name_props['style'] ) . '"' : '';
 		$out .= '<' . $name_tag . ' class="' . esc_attr( $name_classes ) . '"' . $name_style_attr . '>' . esc_html( $name ) . '</' . $name_tag . '>';
 
 		if ( '' !== $role ) {
-			$role_classes    = trim( 'nextora-team-section__card-role ' . ( $is_nuptse ? 'has-base-font-size ' : '' ) . $role_props['class'] );
+			$role_classes    = trim( 'nextora-team-section__card-role ' . ( '' !== $role_font['class'] ? $role_font['class'] . ' ' : '' ) . $role_props['class'] );
 			$role_style_attr = '' !== $role_props['style'] ? ' style="' . esc_attr( $role_props['style'] ) . '"' : '';
 			$out .= '<p class="' . esc_attr( $role_classes ) . '"' . $role_style_attr . '>' . esc_html( $role ) . '</p>';
 		}
@@ -918,6 +944,12 @@ if ( in_array( $card_template, array( 'template-nuptse', 'platons' ), true ) ) {
 	// Keep the resolved block value; Nuptse's initial true is set in the editor.
 	unset( $template_defaults['disableResponsiveCarousel'] );
 }
+if ( 'template-nuptse' === $card_template ) {
+	// Gutenberg omits true (the schema default) when pagination is enabled.
+	// Preserve the resolved value instead of overriding it with Nuptse's
+	// initial false, which is explicitly saved when selecting this template.
+	unset( $template_defaults['showPagination'] );
+}
 $attributes        = array_merge( $attributes, $template_defaults, $parsed_attrs );
 
 $layout_mode = isset( $attributes['layoutMode'] ) ? (string) $attributes['layoutMode'] : 'carousel';
@@ -948,7 +980,18 @@ $color_options = array(
 	'tagBackgroundColor'  => (string) ( $attributes['tagBackgroundColor'] ?? '' ),
 	'tagTextColor'        => (string) ( $attributes['tagTextColor'] ?? '' ),
 	'socialColor'         => (string) ( $attributes['socialColor'] ?? '' ),
+	'nuptseNameFontSize'  => (string) ( $attributes['nuptseNameFontSize'] ?? '' ),
+	'nuptseRoleFontSize'  => (string) ( $attributes['nuptseRoleFontSize'] ?? '' ),
 );
+
+$arrow_color = nextora_team_section_get_color_props( 'template-nuptse' === $card_template ? (string) ( $attributes['nuptseArrowColor'] ?? '' ) : '', 'color' );
+$arrow_bg    = nextora_team_section_get_color_props( 'template-nuptse' === $card_template ? (string) ( $attributes['nuptseArrowBackgroundColor'] ?? '' ) : '', 'background' );
+$arrow_class = trim( $arrow_color['class'] . ' ' . $arrow_bg['class'] );
+if ( '' !== $arrow_class ) {
+	$arrow_class .= ' nextora-team-section__arrow--custom-colors';
+}
+$arrow_style = trim( $arrow_color['style'] . ' ' . $arrow_bg['style'] );
+$arrow_style_attr = '' !== $arrow_style ? ' style="' . esc_attr( $arrow_style ) . '"' : '';
 
 $raw_bg       = (string) ( $attributes['sectionBackgroundColor'] ?? $attributes['backgroundColor'] ?? '' );
 $bg_props     = nextora_team_section_get_color_props( $raw_bg, 'background' );
@@ -1203,10 +1246,10 @@ nextora_team_section_enqueue_view_script();
 					<div class="nextora-team-section__edge-overlay" aria-hidden="true"></div>
 				<?php endif; ?>
 				<?php if ( $show_arrows && $slide_count > 1 ) : ?>
-					<button type="button" class="nextora-team-section__arrow nextora-team-section__arrow--prev" aria-label="<?php echo esc_attr__( 'Previous team member', 'nextora' ); ?>">
+					<button type="button" class="<?php echo esc_attr( trim( 'nextora-team-section__arrow nextora-team-section__arrow--prev ' . $arrow_class ) ); ?>"<?php echo $arrow_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped above.?> aria-label="<?php echo esc_attr__( 'Previous team member', 'nextora' ); ?>">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
 					</button>
-					<button type="button" class="nextora-team-section__arrow nextora-team-section__arrow--next" aria-label="<?php echo esc_attr__( 'Next team member', 'nextora' ); ?>">
+					<button type="button" class="<?php echo esc_attr( trim( 'nextora-team-section__arrow nextora-team-section__arrow--next ' . $arrow_class ) ); ?>"<?php echo $arrow_style_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped above.?> aria-label="<?php echo esc_attr__( 'Next team member', 'nextora' ); ?>">
 						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
 					</button>
 				<?php endif; ?>

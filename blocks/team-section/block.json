@@ -230,6 +230,22 @@
       "type": "number",
       "default": 16
     },
+    "nuptseNameFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "nuptseRoleFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "nuptseArrowColor": {
+      "type": "string",
+      "default": ""
+    },
+    "nuptseArrowBackgroundColor": {
+      "type": "string",
+      "default": ""
+    },
     "nameColor": {
       "type": "string",
       "default": ""
