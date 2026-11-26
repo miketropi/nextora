@@ -9,12 +9,13 @@ import metadata from './block.json';
 import SectionBackgroundFill from '../advanced-container/section-background-fill';
 import { getMergedPaletteEntries, storedColorToCss, useThemeColorPalette } from '../advanced-container/color-utils';
 import { getMergedGradientEntries, useThemeGradients } from '../advanced-container/gradient-utils';
+import { DividerControls, DividerElement, type Divider } from './shape-divider';
 
 const SpacingSizesControl = (blockEditor as unknown as { __experimentalSpacingSizesControl: React.ComponentType<any> }).__experimentalSpacingSizesControl;
 
 type Device = 'desktop' | 'tablet' | 'mobile';
 type Settings = Record<string, string>;
-type Attributes = { tagName: string; desktop: Settings; tablet: Settings; mobile: Settings; ariaLabel: string; useContentWidth?: boolean; chooseLayout?: boolean; overlayColor?: string; overlayGradient?: string; overlayType?: string; overlayOpacity?: number; layout?: { type?: string; inherit?: boolean } };
+type Attributes = { tagName: string; desktop: Settings; tablet: Settings; mobile: Settings; ariaLabel: string; useContentWidth?: boolean; chooseLayout?: boolean; aspectRatio?: string; overlayColor?: string; overlayGradient?: string; overlayType?: string; overlayOpacity?: number; shapeDividerTop?: Divider; shapeDividerBottom?: Divider; layout?: { type?: string; inherit?: boolean } };
 type Props = { attributes: Attributes; setAttributes: (value: Partial<Attributes>) => void; clientId: string };
 
 const fields: Record<string, string> = {
@@ -22,17 +23,21 @@ const fields: Record<string, string> = {
   wrap: 'flex-wrap', columnGap: 'column-gap', rowGap: 'row-gap', columns: 'grid-template-columns',
   width: 'width', minWidth: 'min-width', maxWidth: 'max-width', height: 'height', minHeight: 'min-height', maxHeight: 'max-height', overflow: 'overflow',
   position: 'position', top: 'top', right: 'right', bottom: 'bottom', left: 'left', zIndex: 'z-index', borderSide: 'border-side',
+  paddingTop: 'padding-top', paddingRight: 'padding-right', paddingLeft: 'padding-left', backgroundPositionY: 'background-position-y',
 };
 const tags = ['div', 'section', 'article', 'aside', 'header', 'footer', 'main', 'nav'];
+const aspectRatios = ['1 / 1', '4 / 3', '3 / 4', '16 / 9', '9 / 16'];
 const lengthPattern = /^(?:0|(?:\d*\.)?\d+(?:px|%|em|rem|vw|vh|vmin|vmax|ch|ex))$/;
 const offsetPattern = /^-?(?:0|(?:\d*\.)?\d+(?:px|%|em|rem|vw|vh|vmin|vmax|ch|ex))$/;
 function cssValue(key: string, value: string): string {
   if (key === 'borderSide') return ({ none: '0', top: '1px 0 0 0', right: '0 1px 0 0', bottom: '0 0 1px 0', left: '0 0 0 1px' } as Record<string, string>)[value] || '';
   if (key === 'columns') return /^[1-9]$|^1[0-2]$/.test(value) ? `repeat(${value}, minmax(0, 1fr))` : '';
-  if (key === 'columnGap' || key === 'rowGap') {
+  if (['columnGap', 'rowGap', 'paddingTop', 'paddingRight', 'paddingLeft'].includes(key)) {
     const preset = /^var:preset\|spacing\|([a-zA-Z0-9-]+)$/.exec(value);
     if (preset) return `var(--wp--preset--spacing--${preset[1]})`;
   }
+  if (['paddingTop', 'paddingRight', 'paddingLeft'].includes(key)) return lengthPattern.test(value) ? value : '';
+  if (key === 'backgroundPositionY') return /^(?:100|[0-9]{1,2})%$/.test(value) ? value : '';
   if (['columnGap', 'rowGap', 'width', 'minWidth', 'maxWidth', 'height', 'minHeight', 'maxHeight'].includes(key)) return lengthPattern.test(value) || (['width', 'height'].includes(key) && value === 'auto') ? value : '';
   if (['top', 'right', 'bottom', 'left'].includes(key)) return offsetPattern.test(value) || value === 'auto' ? value : '';
   if (key === 'zIndex') return /^-?\d+$/.test(value) ? value : '';
@@ -63,7 +68,7 @@ function previousStyle(attributes: Attributes): Record<string, string> {
   }
   return style;
 }
-const responsiveKeys = ['direction', 'justify', 'align', 'wrap', 'columnGap', 'rowGap', 'columns', 'width', 'borderSide'];
+const responsiveKeys = ['direction', 'justify', 'align', 'wrap', 'columnGap', 'rowGap', 'columns', 'width', 'borderSide', 'paddingTop', 'paddingRight', 'paddingLeft', 'backgroundPositionY'];
 function deviceLabel(device: Device) {
   return device === 'mobile' ? __('Editing: Mobile', 'nextora') : device === 'tablet' ? __('Editing: Tablet', 'nextora') : __('Editing: Desktop', 'nextora');
 }
@@ -72,6 +77,9 @@ function responsiveLabel(label: string, device: Device) {
 }
 function blockStyle(attributes: Attributes): Record<string, string> {
   const style = previousStyle(attributes);
+  if (aspectRatios.includes(attributes.aspectRatio || '')) {
+    style['--flexbox-aspect-ratio'] = attributes.aspectRatio as string;
+  }
   const desktop = attributes.desktop || {};
   if (desktop.gridMinWidth && parseFloat(desktop.gridMinWidth) > 0 && desktop.columnGap === '0') {
     style['--flexbox-grid-template-columns'] = style['--flexbox-grid-template-columns'].replace('* 0)', '* 0px)');
@@ -106,7 +114,7 @@ function overlayStyle(attributes: Attributes): Record<string, string> {
 function legacyStyle(attributes: Attributes): Record<string, string> {
   const style: Record<string, string> = {};
   (['desktop', 'tablet', 'mobile'] as Device[]).forEach((device) => {
-    Object.entries(fields).filter(([key]) => key !== 'maxHeight' && key !== 'overflow').forEach(([, field]) => { style[`--flexbox-${device}-${field}`] = 'initial'; });
+    Object.entries(fields).filter(([key]) => !['maxHeight', 'overflow', 'paddingTop', 'paddingRight', 'paddingLeft', 'backgroundPositionY'].includes(key)).forEach(([, field]) => { style[`--flexbox-${device}-${field}`] = 'initial'; });
     Object.entries(attributes[device] || {}).forEach(([key, value]) => {
       const valid = cssValue(key, value);
       if (fields[key] && valid) style[`--flexbox-${device}-${fields[key]}`] = valid;
@@ -175,7 +183,7 @@ function Edit({ attributes, setAttributes, clientId }: Props) {
   const editorStyle = { ...blockStyle(attributes), ...overlay };
   // Hidden containers remain editable in the block editor.
   if (editorStyle['--flexbox-display'] === 'none') editorStyle['--flexbox-display'] = 'flex';
-  const blockProps = useBlockProps({ style: editorStyle, className: [isEmpty && 'nextora-flexbox--empty', attributes.useContentWidth && 'nextora-flexbox--content-width', overlay['--flexbox-overlay-background'] && 'nextora-flexbox--overlay'].filter(Boolean).join(' ') || undefined });
+  const blockProps = useBlockProps({ style: editorStyle, className: [isEmpty && 'nextora-flexbox--empty', attributes.useContentWidth && 'nextora-flexbox--content-width', overlay['--flexbox-overlay-background'] && 'nextora-flexbox--overlay', (attributes.shapeDividerTop?.type === 'torn-paper' || attributes.shapeDividerBottom?.type === 'torn-paper') && 'nextora-flexbox--has-divider'].filter(Boolean).join(' ') || undefined });
   const showLayouts = !!attributes.chooseLayout && isEmpty;
   const innerProps = useInnerBlocksProps(blockProps, { renderAppender: showLayouts ? () => null : undefined });
   const chooseLayout = (widths: string[]) => {
@@ -203,7 +211,17 @@ function Edit({ attributes, setAttributes, clientId }: Props) {
         <SectionBackgroundFill fillType={attributes.overlayType === 'gradient' ? 'gradient' : 'solid'} solidColor={attributes.overlayColor || ''} gradient={attributes.overlayGradient || ''} colorPalette={palette} lookupPalette={getMergedPaletteEntries(palette)} lookupGradients={getMergedGradientEntries(gradients)} onFillTypeChange={(overlayType) => setAttributes({ overlayType })} onSolidColorChange={(overlayColor) => setAttributes({ overlayColor })} onGradientChange={(overlayGradient) => setAttributes({ overlayGradient })} />
         <RangeControl label={__('Overlay opacity', 'nextora')} value={attributes.overlayOpacity ?? 50} min={0} max={100} onChange={(overlayOpacity) => setAttributes({ overlayOpacity: overlayOpacity ?? 50 })} />
       </PanelBody>
+      {device !== 'desktop' && <div className="nextora-flexbox-responsive-control" data-device={device} title={deviceLabel(device)}>
+        <TextControl label={__('Responsive background vertical position', 'nextora')} value={overrides.backgroundPositionY || ''} help={__('Enter a percentage from 0% to 100%, or leave empty to inherit.', 'nextora')} onChange={(value: string) => set('backgroundPositionY', value)} />
+        {overrides.backgroundPositionY && reset('backgroundPositionY')}
+      </div>}
     </InspectorControls>
+    {device !== 'desktop' && <InspectorControls group="dimensions">
+      <div className="nextora-flexbox-responsive-control" data-device={device} title={deviceLabel(device)}>
+        <SpacingSizesControl label={__('Responsive padding', 'nextora')} sides={['top', 'right', 'left']} values={{ top: overrides.paddingTop || undefined, right: overrides.paddingRight || undefined, left: overrides.paddingLeft || undefined }} onChange={(values: { top?: string; right?: string; left?: string }) => { const next = { ...(attributes[device] || {}) }; (['top', 'right', 'left'] as const).forEach((side) => { const key = `padding${side[0].toUpperCase()}${side.slice(1)}`; if (values[side]) next[key] = values[side] as string; else delete next[key]; }); setAttributes({ [device]: next }); }} />
+        {(['paddingTop', 'paddingRight', 'paddingLeft'] as const).map((key) => overrides[key] && <Button key={key} variant="link" onClick={() => set(key, '')}>{__('Reset padding override', 'nextora')}: {key}</Button>)}
+      </div>
+    </InspectorControls>}
     <InspectorControls group="border">
       <fieldset className="nextora-flexbox-options nextora-flexbox-options--border-side">
         <legend>{responsiveLabel(__('Border sides', 'nextora'), device)}</legend>
@@ -252,6 +270,10 @@ function Edit({ attributes, setAttributes, clientId }: Props) {
         <Button variant="secondary" onClick={() => { const next = { ...(attributes[device] || {}) }; (device === 'desktop' ? ['display', ...responsiveKeys.filter((key) => key !== 'width'), 'gridMinWidth'] : responsiveKeys.filter((key) => key !== 'width')).forEach((key) => delete next[key]); setAttributes({ [device]: next }); }}>{__('Reset layout settings', 'nextora')}</Button>
       </PanelBody>
       <PanelBody title={__('Dimensions', 'nextora')} initialOpen={false}>
+        <SelectControl label={__('Aspect ratio', 'nextora')} value={attributes.aspectRatio || ''} options={[
+          { value: '', label: __('Auto', 'nextora') },
+          ...aspectRatios.map((value) => ({ value, label: value.replace(' / ', ':') })),
+        ]} onChange={(aspectRatio: string) => setAttributes({ aspectRatio })} help={__('Applies to all devices. Leave height on Auto to size the container from its width.', 'nextora')} />
         {device !== 'desktop' && <p className="components-base-control__help">{__('Only width changes by device. Other dimensions apply to all devices.', 'nextora')}</p>}
         <div className="nextora-flexbox-dimensions">
           {([
@@ -283,12 +305,16 @@ function Edit({ attributes, setAttributes, clientId }: Props) {
           <TextControl type="number" step={1} label={__('Z-index', 'nextora')} value={settings.zIndex || ''} onChange={(value: string) => set('zIndex', value)} />
         </>}
       </PanelBody>
+    </InspectorControls>
+    <InspectorControls><DividerControls title={__('Top shape divider', 'nextora')} value={attributes.shapeDividerTop || {}} onChange={(shapeDividerTop) => setAttributes({ shapeDividerTop })} /><DividerControls title={__('Bottom shape divider', 'nextora')} value={attributes.shapeDividerBottom || {}} onChange={(shapeDividerBottom) => setAttributes({ shapeDividerBottom })} /></InspectorControls>
+    <InspectorControls>
       <PanelBody title={__('HTML element', 'nextora')} initialOpen={false}>
         <SelectControl label={__('HTML tag', 'nextora')} value={attributes.tagName} options={tags.map((tag) => ({ label: tag, value: tag }))} onChange={(v: string) => setAttributes({ tagName: v })} />
         <TextControl label={__('Accessible label', 'nextora')} value={attributes.ariaLabel} onChange={(v: string) => setAttributes({ ariaLabel: v })} help={__('Use a descriptive label for navigation or other landmarks when needed. Use only one main landmark per page.', 'nextora')} />
       </PanelBody>
     </InspectorControls>
     <Tag {...innerProps} aria-label={attributes.ariaLabel || undefined}>
+      <DividerElement value={attributes.shapeDividerTop} position="top" />
       {isEmpty && <span className="nextora-flexbox-empty-guide" aria-hidden="true" />}
       {showLayouts && <div className="nextora-flexbox-layout-picker" role="group" aria-label={__('Choose a Flexbox layout', 'nextora')}>
         {([
@@ -301,14 +327,16 @@ function Edit({ attributes, setAttributes, clientId }: Props) {
         </Button>)}
       </div>}
       {innerProps.children}
+      <DividerElement value={attributes.shapeDividerBottom} position="bottom" />
     </Tag>
   </>;
 }
 function Save({ attributes }: { attributes: Attributes }) {
   const Tag = (tags.includes(attributes.tagName) ? attributes.tagName : 'div') as 'div';
   const overlay = overlayStyle(attributes);
-  const props = useBlockProps.save({ style: { ...blockStyle(attributes), ...overlay }, className: [attributes.useContentWidth && 'nextora-flexbox--content-width', overlay['--flexbox-overlay-background'] && 'nextora-flexbox--overlay'].filter(Boolean).join(' ') || undefined, 'aria-label': attributes.ariaLabel || undefined });
-  return <Tag {...useInnerBlocksProps.save(props)} />;
+  const props = useBlockProps.save({ style: { ...blockStyle(attributes), ...overlay }, className: [attributes.useContentWidth && 'nextora-flexbox--content-width', overlay['--flexbox-overlay-background'] && 'nextora-flexbox--overlay', (attributes.shapeDividerTop?.type === 'torn-paper' || attributes.shapeDividerBottom?.type === 'torn-paper') && 'nextora-flexbox--has-divider'].filter(Boolean).join(' ') || undefined, 'aria-label': attributes.ariaLabel || undefined });
+  const inner = useInnerBlocksProps.save(props);
+  return <Tag {...inner}><DividerElement value={attributes.shapeDividerTop} position="top" />{inner.children as React.ReactNode}<DividerElement value={attributes.shapeDividerBottom} position="bottom" /></Tag>;
 }
 registerBlockType(metadata as BlockConfiguration<Attributes>, {
   edit: Edit,

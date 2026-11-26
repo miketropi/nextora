@@ -91,6 +91,26 @@ export function normalizeMembers(members: TeamMember[] | undefined): TeamMember[
 export function getTemplateDefaultAttributes(
 	template: string,
 ): Partial<TeamSectionAttributes> {
+	if (template === 'platons') {
+		return {
+			layoutMode: 'grid',
+			gridColumns: 4,
+			gridColumnsTablet: 2,
+			gridColumnsMobile: 2,
+			disableResponsiveCarousel: true,
+			gridColumnGap: 0,
+			gridRowGap: 30,
+			photoAspectRatio: '3/4',
+			cardBorderRadius: 0,
+			showPagination: false,
+			showArrows: false,
+			enablePopup: false,
+			autoplay: false,
+			slidesPerView: 4,
+			slidesPerViewTablet: 2,
+			slidesPerViewMobile: 2,
+		};
+	}
 	if (template === 'template-nuptse') {
 		return {
 			layoutMode: 'grid',

@@ -125,7 +125,7 @@ function clearRevealStyles(targets: HTMLElement[]): void {
 	gsap.set(targets, { clearProps: 'opacity,transform,translate,rotate,scale' });
 }
 
-function scheduleRevealFallback(section: HTMLElement, targets: HTMLElement[]): void {
+function scheduleRevealFallback(section: HTMLElement, targets: HTMLElement[], timeoutMs = REVEAL_FALLBACK_MS): void {
 	window.setTimeout(() => {
 		if (section.classList.contains('nextora-team-section--reveal-ready')) {
 			return;
@@ -137,7 +137,7 @@ function scheduleRevealFallback(section: HTMLElement, targets: HTMLElement[]): v
 		gsap.killTweensOf(targets);
 		clearRevealStyles(targets);
 		setRevealReady(section);
-	}, REVEAL_FALLBACK_MS);
+	}, timeoutMs);
 }
 
 function initScrollReveal(section: HTMLElement): void {
@@ -158,18 +158,26 @@ function initScrollReveal(section: HTMLElement): void {
 	const content = section.querySelector<HTMLElement>(
 		'.nextora-team-section__carousel-root, .nextora-team-section__deck-container'
 	);
-	const targets = [header, content].filter((el): el is HTMLElement => el !== null);
+	const cards = section.getAttribute('data-nextora-scroll-reveal-style') === 'sequential' && content
+		? Array.from(content.querySelectorAll<HTMLElement>('.swiper-wrapper > .swiper-slide'))
+		: [];
+	const sequential = cards.length > 0;
+	const targets = [header, ...(sequential ? cards : [content])].filter((el): el is HTMLElement => el !== null);
 
 	if (targets.length === 0) {
 		setRevealReady(section);
 		return;
 	}
 
-	gsap.set(targets, { opacity: 0, y: 32, force3D: true });
+	// Animate slide wrappers, never the photos: polaroid rotations remain untouched.
+	if (sequential && content) {
+		clearRevealStyles([content]);
+	}
+	gsap.set(targets, { opacity: 0, y: sequential ? 36 : 32, force3D: true });
 
 	const timeline = gsap.timeline({
 		paused: true,
-		defaults: { ease: 'power3.out' },
+		defaults: { ease: sequential ? 'power2.out' : 'power3.out' },
 		onComplete: () => {
 			clearRevealStyles(targets);
 			setRevealReady(section);
@@ -177,10 +185,17 @@ function initScrollReveal(section: HTMLElement): void {
 	});
 
 	if (header) {
-		timeline.to(header, { opacity: 1, y: 0, duration: 1 }, 0);
+		timeline.to(header, { opacity: 1, y: 0, duration: sequential ? 0.8 : 1 }, 0);
 	}
 
-	if (content) {
+	if (sequential) {
+		timeline.to(cards, {
+			opacity: 1,
+			y: 0,
+			duration: 0.75,
+			stagger: { each: 0.14, from: 'start' },
+		}, header ? 0.2 : 0);
+	} else if (content) {
 		timeline.to(
 			content,
 			{
@@ -199,10 +214,16 @@ function initScrollReveal(section: HTMLElement): void {
 			return;
 		}
 		played = true;
+		if (sequential) {
+			section.classList.remove('nextora-team-section--reveal-pending');
+			scheduleRevealFallback(section, targets, Math.max(REVEAL_FALLBACK_MS, Math.ceil(timeline.totalDuration() * 1000) + 1000));
+		}
 		timeline.play();
 	};
 
-	scheduleRevealFallback(section, targets);
+	if (!sequential) {
+		scheduleRevealFallback(section, targets);
+	}
 
 	if (isRevealStartPassed(section)) {
 		playReveal();

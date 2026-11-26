@@ -221,6 +221,26 @@ if ( ! function_exists( 'nextora_team_section_get_template_defaults' ) ) {
 	 * @return array<string, mixed>
 	 */
 	function nextora_team_section_get_template_defaults( string $template ): array {
+		if ( 'platons' === $template ) {
+			return array(
+				'layoutMode'                => 'grid',
+				'gridColumns'               => 4,
+				'gridColumnsTablet'         => 2,
+				'gridColumnsMobile'         => 2,
+				'disableResponsiveCarousel' => true,
+				'gridColumnGap'             => 0,
+				'gridRowGap'                => 30,
+				'photoAspectRatio'          => '3/4',
+				'cardBorderRadius'          => 0,
+				'showPagination'            => false,
+				'showArrows'                => false,
+				'enablePopup'               => false,
+				'autoplay'                  => false,
+				'slidesPerView'             => 4,
+				'slidesPerViewTablet'       => 2,
+				'slidesPerViewMobile'       => 2,
+			);
+		}
 		if ( 'template-nuptse' === $template ) {
 			return array(
 				'layoutMode'                => 'grid',
@@ -885,7 +905,7 @@ if ( array() === $members ) {
 }
 
 $card_template = isset( $attributes['cardTemplate'] ) ? (string) $attributes['cardTemplate'] : 'default';
-if ( ! in_array( $card_template, array( 'default', 'overlay-social', 'template-02', 'template-03', 'template-nuptse' ), true ) ) {
+if ( ! in_array( $card_template, array( 'default', 'overlay-social', 'template-02', 'template-03', 'template-nuptse', 'platons' ), true ) ) {
 	$card_template = 'default';
 }
 
@@ -893,7 +913,7 @@ $parsed_attrs      = isset( $block ) && $block instanceof WP_Block && isset( $bl
 	? $block->parsed_block['attrs']
 	: array();
 $template_defaults = nextora_team_section_get_template_defaults( $card_template );
-if ( 'template-nuptse' === $card_template ) {
+if ( in_array( $card_template, array( 'template-nuptse', 'platons' ), true ) ) {
 	// WordPress omits false (the schema default) when saving this toggle.
 	// Keep the resolved block value; Nuptse's initial true is set in the editor.
 	unset( $template_defaults['disableResponsiveCarousel'] );
@@ -967,7 +987,8 @@ $free_mode   = ! empty( $attributes['freeMode'] );
 $grab_cursor = ! isset( $attributes['grabCursor'] ) || (bool) $attributes['grabCursor'];
 
 $enable_scroll = ! isset( $attributes['enableScrollAnimation'] ) || (bool) $attributes['enableScrollAnimation'];
-$enable_popup  = ! empty( $attributes['enablePopup'] );
+$scroll_style  = isset( $attributes['scrollAnimationStyle'] ) && 'sequential' === $attributes['scrollAnimationStyle'] ? 'sequential' : 'default';
+$enable_popup  = 'platons' !== $card_template && ! empty( $attributes['enablePopup'] );
 
 /** @var list<array<string, mixed>> $members */
 $members = array_values( (array) apply_filters( 'nextora_team_section_members', $members, $attributes ) );
@@ -1088,6 +1109,9 @@ $wrapper_extra = array(
 );
 if ( $enable_scroll ) {
 	$wrapper_extra['data-nextora-scroll-reveal'] = '1';
+	if ( 'sequential' === $scroll_style ) {
+		$wrapper_extra['data-nextora-scroll-reveal-style'] = $scroll_style;
+	}
 }
 if ( $enable_popup ) {
 	$wrapper_extra['data-enable-popup'] = '1';
@@ -1156,7 +1180,11 @@ nextora_team_section_enqueue_view_script();
 					<div class="swiper-wrapper">
 						<?php
 						foreach ( $members as $member ) {
-							if ( 'template-03' === $card_template ) {
+							if ( 'platons' === $card_template ) {
+								require_once __DIR__ . '/platons-card.php';
+								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
+								echo nextora_team_section_render_member_slide_platons( $member, $color_options );
+							} elseif ( 'template-03' === $card_template ) {
 								require_once __DIR__ . '/taboche-card.php';
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built with esc_*.
 								echo nextora_team_section_render_member_slide_taboche( $member, $card_radius, $enable_popup, $color_options );

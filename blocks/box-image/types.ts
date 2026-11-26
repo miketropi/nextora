@@ -1,6 +1,6 @@
 export type BoxImageLayoutMode = 'slider' | 'grid';
 export type BoxImageFit = 'cover' | 'contain' | 'fill' | 'none';
-export type BoxImageTemplate = 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5';
+export type BoxImageTemplate = 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5' | 'template6';
 export type BoxImageScrollAnimationStyle = 'default' | 'sequential';
 
 export interface BoxImageItem {
@@ -65,6 +65,8 @@ export interface BoxImageAttributes {
 	cardTitleColor: string;
 	cardDescriptionColor: string;
 	titleFontSize?: string;
+	template6TitleFontFamily?: string;
+	template6LinkFontFamily?: string;
 	descriptionFontSize?: string;
 	descriptionHoverColor: string;
 	linkColor: string;

@@ -267,7 +267,16 @@ export function initHeaderSticky(): void {
 	);
 
 	if (typeof ResizeObserver !== "undefined") {
-		const ro = new ResizeObserver(() => syncLayout());
+		let roRaf: number | null = null;
+		const ro = new ResizeObserver(() => {
+			if (roRaf !== null) {
+				return;
+			}
+			roRaf = window.requestAnimationFrame(() => {
+				roRaf = null;
+				syncLayout();
+			});
+		});
 		for (const entry of entries) {
 			ro.observe(entry.shell);
 		}

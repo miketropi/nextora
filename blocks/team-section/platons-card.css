@@ -1,0 +1,97 @@
+/* Platons polaroids: shared by the editor and frontend; no page-specific selectors. */
+/* Server markup stays visible without JavaScript; GSAP uses inline start styles. */
+.nextora-team-section.nextora-team-section--template-platons[data-nextora-scroll-reveal='1'].nextora-team-section--reveal-pending:not(.nextora-team-section--reveal-ready) .nextora-team-section__carousel-root {
+	opacity: 1;
+	transform: none;
+}
+.nextora-team-section--template-platons.nextora-team-section--grid-no-carousel .nextora-team-section__swiper {
+	opacity: 1;
+}
+
+.nextora-team-section--template-platons .nextora-team-section__carousel-root,
+.nextora-team-section--template-platons .nextora-team-section__swiper {
+	overflow: visible;
+}
+
+.nextora-team-section--template-platons .nextora-team-section__swiper,
+.nextora-team-section--template-platons .nextora-team-section__members-row {
+	padding-block: var(--wp--preset--spacing--30) var(--wp--preset--spacing--20);
+}
+
+/* Keep the opted-in grid usable before JavaScript and when JavaScript is disabled. */
+.nextora-team-section--template-platons.nextora-team-section--layout-grid.nextora-team-section--grid-no-carousel .swiper-wrapper {
+	display: grid;
+	grid-template-columns: repeat(var(--nextora-team-grid-columns, 4), minmax(0, 1fr));
+	column-gap: var(--nextora-team-grid-column-gap, 0px);
+	row-gap: var(--nextora-team-grid-row-gap, var(--wp--preset--spacing--30));
+}
+
+.nextora-team-section--template-platons .nextora-team-section__card--platons {
+	--nextora-team-platons-tilt: -11deg;
+	--nextora-team-platons-caption-tilt: -6deg;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	overflow: visible;
+	text-align: center;
+	min-width: 0;
+}
+
+.nextora-team-section--template-platons :is(.swiper-slide:nth-child(4n + 2) .nextora-team-section__card--platons, .nextora-team-section__members-row > .nextora-team-section__card--platons:nth-child(4n + 2)) {
+	--nextora-team-platons-tilt: 8deg;
+}
+.nextora-team-section--template-platons :is(.swiper-slide:nth-child(4n + 3) .nextora-team-section__card--platons, .nextora-team-section__members-row > .nextora-team-section__card--platons:nth-child(4n + 3)) {
+	--nextora-team-platons-tilt: -9deg;
+}
+.nextora-team-section--template-platons :is(.swiper-slide:nth-child(4n + 4) .nextora-team-section__card--platons, .nextora-team-section__members-row > .nextora-team-section__card--platons:nth-child(4n + 4)) {
+	--nextora-team-platons-tilt: 10deg;
+}
+.nextora-team-section--template-platons :is(.swiper-slide:nth-child(even) .nextora-team-section__card--platons, .nextora-team-section__members-row > .nextora-team-section__card--platons:nth-child(even)) {
+	--nextora-team-platons-caption-tilt: 4deg;
+}
+
+.nextora-team-section--template-platons .nextora-team-section__card-photo {
+	box-sizing: border-box;
+	width: min(270px, 84%);
+	aspect-ratio: 269 / 303;
+	margin-inline: auto;
+	border: 9px solid var(--wp--preset--color--base);
+	border-radius: 0;
+	box-shadow: 0 10px 24px rgb(from var(--wp--preset--color--contrast) r g b / 0.22);
+	transform: rotate(var(--nextora-team-platons-tilt));
+}
+
+.nextora-team-section--template-platons .nextora-team-section__card-body {
+	flex: 0 1 auto;
+	padding: 0;
+	margin-top: var(--wp--preset--spacing--30) !important;
+	transform: rotate(var(--nextora-team-platons-caption-tilt));
+}
+
+.nextora-team-section--template-platons .nextora-team-section__card-name,
+.nextora-team-section--template-platons .nextora-team-section__card-role {
+	font-size: var(--wp--preset--font-size--base);
+	margin: 0 !important;
+	opacity: 1;
+	text-transform: none;
+	letter-spacing: normal;
+}
+.nextora-team-section--template-platons .nextora-team-section__card-name {
+	color: var(--nextora-team-name-color, var(--wp--preset--color--contrast));
+}
+.nextora-team-section--template-platons .nextora-team-section__card-role {
+	color: var(--nextora-team-role-color, var(--wp--preset--color--paragraph));
+}
+
+@media (max-width: 1023.98px) {
+	.nextora-team-section--template-platons.nextora-team-section--layout-grid.nextora-team-section--grid-no-carousel .swiper-wrapper {
+		grid-template-columns: repeat(var(--nextora-team-grid-columns-tablet, 2), minmax(0, 1fr));
+	}
+}
+@media (max-width: 639.98px) {
+	.nextora-team-section--template-platons.nextora-team-section--layout-grid.nextora-team-section--grid-no-carousel .swiper-wrapper {
+		grid-template-columns: repeat(var(--nextora-team-grid-columns-mobile, 2), minmax(0, 1fr));
+	}
+}

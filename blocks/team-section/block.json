@@ -250,6 +250,11 @@
       "type": "boolean",
       "default": true
     },
+    "scrollAnimationStyle": {
+      "type": "string",
+      "default": "default",
+      "enum": ["default", "sequential"]
+    },
     "enablePopup": {
       "type": "boolean",
       "default": false
