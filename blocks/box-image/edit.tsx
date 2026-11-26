@@ -32,6 +32,7 @@ import {
 import { IconPicker } from '../advanced-icon/icon-picker';
 import BoxImageEditorIcon from './editor-icon';
 import { storedColorToCss } from './icon-catalog';
+import { useFontFamilyOptions } from './font-family-utils';
 import { buildStyleVars, createItemId, getColorProps, getTemplateDefaultAttributes, normalizeItems } from './item-utils';
 import type { BoxImageAttributes, BoxImageTemplate, BoxImageScrollAnimationStyle, BoxImageItem } from './types';
 
@@ -70,6 +71,7 @@ const templateOptions: { label: string; value: BoxImageTemplate }[] = [
 	{ label: __('Template 3', 'nextora'), value: 'template3' },
 	{ label: __('Template 4', 'nextora'), value: 'template4' },
 	{ label: __('Template 5', 'nextora'), value: 'template5' },
+	{ label: __('Template 6', 'nextora'), value: 'template6' },
 ];
 
 const aspectRatioOptions = [
@@ -78,6 +80,7 @@ const aspectRatioOptions = [
 	{ label: '4:3', value: '4/3' },
 	{ label: '1:1', value: '1/1' },
 	{ label: '2:3', value: '2/3' },
+	{ label: '264:350', value: '264/350' },
 ];
 
 const imageFitOptions = [
@@ -351,6 +354,8 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 		cardTitleColor = '',
 		cardDescriptionColor = '',
 		titleFontSize = '',
+		template6TitleFontFamily = '',
+		template6LinkFontFamily = '',
 		descriptionFontSize = '',
 		descriptionHoverColor = '',
 		linkColor = '',
@@ -370,6 +375,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 	} = attributes;
 
 	const templateDefaults = useMemo(() => getTemplateDefaultAttributes(template), [template]);
+	const fontFamilyOptions = useFontFamilyOptions();
 
 	// Resolved attributes: explicit user selection takes precedence, fallback to template defaults
 	const layoutMode = (attributes.layoutMode as 'slider' | 'grid' | undefined) || templateDefaults.layoutMode || 'slider';
@@ -813,7 +819,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 						value={template}
 						options={templateOptions}
 						onChange={(v: string) => {
-							const tpl = (v === 'template1' ? 'template1' : v === 'template2' ? 'template2' : v === 'template3' ? 'template3' : v === 'template4' ? 'template4' : v === 'template5' ? 'template5' : 'default') as BoxImageTemplate;
+							const tpl = (v === 'template1' ? 'template1' : v === 'template2' ? 'template2' : v === 'template3' ? 'template3' : v === 'template4' ? 'template4' : v === 'template5' ? 'template5' : v === 'template6' ? 'template6' : 'default') as BoxImageTemplate;
 							const defaults = getTemplateDefaultAttributes(tpl);
 							setAttributes({
 								template: tpl,
@@ -1121,6 +1127,8 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 				/>
 
 				<PanelBody title={__('Typography', 'nextora')} opened={panelStates.typography} onToggle={togglePanel('typography')}>
+					{template === 'template6' && <SelectControl label={__('Card title font family', 'nextora')} value={template6TitleFontFamily} options={fontFamilyOptions} onChange={(value) => setAttributes({ template6TitleFontFamily: value })} help={__('Default inherits the theme heading font.', 'nextora')} />}
+					{template === 'template6' && <SelectControl label={__('Card link font family', 'nextora')} value={template6LinkFontFamily} options={fontFamilyOptions} onChange={(value) => setAttributes({ template6LinkFontFamily: value })} help={__('Default inherits the theme link font.', 'nextora')} />}
 					<BaseControl
 						label={__('Card title font size', 'nextora')}
 						id="nextora-box-image-title-font-size"
@@ -1128,8 +1136,8 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 					>
 						<FontSizePicker
 							fontSizes={themeFontSizes}
-							value={titleFontSize || undefined}
-							valueMode={isPresetFontSize(titleFontSize, themeFontSizes) ? 'slug' : 'literal'}
+							value={(template === 'template6' ? effectiveTitleFontSize : titleFontSize) || undefined}
+							valueMode={isPresetFontSize(template === 'template6' ? effectiveTitleFontSize : titleFontSize, themeFontSizes) ? 'slug' : 'literal'}
 							onChange={(value, selectedItem) =>
 								setAttributes({
 									titleFontSize: normalizeFontSizeAttribute(value, selectedItem),
@@ -1670,6 +1678,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									const itemTitleColorProps = getColorProps(itemTitleColor, 'color');
 									const titleClasses = [
 										'nextora-box-image__title',
+										template === 'template6' && /^[a-z0-9-]+$/.test(template6TitleFontFamily) ? `has-${template6TitleFontFamily}-font-family` : '',
 										titleFontSizeProps.className,
 										itemTitleColorProps.className,
 									].filter(Boolean).join(' ');
@@ -1704,7 +1713,7 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 									const cardBgProps = getColorProps(itemBg, 'background');
 									const cardClasses = [
 										'nextora-box-image__card',
-										template === 'template1' ? 'nextora-box-image__card--template1' : template === 'template2' ? 'nextora-box-image__card--template2' : template === 'template3' ? 'nextora-box-image__card--template3' : template === 'template5' ? 'nextora-box-image__card--template5' : '',
+										template === 'template1' ? 'nextora-box-image__card--template1' : template === 'template2' ? 'nextora-box-image__card--template2' : template === 'template3' ? 'nextora-box-image__card--template3' : template === 'template5' ? 'nextora-box-image__card--template5' : template === 'template6' ? 'nextora-box-image__card--template6' : '',
 										'nextora-box-image__card--editable',
 										isWrapLink ? 'nextora-box-image__card-link' : '',
 										cardBgProps.className,
@@ -1848,6 +1857,15 @@ export default function BoxImageEdit({ attributes, setAttributes }: EditProps) {
 															</span>
 														</span>
 													) : null}
+												</div>
+											</>
+										) : template === 'template6' ? (
+											<>
+												<div className="nextora-box-image__image-wrap"><img className="nextora-box-image__card-image" src={resolveEditorImage(item, placeholderUrl)} alt="" /></div>
+												<div className="nextora-box-image__card-body">
+													<h4 className={titleClasses} style={titleStyle}>{item.title || __('Title', 'nextora')}</h4>
+													{item.description && <p className={descClasses} style={descStyle}>{item.description}</p>}
+													{!item.linkWrapCard && item.showLink && item.linkLabel && <span className={`nextora-box-image__link nextora-box-image__link--static ${/^[a-z0-9-]+$/.test(template6LinkFontFamily) ? `has-${template6LinkFontFamily}-font-family` : ''}`}>{item.linkLabel}</span>}
 												</div>
 											</>
 										) : template === 'template5' ? (

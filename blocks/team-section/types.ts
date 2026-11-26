@@ -1,10 +1,12 @@
 export type TeamLayoutMode = 'carousel' | 'grid';
 
-export type TeamCardTemplate = 'default' | 'overlay-social' | 'template-02' | 'template-03' | 'template-nuptse';
+export type TeamCardTemplate = 'default' | 'overlay-social' | 'template-02' | 'template-03' | 'template-nuptse' | 'platons';
 
 export type TeamPhotoAspectRatio = '3/4' | '4/3' | '1/1' | '16/9';
 
 export type TeamPaginationType = 'bullets' | 'fraction' | 'progressbar';
+
+export type TeamScrollAnimationStyle = 'default' | 'sequential';
 
 export type TeamSocialPlatform =
 	| 'linkedin'
@@ -74,6 +76,7 @@ export interface TeamSectionAttributes {
 	bioColor?: string;
 	socialColor?: string;
 	enableScrollAnimation: boolean;
+	scrollAnimationStyle?: TeamScrollAnimationStyle;
 	enablePopup?: boolean;
 	edgeFadeColor?: string;
 }

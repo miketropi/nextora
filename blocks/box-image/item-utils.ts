@@ -62,6 +62,8 @@ export function getTemplateDefaultAttributes(
 				cardBackgroundColor: 'transparent',
 				imageAspectRatio: '4/3',
 			};
+		case 'template6':
+			return { layoutMode: 'grid', gridColumns: 4, gridColumnsTablet: 2, gridColumnsMobile: 1, disableResponsiveCarousel: true, cardBorderRadius: 0, cardBorderWidth: 0, cardMinHeight: 0, cardBackgroundColor: 'transparent', imageAspectRatio: '264/350', enableCardHover: false, titleFontSize: 'medium' };
 		default:
 			return {
 				layoutMode: 'slider',

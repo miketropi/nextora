@@ -4,6 +4,11 @@
 
 @import './style.css';
 
+.nextora-team-section--editor.nextora-team-section--template-platons.nextora-team-section--layout-grid .nextora-team-section__members-row {
+	grid-template-columns: repeat(var(--nextora-team-preview-grid-columns, 4), minmax(0, 1fr));
+	margin-top: 0;
+}
+
 /* Carousel wrapper for arrow absolute positioning */
 .nextora-team-section--editor .nextora-team-section__carousel-root {
 	position: relative;

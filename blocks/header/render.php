@@ -70,6 +70,204 @@ if ( ! function_exists( 'nextora_header_block_sanitize_border_color' ) ) {
 	}
 }
 
+if ( ! function_exists( 'nextora_header_block_styles_disable_border' ) ) {
+	/**
+	 * Determine whether header styles explicitly remove the border.
+	 *
+	 * @param array<string, mixed> $styles Header styles.
+	 */
+	function nextora_header_block_styles_disable_border( array $styles ): bool
+	{
+		if ( ! isset( $styles['border'] ) || ! is_array( $styles['border'] ) ) {
+			return false;
+		}
+
+		$border = $styles['border'];
+		$width  = isset( $border['width'] ) && is_scalar( $border['width'] ) ? strtolower( trim( (string) $border['width'] ) ) : '';
+		$style  = isset( $border['style'] ) && is_scalar( $border['style'] ) ? strtolower( trim( (string) $border['style'] ) ) : '';
+
+		return in_array( $width, array( '0', '0px', '0rem', '0em' ), true ) || 'none' === $style;
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_global_styles_disable_border' ) ) {
+	/**
+	 * Determine whether the active Global Styles variation explicitly removes the
+	 * header border. The block's legacy border class has higher specificity than
+	 * Core's generated variation selector, so do not add that class in this case.
+	 *
+	 * @return bool True when the active header block style disables its border.
+	 */
+	function nextora_header_block_global_styles_disable_border(): bool
+	{
+		if ( ! function_exists( 'wp_get_global_styles' ) ) {
+			return false;
+		}
+
+		$styles = wp_get_global_styles( array( 'blocks', 'nextora/header' ) );
+		if ( ! is_array( $styles ) ) {
+			return false;
+		}
+
+		return nextora_header_block_styles_disable_border( $styles );
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_get_page_variation_styles' ) ) {
+	/**
+	 * Return the header styles from the variation assigned to the current page.
+	 *
+	 * This keeps demo pages self-contained when a site uses multiple homepage
+	 * variations. A site-wide active variation continues to be handled by
+	 * WordPress Global Styles.
+	 *
+	 * @return array<string, mixed>
+	 */
+	function nextora_header_block_get_page_variation_styles(): array
+	{
+		static $styles = null;
+
+		if ( is_array( $styles ) ) {
+			return $styles;
+		}
+
+		$styles  = array();
+		$post_id = get_queried_object_id();
+		if ( $post_id <= 0 ) {
+			return $styles;
+		}
+
+		$theme_slug = '';
+		foreach ( array_merge( array( $post_id ), get_post_ancestors( $post_id ) ) as $candidate_id ) {
+			$theme_slug = sanitize_title( (string) get_post_meta( (int) $candidate_id, '_nextora_theme', true ) );
+			if ( '' !== $theme_slug ) {
+				break;
+			}
+		}
+
+		if ( '' === $theme_slug ) {
+			return $styles;
+		}
+
+		$file = trailingslashit( get_stylesheet_directory() ) . 'styles/' . $theme_slug . '.json';
+		if ( ! is_readable( $file ) ) {
+			return $styles;
+		}
+
+		/** @var mixed $variation */
+		$variation    = json_decode( (string) file_get_contents( $file ), true );
+		$header       = is_array( $variation ) ? $variation['styles']['blocks']['nextora/header'] ?? null : null;
+		$global_button = is_array( $variation ) ? $variation['styles']['elements']['button'] ?? null : null;
+
+		if ( is_array( $header ) ) {
+			$styles = $header;
+		}
+
+		// The header CTA intentionally follows the variation's Global Button so
+		// each homepage has one consistent primary action style.
+		if ( is_array( $global_button ) ) {
+			if ( array() === $styles ) {
+				$styles = array( 'elements' => array() );
+			}
+			if ( ! isset( $styles['elements'] ) || ! is_array( $styles['elements'] ) ) {
+				$styles['elements'] = array();
+			}
+			$styles['elements']['button'] = $global_button;
+		}
+
+		return $styles;
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_sanitize_shadow' ) ) {
+	/**
+	 * Sanitize a trusted Theme JSON box-shadow value before exposing it as a CSS
+	 * custom property.
+	 *
+	 * @param mixed $value Theme JSON shadow value.
+	 */
+	function nextora_header_block_sanitize_shadow( mixed $value ): string
+	{
+		if ( ! is_string( $value ) ) {
+			return '';
+		}
+
+		$value = trim( $value );
+		if ( '' === $value || strlen( $value ) > 240 || preg_match( '/[;<>{}]|url\s*\(|expression\s*\(/i', $value ) ) {
+			return '';
+		}
+
+		return $value;
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_get_variation_inline_style' ) ) {
+	/**
+	 * Build custom properties used by the header stylesheet for page variations.
+	 *
+	 * @param array<string, mixed> $styles Header styles read from Theme JSON.
+	 */
+	function nextora_header_block_get_variation_inline_style( array $styles ): string
+	{
+		$declarations = array();
+		$add_color    = static function ( string $property, mixed $value ) use ( &$declarations ): void {
+			if ( ! is_string( $value ) ) {
+				return;
+			}
+
+			$color = nextora_header_block_sanitize_border_color( $value );
+			if ( '' !== $color ) {
+				$declarations[] = $property . ':' . $color;
+			}
+		};
+
+		$add_color( '--nextora-header-variation-background', $styles['color']['background'] ?? null );
+		$add_color( '--nextora-header-variation-color', $styles['color']['text'] ?? null );
+
+		$button = $styles['elements']['button'] ?? null;
+		if ( is_array( $button ) ) {
+			$add_color( '--nextora-header-variation-cta-background', $button['color']['background'] ?? null );
+			$add_color( '--nextora-header-variation-cta-color', $button['color']['text'] ?? null );
+			$add_color( '--nextora-header-variation-cta-hover-background', $button[':hover']['color']['background'] ?? null );
+			$add_color( '--nextora-header-variation-cta-hover-color', $button[':hover']['color']['text'] ?? null );
+
+			$radius = isset( $button['border']['radius'] ) && is_string( $button['border']['radius'] )
+				? nextora_header_block_sanitize_css_length( $button['border']['radius'] )
+				: '';
+			if ( '' !== $radius ) {
+				$declarations[] = '--nextora-header-variation-cta-radius:' . $radius;
+			}
+
+			$shadow = nextora_header_block_sanitize_shadow( $button['shadow'] ?? null );
+			if ( '' !== $shadow ) {
+				$declarations[] = '--nextora-header-variation-cta-shadow:' . $shadow;
+			}
+		}
+
+		return implode( ';', $declarations );
+	}
+}
+
+if ( ! function_exists( 'nextora_header_block_has_variation_cta_style' ) ) {
+	/**
+	 * Whether a page variation provides CTA visual values beyond typography.
+	 *
+	 * @param array<string, mixed> $styles Header styles read from Theme JSON.
+	 */
+	function nextora_header_block_has_variation_cta_style( array $styles ): bool
+	{
+		$button = $styles['elements']['button'] ?? null;
+		if ( ! is_array( $button ) ) {
+			return false;
+		}
+
+		return isset( $button['color']['background'], $button['color']['text'] )
+			|| isset( $button[':hover']['color']['background'], $button[':hover']['color']['text'] )
+			|| isset( $button['border']['radius'] )
+			|| isset( $button['shadow'] );
+	}
+}
+
 if ( ! function_exists( 'nextora_header_block_append_border_color_to_wrapper' ) ) {
 	/**
 	 * Append border-bottom-color as the last declaration in the wrapper style attribute so it wins over
@@ -1876,6 +2074,11 @@ $mobile_bp = isset( $attributes['mobileBreakpoint'] ) && (int) $attributes['mobi
 	? (int) $attributes['mobileBreakpoint']
 	: 1025;
 
+$page_variation_styles          = nextora_header_block_get_page_variation_styles();
+$page_variation_disables_border = nextora_header_block_styles_disable_border( $page_variation_styles );
+$variation_style                = nextora_header_block_get_variation_inline_style( $page_variation_styles );
+$has_variation_cta_style        = nextora_header_block_has_variation_cta_style( $page_variation_styles );
+
 $wrapper_classes   = (array) apply_filters( 'nextora_header_block_wrapper_classes', array( 'nextora-header-block' ), $attributes );
 $wrapper_classes   = array_filter( array_map( 'trim', $wrapper_classes ) );
 
@@ -1884,7 +2087,7 @@ if ( ! empty( $attributes['stickyHeader'] ) ) {
 	$wrapper_classes[] = 'nextora-header-block--sticky-' . $sticky_style;
 }
 
-if ( ! empty( $attributes['showBottomBorder'] ) ) {
+if ( ! empty( $attributes['showBottomBorder'] ) && ! nextora_header_block_global_styles_disable_border() && ! $page_variation_disables_border ) {
 	$wrapper_classes[] = 'nextora-header-block--border-bottom';
 }
 
@@ -1899,7 +2102,18 @@ $wrapper_extra = array(
 	'role'  => 'banner',
 );
 
+if ( '' !== $variation_style ) {
+	$wrapper_extra['data-nextora-header-page-variation'] = '1';
+}
+if ( $has_variation_cta_style ) {
+	$wrapper_extra['data-nextora-header-page-variation-cta'] = '1';
+}
+
 $wrapper_attributes = get_block_wrapper_attributes( $wrapper_extra );
+
+if ( '' !== $variation_style ) {
+	$wrapper_attributes = nextora_header_block_append_style_to_wrapper( $wrapper_attributes, $variation_style );
+}
 
 $raw_border = isset( $attributes['bottomBorderColor'] ) ? (string) $attributes['bottomBorderColor'] : '';
 $san_border = nextora_header_block_sanitize_border_color( $raw_border );

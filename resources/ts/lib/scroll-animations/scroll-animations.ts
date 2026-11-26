@@ -122,6 +122,14 @@ function scheduleRescan(): void {
 	}, MUTATION_DEBOUNCE_MS);
 }
 
+function isRelevantMutationNode(node: Node): boolean {
+	if (!(node instanceof HTMLElement)) {
+		return false;
+	}
+	const selector = `${getAnimationSelector()}, ${PARALLAX_SELECTOR}, [${DEFERRED_ATTR}], [${REPLAY_ATTR}], [data-nextora-scroll-reveal]`;
+	return node.matches(selector) || node.querySelector(selector) !== null;
+}
+
 function observeDynamicContent(): void {
 	if (observer || typeof MutationObserver === "undefined") {
 		return;
@@ -129,13 +137,18 @@ function observeDynamicContent(): void {
 
 	observer = new MutationObserver((records) => {
 		for (const record of records) {
-			if (record.type === "childList" && record.addedNodes.length > 0) {
-				scheduleRescan();
-				return;
-			}
-			if (record.type === "attributes" && record.attributeName === "class") {
-				scheduleRescan();
-				return;
+			if (record.type === "childList") {
+				for (let i = 0; i < record.addedNodes.length; i++) {
+					if (isRelevantMutationNode(record.addedNodes[i])) {
+						scheduleRescan();
+						return;
+					}
+				}
+			} else if (record.type === "attributes" && record.attributeName === "class") {
+				if (isRelevantMutationNode(record.target)) {
+					scheduleRescan();
+					return;
+				}
 			}
 		}
 	});
@@ -213,8 +226,7 @@ function watchDeferredScrollElements(): void {
 				hasWork = true;
 			});
 
-		if (needsThrottle || hasWork) {
-			needsThrottle = true;
+		if (hasWork) {
 			setTimeout(() => requestAnimationFrame(check), 50);
 		}
 	};

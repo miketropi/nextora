@@ -21,6 +21,24 @@
 	border-bottom-color: color-mix(in srgb, currentColor 18%, transparent);
 }
 
+.nextora-header-block[data-nextora-header-page-variation='1'] {
+	background-color: var(--nextora-header-variation-background, inherit);
+	color: var(--nextora-header-variation-color, inherit);
+}
+
+.nextora-header-block[data-nextora-header-page-variation-cta='1'] .nextora-header-block__cta.nextora-header-block__cta--solid {
+	background-color: var(--nextora-header-variation-cta-background, var(--nextora-header-button-bg, var(--wp--preset--color--primary)));
+	border-radius: var(--nextora-header-variation-cta-radius, 30rem);
+	box-shadow: var(--nextora-header-variation-cta-shadow, none);
+	color: var(--nextora-header-variation-cta-color, var(--nextora-header-button-color, var(--wp--preset--color--base)));
+}
+
+.nextora-header-block[data-nextora-header-page-variation-cta='1'] .nextora-header-block__cta.nextora-header-block__cta--solid:hover,
+.nextora-header-block[data-nextora-header-page-variation-cta='1'] .nextora-header-block__cta.nextora-header-block__cta--solid:focus-visible {
+	background-color: var(--nextora-header-variation-cta-hover-background, var(--nextora-header-button-hover-bg, var(--nextora-header-variation-cta-background, var(--wp--preset--color--primary))));
+	color: var(--nextora-header-variation-cta-hover-color, var(--nextora-header-button-hover-color, var(--nextora-header-variation-cta-color, var(--wp--preset--color--base))));
+}
+
 /**
  * Block text color: Core sets `color` on `.wp-block-nextora-header`.
  * Link color: Core enqueues `.wp-elements-* a` — :where() avoids overriding Core when vars are unset.

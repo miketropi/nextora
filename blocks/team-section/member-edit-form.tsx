@@ -36,6 +36,7 @@ export interface MemberEditFormProps {
 export default function MemberEditForm({ member, photoUrl, cardTemplate, enablePopup, onPatch }: MemberEditFormProps) {
 	const isOverlay = cardTemplate === 'overlay-social';
 	const isTaboche = cardTemplate === 'template-03';
+	const isPlatons = cardTemplate === 'platons';
 	const showTags = cardTemplate === 'default';
 
 	return (
@@ -122,7 +123,7 @@ export default function MemberEditForm({ member, photoUrl, cardTemplate, enableP
 						value={member.role}
 						onChange={(role) => onPatch({ role: role ?? '' })}
 					/>
-					{!isOverlay && !isTaboche && (
+					{!isOverlay && !isTaboche && !isPlatons && (
 						<>
 							<TextareaControl
 								label={__('Bio', 'nextora')}
@@ -206,7 +207,7 @@ export default function MemberEditForm({ member, photoUrl, cardTemplate, enableP
 					</div>
 				)}
 
-				<div className="nextora-team-section__member-form-section">
+				{!isPlatons && <div className="nextora-team-section__member-form-section">
 					<ToggleControl
 						label={__('Show social links', 'nextora')}
 						checked={member.showSocialLinks}
@@ -370,7 +371,7 @@ export default function MemberEditForm({ member, photoUrl, cardTemplate, enableP
 							)}
 						</div>
 					)}
-				</div>
+				</div>}
 			</div>
 		</div>
 	);

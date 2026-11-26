@@ -15,12 +15,15 @@
     "mobile": { "type": "object", "default": {} },
     "useContentWidth": { "type": "boolean", "default": false },
     "chooseLayout": { "type": "boolean", "default": false },
+    "aspectRatio": { "type": "string", "default": "" },
     "overlayColor": { "type": "string", "default": "" },
     "overlayGradient": { "type": "string", "default": "" },
     "overlayType": { "type": "string", "default": "solid" },
     "overlayOpacity": { "type": "number", "default": 50 },
     "layout": { "type": "object" },
-    "ariaLabel": { "type": "string", "default": "" }
+    "ariaLabel": { "type": "string", "default": "" },
+    "shapeDividerTop": { "type": "object", "default": {} },
+    "shapeDividerBottom": { "type": "object", "default": {} }
   },
   "supports": {
     "html": false, "anchor": true, "align": ["wide", "full"],

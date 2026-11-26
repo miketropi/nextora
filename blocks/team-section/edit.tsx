@@ -25,6 +25,7 @@ import {
 	resolvePhotoUrl,
 } from './member-utils';
 import MemberEditForm from './member-edit-form';
+import PlatonsCard from './platons-card';
 import {
 	normalizeColorForStorage,
 	colorValueForPicker,
@@ -49,6 +50,7 @@ const cardTemplateOptions = [
 	{ label: __('Template 02', 'nextora'), value: 'template-02' },
 	{ label: __('Nuptse', 'nextora'), value: 'template-nuptse' },
 	{ label: __('Template 03 (Taboche)', 'nextora'), value: 'template-03' },
+	{ label: __('Platons (Polaroid)', 'nextora'), value: 'platons' },
 ];
 
 const photoAspectRatioOptions = [
@@ -165,6 +167,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		bioColor = '',
 		socialColor = '',
 		enableScrollAnimation = true,
+		scrollAnimationStyle = 'default',
 		enablePopup = false,
 		edgeFadeColor = '',
 	} = attributes;
@@ -236,7 +239,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 				cardBorderRadius: effectiveCardBorderRadius,
 				edgeFadeColor,
 			}),
-			...(isNuptse ? { '--nextora-team-preview-grid-columns': String(editorGridColumns) } : {}),
+				...(isNuptse || cardTemplate === 'platons' ? { '--nextora-team-preview-grid-columns': String(editorGridColumns) } : {}),
 			...sectionBgProps.style,
 		} as CSSProperties,
 	});
@@ -416,7 +419,9 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						}}
 					/>
 
-					{cardTemplate === 'template-nuptse' ? (
+					{cardTemplate === 'platons' ? (
+						<p className="components-base-control__help">{__('Platons uses tilted polaroid photos with names and roles below. Photo proportions are fixed to match the frames.', 'nextora')}</p>
+					) : cardTemplate === 'template-nuptse' ? (
 						<p className="components-base-control__help">
 							{__('Nuptse displays names and roles above circular, square-cropped photos.', 'nextora')}
 						</p>
@@ -758,9 +763,19 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						checked={enableScrollAnimation !== false}
 						onChange={(v) => setAttributes({ enableScrollAnimation: v })}
 					/>
+					{enableScrollAnimation !== false && <SelectControl
+						label={__('Animation style', 'nextora')}
+						value={scrollAnimationStyle}
+						options={[
+							{ label: __('Default', 'nextora'), value: 'default' },
+							{ label: __('Sequential', 'nextora'), value: 'sequential' },
+						]}
+						onChange={(value) => setAttributes({ scrollAnimationStyle: value === 'sequential' ? 'sequential' : 'default' })}
+						help={__('Default: the whole section fades up together. Sequential: cards appear one by one with a gentle upward motion.', 'nextora')}
+					/>}
 				</PanelBody>
 
-				<PanelBody title={__('Popup Drawer', 'nextora')} initialOpen={false}>
+				{cardTemplate !== 'platons' && <PanelBody title={__('Popup Drawer', 'nextora')} initialOpen={false}>
 					<ToggleControl
 						label={__('Enable member detail popup', 'nextora')}
 						help={__(
@@ -770,7 +785,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 						checked={enablePopup === true}
 						onChange={(v) => setAttributes({ enablePopup: v })}
 					/>
-				</PanelBody>
+				</PanelBody>}
 			</InspectorControls>
 
 			{editingMember && (
@@ -939,6 +954,9 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 							<div className="nextora-team-section__members-row" aria-label={__('Team members', 'nextora')}>
 								{members.map((member) => {
 									const photoUrl = resolvePhotoUrl(member, mediaUrlById);
+									if (cardTemplate === 'platons') {
+										return <PlatonsCard key={member.id} member={member} photoUrl={photoUrl} nameColorProps={nameColorProps} roleColorProps={roleColorProps} onEdit={() => openMemberEditor(member.id)} />;
+									}
 									const memberRadius =
 										member.cardBorderRadius && member.cardBorderRadius > 0
 											? member.cardBorderRadius

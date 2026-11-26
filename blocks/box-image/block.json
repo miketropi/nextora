@@ -236,6 +236,14 @@
       "type": "string",
       "default": ""
     },
+    "template6TitleFontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "template6LinkFontFamily": {
+      "type": "string",
+      "default": ""
+    },
     "titleFontSize": {
       "type": "string",
       "default": ""

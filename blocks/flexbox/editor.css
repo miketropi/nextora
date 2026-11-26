@@ -3,7 +3,8 @@
   min-height: 120px;
   position: var(--flexbox-position, var(--flexbox-desktop-position, relative));
 }
-.background-block-support-panel__inner-wrapper > .nextora-flexbox-overlay-panel {
+.background-block-support-panel__inner-wrapper > .nextora-flexbox-overlay-panel,
+.background-block-support-panel__inner-wrapper > .nextora-flexbox-responsive-control {
   grid-column: 1 / -1;
   min-width: 0;
   width: 100%;
