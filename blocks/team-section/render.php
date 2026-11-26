@@ -944,6 +944,12 @@ if ( in_array( $card_template, array( 'template-nuptse', 'platons' ), true ) ) {
 	// Keep the resolved block value; Nuptse's initial true is set in the editor.
 	unset( $template_defaults['disableResponsiveCarousel'] );
 }
+if ( 'template-nuptse' === $card_template ) {
+	// Gutenberg omits true (the schema default) when pagination is enabled.
+	// Preserve the resolved value instead of overriding it with Nuptse's
+	// initial false, which is explicitly saved when selecting this template.
+	unset( $template_defaults['showPagination'] );
+}
 $attributes        = array_merge( $attributes, $template_defaults, $parsed_attrs );
 
 $layout_mode = isset( $attributes['layoutMode'] ) ? (string) $attributes['layoutMode'] : 'carousel';
