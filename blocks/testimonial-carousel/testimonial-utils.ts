@@ -99,6 +99,7 @@ export function buildSectionStyleVars(attrs: {
 	backgroundColor?: string;
 	contentMaxWidth?: string;
 	topIconSize?: number;
+	quoteIconSize?: number;
 	topIconColor?: string;
 	paginationColor?: string;
 	paginationActiveColor?: string;
@@ -122,6 +123,7 @@ export function buildSectionStyleVars(attrs: {
 	const vars: Record<string, string> = {
 		'--nextora-testimonial-max-width': attrs.contentMaxWidth || '680px',
 		'--nextora-testimonial-icon-size': `${attrs.topIconSize ?? 20}px`,
+		'--nextora-testimonial-quote-icon-size': `${Math.max(12, Math.min(120, attrs.quoteIconSize ?? 32))}px`,
 		'--nextora-testimonial-avatar-size': `${attrs.trustAvatarSize ?? 36}px`,
 		'--nextora-testimonial-avatar-overlap': `${attrs.trustAvatarOverlap ?? 10}px`,
 		'--nextora-testimonial-avatar-border': `${attrs.trustAvatarBorderWidth ?? 2.5}px`,

@@ -48,7 +48,7 @@ const cardTemplateOptions = [
 	{ label: __('Default', 'nextora'), value: 'default' },
 	{ label: __('Template 01', 'nextora'), value: 'overlay-social' },
 	{ label: __('Template 02', 'nextora'), value: 'template-02' },
-	{ label: __('Nuptse', 'nextora'), value: 'template-nuptse' },
+	{ label: __('Template Nuptse', 'nextora'), value: 'template-nuptse' },
 	{ label: __('Template 03 (Taboche)', 'nextora'), value: 'template-03' },
 	{ label: __('Platons (Polaroid)', 'nextora'), value: 'platons' },
 ];
@@ -193,11 +193,11 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 		: slidesPerView;
 	const editorGridColumns = previewDevice === 'mobile' ? gridColumnsMobile : previewDevice === 'tablet' ? gridColumnsTablet : gridColumns;
 
-	const nameColorProps = getColorProps(nameColor, 'color');
-	const roleColorProps = getColorProps(roleColor, 'color');
+	const nameColorProps = getColorProps(nameColor || (isNuptse ? templateDefaults.nameColor || '' : ''), 'color');
+	const roleColorProps = getColorProps(roleColor || (isNuptse ? templateDefaults.roleColor || '' : ''), 'color');
 	const bioColorProps = getColorProps(bioColor, 'color');
 	const socialColorProps = getColorProps(socialColor, 'color');
-	const cardBgProps = getColorProps(cardBackgroundColor, 'background');
+	const cardBgProps = getColorProps(cardBackgroundColor || (isNuptse ? templateDefaults.cardBackgroundColor || '' : ''), 'background');
 	const tagBgProps = getColorProps(tagBackgroundColor, 'background');
 	const tagTextColorProps = getColorProps(tagTextColor, 'color');
 	const sectionBgProps = getColorProps(sectionBackgroundColor, 'background');
@@ -957,6 +957,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 									if (cardTemplate === 'platons') {
 										return <PlatonsCard key={member.id} member={member} photoUrl={photoUrl} nameColorProps={nameColorProps} roleColorProps={roleColorProps} onEdit={() => openMemberEditor(member.id)} />;
 									}
+									const NameTag = isNuptse ? 'p' : 'h4';
 									const memberRadius =
 										member.cardBorderRadius && member.cardBorderRadius > 0
 											? member.cardBorderRadius
@@ -1009,21 +1010,21 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 											</button>
 											{cardTemplate !== 'template-nuptse' ? photo : null}
 											<div className="nextora-team-section__card-body">
-												<h4
-													className={`nextora-team-section__card-name ${nameColorProps.className}`.trim()}
+												<NameTag
+													className={`nextora-team-section__card-name ${isNuptse ? 'has-medium-font-size ' : ''}${nameColorProps.className}`.trim()}
 													style={nameColorProps.style}
 												>
 													{member.name || __('Member name', 'nextora')}
-												</h4>
+												</NameTag>
 												{member.role ? (
 													<p
-														className={`nextora-team-section__card-role ${roleColorProps.className}`.trim()}
+														className={`nextora-team-section__card-role ${isNuptse ? 'has-base-font-size ' : ''}${roleColorProps.className}`.trim()}
 														style={roleColorProps.style}
 													>
 														{member.role}
 													</p>
 												) : null}
-												{cardTemplate !== 'overlay-social' && cardTemplate !== 'template-03' && member.tags.length > 0 && (
+												{!isNuptse && cardTemplate !== 'overlay-social' && cardTemplate !== 'template-03' && member.tags.length > 0 && (
 													<div className="nextora-team-section__card-tags">
 														{member.tags.map((tag) =>
 															tag ? (
@@ -1038,7 +1039,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 														)}
 													</div>
 												)}
-												{cardTemplate !== 'overlay-social' && cardTemplate !== 'template-03' && member.bio ? (
+												{!isNuptse && cardTemplate !== 'overlay-social' && cardTemplate !== 'template-03' && member.bio ? (
 													<p
 														className={`nextora-team-section__card-bio ${bioColorProps.className}`.trim()}
 														style={bioColorProps.style}
@@ -1060,7 +1061,7 @@ export default function TeamSectionEdit({ attributes, setAttributes }: EditProps
 														))}
 													</div>
 												)}
-												{(cardTemplate === 'default' || cardTemplate === 'template-nuptse') && member.showSocialLinks && member.socialLinks.length > 0 && (
+												{cardTemplate === 'default' && member.showSocialLinks && member.socialLinks.length > 0 && (
 													<div className="nextora-team-section__card-social">
 														{member.socialLinks.map((link, lIdx) => (
 															<span

@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { SomoniSettings } from '../event/somoni-settings';
+import ChangtseSettings from '../event/changtse-settings';
 import { TabocheSettings } from '../event/taboche-settings';
 import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -395,7 +396,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				<PanelBody title={__('Layout & Template', 'nextora')} initialOpen={true}>
 					<SelectControl
 						label={__('Template', 'nextora')}
-						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5' | 'template6'}
+						value={template as 'default' | 'template1' | 'template2' | 'template3' | 'template4' | 'template5' | 'template6' | 'template7'}
 						options={[
 							{ label: __('Default (List)', 'nextora'), value: 'default' },
 							{ label: __('Template 1 (Card Slider)', 'nextora'), value: 'template1' },
@@ -403,7 +404,8 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 							{ label: __('Template 3 (Editorial Alternating)', 'nextora'), value: 'template3' },
 							{ label: __('Template 4 — Compact List', 'nextora'), value: 'template4' },
 							{ label: __('Template 5 — Somoni Card Slider', 'nextora'), value: 'template5' },
-							{ label: __('Template 6 — Taboche Editorial Row', 'nextora'), value: 'template6' },
+							{ label: __('Template 6 — Changtse List', 'nextora'), value: 'template6' },
+							{ label: __('Template 7 — Taboche Editorial Row', 'nextora'), value: 'template7' },
 						]}
 						onChange={(val) => setAttributes({ template: val })}
 					/>
@@ -418,7 +420,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				</PanelBody>
 
 				{/* ── Settings / Button Settings ── */}
-				{template !== 'template5' && template !== 'template6' && <PanelBody title={template === 'template4' ? __('Settings', 'nextora') : __('Register Button', 'nextora')} initialOpen={template === 'template4'}>
+				{template !== 'template5' && template !== 'template6' && template !== 'template7' && <PanelBody title={template === 'template4' ? __('Settings', 'nextora') : __('Register Button', 'nextora')} initialOpen={template === 'template4'}>
 					{template === 'template4' ? (
 						<>
 							<RangeControl
@@ -619,6 +621,8 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 
 				{/* ── Color Settings ── */}
 				{template === 'template6' ? (
+					<ChangtseSettings attributes={attributes} setAttributes={setAttributes} />
+				) : template === 'template7' ? (
 					<TabocheSettings attributes={attributes} setAttributes={setAttributes} />
 				) : template === 'template5' ? (
 					<SomoniSettings attributes={attributes} setAttributes={setAttributes} />
@@ -703,7 +707,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 				)}
 
 				{/* ── Typography Settings ── */}
-				<PanelBody title={__('Typography', 'nextora')} initialOpen={template === 'template3' || template === 'template4'}>
+				{template !== 'template6' && template !== 'template5' && <PanelBody title={__('Typography', 'nextora')} initialOpen={template === 'template3' || template === 'template4'}>
 					<BaseControl
 						label={__('Card title font size', 'nextora')}
 						id="nextora-event-tec-title-font-size"
@@ -756,6 +760,7 @@ export default function Edit({ attributes, setAttributes }: EditProps): JSX.Elem
 					</BaseControl>
 				</PanelBody>
 
+				}
 				{/* ── Animation Settings ── */}
 				{template !== 'template4' && (
 					<PanelBody title={__('Animation', 'nextora')} initialOpen={false}>

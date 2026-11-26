@@ -1,3 +1,5 @@
+import type { ChangtseOptions } from './changtse-list';
+
 export interface EventItem {
 	id: string;
 	day: string;
@@ -21,7 +23,7 @@ export interface EventItem {
 	registerButtonIcon?: string;
 }
 
-export interface EventAttributes {
+export interface EventAttributes extends ChangtseOptions {
 	template: string;
 	events: EventItem[];
 	showRegisterButton: boolean;

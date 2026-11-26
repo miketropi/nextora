@@ -23,7 +23,7 @@ test('existing template defaults remain unchanged', () => {
 	assert.deepEqual(defaults('overlay-social'), { photoAspectRatio: '3/4', cardBorderRadius: 20 });
 	assert.deepEqual(defaults('template-02'), { photoAspectRatio: '3/4', cardBorderRadius: 24 });
 	assert.deepEqual(defaults('template-03'), { photoAspectRatio: '3/4', cardBorderRadius: 3, layoutMode: 'grid', gridColumns: 3, gridColumnsTablet: 2, gridColumnsMobile: 1, gridColumnGap: 30, gridRowGap: 30 });
-	assert.deepEqual(defaults('template-nuptse'), { layoutMode: 'grid', gridColumns: 3, gridColumnsTablet: 3, gridColumnsMobile: 1, disableResponsiveCarousel: true, gridColumnGap: 16, gridRowGap: 16, photoAspectRatio: '1/1', cardBorderRadius: 10, showPagination: false, showArrows: false });
+	assert.deepEqual(defaults('template-nuptse'), { layoutMode: 'grid', gridColumns: 3, gridColumnsTablet: 3, gridColumnsMobile: 1, disableResponsiveCarousel: true, gridColumnGap: 16, gridRowGap: 16, photoAspectRatio: '1/1', cardBorderRadius: 10, cardBackgroundColor: 'base', nameColor: 'contrast', roleColor: 'primary', showPagination: false, showArrows: false });
 });
 
 test('polaroid CSS stays template-scoped and uses palette colors', () => {
