@@ -72,6 +72,10 @@ export interface TeamSectionAttributes {
 	tagTextColor: string;
 	cardBorderRadius: number;
 	nameColor: string;
+	nuptseNameFontSize?: string;
+	nuptseRoleFontSize?: string;
+	nuptseArrowColor?: string;
+	nuptseArrowBackgroundColor?: string;
 	roleColor: string;
 	bioColor?: string;
 	socialColor?: string;
