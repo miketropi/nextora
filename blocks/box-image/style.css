@@ -181,7 +181,7 @@
 	padding: var(--wp--preset--spacing--20) 0 0;
 }
 .nextora-box-image__card--template6 .nextora-box-image__title {
-	margin: 0 0 var(--wp--preset--spacing--10);
+	margin: 0 0 0.5rem;
 	font-weight: 700;
 	text-transform: none;
 	letter-spacing: normal;
@@ -193,7 +193,7 @@
 }
 .nextora-box-image__card--template6 .nextora-box-image__link {
 	margin: 0;
-	font-size: var(--wp--preset--font-size--base);
+	font-size: calc(var(--wp--preset--font-size--base) * 1.15);
 }
 .nextora-box-image__card--template6 .nextora-box-image__link:focus-visible {
 	outline: 2px solid currentColor;

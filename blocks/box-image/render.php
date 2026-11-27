@@ -9,6 +9,8 @@
 
 declare( strict_types=1 );
 
+require_once __DIR__ . '/image-media.php';
+
 $lucide_path = dirname( __DIR__ ) . '/advanced-icon/lucide.php';
 if ( file_exists( $lucide_path ) ) {
 	require_once $lucide_path;
@@ -967,11 +969,7 @@ if ( ! function_exists( 'nextora_box_image_render_card' ) ) {
 
 		if ( 'template6' === $template ) {
 			$out .= '<div class="nextora-box-image__image-wrap">';
-			if ( $image_id > 0 ) {
-				$out .= wp_get_attachment_image( $image_id, 'medium_large', false, array( 'class' => 'nextora-box-image__card-image', 'loading' => 'lazy', 'decoding' => 'async' ) );
-			} elseif ( '' !== $image_url ) {
-				$out .= '<img class="nextora-box-image__card-image" src="' . esc_url( $image_url ) . '" alt="" loading="lazy" decoding="async" />';
-			}
+			$out .= nextora_box_image_render_template6_image( $image_id, $image_url );
 			$out .= '</div><div class="nextora-box-image__card-body">';
 			$out .= '<h4 class="' . esc_attr( implode( ' ', $title_classes ) ) . '"' . $title_style_attr . '>' . esc_html( $title ) . '</h4>';
 			if ( '' !== trim( wp_strip_all_tags( $description ) ) ) {
